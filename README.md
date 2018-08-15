@@ -1,4 +1,4 @@
-# manage-pensions-frontend
+# Manage Pensions Frontend 
 
 [![Build Status](https://travis-ci.org/hmrc/manage-pensions-frontend.svg)](https://travis-ci.org/hmrc/manage-pensions-frontend) [ ![Download](https://api.bintray.com/packages/hmrc/releases/manage-pensions-frontend/images/download.svg) ](https://bintray.com/hmrc/releases/manage-pensions-frontend/_latestVersion)
 
