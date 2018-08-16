@@ -1,4 +1,19 @@
+messages__manage_pension_schemes__title = Manage Pension Schemes - GOV.UK
+
 messages__unauthorised__title = You can’t access this service with this account
 
 messages__index__title = Manage Pensions Frontend
 messages__index__guidance = Welcome to your new frontend. Please see the README file for a guide to getting started.
+
+messages__youNeedToRegister__title = You need to register
+messages__youNeedToRegister__heading = Manage and register your pension schemes
+messages__youNeedToRegister__lede = You must register to use this service before you can register a pension scheme.
+messages__youNeedToRegister__p1 = You can only use this service if you are a {0}.
+messages__youNeedToRegister__p1__link = pension scheme administrator
+messages__youNeedToRegister__p2 = If you are a {0}, you cannot register to use this service.
+messages__youNeedToRegister__p2__link = pension scheme practitioner
+messages__youNeedToRegister__button = Register as a pension scheme administrator
+messages__youNeedToRegister__govUk__link = Exit to GOV.UK
+
+messages__session_expired__title = For your security, this service has been reset
+messages__session_expired__guidance = The details you have given have been deleted because you did not continue the service for 1 hour.
