@@ -13,3 +13,5 @@ GET        /unauthorised                                controllers.Unauthorised
 GET        /logout                                      controllers.LogoutController.onPageLoad
 
 GET        /you-need-to-register                        controllers.YouNeedToRegisterController.onPageLoad()
+
+GET        /your-pension-schemes                        controllers.ListSchemesController.onPageLoad
