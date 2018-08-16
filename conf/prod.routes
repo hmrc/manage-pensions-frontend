@@ -1,5 +1,5 @@
 # Add all the application routes to the app.routes file
-->         /manage-pensions-frontend              app.Routes
+->         /manage-pensions-schemes              app.Routes
 ->         /                          health.Routes
 ->     	   /template                  template.Routes
 
