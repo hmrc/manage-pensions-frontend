@@ -1,0 +1,125 @@
+//Grid system
+.column-one-sixth {
+  padding: 0;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+@media (min-width: 641px) {
+  .column-one-sixth {
+    float: left;
+    width: 16.66667%;
+    padding: 0 15px;
+  }
+}
+
+.column-two-sixths {
+  padding: 0;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+@media (min-width: 641px) {
+  .column-two-sixths {
+    float: left;
+    width: 33.33333%;
+    padding: 0 15px;
+  }
+}
+
+.row-group {
+  border-bottom: 1px solid #bfc1c3;
+  padding-top:0.75em;
+  padding-bottom:0.5em;
+  display:block;
+}
+
+.row-group:after {
+  content:"";
+  display:block;
+  clear:both;
+}
+
+@media (max-width: 640px) {
+  .row-group p {
+    margin-bottom: 0.5em;
+  }
+}
+
+.table-header {
+  display: none;
+
+  @media (min-width: 641px) {
+    display: block;
+  }
+}
+
+@media (min-width: 641px) {
+  .table-column {
+    border: 1px solid transparent;
+  }
+
+  .row-group {
+    padding-bottom:0;
+  }
+}
+
+.table-column {
+  [data-title]::before {
+    content: attr(data-title);
+    float: left;
+    font-weight: 700;
+
+    @media (min-width: 641px) {
+      content: none;
+    }
+  }
+}
+
+//statuses
+p.status { margin-bottom: 0;}
+
+.status span {
+  border: 1px solid;
+  border-radius: 3px;
+  display: block;
+  font-size: 0.7em;
+  font-weight: 700;
+  padding: 0 10px;
+  position: relative;
+  top: -1px;
+  text-align: center;
+  width: 80px;
+  margin-right: 20px;
+  line-height: initial;
+}
+
+.not-started {
+  text-transform: uppercase;
+  border-color: #6f777b;
+  color: #6f777b;
+  background-color: white;
+}
+
+.incomplete {
+  text-transform: uppercase;
+  border-color: #f47738;
+  color: #f47738;
+  background-color: white;
+}
+
+.complete {
+  text-transform: uppercase;
+  border-color: #85994b;
+  color: #85994b;
+}
+
+.rejected {
+  text-transform: uppercase;
+  border-color: #B10E1E;
+  color: #B10E1E;
+}
+
+
