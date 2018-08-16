@@ -1,0 +1,4 @@
+messages__unauthorised__title = You can’t access this service with this account
+
+messages__index__title = pensions-scheme-frontend
+messages__index__guidance = Welcome to your new frontend. Please see the README file for a guide to getting started.
