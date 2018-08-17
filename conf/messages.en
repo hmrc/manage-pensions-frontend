@@ -20,3 +20,21 @@ messages__youNeedToRegister__govUk__link = Exit to GOV.UK
 
 messages__session_expired__title = For your security, this service has been reset
 messages__session_expired__guidance = The details you have given have been deleted because you did not continue the service for 1 hour.
+
+messages__schemesOverview__title = Manage and register your pension schemes
+messages__schemesOverview__heading = Manage and register your pension schemes
+messages__schemesOverview__manage__head = Manage your pension schemes
+messages__schemesOverview__manage__text = You can only view pension schemes that you have registered through this service.
+messages__schemesOverview__manage__link = View your pension schemes
+messages__schemesOverview__manage__redirect__text = If you want to view a pension scheme that you did not register through this service, you must {0}
+messages__schemesOverview__manage__redirect__link = use the Pension Schemes Online service.
+messages__schemesOverview__register__head = Register a new pension scheme
+messages__schemesOverview__register__text = You have 28 days to finish a new pension scheme registration before it is deleted. You can save your progress and return to it later.
+messages__schemesOverview__register__link = Register a new scheme
+messages__schemesOverview__scheme_name = {0} scheme
+messages__schemesOverview__continue__lastDate = You last entered details about this scheme on {0}.
+messages__schemesOverview__continue__deleteDate = You have until {0} to finish this registration before the details are deleted.
+messages__schemesOverview__continue__link = Continue registering this scheme
+messages__schemesOverview__delete__link = Delete this scheme and start a new registration
+messages__schemesOverview__UR__text = We want to hear from people who would like to help improve this service by sharing their feedback and testing new features.
+messages__schemesOverview__UR__link = Let us know if you would like to help improve this service.

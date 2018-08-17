@@ -46,6 +46,7 @@ class FrontendAppConfig @Inject()(override val runModeConfiguration: Configurati
 
   lazy val authUrl: String = baseUrl("auth")
   lazy val pensionsSchemeUrl: String = baseUrl("pensions-scheme")
+  lazy val schemeFrontendUrl: String = baseUrl("pensions-scheme-frontend")
 
   lazy val loginUrl = loadConfig("urls.login")
   lazy val loginContinueUrl = loadConfig("urls.loginContinue")
@@ -54,7 +55,11 @@ class FrontendAppConfig @Inject()(override val runModeConfiguration: Configurati
   lazy val pensionAdministratorGovUkLink = runModeConfiguration.underlying.getString("urls.pensionAdministratorGovUkLink")
   lazy val pensionPractitionerGovUkLink = runModeConfiguration.underlying.getString("urls.pensionPractitionerGovUkLink")
   lazy val govUkLink = runModeConfiguration.underlying.getString("urls.govUkLink")
-
+  lazy val registerNewSchemeUrl = s"$schemeFrontendUrl/${loadConfig("urls.registerNewScheme")}"
+  lazy val continueSchemeUrl = s"$schemeFrontendUrl/${loadConfig("urls.continueSchemeRegistration")}"
+  lazy val deleteSchemeUrl = s"$schemeFrontendUrl/${loadConfig("urls.deleteScheme")}"
+  lazy val userResearchUrl = s"$schemeFrontendUrl/${loadConfig("urls.userResearch")}"
+  lazy val pensionSchemeOnlineServiceUrl: String = loadConfig("urls.pensionSchemeOnlineService")
 
   lazy val languageTranslationEnabled: Boolean = runModeConfiguration.getBoolean("features.welsh-translation").getOrElse(true)
 
@@ -64,5 +69,6 @@ class FrontendAppConfig @Inject()(override val runModeConfiguration: Configurati
 
   def routeToSwitchLanguage: String => Call = (lang: String) => routes.LanguageSwitchController.switchToLanguage(lang)
 
+  lazy val daysDataSaved: Int = loadConfig("daysDataSaved").toInt
 }
 
