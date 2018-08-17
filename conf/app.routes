@@ -14,4 +14,6 @@ GET        /logout                                      controllers.LogoutContro
 
 GET        /you-need-to-register                        controllers.YouNeedToRegisterController.onPageLoad()
 
+GET        /your-pension-schemes                        controllers.ListSchemesController.onPageLoad
+
 GET        /overview                                    controllers.SchemesOverviewController.onPageLoad()
