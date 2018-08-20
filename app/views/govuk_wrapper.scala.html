@@ -34,7 +34,7 @@ scriptElem: Option[Html] = None)(implicit request: Request[_], messages: Message
         linkElem = None,
         headScripts = None)
     <meta name="format-detection" content="telephone=no" />
-    <link rel="stylesheet" href='@routes.Assets.versioned("stylesheets/pensionsschemefrontend-app.css")' />
+    <link rel="stylesheet" href='@routes.Assets.versioned("stylesheets/managepensionsfrontend-app.css")' />
 }
 
 @headerNavLinks = {
@@ -58,7 +58,7 @@ scriptElem: Option[Html] = None)(implicit request: Request[_], messages: Message
         ssoUrl = None,
         scriptElem = scriptElem,
         gaCalls = None)
-        <script src='@routes.Assets.versioned("javascripts/pensionsschemefrontend-app.min.js")'> </script>
+        <script src='@routes.Assets.versioned("javascripts/managepensionsfrontend-app.min.js")'> </script>
         <!--[if gt IE 8]><!-->
         <script src='@routes.Assets.versioned("javascripts/autocomplete/location-autocomplete.min.js")'> </script>
         <!--<![endif]-->
