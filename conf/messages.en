@@ -1,5 +1,6 @@
 site.service_name = Manage Pension Schemes
 site.signOut = Log Out
+site.back = Back
 
 messages__manage_pension_schemes__title = Manage Pension Schemes - GOV.UK
 
@@ -20,3 +21,47 @@ messages__youNeedToRegister__govUk__link = Exit to GOV.UK
 
 messages__session_expired__title = For your security, this service has been reset
 messages__session_expired__guidance = The details you have given have been deleted because you did not continue the service for 1 hour.
+
+messages__listSchemes__title = Your pension schemes
+messages__listSchemes__open__heading = Schemes that have been opened
+messages__listSchemes__not_open__heading = Schemes that have not been opened
+messages__listSchemes__noSchemes = You have not registered any pension schemes in this service.
+messages__listSchemes__registerNewScheme = Register a new scheme
+messages__listSchemes__column_schemeName = Scheme name
+messages__listSchemes__column_srn = SRN
+messages__listSchemes__column_pstr = PSTR
+messages__listSchemes__column_status = Status
+messages__listSchemes__column_date = Date scheme opened
+messages__listSchemes__no_date = Scheme not open
+messages__listSchemes__pstr_not_assigned = Not assigned
+messages__listSchemes__status_pending = Pending
+messages__listSchemes__status_pending_req = Pending information required
+messages__listSchemes__status_pending_rec = Pending information received
+messages__listSchemes__status_rejected = Rejected
+messages__listSchemes__status_open = Open
+messages__listSchemes__status_deregistered = De-registered
+messages__listSchemes__status_wound_up = Wound-up
+messages__listSchemes__status_rejected_appeal = Rejected under appeal
+messages__listSchemes__schemeName__screen_reader = The scheme name is: {0}
+messages__listSchemes__SRN__screen_reader = {0}’s, submission reference number is {1}
+messages__listSchemes__PSTR__screen_reader = {0}’s, Pension Scheme Tax Reference number is {1}
+messages__listSchemes__status__screen_reader = {0}'s' status is {1}
+messages__listSchemes__date__screen_reader = {0} was opened on {1}
+
+messages__schemesOverview__title = Manage and register your pension schemes
+messages__schemesOverview__heading = Manage and register your pension schemes
+messages__schemesOverview__manage__head = Manage your pension schemes
+messages__schemesOverview__manage__text = You can only view pension schemes that you have registered through this service.
+messages__schemesOverview__manage__link = View your pension schemes
+messages__schemesOverview__manage__redirect__text = If you want to view a pension scheme that you did not register through this service, you must {0}
+messages__schemesOverview__manage__redirect__link = use the Pension Schemes Online service.
+messages__schemesOverview__register__head = Register a new pension scheme
+messages__schemesOverview__register__text = You have 28 days to finish a new pension scheme registration before it is deleted. You can save your progress and return to it later.
+messages__schemesOverview__register__link = Register a new scheme
+messages__schemesOverview__scheme_name = {0} scheme
+messages__schemesOverview__continue__lastDate = You last entered details about this scheme on {0}.
+messages__schemesOverview__continue__deleteDate = You have until {0} to finish this registration before the details are deleted.
+messages__schemesOverview__continue__link = Continue registering this scheme
+messages__schemesOverview__delete__link = Delete this scheme and start a new registration
+messages__schemesOverview__UR__text = We want to hear from people who would like to help improve this service by sharing their feedback and testing new features.
+messages__schemesOverview__UR__link = Let us know if you would like to help improve this service.
