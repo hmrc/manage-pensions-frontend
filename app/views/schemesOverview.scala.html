@@ -47,7 +47,7 @@
 
             <p>@messages("messages__schemesOverview__register__text")</p>
 
-            <p><a id="register-new-scheme" href="@appConfig.registerNewSchemeUrl">@messages("messages__schemesOverview__register__link")</a></p>
+            <p><a id="register-new-scheme" href="@appConfig.registerSchemeUrl">@messages("messages__schemesOverview__register__link")</a></p>
         }
         case Some(name) => {
             <h2>@Html(Message("messages__schemesOverview__scheme_name", name))</h2>
