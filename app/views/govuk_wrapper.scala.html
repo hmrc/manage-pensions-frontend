@@ -57,7 +57,8 @@ scriptElem: Option[Html] = None)(implicit request: Request[_], messages: Message
         analyticsHost = appConfig.analyticsHost,
         ssoUrl = None,
         scriptElem = scriptElem,
-        gaCalls = None)
+        gaCalls = None,
+        allowQueryStringInAnalytics = true)
         <script src='@routes.Assets.versioned("javascripts/managepensionsfrontend-app.min.js")'> </script>
         <!--[if gt IE 8]><!-->
         <script src='@routes.Assets.versioned("javascripts/autocomplete/location-autocomplete.min.js")'> </script>
