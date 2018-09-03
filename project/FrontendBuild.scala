@@ -26,7 +26,7 @@ private object AppDependencies {
   private val playLanguageVersion = "3.4.0"
   private val bootstrapVersion = "1.6.0"
   private val domainVersion = "5.1.0"
-  private val scalacheckGenRegexp = "0.1.0"
+  private val scalacheckGenRegexp = "0.1.1"
   private val wireMockVersion = "2.15.0"
   private val whitelistVersion = "2.0.0"
 
