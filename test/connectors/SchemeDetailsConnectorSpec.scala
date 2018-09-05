@@ -22,7 +22,7 @@ import models._
 import org.scalatest.{AsyncFlatSpec, Matchers, OptionValues}
 import play.api.http.Status
 import play.api.libs.json.Json
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
 import utils.WireMockHelper
 
 class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper {
@@ -52,7 +52,7 @@ class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
 
   }
 
-  it should "throw InvalidPayloadException for a 400 INVALID_IDTYPE response" in {
+  it should "throw BadRequestException for a 400 INVALID_IDTYPE response" in {
 
     server.stubFor(
       get(urlEqualTo(schemeDetailsUrl))
@@ -64,12 +64,12 @@ class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
     )
 
     val connector = injector.instanceOf[SchemeDetailsConnector]
-    recoverToSucceededIf[InvalidSchemeIdTypeException] {
+    recoverToSucceededIf[BadRequestException] {
       connector.getSchemeDetails(schemeIdType, idNumber)
     }
   }
 
-  it should "throw InvalidCorrelationIdException for a 400 INVALID_SRN response" in {
+  it should "throw BadRequestException for a 400 INVALID_SRN response" in {
 
     server.stubFor(
       get(urlEqualTo(schemeDetailsUrl))
@@ -81,13 +81,12 @@ class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
     )
     val connector = injector.instanceOf[SchemeDetailsConnector]
 
-    recoverToSucceededIf[InvalidIdException] {
+    recoverToSucceededIf[BadRequestException] {
       connector.getSchemeDetails(schemeIdType, idNumber)
     }
 
   }
-
-  it should "throw InvalidCorrelationIdException for a 400 INVALID_PSTR response" in {
+  it should "throw BadRequestException for a 400 INVALID_PSTR response" in {
 
     server.stubFor(
       get(urlEqualTo(schemeDetailsUrl))
@@ -99,62 +98,25 @@ class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
     )
     val connector = injector.instanceOf[SchemeDetailsConnector]
 
-    recoverToSucceededIf[InvalidIdException] {
+    recoverToSucceededIf[BadRequestException] {
       connector.getSchemeDetails(schemeIdType, idNumber)
     }
 
   }
 
-  it should "throw InvalidCorrelationIdException for a 400 INVALID_CORRELATION_ID response" in {
+  it should "throw BadRequest for a 400 INVALID_CORRELATIONID response" in {
 
     server.stubFor(
       get(urlEqualTo(schemeDetailsUrl))
         .willReturn(
           badRequest
             .withHeader("Content-Type", "application/json")
-            .withBody(errorResponse("INVALID_CORRELATION_ID"))
+            .withBody(errorResponse("INVALID_CORRELATIONID"))
         )
     )
     val connector = injector.instanceOf[SchemeDetailsConnector]
 
-    recoverToSucceededIf[InvalidCorrelationException] {
-      connector.getSchemeDetails(schemeIdType, idNumber)
-    }
-
-  }
-
-  it should "throw InternalServerErrorException for a 500 response" in {
-
-    server.stubFor(
-      get(urlEqualTo(schemeDetailsUrl))
-        .willReturn(
-          aResponse()
-            .withStatus(Status.INTERNAL_SERVER_ERROR)
-            .withHeader("Content-Type", "application/json")
-            .withBody("{}")
-        )
-    )
-    val connector = injector.instanceOf[SchemeDetailsConnector]
-
-    recoverToSucceededIf[InternalServerErrorException] {
-      connector.getSchemeDetails(schemeIdType, idNumber)
-    }
-
-  }
-
-  it should "throw ServiceUnavailableException for a 503 response" in {
-
-    server.stubFor(
-      get(urlEqualTo(schemeDetailsUrl))
-        .willReturn(
-          aResponse()
-            .withStatus(Status.SERVICE_UNAVAILABLE)
-            .withHeader("Content-Type", "application/json")
-            .withBody("{}")
-        )
-    )
-    val connector = injector.instanceOf[SchemeDetailsConnector]
-    recoverToSucceededIf[ServiceUnavailableException] {
+    recoverToSucceededIf[BadRequestException] {
       connector.getSchemeDetails(schemeIdType, idNumber)
     }
 
