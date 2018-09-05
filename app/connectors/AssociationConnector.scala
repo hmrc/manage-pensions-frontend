@@ -16,9 +16,11 @@
 
 package connectors
 
+import javassist.tools.web.BadHttpRequest
+
 import com.google.inject.{Inject, ImplementedBy}
 import config.FrontendAppConfig
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.http.{NotFoundException, BadRequestException, HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
 import scala.concurrent.{Future, ExecutionContext}
@@ -33,9 +35,15 @@ class AssociationConnectorImpl @Inject()(http: HttpClient, config: FrontendAppCo
 
   override def getSubscriptionDetails(psaId:String) (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
 
-    val url  = config.subscriptionDetailsUrl.format(psaId)
+    val psaIdHC = hc.withExtraHeaders("psaId"-> psaId)
 
-    http.GET[HttpResponse](url)
+    val url  = config.subscriptionDetailsUrl
+
+    http.GET[HttpResponse](url)(implicitly, psaIdHC, implicitly) recoverWith {
+      case ex : BadRequestException if(ex.message.contains("INVALID_PSAID")) => throw new PsaIdInvalidException
+      case ex : BadRequestException if(ex.message.contains("INVALID_CORRELATIONID")) => throw new CorrelationIdInvalidException
+      case ex : NotFoundException => throw new PsaIdNotFoundException
+    }
 
   }
 }

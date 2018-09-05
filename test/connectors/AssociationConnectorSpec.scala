@@ -19,9 +19,9 @@ package connectors
 import com.github.tomakehurst.wiremock.client.WireMock._
 import org.scalatest.prop.Checkers
 import org.scalatest.{Matchers, AsyncFlatSpec}
-import play.api.http.Status
 import play.api.http.Status._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import play.api.libs.json.Json
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpResponse}
 import utils.WireMockHelper
 
 class AssociationConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper with Checkers {
@@ -30,29 +30,117 @@ class AssociationConnectorSpec extends AsyncFlatSpec with Matchers with WireMock
 
   private implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 
-  val psaid = "A1234567"
+  val psaId = "A1234567"
 
-  val subscriptionDetailsUrl = s"/pension-administrator/psa-subscription-details/${psaid}"
+  val subscriptionDetailsUrl = s"/pension-administrator/psa-subscription-details"
+
+  val psaIdJson = Json.stringify(
+    Json.obj(
+      "psaId" -> s"$psaId"
+    )
+  )
 
 
-  "AssociationConnector" should "return 200" in {
+  "calling getSubscriptionDetails" should "return 200" in {
 
     server.stubFor(
-      get(urlEqualTo(subscriptionDetailsUrl))
+      get(urlEqualTo(subscriptionDetailsUrl)).withHeader("psaId", equalTo(psaId))
         .willReturn(
           aResponse()
-            .withStatus(Status.OK)
+            .withStatus(OK)
         )
     )
 
     val connector = injector.instanceOf[AssociationConnector]
 
-    connector.getSubscriptionDetails(psaid).map {
+    connector.getSubscriptionDetails(psaId).map {
       result =>
         result.status shouldBe OK
-        server.findAll(getRequestedFor(urlEqualTo(subscriptionDetailsUrl))).size() shouldBe 1
+        server.findAll(getRequestedFor(urlEqualTo(subscriptionDetailsUrl))
+          .withHeader("psaId", equalTo(psaId))).size() shouldBe 1
     }
 
+  }
+
+  it should "throw badrequest if INVALID_PSAID" in {
+    server.stubFor(
+      get(urlEqualTo(subscriptionDetailsUrl)).withHeader("psaId", equalTo(psaId))
+        .willReturn(
+          aResponse()
+            .withStatus(400).withBody("INVALID_PSAID")
+        )
+    )
+
+    val connector = injector.instanceOf[AssociationConnector]
+
+
+    recoverToExceptionIf[PsaIdInvalidException] {
+      connector.getSubscriptionDetails(psaId)
+    } map {
+      _ =>
+        server.findAll(getRequestedFor(urlEqualTo(subscriptionDetailsUrl))
+          .withHeader("psaId", equalTo(psaId))).size() shouldBe 1
+    }
+  }
+
+  it should "throw badrequest if INVALID_CORRELATIONID" in {
+    server.stubFor(
+      get(urlEqualTo(subscriptionDetailsUrl)).withHeader("psaId", equalTo(psaId))
+        .willReturn(
+          aResponse()
+            .withStatus(400).withBody("INVALID_CORRELATIONID")
+        )
+    )
+
+    val connector = injector.instanceOf[AssociationConnector]
+
+
+    recoverToExceptionIf[CorrelationIdInvalidException] {
+      connector.getSubscriptionDetails(psaId)
+    } map {
+      _ =>
+        server.findAll(getRequestedFor(urlEqualTo(subscriptionDetailsUrl))
+          .withHeader("psaId", equalTo(psaId))).size() shouldBe 1
+    }
+  }
+  it should "throw Not Found" in {
+    server.stubFor(
+      get(urlEqualTo(subscriptionDetailsUrl)).withHeader("psaId", equalTo(psaId))
+        .willReturn(
+          notFound()
+        )
+    )
+
+    val connector = injector.instanceOf[AssociationConnector]
+
+
+    recoverToExceptionIf[PsaIdNotFoundException] {
+      connector.getSubscriptionDetails(psaId)
+    } map {
+      _ =>
+        server.findAll(getRequestedFor(urlEqualTo(subscriptionDetailsUrl))
+          .withHeader("psaId", equalTo(psaId))).size() shouldBe 1
+    }
+  }
+
+  it should "throw Generic exception for all others" in {
+    server.stubFor(
+      get(urlEqualTo(subscriptionDetailsUrl)).withHeader("psaId", equalTo(psaId))
+        .willReturn(
+          serverError()
+        )
+    )
+
+    val connector = injector.instanceOf[AssociationConnector]
+
+
+    recoverToExceptionIf[Exception] {
+      connector.getSubscriptionDetails(psaId)
+    } map {
+      _ =>
+        server.findAll(getRequestedFor(urlEqualTo(subscriptionDetailsUrl))
+          .withHeader("psaId", equalTo(psaId))).size() shouldBe 1
+    }
   }
 
 }
