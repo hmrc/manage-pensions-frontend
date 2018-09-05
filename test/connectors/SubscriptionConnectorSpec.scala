@@ -21,14 +21,16 @@ import org.scalatest.prop.Checkers
 import org.scalatest.{Matchers, AsyncFlatSpec}
 import play.api.http.Status._
 import play.api.libs.json.{JsResultException, Json}
-import uk.gov.hmrc.http.{Upstream5xxResponse, HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.http.{Upstream5xxResponse, HeaderCarrier}
 import utils.WireMockHelper
 
-class AssociationConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper with Checkers {
+class SubscriptionConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper with Checkers {
 
   override protected def portConfigKey: String = "microservice.services.pension-administrator.port"
 
-  import AssociationConnectorSpec._
+  lazy val connector = injector.instanceOf[SubscriptionConnector]
+
+  import SubscriptionConnectorSpec._
 
   "calling getSubscriptionDetails" should "return 200" in {
 
@@ -39,8 +41,6 @@ class AssociationConnectorSpec extends AsyncFlatSpec with Matchers with WireMock
             .withStatus(OK).withBody(successResponse)
         )
     )
-
-    val connector = injector.instanceOf[AssociationConnector]
 
     connector.getSubscriptionDetails(psaId).map {
       result =>
@@ -61,8 +61,6 @@ class AssociationConnectorSpec extends AsyncFlatSpec with Matchers with WireMock
         )
     )
 
-    val connector = injector.instanceOf[AssociationConnector]
-
     recoverToExceptionIf[JsResultException] {
       connector.getSubscriptionDetails(psaId)
     } map {
@@ -82,10 +80,7 @@ class AssociationConnectorSpec extends AsyncFlatSpec with Matchers with WireMock
         )
     )
 
-    val connector = injector.instanceOf[AssociationConnector]
-
-
-    recoverToExceptionIf[PsaIdInvalidException] {
+    recoverToExceptionIf[PsaIdInvalidSubscriptionException] {
       connector.getSubscriptionDetails(psaId)
     } map {
       _ =>
@@ -103,10 +98,7 @@ class AssociationConnectorSpec extends AsyncFlatSpec with Matchers with WireMock
         )
     )
 
-    val connector = injector.instanceOf[AssociationConnector]
-
-
-    recoverToExceptionIf[CorrelationIdInvalidException] {
+    recoverToExceptionIf[CorrelationIdInvalidSubscriptionException] {
       connector.getSubscriptionDetails(psaId)
     } map {
       _ =>
@@ -114,6 +106,7 @@ class AssociationConnectorSpec extends AsyncFlatSpec with Matchers with WireMock
           .withHeader("psaId", equalTo(psaId))).size() shouldBe 1
     }
   }
+
   it should "throw Not Found" in {
     server.stubFor(
       get(urlEqualTo(subscriptionDetailsUrl)).withHeader("psaId", equalTo(psaId))
@@ -122,10 +115,7 @@ class AssociationConnectorSpec extends AsyncFlatSpec with Matchers with WireMock
         )
     )
 
-    val connector = injector.instanceOf[AssociationConnector]
-
-
-    recoverToExceptionIf[PsaIdNotFoundException] {
+    recoverToExceptionIf[PsaIdNotFoundSubscriptionException] {
       connector.getSubscriptionDetails(psaId)
     } map {
       _ =>
@@ -141,9 +131,6 @@ class AssociationConnectorSpec extends AsyncFlatSpec with Matchers with WireMock
           serverError()
         )
     )
-
-    val connector = injector.instanceOf[AssociationConnector]
-
 
     recoverToExceptionIf[Upstream5xxResponse] {
       connector.getSubscriptionDetails(psaId)
@@ -162,9 +149,6 @@ class AssociationConnectorSpec extends AsyncFlatSpec with Matchers with WireMock
         )
     )
 
-    val connector = injector.instanceOf[AssociationConnector]
-
-
     recoverToExceptionIf[Exception] {
       connector.getSubscriptionDetails(psaId)
     } map {
@@ -176,16 +160,18 @@ class AssociationConnectorSpec extends AsyncFlatSpec with Matchers with WireMock
 
 }
 
-object AssociationConnectorSpec {
+object SubscriptionConnectorSpec {
 
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
   val psaId = "A1234567"
   val subscriptionDetailsUrl = s"/pension-administrator/psa-subscription-details"
+
   val psaIdJson = Json.stringify(
     Json.obj(
       "psaId" -> s"$psaId"
     )
   )
+
   val invalidResponse = """{"invalid" : "response"}"""
 
   val successResponse = """{

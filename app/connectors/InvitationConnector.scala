@@ -37,7 +37,6 @@ trait InvitationConnector {
 
 abstract class InvitationException extends Exception
 class PsaIdInvalidException extends InvitationException
-class CorrelationIdInvalidException extends InvitationException
 class PsaIdNotFoundException extends InvitationException
 
 class InvitationConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) extends InvitationConnector with HttpResponseHelper {
