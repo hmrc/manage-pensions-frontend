@@ -18,56 +18,56 @@ package models
 
 import play.api.libs.json.{Json, Format}
 
-case class SubscriptionDetails(psaSubscriptionDetails:PsaSubscriptionDetailsType)
+case class SubscriptionDetails(psaSubscriptionDetails:PsaSubscriptionDetails)
 
 object SubscriptionDetails {
   implicit val format: Format[SubscriptionDetails] = Json.format[SubscriptionDetails]
 }
 
-case class PsaSubscriptionDetailsType(isPSASuspension:Boolean,
-                                      directorOrPartnerDetails:Option[List[DirectorOrPartnerDetails]],
-                                      previousAddressDetails:PreviousAddressDetailsType,
-                                      correspondenceContactDetails:ContactDetailsType,
-                                      numberOfDirectorsOrPartnersDetails:Option[NumberOfDirectorsOrPartnersType],
-                                      organisationOrPartnerDetails:Option[OrganisationOrPartnerDetailsType],
-                                      customerIdentificationDetails:CustomerIdentificationDetailsType,
-                                      correspondenceAddressDetails:AddressType,
-                                      individualDetails:Option[IndividualDetailsType],
-                                      declarationDetails:PensionSchemeAdministratorDeclarationType)
+case class PsaSubscriptionDetails(isPSASuspension:Boolean,
+                                  customerIdentificationDetails:CustomerIdentificationDetails,
+                                  organisationOrPartnerDetails:Option[OrganisationOrPartnerDetails],
+                                  individualDetails:Option[IndividualDetails],
+                                  correspondenceAddressDetails:Address,
+                                  correspondenceContactDetails:ContactDetails,
+                                  previousAddressDetails:PreviousAddressDetails,
+                                  numberOfDirectorsOrPartnersDetails:Option[NumberOfDirectorsOrPartners],
+                                  directorOrPartnerDetails:Option[List[DirectorOrPartnerDetails]],
+                                  declarationDetails:PensionSchemeAdministratorDeclaration)
 
-object PsaSubscriptionDetailsType {
-  implicit val format: Format[PsaSubscriptionDetailsType] = Json.format[PsaSubscriptionDetailsType]
+object PsaSubscriptionDetails {
+  implicit val format: Format[PsaSubscriptionDetails] = Json.format[PsaSubscriptionDetails]
 }
 
-case class CustomerIdentificationDetailsType(legalStatus:String,
-                                             idType:Option[String],
-                                             idNumber:Option[String],
-                                             noIdentifier:Boolean)
+case class CustomerIdentificationDetails(legalStatus:String,
+                                         idType:Option[String],
+                                         idNumber:Option[String],
+                                         noIdentifier:Boolean)
 
-object CustomerIdentificationDetailsType {
-  implicit val format: Format[CustomerIdentificationDetailsType] = Json.format[CustomerIdentificationDetailsType]
+object CustomerIdentificationDetails {
+  implicit val format: Format[CustomerIdentificationDetails] = Json.format[CustomerIdentificationDetails]
 }
 
-case class OrganisationOrPartnerDetailsType(name:String,
-                                            crnNumber:Option[String],
-                                            vatRegistrationNumber:Option[String],
-                                            payeReference:Option[String])
+case class OrganisationOrPartnerDetails(name:String,
+                                        crnNumber:Option[String],
+                                        vatRegistrationNumber:Option[String],
+                                        payeReference:Option[String])
 
-object OrganisationOrPartnerDetailsType {
-  implicit val format: Format[OrganisationOrPartnerDetailsType] = Json.format[OrganisationOrPartnerDetailsType]
+object OrganisationOrPartnerDetails {
+  implicit val format: Format[OrganisationOrPartnerDetails] = Json.format[OrganisationOrPartnerDetails]
 }
 
 
-case class AddressType(nonUKAddress:Boolean,
-                       line1:String,
-                       line2:String,
-                       line3:Option[String],
-                       line4:Option[String],
-                       postalCode:Option[String],
-                       countryCode:String)
+case class Address(nonUKAddress:Boolean,
+                   line1:String,
+                   line2:String,
+                   line3:Option[String],
+                   line4:Option[String],
+                   postalCode:Option[String],
+                   countryCode:String)
 
-object AddressType {
-  implicit val format: Format[AddressType] = Json.format[AddressType]
+object Address {
+  implicit val format: Format[Address] = Json.format[Address]
 }
 
 case class DirectorOrPartnerDetails(sequenceId:String,
@@ -81,70 +81,70 @@ case class DirectorOrPartnerDetails(sequenceId:String,
                                     noNinoReason:Option[String],
                                     utr:Option[String],
                                     noUtrReason:Option[String],
-                                    previousAddressDetails:PreviousAddressDetailsType,
-                                    correspondenceCommonDetails:Option[CorrespondenceCommonDetails])
+                                    correspondenceCommonDetails:Option[CorrespondenceCommonDetails],
+                                    previousAddressDetails:PreviousAddressDetails)
 
 object DirectorOrPartnerDetails {
   implicit val format: Format[DirectorOrPartnerDetails] = Json.format[DirectorOrPartnerDetails]
 }
 
-case class PensionSchemeAdministratorDeclarationType(box1:Boolean,
-                                                     box2:Boolean,
-                                                     box3:Boolean,
-                                                     box4:Boolean,
-                                                     box5:Option[Boolean],
-                                                     box6:Option[Boolean],
-                                                     box7:Boolean,
-                                                     pensionAdvisorDetails:Option[PensionAdvisorDetails])
+case class PensionSchemeAdministratorDeclaration(box1:Boolean,
+                                                 box2:Boolean,
+                                                 box3:Boolean,
+                                                 box4:Boolean,
+                                                 box5:Option[Boolean],
+                                                 box6:Option[Boolean],
+                                                 box7:Boolean,
+                                                 pensionAdvisorDetails:Option[PensionAdvisorDetails])
 
-object PensionSchemeAdministratorDeclarationType {
-  implicit val format: Format[PensionSchemeAdministratorDeclarationType] = Json.format[PensionSchemeAdministratorDeclarationType]
+object PensionSchemeAdministratorDeclaration {
+  implicit val format: Format[PensionSchemeAdministratorDeclaration] = Json.format[PensionSchemeAdministratorDeclaration]
 }
 
-case class ContactDetailsType(telephone:String,
-                              mobileNumber:Option[String],
-                              fax:Option[String],
-                              email:Option[String])
+case class ContactDetails(telephone:String,
+                          mobileNumber:Option[String],
+                          fax:Option[String],
+                          email:Option[String])
 
-object ContactDetailsType {
-  implicit val format: Format[ContactDetailsType] = Json.format[ContactDetailsType]
+object ContactDetails {
+  implicit val format: Format[ContactDetails] = Json.format[ContactDetails]
 }
 
-case class IndividualDetailsType(firstName:String,
-                                 middleName:Option[String],
-                                 dateOfBirth:String,
-                                 lastName:String,
-                                 title:Option[String])
+case class IndividualDetails(title:Option[String],
+                             firstName:String,
+                             middleName:Option[String],
+                             lastName:String,
+                             dateOfBirth:String)
 
-object IndividualDetailsType {
-  implicit val format: Format[IndividualDetailsType] = Json.format[IndividualDetailsType]
+object IndividualDetails {
+  implicit val format: Format[IndividualDetails] = Json.format[IndividualDetails]
 }
 
-case class NumberOfDirectorsOrPartnersType(isMorethanTenDirectors:Option[Boolean],
-                                           isMorethanTenPartners:Option[Boolean])
+case class NumberOfDirectorsOrPartners(isMorethanTenDirectors:Option[Boolean],
+                                       isMorethanTenPartners:Option[Boolean])
 
 
-object NumberOfDirectorsOrPartnersType {
-  implicit val format: Format[NumberOfDirectorsOrPartnersType] = Json.format[NumberOfDirectorsOrPartnersType]
+object NumberOfDirectorsOrPartners {
+  implicit val format: Format[NumberOfDirectorsOrPartners] = Json.format[NumberOfDirectorsOrPartners]
 }
 
-case class CorrespondenceCommonDetails(addressDetails:AddressType,
-                                       contactDetails:Option[ContactDetailsType])
+case class CorrespondenceCommonDetails(addressDetails:Address,
+                                       contactDetails:Option[ContactDetails])
 
 object CorrespondenceCommonDetails {
   implicit val format: Format[CorrespondenceCommonDetails] = Json.format[CorrespondenceCommonDetails]
 }
 
-case class PreviousAddressDetailsType(isPreviousAddressLast12Month:Boolean,
-                                      previousAddress:Option[AddressType])
+case class PreviousAddressDetails(isPreviousAddressLast12Month:Boolean,
+                                  previousAddress:Option[Address])
 
-object PreviousAddressDetailsType {
-  implicit val format: Format[PreviousAddressDetailsType] = Json.format[PreviousAddressDetailsType]
+object PreviousAddressDetails {
+  implicit val format: Format[PreviousAddressDetails] = Json.format[PreviousAddressDetails]
 }
 
 case class PensionAdvisorDetails(name:String,
-                                 addressDetails:AddressType,
-                                 contactDetails:Option[ContactDetailsType])
+                                 addressDetails:Address,
+                                 contactDetails:Option[ContactDetails])
 
 object PensionAdvisorDetails {
   implicit val format: Format[PensionAdvisorDetails] = Json.format[PensionAdvisorDetails]
