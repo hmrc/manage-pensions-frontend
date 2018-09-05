@@ -63,6 +63,8 @@ class FrontendAppConfig @Inject()(override val runModeConfiguration: Configurati
   lazy val languageTranslationEnabled: Boolean = runModeConfiguration.getBoolean("features.welsh-translation").getOrElse(true)
   lazy val registerSchemeUrl = runModeConfiguration.underlying.getString(("urls.registerScheme"))
   lazy val listOfSchemesUrl: String = s"${baseUrl("pensions-scheme")}${runModeConfiguration.underlying.getString("urls.listOfSchemes")}"
+  lazy val inviteUrl: String = s"${baseUrl("pension-administrator")}${runModeConfiguration.underlying.getString("urls.invite")}"
+
   def languageMap: Map[String, Lang] = Map(
     "english" -> Lang("en"),
     "cymraeg" -> Lang("cy"))
