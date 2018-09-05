@@ -20,29 +20,43 @@ import javassist.tools.web.BadHttpRequest
 
 import com.google.inject.{Inject, ImplementedBy}
 import config.FrontendAppConfig
+import models.SubscriptionDetails
+import netscape.javascript.JSException
+import play.api.Logger
+import play.api.http.Status._
+import play.api.libs.json.{JsError, JsSuccess}
 import uk.gov.hmrc.http.{NotFoundException, BadRequestException, HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
+import utils.HttpResponseHelper
 
 import scala.concurrent.{Future, ExecutionContext}
+import scala.util.Failure
 
 @ImplementedBy(classOf[AssociationConnectorImpl])
 trait AssociationConnector {
 
-  def getSubscriptionDetails(psaId:String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse]
+  def getSubscriptionDetails(psaId:String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[SubscriptionDetails]
 }
 
-class AssociationConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) extends AssociationConnector {
+class AssociationConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) extends AssociationConnector with HttpResponseHelper{
 
-  override def getSubscriptionDetails(psaId:String) (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
+  override def getSubscriptionDetails(psaId:String) (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[SubscriptionDetails] = {
 
     val psaIdHC = hc.withExtraHeaders("psaId"-> psaId)
 
     val url  = config.subscriptionDetailsUrl
 
-    http.GET[HttpResponse](url)(implicitly, psaIdHC, implicitly) recoverWith {
-      case ex : BadRequestException if(ex.message.contains("INVALID_PSAID")) => throw new PsaIdInvalidException
-      case ex : BadRequestException if(ex.message.contains("INVALID_CORRELATIONID")) => throw new CorrelationIdInvalidException
-      case ex : NotFoundException => throw new PsaIdNotFoundException
+    http.GET[HttpResponse](url)(implicitly, psaIdHC, implicitly) map { response =>
+
+      response.status match {
+        case OK => response.json.as[SubscriptionDetails]
+        case BAD_REQUEST if(response.body.contains("INVALID_PSAID")) => throw new PsaIdInvalidException
+        case BAD_REQUEST if(response.body.contains("INVALID_CORRELATIONID")) => throw new CorrelationIdInvalidException
+        case NOT_FOUND => throw new PsaIdNotFoundException
+        case _ => handleErrorResponse("GET", config.subscriptionDetailsUrl)(response)
+      }
+    } andThen {
+      case Failure(t: Throwable) => Logger.warn("Unable to get PSA subscription details", t)
     }
 
   }
