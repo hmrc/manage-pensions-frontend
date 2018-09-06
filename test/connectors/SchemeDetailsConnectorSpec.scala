@@ -36,6 +36,8 @@ class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
 
     server.stubFor(
       get(urlEqualTo(schemeDetailsUrl))
+        .withHeader("schemeIdType", equalTo(schemeIdType))
+        .withHeader("idNumber", equalTo(idNumber))
         .willReturn(
           aResponse()
             .withStatus(Status.OK)
@@ -56,6 +58,8 @@ class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
 
     server.stubFor(
       get(urlEqualTo(schemeDetailsUrl))
+        .withHeader("schemeIdType", equalTo(schemeIdType))
+        .withHeader("idNumber", equalTo(idNumber))
         .willReturn(
           badRequest
             .withHeader("Content-Type", "application/json")
@@ -73,6 +77,8 @@ class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
 
     server.stubFor(
       get(urlEqualTo(schemeDetailsUrl))
+        .withHeader("schemeIdType", equalTo(schemeIdType))
+        .withHeader("idNumber", equalTo(idNumber))
         .willReturn(
           badRequest
             .withHeader("Content-Type", "application/json")
@@ -128,7 +134,7 @@ object SchemeDetailsConnectorSpec extends JsonFileReader {
 
   private val schemeIdType = "pstr"
   private val idNumber = "00000000AA"
-  private val schemeDetailsUrl = s"/pension-administrator/scheme/$schemeIdType/$idNumber"
+  private val schemeDetailsUrl = s"/pension-administrator/scheme"
 
   private implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 

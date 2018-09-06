@@ -42,9 +42,9 @@ class SchemeDetailsConnectorImpl @Inject()(http: HttpClient, config: FrontendApp
 
   def getSchemeDetails(schemeIdType: String, idNumber: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[PsaSchemeDetails] = {
 
-    val url = config.schemeDetailsUrl.format(schemeIdType, idNumber)
-
-    http.GET[HttpResponse](url)(implicitly, hc, implicitly).map { response =>
+    val url = config.schemeDetailsUrl
+    val schemeHc = hc.withExtraHeaders("schemeIdType" -> schemeIdType, "idNumber" -> idNumber)
+    http.GET[HttpResponse](url)(implicitly, schemeHc, implicitly).map { response =>
       response.status match {
         case OK =>
           val json = Json.parse(response.body)
