@@ -1,0 +1,131 @@
+{
+  "psaSchemeDetails": {
+    "schemeDetails": {
+      "srn": "S9000000000",
+      "pstr": "00000000AA",
+      "schemeStatus": "Pending",
+      "schemeName": "Benefits Scheme",
+      "isSchemeMasterTrust": true,
+      "pensionSchemeStructure": "A single trust under which all of the assets are held for the benefit of all members of the scheme",
+      "otherPensionSchemeStructure": " ",
+      "hasMoreThanTenTrustees": true,
+      "currentSchemeMembers": "0",
+      "futureSchemeMembers": "0",
+      "isReguledSchemeInvestment": true,
+      "isOccupationalPensionScheme": true,
+      "schemeProvideBenefits": "Money Purchase benefits only (defined contribution)",
+      "schemeEstablishedCountry": "AD",
+      "invalidBankFlag": true,
+      "isSchemeBenefitsInsuranceCompany": true,
+      "insuranceCompanyName": "Aviva Insurance",
+      "policyNumber": " ",
+      "insuranceCompanyAddressDetails": {
+        "nonUKAddress": false,
+        "line1": "Telford1",
+        "line2": "Telford2",
+        "line3": "Telford13",
+        "line4": "Telford14",
+        "postalCode": "TF3 4ER",
+        "countryCode": "GB"
+      },
+      "insuranceCompanyContactDetails": {
+        "telephone": "0044-09876542312",
+        "mobileNumber": "0044-09876542312",
+        "fax": "0044-09876542312",
+        "email": "abc@hmrc.gsi.gov.uk"
+      }
+    },
+    "establisherDetails": {
+      "individualDetails": [
+        {
+          "personDetails": {
+            "title": "Mr",
+            "firstName": "abcdef",
+            "middleName": "fdgdgfggfdg",
+            "lastName": "dfgfdgdfg",
+            "dateOfBirth": "1955-03-29"
+          },
+          "nino": "AA999999A",
+          "noNinoReason": "retxgfdg",
+          "utr": "1234567892",
+          "noUtrReason": "asdgdgdsg",
+          "correspondenceAddressDetails": {
+            "nonUKAddress": false,
+            "line1": "addressline1",
+            "line2": "addressline2",
+            "line3": "addressline3",
+            "line4": "addressline4",
+            "postalCode": "TF3 5TR",
+            "countryCode": "GB"
+          },
+          "correspondenceContactDetails": {
+            "telephone": "0044-09876542334",
+            "mobileNumber": "0044-09876542312",
+            "fax": "0044-09876542312",
+            "email": "aaa@gmail.com"
+          },
+          "previousAddressDetails": {
+            "isPreviousAddressLast12Month": true,
+            "previousAddress": {
+              "nonUKAddress": true,
+              "line1": "sddsfsfsdf",
+              "line2": "sddsfsdf",
+              "line3": "sdfdsfsdf",
+              "line4": "sfdsfsdf",
+              "postalCode": "456546",
+              "countryCode": "AD"
+            }
+          }
+        }
+      ],
+      "companyOrOrganisationDetails": [
+        {
+          "organisationName": "abc organisation",
+          "utr": "7897700000",
+          "noUtrReason": "reason forutr",
+          "crnNumber": "sdfsfs",
+          "noCrnReason": "crn no reason",
+          "vatRegistrationNumber": "789770000",
+          "payeReference": "9999",
+          "haveMoreThanTenDirectors": true,
+          "correspondenceAddressDetails": {
+            "nonUKAddress": true,
+            "line1": "line1",
+            "line2": "line2",
+            "line3": "line3",
+            "line4": "line4",
+            "postalCode": "LE45RT",
+            "countryCode": "GB"
+          },
+          "correspondenceContactDetails": {
+            "telephone": "0044-09876542312",
+            "mobileNumber": "0044-09876542312",
+            "fax": "0044-09876542312",
+            "email": "abcfe@hmrc.gsi.gov.uk"
+          },
+          "previousAddressDetails": {
+            "isPreviousAddressLast12Month": true,
+            "previousAddress": {
+              "nonUKAddress": true,
+              "line1": "addline1",
+              "line2": "addline2",
+              "line3": "addline3",
+              "line4": "addline4",
+              "postalCode": "ST36TR",
+              "countryCode": "AD"
+            }
+          }
+        }
+      ]
+    },
+    "psaDetails": {
+      "psaid": "A0000000",
+      "organizationOrPartnershipName": "partnetship name",
+      "firstName": "Taylor",
+      "middleName": "Middle",
+      "lastName": "Rayon",
+      "relationshipType": "Primary",
+      "relationshipDate": "1978-03-22"
+    }
+  }
+}
