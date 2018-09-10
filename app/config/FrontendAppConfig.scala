@@ -55,8 +55,8 @@ class FrontendAppConfig @Inject()(override val runModeConfiguration: Configurati
   lazy val pensionAdministratorGovUkLink = runModeConfiguration.underlying.getString("urls.pensionAdministratorGovUkLink")
   lazy val pensionPractitionerGovUkLink = runModeConfiguration.underlying.getString("urls.pensionPractitionerGovUkLink")
   lazy val govUkLink = runModeConfiguration.underlying.getString("urls.govUkLink")
-  lazy val continueSchemeUrl = s"$schemeFrontendUrl/${loadConfig("urls.continueSchemeRegistration")}"
-  lazy val deleteSchemeUrl = s"$schemeFrontendUrl/${loadConfig("urls.deleteScheme")}"
+  lazy val continueSchemeUrl = s"${loadConfig("urls.continueSchemeRegistration")}"
+  lazy val deleteSchemeUrl = s"${loadConfig("urls.deleteScheme")}"
   lazy val userResearchUrl = runModeConfiguration.underlying.getString(("urls.userResearch"))
   lazy val pensionSchemeOnlineServiceUrl: String = loadConfig("urls.pensionSchemeOnlineService")
 
@@ -64,6 +64,7 @@ class FrontendAppConfig @Inject()(override val runModeConfiguration: Configurati
   lazy val registerSchemeUrl = runModeConfiguration.underlying.getString(("urls.registerScheme"))
   lazy val listOfSchemesUrl: String = s"${baseUrl("pensions-scheme")}${runModeConfiguration.underlying.getString("urls.listOfSchemes")}"
   lazy val inviteUrl: String = s"${baseUrl("pension-administrator")}${runModeConfiguration.underlying.getString("urls.invite")}"
+  lazy val schemeDetailsUrl: String = s"${baseUrl("pensions-scheme")}${runModeConfiguration.underlying.getString("urls.schemeDetails")}"
   lazy val subscriptionDetailsUrl: String = s"${baseUrl("pension-administrator")}${runModeConfiguration.underlying.getString("urls.subscriptionDetails")}"
 
   def languageMap: Map[String, Lang] = Map(
