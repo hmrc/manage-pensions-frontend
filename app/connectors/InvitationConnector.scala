@@ -46,6 +46,7 @@ class InvalidInvitationPayloadException extends AcceptInvitationException
 class InviteePsaIdInvalidException extends AcceptInvitationException
 class InviterPsaIdInvalidException extends AcceptInvitationException
 class ActiveRelationshipExistsException extends AcceptInvitationException
+
 class InvitationConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) extends InvitationConnector with HttpResponseHelper {
 
   override def invite(invitation: Invitation)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit.type] = {
@@ -64,18 +65,17 @@ class InvitationConnectorImpl @Inject()(http: HttpClient, config: FrontendAppCon
 
   }
 
-  def handleForbiddenResponse(response: String): Unit = {
+  def handleBadResponse(response: String): Unit = {
+    val PstrPattern = "(.*INVALID_PSTR.*)".r
     val InviteePattern = "(.*INVALID_INVITEE_PSAID.*)".r
     val InviterPattern = "(.*INVALID_INVITER_PSAID.*)".r
-    val ActiveRelationshipPattern = "(.*ACTIVE_RELATIONSHIP_EXISTS.*)".r
+    val InvalidPayloadPattern = "(.*INVALID_PAYLOAD.*)".r
 
     response match {
-      case InviteePattern(_) =>
-        throw new InviteePsaIdInvalidException()
-      case InviterPattern(_) =>
-        throw new InviterPsaIdInvalidException()
-      case ActiveRelationshipPattern(_) =>
-        throw new ActiveRelationshipExistsException()
+      case PstrPattern(_) => throw new PstrInvalidException
+      case InvalidPayloadPattern(_) => throw new InvalidInvitationPayloadException
+      case InviteePattern(_) => throw new InviteePsaIdInvalidException
+      case InviterPattern(_) => throw new InviterPsaIdInvalidException
     }
   }
 
@@ -85,9 +85,8 @@ class InvitationConnectorImpl @Inject()(http: HttpClient, config: FrontendAppCon
       response =>
         response.status match {
           case OK => ()
-          case BAD_REQUEST if response.body.contains("INVALID_PSTR") => throw new PstrInvalidException()
-          case BAD_REQUEST if response.body.contains("INVALID_PAYLOAD") => throw new InvalidInvitationPayloadException()
-          case FORBIDDEN => handleForbiddenResponse(response.body)
+          case BAD_REQUEST => handleBadResponse(response.body)
+          case CONFLICT if response.body.contains("ACTIVE_RELATIONSHIP_EXISTS") => throw new ActiveRelationshipExistsException
           case _ => handleErrorResponse("POST", config.acceptInvitationUrl)(response)
         }
     } andThen {

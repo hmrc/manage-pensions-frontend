@@ -23,7 +23,7 @@ import org.scalatest.{AsyncFlatSpec, Matchers}
 import play.api.http.Status
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
-import utils.{UserAnswers, WireMockHelper}
+import utils.WireMockHelper
 
 class InvitationConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper with Checkers {
 
@@ -161,7 +161,7 @@ class InvitationConnectorSpec extends AsyncFlatSpec with Matchers with WireMockH
       post(urlEqualTo(acceptInviteUrl))
         .willReturn(
           aResponse()
-            .withStatus(Status.FORBIDDEN)
+            .withStatus(Status.BAD_REQUEST)
             .withHeader("Content-Type", "application/json")
             .withBody(invalidResponse("INVALID_INVITEE_PSAID"))
         )
@@ -182,7 +182,7 @@ class InvitationConnectorSpec extends AsyncFlatSpec with Matchers with WireMockH
       post(urlEqualTo(acceptInviteUrl))
         .willReturn(
           aResponse()
-            .withStatus(Status.FORBIDDEN)
+            .withStatus(Status.BAD_REQUEST)
             .withHeader("Content-Type", "application/json")
             .withBody(invalidResponse("INVALID_INVITER_PSAID"))
         )
@@ -203,7 +203,7 @@ class InvitationConnectorSpec extends AsyncFlatSpec with Matchers with WireMockH
       post(urlEqualTo(acceptInviteUrl))
         .willReturn(
           aResponse()
-            .withStatus(Status.FORBIDDEN)
+            .withStatus(Status.CONFLICT)
             .withHeader("Content-Type", "application/json")
             .withBody(invalidResponse("ACTIVE_RELATIONSHIP_EXISTS"))
         )
