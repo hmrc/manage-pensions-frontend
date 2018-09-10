@@ -12,8 +12,8 @@ private object AppDependencies {
   import play.sbt.PlayImport._
 
   private val playHealthVersion = "2.1.0"
-  private val logbackJsonLoggerVersion = "3.1.0"
-  private val govukTemplateVersion = "5.20.0"
+  private val logbackJsonLoggerVersion = "4.0.0"
+  private val govukTemplateVersion = "5.22.0"
   private val playUiVersion = "7.22.0"
   private val hmrcTestVersion = "3.0.0"
   private val scalaTestVersion = "3.0.4"
@@ -56,9 +56,9 @@ private object AppDependencies {
         "uk.gov.hmrc" %% "hmrctest" % hmrcTestVersion % scope,
         "org.scalatest" %% "scalatest" % scalaTestVersion % scope,
         "org.scalatestplus.play" %% "scalatestplus-play" % scalaTestPlusPlayVersion % scope,
-        "org.scalacheck" %% "scalacheck" % "1.13.4" % scope,
+        "org.scalacheck" %% "scalacheck" % "1.14.0" % scope,
         "org.pegdown" % "pegdown" % pegdownVersion % scope,
-        "org.jsoup" % "jsoup" % "1.10.3" % scope,
+        "org.jsoup" % "jsoup" % "1.11.3" % scope,
         "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
         "org.mockito" % "mockito-all" % mockitoAllVersion % scope,
         "com.github.tomakehurst" % "wiremock" % wireMockVersion % scope,
