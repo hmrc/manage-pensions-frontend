@@ -62,20 +62,19 @@ class InvitationConnectorImpl @Inject()(http: HttpClient, config: FrontendAppCon
     } andThen {
       case Failure(t: Throwable) => Logger.warn("Unable to invite PSA to administer scheme", t)
     }
-
   }
 
   def handleBadResponse(response: String): Unit = {
-    val PstrPattern = "(.*INVALID_PSTR.*)".r
-    val InviteePattern = "(.*INVALID_INVITEE_PSAID.*)".r
-    val InviterPattern = "(.*INVALID_INVITER_PSAID.*)".r
+    val InvalidPstrPattern = "(.*INVALID_PSTR.*)".r
     val InvalidPayloadPattern = "(.*INVALID_PAYLOAD.*)".r
+    val InvalidInviteePattern = "(.*INVALID_INVITEE_PSAID.*)".r
+    val InvalidInviterPattern = "(.*INVALID_INVITER_PSAID.*)".r
 
     response match {
-      case PstrPattern(_) => throw new PstrInvalidException
+      case InvalidPstrPattern(_) => throw new PstrInvalidException
       case InvalidPayloadPattern(_) => throw new InvalidInvitationPayloadException
-      case InviteePattern(_) => throw new InviteePsaIdInvalidException
-      case InviterPattern(_) => throw new InviterPsaIdInvalidException
+      case InvalidInviteePattern(_) => throw new InviteePsaIdInvalidException
+      case InvalidInviterPattern(_) => throw new InviterPsaIdInvalidException
     }
   }
 

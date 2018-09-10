@@ -198,7 +198,7 @@ class InvitationConnectorSpec extends AsyncFlatSpec with Matchers with WireMockH
     }
   }
 
-  it should "throw ActiveRelationshipExistsException for a Bad Request (ACTIVE_RELATIONSHIP_EXISTS) response" in {
+  it should "throw ActiveRelationshipExistsException for a Conflict (ACTIVE_RELATIONSHIP_EXISTS) response" in {
     server.stubFor(
       post(urlEqualTo(acceptInviteUrl))
         .willReturn(
