@@ -17,13 +17,13 @@
 package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
-import models.Invitation
+import models.{AcceptedInvitation, Invitation}
 import org.scalatest.prop.Checkers
 import org.scalatest.{AsyncFlatSpec, Matchers}
 import play.api.http.Status
 import play.api.libs.json.Json
-import uk.gov.hmrc.http.HeaderCarrier
-import utils.WireMockHelper
+import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
+import utils.{UserAnswers, WireMockHelper}
 
 class InvitationConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper with Checkers {
 
@@ -95,11 +95,157 @@ class InvitationConnectorSpec extends AsyncFlatSpec with Matchers with WireMockH
 
   }
 
+  "acceptInvite" should "return successfully when user accepts the invite" in {
+
+    server.stubFor(
+      post(urlEqualTo(acceptInviteUrl))
+        .withRequestBody(equalToJson(Json.stringify(Json.toJson(acceptedInvitation))))
+        .willReturn(
+          aResponse()
+            .withStatus(Status.OK)
+        )
+    )
+
+    val connector = injector.instanceOf[InvitationConnector]
+
+    connector.acceptInvite(acceptedInvitation) map {
+      _ =>
+        server.findAll(postRequestedFor(urlEqualTo(acceptInviteUrl))).size() shouldBe 1
+    }
+  }
+
+  it should "throw PstrInvalidException for a Bad Request (INVALID_PSTR) response" in {
+    server.stubFor(
+      post(urlEqualTo(acceptInviteUrl))
+        .willReturn(
+          aResponse()
+            .withStatus(Status.BAD_REQUEST)
+            .withHeader("Content-Type", "application/json")
+            .withBody(invalidResponse("INVALID_PSTR"))
+        )
+    )
+
+    val connector = injector.instanceOf[InvitationConnector]
+
+    recoverToExceptionIf[PstrInvalidException] {
+      connector.acceptInvite(acceptedInvitation)
+    } map {
+      _ =>
+        server.findAll(postRequestedFor(urlEqualTo(acceptInviteUrl))).size() shouldBe 1
+    }
+  }
+
+  it should "throw InvalidInvitationPayloadException for a Bad Request (INVALID_PAYLOAD) response" in {
+    server.stubFor(
+      post(urlEqualTo(acceptInviteUrl))
+        .willReturn(
+          aResponse()
+            .withStatus(Status.BAD_REQUEST)
+            .withHeader("Content-Type", "application/json")
+            .withBody(invalidResponse("INVALID_PAYLOAD"))
+        )
+    )
+
+    val connector = injector.instanceOf[InvitationConnector]
+
+    recoverToExceptionIf[InvalidInvitationPayloadException] {
+      connector.acceptInvite(acceptedInvitation)
+    } map {
+      _ =>
+        server.findAll(postRequestedFor(urlEqualTo(acceptInviteUrl))).size() shouldBe 1
+    }
+  }
+
+  it should "throw InviteePsaIdInvalidException for a Bad Request (INVALID_INVITEE_PSAID) response" in {
+    server.stubFor(
+      post(urlEqualTo(acceptInviteUrl))
+        .willReturn(
+          aResponse()
+            .withStatus(Status.FORBIDDEN)
+            .withHeader("Content-Type", "application/json")
+            .withBody(invalidResponse("INVALID_INVITEE_PSAID"))
+        )
+    )
+
+    val connector = injector.instanceOf[InvitationConnector]
+
+    recoverToExceptionIf[InviteePsaIdInvalidException] {
+      connector.acceptInvite(acceptedInvitation)
+    } map {
+      _ =>
+        server.findAll(postRequestedFor(urlEqualTo(acceptInviteUrl))).size() shouldBe 1
+    }
+  }
+
+  it should "throw InviterPsaIdInvalidException for a Bad Request (INVALID_INVITER_PSAID) response" in {
+    server.stubFor(
+      post(urlEqualTo(acceptInviteUrl))
+        .willReturn(
+          aResponse()
+            .withStatus(Status.FORBIDDEN)
+            .withHeader("Content-Type", "application/json")
+            .withBody(invalidResponse("INVALID_INVITER_PSAID"))
+        )
+    )
+
+    val connector = injector.instanceOf[InvitationConnector]
+
+    recoverToExceptionIf[InviterPsaIdInvalidException] {
+      connector.acceptInvite(acceptedInvitation)
+    } map {
+      _ =>
+        server.findAll(postRequestedFor(urlEqualTo(acceptInviteUrl))).size() shouldBe 1
+    }
+  }
+
+  it should "throw ActiveRelationshipExistsException for a Bad Request (ACTIVE_RELATIONSHIP_EXISTS) response" in {
+    server.stubFor(
+      post(urlEqualTo(acceptInviteUrl))
+        .willReturn(
+          aResponse()
+            .withStatus(Status.FORBIDDEN)
+            .withHeader("Content-Type", "application/json")
+            .withBody(invalidResponse("ACTIVE_RELATIONSHIP_EXISTS"))
+        )
+    )
+
+    val connector = injector.instanceOf[InvitationConnector]
+
+    recoverToExceptionIf[ActiveRelationshipExistsException] {
+      connector.acceptInvite(acceptedInvitation)
+    } map {
+      _ =>
+        server.findAll(postRequestedFor(urlEqualTo(acceptInviteUrl))).size() shouldBe 1
+    }
+  }
+
+  it should "throw NotFoundException for a Not Found response" in {
+    server.stubFor(
+      post(urlEqualTo(acceptInviteUrl))
+        .willReturn(
+          aResponse()
+            .withStatus(Status.NOT_FOUND)
+            .withHeader("Content-Type", "application/json")
+            .withBody(invalidResponse("NOT_FOUND"))
+        )
+    )
+
+    val connector = injector.instanceOf[InvitationConnector]
+
+    recoverToExceptionIf[NotFoundException] {
+      connector.acceptInvite(acceptedInvitation)
+    } map {
+      _ =>
+        server.findAll(postRequestedFor(urlEqualTo(acceptInviteUrl))).size() shouldBe 1
+    }
+  }
+
 }
 
 object InvitationConnectorSpec {
 
   private val inviteUrl = "/pension-administrator/invite"
+  private val acceptInviteUrl = "/pension-administrator/accept-invite"
 
   private implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 
@@ -108,6 +254,17 @@ object InvitationConnectorSpec {
   private val inviterPsaId = "test-inviter-psa-id"
   private val inviteePsaId = "test-invitee-psa-id"
   private val inviteeName = "test-invitee-name"
+  private val declaration = true
+  private val declarationDuties = true
+
+  private val acceptedInvitation = AcceptedInvitation(
+    pstr,
+    inviteePsaId,
+    inviterPsaId,
+    declaration,
+    declarationDuties,
+    None
+  )
 
   private val invitation =
     Invitation(
@@ -128,6 +285,14 @@ object InvitationConnectorSpec {
       Json.obj(
         "code" -> "INVALID_PSAID",
         "reason" -> "Reason for INVALID_PSAID"
+      )
+    )
+
+  private def invalidResponse(code: String) =
+    Json.stringify(
+      Json.obj(
+        "code" -> code,
+        "reason" -> s"Reason for $code"
       )
     )
 
