@@ -55,8 +55,8 @@ class FrontendAppConfig @Inject()(override val runModeConfiguration: Configurati
   lazy val pensionAdministratorGovUkLink = runModeConfiguration.underlying.getString("urls.pensionAdministratorGovUkLink")
   lazy val pensionPractitionerGovUkLink = runModeConfiguration.underlying.getString("urls.pensionPractitionerGovUkLink")
   lazy val govUkLink = runModeConfiguration.underlying.getString("urls.govUkLink")
-  lazy val continueSchemeUrl = s"$schemeFrontendUrl/${loadConfig("urls.continueSchemeRegistration")}"
-  lazy val deleteSchemeUrl = s"$schemeFrontendUrl/${loadConfig("urls.deleteScheme")}"
+  lazy val continueSchemeUrl = s"${loadConfig("urls.continueSchemeRegistration")}"
+  lazy val deleteSchemeUrl = s"${loadConfig("urls.deleteScheme")}"
   lazy val userResearchUrl = runModeConfiguration.underlying.getString(("urls.userResearch"))
   lazy val pensionSchemeOnlineServiceUrl: String = loadConfig("urls.pensionSchemeOnlineService")
 
