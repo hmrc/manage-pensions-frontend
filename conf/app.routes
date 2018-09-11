@@ -18,4 +18,4 @@ GET        /your-pension-schemes                        controllers.ListSchemesC
 
 GET        /overview                                    controllers.SchemesOverviewController.onPageLoad()
 
-GET        /you-cannot-send-an-invite                   controllers.YouCannotSendAnInviteController.onPageLoad()
+GET        /you-cannot-send-invite                      controllers.YouCannotSendAnInviteController.onPageLoad()
