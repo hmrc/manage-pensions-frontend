@@ -19,6 +19,7 @@ package connectors
 import com.fasterxml.jackson.core.JsonParseException
 import com.github.tomakehurst.wiremock.client.WireMock._
 import identifiers.TypedIdentifier
+import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{AsyncWordSpec, MustMatchers, OptionValues}
 import play.api.libs.json.Json
 import play.api.mvc.Results._
@@ -29,7 +30,7 @@ import utils.WireMockHelper
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class MicroserviceCacheConnectorSpec extends AsyncWordSpec with MustMatchers with WireMockHelper with OptionValues {
+class PensionsSchemeCacheConnectorSpec extends AsyncWordSpec with MustMatchers with WireMockHelper with OptionValues with MockitoSugar {
 
   protected object FakeIdentifier extends TypedIdentifier[String] {
     override def toString: String = "fake-identifier"
@@ -43,8 +44,9 @@ class MicroserviceCacheConnectorSpec extends AsyncWordSpec with MustMatchers wit
 
   protected def lastUpdatedUrl(id: String) = s"/pensions-scheme/journey-cache/scheme/$id/lastUpdated"
 
-  protected lazy val connector: DataCacheConnector = injector.instanceOf[MicroserviceCacheConnector]
+  protected lazy val connector: DataCacheConnector = injector.instanceOf[PensionsSchemeCacheConnector]
   protected lazy val crypto = injector.instanceOf[ApplicationCrypto].JsonCrypto
+
 
   ".fetch" must {
 
