@@ -57,19 +57,6 @@ object OrganisationOrPartnerDetails {
   implicit val format: Format[OrganisationOrPartnerDetails] = Json.format[OrganisationOrPartnerDetails]
 }
 
-
-case class Address(nonUKAddress:Boolean,
-                   line1:String,
-                   line2:String,
-                   line3:Option[String],
-                   line4:Option[String],
-                   postalCode:Option[String],
-                   countryCode:String)
-
-object Address {
-  implicit val format: Format[Address] = Json.format[Address]
-}
-
 case class DirectorOrPartnerDetails(sequenceId:String,
                                     entityType:String,
                                     title:Option[String],
@@ -101,25 +88,6 @@ object PensionSchemeAdministratorDeclaration {
   implicit val format: Format[PensionSchemeAdministratorDeclaration] = Json.format[PensionSchemeAdministratorDeclaration]
 }
 
-case class ContactDetails(telephone:String,
-                          mobileNumber:Option[String],
-                          fax:Option[String],
-                          email:Option[String])
-
-object ContactDetails {
-  implicit val format: Format[ContactDetails] = Json.format[ContactDetails]
-}
-
-case class IndividualDetails(title:Option[String],
-                             firstName:String,
-                             middleName:Option[String],
-                             lastName:String,
-                             dateOfBirth:String)
-
-object IndividualDetails {
-  implicit val format: Format[IndividualDetails] = Json.format[IndividualDetails]
-}
-
 case class NumberOfDirectorsOrPartners(isMorethanTenDirectors:Option[Boolean],
                                        isMorethanTenPartners:Option[Boolean])
 
@@ -133,13 +101,6 @@ case class CorrespondenceCommonDetails(addressDetails:Address,
 
 object CorrespondenceCommonDetails {
   implicit val format: Format[CorrespondenceCommonDetails] = Json.format[CorrespondenceCommonDetails]
-}
-
-case class PreviousAddressDetails(isPreviousAddressLast12Month:Boolean,
-                                  previousAddress:Option[Address])
-
-object PreviousAddressDetails {
-  implicit val format: Format[PreviousAddressDetails] = Json.format[PreviousAddressDetails]
 }
 
 case class PensionAdvisorDetails(name:String,
