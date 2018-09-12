@@ -134,7 +134,7 @@ object SchemeDetailsConnectorSpec extends JsonFileReader {
 
   private val schemeIdType = "pstr"
   private val idNumber = "00000000AA"
-  private val schemeDetailsUrl = s"/pension-administrator/scheme"
+  private val schemeDetailsUrl = s"/pensions-scheme/scheme"
 
   private implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 
@@ -172,9 +172,10 @@ object SchemeDetailsConnectorSpec extends JsonFileReader {
 
   private val establisherDetails = EstablisherDetails(Some(List(indEstablisher)), Some(List(compEstablisher)), None)
 
-  private val psaDetails = PsaDetails("A0000000",Some("partnetship name"),Some("Taylor"),Some("Middle"),Some("Rayon"),Some("Primary"),Some("1978-03-22"))
+  private val psaDetails1 = PsaDetails("A0000000",Some("partnetship name"),Some("Taylor"),Some("Middle"),Some("Rayon"),Some("Primary"),Some("1978-03-22"))
+  private val psaDetails2 = PsaDetails("A0000001",Some("partnetship name 1"),Some("Smith"),Some("A"),Some("Tony"),Some("Primary"),Some("1977-03-22"))
 
-  private val expectedResponse = PsaSchemeDetails(PensionsScheme(schemeDetails, Some(establisherDetails), None, Some(psaDetails)))
+  private val expectedResponse = PsaSchemeDetails(PensionsScheme(schemeDetails, Some(establisherDetails), None, Some(Seq(psaDetails1, psaDetails2))))
 
 }
 

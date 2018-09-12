@@ -65,3 +65,10 @@ messages__schemesOverview__continue__link = Continue registering this scheme
 messages__schemesOverview__delete__link = Delete this scheme and start a new registration
 messages__schemesOverview__UR__text = We want to hear from people who would like to help improve this service by sharing their feedback and testing new features.
 messages__schemesOverview__UR__link = Let us know if you would like to help improve this service.
+
+messages__schemeDetails__title = Pension scheme details
+messages__schemeDetails__view_details_link = View the registered scheme details
+messages__schemeDetails__opened_date_head = This scheme was opened on:
+messages__schemeDetails__psa_list_head = Pension scheme administrators
+messages__schemeDetails__invite_link = Invite another PSA to administer this scheme
+messages__schemeDetails__return_link = Return to your pension schemes

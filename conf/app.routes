@@ -17,3 +17,5 @@ GET        /you-need-to-register                        controllers.YouNeedToReg
 GET        /your-pension-schemes                        controllers.ListSchemesController.onPageLoad
 
 GET        /overview                                    controllers.SchemesOverviewController.onPageLoad()
+
+GET        /scheme-details                      controllers.SchemeDetailsController.onPageLoad()

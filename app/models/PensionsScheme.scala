@@ -176,7 +176,7 @@ object PsaDetails{
 }
 
 case class PensionsScheme(schemeDetails: SchemeDetails, establisherDetails: Option[EstablisherDetails],
-                          trusteeDetails: Option[TrusteeDetails], psaDetails: Option[PsaDetails])
+                          trusteeDetails: Option[TrusteeDetails], psaDetails: Option[Seq[PsaDetails]])
 
 object PensionsScheme {
   implicit val formats: Format[PensionsScheme] = Json.format[PensionsScheme]
