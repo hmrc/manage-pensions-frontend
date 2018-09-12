@@ -18,19 +18,6 @@ package models
 
 import play.api.libs.json.{Format, Json}
 
-case class Address(nonUKAddress: Boolean, line1: String, line2: String, line3: Option[String], line4: Option[String],
-                   postalCode: Option[String], countryCode: String)
-
-object Address {
-  implicit val formats: Format[Address] = Json.format[Address]
-}
-
-case class ContactDetails(telephone: String, mobileNumber: Option[String], fax: Option[String], email: String)
-
-object ContactDetails {
-  implicit val formats: Format[ContactDetails] = Json.format[ContactDetails]
-}
-
 case class SchemeDetails(srn: String, pstr: String, schemeStatus: String, schemeName: String, isSchemeMasterTrust: Option[Boolean],
                          pensionSchemeStructure: Option[String], otherPensionSchemeStructure: Option[String],
                          hasMoreThanTenTrustees: Option[Boolean], currentSchemeMembers: String, futureSchemeMembers: String,
