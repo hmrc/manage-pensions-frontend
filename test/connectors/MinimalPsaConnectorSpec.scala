@@ -52,40 +52,40 @@ class MinimalPsaConnectorSpec extends AsyncFlatSpec with Matchers with WireMockH
 
   }
 
-//  it should "throw BadRequestException for a 400 INVALID_PSAID response" in {
-//
-//    server.stubFor(
-//      get(urlEqualTo(minimalPsaDetailsUrl))
-//        .withHeader("psaId", equalTo(psaId))
-//        .willReturn(
-//          badRequest
-//            .withHeader("Content-Type", "application/json")
-//            .withBody(errorResponse("INVALID_PSAID"))
-//        )
-//    )
-//
-//    val connector = injector.instanceOf[MinimalPsaConnector]
-//    recoverToSucceededIf[BadRequestException] {
-//      connector.getMinimalPsaDetails(psaId)
-//    }
-//  }
-//
-//  it should "throw BadRequest for a 400 INVALID_CORRELATIONID response" in {
-//
-//    server.stubFor(
-//      get(urlEqualTo(minimalPsaDetailsUrl))
-//        .willReturn(
-//          badRequest
-//            .withHeader("Content-Type", "application/json")
-//            .withBody(errorResponse("INVALID_CORRELATIONID"))
-//        )
-//    )
-//    val connector = injector.instanceOf[MinimalPsaConnector]
-//
-//    recoverToSucceededIf[BadRequestException] {
-//      connector.getMinimalPsaDetails(psaId)
-//    }
-//  }
+  it should "throw BadRequestException for a 400 INVALID_PSAID response" in {
+
+    server.stubFor(
+      get(urlEqualTo(minimalPsaDetailsUrl))
+        .withHeader("psaId", equalTo(psaId))
+        .willReturn(
+          badRequest
+            .withHeader("Content-Type", "application/json")
+            .withBody(errorResponse("INVALID_PSAID"))
+        )
+    )
+
+    val connector = injector.instanceOf[MinimalPsaConnector]
+    recoverToSucceededIf[BadRequestException] {
+      connector.getMinimalPsaDetails(psaId)
+    }
+  }
+
+  it should "throw BadRequest for a 400 INVALID_CORRELATIONID response" in {
+
+    server.stubFor(
+      get(urlEqualTo(minimalPsaDetailsUrl))
+        .willReturn(
+          badRequest
+            .withHeader("Content-Type", "application/json")
+            .withBody(errorResponse("INVALID_CORRELATIONID"))
+        )
+    )
+    val connector = injector.instanceOf[MinimalPsaConnector]
+
+    recoverToSucceededIf[BadRequestException] {
+      connector.getMinimalPsaDetails(psaId)
+    }
+  }
 
 }
 
