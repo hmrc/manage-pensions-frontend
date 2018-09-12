@@ -29,7 +29,7 @@
 
     @components.heading(schemeName)
 
-    <p><a id="view-details" href="@routes.SchemeDetailsController.onPageLoad()">@messages("messages__schemeDetails__view_details_link")</a></p>
+    <p><a id="view-details" href="@routes.SchemeDetailsController.onPageLoad(0)">@messages("messages__schemeDetails__view_details_link")</a></p>
 
     <h2>@messages("messages__schemeDetails__opened_date_head")</h2>
     <p>@openedDate</p>
@@ -43,7 +43,7 @@
     </ul>
 
     @if(appConfig.psaInvitationEnabled){
-        <p><a id="invite" href="@routes.SchemeDetailsController.onPageLoad()">@messages("messages__schemeDetails__invite_link")</a></p>
+        <p><a id="invite" href="@routes.SchemeDetailsController.onPageLoad(0)">@messages("messages__schemeDetails__invite_link")</a></p>
     }
     <p><a id="return" href="@routes.ListSchemesController.onPageLoad()">@messages("messages__schemeDetails__return_link")</a></p>
 

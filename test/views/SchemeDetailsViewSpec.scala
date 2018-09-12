@@ -56,7 +56,7 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
 
       "have link to view scheme details" in {
         Jsoup.parse(createView()().toString()).select("a[id=view-details]") must
-          haveLink(controllers.routes.SchemeDetailsController.onPageLoad.url)
+          haveLink(controllers.routes.SchemeDetailsController.onPageLoad(0).url)
       }
 
       "display the date on which scheme was opened" in {
@@ -72,14 +72,14 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
       "have link to Invite another PSA" when {
         "invitations toggle is turned on" in {
           Jsoup.parse(createView(invitations = true)().toString()).select("a[id=invite]") must
-            haveLink(controllers.routes.SchemeDetailsController.onPageLoad.url)
+            haveLink(controllers.routes.SchemeDetailsController.onPageLoad(0).url)
         }
       }
 
       "not have link to Invite another PSA" when {
         "invitations toggle is turned off" in {
           Jsoup.parse(createView()().toString()).select("a[id=invite]") mustNot
-            haveLink(controllers.routes.SchemeDetailsController.onPageLoad.url)
+            haveLink(controllers.routes.SchemeDetailsController.onPageLoad(0).url)
         }
       }
 

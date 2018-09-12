@@ -17,41 +17,53 @@
 package controllers
 
 import config.FrontendAppConfig
-import connectors.{ListOfSchemesConnector, SchemeDetailsConnector}
+import connectors.{DataCacheConnector, ListOfSchemesConnector, SchemeDetailsConnector}
 import controllers.actions._
 import javax.inject.Inject
-import models.SchemeDetail
+import models.{PsaDetails, Scheme, SchemeDetail}
 import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.libs.json.JsSuccess
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import views.html.schemeDetails
 
+import scala.concurrent.Future
+
 class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                                           override val messagesApi: MessagesApi,
+                                          dataCacheConnector: DataCacheConnector,
                                           schemeDetailsConnector: SchemeDetailsConnector,
-                                          listSchemesConnector: ListOfSchemesConnector,
                                           authenticate: AuthAction,
                                           getData: DataRetrievalAction) extends FrontendController with I18nSupport {
 
-  def onPageLoad(): Action[AnyContent] = (authenticate andThen getData).async {
+  private def fullName(psa:PsaDetails) =
+    s"${psa.firstName} ${psa.middleName} ${psa.lastName}"
+
+  def onPageLoad(index: Int): Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
       val pstr = "21000005AA"
+     dataCacheConnector.fetch(request.externalId).flatMap {
+          case None => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+          case Some(jsValue) => (jsValue \ "schemes").validate[Seq[Scheme]] match {
+            case JsSuccess(schemes, _) =>
 
-      schemeDetailsConnector.getSchemeDetails("pstr", pstr).flatMap { scheme =>
-        listSchemesConnector.getListOfSchemes("A2200002").map { list =>
+              schemeDetailsConnector.getSchemeDetails("pstr", schemes(index-1).pstr)
+                .flatMap { scheme =>
 
-          val openDate = list.schemeDetail.flatMap(_.filter((i: SchemeDetail) => i.pstr.contains(pstr)).head.openDate)
+                val administrators: Seq[String] = scheme.psaSchemeDetails.psaDetails.map(_.map(fullName)).getOrElse(Seq.empty)
 
-          val administrators = scheme.psaSchemeDetails.psaDetails.map(
-            _.map(psa => s"${psa.firstName} ${psa.middleName} ${psa.lastName}"))
+                Future.successful(Ok(schemeDetails(appConfig,
+                  scheme.psaSchemeDetails.schemeDetails.schemeName,
+                  schemes(index-1).openDate.toString,
+                  administrators
+                )))
+              }
 
-          Ok(schemeDetails(appConfig,
-            scheme.psaSchemeDetails.schemeDetails.schemeName,
-            openDate.get,
-            administrators.getOrElse(Seq.empty)
-          ))
+            case _ => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+          }
         }
-      }
+
+
   }
 
 }

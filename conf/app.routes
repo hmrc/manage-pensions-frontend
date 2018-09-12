@@ -18,4 +18,4 @@ GET        /your-pension-schemes                        controllers.ListSchemesC
 
 GET        /overview                                    controllers.SchemesOverviewController.onPageLoad()
 
-GET        /scheme-details                      controllers.SchemeDetailsController.onPageLoad()
+GET        /scheme-details/:index                      controllers.SchemeDetailsController.onPageLoad(index: Int)
