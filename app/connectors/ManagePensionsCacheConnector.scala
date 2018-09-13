@@ -27,7 +27,7 @@ class ManagePensionsCacheConnector @Inject()(
                                             crypto: ApplicationCrypto
                                           ) extends MicroserviceCacheConnector(http, crypto) {
 
-  override protected def url(id: String) = s"${config.pensionsSchemeUrl}/manage-pensions-frontend/journey-cache/misc/$id"
+  override protected def url(id: String) = s"${config.pensionAdminUrl}/pension-administrator/journey-cache/manage-pensions/$id"
 
-  override protected def lastUpdatedUrl(id: String) = s"${config.pensionsSchemeUrl}/manage-pensions-frontend/journey-cache/misc/$id/lastUpdated"
+  override protected def lastUpdatedUrl(id: String) = s"${config.pensionAdminUrl}/pension-administrator/journey-cache/manage-pensions/$id/lastUpdated"
 }
