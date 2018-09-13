@@ -31,11 +31,6 @@
 
     @components.heading("messages__schemesOverview__heading")
 
-    <div class="panel">
-        <p>@messages("messages__schemesOverview__UR__text")</p>
-        <p><a id="user-research" href="@appConfig.userResearchUrl">@messages("messages__schemesOverview__UR__link")</a></p>
-    </div>
-
     <h2>@messages("messages__schemesOverview__manage__head")</h2>
     <p>@messages("messages__schemesOverview__manage__text")</p>
     <p><a id="view-schemes" href="@routes.ListSchemesController.onPageLoad()">@messages("messages__schemesOverview__manage__link")</a></p>
@@ -65,4 +60,8 @@
 
         }
     }
+
+    <h2>@messages("messages__schemesOverview__UR__head")</h2>
+    <p>@messages("messages__schemesOverview__UR__text")</p>
+    <p><a id="user-research" href="@appConfig.userResearchUrl">@messages("messages__schemesOverview__UR__link")</a></p>
 }
