@@ -30,23 +30,22 @@ import utils.WireMockHelper
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class PensionsSchemeCacheConnectorSpec extends AsyncWordSpec with MustMatchers with WireMockHelper with OptionValues with MockitoSugar {
+trait CacheConnectorSpec extends AsyncWordSpec with MustMatchers with WireMockHelper with OptionValues with MockitoSugar {
 
   protected object FakeIdentifier extends TypedIdentifier[String] {
     override def toString: String = "fake-identifier"
   }
 
-  override protected def portConfigKey: String = "microservice.services.pensions-scheme.port"
+  override protected def portConfigKey: String
 
   protected implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  protected def url(id: String): String = s"/pensions-scheme/journey-cache/scheme/$id"
+  protected def url(id: String): String
 
-  protected def lastUpdatedUrl(id: String) = s"/pensions-scheme/journey-cache/scheme/$id/lastUpdated"
+  protected def lastUpdatedUrl(id: String): String
 
-  protected lazy val connector: DataCacheConnector = injector.instanceOf[PensionsSchemeCacheConnector]
+  protected val connector: DataCacheConnector
   protected lazy val crypto = injector.instanceOf[ApplicationCrypto].JsonCrypto
-
 
   ".fetch" must {
 
@@ -353,4 +352,23 @@ class PensionsSchemeCacheConnectorSpec extends AsyncWordSpec with MustMatchers w
       }
     }
   }
+
 }
+
+class PensionsSchemeCacheConnectorSpec extends CacheConnectorSpec {
+  override protected def portConfigKey: String = "microservice.services.pensions-scheme.port"
+
+  override protected lazy val connector: DataCacheConnector = injector.instanceOf[PensionsSchemeCacheConnector]
+
+  override protected def url(id: String): String = s"/pensions-scheme/journey-cache/scheme/$id"
+
+  override protected def lastUpdatedUrl(id: String) = s"/pensions-scheme/journey-cache/scheme/$id/lastUpdated"
+}
+
+//class ManagePensionsCacheConnectorSpec extends CacheConnectorSpec {
+//  override protected def portConfigKey: String = "microservice.services.manage-pensions-scheme.port"
+//  override protected lazy val connector: DataCacheConnector = injector.instanceOf[ManagePensionsCacheConnector]
+//  override protected def url(id: String): String = s"/manage-pensions-frontend/journey-cache/misc/$id"
+//  override protected def lastUpdatedUrl(id: String) = s"/manage-pensions-frontend/journey-cache/misc/$id/lastUpdated"
+//
+//}
