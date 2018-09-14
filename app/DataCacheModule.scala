@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import connectors.{DataCacheConnector, ManagePensionsCacheConnector, MicroserviceCacheConnector, MongoCacheConnector}
+import connectors.{DataCacheConnector, MicroserviceCacheConnector, MongoCacheConnector}
 import play.api.inject.{Binding, Module}
 import play.api.{Configuration, Environment, Logger}
 
@@ -27,12 +27,12 @@ class DataCacheModule extends Module {
         Seq(bind[DataCacheConnector].to[MongoCacheConnector])
       case Some("protected") =>
         Seq(
-          bind[DataCacheConnector].to[ManagePensionsCacheConnector]
+          bind[DataCacheConnector].to[MicroserviceCacheConnector]
         )
       case _ =>
         Logger.warn("No journey-cache set, defaulting to `protected`")
         Seq(
-          bind[DataCacheConnector].to[ManagePensionsCacheConnector]
+          bind[DataCacheConnector].to[MicroserviceCacheConnector]
         )
     }
   }
