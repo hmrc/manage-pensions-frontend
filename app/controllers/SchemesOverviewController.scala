@@ -17,7 +17,7 @@
 package controllers
 
 import config.FrontendAppConfig
-import connectors.DataCacheConnector
+import connectors.{DataCacheConnector, PensionsSchemeCacheConnector}
 import controllers.actions._
 import javax.inject.Inject
 import models.LastUpdatedDate
@@ -33,7 +33,7 @@ import scala.concurrent.Future
 
 class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
                                           override val messagesApi: MessagesApi,
-                                          dataCacheConnector: DataCacheConnector,
+                                          dataCacheConnector: PensionsSchemeCacheConnector,
                                           authenticate: AuthAction,
                                           getData: DataRetrievalAction,
                                           requireData: DataRequiredAction) extends FrontendController with I18nSupport {
