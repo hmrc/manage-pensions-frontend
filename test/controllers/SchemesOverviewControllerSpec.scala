@@ -16,7 +16,7 @@
 
 package controllers
 
-import connectors.{DataCacheConnector, MicroserviceCacheConnector}
+import connectors.{DataCacheConnector, MicroserviceCacheConnector, PensionsSchemeCacheConnector}
 import controllers.actions.{DataRetrievalAction, _}
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTime, DateTimeZone}
@@ -31,7 +31,7 @@ import scala.concurrent.Future
 
 class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar {
 
-  val fakeCacheConnector: DataCacheConnector = mock[MicroserviceCacheConnector]
+  val fakeCacheConnector: PensionsSchemeCacheConnector = mock[PensionsSchemeCacheConnector]
 
   def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): SchemesOverviewController =
     new SchemesOverviewController(frontendAppConfig, messagesApi, fakeCacheConnector, FakeAuthAction,
