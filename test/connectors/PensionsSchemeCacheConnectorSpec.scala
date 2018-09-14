@@ -367,8 +367,20 @@ class PensionsSchemeCacheConnectorSpec extends CacheConnectorSpec {
 
 class ManagePensionsCacheConnectorSpec extends CacheConnectorSpec {
   override protected def portConfigKey: String = "microservice.services.pension-administrator.port"
-  override protected lazy val connector: DataCacheConnector = injector.instanceOf[ManagePensionsCacheConnector]
-  override protected def url(id: String): String = s"/pension-administrator/journey-cache/manage-pensions/$id"
-  override protected def lastUpdatedUrl(id: String) = s"/pension-administrator/journey-cache/manage-pensions/$id/lastUpdated"
 
+  override protected lazy val connector: DataCacheConnector = injector.instanceOf[ManagePensionsCacheConnector]
+
+  override protected def url(id: String): String = s"/pension-administrator/journey-cache/manage-pensions/$id"
+
+  override protected def lastUpdatedUrl(id: String) = s"/pension-administrator/journey-cache/manage-pensions/$id/lastUpdated"
+}
+
+class InvitationsCacheConnectorSpec extends CacheConnectorSpec {
+  override protected def portConfigKey: String = "microservice.services.pension-administrator.port"
+
+  override protected lazy val connector: DataCacheConnector = injector.instanceOf[InvitationsCacheConnector]
+
+  override protected def url(id: String): String = s"/pension-administrator/journey-cache/invitations/$id"
+
+  override protected def lastUpdatedUrl(id: String) = s"/pension-administrator/journey-cache/invitations/$id/lastUpdated"
 }
