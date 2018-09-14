@@ -19,7 +19,7 @@ package connectors
 import base.JsonFileReader
 import com.github.tomakehurst.wiremock.client.WireMock._
 import models._
-import org.scalatest.{AsyncFlatSpec, Matchers, OptionValues}
+import org.scalatest.{AsyncFlatSpec, Matchers}
 import play.api.http.Status
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}

@@ -1,0 +1,14 @@
+{
+	"processingDate": "2001-12-17T09:30:47Z",
+	"psaMinimalDetails": {
+		"individualDetails": {
+			"firstName": "First",
+			"middleName": "Middle",
+			"lastName": "Last"
+		}
+	},
+	"email": "test@test.com",
+	"psaSuspensionFlag": false
+}
+
+

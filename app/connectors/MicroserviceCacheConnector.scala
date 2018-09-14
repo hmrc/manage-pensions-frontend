@@ -17,7 +17,6 @@
 package connectors
 
 import com.google.inject.Inject
-import config.FrontendAppConfig
 import identifiers.TypedIdentifier
 import play.api.Logger
 import play.api.http.Status._
@@ -31,15 +30,14 @@ import utils.UserAnswers
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class MicroserviceCacheConnector @Inject()(
-                                            config: FrontendAppConfig,
+abstract class MicroserviceCacheConnector @Inject()(
                                             http: WSClient,
                                             crypto: ApplicationCrypto
                                           ) extends DataCacheConnector {
 
-  protected def url(id: String) = s"${config.pensionsSchemeUrl}/pensions-scheme/journey-cache/scheme/$id"
+  protected def url(id: String): String
 
-  protected def lastUpdatedUrl(id: String) = s"${config.pensionsSchemeUrl}/pensions-scheme/journey-cache/scheme/$id/lastUpdated"
+  protected def lastUpdatedUrl(id: String): String
 
   override def save[A, I <: TypedIdentifier[A]](cacheId: String, id: I, value: A)
                                                (implicit
@@ -104,11 +102,10 @@ class MicroserviceCacheConnector @Inject()(
         response.status match {
           case NOT_FOUND =>
             Future.successful(None)
-          case OK => {
+          case OK =>
             val decrypted = crypto.JsonCrypto.decrypt(Crypted(response.body))
             Logger.debug(s"connectors.MicroserviceCacheConnector.fetch: Successful response: $decrypted")
             Future.successful(Some(Json.parse(decrypted.value)))
-          }
           case _ =>
             Future.failed(new HttpException(response.body, response.status))
         }
@@ -133,10 +130,9 @@ class MicroserviceCacheConnector @Inject()(
         response.status match {
           case NOT_FOUND =>
             Future.successful(None)
-          case OK => {
+          case OK =>
             Logger.debug(s"connectors.MicroserviceCacheConnector.fetch: Successful response: ${response.body}")
             Future.successful(Some(Json.parse(response.body)))
-          }
           case _ =>
             Future.failed(new HttpException(response.body, response.status))
         }
