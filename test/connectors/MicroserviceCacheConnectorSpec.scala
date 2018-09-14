@@ -19,7 +19,6 @@ package connectors
 import com.fasterxml.jackson.core.JsonParseException
 import com.github.tomakehurst.wiremock.client.WireMock._
 import identifiers.TypedIdentifier
-import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{AsyncWordSpec, MustMatchers, OptionValues}
 import play.api.libs.json.Json
 import play.api.mvc.Results._
@@ -30,21 +29,21 @@ import utils.WireMockHelper
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-trait CacheConnectorSpec extends AsyncWordSpec with MustMatchers with WireMockHelper with OptionValues with MockitoSugar {
+class MicroserviceCacheConnectorSpec extends AsyncWordSpec with MustMatchers with WireMockHelper with OptionValues {
 
   protected object FakeIdentifier extends TypedIdentifier[String] {
     override def toString: String = "fake-identifier"
   }
 
-  override protected def portConfigKey: String
+  override protected def portConfigKey: String = "microservice.services.pensions-scheme.port"
 
   protected implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  protected def url(id: String): String
+  protected def url(id: String): String = s"/pensions-scheme/journey-cache/scheme/$id"
 
-  protected def lastUpdatedUrl(id: String): String
+  protected def lastUpdatedUrl(id: String) = s"/pensions-scheme/journey-cache/scheme/$id/lastUpdated"
 
-  protected val connector: DataCacheConnector
+  protected lazy val connector: DataCacheConnector = injector.instanceOf[MicroserviceCacheConnector]
   protected lazy val crypto = injector.instanceOf[ApplicationCrypto].JsonCrypto
 
   ".fetch" must {
@@ -352,35 +351,4 @@ trait CacheConnectorSpec extends AsyncWordSpec with MustMatchers with WireMockHe
       }
     }
   }
-
-}
-
-class PensionsSchemeCacheConnectorSpec extends CacheConnectorSpec {
-  override protected def portConfigKey: String = "microservice.services.pensions-scheme.port"
-
-  override protected lazy val connector: DataCacheConnector = injector.instanceOf[PensionsSchemeCacheConnector]
-
-  override protected def url(id: String): String = s"/pensions-scheme/journey-cache/scheme/$id"
-
-  override protected def lastUpdatedUrl(id: String) = s"/pensions-scheme/journey-cache/scheme/$id/lastUpdated"
-}
-
-class ManagePensionsCacheConnectorSpec extends CacheConnectorSpec {
-  override protected def portConfigKey: String = "microservice.services.pension-administrator.port"
-
-  override protected lazy val connector: DataCacheConnector = injector.instanceOf[ManagePensionsCacheConnector]
-
-  override protected def url(id: String): String = s"/pension-administrator/journey-cache/manage-pensions/$id"
-
-  override protected def lastUpdatedUrl(id: String) = s"/pension-administrator/journey-cache/manage-pensions/$id/lastUpdated"
-}
-
-class InvitationsCacheConnectorSpec extends CacheConnectorSpec {
-  override protected def portConfigKey: String = "microservice.services.pension-administrator.port"
-
-  override protected lazy val connector: DataCacheConnector = injector.instanceOf[InvitationsCacheConnector]
-
-  override protected def url(id: String): String = s"/pension-administrator/journey-cache/invitations/$id"
-
-  override protected def lastUpdatedUrl(id: String) = s"/pension-administrator/journey-cache/invitations/$id/lastUpdated"
 }
