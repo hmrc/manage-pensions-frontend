@@ -22,6 +22,10 @@ import views.html.incorrectPsaDetails
 class IncorrectPsaDetailsControllerSpec extends ControllerSpecBase {
 
   "SessionExpired Controller" must {
+
+    val invitee = "PSA"
+    val schemeName = "Scheme"
+
     "return 200 for a GET" in {
       val result = new IncorrectPsaDetailsController(frontendAppConfig, messagesApi).onPageLoad()(fakeRequest)
       status(result) mustBe OK
@@ -29,7 +33,7 @@ class IncorrectPsaDetailsControllerSpec extends ControllerSpecBase {
 
     "return the correct view for a GET" in {
       val result = new IncorrectPsaDetailsController(frontendAppConfig, messagesApi).onPageLoad()(fakeRequest)
-      contentAsString(result) mustBe incorrectPsaDetails(frontendAppConfig)(fakeRequest, messages).toString
+      contentAsString(result) mustBe incorrectPsaDetails(frontendAppConfig, invitee, schemeName)(fakeRequest, messages).toString
     }
   }
 }

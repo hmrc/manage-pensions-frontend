@@ -23,19 +23,30 @@ import org.jsoup.Jsoup
 class incorrectPsaDetailsViewSpec extends ViewBehaviours {
 
   val messageKeyPrefix = "incorrectPsaDetails"
+  val invitee = "PSA"
+  val schemeName = "Scheme"
 
-  def createView = () => incorrectPsaDetails(frontendAppConfig)(fakeRequest, messages)
+  def createView = () => incorrectPsaDetails(frontendAppConfig, invitee, schemeName)(fakeRequest, messages)
 
   "IncorrectPsaDetails view" must {
     behave like normalPage(createView, messageKeyPrefix,
       messages(s"messages__${messageKeyPrefix}__title"),
-      "_text1",
-      "_text2",
-      "_linkText")
+      "_text2"
+    )
 
-    //  "have link to return to scheme details" in {
-    //    Jsoup.parse(createView().toString()).select("a[id=view-schemes]") must
-    //      haveLink(controllers.routes.ListSchemesController.onPageLoad.url)
-    //  }
+    "display PSA name dynamically" in {
+      Jsoup.parse(createView().toString()) must haveDynamicText(s"messages__${messageKeyPrefix}__text1", invitee)
+    }
+
+    "display Scheme name dynamically" in {
+      Jsoup.parse(createView().toString()) must haveDynamicText(s"messages__${messageKeyPrefix}__linkText", schemeName)
+    }
+
+    "have link to return to scheme details" in {
+      Jsoup.parse(createView().toString()).select("a[id=view-schemes]") must
+        haveLink(controllers.routes.ListSchemesController.onPageLoad.url)
+    }
+
   }
+
 }

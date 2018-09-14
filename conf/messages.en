@@ -74,6 +74,6 @@ messages__schemesOverview__UR__text = We want to hear from people who would like
 messages__schemesOverview__UR__link = Let us know if you would like to help improve this service.
 
 messages__incorrectPsaDetails__title = The name and PSA ID do not match our records
-messages__incorrectPsaDetails__text1 = You should check these details with __________.
+messages__incorrectPsaDetails__text1 = You should check these details with {0}.
 messages__incorrectPsaDetails__text2 = Their name should be entered exactly as their registered PSA name.
-messages__incorrectPsaDetails__linkText = Return to __________
+messages__incorrectPsaDetails__linkText = Return to {0}
