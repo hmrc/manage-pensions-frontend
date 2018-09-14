@@ -17,7 +17,7 @@
 package controllers
 
 import connectors.ListOfSchemesConnector
-import controllers.actions.AuthAction
+import controllers.actions.{FakeAuthAction, AuthAction}
 import models.requests.AuthenticatedRequest
 import models.{ListOfSchemes, SchemeDetail}
 import play.api.mvc.{Request, Result}
@@ -86,11 +86,7 @@ object ListSchemesControllerSpec {
 
   def testFixture(app: ControllerSpecBase, psaId: String): TestFixture = new TestFixture {
 
-    private def authAction(psaId: String): AuthAction = new AuthAction {
-      override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] = {
-        block(AuthenticatedRequest(request, "test-external-id", PsaId(psaId)))
-      }
-    }
+    private def authAction(psaId: String): AuthAction = FakeAuthAction(psaId)
 
     private def listSchemesConnector(): ListOfSchemesConnector = new ListOfSchemesConnector {
 

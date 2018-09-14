@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.actions
 
-import controllers.actions.FakeAuthAction
-import play.api.test.Helpers._
+import controllers.routes
+import models.requests.AuthenticatedRequest
+import play.api.mvc.Results._
+import play.api.mvc.{Request, Result}
 
-class LogoutControllerSpec extends ControllerSpecBase {
+import scala.concurrent.Future
 
-  def logoutController = new LogoutController(frontendAppConfig, messagesApi, FakeAuthAction())
+object FakeUnAuthorisedAction {
 
-  "Logout Controller" must {
-
-    "redirect to feedback survey page for an Individual" in {
-      val result = logoutController.onPageLoad(fakeRequest)
-
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(frontendAppConfig.serviceSignOut)
+  def apply(): AuthAction = {
+    new AuthAction {
+      override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] =
+        Future.successful(Redirect(routes.UnauthorisedController.onPageLoad))
     }
   }
 }

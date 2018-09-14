@@ -18,16 +18,14 @@ package controllers
 
 import base.SpecBase
 import connectors.SubscriptionConnector
-import controllers.actions.AuthAction
+import controllers.actions.{FakeUnAuthorisedAction, FakeAuthAction}
 import models._
-import models.requests.AuthenticatedRequest
 import org.scalatest.BeforeAndAfter
 import org.scalatest.mockito.MockitoSugar
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{reset, when, verify, times}
-import play.api.mvc.{Result, Request}
 import play.api.test.Helpers._
-import uk.gov.hmrc.domain.PsaId
+import utils.MockDataHelper
 
 import scala.concurrent.Future
 
@@ -44,7 +42,8 @@ class InviteControllerSpec extends SpecBase with MockitoSugar with BeforeAndAfte
 
     "return 200 if PSASuspension is false" in {
 
-      when(mockConnector.getSubscriptionDetails(any())(any(), any())).thenReturn(Future.successful(SubscriptionDetails(psaSubscription)))
+      when(mockConnector.getSubscriptionDetails(any())(any(), any())).thenReturn(Future.successful(
+        SubscriptionDetails(psaSubscription)))
 
       val result = controller.onPageLoad(fakeRequest)
 
@@ -66,15 +65,23 @@ class InviteControllerSpec extends SpecBase with MockitoSugar with BeforeAndAfte
 
     }
 
+    "return 303 if request is unauthorised" in {
+
+      val controller = new InviteController(FakeUnAuthorisedAction(), mockConnector)
+      val result = controller.onPageLoad(fakeRequest)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad.url)
+      verify(mockConnector,  times(0)).getSubscriptionDetails(any())(any(), any())
+
+    }
+
   }
 
 }
 
-object InviteControllerSpec {
+object InviteControllerSpec extends MockDataHelper {
 
-  private val address = Address(false, "Telford1", "Telford2", Some("Telford13"), Some("Telford14"), Some("TF3 4ER"), "GB")
-  private val contactDetails = ContactDetails("0044-09876542312", Some("0044-09876542312"), Some("0044-09876542312"), "abc@hmrc.gsi.gov.uk")
-  private val indEstPrevAdd = PreviousAddressDetails(true, Some(Address(true,"sddsfsfsdf","sddsfsdf",Some("sdfdsfsdf"),Some("sfdsfsdf"),Some("456546"),"AD")))
   private val customerIdentificationDetails = CustomerIdentificationDetails(legalStatus="AA", None, None, noIdentifier=false)
   private val declarationDetails = PensionSchemeAdministratorDeclaration(true, true, true, true, Some(true), Some(true), true, None)
 
@@ -89,12 +96,6 @@ object InviteControllerSpec {
     directorOrPartnerDetails=None,
     declarationDetails = declarationDetails)
 
-  private val psaId = "A1234567"
-
-  private val mockAuthAction =  new AuthAction {
-    override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] = {
-      block(AuthenticatedRequest(request, "test-external-id", PsaId(psaId)))
-    }
-  }
+  private val mockAuthAction =  FakeAuthAction()
 
 }
