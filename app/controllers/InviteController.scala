@@ -35,5 +35,4 @@ class InviteController@Inject()(authenticate: AuthAction,connector:SubscriptionC
         }
       }
   }
-
 }

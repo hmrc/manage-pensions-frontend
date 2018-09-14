@@ -23,7 +23,6 @@ import uk.gov.hmrc.domain.PsaId
 import scala.concurrent.Future
 
 object FakeAuthAction {
-
   private val externalId: String = "id"
   private val defaultPsaId: String = "A0000000"
 
@@ -41,3 +40,4 @@ object FakeAuthAction {
     }
   }
 }
+

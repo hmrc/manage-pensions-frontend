@@ -75,13 +75,10 @@ class InviteControllerSpec extends SpecBase with MockitoSugar with BeforeAndAfte
       verify(mockConnector,  times(0)).getSubscriptionDetails(any())(any(), any())
 
     }
-
   }
-
 }
 
 object InviteControllerSpec extends MockDataHelper {
-
   private val customerIdentificationDetails = CustomerIdentificationDetails(legalStatus="AA", None, None, noIdentifier=false)
   private val declarationDetails = PensionSchemeAdministratorDeclaration(true, true, true, true, Some(true), Some(true), true, None)
 

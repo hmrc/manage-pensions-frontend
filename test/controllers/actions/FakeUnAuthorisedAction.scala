@@ -24,7 +24,6 @@ import play.api.mvc.{Request, Result}
 import scala.concurrent.Future
 
 object FakeUnAuthorisedAction {
-
   def apply(): AuthAction = {
     new AuthAction {
       override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] =
@@ -32,3 +31,4 @@ object FakeUnAuthorisedAction {
     }
   }
 }
+
