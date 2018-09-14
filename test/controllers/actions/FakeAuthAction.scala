@@ -33,7 +33,7 @@ object FakeAuthAction {
     }
   }
 
-  def apply(psaId:String): AuthAction = {
+  def createWithPsaId(psaId:String): AuthAction = {
     new AuthAction {
       override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] =
         block(AuthenticatedRequest(request, externalId, PsaId(psaId)))

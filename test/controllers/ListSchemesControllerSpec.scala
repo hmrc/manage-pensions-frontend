@@ -86,7 +86,7 @@ object ListSchemesControllerSpec {
 
   def testFixture(app: ControllerSpecBase, psaId: String): TestFixture = new TestFixture {
 
-    private def authAction(psaId: String): AuthAction = FakeAuthAction(psaId)
+    private def authAction(psaId: String): AuthAction = FakeAuthAction.createWithPsaId(psaId)
 
     private def listSchemesConnector(): ListOfSchemesConnector = new ListOfSchemesConnector {
 
