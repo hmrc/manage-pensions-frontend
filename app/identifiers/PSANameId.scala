@@ -14,25 +14,10 @@
  * limitations under the License.
  */
 
-package models
+package identifiers
 
-import play.api.libs.json.{Format, Json}
+object PSANameId extends TypedIdentifier[String] {
 
+  override def toString: String = "psaName"
 
-case class IndividualDetails(firstName: String, middleName: Option[String], lastName: String)
-
-object IndividualDetails {
-  implicit val format: Format[IndividualDetails] = Json.format[IndividualDetails]
 }
-
-case class MinimalPSA(
-                       email: String,
-                       isPsaSuspended: Boolean,
-                       organisationName: Option[String],
-                       individualDetails: Option[IndividualDetails]
-                     )
-
-object MinimalPSA {
-  implicit val format: Format[MinimalPSA] = Json.format[MinimalPSA]
-}
-

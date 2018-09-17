@@ -92,7 +92,7 @@ class MinimalPsaConnectorSpec extends AsyncFlatSpec with Matchers with WireMockH
 object MinimalPsaConnectorSpec extends JsonFileReader {
 
   private val psaId = "A1234567"
-  private val minimalPsaDetailsUrl = s"/pension-administrator/minimal-psa-details"
+  private val minimalPsaDetailsUrl = s"/pension-administrator/get-minimal-psa"
 
   private implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 
@@ -109,10 +109,7 @@ object MinimalPsaConnectorSpec extends JsonFileReader {
 
   private val email = "test@test.com"
 
-  private val psaMinimalDetails = MinimalPSADetails(None, Some(IndividualDetails("First",Some("Middle"),"Last")))
-
-  private val expectedResponse = MinimalPSA(psaMinimalDetails = psaMinimalDetails, email = email, psaSuspensionFlag = false)
-
+  private val expectedResponse = MinimalPSA(email,false,None,Some(IndividualDetails("First",Some("Middle"),"Last")))
 }
 
 

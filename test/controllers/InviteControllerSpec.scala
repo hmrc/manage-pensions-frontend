@@ -17,20 +17,70 @@
 package controllers
 
 import base.SpecBase
+import connectors.MinimalPsaConnector
+import controllers.actions.{FakeAuthAction, FakeUnAuthorisedAction}
+import models._
+import org.mockito.Matchers.any
+import org.mockito.Mockito.{reset, times, verify, when}
+import org.scalatest.BeforeAndAfter
+import org.scalatest.mockito.MockitoSugar
 import play.api.test.Helpers._
+import utils.MockDataHelper
 
-class InviteControllerSpec extends SpecBase{
+import scala.concurrent.Future
+
+class InviteControllerSpec extends SpecBase with MockitoSugar with BeforeAndAfter{
+
+  import InviteControllerSpec._
+
+  val mockConnector = mock[MinimalPsaConnector]
+  val controller = new InviteController(mockAuthAction, mockConnector)
+
+  before(reset(mockConnector))
 
   "InviteController calling onPageLoad" must {
 
-    "return ok" in {
-      val controller = new InviteController
+    "return 200 if PSASuspension is false" in {
+
+      when(mockConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(psaMinimalSubscription))
+
       val result = controller.onPageLoad(fakeRequest)
 
       status(result) mustBe OK
+      verify(mockConnector,  times(1)).getMinimalPsaDetails(any())(any(), any())
 
     }
 
-  }
+    "return 303 if PSASuspension is true" in {
 
+      when(mockConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(
+        psaMinimalSubscription.copy(isPsaSuspended = true)))
+
+      val result = controller.onPageLoad(fakeRequest)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(controllers.routes.YouCannotSendAnInviteController.onPageLoad().url)
+      verify(mockConnector,  times(1)).getMinimalPsaDetails(any())(any(), any())
+
+    }
+
+    "return 303 if request is unauthorised" in {
+
+      val controller = new InviteController(FakeUnAuthorisedAction(), mockConnector)
+      val result = controller.onPageLoad(fakeRequest)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad.url)
+      verify(mockConnector,  times(0)).getMinimalPsaDetails(any())(any(), any())
+
+    }
+  }
+}
+
+object InviteControllerSpec extends MockDataHelper {
+  private val email = "test@test.com"
+
+  private val psaMinimalSubscription = MinimalPSA(email,false,None,Some(IndividualDetails("First",Some("Middle"),"Last")))
+
+  private val mockAuthAction =  FakeAuthAction()
 }

@@ -21,7 +21,7 @@ import play.api.test.Helpers._
 
 class LogoutControllerSpec extends ControllerSpecBase {
 
-  def logoutController = new LogoutController(frontendAppConfig, messagesApi, FakeAuthAction)
+  def logoutController = new LogoutController(frontendAppConfig, messagesApi, FakeAuthAction())
 
   "Logout Controller" must {
 
