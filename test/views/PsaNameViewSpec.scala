@@ -38,7 +38,8 @@ class PsaNameViewSpec extends QuestionViewBehaviours[PsaName] {
     behave like normalPage(
       createView,
       messageKeyPrefix,
-      messages(s"messages__${messageKeyPrefix}__heading")
+      messages(s"messages__${messageKeyPrefix}__heading"),
+      s"_p1"
     )
 
     behave like pageWithBackLink(createView)
