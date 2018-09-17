@@ -16,12 +16,13 @@
 
 package controllers
 
-import connectors.{DataCacheConnector, MicroserviceCacheConnector}
+import connectors.{DataCacheConnector, MicroserviceCacheConnector, MinimalPsaConnector}
 import controllers.actions.{DataRetrievalAction, _}
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTime, DateTimeZone}
 import org.mockito.Matchers
 import org.mockito.Mockito.{reset, when}
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import play.api.libs.json.Json
 import play.api.test.Helpers.{contentAsString, _}
@@ -29,21 +30,16 @@ import views.html.schemesOverview
 
 import scala.concurrent.Future
 
-class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar {
+class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar with BeforeAndAfterEach {
+ import SchemesOverviewControllerSpec._
 
   val fakeCacheConnector: DataCacheConnector = mock[MicroserviceCacheConnector]
+  val fakePsaMinimalConnector: MinimalPsaConnector = mock[MinimalPsaConnector]
 
   def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): SchemesOverviewController =
-    new SchemesOverviewController(frontendAppConfig, messagesApi, fakeCacheConnector, FakeAuthAction(),
+    new SchemesOverviewController(frontendAppConfig, messagesApi, fakeCacheConnector, fakePsaMinimalConnector, FakeAuthAction(),
       dataRetrievalAction, new DataRequiredActionImpl)
 
-  val schemeName = "Test Scheme Name"
-
-//  val validData = new FakeDataRetrievalAction(Some(Json.obj(
-//    "schemeDetails" -> Json.obj("schemeName" -> schemeName))))
-  private val formatter = DateTimeFormat.forPattern("dd MMMM YYYY")
-  val lastDate: DateTime = DateTime.now(DateTimeZone.UTC)
-  val timestamp: Long = lastDate.getMillis
   val deleteDate: String = DateTime.now(DateTimeZone.UTC).plusDays(frontendAppConfig.daysDataSaved).toString(formatter)
 
   def viewAsString(): String = schemesOverview(
@@ -55,12 +51,16 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
 
   def viewAsStringNewScheme(): String = schemesOverview(frontendAppConfig, None, None, None)(fakeRequest, messages).toString
 
-  "SchemesOverview Controller" must {
+  override def beforeEach(): Unit = {
+    reset(fakeCacheConnector)
+    super.beforeEach()
+  }
 
-    "return OK and the correct view for a GET" when {
-      "no scheme has been defined" in {
+  "SchemesOverview Controller" when {
 
-        reset(fakeCacheConnector)
+    "on a GET" must {
+
+      "return OK and the correct view if no scheme has been defined" in {
         when(fakeCacheConnector.fetch(Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
 
@@ -70,9 +70,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
         contentAsString(result) mustBe viewAsStringNewScheme()
       }
 
-      "a scheme has been partially defined" in {
-
-        reset(fakeCacheConnector)
+      "return OK and the correct view if a scheme has been partially defined" in {
         when(fakeCacheConnector.fetch(Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Some(Json.obj(
             "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
@@ -85,7 +83,20 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
         contentAsString(result) mustBe viewAsString()
       }
     }
+
+    "on a POST" must {
+      "redirect to the new page if called with a psa name but psa is suspended" in {
+
+      }
+    }
   }
+}
+
+object SchemesOverviewControllerSpec {
+  val schemeName = "Test Scheme Name"
+  private val formatter = DateTimeFormat.forPattern("dd MMMM YYYY")
+  val lastDate: DateTime = DateTime.now(DateTimeZone.UTC)
+  val timestamp: Long = lastDate.getMillis
 }
 
 
