@@ -42,7 +42,7 @@
 
             <p>@messages("messages__schemesOverview__register__text")</p>
 
-            <p><a id="register-new-scheme" href="@appConfig.registerSchemeUrl">@messages("messages__schemesOverview__register__link")</a></p>
+            <p><a id="register-new-scheme" href="@controllers.routes.SchemesOverviewController.onClick">@messages("messages__schemesOverview__register__link")</a></p>
         }
         case Some(name) => {
             <h2>@Html(Message("messages__schemesOverview__scheme_name", name))</h2>
@@ -55,7 +55,7 @@
                 <p>@Html(Message("messages__schemesOverview__continue__deleteDate", deletionDate))</p>
             }
 
-            <p><a id="continue-registration" href="@appConfig.continueSchemeUrl">@messages("messages__schemesOverview__continue__link")</a></p>
+            <p><a id="continue-registration" href="@controllers.routes.SchemesOverviewController.onClick">@messages("messages__schemesOverview__continue__link")</a></p>
             <p><a id="delete-registration" href="@appConfig.deleteSchemeUrl">@messages("messages__schemesOverview__delete__link")</a></p>
 
         }

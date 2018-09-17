@@ -20,12 +20,12 @@ import config.FrontendAppConfig
 import connectors.{DataCacheConnector, MinimalPsaConnector}
 import controllers.actions._
 import javax.inject.Inject
-import models.LastUpdatedDate
+import models.{LastUpdatedDate, MinimalPSA}
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTime, DateTimeZone, LocalDate}
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.libs.json.{JsError, JsResultException, JsSuccess}
-import play.api.mvc.{Action, AnyContent}
+import play.api.libs.json.{JsError, JsResultException, JsSuccess, JsValue}
+import play.api.mvc.{Action, AnyContent, Result}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import views.html.schemesOverview
 
@@ -36,8 +36,7 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
                                           dataCacheConnector: DataCacheConnector,
                                           minimalPsaConnector: MinimalPsaConnector,
                                           authenticate: AuthAction,
-                                          getData: DataRetrievalAction,
-                                          requireData: DataRequiredAction) extends FrontendController with I18nSupport {
+                                          getData: DataRetrievalAction) extends FrontendController with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
@@ -70,6 +69,62 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
             case JsError(_) => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
           }
       }
+  }
+
+  def onClick: Action[AnyContent] = (authenticate andThen getData).async {
+    implicit request =>
+      if (appConfig.isWorkPackageOneEnabled) {
+        for {
+          data <- dataCacheConnector.fetch(request.externalId)
+          psaMinimalDetails <- minimalPsaConnector.getMinimalPsaDetails(request.psaId.id)
+        } yield {
+          retrieveResult(data, Some(psaMinimalDetails))
+        }
+      } else {
+        dataCacheConnector.fetch(request.externalId).map { data =>
+          retrieveResult(data, None)
+        }
+      }
+  }
+
+  private def retrieveResult(schemeDetails: Option[JsValue], psaMinimalDetails: Option[MinimalPSA]): Result = {
+    schemeDetails match {
+      case None =>
+        psaMinimalDetails.map { details =>
+          redirect(
+            appConfig.registerSchemeUrl,
+            details)
+        }.getOrElse(
+          Redirect(
+            appConfig.registerSchemeUrl
+          )
+        )
+      case Some(details) =>
+        (details \ "schemeDetails" \ "schemeName").validate[String] match {
+          case JsSuccess(value, _) =>
+            psaMinimalDetails.map { details =>
+              redirect(
+                appConfig.continueSchemeUrl,
+                details
+              )
+            }.getOrElse(
+              Redirect(
+                appConfig.continueSchemeUrl
+              )
+            )
+          case JsError(_) =>
+            Redirect(controllers.routes.SessionExpiredController.onPageLoad())
+        }
+
+    }
+  }
+
+  private def redirect(redirectUrl: String, psaMinimalDetails: MinimalPSA) = {
+    if (psaMinimalDetails.isPsaSuspended) {
+      Redirect(routes.CannotStartRegistrationController.onPageLoad())
+    } else {
+      Redirect(redirectUrl)
+    }
   }
 
   private val formatter = DateTimeFormat.forPattern("dd MMMM YYYY")

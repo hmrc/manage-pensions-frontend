@@ -16,14 +16,19 @@
 
 package controllers
 
+import config.FrontendAppConfig
 import connectors.{DataCacheConnector, MicroserviceCacheConnector, MinimalPsaConnector}
 import controllers.actions.{DataRetrievalAction, _}
+import models.MinimalPSA
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTime, DateTimeZone}
-import org.mockito.Matchers
-import org.mockito.Mockito.{reset, when}
+import org.mockito.Matchers._
+import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
+import play.api.Application
+import play.api.inject.Injector
+import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import play.api.test.Helpers.{contentAsString, _}
 import views.html.schemesOverview
@@ -36,14 +41,27 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
   val fakeCacheConnector: DataCacheConnector = mock[MicroserviceCacheConnector]
   val fakePsaMinimalConnector: MinimalPsaConnector = mock[MinimalPsaConnector]
 
-  def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): SchemesOverviewController =
-    new SchemesOverviewController(frontendAppConfig, messagesApi, fakeCacheConnector, fakePsaMinimalConnector, FakeAuthAction(),
-      dataRetrievalAction, new DataRequiredActionImpl)
+  def getConfig(enabled: Boolean): FrontendAppConfig = {
+    val app: Application =
+      new GuiceApplicationBuilder()
+        .configure(
+          "features.work-package-one-enabled" -> enabled
+        )
+        .build()
 
-  val deleteDate: String = DateTime.now(DateTimeZone.UTC).plusDays(frontendAppConfig.daysDataSaved).toString(formatter)
+    def injector: Injector = app.injector
+
+    injector.instanceOf[FrontendAppConfig]
+  }
+
+  def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData, isWorkPackageOneEnabled: Boolean = true): SchemesOverviewController =
+    new SchemesOverviewController(getConfig(isWorkPackageOneEnabled), messagesApi, fakeCacheConnector, fakePsaMinimalConnector, FakeAuthAction(),
+      dataRetrievalAction)
+
+  val deleteDate: String = DateTime.now(DateTimeZone.UTC).plusDays(getConfig(true).daysDataSaved).toString(formatter)
 
   def viewAsString(): String = schemesOverview(
-    frontendAppConfig,
+    getConfig(true),
     Some(schemeName),
     Some(lastDate.toString(formatter)),
     Some(deleteDate)
@@ -53,6 +71,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
 
   override def beforeEach(): Unit = {
     reset(fakeCacheConnector)
+    reset(fakePsaMinimalConnector)
     super.beforeEach()
   }
 
@@ -61,8 +80,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
     "on a GET" must {
 
       "return OK and the correct view if no scheme has been defined" in {
-        when(fakeCacheConnector.fetch(Matchers.any())(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
+        when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(None))
 
         val result = controller().onPageLoad(fakeRequest)
 
@@ -71,11 +89,10 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
       }
 
       "return OK and the correct view if a scheme has been partially defined" in {
-        when(fakeCacheConnector.fetch(Matchers.any())(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Some(Json.obj(
+        when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(Some(Json.obj(
             "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
 
-        when(fakeCacheConnector.lastUpdated(Matchers.any())(Matchers.any(), Matchers.any()))
+        when(fakeCacheConnector.lastUpdated(any())(any(), any()))
           .thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
 
         val result = controller().onPageLoad(fakeRequest)
@@ -84,9 +101,72 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
       }
     }
 
-    "on a POST" must {
-      "redirect to the new page if called with a psa name but psa is suspended" in {
+    "on a POST with isWorkPackageOneEnabled flag is on" must {
 
+      "redirect to the cannot start registration page if called without a psa name but psa is suspended" in {
+        when(fakePsaMinimalConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPsaDetails(true)))
+        when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(None))
+
+        val result = controller().onClick(fakeRequest)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).value mustBe cannotStartRegistrationUrl.url
+      }
+
+      "redirect to the register scheme page if called without psa name but psa is not suspended" in {
+        when(fakePsaMinimalConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPsaDetails(false)))
+        when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(None))
+
+        val result = controller().onClick(fakeRequest)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).value mustBe frontendAppConfig.registerSchemeUrl
+      }
+
+      "redirect to continue register a scheme page if called with a psa name and psa is not suspended" in {
+        when(fakePsaMinimalConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPsaDetails(false)))
+        when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(Some(Json.obj(
+          "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
+
+        val result = controller().onClick(fakeRequest)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).value mustBe frontendAppConfig.continueSchemeUrl
+      }
+
+      "redirect to cannot start registration page if called with a psa name and psa is suspended" in {
+        when(fakePsaMinimalConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPsaDetails(true)))
+        when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(Some(Json.obj(
+          "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
+
+        val result = controller().onClick(fakeRequest)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).value mustBe cannotStartRegistrationUrl.url
+      }
+    }
+
+    "on a POST with isWorkPackageOneEnabled flag is off" must {
+
+      "redirect to the register scheme page if called without psa name" in {
+        when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(None))
+
+        val result = controller(isWorkPackageOneEnabled = false).onClick(fakeRequest)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).value mustBe frontendAppConfig.registerSchemeUrl
+        verify(fakePsaMinimalConnector, never()).getMinimalPsaDetails(any())(any(), any())
+      }
+
+      "redirect to the continue register scheme page if called with psa name" in {
+        when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(Some(Json.obj(
+          "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
+
+        val result = controller(isWorkPackageOneEnabled = false).onClick(fakeRequest)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).value mustBe frontendAppConfig.continueSchemeUrl
+        verify(fakePsaMinimalConnector, never()).getMinimalPsaDetails(any())(any(), any())
       }
     }
   }
@@ -97,6 +177,10 @@ object SchemesOverviewControllerSpec {
   private val formatter = DateTimeFormat.forPattern("dd MMMM YYYY")
   val lastDate: DateTime = DateTime.now(DateTimeZone.UTC)
   val timestamp: Long = lastDate.getMillis
+
+  def minimalPsaDetails(psaSuspended: Boolean) = MinimalPSA("test@test.com", psaSuspended, Some("Org Name"), None)
+
+  val cannotStartRegistrationUrl = routes.CannotStartRegistrationController.onPageLoad()
 }
 
 

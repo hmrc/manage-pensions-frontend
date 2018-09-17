@@ -19,6 +19,7 @@ GET        /cannot-start-registration                   controllers.CannotStartR
 GET        /your-pension-schemes                        controllers.ListSchemesController.onPageLoad
 
 GET        /overview                                    controllers.SchemesOverviewController.onPageLoad()
+GET        /overview/redirect                           controllers.SchemesOverviewController.onClick()
 
 GET        /you-cannot-send-invite                      controllers.YouCannotSendAnInviteController.onPageLoad()
 
