@@ -23,7 +23,8 @@ import uk.gov.hmrc.domain.Nino
 import scala.language.implicitConversions
 
 trait Constraints {
-  val psaNamereg = """^[a-zA-Z\u00C0-\u00FF '‘’\u2014\u2013\u2010\u002d]{1,107}$"""
+
+  val psaNameRegx = """^[a-zA-Z\u00C0-\u00FF '‘’\u2014\u2013\u2010\u002d]{1,107}$"""
 
   protected def firstError[A](constraints: Constraint[A]*): Constraint[A] =
     Constraint {
@@ -91,5 +92,5 @@ trait Constraints {
       case _ => Valid
     }
 
-  protected def safeText(errorKey: String): Constraint[String] = regexp(psaNamereg, errorKey)
+  protected def psaName(errorKey: String): Constraint[String] = regexp(psaNameRegx, errorKey)
 }

@@ -14,23 +14,20 @@
  * limitations under the License.
  */
 
-package forms
+package forms.mappings
 
-import javax.inject.Inject
+import play.api.data.Mapping
 
-import forms.mappings.Mappings
-import models.PsaName
-import play.api.data.Form
-import play.api.data.Forms._
+trait PsaNameMapping extends Mappings with Transforms {
 
+  def psaNameMapping(keyPsaNameRequired: String, keyPsaNameInvalid: String): Mapping[String] = {
+    text(keyPsaNameRequired)
+      .transform(standardTextTransform, noTransform)
+      .verifying(psaName(keyPsaNameInvalid))
+  }
 
-class PsaNameFormProvider @Inject() extends Mappings {
-  val psaNameMaxLength = 107
-  def apply(): Form[PsaName] = Form(mapping(
-    "psaName" -> text(
-      "messages__error__psa__name__required").
-      verifying(firstError(
-        maxLength(psaNameMaxLength, "messages__error__psa__name__length"),
-        psaName("messages__error__psa__name__invalid")))
-  )(PsaName.apply)(PsaName.unapply))
+}
+
+object PsaNameMapping {
+  val maxCrnLength = 107
 }

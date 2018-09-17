@@ -28,6 +28,7 @@ import config.FrontendAppConfig
 import forms.PsaNameFormProvider
 import models.Mode
 import utils.{UserAnswers, Navigator}
+import utils.annotations.Invitation
 import views.html.psaName
 
 import scala.concurrent.Future
@@ -36,7 +37,7 @@ class PsaNameController @Inject()(
                                         appConfig: FrontendAppConfig,
                                         override val messagesApi: MessagesApi,
                                         dataCacheConnector: DataCacheConnector,
-                                        navigator: Navigator,
+                                        @Invitation navigator: Navigator,
                                         authenticate: AuthAction,
                                         getData: DataRetrievalAction,
                                         requireData: DataRequiredAction,
@@ -45,7 +46,7 @@ class PsaNameController @Inject()(
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode) = (authenticate andThen getData) {
+  def onPageLoad(mode: Mode) = (authenticate andThen getData).async {
     implicit request =>
 
       val preparedForm = request.userAnswers.flatMap(_.get(PsaNameId)) match {
@@ -53,7 +54,7 @@ class PsaNameController @Inject()(
         case Some(value) => form.fill(value)
       }
 
-      Ok(psaName(appConfig, preparedForm, mode))
+      Future.successful(Ok(psaName(appConfig, preparedForm, mode)))
   }
 
   def onSubmit(mode: Mode) = (authenticate andThen getData).async {

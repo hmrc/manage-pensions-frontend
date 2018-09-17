@@ -25,7 +25,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext
 
-class FakeNavigator(desiredRoute: Call, mode: Mode = NormalMode) extends Navigator {
+class FakeNavigator(val desiredRoute: Call, mode: Mode = NormalMode) extends Navigator {
 
   private[this] var userAnswers: Option[UserAnswers] = None
 
