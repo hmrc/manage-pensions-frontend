@@ -16,23 +16,30 @@
 
 package controllers
 
-import javax.inject.Inject
-import views.html.incorrectPsaDetails
 import config.FrontendAppConfig
-import connectors.DataCacheConnector
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import identifiers.{ListOfSchemesId, PSANameId}
+import javax.inject.Inject
+import models.Index
 import play.api.i18n.{I18nSupport, MessagesApi}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import play.api.mvc.{Action, AnyContent}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import views.html.incorrectPsaDetails
+
+import scala.concurrent.Future
 
 class IncorrectPsaDetailsController @Inject()(val appConfig: FrontendAppConfig,
                                               val messagesApi: MessagesApi,
-                                              val dataCacheConnector: DataCacheConnector,
-                                              val authorise: AuthAction,
-                                              val dataRetrieval: DataRetrievalAction,
-                                              val dataRequired: DataRequiredAction) extends FrontendController with I18nSupport {
-  def onPageLoad: Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired) {
+                                              authenticate: AuthAction,
+                                              getData: DataRetrievalAction,
+                                              requireData: DataRequiredAction
+                                             ) extends FrontendController with I18nSupport with Retrievals {
+
+  def onPageLoad(index: Index): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
-      Ok(incorrectPsaDetails(appConfig, "", ""))
+      (PSANameId and ListOfSchemesId).retrieve.right.map { case psaName ~ schemeName =>
+        Future.successful(Ok(incorrectPsaDetails(appConfig, psaName, schemeName(index - 1).name)))
+      }
   }
+
 }

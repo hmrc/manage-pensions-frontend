@@ -18,7 +18,7 @@ GET        /your-pension-schemes                        controllers.ListSchemesC
 
 GET        /overview                                    controllers.SchemesOverviewController.onPageLoad()
 
-GET        /invalidPsaCredentials                       controllers.IncorrectPsaDetailsController.onPageLoad()
+GET        /:index/invalidPsaCredentials                controllers.IncorrectPsaDetailsController.onPageLoad(index: Index)
 
 GET        /you-cannot-send-invite                      controllers.YouCannotSendAnInviteController.onPageLoad()
 

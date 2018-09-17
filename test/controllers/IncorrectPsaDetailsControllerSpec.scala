@@ -16,24 +16,43 @@
 
 package controllers
 
+import controllers.actions._
+import identifiers.{ListOfSchemesId, PSANameId}
+import models.{Index, SchemeDetail}
+import play.api.libs.json.Json
 import play.api.test.Helpers._
 import views.html.incorrectPsaDetails
 
 class IncorrectPsaDetailsControllerSpec extends ControllerSpecBase {
 
-  "SessionExpired Controller" must {
+  "IncorrectPsaDetails Controller" must {
 
     val invitee = "PSA"
     val schemeName = "Scheme"
+    val scheme = SchemeDetail(schemeName, "schemeRef", "OK", None, None,None)
+    val FakeDataRetrieval = new FakeDataRetrievalAction(Some(Json.obj(
+      PSANameId.toString -> invitee,
+      ListOfSchemesId.toString -> List(scheme)
+    )))
+    val DataRequiredAction = new DataRequiredActionImpl()
+
+    val controller = new IncorrectPsaDetailsController(
+      frontendAppConfig,
+      messagesApi,
+      FakeAuthAction(),
+      FakeDataRetrieval,
+      DataRequiredAction
+    )
 
     "return 200 for a GET" in {
-      val result = new IncorrectPsaDetailsController(frontendAppConfig, messagesApi).onPageLoad()(fakeRequest)
+      val result = controller.onPageLoad(Index(1))(fakeRequest)
       status(result) mustBe OK
     }
 
     "return the correct view for a GET" in {
-      val result = new IncorrectPsaDetailsController(frontendAppConfig, messagesApi).onPageLoad()(fakeRequest)
-      contentAsString(result) mustBe incorrectPsaDetails(frontendAppConfig, invitee, schemeName)(fakeRequest, messages).toString
+      val result = controller.onPageLoad(Index(1))(fakeRequest)
+      contentAsString(result) mustBe incorrectPsaDetails(frontendAppConfig, invitee, schemeName
+      )(fakeRequest, messages).toString
     }
   }
 }
