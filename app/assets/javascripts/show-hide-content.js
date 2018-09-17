@@ -1,6 +1,3 @@
-// From govuk_frontend_toolkit
-// Placed here until assets frontend is updated
-
 ;(function (global) {
   'use strict'
 
@@ -13,14 +10,13 @@
     // Radio and Checkbox selectors
     var selectors = {
       namespace: 'ShowHideContent',
-      radio: '.block-label[data-target] input[type="radio"]',
-      checkbox: '.block-label[data-target] input[type="checkbox"]'
+      radio: '[data-target] > input[type="radio"]',
+      checkbox: '[data-target] > input[type="checkbox"]'
     }
 
     // Escape name attribute for use in DOM selector
     function escapeElementName (str) {
-      var result;
-      result = str.replace('[', '\[').replace(']', '\]')
+      var result = str.replace('[', '\\[').replace(']', '\\]')
       return result
     }
 
@@ -43,7 +39,7 @@
 
       // ARIA attributes aren't set before init
       if (!id) {
-        id = $control.closest('label').data('target')
+        id = $control.closest('[data-target]').data('target')
       }
 
       // Find show/hide content by id
@@ -53,52 +49,39 @@
     // Show toggled content for control
     function showToggledContent ($control, $content) {
       // Show content
-      if ($content.attr('aria-hidden') == 'true') {
+      if ($content.hasClass('js-hidden')) {
         $content.removeClass('js-hidden')
         $content.attr('aria-hidden', 'false')
-      }
 
-      // If the controlling input, update aria-expanded
-      getRelatedControls($control).each(function () {
-        if ($(this).attr('aria-controls') == $content.attr('id')) {
-          $(this).attr('aria-expanded', 'true')
+        // If the controlling input, update aria-expanded
+        if ($control.attr('aria-controls')) {
+          $control.attr('aria-expanded', 'true')
         }
-      });
-    }
-
-    function getRelatedControls ($control) {
-      return $('[aria-controls="' + $control.attr('aria-controls') + '"]');
-    }
-
-    function shouldContentBeVisible ($control) {
-      // takes a current control and determines if the content related should be visible
-      // i.e. checks to see if another related control is selected
-      // this allows us to prevent hiding content before showing it again, triggering an unneeded aria response
-      return getRelatedControls($control).filter(':checked').length > 0;
-
+      }
     }
 
     // Hide toggled content for control
     function hideToggledContent ($control, $content) {
       $content = $content || getToggledContent($control)
-      // If the controlling input, update aria-expanded
-      if ($control.attr('aria-controls')) {
-        $control.attr('aria-expanded', 'false')
-      }
-      // Hide content (only if we need to)
-      if ($content.attr('aria-hidden') == 'false' && !shouldContentBeVisible($control)) {
+
+      // Hide content
+      if (!$content.hasClass('js-hidden')) {
         $content.addClass('js-hidden')
         $content.attr('aria-hidden', 'true')
-      }
 
+        // If the controlling input, update aria-expanded
+        if ($control.attr('aria-controls')) {
+          $control.attr('aria-expanded', 'false')
+        }
+      }
     }
 
     // Handle radio show/hide
     function handleRadioContent ($control, $content) {
       // All radios in this group which control content
-      var selector, $radios;
-      selector = selectors.radio + '[name=' + escapeElementName($control.attr('name')) + '][aria-controls]'
-      $radios = $control.closest('form').find(selector)
+      var selector = selectors.radio + '[name="' + escapeElementName($control.attr('name')) + '"][aria-controls]'
+      var $form = $control.closest('form')
+      var $radios = $form.length ? $form.find(selector) : $(selector)
 
       // Hide content for radios in group
       $radios.each(function () {
@@ -117,17 +100,7 @@
       if ($control.is(':checked')) {
         showToggledContent($control, $content)
       } else { // Hide checkbox content
-
-        //update related checkboxes
-        // If the controlling input, update aria-expanded if no other checkboxes pointing to this content are checked
-        if(!shouldContentBeVisible($control)){
-          hideToggledContent($control, $content)
-          getRelatedControls($control).each(function () {
-            if ($(this).attr('aria-controls') == $content.attr('id')) {
-              $(this).attr('aria-expanded', 'false')
-            }
-          });
-        }
+        hideToggledContent($control, $content)
       }
     }
 
@@ -196,4 +169,5 @@
 
   GOVUK.ShowHideContent = ShowHideContent
   global.GOVUK = GOVUK
+
 })(window)
