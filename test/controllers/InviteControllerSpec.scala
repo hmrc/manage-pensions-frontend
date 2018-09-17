@@ -17,7 +17,7 @@
 package controllers
 
 import base.SpecBase
-import connectors.SubscriptionConnector
+import connectors.MinimalPsaConnector
 import controllers.actions.{FakeUnAuthorisedAction, FakeAuthAction}
 import models._
 import org.scalatest.BeforeAndAfter
@@ -33,7 +33,7 @@ class InviteControllerSpec extends SpecBase with MockitoSugar with BeforeAndAfte
 
   import InviteControllerSpec._
 
-  val mockConnector = mock[SubscriptionConnector]
+  val mockConnector = mock[MinimalPsaConnector]
   val controller = new InviteController(mockAuthAction, mockConnector)
 
   before(reset(mockConnector))
@@ -42,26 +42,25 @@ class InviteControllerSpec extends SpecBase with MockitoSugar with BeforeAndAfte
 
     "return 200 if PSASuspension is false" in {
 
-      when(mockConnector.getSubscriptionDetails(any())(any(), any())).thenReturn(Future.successful(
-        SubscriptionDetails(psaSubscription)))
+      when(mockConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(psaMinimalSubscription))
 
       val result = controller.onPageLoad(fakeRequest)
 
       status(result) mustBe OK
-      verify(mockConnector,  times(1)).getSubscriptionDetails(any())(any(), any())
+      verify(mockConnector,  times(1)).getMinimalPsaDetails(any())(any(), any())
 
     }
 
     "return 303 if PSASuspension is true" in {
 
-      when(mockConnector.getSubscriptionDetails(any())(any(), any())).thenReturn(Future.successful(
-        SubscriptionDetails(psaSubscription.copy(isPSASuspension = true))))
+      when(mockConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(
+        psaMinimalSubscription.copy(psaSuspensionFlag = true)))
 
       val result = controller.onPageLoad(fakeRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.routes.YouCannotSendAnInviteController.onPageLoad().url)
-      verify(mockConnector,  times(1)).getSubscriptionDetails(any())(any(), any())
+      verify(mockConnector,  times(1)).getMinimalPsaDetails(any())(any(), any())
 
     }
 
@@ -72,27 +71,20 @@ class InviteControllerSpec extends SpecBase with MockitoSugar with BeforeAndAfte
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad.url)
-      verify(mockConnector,  times(0)).getSubscriptionDetails(any())(any(), any())
+      verify(mockConnector,  times(0)).getMinimalPsaDetails(any())(any(), any())
 
     }
   }
 }
 
 object InviteControllerSpec extends MockDataHelper {
-  private val customerIdentificationDetails = CustomerIdentificationDetails(legalStatus="AA", None, None, noIdentifier=false)
-  private val declarationDetails = PensionSchemeAdministratorDeclaration(true, true, true, true, Some(true), Some(true), true, None)
 
-  private val psaSubscription = PsaSubscriptionDetails(isPSASuspension=false,
-    customerIdentificationDetails=customerIdentificationDetails,
-    organisationOrPartnerDetails=None,
-    individualDetails=None,
-    correspondenceAddressDetails= address,
-    correspondenceContactDetails = contactDetails,
-    previousAddressDetails= indEstPrevAdd,
-    numberOfDirectorsOrPartnersDetails=None,
-    directorOrPartnerDetails=None,
-    declarationDetails = declarationDetails)
+  private val email = "test@test.com"
 
+  private val psaMinimalDetails = MinimalPSADetails(None, Some(IndividualDetails("First",Some("Middle"),"Last")))
+
+  private val psaMinimalSubscription = MinimalPSA(psaMinimalDetails = psaMinimalDetails, email = email, psaSuspensionFlag = false)
+  
   private val mockAuthAction =  FakeAuthAction()
 
 }

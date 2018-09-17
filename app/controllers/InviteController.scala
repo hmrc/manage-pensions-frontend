@@ -17,21 +17,22 @@
 package controllers
 
 import com.google.inject.{Inject, Singleton}
-import connectors.SubscriptionConnector
+import connectors.MinimalPsaConnector
 import controllers.actions.AuthAction
-import models.{PsaSubscriptionDetails, SubscriptionDetails}
 import play.api.mvc.{AnyContent, Action}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 @Singleton
-class InviteController@Inject()(authenticate: AuthAction,connector:SubscriptionConnector) extends FrontendController {
+class InviteController@Inject()(authenticate: AuthAction,
+                                connector:MinimalPsaConnector) extends FrontendController {
 
   def onPageLoad: Action[AnyContent] = authenticate.async{
     implicit request =>
-      connector.getSubscriptionDetails(request.psaId.id) map { subscriptionDetails =>
-        subscriptionDetails.psaSubscriptionDetails.isPSASuspension match {
-          case true => Redirect(controllers.routes.YouCannotSendAnInviteController.onPageLoad())
-          case false => Ok
+      connector.getMinimalPsaDetails(request.psaId.id) map { subscriptionDetails =>
+        if(subscriptionDetails.psaSuspensionFlag) {
+          Redirect(controllers.routes.YouCannotSendAnInviteController.onPageLoad())
+        } else {
+          Ok
         }
       }
   }
