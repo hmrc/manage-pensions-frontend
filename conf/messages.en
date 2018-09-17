@@ -72,3 +72,10 @@ messages__schemesOverview__continue__link = Continue registering this scheme
 messages__schemesOverview__delete__link = Delete this scheme and start a new registration
 messages__schemesOverview__UR__text = We want to hear from people who would like to help improve this service by sharing their feedback and testing new features.
 messages__schemesOverview__UR__link = Let us know if you would like to help improve this service.
+
+messages__psa__name__title = PSA name
+messages__psa__name__heading = PSA name
+messages__psa__name__checkYourAnswersLabel = PSA name
+messages__error__psa__name = Enter PSA name
+messages__error__psa__name_length = PSA name must be 107 characters or less
+messages__error__psa__name_invalid = PSA name must be 107 characters or less
