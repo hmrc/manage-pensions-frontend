@@ -17,16 +17,22 @@
 package controllers
 
 import javax.inject.Inject
-
 import views.html.incorrectPsaDetails
 import config.FrontendAppConfig
+import connectors.DataCacheConnector
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import play.api.mvc.{Action, AnyContent}
 
 class IncorrectPsaDetailsController @Inject()(val appConfig: FrontendAppConfig,
-                                              val messagesApi: MessagesApi) extends FrontendController with I18nSupport {
-  def onPageLoad: Action[AnyContent] = Action { implicit request =>
-    Ok(incorrectPsaDetails(appConfig, "", ""))
+                                              val messagesApi: MessagesApi,
+                                              val dataCacheConnector: DataCacheConnector,
+                                              val authorise: AuthAction,
+                                              val dataRetrieval: DataRetrievalAction,
+                                              val dataRequired: DataRequiredAction) extends FrontendController with I18nSupport {
+  def onPageLoad: Action[AnyContent] = (authorise andThen dataRetrieval andThen dataRequired) {
+    implicit request =>
+      Ok(incorrectPsaDetails(appConfig, "", ""))
   }
 }
