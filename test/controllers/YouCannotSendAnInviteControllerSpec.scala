@@ -23,7 +23,7 @@ import views.html.youCannotSendAnInvite
 class YouCannotSendAnInviteControllerSpec extends ControllerSpecBase {
 
   def controller(dataRetrievalAction: DataRetrievalAction = getEmptyData): YouCannotSendAnInviteController =
-    new YouCannotSendAnInviteController(frontendAppConfig, messagesApi, FakeAuthAction,
+    new YouCannotSendAnInviteController(frontendAppConfig, messagesApi, FakeAuthAction(),
       dataRetrievalAction, new DataRequiredActionImpl)
 
   private def viewAsString() = youCannotSendAnInvite(frontendAppConfig)(fakeRequest, messages).toString

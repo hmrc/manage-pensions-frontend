@@ -34,7 +34,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
   val fakeCacheConnector: DataCacheConnector = mock[MicroserviceCacheConnector]
 
   def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): SchemesOverviewController =
-    new SchemesOverviewController(frontendAppConfig, messagesApi, fakeCacheConnector, FakeAuthAction,
+    new SchemesOverviewController(frontendAppConfig, messagesApi, fakeCacheConnector, FakeAuthAction(),
       dataRetrievalAction, new DataRequiredActionImpl)
 
   val schemeName = "Test Scheme Name"

@@ -16,27 +16,18 @@
 
 package controllers.actions
 
+import controllers.routes
 import models.requests.AuthenticatedRequest
+import play.api.mvc.Results._
 import play.api.mvc.{Request, Result}
-import uk.gov.hmrc.domain.PsaId
 
 import scala.concurrent.Future
 
-object FakeAuthAction {
-  private val externalId: String = "id"
-  private val defaultPsaId: String = "A0000000"
-
+object FakeUnAuthorisedAction {
   def apply(): AuthAction = {
     new AuthAction {
       override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] =
-        block(AuthenticatedRequest(request, externalId, PsaId(defaultPsaId)))
-    }
-  }
-
-  def createWithPsaId(psaId:String): AuthAction = {
-    new AuthAction {
-      override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] =
-        block(AuthenticatedRequest(request, externalId, PsaId(psaId)))
+        Future.successful(Redirect(routes.UnauthorisedController.onPageLoad))
     }
   }
 }
