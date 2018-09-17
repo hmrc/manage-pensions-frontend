@@ -74,8 +74,8 @@ messages__schemesOverview__UR__head = Help us improve this service
 messages__schemesOverview__UR__text = We want to hear from people who would like to help improve this service by sharing their feedback and testing new features.
 messages__schemesOverview__UR__link = Let us know if you would like to help improve this service.
 
-messages__psaSuspended__title = A scheme registration cannot be started
-messages__psaSuspended__heading = A scheme registration cannot be started
-messages__psaSuspended__p1 = A scheme registration cannot be started at the moment.
-messages__psaSuspended__p2 = You need to phone Pension Scheme Services on 0300 123 1079.
-messages__psaSuspended__returnToSchemes__link = Return to your pension schemes
+messages__cannotStartRegistration__title = A scheme registration cannot be started
+messages__cannotStartRegistration__heading = A scheme registration cannot be started
+messages__cannotStartRegistration__p1 = A scheme registration cannot be started at the moment.
+messages__cannotStartRegistration__p2 = You need to phone Pension Scheme Services on 0300 123 1079.
+messages__cannotStartRegistration__returnToSchemes__link = Return to your pension schemes

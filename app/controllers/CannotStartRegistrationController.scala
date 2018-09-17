@@ -16,22 +16,20 @@
 
 package controllers
 
+import config.FrontendAppConfig
 import controllers.actions._
-import play.api.test.Helpers._
-import views.html.psaSuspended
+import javax.inject.Inject
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, AnyContent}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import views.html.cannotStartRegistration
 
-class PsaSuspendedControllerSpec extends ControllerSpecBase {
+class CannotStartRegistrationController @Inject()(appConfig: FrontendAppConfig,
+                                       override val messagesApi: MessagesApi,
+                                       authenticate: AuthAction) extends FrontendController with I18nSupport {
 
-  def controller(dataRetrievalAction: DataRetrievalAction = getEmptyData): PsaSuspendedController =
-    new PsaSuspendedController(frontendAppConfig, messagesApi, FakeAuthAction())
-
-  private def viewAsString() = psaSuspended(frontendAppConfig)(fakeRequest, messages).toString
-
-  "PsaSuspendedController" must {
-    "return OK and the correct view for a GET" in {
-      val result = controller().onPageLoad(fakeRequest)
-      status(result) mustBe OK
-      contentAsString(result) mustBe viewAsString()
-    }
+  def onPageLoad: Action[AnyContent] = (authenticate) {
+    implicit request =>
+    Ok(cannotStartRegistration(appConfig))
   }
 }

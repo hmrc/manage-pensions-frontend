@@ -23,15 +23,15 @@
 @(appConfig: FrontendAppConfig)(implicit request: Request[_], messages: Messages)
 
 @main_template(
-    title = messages("messages__psaSuspended__title"),
+    title = messages("messages__cannotStartRegistration__title"),
     appConfig = appConfig,
     bodyClasses = None) {
 
-    @components.heading(messages("messages__psaSuspended__heading"))
+    @components.heading(messages("messages__cannotStartRegistration__heading"))
 
-    <p>@messages("messages__psaSuspended__p1")</p>
-    <p>@messages("messages__psaSuspended__p2")</p>
+    <p>@messages("messages__cannotStartRegistration__p1")</p>
+    <p>@messages("messages__cannotStartRegistration__p2")</p>
 
-    <p><a id="return-to-schemes" href="@controllers.routes.ListSchemesController.onPageLoad()">@messages("messages__psaSuspended__returnToSchemes__link")</a></p>
+    <p><a id="return-to-schemes" href="@controllers.routes.ListSchemesController.onPageLoad()">@messages("messages__cannotStartRegistration__returnToSchemes__link")</a></p>
 
 }

@@ -19,14 +19,14 @@ package views
 import org.jsoup.Jsoup
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
-import views.html.psaSuspended
+import views.html.cannotStartRegistration
 
-class PsaSuspendedViewSpec extends ViewBehaviours {
+class CannotStartRegistrationViewSpec extends ViewBehaviours {
 
-  private val messageKeyPrefix = "psaSuspended"
+  private val messageKeyPrefix = "cannotStartRegistration"
 
   def createView: (() => HtmlFormat.Appendable) = () =>
-    psaSuspended(frontendAppConfig)(fakeRequest, messages)
+    cannotStartRegistration(frontendAppConfig)(fakeRequest, messages)
 
   "Psa Suspended page" must {
     behave like normalPage(
