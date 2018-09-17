@@ -18,12 +18,12 @@ package controllers
 
 import base.SpecBase
 import connectors.MinimalPsaConnector
-import controllers.actions.{FakeUnAuthorisedAction, FakeAuthAction}
+import controllers.actions.{FakeAuthAction, FakeUnAuthorisedAction}
 import models._
+import org.mockito.Matchers.any
+import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.BeforeAndAfter
 import org.scalatest.mockito.MockitoSugar
-import org.mockito.Matchers.any
-import org.mockito.Mockito.{reset, when, verify, times}
 import play.api.test.Helpers._
 import utils.MockDataHelper
 
@@ -54,7 +54,7 @@ class InviteControllerSpec extends SpecBase with MockitoSugar with BeforeAndAfte
     "return 303 if PSASuspension is true" in {
 
       when(mockConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(
-        psaMinimalSubscription.copy(psaSuspensionFlag = true)))
+        psaMinimalSubscription.copy(isPsaSuspended = true)))
 
       val result = controller.onPageLoad(fakeRequest)
 
@@ -78,13 +78,9 @@ class InviteControllerSpec extends SpecBase with MockitoSugar with BeforeAndAfte
 }
 
 object InviteControllerSpec extends MockDataHelper {
-
   private val email = "test@test.com"
 
-  private val psaMinimalDetails = MinimalPSADetails(None, Some(IndividualDetails("First",Some("Middle"),"Last")))
+  private val psaMinimalSubscription = MinimalPSA(email,false,None,Some(IndividualDetails("First",Some("Middle"),"Last")))
 
-  private val psaMinimalSubscription = MinimalPSA(psaMinimalDetails = psaMinimalDetails, email = email, psaSuspensionFlag = false)
-  
   private val mockAuthAction =  FakeAuthAction()
-
 }

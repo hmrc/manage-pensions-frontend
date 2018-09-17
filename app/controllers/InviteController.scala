@@ -29,7 +29,7 @@ class InviteController@Inject()(authenticate: AuthAction,
   def onPageLoad: Action[AnyContent] = authenticate.async{
     implicit request =>
       connector.getMinimalPsaDetails(request.psaId.id) map { subscriptionDetails =>
-        if(subscriptionDetails.psaSuspensionFlag) {
+        if(subscriptionDetails.isPsaSuspended) {
           Redirect(controllers.routes.YouCannotSendAnInviteController.onPageLoad())
         } else {
           Ok
