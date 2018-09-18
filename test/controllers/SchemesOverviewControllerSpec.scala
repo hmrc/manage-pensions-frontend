@@ -107,11 +107,11 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
       "return OK and the correct view with an individual name for an individual Psa" in {
         when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
         when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo("A0000000"))(any(), any())).thenReturn(Future.successful(minimalPsaDetailsIndividual))
+        val expectedName = s"${minimalPsaDetailsIndividual.individualDetails.get.firstName} ${minimalPsaDetailsIndividual.individualDetails.get.middleName.get} ${minimalPsaDetailsIndividual.individualDetails.get.lastName}"
 
         val result = controller().onPageLoad(fakeRequest)
         status(result) mustBe OK
-        contentAsString(result) mustBe viewAsString()
-
+        contentAsString(result) mustBe viewWithPsaName(expectedName)
       }
     }
 
