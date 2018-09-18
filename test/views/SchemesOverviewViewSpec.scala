@@ -46,6 +46,7 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
       "_manage__link",
       "_continue__link",
       "_delete__link",
+      "_UR__head",
       "_UR__text",
       "_UR__link"
     )

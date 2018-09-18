@@ -14,25 +14,12 @@
  * limitations under the License.
  */
 
-package models
+package identifiers
 
-import play.api.libs.json.{Format, Json}
+import models.SchemeDetail
 
+object ListOfSchemesId extends TypedIdentifier[List[SchemeDetail]] {
 
-case class IndividualDetails(firstName: String, middleName: Option[String], lastName: String)
+  override def toString: String = "listOfSchemes"
 
-object IndividualDetails {
-  implicit val format: Format[IndividualDetails] = Json.format[IndividualDetails]
 }
-
-case class MinimalPSA(
-                       email: String,
-                       isPsaSuspended: Boolean,
-                       organisationName: Option[String],
-                       individualDetails: Option[IndividualDetails]
-                     )
-
-object MinimalPSA {
-  implicit val format: Format[MinimalPSA] = Json.format[MinimalPSA]
-}
-
