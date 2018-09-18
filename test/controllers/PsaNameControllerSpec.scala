@@ -36,7 +36,7 @@ class PsaNameControllerSpec extends ControllerSpecBase {
   val form = formProvider()
 
   def controller(dataRetrievalAction: DataRetrievalAction = getEmptyData) =
-    new PsaNameController(frontendAppConfig, messagesApi, FakeDataCacheConnector, new FakeNavigator(onwardRoute), FakeAuthAction,
+    new PsaNameController(frontendAppConfig, messagesApi, FakeDataCacheConnector, new FakeNavigator(onwardRoute), FakeAuthAction(),
       dataRetrievalAction, new DataRequiredActionImpl, formProvider)
 
   def viewAsString(form: Form[_] = form) = psaName(frontendAppConfig, form, NormalMode)(fakeRequest, messages).toString

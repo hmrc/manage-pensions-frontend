@@ -16,6 +16,7 @@
 
 package identifiers
 
-case object PsaNameId extends TypedIdentifier[String] {
+
+object PsaNameId extends TypedIdentifier[String] {
   override def toString: String = "psaName"
 }
