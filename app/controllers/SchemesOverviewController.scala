@@ -76,12 +76,9 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
       }
   }
 
-  private def getPsaName(minimalDetails: MinimalPSA) = {
+  private def getPsaName(minimalDetails: MinimalPSA): String = {
     minimalDetails.individualDetails match {
-      case Some(individual) =>
-        individual.middleName.fold(
-          s"${individual.firstName} ${individual.lastName}")(middleName =>
-          s"${individual.firstName} $middleName ${individual.lastName}")
+      case Some(individual) => individual.fullName
       case _ => s"${minimalDetails.organisationName.get}"
     }
   }
