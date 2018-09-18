@@ -17,7 +17,7 @@
 package controllers
 
 import config.FrontendAppConfig
-import connectors.{DataCacheConnector, ListOfSchemesConnector, SchemeDetailsConnector}
+import connectors._
 import controllers.actions._
 import javax.inject.Inject
 import models.{PsaDetails, Scheme, SchemeDetail}
@@ -31,7 +31,8 @@ import scala.concurrent.Future
 
 class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                                           override val messagesApi: MessagesApi,
-                                          dataCacheConnector: DataCacheConnector,
+                                          managePensionsCacheConnector: ManagePensionsCacheConnector,
+                                          invitationsCacheConnector: InvitationsCacheConnector,
                                           schemeDetailsConnector: SchemeDetailsConnector,
                                           authenticate: AuthAction,
                                           getData: DataRetrievalAction) extends FrontendController with I18nSupport {
@@ -41,21 +42,23 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
 
   def onPageLoad(index: Int): Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
-      val pstr = "21000005AA"
-     dataCacheConnector.fetch(request.externalId).flatMap {
+
+      managePensionsCacheConnector.fetch(request.externalId).flatMap {
           case None => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
           case Some(jsValue) => (jsValue \ "schemes").validate[Seq[Scheme]] match {
             case JsSuccess(schemes, _) =>
+              val pstr = schemes(index-1).pstr
+              val openedDate = schemes(index-1).openDate.toString
 
-              schemeDetailsConnector.getSchemeDetails("pstr", schemes(index-1).pstr)
+              schemeDetailsConnector.getSchemeDetails("pstr", pstr)
                 .flatMap { scheme =>
 
                 val administrators: Seq[String] = scheme.psaSchemeDetails.psaDetails.map(_.map(fullName)).getOrElse(Seq.empty)
 
                 Future.successful(Ok(schemeDetails(appConfig,
                   scheme.psaSchemeDetails.schemeDetails.schemeName,
-                  schemes(index-1).openDate.toString,
-                  administrators
+                  Some(openedDate),
+                  Some(administrators)
                 )))
               }
 

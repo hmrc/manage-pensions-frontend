@@ -32,13 +32,15 @@
 //
 //package controllers
 //
-//import connectors.{ListOfSchemesConnector, SchemeDetailsConnector}
+//import connectors.{InvitationsCacheConnector, ListOfSchemesConnector, ManagePensionsCacheConnector, SchemeDetailsConnector}
 //import controllers.actions.{DataRetrievalAction, _}
 //import org.mockito.Matchers
 //import org.mockito.Mockito.{reset, when}
 //import org.scalatest.mockito.MockitoSugar
 //import play.api.test.Helpers.{contentAsString, _}
+//import testhelpers.CommonBuilders
 //import views.html.schemeDetails
+//import testhelpers.CommonBuilders._
 //
 //import scala.concurrent.Future
 //
@@ -51,12 +53,11 @@
 //    "return OK and the correct view for a GET" in {
 //
 //        reset(fakeSchemeDetailsConnector)
-//        reset(fakeListSchemesConnector)
 //        when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
-//          .thenReturn(Future.successful(None))
+//          .thenReturn(Future.successful(CommonBuilders.schemeDetailsWithPsaOnlyModel))
 //
 //
-//        val result = controller().onPageLoad()(fakeRequest)
+//        val result = controller().onPageLoad(1)(fakeRequest)
 //
 //        status(result) mustBe OK
 //        contentAsString(result) mustBe viewAsString()
@@ -68,23 +69,31 @@
 //object SchemeDetailsControllerSpec extends ControllerSpecBase  with MockitoSugar {
 //
 //  val fakeSchemeDetailsConnector: SchemeDetailsConnector = mock[SchemeDetailsConnector]
-//
+//  val fakeManagePensionsCacheConnector: ManagePensionsCacheConnector = mock[ManagePensionsCacheConnector]
+//  val fakeInvitationsCacheConnector: InvitationsCacheConnector = mock[InvitationsCacheConnector]
 //
 //  def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): SchemeDetailsController =
-//    new SchemeDetailsController(frontendAppConfig, messagesApi, fakeSchemeDetailsConnector,
+//    new SchemeDetailsController(frontendAppConfig,
+//      messagesApi,
+//      fakeManagePensionsCacheConnector,
+//      fakeInvitationsCacheConnector,
+//      fakeSchemeDetailsConnector,
 //      FakeAuthAction,
 //      dataRetrievalAction)
 //
 //  val schemeName = "Test Scheme Name"
-//  val administrators = Seq("First PSA", "Second PSA", "Third PSA")
+//  val administrators = Seq("Taylor Middle Rayon", "Smith A Tony")
 //  val openDate = "29th February 2018"
+//
 //
 //  def viewAsString(): String = schemeDetails(
 //    frontendAppConfig,
-//    schemeName,
+//    CommonBuilders.schemeDetails.schemeName,
 //    openDate,
 //    administrators
 //  )(fakeRequest, messages).toString
+//
+//
 //
 //}
 //

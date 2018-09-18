@@ -32,16 +32,12 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
     val openedDate = "29 February 2017"
     val administrators = Seq("First Psa", "Second User")
 
-//    override lazy val app = new GuiceApplicationBuilder().configure(
-//      "features.invitations" -> true
-//    ).build()
-
   class fakeFrontendAppConfig(invitationsEnabled: Boolean) extends FrontendAppConfig(app.configuration, injector.instanceOf[Environment]) {
     override lazy val psaInvitationEnabled = invitationsEnabled
   }
 
     def createView(invitations: Boolean = false): () => HtmlFormat.Appendable = () =>
-      schemeDetails(new fakeFrontendAppConfig(invitations), schemeName, openedDate, administrators)(fakeRequest, messages)
+      schemeDetails(new fakeFrontendAppConfig(invitations), schemeName, Some(openedDate), Some(administrators))(fakeRequest, messages)
 
     "SchemesDetails view" must {
       behave like normalPage(
