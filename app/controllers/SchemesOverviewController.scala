@@ -68,7 +68,7 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
       }
   }
 
-  def onClick: Action[AnyContent] = (authenticate andThen getData).async {
+  def onClickCheckIfSchemeCanBeRegistered: Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
       if (appConfig.isWorkPackageOneEnabled) {
         for {

@@ -107,7 +107,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
         when(fakePsaMinimalConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPsaDetails(true)))
         when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(None))
 
-        val result = controller().onClick(fakeRequest)
+        val result = controller().onClickCheckIfSchemeCanBeRegistered(fakeRequest)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).value mustBe cannotStartRegistrationUrl.url
@@ -117,7 +117,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
         when(fakePsaMinimalConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPsaDetails(false)))
         when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(None))
 
-        val result = controller().onClick(fakeRequest)
+        val result = controller().onClickCheckIfSchemeCanBeRegistered(fakeRequest)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).value mustBe frontendAppConfig.registerSchemeUrl
@@ -128,7 +128,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
         when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(Some(Json.obj(
           "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
 
-        val result = controller().onClick(fakeRequest)
+        val result = controller().onClickCheckIfSchemeCanBeRegistered(fakeRequest)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).value mustBe frontendAppConfig.continueSchemeUrl
@@ -139,7 +139,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
         when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(Some(Json.obj(
           "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
 
-        val result = controller().onClick(fakeRequest)
+        val result = controller().onClickCheckIfSchemeCanBeRegistered(fakeRequest)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).value mustBe cannotStartRegistrationUrl.url
@@ -151,7 +151,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
       "redirect to the register scheme page if called without psa name" in {
         when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(None))
 
-        val result = controller(isWorkPackageOneEnabled = false).onClick(fakeRequest)
+        val result = controller(isWorkPackageOneEnabled = false).onClickCheckIfSchemeCanBeRegistered(fakeRequest)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).value mustBe frontendAppConfig.registerSchemeUrl
@@ -162,7 +162,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
         when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(Some(Json.obj(
           "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
 
-        val result = controller(isWorkPackageOneEnabled = false).onClick(fakeRequest)
+        val result = controller(isWorkPackageOneEnabled = false).onClickCheckIfSchemeCanBeRegistered(fakeRequest)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).value mustBe frontendAppConfig.continueSchemeUrl
