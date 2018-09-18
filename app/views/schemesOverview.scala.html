@@ -30,14 +30,14 @@
     bodyClasses = None) {
 
     @components.heading("messages__schemesOverview__heading")
-
+    @name.map{ psaName =>
+        <p>@psaName</p>
+    }
     <h2>@messages("messages__schemesOverview__manage__head")</h2>
     <p>@messages("messages__schemesOverview__manage__text")</p>
     <p><a id="view-schemes" href="@routes.ListSchemesController.onPageLoad()">@messages("messages__schemesOverview__manage__link")</a></p>
     <p>@Html(Message("messages__schemesOverview__manage__redirect__text").withArgs(manageRedirectLink))</p>
-    @name.map{ psaName =>
-        <p>@psaName</p>
-    }
+
     @schemeName match {
         case None => {
             <h2>@messages("messages__schemesOverview__register__head")</h2>
