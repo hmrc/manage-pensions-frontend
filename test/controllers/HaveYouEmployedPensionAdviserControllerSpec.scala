@@ -16,20 +16,21 @@
 
 package controllers
 
-import models.Index
-import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import controllers.actions.FakeAuthAction
+import play.api.test.Helpers._
 
-class HaveYouEmployedPensionAdviser extends FrontendController {
+class HaveYouEmployedPensionAdviserControllerSpec extends ControllerSpecBase {
 
-  def onPageLoad(index: Index): Action[AnyContent] = Action {
-    implicit request =>
-      ???
+  "HaveYouEmployedPensionAdviserSpec" must {
+
+    val controller = new HaveYouEmployedPensionAdviserController(frontendAppConfig, FakeAuthAction(), messagesApi)
+
+    "Return 200 for a GET" in {
+
+      val result = controller.onPageLoad(1)(fakeRequest)
+
+      status(result) mustBe OK
+
+    }
   }
-
-  def onSubmit(index: Index): Action[AnyContent] = Action {
-    implicit request =>
-      ???
-  }
-
 }

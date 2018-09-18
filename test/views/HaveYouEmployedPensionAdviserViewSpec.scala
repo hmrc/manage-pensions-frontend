@@ -14,8 +14,24 @@
  * limitations under the License.
  */
 
-package controllers
+package views
 
-class HaveYouEmployedPensionAdviserSpec {
+import play.twirl.api.HtmlFormat
+import views.behaviours.ViewBehaviours
+import views.html.haveYouEmployedPensionAdviser
+
+class HaveYouEmployedPensionAdviserViewSpec extends ViewBehaviours {
+
+  def createView: () => HtmlFormat.Appendable = () => haveYouEmployedPensionAdviser(frontendAppConfig)(fakeRequest, messages)
+
+  val prefix = "messages_haveYouEmployedPensionAdviser__"
+
+  "HaveYouEmployedPensionAdviser" must {
+
+    behave like normalPageWithTitle(createView, prefix, messages(prefix + "title"), messages(prefix + "heading"))
+
+    behave like pageWithSubmitButton(createView)
+
+  }
 
 }

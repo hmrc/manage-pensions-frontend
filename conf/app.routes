@@ -22,5 +22,5 @@ GET        /you-cannot-send-invite                      controllers.YouCannotSen
 
 GET        /invite                                      controllers.InviteController.onPageLoad()
 
-GET        /:index/pensionAdviser                              controllers.HaveYouEmployedPensionAdviser.onPageLoad(index: Index)
-POST       /:index/pensionAdviser                              controllers.HaveYouEmployedPensionAdviser.onSubmit(index: Index)
+GET        /:index/pensionAdviser                       controllers.HaveYouEmployedPensionAdviserController.onPageLoad(index: Index)
+POST       /:index/pensionAdviser                       controllers.HaveYouEmployedPensionAdviserController.onSubmit(index: Index)
