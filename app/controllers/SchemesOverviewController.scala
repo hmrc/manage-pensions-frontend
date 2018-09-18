@@ -40,7 +40,6 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
-
       dataCacheConnector.fetch(request.externalId).flatMap {
         case None =>
           Future.successful(Ok(schemesOverview(appConfig, None, None, None)))
@@ -57,15 +56,13 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
                     }
                   )
                 ).getOrElse(currentTimestamp)
-
                 Ok(schemesOverview(
                   appConfig,
                   Some(name),
-                  Some(s"${f(date, daysToAdd = 0)}"),
-                  Some(s"${f(date, appConfig.daysDataSaved)}")
+                  Some(s"${createFormattedDate(date, daysToAdd = 0)}"),
+                  Some(s"${createFormattedDate(date, appConfig.daysDataSaved)}")
                 ))
               }
-
             case JsError(_) => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
           }
       }
@@ -107,8 +104,7 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
 
   private val formatter = DateTimeFormat.forPattern("dd MMMM YYYY")
 
-  private def f(dt: LastUpdatedDate, daysToAdd: Int): String = new LocalDate(dt.timestamp).plusDays(daysToAdd).toString(formatter)
+  private def createFormattedDate(dt: LastUpdatedDate, daysToAdd: Int): String = new LocalDate(dt.timestamp).plusDays(daysToAdd).toString(formatter)
 
   private def currentTimestamp: LastUpdatedDate = LastUpdatedDate(DateTime.now(DateTimeZone.UTC).getMillis)
-
 }
