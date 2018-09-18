@@ -15,15 +15,23 @@
  *@
 
 @import config.FrontendAppConfig
+@import uk.gov.hmrc.play.views.html._
+@import controllers.routes._
+@import models.Mode
+@import viewmodels.Message
 
 @(appConfig: FrontendAppConfig)(implicit request: Request[_], messages: Messages)
 
 @main_template(
-    title = Messages("messages_haveYouEmployedPensionAdviser__title"),
-    appConfig = appConfig
-){
+    title = messages("messages__cannotStartRegistration__title"),
+    appConfig = appConfig,
+    bodyClasses = None) {
 
-    @components.heading("messages_haveYouEmployedPensionAdviser__heading")
+    @components.heading(messages("messages__cannotStartRegistration__heading"))
 
+    <p>@messages("messages__cannotStartRegistration__p1")</p>
+    <p>@messages("messages__cannotStartRegistration__p2")</p>
+
+    <p><a id="return-to-overview" href="@controllers.routes.SchemesOverviewController.onPageLoad()">@messages("messages__cannotStartRegistration__returnToOverview__link")</a></p>
 
 }

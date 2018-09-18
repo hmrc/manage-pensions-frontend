@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2018 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,18 +12,17 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@import config.FrontendAppConfig
+package forms.mappings
 
-@(appConfig: FrontendAppConfig)(implicit request: Request[_], messages: Messages)
+import play.api.data.FieldMapping
+import play.api.data.Forms.of
 
-@main_template(
-    title = Messages("messages_haveYouEmployedPensionAdviser__title"),
-    appConfig = appConfig
-){
+trait Mappings extends Formatters {
 
-    @components.heading("messages_haveYouEmployedPensionAdviser__heading")
-
+  protected def boolean(requiredKey: String = "error.required",
+                        invalidKey: String = "error.boolean"): FieldMapping[Boolean] =
+    of(booleanFormatter(requiredKey, invalidKey))
 
 }

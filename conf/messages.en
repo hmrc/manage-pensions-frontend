@@ -76,3 +76,9 @@ messages__schemesOverview__UR__link = Let us know if you would like to help impr
 
 messages_haveYouEmployedPensionAdviser__title = Have you employed a pension adviser to help you with your duties as a PSA?
 messages_haveYouEmployedPensionAdviser__heading = Have you employed a pension adviser to help you with your duties as a PSA?
+
+messages__cannotStartRegistration__title = A scheme registration cannot be started
+messages__cannotStartRegistration__heading = A scheme registration cannot be started
+messages__cannotStartRegistration__p1 = A scheme registration cannot be started at the moment.
+messages__cannotStartRegistration__p2 = You need to phone Pension Scheme Services on 0300 123 1079.
+messages__cannotStartRegistration__returnToOverview__link = Return to manage and register pension schemes

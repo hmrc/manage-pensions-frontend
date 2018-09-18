@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2018 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,18 +12,18 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@import config.FrontendAppConfig
+package forms
 
-@(appConfig: FrontendAppConfig)(implicit request: Request[_], messages: Messages)
+import forms.mappings.Mappings
+import javax.inject.Inject
+import play.api.data.Form
 
-@main_template(
-    title = Messages("messages_haveYouEmployedPensionAdviser__title"),
-    appConfig = appConfig
-){
+class HaveYouEmployedPensionAdviserFormProvider @Inject()() extends Mappings {
 
-    @components.heading("messages_haveYouEmployedPensionAdviser__heading")
-
+  def apply(): Form[Boolean] = Form(
+    "value" -> boolean()
+  )
 
 }
