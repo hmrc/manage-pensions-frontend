@@ -20,7 +20,6 @@ import base.SpecBase
 import connectors.FakeDataCacheConnector
 import identifiers.{PsaNameId, Identifier}
 import models.requests.IdentifiedRequest
-import models.NormalMode
 import org.scalatest.OptionValues
 import org.scalatest.prop.TableFor6
 import play.api.libs.json.Json
@@ -48,7 +47,7 @@ class InvitationNavigatorSpec extends SpecBase with NavigatorBehaviour {
 
 object InvitationNavigatorSpec extends OptionValues {
   lazy val emptyAnswers = UserAnswers(Json.obj())
-  lazy val psaNamePage: Call = controllers.routes.PsaNameController.onPageLoad(NormalMode)
+  lazy val psaNamePage: Call = controllers.routes.IndexController.onPageLoad()
 
 
   implicit val ex: IdentifiedRequest = new IdentifiedRequest() {

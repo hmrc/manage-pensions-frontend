@@ -28,14 +28,6 @@ trait Transforms {
     value.trim
   }
 
-  def ninoTransform(value: String): String = {
-    strip(value).toUpperCase
-  }
-
-  def payeTransform(value: String): String = {
-    value.replaceAll("[\\\\/]", "").trim
-  }
-
   protected def strip(value: String): String = {
     value.replaceAll(" ", "")
   }
