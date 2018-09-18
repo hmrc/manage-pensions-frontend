@@ -48,19 +48,19 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
             minimalPsaConnector.getMinimalPsaDetails(request.psaId.id).map { minimalDetails =>
               Ok(schemesOverview(appConfig, None, None, None, getPsaName(minimalDetails)))
             }
-          }else{
+          } else {
             Future.successful(Ok(schemesOverview(appConfig, None, None, None, None)))
           }
         case Some(data) =>
           (data \ "schemeDetails" \ "schemeName").validate[String] match {
             case JsSuccess(name, _) =>
               dataCacheConnector.lastUpdated(request.externalId).flatMap { dateOpt =>
-                if(appConfig.isWorkPackageOneEnabled) {
+                if (appConfig.isWorkPackageOneEnabled) {
                   minimalPsaConnector.getMinimalPsaDetails(request.psaId.id).map { minimalDetails =>
                     buildView(name, dateOpt, Some(minimalDetails))
                   }
                 } else {
-                  Future.successful(buildView(name,dateOpt))
+                  Future.successful(buildView(name, dateOpt))
                 }
               }
             case JsError(_) => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
@@ -68,7 +68,8 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
       }
   }
 
-  private def buildView(name: String, dateOpt: Option[JsValue], minimalDetails: Option[MinimalPSA] = None)(implicit request: OptionalDataRequest[AnyContent]) = {
+  private def buildView(name: String, dateOpt: Option[JsValue],
+                        minimalDetails: Option[MinimalPSA] = None)(implicit request: OptionalDataRequest[AnyContent]) = {
     val date = dateOpt.map(ts =>
       LastUpdatedDate(
         ts.validate[Long] match {
@@ -88,9 +89,9 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
   }
 
   private def getPsaName(minimalDetails: MinimalPSA): Option[String] = {
-    (minimalDetails.individualDetails,minimalDetails.organisationName) match {
-      case (Some(individual),None) => Some(individual.fullName)
-      case (None,Some(org)) => Some(s"$org")
+    (minimalDetails.individualDetails, minimalDetails.organisationName) match {
+      case (Some(individual), None) => Some(individual.fullName)
+      case (None, Some(org)) => Some(s"$org")
       case _ => None
     }
   }

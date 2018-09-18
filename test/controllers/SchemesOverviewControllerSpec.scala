@@ -70,7 +70,6 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
   )(fakeRequest, messages).toString
 
   def viewAsStringNewScheme(): String = schemesOverview(frontendAppConfig, None, None, None, None)(fakeRequest, messages).toString
-
   def viewWithPsaName(name: Option[String] = None) = schemesOverview(frontendAppConfig, None, None, None, name)(fakeRequest, messages).toString
   def viewWithPsaNameAndScheme(name: Option[String]) = schemesOverview(frontendAppConfig, Some(schemeName),
     Some(lastDate.toString(formatter)),
@@ -94,24 +93,10 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
         contentAsString(result) mustBe viewWithPsaName(Some(expectedName))
       }
 
-      "return OK and the correct view if a scheme has been partially defined" in {
-        when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(Some(Json.obj(
-            "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
-        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo("A0000000"))(any(), any())).thenReturn(Future.successful(minimalPsaDetailsIndividual))
-        when(fakeCacheConnector.lastUpdated(any())(any(), any()))
-          .thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
-
-
-        val result = controller().onPageLoad(fakeRequest)
-        status(result) mustBe OK
-        contentAsString(result) mustBe viewWithPsaNameAndScheme(Some(expectedName))
-      }
-
       "return OK and the correct view with an individual name for an individual Psa and no scheme has been defined" in {
-        when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(None))
+        when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
         when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo("A0000000"))(any(), any())).thenReturn(Future.successful(minimalPsaDetailsIndividual))
-        when(fakeCacheConnector.lastUpdated(any())(any(), any()))
-          .thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
+        when(fakeCacheConnector.lastUpdated(any())(any(), any())).thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
 
         val result = controller().onPageLoad(fakeRequest)
         status(result) mustBe OK
@@ -119,10 +104,9 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
       }
 
       "return OK and the correct view with an individual name with no middle name for an individual Psa and no scheme has been defined" in {
-        when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(None))
+        when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
         when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo("A0000000"))(any(), any())).thenReturn(Future.successful(individualPsaDetailsWithNoMiddleName))
-        when(fakeCacheConnector.lastUpdated(any())(any(), any()))
-          .thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
+        when(fakeCacheConnector.lastUpdated(any())(any(), any())).thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
 
         val expectedName = s"${minimalPsaDetailsIndividual.individualDetails.get.firstName} ${minimalPsaDetailsIndividual.individualDetails.get.lastName}"
 
@@ -131,12 +115,22 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
         contentAsString(result) mustBe viewWithPsaName(Some(expectedName))
       }
 
+      "return OK and the correct view if a scheme has been partially defined" in {
+        when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(Some(Json.obj(
+            "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
+        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo("A0000000"))(any(), any())).thenReturn(Future.successful(minimalPsaDetailsIndividual))
+        when(fakeCacheConnector.lastUpdated(any())(any(), any())).thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
+
+        val result = controller().onPageLoad(fakeRequest)
+        status(result) mustBe OK
+        contentAsString(result) mustBe viewWithPsaNameAndScheme(Some(expectedName))
+      }
+
       "return OK and the correct view with an individual name with no middle name for an individual Psa and if a scheme has been partially defined" in {
-        when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(Some(Json.obj(
+        when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(Some(Json.obj(
           "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
         when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo("A0000000"))(any(), any())).thenReturn(Future.successful(individualPsaDetailsWithNoMiddleName))
-        when(fakeCacheConnector.lastUpdated(any())(any(), any()))
-          .thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
+        when(fakeCacheConnector.lastUpdated(any())(any(), any())).thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
 
         val expectedName = s"${minimalPsaDetailsIndividual.individualDetails.get.firstName} ${minimalPsaDetailsIndividual.individualDetails.get.lastName}"
 
@@ -146,11 +140,10 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
       }
 
       "return OK and the correct view with an individual name for an individual Psa and scheme has been defined" in {
-        when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(Some(Json.obj(
+        when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(Some(Json.obj(
           "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
         when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo("A0000000"))(any(), any())).thenReturn(Future.successful(minimalPsaDetailsIndividual))
-        when(fakeCacheConnector.lastUpdated(any())(any(), any()))
-          .thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
+        when(fakeCacheConnector.lastUpdated(any())(any(), any())).thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
 
         val result = controller().onPageLoad(fakeRequest)
         status(result) mustBe OK
