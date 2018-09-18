@@ -82,3 +82,9 @@ messages__psa__name__p1 = This must be the exact name that they used when they r
 messages__error__psa__name__required = Enter the name of who you are inviting
 messages__error__psa__name__length = Enter a name using less than 108 characters
 messages__error__psa__name__invalid = Enter a name using only letters
+
+messages__psa__id__title = What is the PSA ID of the PSA you are inviting?
+messages__psa__id__heading = What is {0}’s PSA ID?
+messages__error__psa__id__required = Enter the name of who you are inviting
+messages__error__psa__id__length = Enter a name using less than 108 characters
+messages__error__psa__id__invalid = Enter a name using only letters

@@ -139,4 +139,23 @@ class ConstraintsSpec extends WordSpec with Matchers with Constraints with Regex
     behave like regexWithValidAndInvalidExamples(psaName, validText, invalidText, invalidMsg, psaNameRegx)
   }
 
+  "PSAId" must {
+
+    val validText = Table(
+      "A1234567",
+      "A0000000"
+    )
+
+    val invalidText = Table(
+      "A0000",
+      "B0000000",
+      "A12345678",
+      "Ae000000"
+    )
+
+    val invalidMsg = "Invalid PSA Id"
+
+    behave like regexWithValidAndInvalidExamples(psaId, validText, invalidText, invalidMsg, psaIdRegx)
+  }
+
 }

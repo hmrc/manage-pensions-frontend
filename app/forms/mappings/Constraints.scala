@@ -25,6 +25,7 @@ import scala.language.implicitConversions
 trait Constraints {
 
   val psaNameRegx = """^[a-zA-Z\u00C0-\u00FF '‘’\u2014\u2013\u2010\u002d]{1,107}$"""
+  val psaIdRegx = """^A[0-9]{7}$"""
 
   protected def firstError[A](constraints: Constraint[A]*): Constraint[A] =
     Constraint {
@@ -93,4 +94,6 @@ trait Constraints {
     }
 
   protected def psaName(errorKey: String): Constraint[String] = regexp(psaNameRegx, errorKey)
+
+  protected def psaId(errorKey: String): Constraint[String] = regexp(psaIdRegx, errorKey)
 }
