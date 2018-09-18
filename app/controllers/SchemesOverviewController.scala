@@ -62,18 +62,28 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
                       }
                     )
                   ).getOrElse(currentTimestamp)
+
                   Ok(schemesOverview(
                     appConfig,
                     Some(name),
                     Some(s"${createFormattedDate(date, daysToAdd = 0)}"),
                     Some(s"${createFormattedDate(date, appConfig.daysDataSaved)}"),
-                    s"${minimalDetails.individualDetails.get.firstName} ${minimalDetails.individualDetails.get.middleName.get} ${minimalDetails.individualDetails.get.lastName}"
+                    getPsaName(minimalDetails)
                   ))
                 }
               }
             case JsError(_) => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
           }
       }
+  }
+
+  private def getPsaName(minimalDetails: MinimalPSA) = {
+    minimalDetails.individualDetails match {
+      case Some(individual) => {
+        s"${individual.firstName} ${individual.middleName.get} ${individual.lastName}"
+      }
+      case _ => s"${minimalDetails.organisationName.get}"
+    }
   }
 
   def onClickCheckIfSchemeCanBeRegistered: Action[AnyContent] = (authenticate andThen getData).async {

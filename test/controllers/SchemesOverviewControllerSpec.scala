@@ -89,23 +89,28 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
 
       "return OK and the correct view if no scheme has been defined" in {
         when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
-        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo("A0000000"))(any(), any())).thenReturn(Future.successful(emptyPsa))
+        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo("A0000000"))(any(), any())).thenReturn(Future.successful(minimalPsaDetailsIndividual))
+
+        val expectedName = s"${minimalPsaDetailsIndividual.individualDetails.get.firstName} ${minimalPsaDetailsIndividual.individualDetails.get.middleName.get} ${minimalPsaDetailsIndividual.individualDetails.get.lastName}"
+
         val result = controller().onPageLoad(fakeRequest)
 
         status(result) mustBe OK
-        contentAsString(result) mustBe viewAsStringNewScheme()
+        contentAsString(result) mustBe viewWithPsaName(expectedName)
       }
 
       "return OK and the correct view if a scheme has been partially defined" in {
         when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(Some(Json.obj(
             "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
-        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo("A0000000"))(any(), any())).thenReturn(Future.successful(emptyPsa))
+        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo("A0000000"))(any(), any())).thenReturn(Future.successful(minimalPsaDetailsIndividual))
         when(fakeCacheConnector.lastUpdated(any())(any(), any()))
           .thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
 
+        val expectedName = s"${minimalPsaDetailsIndividual.individualDetails.get.firstName} ${minimalPsaDetailsIndividual.individualDetails.get.middleName.get} ${minimalPsaDetailsIndividual.individualDetails.get.lastName}"
+
         val result = controller().onPageLoad(fakeRequest)
         status(result) mustBe OK
-        contentAsString(result) mustBe viewAsString()
+        contentAsString(result) mustBe viewWithPsaNameAndScheme(expectedName)
       }
 
       "return OK and the correct view with an individual name for an individual Psa and no scheme has been defined" in {
@@ -115,6 +120,21 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
           .thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
 
         val expectedName = s"${minimalPsaDetailsIndividual.individualDetails.get.firstName} ${minimalPsaDetailsIndividual.individualDetails.get.middleName.get} ${minimalPsaDetailsIndividual.individualDetails.get.lastName}"
+
+        val result = controller().onPageLoad(fakeRequest)
+        status(result) mustBe OK
+        contentAsString(result) mustBe viewWithPsaName(expectedName)
+      }
+
+      "return OK and the correct view with an individual name with no middle name for an individual Psa and no scheme has been defined" in {
+        val psaDetails = MinimalPSA("test@test.com",false,None,Some(IndividualDetails("John",None,"Doe")))
+
+        when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(None))
+        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo("A0000000"))(any(), any())).thenReturn(Future.successful(psaDetails))
+        when(fakeCacheConnector.lastUpdated(any())(any(), any()))
+          .thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
+
+        val expectedName = s"${minimalPsaDetailsIndividual.individualDetails.get.firstName} ${minimalPsaDetailsIndividual.individualDetails.get.lastName}"
 
         val result = controller().onPageLoad(fakeRequest)
         status(result) mustBe OK
