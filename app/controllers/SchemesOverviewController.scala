@@ -89,37 +89,15 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
 
   private def retrieveResult(schemeDetails: Option[JsValue], psaMinimalDetails: Option[MinimalPSA]): Result = {
     schemeDetails match {
-      case None =>
-        psaMinimalDetails.map { details =>
-          redirect(
-            appConfig.registerSchemeUrl,
-            details)
-        }.getOrElse(
-          Redirect(
-            appConfig.registerSchemeUrl
-          )
-        )
-      case Some(details) =>
-        (details \ "schemeDetails" \ "schemeName").validate[String] match {
-          case JsSuccess(value, _) =>
-            psaMinimalDetails.map { details =>
-              redirect(
-                appConfig.continueSchemeUrl,
-                details
-              )
-            }.getOrElse(
-              Redirect(
-                appConfig.continueSchemeUrl
-              )
-            )
-          case JsError(_) =>
-            Redirect(controllers.routes.SessionExpiredController.onPageLoad())
+      case None => psaMinimalDetails.fold(Redirect(appConfig.registerSchemeUrl))(details=>redirect(appConfig.registerSchemeUrl,details))
+      case Some(details) => (details \ "schemeDetails" \ "schemeName").validate[String] match {
+          case JsSuccess(_, _) => psaMinimalDetails.fold(Redirect(appConfig.continueSchemeUrl))(details=>redirect(appConfig.continueSchemeUrl,details))
+          case JsError(_) => Redirect(controllers.routes.SessionExpiredController.onPageLoad())
         }
-
     }
   }
 
-  private def redirect(redirectUrl: String, psaMinimalDetails: MinimalPSA) = {
+  private def redirect(redirectUrl: String, psaMinimalDetails: MinimalPSA): Result = {
     if (psaMinimalDetails.isPsaSuspended) {
       Redirect(routes.CannotStartRegistrationController.onPageLoad())
     } else {
