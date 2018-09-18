@@ -43,7 +43,7 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
     implicit request =>
 
       dataCacheConnector.fetch(request.externalId).flatMap {
-        case None => {
+        case None =>
           if (appConfig.isWorkPackageOneEnabled) {
             minimalPsaConnector.getMinimalPsaDetails(request.psaId.id).map { minimalDetails =>
               Ok(schemesOverview(appConfig, None, None, None, getPsaName(minimalDetails)))
@@ -51,7 +51,6 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
           }else{
             Future.successful(Ok(schemesOverview(appConfig, None, None, None, None)))
           }
-        }
         case Some(data) =>
           (data \ "schemeDetails" \ "schemeName").validate[String] match {
             case JsSuccess(name, _) =>
@@ -84,7 +83,7 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
       Some(name),
       Some(s"${createFormattedDate(date, daysToAdd = 0)}"),
       Some(s"${createFormattedDate(date, appConfig.daysDataSaved)}"),
-      if (minimalDetails.isDefined) getPsaName(minimalDetails.get) else None
+      minimalDetails.flatMap(getPsaName)
     ))
   }
 
