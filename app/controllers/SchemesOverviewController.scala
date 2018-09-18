@@ -40,29 +40,36 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
+
       dataCacheConnector.fetch(request.externalId).flatMap {
         case None =>
-          Future.successful(Ok(schemesOverview(appConfig, None, None, None, "")))
+          minimalPsaConnector.getMinimalPsaDetails(request.psaId.id).map { minimalDetails =>
+            Ok(schemesOverview(appConfig, None, None, None,
+              s"${minimalDetails.individualDetails.get.firstName} ${minimalDetails.individualDetails.get.middleName.get} ${minimalDetails.individualDetails.get.lastName}"))
+          }
         case Some(data) =>
           (data \ "schemeDetails" \ "schemeName").validate[String] match {
             case JsSuccess(name, _) =>
-              dataCacheConnector.lastUpdated(request.externalId).map { dateOpt =>
+              dataCacheConnector.lastUpdated(request.externalId).flatMap { dateOpt =>
 
-                val date = dateOpt.map(ts =>
-                  LastUpdatedDate(
-                    ts.validate[Long] match {
-                      case JsSuccess(value, _) => value
-                      case JsError(errors) => throw JsResultException(errors)
-                    }
-                  )
-                ).getOrElse(currentTimestamp)
-                Ok(schemesOverview(
-                  appConfig,
-                  Some(name),
-                  Some(s"${createFormattedDate(date, daysToAdd = 0)}"),
-                  Some(s"${createFormattedDate(date, appConfig.daysDataSaved)}"),
-                  ""
-                ))
+                minimalPsaConnector.getMinimalPsaDetails(request.psaId.id).map { minimalDetails =>
+
+                  val date = dateOpt.map(ts =>
+                    LastUpdatedDate(
+                      ts.validate[Long] match {
+                        case JsSuccess(value, _) => value
+                        case JsError(errors) => throw JsResultException(errors)
+                      }
+                    )
+                  ).getOrElse(currentTimestamp)
+                  Ok(schemesOverview(
+                    appConfig,
+                    Some(name),
+                    Some(s"${createFormattedDate(date, daysToAdd = 0)}"),
+                    Some(s"${createFormattedDate(date, appConfig.daysDataSaved)}"),
+                    s"${minimalDetails.individualDetails.get.firstName} ${minimalDetails.individualDetails.get.middleName.get} ${minimalDetails.individualDetails.get.lastName}"
+                  ))
+                }
               }
             case JsError(_) => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
           }
