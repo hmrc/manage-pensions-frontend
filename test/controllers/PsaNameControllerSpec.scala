@@ -18,13 +18,13 @@ package controllers
 
 import identifiers.PsaNameId
 import play.api.data.Form
-import play.api.libs.json.{Json, JsString}
+import play.api.libs.json.Json
 import utils.FakeNavigator
 import connectors.FakeDataCacheConnector
 import controllers.actions._
 import play.api.test.Helpers._
 import forms.PsaNameFormProvider
-import models.{PsaName, NormalMode}
+import models.NormalMode
 import play.api.mvc.Call
 import views.html.psaName
 
@@ -41,7 +41,7 @@ class PsaNameControllerSpec extends ControllerSpecBase {
 
   def viewAsString(form: Form[_] = form) = psaName(frontendAppConfig, form, NormalMode)(fakeRequest, messages).toString
 
-  val testAnswer = PsaName("answer")
+  val testAnswer = ("answer")
 
   "PsaName Controller" must {
 
@@ -53,7 +53,7 @@ class PsaNameControllerSpec extends ControllerSpecBase {
     }
 
     "populate the view correctly on a GET when the question has previously been answered" in {
-      val validData = Json.obj(PsaNameId.toString -> Json.toJson(PsaName("answer")))
+      val validData = Json.obj(PsaNameId.toString -> "answer")
       val getRelevantData = new FakeDataRetrievalAction(Some(validData))
 
       val result = controller(getRelevantData).onPageLoad(NormalMode)(fakeRequest)

@@ -31,7 +31,7 @@ class PsaNameFormProviderSpec extends StringFieldBehaviours with Constraints{
     val requiredKey = "messages__error__psa__name__required"
     val lengthKey = "messages__error__psa__name__length"
     val invalidKey = "messages__error__psa__name__invalid"
-    val maxLength = 107
+    val maxLength = PsaNameFormProvider.psaNameLength
 
     behave like fieldThatBindsValidData(
       form,

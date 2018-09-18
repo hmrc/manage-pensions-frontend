@@ -18,19 +18,20 @@ package forms
 
 import javax.inject.Inject
 
-import forms.mappings.Mappings
-import models.PsaName
+import forms.mappings.{Transforms, Mappings}
 import play.api.data.Form
-import play.api.data.Forms._
 
 
-class PsaNameFormProvider @Inject() extends Mappings {
-  val psaNameMaxLength = 107
-  def apply(): Form[PsaName] = Form(mapping(
-    "psaName" -> text(
-      "messages__error__psa__name__required").
+class PsaNameFormProvider @Inject() extends Mappings with Transforms {
+  def apply(): Form[String] = Form(
+    "psaName" -> text("messages__error__psa__name__required").
+      transform(standardTextTransform, noTransform).
       verifying(firstError(
-        maxLength(psaNameMaxLength, "messages__error__psa__name__length"),
+        maxLength(PsaNameFormProvider.psaNameLength, "messages__error__psa__name__length"),
         psaName("messages__error__psa__name__invalid")))
-  )(PsaName.apply)(PsaName.unapply))
+  )
+}
+
+object PsaNameFormProvider {
+  val psaNameLength = 107
 }

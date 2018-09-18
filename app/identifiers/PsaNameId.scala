@@ -16,8 +16,6 @@
 
 package identifiers
 
-import models.PsaName
-
-case object PsaNameId extends TypedIdentifier[PsaName] {
+case object PsaNameId extends TypedIdentifier[String] {
   override def toString: String = "psaName"
 }

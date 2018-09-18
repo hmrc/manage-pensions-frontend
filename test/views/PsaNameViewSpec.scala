@@ -17,13 +17,13 @@
 package views
 
 import forms.PsaNameFormProvider
-import models.{CheckMode, NormalMode, PsaName}
+import models.{CheckMode, NormalMode}
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import views.behaviours.QuestionViewBehaviours
 import views.html.psaName
 
-class PsaNameViewSpec extends QuestionViewBehaviours[PsaName] {
+class PsaNameViewSpec extends QuestionViewBehaviours[String] {
 
   val messageKeyPrefix = "psa__name"
 
