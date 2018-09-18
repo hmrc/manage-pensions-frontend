@@ -38,8 +38,8 @@ class CannotStartRegistrationViewSpec extends ViewBehaviours {
     )
 
     "have link to return to your pension schemes" in {
-      Jsoup.parse(createView().toString()).select("a[id=return-to-schemes]") must
-        haveLink(controllers.routes.ListSchemesController.onPageLoad().url)
+      Jsoup.parse(createView().toString()).select("a[id=return-to-overview]") must
+        haveLink(controllers.routes.SchemesOverviewController.onPageLoad().url)
     }
   }
 }

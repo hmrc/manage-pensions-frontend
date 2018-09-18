@@ -78,4 +78,4 @@ messages__cannotStartRegistration__title = A scheme registration cannot be start
 messages__cannotStartRegistration__heading = A scheme registration cannot be started
 messages__cannotStartRegistration__p1 = A scheme registration cannot be started at the moment.
 messages__cannotStartRegistration__p2 = You need to phone Pension Scheme Services on 0300 123 1079.
-messages__cannotStartRegistration__returnToSchemes__link = Return to your pension schemes
+messages__cannotStartRegistration__returnToOverview__link = Return to manage and register pension schemes
