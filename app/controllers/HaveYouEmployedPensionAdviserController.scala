@@ -18,16 +18,21 @@ package controllers
 
 import config.FrontendAppConfig
 import controllers.actions.AuthAction
+import forms.HaveYouEmployedPensionAdviserFormProvider
 import javax.inject.Inject
 import models.Index
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-class HaveYouEmployedPensionAdviserController @Inject()(val appConfig: FrontendAppConfig,
-                                                        val auth: AuthAction,
-                                                        val messagesApi: MessagesApi
-                                             ) extends FrontendController with I18nSupport {
+class HaveYouEmployedPensionAdviserController @Inject()(
+                                                         val appConfig: FrontendAppConfig,
+                                                         val auth: AuthAction,
+                                                         val messagesApi: MessagesApi,
+                                                         val formProvider: HaveYouEmployedPensionAdviserFormProvider
+                                                       ) extends FrontendController with I18nSupport {
+
+  val form = formProvider()
 
   def onPageLoad(index: Index): Action[AnyContent] = auth {
     implicit request =>

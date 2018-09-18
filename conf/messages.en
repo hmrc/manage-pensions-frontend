@@ -2,6 +2,9 @@ site.service_name = Manage Pension Schemes
 site.signOut = Log Out
 site.back = Back
 
+site.yes = Yes
+site.no = No
+
 messages__manage_pension_schemes__title = Manage Pension Schemes - GOV.UK
 
 messages__unauthorised__title = You can’t access this service with this account

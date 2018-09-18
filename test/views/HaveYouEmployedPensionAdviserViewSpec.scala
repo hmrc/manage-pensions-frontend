@@ -16,13 +16,20 @@
 
 package views
 
+import forms.HaveYouEmployedPensionAdviserFormProvider
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
 import views.html.haveYouEmployedPensionAdviser
 
 class HaveYouEmployedPensionAdviserViewSpec extends ViewBehaviours {
 
-  def createView: () => HtmlFormat.Appendable = () => haveYouEmployedPensionAdviser(frontendAppConfig)(fakeRequest, messages)
+  val form = new HaveYouEmployedPensionAdviserFormProvider()()
+
+  def createView: () => HtmlFormat.Appendable = () => haveYouEmployedPensionAdviser(frontendAppConfig, form)(fakeRequest, messages)
+
+  def doc: Document = Jsoup.parse(createView().toString)
 
   val prefix = "messages_haveYouEmployedPensionAdviser__"
 
@@ -31,6 +38,10 @@ class HaveYouEmployedPensionAdviserViewSpec extends ViewBehaviours {
     behave like normalPageWithTitle(createView, prefix, messages(prefix + "title"), messages(prefix + "heading"))
 
     behave like pageWithSubmitButton(createView)
+
+    "contain true option" in assertContainsRadioButton(doc, "value-true", "value", "true", false)
+
+    "contain false option" in assertContainsRadioButton(doc, "value-false", "value", "false", false)
 
   }
 

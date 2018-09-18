@@ -17,13 +17,19 @@
 package controllers
 
 import controllers.actions.FakeAuthAction
+import forms.HaveYouEmployedPensionAdviserFormProvider
 import play.api.test.Helpers._
 
 class HaveYouEmployedPensionAdviserControllerSpec extends ControllerSpecBase {
 
   "HaveYouEmployedPensionAdviserSpec" must {
 
-    val controller = new HaveYouEmployedPensionAdviserController(frontendAppConfig, FakeAuthAction(), messagesApi)
+    val controller = new HaveYouEmployedPensionAdviserController(
+      frontendAppConfig,
+      FakeAuthAction(),
+      messagesApi,
+      new HaveYouEmployedPensionAdviserFormProvider()
+    )
 
     "Return 200 for a GET" in {
 
