@@ -44,8 +44,7 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
       dataCacheConnector.fetch(request.externalId).flatMap {
         case None =>
           minimalPsaConnector.getMinimalPsaDetails(request.psaId.id).map { minimalDetails =>
-            Ok(schemesOverview(appConfig, None, None, None,
-              s"${minimalDetails.individualDetails.get.firstName} ${minimalDetails.individualDetails.get.middleName.get} ${minimalDetails.individualDetails.get.lastName}"))
+            Ok(schemesOverview(appConfig, None, None, None, getPsaName(minimalDetails)))
           }
         case Some(data) =>
           (data \ "schemeDetails" \ "schemeName").validate[String] match {
@@ -79,9 +78,10 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
 
   private def getPsaName(minimalDetails: MinimalPSA) = {
     minimalDetails.individualDetails match {
-      case Some(individual) => {
-        s"${individual.firstName} ${individual.middleName.get} ${individual.lastName}"
-      }
+      case Some(individual) =>
+        individual.middleName.fold(
+          s"${individual.firstName} ${individual.lastName}")(middleName =>
+          s"${individual.firstName} $middleName ${individual.lastName}")
       case _ => s"${minimalDetails.organisationName.get}"
     }
   }

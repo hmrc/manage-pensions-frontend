@@ -141,6 +141,21 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
         contentAsString(result) mustBe viewWithPsaName(expectedName)
       }
 
+      "return OK and the correct view with an individual name with no middle name for an individual Psa and if a scheme has been partially defined" in {
+        val psaDetails = MinimalPSA("test@test.com",false,None,Some(IndividualDetails("John",None,"Doe")))
+        when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(Some(Json.obj(
+          "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
+        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo("A0000000"))(any(), any())).thenReturn(Future.successful(psaDetails))
+        when(fakeCacheConnector.lastUpdated(any())(any(), any()))
+          .thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
+
+        val expectedName = s"${minimalPsaDetailsIndividual.individualDetails.get.firstName} ${minimalPsaDetailsIndividual.individualDetails.get.lastName}"
+
+        val result = controller().onPageLoad(fakeRequest)
+        status(result) mustBe OK
+        contentAsString(result) mustBe viewWithPsaNameAndScheme(expectedName)
+      }
+
       "return OK and the correct view with an individual name for an individual Psa and scheme has been defined" in {
         when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(Some(Json.obj(
           "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
