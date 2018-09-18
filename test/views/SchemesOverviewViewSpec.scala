@@ -78,7 +78,7 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
 
     "have link for continue registration" in {
       Jsoup.parse(createView().toString()).select("a[id=continue-registration]") must
-        haveLink(frontendAppConfig.continueSchemeUrl)
+        haveLink(controllers.routes.SchemesOverviewController.onClickCheckIfSchemeCanBeRegistered().url)
     }
 
     "have link for delete registration" in {
@@ -116,6 +116,10 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
         haveLink(frontendAppConfig.pensionSchemeOnlineServiceUrl)
     }
 
+    "have link for registration" in {
+      Jsoup.parse(createFreshView().toString()).select("a[id=register-new-scheme]") must
+        haveLink(controllers.routes.SchemesOverviewController.onClickCheckIfSchemeCanBeRegistered().url)
+    }
 
   }
 }
