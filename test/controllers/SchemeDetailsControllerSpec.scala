@@ -23,52 +23,41 @@ import org.joda.time.LocalDate
 import org.mockito.Matchers
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.mockito.MockitoSugar
-import play.api.libs.json.Json
+import play.api.libs.json.{JsObject, Json}
 import play.api.test.Helpers.{contentAsString, _}
 import testhelpers.CommonBuilders
 import views.html.schemeDetails
-import testhelpers.CommonBuilders._
 
 import scala.concurrent.Future
 
 class SchemeDetailsControllerSpec extends ControllerSpecBase {
-
   import SchemeDetailsControllerSpec._
 
   "SchemeDetailsController" must {
-
     "return OK and the correct view for a GET" in {
-
-        reset(fakeSchemeDetailsConnector)
-        when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(CommonBuilders.schemeDetailsWithPsaOnlyModel))
-        when(fakeManagePensionsCacheConnector.fetch(Matchers.any())(Matchers.any(), Matchers.any()))
+      reset(fakeSchemeDetailsConnector)
+      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(CommonBuilders.schemeDetailsWithPsaOnlyModel))
+      when(fakeManagePensionsCacheConnector.fetch(Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(manageSessionData)))
-
-        val result = controller().onPageLoad(1)(fakeRequest)
-
-        status(result) mustBe OK
-        contentAsString(result) mustBe viewAsString()
-
+      val result = controller().onPageLoad(1)(fakeRequest)
+      status(result) mustBe OK
+      contentAsString(result) mustBe viewAsString()
     }
 
-    "return redirect when fetch returns None for a GET" in {
-
-        reset(fakeSchemeDetailsConnector)
-        when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(CommonBuilders.schemeDetailsWithPsaOnlyModel))
-        when(fakeManagePensionsCacheConnector.fetch(Matchers.any())(Matchers.any(), Matchers.any()))
+    "return redirect when there is no manage pensions data to fetch" in {
+      reset(fakeSchemeDetailsConnector)
+      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(CommonBuilders.schemeDetailsWithPsaOnlyModel))
+      when(fakeManagePensionsCacheConnector.fetch(Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-
-        val result = controller().onPageLoad(1)(fakeRequest)
-
-        status(result) mustBe SEE_OTHER
-
+      val result = controller().onPageLoad(1)(fakeRequest)
+      status(result) mustBe SEE_OTHER
     }
   }
 }
 
-object SchemeDetailsControllerSpec extends ControllerSpecBase  with MockitoSugar {
+private object SchemeDetailsControllerSpec extends ControllerSpecBase with MockitoSugar {
 
   val fakeSchemeDetailsConnector: SchemeDetailsConnector = mock[SchemeDetailsConnector]
   val fakeManagePensionsCacheConnector: DataCacheConnector = mock[DataCacheConnector]
@@ -87,7 +76,7 @@ object SchemeDetailsControllerSpec extends ControllerSpecBase  with MockitoSugar
   val pstr = "P12345678"
   val date: LocalDate = LocalDate.parse("2018-02-28")
 
-  val manageSessionData = Json.obj(
+  val manageSessionData: JsObject = Json.obj(
     "schemes" -> Seq(Scheme(pstr, date))
   )
 
@@ -97,10 +86,4 @@ object SchemeDetailsControllerSpec extends ControllerSpecBase  with MockitoSugar
     openDate,
     administrators
   )(fakeRequest, messages).toString
-
-
-
 }
-
-
-
