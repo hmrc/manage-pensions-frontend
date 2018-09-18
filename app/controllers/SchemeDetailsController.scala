@@ -16,12 +16,12 @@
 
 package controllers
 
+import javax.inject.Inject
+
 import config.FrontendAppConfig
 import connectors._
 import controllers.actions._
-import javax.inject.Inject
-
-import models.{PsaDetails, Scheme, SchemeDetail}
+import models.{PsaDetails, Scheme}
 import org.joda.time.format.DateTimeFormat
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.JsSuccess
@@ -38,38 +38,25 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                                         authenticate: AuthAction,
                                         getData: DataRetrievalAction) extends FrontendController with I18nSupport {
 
-  private def fullName(psa:PsaDetails) =
+  private def fullName(psa: PsaDetails) =
     s"${psa.firstName.getOrElse("")} ${psa.middleName.getOrElse("")} ${psa.lastName.getOrElse("")}"
 
   private val formatter = DateTimeFormat.forPattern("dd MMMM YYYY")
 
   def onPageLoad(index: Int): Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
-
       dataCacheConnector.fetch(request.externalId).flatMap {
-          case None => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
-          case Some(jsValue) => (jsValue \ "schemes").validate[Seq[Scheme]] match {
-            case JsSuccess(schemes, _) =>
-              val pstr = schemes(index-1).pstr
-              val openedDate = schemes(index-1).openDate.toString(formatter)
-
-              schemeDetailsConnector.getSchemeDetails("pstr", pstr)
-                .flatMap { scheme =>
-
-                val administrators: Seq[String] = scheme.psaSchemeDetails.psaDetails.map(_.map(fullName)).getOrElse(Seq.empty)
-
-                Future.successful(Ok(schemeDetails(appConfig,
-                  scheme.psaSchemeDetails.schemeDetails.schemeName,
-                  Some(openedDate),
-                  Some(administrators)
-                )))
-              }
-
-            case _ => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
-          }
+        case None => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+        case Some(jsValue) => (jsValue \ "schemes").validate[Seq[Scheme]] match {
+          case JsSuccess(schemes, _) =>
+            val pstr = schemes(index - 1).pstr
+            val openedDate = schemes(index - 1).openDate.toString(formatter)
+            schemeDetailsConnector.getSchemeDetails("pstr", pstr)
+              .map(scheme =>
+                Ok(schemeDetails(appConfig, scheme.psaSchemeDetails.schemeDetails.schemeName, Some(openedDate),
+                    Some(scheme.psaSchemeDetails.psaDetails.map(_.map(fullName)).getOrElse(Seq.empty)))))
+          case _ => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
         }
-
-
+      }
   }
-
 }
