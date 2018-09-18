@@ -51,8 +51,27 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
             case JsSuccess(name, _) =>
               dataCacheConnector.lastUpdated(request.externalId).flatMap { dateOpt =>
 
-                minimalPsaConnector.getMinimalPsaDetails(request.psaId.id).map { minimalDetails =>
+                if(appConfig.isWorkPackageOneEnabled) {
+                  minimalPsaConnector.getMinimalPsaDetails(request.psaId.id).map { minimalDetails =>
 
+                    val date = dateOpt.map(ts =>
+                      LastUpdatedDate(
+                        ts.validate[Long] match {
+                          case JsSuccess(value, _) => value
+                          case JsError(errors) => throw JsResultException(errors)
+                        }
+                      )
+                    ).getOrElse(currentTimestamp)
+
+                    Ok(schemesOverview(
+                      appConfig,
+                      Some(name),
+                      Some(s"${createFormattedDate(date, daysToAdd = 0)}"),
+                      Some(s"${createFormattedDate(date, appConfig.daysDataSaved)}"),
+                      getPsaName(minimalDetails)
+                    ))
+                  }
+                } else {
                   val date = dateOpt.map(ts =>
                     LastUpdatedDate(
                       ts.validate[Long] match {
@@ -62,13 +81,13 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
                     )
                   ).getOrElse(currentTimestamp)
 
-                  Ok(schemesOverview(
+                  Future.successful(Ok(schemesOverview(
                     appConfig,
                     Some(name),
                     Some(s"${createFormattedDate(date, daysToAdd = 0)}"),
                     Some(s"${createFormattedDate(date, appConfig.daysDataSaved)}"),
-                    getPsaName(minimalDetails)
-                  ))
+                    None
+                  )))
                 }
               }
             case JsError(_) => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))

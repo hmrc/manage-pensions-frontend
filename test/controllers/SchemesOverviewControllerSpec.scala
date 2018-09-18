@@ -184,9 +184,19 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
         contentAsString(result) mustBe viewWithPsaNameAndScheme(None)
       }
 
-      "return OK and no name when flag is off" in {
+      "return OK and no name when flag is off and scheme has been defined" in {
         when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(Some(Json.obj(
           "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
+        when(fakeCacheConnector.lastUpdated(any())(any(), any()))
+          .thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
+
+        val result = controller(isWorkPackageOneEnabled = false).onPageLoad(fakeRequest)
+        status(result) mustBe OK
+        contentAsString(result) mustBe viewWithPsaNameAndScheme(None)
+      }
+
+      "return OK and no name when flag is off and no scheme has been defined" in {
+        when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(None))
         when(fakeCacheConnector.lastUpdated(any())(any(), any()))
           .thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
 
