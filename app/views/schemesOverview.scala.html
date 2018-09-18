@@ -20,7 +20,7 @@
 @import models.Mode
 @import viewmodels.Message
 
-@(appConfig: FrontendAppConfig, schemeName: Option[String], lastDate: Option[String], deleteDate: Option[String])(implicit request: Request[_], messages: Messages)
+@(appConfig: FrontendAppConfig, schemeName: Option[String], lastDate: Option[String], deleteDate: Option[String], name: Option[String])(implicit request: Request[_], messages: Messages)
 
 @manageRedirectLink = {<a id="manage-link" href="@appConfig.pensionSchemeOnlineServiceUrl">@messages("messages__schemesOverview__manage__redirect__link")</a>}
 
@@ -30,7 +30,9 @@
     bodyClasses = None) {
 
     @components.heading("messages__schemesOverview__heading")
-
+    @name.map{ psaName =>
+        <p>@psaName</p>
+    }
     <h2>@messages("messages__schemesOverview__manage__head")</h2>
     <p>@messages("messages__schemesOverview__manage__text")</p>
     <p><a id="view-schemes" href="@routes.ListSchemesController.onPageLoad()">@messages("messages__schemesOverview__manage__link")</a></p>

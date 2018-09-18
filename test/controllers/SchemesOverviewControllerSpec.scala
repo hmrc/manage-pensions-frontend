@@ -19,11 +19,11 @@ package controllers
 import config.FrontendAppConfig
 import connectors.{DataCacheConnector, MicroserviceCacheConnector, MinimalPsaConnector}
 import controllers.actions.{DataRetrievalAction, _}
-import models.MinimalPSA
+import models.{IndividualDetails, MinimalPSA}
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTime, DateTimeZone}
 import org.mockito.Matchers._
-import org.mockito.Matchers.{eq=>eqTo}
+import org.mockito.Matchers.{eq => eqTo}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -65,10 +65,15 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
     getConfig(true),
     Some(schemeName),
     Some(lastDate.toString(formatter)),
-    Some(deleteDate)
+    Some(deleteDate),
+    None
   )(fakeRequest, messages).toString
 
-  def viewAsStringNewScheme(): String = schemesOverview(frontendAppConfig, None, None, None)(fakeRequest, messages).toString
+  def viewAsStringNewScheme(): String = schemesOverview(frontendAppConfig, None, None, None, None)(fakeRequest, messages).toString
+  def viewWithPsaName(name: Option[String] = None) = schemesOverview(frontendAppConfig, None, None, None, name)(fakeRequest, messages).toString
+  def viewWithPsaNameAndScheme(name: Option[String]) = schemesOverview(frontendAppConfig, Some(schemeName),
+    Some(lastDate.toString(formatter)),
+    Some(deleteDate), name)(fakeRequest, messages).toString
 
   override def beforeEach(): Unit = {
     reset(fakeCacheConnector)
@@ -77,28 +82,120 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
   }
 
   "SchemesOverview Controller" when {
-
     "on a GET" must {
-
       "return OK and the correct view if no scheme has been defined" in {
         when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
+        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo("A0000000"))(any(), any())).thenReturn(Future.successful(minimalPsaDetailsIndividual))
 
         val result = controller().onPageLoad(fakeRequest)
 
         status(result) mustBe OK
-        contentAsString(result) mustBe viewAsStringNewScheme()
+        contentAsString(result) mustBe viewWithPsaName(Some(expectedName))
+      }
+
+      "return OK and the correct view with an individual name for an individual Psa and no scheme has been defined" in {
+        when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
+        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo("A0000000"))(any(), any())).thenReturn(Future.successful(minimalPsaDetailsIndividual))
+        when(fakeCacheConnector.lastUpdated(any())(any(), any())).thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
+
+        val result = controller().onPageLoad(fakeRequest)
+        status(result) mustBe OK
+        contentAsString(result) mustBe viewWithPsaName(Some(expectedName))
+      }
+
+      "return OK and the correct view with an individual name with no middle name for an individual Psa and no scheme has been defined" in {
+        when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
+        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo("A0000000"))(any(), any())).thenReturn(Future.successful(individualPsaDetailsWithNoMiddleName))
+        when(fakeCacheConnector.lastUpdated(any())(any(), any())).thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
+
+        val expectedName = s"${minimalPsaDetailsIndividual.individualDetails.get.firstName} ${minimalPsaDetailsIndividual.individualDetails.get.lastName}"
+
+        val result = controller().onPageLoad(fakeRequest)
+        status(result) mustBe OK
+        contentAsString(result) mustBe viewWithPsaName(Some(expectedName))
       }
 
       "return OK and the correct view if a scheme has been partially defined" in {
         when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(Some(Json.obj(
             "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
-
-        when(fakeCacheConnector.lastUpdated(any())(any(), any()))
-          .thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
+        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo("A0000000"))(any(), any())).thenReturn(Future.successful(minimalPsaDetailsIndividual))
+        when(fakeCacheConnector.lastUpdated(any())(any(), any())).thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
 
         val result = controller().onPageLoad(fakeRequest)
         status(result) mustBe OK
-        contentAsString(result) mustBe viewAsString()
+        contentAsString(result) mustBe viewWithPsaNameAndScheme(Some(expectedName))
+      }
+
+      "return OK and the correct view with an individual name with no middle name for an individual Psa and if a scheme has been partially defined" in {
+        when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(Some(Json.obj(
+          "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
+        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo("A0000000"))(any(), any())).thenReturn(Future.successful(individualPsaDetailsWithNoMiddleName))
+        when(fakeCacheConnector.lastUpdated(any())(any(), any())).thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
+
+        val expectedName = s"${minimalPsaDetailsIndividual.individualDetails.get.firstName} ${minimalPsaDetailsIndividual.individualDetails.get.lastName}"
+
+        val result = controller().onPageLoad(fakeRequest)
+        status(result) mustBe OK
+        contentAsString(result) mustBe viewWithPsaNameAndScheme(Some(expectedName))
+      }
+
+      "return OK and the correct view with an individual name for an individual Psa and scheme has been defined" in {
+        when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(Some(Json.obj(
+          "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
+        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo("A0000000"))(any(), any())).thenReturn(Future.successful(minimalPsaDetailsIndividual))
+        when(fakeCacheConnector.lastUpdated(any())(any(), any())).thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
+
+        val result = controller().onPageLoad(fakeRequest)
+        status(result) mustBe OK
+        contentAsString(result) mustBe viewWithPsaNameAndScheme(Some(expectedName))
+      }
+
+      "return OK and the correct view with an organisation name for an Organisation Psa" in {
+        when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(Some(Json.obj(
+          "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
+        when(fakeCacheConnector.lastUpdated(any())(any(), any()))
+          .thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
+        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo("A0000000"))(any(), any())).thenReturn(Future.successful(minimalPsaDetailsOrg))
+        val expectedName = s"${minimalPsaDetailsOrg.organisationName.get}"
+
+        val result = controller().onPageLoad(fakeRequest)
+        status(result) mustBe OK
+        contentAsString(result) mustBe viewWithPsaNameAndScheme(Some(expectedName))
+      }
+
+      "return OK and the correct view with no individual name and organisation name" in {
+        when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(Some(Json.obj(
+          "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
+        when(fakeCacheConnector.lastUpdated(any())(any(), any()))
+          .thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
+
+        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo("A0000000"))(any(), any())).thenReturn(Future.successful(
+          minimalPsaDetailsOrg.copy(organisationName = None)))
+
+        val result = controller().onPageLoad(fakeRequest)
+        status(result) mustBe OK
+        contentAsString(result) mustBe viewWithPsaNameAndScheme(None)
+      }
+
+      "return OK and no name when flag is off and scheme has been defined" in {
+        when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(Some(Json.obj(
+          "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
+        when(fakeCacheConnector.lastUpdated(any())(any(), any()))
+          .thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
+
+        val result = controller(isWorkPackageOneEnabled = false).onPageLoad(fakeRequest)
+        status(result) mustBe OK
+        contentAsString(result) mustBe viewWithPsaNameAndScheme(None)
+      }
+
+      "return OK and no name when flag is off and no scheme has been defined" in {
+        when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(None))
+        when(fakeCacheConnector.lastUpdated(any())(any(), any()))
+          .thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
+
+        val result = controller(isWorkPackageOneEnabled = false).onPageLoad(fakeRequest)
+        status(result) mustBe OK
+        contentAsString(result) mustBe viewWithPsaName()
       }
     }
 
@@ -180,7 +277,10 @@ object SchemesOverviewControllerSpec {
   val timestamp: Long = lastDate.getMillis
 
   def minimalPsaDetails(psaSuspended: Boolean) = MinimalPSA("test@test.com", psaSuspended, Some("Org Name"), None)
-
+  val minimalPsaDetailsIndividual = MinimalPSA("test@test.com", false, None, Some(IndividualDetails("John", Some("Doe"), "Doe")))
+  val individualPsaDetailsWithNoMiddleName = MinimalPSA("test@test.com",false,None,Some(IndividualDetails("John",None,"Doe")))
+  val minimalPsaDetailsOrg = MinimalPSA("test@test.com", false, Some("Org Name"), None)
+  val expectedName = s"${minimalPsaDetailsIndividual.individualDetails.get.firstName} ${minimalPsaDetailsIndividual.individualDetails.get.middleName.get} ${minimalPsaDetailsIndividual.individualDetails.get.lastName}"
   val cannotStartRegistrationUrl = routes.CannotStartRegistrationController.onPageLoad()
 }
 

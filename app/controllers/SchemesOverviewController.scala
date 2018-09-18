@@ -20,6 +20,7 @@ import config.FrontendAppConfig
 import connectors.{DataCacheConnector, MinimalPsaConnector}
 import controllers.actions._
 import javax.inject.Inject
+import models.requests.OptionalDataRequest
 import models.{LastUpdatedDate, MinimalPSA}
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTime, DateTimeZone, LocalDate}
@@ -40,32 +41,59 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
+
       dataCacheConnector.fetch(request.externalId).flatMap {
         case None =>
-          Future.successful(Ok(schemesOverview(appConfig, None, None, None)))
+          if (appConfig.isWorkPackageOneEnabled) {
+            minimalPsaConnector.getMinimalPsaDetails(request.psaId.id).map { minimalDetails =>
+              Ok(schemesOverview(appConfig, None, None, None, getPsaName(minimalDetails)))
+            }
+          } else {
+            Future.successful(Ok(schemesOverview(appConfig, None, None, None, None)))
+          }
         case Some(data) =>
           (data \ "schemeDetails" \ "schemeName").validate[String] match {
             case JsSuccess(name, _) =>
-              dataCacheConnector.lastUpdated(request.externalId).map { dateOpt =>
-
-                val date = dateOpt.map(ts =>
-                  LastUpdatedDate(
-                    ts.validate[Long] match {
-                      case JsSuccess(value, _) => value
-                      case JsError(errors) => throw JsResultException(errors)
-                    }
-                  )
-                ).getOrElse(currentTimestamp)
-                Ok(schemesOverview(
-                  appConfig,
-                  Some(name),
-                  Some(s"${createFormattedDate(date, daysToAdd = 0)}"),
-                  Some(s"${createFormattedDate(date, appConfig.daysDataSaved)}")
-                ))
+              dataCacheConnector.lastUpdated(request.externalId).flatMap { dateOpt =>
+                if (appConfig.isWorkPackageOneEnabled) {
+                  minimalPsaConnector.getMinimalPsaDetails(request.psaId.id).map { minimalDetails =>
+                    buildView(name, dateOpt, Some(minimalDetails))
+                  }
+                } else {
+                  Future.successful(buildView(name, dateOpt))
+                }
               }
             case JsError(_) => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
           }
       }
+  }
+
+  private def buildView(name: String, dateOpt: Option[JsValue],
+                        minimalDetails: Option[MinimalPSA] = None)(implicit request: OptionalDataRequest[AnyContent]) = {
+    val date = dateOpt.map(ts =>
+      LastUpdatedDate(
+        ts.validate[Long] match {
+          case JsSuccess(value, _) => value
+          case JsError(errors) => throw JsResultException(errors)
+        }
+      )
+    ).getOrElse(currentTimestamp)
+
+    Ok(schemesOverview(
+      appConfig,
+      Some(name),
+      Some(s"${createFormattedDate(date, daysToAdd = 0)}"),
+      Some(s"${createFormattedDate(date, appConfig.daysDataSaved)}"),
+      minimalDetails.flatMap(getPsaName)
+    ))
+  }
+
+  private def getPsaName(minimalDetails: MinimalPSA): Option[String] = {
+    (minimalDetails.individualDetails, minimalDetails.organisationName) match {
+      case (Some(individual), None) => Some(individual.fullName)
+      case (None, Some(org)) => Some(s"$org")
+      case _ => None
+    }
   }
 
   def onClickCheckIfSchemeCanBeRegistered: Action[AnyContent] = (authenticate andThen getData).async {
