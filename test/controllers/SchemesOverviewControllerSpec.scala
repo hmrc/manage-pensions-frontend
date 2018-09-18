@@ -23,6 +23,7 @@ import models.MinimalPSA
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTime, DateTimeZone}
 import org.mockito.Matchers._
+import org.mockito.Matchers.{eq=>eqTo}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -80,7 +81,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
     "on a GET" must {
 
       "return OK and the correct view if no scheme has been defined" in {
-        when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(None))
+        when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
 
         val result = controller().onPageLoad(fakeRequest)
 
@@ -89,7 +90,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
       }
 
       "return OK and the correct view if a scheme has been partially defined" in {
-        when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(Some(Json.obj(
+        when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(Some(Json.obj(
             "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
 
         when(fakeCacheConnector.lastUpdated(any())(any(), any()))
@@ -104,8 +105,8 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
     "on a POST with isWorkPackageOneEnabled flag is on" must {
 
       "redirect to the cannot start registration page if called without a psa name but psa is suspended" in {
-        when(fakePsaMinimalConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPsaDetails(true)))
-        when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(None))
+        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo("A0000000"))(any(), any())).thenReturn(Future.successful(minimalPsaDetails(true)))
+        when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
 
         val result = controller().onClickCheckIfSchemeCanBeRegistered(fakeRequest)
 
@@ -114,8 +115,8 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
       }
 
       "redirect to the register scheme page if called without psa name but psa is not suspended" in {
-        when(fakePsaMinimalConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPsaDetails(false)))
-        when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(None))
+        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo("A0000000"))(any(), any())).thenReturn(Future.successful(minimalPsaDetails(false)))
+        when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
 
         val result = controller().onClickCheckIfSchemeCanBeRegistered(fakeRequest)
 
@@ -124,8 +125,8 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
       }
 
       "redirect to continue register a scheme page if called with a psa name and psa is not suspended" in {
-        when(fakePsaMinimalConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPsaDetails(false)))
-        when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(Some(Json.obj(
+        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo("A0000000"))(any(), any())).thenReturn(Future.successful(minimalPsaDetails(false)))
+        when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(Some(Json.obj(
           "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
 
         val result = controller().onClickCheckIfSchemeCanBeRegistered(fakeRequest)
@@ -135,8 +136,8 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
       }
 
       "redirect to cannot start registration page if called with a psa name and psa is suspended" in {
-        when(fakePsaMinimalConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPsaDetails(true)))
-        when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(Some(Json.obj(
+        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo("A0000000"))(any(), any())).thenReturn(Future.successful(minimalPsaDetails(true)))
+        when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(Some(Json.obj(
           "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
 
         val result = controller().onClickCheckIfSchemeCanBeRegistered(fakeRequest)
@@ -149,7 +150,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
     "on a POST with isWorkPackageOneEnabled flag is off" must {
 
       "redirect to the register scheme page if called without psa name" in {
-        when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(None))
+        when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
 
         val result = controller(isWorkPackageOneEnabled = false).onClickCheckIfSchemeCanBeRegistered(fakeRequest)
 
@@ -159,7 +160,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
       }
 
       "redirect to the continue register scheme page if called with psa name" in {
-        when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(Some(Json.obj(
+        when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(Some(Json.obj(
           "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
 
         val result = controller(isWorkPackageOneEnabled = false).onClickCheckIfSchemeCanBeRegistered(fakeRequest)

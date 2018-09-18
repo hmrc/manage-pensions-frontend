@@ -86,11 +86,11 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
 
   private def retrieveResult(schemeDetails: Option[JsValue], psaMinimalDetails: Option[MinimalPSA]): Result = {
     schemeDetails match {
-      case None => psaMinimalDetails.fold(Redirect(appConfig.registerSchemeUrl))(details=>redirect(appConfig.registerSchemeUrl,details))
+      case None => psaMinimalDetails.fold(Redirect(appConfig.registerSchemeUrl))(details => redirect(appConfig.registerSchemeUrl, details))
       case Some(details) => (details \ "schemeDetails" \ "schemeName").validate[String] match {
-          case JsSuccess(_, _) => psaMinimalDetails.fold(Redirect(appConfig.continueSchemeUrl))(details=>redirect(appConfig.continueSchemeUrl,details))
-          case JsError(_) => Redirect(controllers.routes.SessionExpiredController.onPageLoad())
-        }
+        case JsSuccess(_, _) => psaMinimalDetails.fold(Redirect(appConfig.continueSchemeUrl))(details => redirect(appConfig.continueSchemeUrl, details))
+        case JsError(_) => Redirect(controllers.routes.SessionExpiredController.onPageLoad())
+      }
     }
   }
 
