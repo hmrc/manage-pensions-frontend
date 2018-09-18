@@ -18,7 +18,7 @@ package controllers
 
 import config.FrontendAppConfig
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
-import identifiers.{ListOfSchemesId, PSANameId}
+import identifiers.PSANameId
 import javax.inject.Inject
 import models.Index
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -37,8 +37,8 @@ class IncorrectPsaDetailsController @Inject()(val appConfig: FrontendAppConfig,
 
   def onPageLoad(index: Index): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
-      (PSANameId and ListOfSchemesId).retrieve.right.map { case psaName ~ schemeName =>
-        Future.successful(Ok(incorrectPsaDetails(appConfig, psaName, schemeName(index - 1).name)))
+      PSANameId.retrieve.right.map { psaName =>
+        Future.successful(Ok(incorrectPsaDetails(appConfig, psaName)))
       }
   }
 

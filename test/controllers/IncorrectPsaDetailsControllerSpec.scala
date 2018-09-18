@@ -51,8 +51,7 @@ class IncorrectPsaDetailsControllerSpec extends ControllerSpecBase {
 
     "return the correct view for a GET" in {
       val result = controller.onPageLoad(Index(1))(fakeRequest)
-      contentAsString(result) mustBe incorrectPsaDetails(frontendAppConfig, invitee, schemeName
-      )(fakeRequest, messages).toString
+      contentAsString(result) mustBe incorrectPsaDetails(frontendAppConfig, invitee)(fakeRequest, messages).toString
     }
   }
 }
