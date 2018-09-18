@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package forms
+package forms.accept
 
 import forms.mappings.Mappings
 import javax.inject.Inject

@@ -1,0 +1,3 @@
+
+GET        /:index/pensionAdviser                       controllers.accept.HaveYouEmployedPensionAdviserController.onPageLoad(index: Index)
+POST       /:index/pensionAdviser                       controllers.accept.HaveYouEmployedPensionAdviserController.onSubmit(index: Index)

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.accept
 
 import config.FrontendAppConfig
 import controllers.actions.AuthAction
-import forms.HaveYouEmployedPensionAdviserFormProvider
+import forms.accept.HaveYouEmployedPensionAdviserFormProvider
 import javax.inject.Inject
 import models.Index
 import play.api.i18n.{I18nSupport, MessagesApi}

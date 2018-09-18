@@ -14,29 +14,33 @@
  * limitations under the License.
  */
 
-package controllers
+package forms.accept
 
-import controllers.actions.FakeAuthAction
-import forms.HaveYouEmployedPensionAdviserFormProvider
-import play.api.test.Helpers._
+import forms.behaviours.BooleanFieldBehaviours
+import play.api.data.FormError
 
-class HaveYouEmployedPensionAdviserControllerSpec extends ControllerSpecBase {
+class HaveYouEmployedPensionAdviserFormProviderSpec extends BooleanFieldBehaviours {
 
-  "HaveYouEmployedPensionAdviserSpec" must {
+  val requiredKey = "error.required"
+  val invalidKey = "error.boolean"
 
-    val controller = new HaveYouEmployedPensionAdviserController(
-      frontendAppConfig,
-      FakeAuthAction(),
-      messagesApi,
-      new HaveYouEmployedPensionAdviserFormProvider()
+  val form = new HaveYouEmployedPensionAdviserFormProvider()()
+
+  ".value" must {
+
+    val fieldName = "value"
+
+    behave like booleanField(
+      form,
+      fieldName,
+      invalidError = FormError(fieldName, invalidKey)
     )
 
-    "Return 200 for a GET" in {
-
-      val result = controller.onPageLoad(1)(fakeRequest)
-
-      status(result) mustBe OK
-
-    }
+    behave like mandatoryField(
+      form,
+      fieldName,
+      requiredError = FormError(fieldName, requiredKey)
+    )
   }
+
 }
