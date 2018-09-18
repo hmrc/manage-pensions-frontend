@@ -76,7 +76,7 @@ messages__schemesOverview__UR__head = Help us improve this service
 messages__schemesOverview__UR__text = We want to hear from people who would like to help improve this service by sharing their feedback and testing new features.
 messages__schemesOverview__UR__link = Let us know if you would like to help improve this service.
 
-messages__psa__name__title = Who are you inviting?
+messages__psa__name__title = What is the name of the PSA you are inviting?
 messages__psa__name__heading = What is the name of the PSA you are inviting?
 messages__psa__name__p1 = This must be the exact name that they used when they registered as a PSA.
 messages__error__psa__name__required = Enter the name of who you are inviting
