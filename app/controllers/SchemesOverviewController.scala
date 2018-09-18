@@ -42,7 +42,7 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
     implicit request =>
       dataCacheConnector.fetch(request.externalId).flatMap {
         case None =>
-          Future.successful(Ok(schemesOverview(appConfig, None, None, None)))
+          Future.successful(Ok(schemesOverview(appConfig, None, None, None, "")))
         case Some(data) =>
           (data \ "schemeDetails" \ "schemeName").validate[String] match {
             case JsSuccess(name, _) =>
@@ -60,7 +60,8 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
                   appConfig,
                   Some(name),
                   Some(s"${createFormattedDate(date, daysToAdd = 0)}"),
-                  Some(s"${createFormattedDate(date, appConfig.daysDataSaved)}")
+                  Some(s"${createFormattedDate(date, appConfig.daysDataSaved)}"),
+                  ""
                 ))
               }
             case JsError(_) => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))

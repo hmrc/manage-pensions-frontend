@@ -32,9 +32,9 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
   val deleteDate: String = LocalDate.now.plusDays(frontendAppConfig.daysDataSaved).toString
 
   def createView: (() => HtmlFormat.Appendable) = () =>
-    schemesOverview(frontendAppConfig, Some(schemeName), Some(lastDate), Some(deleteDate))(fakeRequest, messages)
+    schemesOverview(frontendAppConfig, Some(schemeName), Some(lastDate), Some(deleteDate), "")(fakeRequest, messages)
 
-  def createFreshView: (() => HtmlFormat.Appendable) = () => schemesOverview(frontendAppConfig, None, None, None)(fakeRequest, messages)
+  def createFreshView: (() => HtmlFormat.Appendable) = () => schemesOverview(frontendAppConfig, None, None, None, "")(fakeRequest, messages)
 
   "SchemesOverview view when a scheme has been partially defined" must {
     behave like normalPage(

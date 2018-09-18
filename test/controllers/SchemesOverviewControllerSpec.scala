@@ -19,11 +19,11 @@ package controllers
 import config.FrontendAppConfig
 import connectors.{DataCacheConnector, MicroserviceCacheConnector, MinimalPsaConnector}
 import controllers.actions.{DataRetrievalAction, _}
-import models.MinimalPSA
+import models.{IndividualDetails, MinimalPSA}
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTime, DateTimeZone}
 import org.mockito.Matchers._
-import org.mockito.Matchers.{eq=>eqTo}
+import org.mockito.Matchers.{eq => eqTo}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
@@ -65,10 +65,13 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
     getConfig(true),
     Some(schemeName),
     Some(lastDate.toString(formatter)),
-    Some(deleteDate)
+    Some(deleteDate),
+    ""
   )(fakeRequest, messages).toString
 
-  def viewAsStringNewScheme(): String = schemesOverview(frontendAppConfig, None, None, None)(fakeRequest, messages).toString
+  def viewAsStringNewScheme(): String = schemesOverview(frontendAppConfig, None, None, None, "")(fakeRequest, messages).toString
+
+  def viewWithPsaName(name: String) = schemesOverview(frontendAppConfig, None, None, None, name)(fakeRequest, messages).toString
 
   override def beforeEach(): Unit = {
     reset(fakeCacheConnector)
@@ -99,6 +102,16 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
         val result = controller().onPageLoad(fakeRequest)
         status(result) mustBe OK
         contentAsString(result) mustBe viewAsString()
+      }
+
+      "return OK and the correct view with an individual name for an individual Psa" in {
+        when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
+        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo("A0000000"))(any(), any())).thenReturn(Future.successful(minimalPsaDetailsIndividual))
+
+        val result = controller().onPageLoad(fakeRequest)
+        status(result) mustBe OK
+        contentAsString(result) mustBe viewAsString()
+
       }
     }
 
@@ -180,6 +193,7 @@ object SchemesOverviewControllerSpec {
   val timestamp: Long = lastDate.getMillis
 
   def minimalPsaDetails(psaSuspended: Boolean) = MinimalPSA("test@test.com", psaSuspended, Some("Org Name"), None)
+  val minimalPsaDetailsIndividual = MinimalPSA("test@test.com", false, None, Some(IndividualDetails("John", Some("Doe"), "Doe")))
 
   val cannotStartRegistrationUrl = routes.CannotStartRegistrationController.onPageLoad()
 }
