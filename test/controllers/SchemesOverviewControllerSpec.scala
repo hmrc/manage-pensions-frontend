@@ -71,7 +71,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
 
   def viewAsStringNewScheme(): String = schemesOverview(frontendAppConfig, None, None, None, None)(fakeRequest, messages).toString
 
-  def viewWithPsaName(name: String) = schemesOverview(frontendAppConfig, None, None, None, Some(name))(fakeRequest, messages).toString
+  def viewWithPsaName(name: Option[String] = None) = schemesOverview(frontendAppConfig, None, None, None, name)(fakeRequest, messages).toString
   def viewWithPsaNameAndScheme(name: Option[String]) = schemesOverview(frontendAppConfig, Some(schemeName),
     Some(lastDate.toString(formatter)),
     Some(deleteDate), name)(fakeRequest, messages).toString
@@ -91,7 +91,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
         val result = controller().onPageLoad(fakeRequest)
 
         status(result) mustBe OK
-        contentAsString(result) mustBe viewWithPsaName(expectedName)
+        contentAsString(result) mustBe viewWithPsaName(Some(expectedName))
       }
 
       "return OK and the correct view if a scheme has been partially defined" in {
@@ -115,7 +115,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
 
         val result = controller().onPageLoad(fakeRequest)
         status(result) mustBe OK
-        contentAsString(result) mustBe viewWithPsaName(expectedName)
+        contentAsString(result) mustBe viewWithPsaName(Some(expectedName))
       }
 
       "return OK and the correct view with an individual name with no middle name for an individual Psa and no scheme has been defined" in {
@@ -128,7 +128,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
 
         val result = controller().onPageLoad(fakeRequest)
         status(result) mustBe OK
-        contentAsString(result) mustBe viewWithPsaName(expectedName)
+        contentAsString(result) mustBe viewWithPsaName(Some(expectedName))
       }
 
       "return OK and the correct view with an individual name with no middle name for an individual Psa and if a scheme has been partially defined" in {
@@ -202,7 +202,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
 
         val result = controller(isWorkPackageOneEnabled = false).onPageLoad(fakeRequest)
         status(result) mustBe OK
-        contentAsString(result) mustBe viewWithPsaNameAndScheme(None)
+        contentAsString(result) mustBe viewWithPsaName()
       }
     }
 

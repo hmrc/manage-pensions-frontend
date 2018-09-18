@@ -20,6 +20,7 @@ import config.FrontendAppConfig
 import connectors.{DataCacheConnector, MinimalPsaConnector}
 import controllers.actions._
 import javax.inject.Inject
+import models.requests.OptionalDataRequest
 import models.{LastUpdatedDate, MinimalPSA}
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTime, DateTimeZone, LocalDate}
@@ -42,57 +43,49 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
     implicit request =>
 
       dataCacheConnector.fetch(request.externalId).flatMap {
-        case None =>
-          minimalPsaConnector.getMinimalPsaDetails(request.psaId.id).map { minimalDetails =>
-            Ok(schemesOverview(appConfig, None, None, None, getPsaName(minimalDetails)))
+        case None => {
+          if (appConfig.isWorkPackageOneEnabled) {
+            minimalPsaConnector.getMinimalPsaDetails(request.psaId.id).map { minimalDetails =>
+              Ok(schemesOverview(appConfig, None, None, None, getPsaName(minimalDetails)))
+            }
+          }else{
+            Future.successful(Ok(schemesOverview(appConfig, None, None, None, None)))
           }
+        }
         case Some(data) =>
           (data \ "schemeDetails" \ "schemeName").validate[String] match {
             case JsSuccess(name, _) =>
               dataCacheConnector.lastUpdated(request.externalId).flatMap { dateOpt =>
-
                 if(appConfig.isWorkPackageOneEnabled) {
                   minimalPsaConnector.getMinimalPsaDetails(request.psaId.id).map { minimalDetails =>
-
-                    val date = dateOpt.map(ts =>
-                      LastUpdatedDate(
-                        ts.validate[Long] match {
-                          case JsSuccess(value, _) => value
-                          case JsError(errors) => throw JsResultException(errors)
-                        }
-                      )
-                    ).getOrElse(currentTimestamp)
-
-                    Ok(schemesOverview(
-                      appConfig,
-                      Some(name),
-                      Some(s"${createFormattedDate(date, daysToAdd = 0)}"),
-                      Some(s"${createFormattedDate(date, appConfig.daysDataSaved)}"),
-                      getPsaName(minimalDetails)
-                    ))
+                    buildView(name, dateOpt, Some(minimalDetails))
                   }
                 } else {
-                  val date = dateOpt.map(ts =>
-                    LastUpdatedDate(
-                      ts.validate[Long] match {
-                        case JsSuccess(value, _) => value
-                        case JsError(errors) => throw JsResultException(errors)
-                      }
-                    )
-                  ).getOrElse(currentTimestamp)
-
-                  Future.successful(Ok(schemesOverview(
-                    appConfig,
-                    Some(name),
-                    Some(s"${createFormattedDate(date, daysToAdd = 0)}"),
-                    Some(s"${createFormattedDate(date, appConfig.daysDataSaved)}"),
-                    None
-                  )))
+                  Future.successful(buildView(name,dateOpt))
                 }
               }
             case JsError(_) => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
           }
       }
+  }
+
+  private def buildView(name: String, dateOpt: Option[JsValue], minimalDetails: Option[MinimalPSA] = None)(implicit request: OptionalDataRequest[AnyContent]) = {
+    val date = dateOpt.map(ts =>
+      LastUpdatedDate(
+        ts.validate[Long] match {
+          case JsSuccess(value, _) => value
+          case JsError(errors) => throw JsResultException(errors)
+        }
+      )
+    ).getOrElse(currentTimestamp)
+
+    Ok(schemesOverview(
+      appConfig,
+      Some(name),
+      Some(s"${createFormattedDate(date, daysToAdd = 0)}"),
+      Some(s"${createFormattedDate(date, appConfig.daysDataSaved)}"),
+      if (minimalDetails.isDefined) getPsaName(minimalDetails.get) else None
+    ))
   }
 
   private def getPsaName(minimalDetails: MinimalPSA): Option[String] = {
