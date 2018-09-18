@@ -76,10 +76,10 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
       }
   }
 
-  private def getPsaName(minimalDetails: MinimalPSA): String = {
+  private def getPsaName(minimalDetails: MinimalPSA): Option[String] = {
     minimalDetails.individualDetails match {
-      case Some(individual) => individual.fullName
-      case _ => s"${minimalDetails.organisationName.get}"
+      case Some(individual) => Some(individual.fullName)
+      case _ => Some(s"${minimalDetails.organisationName.get}")
     }
   }
 

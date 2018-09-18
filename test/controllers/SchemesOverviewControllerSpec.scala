@@ -66,13 +66,13 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
     Some(schemeName),
     Some(lastDate.toString(formatter)),
     Some(deleteDate),
-    ""
+    None
   )(fakeRequest, messages).toString
 
-  def viewAsStringNewScheme(): String = schemesOverview(frontendAppConfig, None, None, None, "")(fakeRequest, messages).toString
+  def viewAsStringNewScheme(): String = schemesOverview(frontendAppConfig, None, None, None, None)(fakeRequest, messages).toString
 
-  def viewWithPsaName(name: String) = schemesOverview(frontendAppConfig, None, None, None, name)(fakeRequest, messages).toString
-  def viewWithPsaNameAndScheme(name: String) = schemesOverview(frontendAppConfig, Some(schemeName),
+  def viewWithPsaName(name: String) = schemesOverview(frontendAppConfig, None, None, None, Some(name))(fakeRequest, messages).toString
+  def viewWithPsaNameAndScheme(name: Option[String]) = schemesOverview(frontendAppConfig, Some(schemeName),
     Some(lastDate.toString(formatter)),
     Some(deleteDate), name)(fakeRequest, messages).toString
 
@@ -104,7 +104,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
 
         val result = controller().onPageLoad(fakeRequest)
         status(result) mustBe OK
-        contentAsString(result) mustBe viewWithPsaNameAndScheme(expectedName)
+        contentAsString(result) mustBe viewWithPsaNameAndScheme(Some(expectedName))
       }
 
       "return OK and the correct view with an individual name for an individual Psa and no scheme has been defined" in {
@@ -142,7 +142,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
 
         val result = controller().onPageLoad(fakeRequest)
         status(result) mustBe OK
-        contentAsString(result) mustBe viewWithPsaNameAndScheme(expectedName)
+        contentAsString(result) mustBe viewWithPsaNameAndScheme(Some(expectedName))
       }
 
       "return OK and the correct view with an individual name for an individual Psa and scheme has been defined" in {
@@ -154,7 +154,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
 
         val result = controller().onPageLoad(fakeRequest)
         status(result) mustBe OK
-        contentAsString(result) mustBe viewWithPsaNameAndScheme(expectedName)
+        contentAsString(result) mustBe viewWithPsaNameAndScheme(Some(expectedName))
       }
 
       "return OK and the correct view with an organisation name for an Organisation Psa" in {
@@ -167,7 +167,21 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
 
         val result = controller().onPageLoad(fakeRequest)
         status(result) mustBe OK
-        contentAsString(result) mustBe viewWithPsaNameAndScheme(expectedName)
+        contentAsString(result) mustBe viewWithPsaNameAndScheme(Some(expectedName))
+      }
+
+      "return OK and the correct view with no individual name and organisation name" in {
+        when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(Some(Json.obj(
+          "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
+        when(fakeCacheConnector.lastUpdated(any())(any(), any()))
+          .thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
+
+        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo("A0000000"))(any(), any())).thenReturn(Future.successful(
+          minimalPsaDetailsOrg.copy(organisationName = None)))
+
+        val result = controller().onPageLoad(fakeRequest)
+        status(result) mustBe OK
+        contentAsString(result) mustBe viewWithPsaNameAndScheme(None)
       }
     }
 
