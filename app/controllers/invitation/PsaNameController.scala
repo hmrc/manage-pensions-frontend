@@ -33,25 +33,26 @@ import views.html.invitation.psaName
 
 import scala.concurrent.Future
 
-class PsaNameController @Inject()(
-                                        appConfig: FrontendAppConfig,
-                                        override val messagesApi: MessagesApi,
-                                        dataCacheConnector: DataCacheConnector,
-                                        @Invitation navigator: Navigator,
-                                        authenticate: AuthAction,
-                                        getData: DataRetrievalAction,
-                                        requireData: DataRequiredAction,
-                                        formProvider: PsaNameFormProvider
-                                      ) extends FrontendController with I18nSupport {
+class PsaNameController @Inject()(appConfig: FrontendAppConfig,
+                                   override val messagesApi: MessagesApi,
+                                   dataCacheConnector: DataCacheConnector,
+                                   @Invitation navigator: Navigator,
+                                   authenticate: AuthAction,
+                                   getData: DataRetrievalAction,
+                                   requireData: DataRequiredAction,
+                                   formProvider: PsaNameFormProvider
+                                 ) extends FrontendController with I18nSupport {
 
   val form = formProvider()
 
   def onPageLoad(mode: Mode) = (authenticate andThen getData).async {
     implicit request =>
 
-      val preparedForm = request.userAnswers.flatMap(_.get(PsaNameId)) match {
-        case None => form
-        case Some(value) => form.fill(value)
+      val value = request.userAnswers.flatMap(_.get(PsaNameId))
+      val preparedForm = if (value.isDefined) {
+        form.fill(value.get)
+      } else {
+        form
       }
 
       Future.successful(Ok(psaName(appConfig, preparedForm, mode)))
@@ -63,8 +64,8 @@ class PsaNameController @Inject()(
       form.bindFromRequest().fold(
         (formWithErrors: Form[_]) =>
           Future.successful(BadRequest(psaName(appConfig, formWithErrors, mode))),
-        (value) => {
 
+        (value) => {
           dataCacheConnector.save(request.externalId, PsaNameId, value).map(
             cacheMap =>
               Redirect(navigator.nextPage(PsaNameId, mode,  UserAnswers(cacheMap)))

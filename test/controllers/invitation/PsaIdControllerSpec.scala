@@ -23,9 +23,10 @@ import forms.invitation.PsaIdFromProvider
 import models.NormalMode
 import play.api.data.Form
 import play.api.libs.json.Json
+import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import utils.UserAnswers
+import utils.FakeNavigator
 import views.html.invitation.psaId
 
 class PsaIdControllerSpec extends ControllerSpecBase {
@@ -33,19 +34,23 @@ class PsaIdControllerSpec extends ControllerSpecBase {
   val formProvider = new PsaIdFromProvider()
   val form = formProvider()
 
+  val navigator =  new FakeNavigator(onwardRoute)
+
+  def onwardRoute = Call("GET", "/foo")
+
   def controller(dataRetrievalAction: DataRetrievalAction = getEmptyData) = new PsaIdController(
-    frontendAppConfig, messagesApi, FakeAuthAction(), FakeDataCacheConnector,
+    frontendAppConfig, messagesApi, FakeAuthAction(), navigator, FakeDataCacheConnector,
     dataRetrievalAction, new DataRequiredActionImpl, formProvider)
 
   def viewAsString(form: Form[_] = form) = psaId(frontendAppConfig, form, NormalMode)(fakeRequest, messages).toString
 
-  "Calling get" must {
+  "PsaIdController calling onPageLoad" must {
 
     "return OK and the correct view for a GET" in {
 
       val result =  controller().onPageLoad(NormalMode)(FakeRequest())
 
-      status(result) mustBe 200
+      status(result) mustBe OK
       contentAsString(result) mustBe viewAsString()
     }
 
@@ -54,19 +59,43 @@ class PsaIdControllerSpec extends ControllerSpecBase {
       val data = new FakeDataRetrievalAction(Some(Json.parse("""{"psaId":"A0000000"}""")))
       val result =  controller(data).onPageLoad(NormalMode)(FakeRequest())
 
-      status(result) mustBe 200
+      status(result) mustBe OK
       contentAsString(result) mustBe viewAsString(form.fill("A0000000"))
 
     }
 
     "return 303 if user action is not authenticated" in {
       val controller =  new PsaIdController(
-        frontendAppConfig, messagesApi, FakeUnAuthorisedAction(), FakeDataCacheConnector,
+        frontendAppConfig, messagesApi, FakeUnAuthorisedAction(), navigator, FakeDataCacheConnector,
         getEmptyData, new DataRequiredActionImpl, formProvider)
       val result =  controller.onPageLoad(NormalMode)(FakeRequest())
 
-      status(result) mustBe 303
+      status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad.url)
+    }
+
+  }
+
+  "PsaIdController calling onSubmit" must {
+
+    "return a Bad Request and errors when invalid data is submitted" in {
+
+      val postRequest = fakeRequest.withFormUrlEncodedBody(("psaId", ""))
+      val boundForm = form.bind(Map("psaId" -> ""))
+
+      val result = controller().onSubmit(NormalMode)(postRequest)
+
+      status(result) mustBe BAD_REQUEST
+      contentAsString(result) mustBe viewAsString(boundForm)
+    }
+
+    "redirect to next screen of valid data is present" in {
+
+      val result = controller().onSubmit(NormalMode)(FakeRequest().withJsonBody(
+        Json.toJson(Json.parse("""{"psaId":"A0000000"}"""))))
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(controllers.routes.IndexController.onPageLoad.url)
     }
 
   }

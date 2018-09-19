@@ -45,7 +45,7 @@ class PsaNameControllerSpec extends ControllerSpecBase {
 
   val testAnswer = ("answer")
 
-  "PsaName Controller" must {
+  "PsaNameController calling onPageLoad" must {
 
     "return OK and the correct view for a GET" in {
       val result = controller().onPageLoad(NormalMode)(fakeRequest)
@@ -64,15 +64,18 @@ class PsaNameControllerSpec extends ControllerSpecBase {
     }
 
     "return 303 if user action is not authenticated" in {
-      val controller =  new PsaNameController(frontendAppConfig, messagesApi, FakeDataCacheConnector,
+      val controller = new PsaNameController(frontendAppConfig, messagesApi, FakeDataCacheConnector,
         new FakeNavigator(onwardRoute), FakeUnAuthorisedAction(),
         getEmptyData, new DataRequiredActionImpl, formProvider)
 
-      val result =  controller.onPageLoad(NormalMode)(FakeRequest())
+      val result = controller.onPageLoad(NormalMode)(FakeRequest())
 
-      status(result) mustBe 303
+      status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad.url)
     }
+  }
+
+  "PsaNameController calling onSubmit" must {
 
     "redirect to the next page when valid data is submitted" in {
       val postRequest = fakeRequest.withFormUrlEncodedBody(("psaName", "answer"))

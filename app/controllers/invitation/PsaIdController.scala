@@ -19,37 +19,56 @@ package controllers.invitation
 import com.google.inject.Inject
 import config.FrontendAppConfig
 import connectors.DataCacheConnector
-import controllers.actions.{DataRequiredAction, DataRetrievalAction, AuthAction}
+import controllers.actions._
 import forms.invitation.PsaIdFromProvider
 import identifiers.PSAId
-import models.{Mode, NormalMode}
+import models.Mode
+import play.api.data.Form
 import play.api.i18n.{MessagesApi, I18nSupport}
-import play.api.mvc.{Results, AnyContent, Action}
-import uk.gov.hmrc.play.bootstrap.controller.BaseController
-import utils.{UserAnswers, Navigator}
+import play.api.mvc.{AnyContent, Action}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import utils.Navigator
 import utils.annotations.Invitation
 import views.html.invitation.psaId
 import scala.concurrent.Future
 
 
-class PsaIdController@Inject()(config:FrontendAppConfig,
-                               override val messagesApi: MessagesApi,
-                               authenticate: AuthAction,
-                               dataCacheConnector: DataCacheConnector,
-                               getData: DataRetrievalAction,
-                               requireData: DataRequiredAction,
-                               formProvider : PsaIdFromProvider) extends BaseController with I18nSupport {
+class PsaIdController @Inject()(appConfig: FrontendAppConfig,
+                                override val messagesApi: MessagesApi,
+                                authenticate: AuthAction,
+                                @Invitation navigator: Navigator,
+                                dataCacheConnector: DataCacheConnector,
+                                getData: DataRetrievalAction,
+                                requireData: DataRequiredAction,
+                                formProvider: PsaIdFromProvider) extends FrontendController with I18nSupport {
 
-  def onPageLoad(mode:Mode) : Action[AnyContent] = (authenticate andThen getData).async{
+  val form = formProvider()
+
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
 
-      val userAnswers = request.userAnswers.getOrElse(new UserAnswers)
-      val form = if(userAnswers.get(PSAId).isDefined) {
-        formProvider().fill(userAnswers.get(PSAId).get)
+      val value = request.userAnswers.flatMap(_.get(PSAId))
+      val preparedForm = if (value.isDefined) {
+        form.fill(value.get)
       } else {
-        formProvider()
+        form
       }
 
-      Future.successful(Ok(psaId(config,form, mode)))
+      Future.successful(Ok(psaId(appConfig, preparedForm, mode)))
+  }
+
+  def onSubmit(mode: Mode): Action[AnyContent] = (authenticate andThen getData).async {
+    implicit request =>
+
+      form.bindFromRequest().fold(
+        (formWithErrors: Form[_]) =>
+          Future.successful(BadRequest(psaId(appConfig, formWithErrors, mode))),
+
+        (value) =>
+          dataCacheConnector.save(request.externalId, PSAId, value).map(
+            cacheMap =>
+              Redirect(controllers.routes.IndexController.onPageLoad())
+          )
+      )
   }
 }
