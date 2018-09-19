@@ -19,12 +19,13 @@ package controllers.invitation
 import connectors.FakeDataCacheConnector
 import controllers.ControllerSpecBase
 import controllers.actions._
-import forms.invitation.PsaNameFormProvider
+import forms.invitation.{PsaIdFromProvider, PsaNameFormProvider}
 import identifiers.PsaNameId
 import models.NormalMode
 import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.mvc.Call
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import utils.FakeNavigator
 import views.html.invitation.psaName
@@ -60,6 +61,17 @@ class PsaNameControllerSpec extends ControllerSpecBase {
       val result = controller(getRelevantData).onPageLoad(NormalMode)(fakeRequest)
 
       contentAsString(result) mustBe viewAsString(form.fill(testAnswer))
+    }
+
+    "return 303 if user action is not authenticated" in {
+      val controller =  new PsaNameController(frontendAppConfig, messagesApi, FakeDataCacheConnector,
+        new FakeNavigator(onwardRoute), FakeUnAuthorisedAction(),
+        getEmptyData, new DataRequiredActionImpl, formProvider)
+
+      val result =  controller.onPageLoad(NormalMode)(FakeRequest())
+
+      status(result) mustBe 303
+      redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad.url)
     }
 
     "redirect to the next page when valid data is submitted" in {
