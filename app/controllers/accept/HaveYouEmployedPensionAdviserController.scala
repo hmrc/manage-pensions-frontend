@@ -20,7 +20,6 @@ import config.FrontendAppConfig
 import controllers.actions.AuthAction
 import forms.accept.HaveYouEmployedPensionAdviserFormProvider
 import javax.inject.Inject
-import models.Index
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
@@ -34,12 +33,12 @@ class HaveYouEmployedPensionAdviserController @Inject()(
 
   val form = formProvider()
 
-  def onPageLoad(index: Index): Action[AnyContent] = auth {
+  def onPageLoad(): Action[AnyContent] = auth {
     implicit request =>
       Ok
   }
 
-  def onSubmit(index: Index): Action[AnyContent] = auth {
+  def onSubmit(): Action[AnyContent] = auth {
     implicit request =>
       ???
   }

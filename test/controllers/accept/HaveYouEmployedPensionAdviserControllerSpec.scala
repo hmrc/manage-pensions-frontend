@@ -32,9 +32,9 @@ class HaveYouEmployedPensionAdviserControllerSpec extends ControllerSpecBase {
       new HaveYouEmployedPensionAdviserFormProvider()
     )
 
-    "Return 200 for a GET" in {
+    "Return 200 and view" in {
 
-      val result = controller.onPageLoad(1)(fakeRequest)
+      val result = controller.onPageLoad()(fakeRequest)
 
       status(result) mustBe OK
 

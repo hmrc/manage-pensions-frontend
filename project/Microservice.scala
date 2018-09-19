@@ -45,7 +45,6 @@ trait MicroService {
       parallelExecution in Test := false
     )
     .settings(scalaSettings: _*)
-    .settings(RoutesKeys.routesImport ++= Seq("models.Index"))
     .settings(publishingSettings: _*)
     .settings(defaultSettings(): _*)
     .settings(
