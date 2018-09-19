@@ -16,6 +16,7 @@
 
 @import play.api.data.Form
 @import config.FrontendAppConfig
+@import uk.gov.hmrc.play.views.html._
 
 @(appConfig: FrontendAppConfig, form: Form[Boolean])(implicit request: Request[_], messages: Messages)
 
@@ -24,12 +25,24 @@
     appConfig = appConfig
 ){
 
-    @components.heading("messages_haveYouEmployedPensionAdviser__heading")
+    @helpers.form(action = controllers.routes.IndexController.onPageLoad(), 'autoComplete -> "off") {
 
-    @components.radio(form("value"), "site.yes", "true")
+        @components.heading("messages_haveYouEmployedPensionAdviser__heading")
 
-    @components.radio(form("value"), "site.no", "false")
+        @components.fieldSet(
+            field = form("value"),
+            legend = "messages_haveYouEmployedPensionAdviser__heading",
+            hiddenLegend = true
+        ) {
 
-    @components.submit_button()
+            @components.radio(form("value"), "site.yes", "true")
+
+            @components.radio(form("value"), "site.no", "false")
+
+        }
+
+        @components.submit_button()
+
+    }
 
 }
