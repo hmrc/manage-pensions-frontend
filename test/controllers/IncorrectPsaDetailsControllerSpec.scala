@@ -17,8 +17,7 @@
 package controllers
 
 import controllers.actions._
-import identifiers.{ListOfSchemesId, PsaNameId}
-import models.{Index, SchemeDetail}
+import identifiers.PsaNameId
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import views.html.incorrectPsaDetails
@@ -27,12 +26,10 @@ class IncorrectPsaDetailsControllerSpec extends ControllerSpecBase {
 
   "IncorrectPsaDetails Controller" must {
 
+    val srn = "S0987654321"
     val invitee = "PSA"
-    val schemeName = "Scheme"
-    val scheme = SchemeDetail(schemeName, "schemeRef", "OK", None, None,None)
     val FakeDataRetrieval = new FakeDataRetrievalAction(Some(Json.obj(
-      PsaNameId.toString -> invitee,
-      ListOfSchemesId.toString -> List(scheme)
+      PsaNameId.toString -> invitee
     )))
     val DataRequiredAction = new DataRequiredActionImpl()
 
@@ -45,12 +42,12 @@ class IncorrectPsaDetailsControllerSpec extends ControllerSpecBase {
     )
 
     "return 200 for a GET" in {
-      val result = controller.onPageLoad(Index(1))(fakeRequest)
+      val result = controller.onPageLoad(srn)(fakeRequest)
       status(result) mustBe OK
     }
 
     "return the correct view for a GET" in {
-      val result = controller.onPageLoad(Index(1))(fakeRequest)
+      val result = controller.onPageLoad(srn)(fakeRequest)
       contentAsString(result) mustBe incorrectPsaDetails(frontendAppConfig, invitee)(fakeRequest, messages).toString
     }
   }
