@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package forms
+package forms.invitation
 
 import javax.inject.Inject
 
-import forms.mappings.{Transforms, Mappings}
+import forms.mappings.{Mappings, Transforms}
 import play.api.data.Form
 
 

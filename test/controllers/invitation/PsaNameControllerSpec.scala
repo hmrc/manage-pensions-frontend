@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.invitation
 
+import connectors.FakeDataCacheConnector
+import controllers.ControllerSpecBase
+import controllers.actions._
+import forms.invitation.PsaNameFormProvider
 import identifiers.PsaNameId
+import models.NormalMode
 import play.api.data.Form
 import play.api.libs.json.Json
-import utils.FakeNavigator
-import connectors.FakeDataCacheConnector
-import controllers.actions._
-import play.api.test.Helpers._
-import forms.PsaNameFormProvider
-import models.NormalMode
 import play.api.mvc.Call
-import views.html.psaName
+import play.api.test.Helpers._
+import utils.FakeNavigator
+import views.html.invitation.psaName
 
 class PsaNameControllerSpec extends ControllerSpecBase {
 

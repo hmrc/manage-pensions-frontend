@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.invitation
 
 import javax.inject.Inject
 
+import config.FrontendAppConfig
+import connectors.DataCacheConnector
+import controllers.actions._
+import forms.invitation.PsaNameFormProvider
 import identifiers.PsaNameId
+import models.Mode
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import connectors.DataCacheConnector
-import controllers.actions._
-import config.FrontendAppConfig
-import forms.PsaNameFormProvider
-import models.Mode
-import utils.{UserAnswers, Navigator}
 import utils.annotations.Invitation
-import views.html.psaName
+import utils.{Navigator, UserAnswers}
+import views.html.invitation.psaName
 
 import scala.concurrent.Future
 

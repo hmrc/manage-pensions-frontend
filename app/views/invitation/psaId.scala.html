@@ -16,13 +16,13 @@
 
 @import config.FrontendAppConfig
 @import uk.gov.hmrc.play.views.html._
-@import controllers.routes._
+@import controllers.invitation.routes._
 @import models.Mode
 
 @(appConfig: FrontendAppConfig, form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
 
 @main_template(
-    title = s"${messages("messages__psa__name__title")}",
+    title = s"${messages("messages__psa__id__title")}",
     appConfig = appConfig,
     bodyClasses = None) {
 
@@ -32,13 +32,11 @@
 
         @components.error_summary(form.errors)
 
-        @components.heading("messages__psa__name__heading")
-
-        <p>@messages("messages__psa__name__p1")</p>
+        @components.heading("messages__psa__id__heading")
 
         @components.input_text(
-          field = form("psaName"),
-          label = messages("messages__psa__name__heading"),
+          field = form("psaId"),
+          label = messages("messages__psa__id__heading"),
           labelClass=Some("visually-hidden")
         )
 

@@ -14,32 +14,32 @@
  * limitations under the License.
  */
 
-package views
+package views.invitation
 
-import forms.PsaNameFormProvider
+import forms.invitation.PsaIdFromProvider
 import models.{CheckMode, NormalMode}
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import views.behaviours.QuestionViewBehaviours
-import views.html.psaName
+import views.html.invitation.psaId
 
-class PsaNameViewSpec extends QuestionViewBehaviours[String] {
+class PsaIdViewSpec extends QuestionViewBehaviours[String] {
 
-  val messageKeyPrefix = "psa__name"
+  val messageKeyPrefix = "psa__id"
 
-  override val form = new PsaNameFormProvider().apply()
+  val formProvider = new PsaIdFromProvider()
+  override val form = formProvider()
 
-  def createView: () => HtmlFormat.Appendable = () => psaName(frontendAppConfig, form, NormalMode)(fakeRequest, messages)
+  def createView: () => HtmlFormat.Appendable = () => psaId(frontendAppConfig, form, NormalMode)(fakeRequest, messages)
 
-  def createViewUsingForm: Form[_] => HtmlFormat.Appendable = (form: Form[_]) => psaName(frontendAppConfig, form, CheckMode)(fakeRequest, messages)
+  def createViewUsingForm: Form[_] => HtmlFormat.Appendable = (form: Form[_]) => psaId(frontendAppConfig, form, CheckMode)(fakeRequest, messages)
 
-  "PsaName view" must {
+  "PsaId view" must {
 
     behave like normalPage(
       createView,
       messageKeyPrefix,
-      messages(s"messages__${messageKeyPrefix}__heading"),
-      s"_p1"
+      messages(s"messages__${messageKeyPrefix}__heading")
     )
 
     behave like pageWithBackLink(createView)
@@ -47,8 +47,8 @@ class PsaNameViewSpec extends QuestionViewBehaviours[String] {
     behave like pageWithTextFields(
       createViewUsingForm,
       messageKeyPrefix,
-      controllers.routes.PsaNameController.onSubmit(NormalMode).url,
-      "psaName"
+      controllers.invitation.routes.PsaNameController.onSubmit(NormalMode).url,
+      "psaId"
     )
   }
 }
