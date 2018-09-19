@@ -14,9 +14,12 @@ GET        /logout                                      controllers.LogoutContro
 
 GET        /you-need-to-register                        controllers.YouNeedToRegisterController.onPageLoad()
 
+GET        /cannot-start-registration                   controllers.CannotStartRegistrationController.onPageLoad()
+
 GET        /your-pension-schemes                        controllers.ListSchemesController.onPageLoad
 
 GET        /overview                                    controllers.SchemesOverviewController.onPageLoad()
+GET        /overview/can-scheme-be-registered           controllers.SchemesOverviewController.onClickCheckIfSchemeCanBeRegistered()
 
 GET        /you-cannot-send-invite                      controllers.YouCannotSendAnInviteController.onPageLoad()
 

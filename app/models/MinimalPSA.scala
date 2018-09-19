@@ -19,7 +19,12 @@ package models
 import play.api.libs.json.{Format, Json}
 
 
-case class IndividualDetails(firstName: String, middleName: Option[String], lastName: String)
+case class IndividualDetails(firstName: String, middleName: Option[String], lastName: String){
+  def fullName: String = middleName match {
+    case Some(middle) => s"$firstName $middle $lastName"
+    case None => s"$firstName $lastName"
+  }
+}
 
 object IndividualDetails {
   implicit val format: Format[IndividualDetails] = Json.format[IndividualDetails]
