@@ -20,6 +20,7 @@ import controllers.ControllerSpecBase
 import controllers.actions.FakeAuthAction
 import forms.accept.HaveYouEmployedPensionAdviserFormProvider
 import play.api.test.Helpers._
+import views.html.accept.haveYouEmployedPensionAdviser
 
 class HaveYouEmployedPensionAdviserControllerSpec extends ControllerSpecBase {
 
@@ -32,11 +33,16 @@ class HaveYouEmployedPensionAdviserControllerSpec extends ControllerSpecBase {
       new HaveYouEmployedPensionAdviserFormProvider()
     )
 
+    val form = new HaveYouEmployedPensionAdviserFormProvider()()
+
+    val viewAsString = haveYouEmployedPensionAdviser(frontendAppConfig, form)(fakeRequest, messages).toString
+
     "Return 200 and view" in {
 
       val result = controller.onPageLoad()(fakeRequest)
 
       status(result) mustBe OK
+      contentAsString(result) mustBe viewAsString
 
     }
   }

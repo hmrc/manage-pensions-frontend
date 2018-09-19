@@ -23,6 +23,7 @@ import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import views.html.accept.haveYouEmployedPensionAdviser
 
 class HaveYouEmployedPensionAdviserController @Inject()(
                                                          val appConfig: FrontendAppConfig,
@@ -35,7 +36,7 @@ class HaveYouEmployedPensionAdviserController @Inject()(
 
   def onPageLoad(): Action[AnyContent] = auth {
     implicit request =>
-      Ok
+      Ok(haveYouEmployedPensionAdviser(appConfig, formProvider()))
   }
 
   def onSubmit(): Action[AnyContent] = auth {
