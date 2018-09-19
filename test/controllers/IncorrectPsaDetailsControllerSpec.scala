@@ -18,6 +18,7 @@ package controllers
 
 import controllers.actions._
 import identifiers.PsaNameId
+import models.SchemeReferenceNumber
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import views.html.incorrectPsaDetails
@@ -26,7 +27,7 @@ class IncorrectPsaDetailsControllerSpec extends ControllerSpecBase {
 
   "IncorrectPsaDetails Controller" must {
 
-    val srn = "S0987654321"
+    val srn = SchemeReferenceNumber("S0987654321")
     val invitee = "PSA"
     val FakeDataRetrieval = new FakeDataRetrievalAction(Some(Json.obj(
       PsaNameId.toString -> invitee
