@@ -21,9 +21,11 @@ import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice._
 import play.api.Environment
 import play.api.i18n.{Messages, MessagesApi}
-import play.api.inject.Injector
+import play.api.inject._
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
+import play.api.test.Helpers._
+import utils.{FakeNavigator, Navigator}
 
 trait SpecBase extends PlaySpec with GuiceOneAppPerSuite {
 
@@ -39,6 +41,7 @@ trait SpecBase extends PlaySpec with GuiceOneAppPerSuite {
 
   def environment: Environment = injector.instanceOf[Environment]
 
-  def appRunning(): Unit = app
+
+  def appRunning(): Unit =  app
 
 }
