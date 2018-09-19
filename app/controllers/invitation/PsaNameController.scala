@@ -68,7 +68,7 @@ class PsaNameController @Inject()(appConfig: FrontendAppConfig,
         (value) => {
           dataCacheConnector.save(request.externalId, PsaNameId, value).map(
             cacheMap =>
-              Redirect(navigator.nextPage(PsaNameId, mode,  UserAnswers(cacheMap)))
+              Redirect(navigator.nextPage(PsaNameId, mode, UserAnswers(cacheMap)))
           )
         }
       )

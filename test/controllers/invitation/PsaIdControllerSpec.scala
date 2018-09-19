@@ -95,7 +95,7 @@ class PsaIdControllerSpec extends ControllerSpecBase {
         Json.toJson(Json.parse("""{"psaId":"A0000000"}"""))))
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.routes.IndexController.onPageLoad.url)
+      redirectLocation(result) mustBe Some(onwardRoute.url)
     }
 
   }

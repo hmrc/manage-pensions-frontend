@@ -19,21 +19,22 @@ package utils.navigators
 import javax.inject.{Inject, Singleton}
 
 import connectors.DataCacheConnector
-import controllers.routes
-import identifiers.PsaNameId
-import models.{CheckMode, NormalMode}
-import play.api.mvc.Call
+import controllers.routes._
+import controllers.invitation.routes._
+import identifiers.{PSAId, PsaNameId}
+import models.NormalMode
 import utils.Navigator
 
 @Singleton
 class InvitationNavigator @Inject()(val dataCacheConnector: DataCacheConnector) extends Navigator {
 
   override def routeMap(from: NavigateFrom): Option[NavigateTo] = from.id match {
-    case PsaNameId => NavigateTo.save(routes.IndexController.onPageLoad())
+    case PsaNameId => NavigateTo.save(PsaIdController.onPageLoad(NormalMode))
+    case PSAId => NavigateTo.save(IndexController.onPageLoad())
     case _ => NavigateTo.dontSave(controllers.routes.SessionExpiredController.onPageLoad())
   }
 
   override protected def editRouteMap(from: NavigateFrom): Option[NavigateTo] = from.id match {
-    case _ => NavigateTo.dontSave(controllers.routes.SessionExpiredController.onPageLoad())
+    case _ => NavigateTo.dontSave(SessionExpiredController.onPageLoad())
   }
 }

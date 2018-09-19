@@ -27,7 +27,7 @@ class PsaIdFromProvider @Inject() extends Mappings with Transforms {
     "psaId" -> text("messages__error__psa__id__required").
       transform(standardTextTransform, noTransform).
       verifying(firstError(
-        maxLength(PsaIdFromProvider.psaIdLength, "messages__error__psa__id__length"),
+        maxLength(PsaIdFromProvider.psaIdLength, "messages__error__psa__id__invalid"),
         psaId("messages__error__psa__id__invalid")))
   )
 }

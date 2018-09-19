@@ -24,12 +24,13 @@ import forms.invitation.PsaIdFromProvider
 import identifiers.PSAId
 import models.Mode
 import play.api.data.Form
-import play.api.i18n.{MessagesApi, I18nSupport}
-import play.api.mvc.{AnyContent, Action}
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import utils.Navigator
 import utils.annotations.Invitation
+import utils.{Navigator, UserAnswers}
 import views.html.invitation.psaId
+
 import scala.concurrent.Future
 
 
@@ -67,7 +68,7 @@ class PsaIdController @Inject()(appConfig: FrontendAppConfig,
         (value) =>
           dataCacheConnector.save(request.externalId, PSAId, value).map(
             cacheMap =>
-              Redirect(controllers.routes.IndexController.onPageLoad())
+              Redirect(navigator.nextPage(PSAId, mode, UserAnswers(cacheMap)))
           )
       )
   }

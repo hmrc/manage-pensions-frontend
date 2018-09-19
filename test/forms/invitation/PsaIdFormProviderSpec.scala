@@ -30,7 +30,7 @@ class PsaIdFromProviderSpec extends StringFieldBehaviours with Constraints{
 
     val fieldName = "psaId"
     val requiredKey = "messages__error__psa__id__required"
-    val lengthKey = "messages__error__psa__id__length"
+    val lengthKey = "messages__error__psa__id__invalid"
     val invalidKey = "messages__error__psa__id__invalid"
     val maxLength = PsaIdFromProvider.psaIdLength
 
