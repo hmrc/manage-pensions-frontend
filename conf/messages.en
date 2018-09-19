@@ -88,3 +88,10 @@ messages__psa__name__p1 = This must be the exact name that they used when they r
 messages__error__psa__name__required = Enter the name of who you are inviting
 messages__error__psa__name__length = Enter a name using less than 108 characters
 messages__error__psa__name__invalid = Enter a name using only letters
+
+messages__adviser__name__title = Who is your pension adviser?
+messages__adviser__name__heading = Who is your pension adviser?
+messages__adviser__name__p1 = This can be either the name of your adviser or the company they work for.
+messages__error__adviser__name__required = Enter the adviser name
+
+

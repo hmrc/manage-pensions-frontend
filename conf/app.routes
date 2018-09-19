@@ -25,7 +25,14 @@ GET        /you-cannot-send-invite                      controllers.YouCannotSen
 
 GET        /invite                                      controllers.InviteController.onPageLoad()
 
-GET        /name-of-invited-psa                         controllers.PsaNameController.onPageLoad(mode: models.Mode = models.NormalMode)
-POST       /name-of-invited-psa                         controllers.PsaNameController.onSubmit(mode: models.Mode = models.NormalMode)
-GET        /change-name-of-invited-psa                  controllers.PsaNameController.onPageLoad(mode: models.Mode = models.CheckMode)
-POST       /change-name-of-invited-psa                  controllers.PsaNameController.onSubmit(mode: models.Mode = models.CheckMode)
+GET        /name-of-invited-psa                         controllers.PsaNameController.onPageLoad(mode: Mode = NormalMode)
+POST       /name-of-invited-psa                         controllers.PsaNameController.onSubmit(mode: Mode = NormalMode)
+GET        /change-name-of-invited-psa                  controllers.PsaNameController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-name-of-invited-psa                  controllers.PsaNameController.onSubmit(mode: Mode = CheckMode)
+
+GET        /adviser-name                                controllers.AdviserDetailsController.onPageLoad(mode: Mode = NormalMode)
+POST       /adviser-name                                controllers.AdviserDetailsController.onSubmit(mode: Mode = NormalMode)
+GET        /change-adviser-name                         controllers.AdviserDetailsController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-adviser-name                         controllers.AdviserDetailsController.onSubmit(mode: Mode = CheckMode)
+
+
