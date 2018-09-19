@@ -22,11 +22,21 @@ import play.api.data.Form
 
 class AdviserDetailsFormProvider @Inject() extends Mappings with Transforms {
   def apply(): Form[String] = Form(
-    "adviserName" -> text("messages__error__adviser__name__required")
+    "adviserName" -> text(
+      "messages__error__adviser__name__required"
+    ).transform(
+      standardTextTransform,
+      noTransform
+    ).verifying(
+      firstError(
+        maxLength(AdviserDetailsFormProvider.adviserNameLength, "messages__error__adviser__name__length"),
+        adviserName("messages__error__adviser__name__invalid")
+      )
+    )
   )
 }
 
 object AdviserDetailsFormProvider {
-  val adviserNameLength = 255
+  val adviserNameLength = 107
 }
 

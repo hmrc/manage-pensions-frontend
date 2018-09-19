@@ -131,12 +131,13 @@ class ConstraintsSpec extends WordSpec with Matchers with Constraints with Regex
     val invalidText = Table(
       "test<name",
       "1234>",
-      ""
+      "",
+      "{test name}"
     )
 
     val invalidMsg = "Invalid text"
 
-    behave like regexWithValidAndInvalidExamples(psaName, validText, invalidText, invalidMsg, psaNameRegx)
+    behave like regexWithValidAndInvalidExamples(psaName, validText, invalidText, invalidMsg, nameRegex)
   }
 
 }

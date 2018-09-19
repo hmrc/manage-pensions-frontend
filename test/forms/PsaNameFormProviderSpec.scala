@@ -36,7 +36,7 @@ class PsaNameFormProviderSpec extends StringFieldBehaviours with Constraints{
     behave like fieldThatBindsValidData(
       form,
       fieldName,
-      RegexpGen.from(psaNameRegx)
+      RegexpGen.from(nameRegex)
     )
 
     behave like fieldWithMaxLength(
@@ -56,7 +56,7 @@ class PsaNameFormProviderSpec extends StringFieldBehaviours with Constraints{
       form,
       fieldName,
       "1234",
-      FormError(fieldName, invalidKey, Seq(psaNameRegx))
+      FormError(fieldName, invalidKey, Seq(nameRegex))
     )
   }
 }
