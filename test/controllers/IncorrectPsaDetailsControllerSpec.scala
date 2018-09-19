@@ -17,7 +17,7 @@
 package controllers
 
 import controllers.actions._
-import identifiers.{ListOfSchemesId, PSANameId}
+import identifiers.{ListOfSchemesId, PsaNameId}
 import models.{Index, SchemeDetail}
 import play.api.libs.json.Json
 import play.api.test.Helpers._
@@ -31,7 +31,7 @@ class IncorrectPsaDetailsControllerSpec extends ControllerSpecBase {
     val schemeName = "Scheme"
     val scheme = SchemeDetail(schemeName, "schemeRef", "OK", None, None,None)
     val FakeDataRetrieval = new FakeDataRetrievalAction(Some(Json.obj(
-      PSANameId.toString -> invitee,
+      PsaNameId.toString -> invitee,
       ListOfSchemesId.toString -> List(scheme)
     )))
     val DataRequiredAction = new DataRequiredActionImpl()

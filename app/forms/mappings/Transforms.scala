@@ -14,10 +14,31 @@
  * limitations under the License.
  */
 
-package identifiers
+package forms.mappings
 
-object PSANameId extends TypedIdentifier[String] {
+import scala.annotation.tailrec
 
-  override def toString: String = "psaName"
+trait Transforms {
+
+  def noTransform(value: String): String = {
+    value
+  }
+
+  def standardTextTransform(value: String): String = {
+    value.trim
+  }
+
+  protected def strip(value: String): String = {
+    value.replaceAll(" ", "")
+  }
+
+  @tailrec
+  protected final def minimiseSpace(value: String): String = {
+    if (value.contains("  ")) {
+      minimiseSpace(value.replaceAll("  ", " "))
+    } else {
+      value
+    }
+  }
 
 }
