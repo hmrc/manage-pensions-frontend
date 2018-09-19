@@ -1,6 +1,8 @@
 site.service_name = Manage Pension Schemes
 site.signOut = Log Out
 site.back = Back
+site.save_and_continue = Save and Continue
+error.summary.title = There was a problem with the page
 
 site.yes = Yes
 site.no = No
@@ -85,3 +87,10 @@ messages__cannotStartRegistration__heading = A scheme registration cannot be sta
 messages__cannotStartRegistration__p1 = A scheme registration cannot be started at the moment.
 messages__cannotStartRegistration__p2 = You need to phone Pension Scheme Services on 0300 123 1079.
 messages__cannotStartRegistration__returnToOverview__link = Return to manage and register pension schemes
+
+messages__psa__name__title = What is the name of the PSA you are inviting?
+messages__psa__name__heading = What is the name of the PSA you are inviting?
+messages__psa__name__p1 = This must be the exact name that they used when they registered as a PSA.
+messages__error__psa__name__required = Enter the name of who you are inviting
+messages__error__psa__name__length = Enter a name using less than 108 characters
+messages__error__psa__name__invalid = Enter a name using only letters
