@@ -40,9 +40,9 @@ class HaveYouEmployedPensionAdviserViewSpec extends ViewBehaviours {
 
     behave like pageWithSubmitButton(createView)
 
-    "contain true option" in assertContainsRadioButton(doc, "value-true", "value", "true", false)
+    "contain true option" in assertContainsRadioButton(doc, "value-yes", "value", "true", false)
 
-    "contain false option" in assertContainsRadioButton(doc, "value-false", "value", "false", false)
+    "contain false option" in assertContainsRadioButton(doc, "value-no", "value", "false", false)
 
   }
 
