@@ -94,3 +94,8 @@ messages__psa__name__p1 = This must be the exact name that they used when they r
 messages__error__psa__name__required = Enter the name of who you are inviting
 messages__error__psa__name__length = Enter a name using less than 108 characters
 messages__error__psa__name__invalid = Enter a name using only letters
+
+messages__incorrectPsaDetails__title = The name and PSA ID do not match our records
+messages__incorrectPsaDetails__text1 = You should check these details with {0}.
+messages__incorrectPsaDetails__text2 = Their name should be entered exactly as their registered PSA name.
+messages__incorrectPsaDetails__linkText = Return to {0}
