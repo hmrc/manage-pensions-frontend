@@ -21,16 +21,17 @@ import javax.inject.Inject
 import play.api.data.Form
 
 class AdviserDetailsFormProvider @Inject() extends Mappings with Transforms {
+
+  import AdviserDetailsFormProvider._
+
   def apply(): Form[String] = Form(
-    "adviserName" -> text(
-      "messages__error__adviser__name__required"
-    ).transform(
+    "adviserName" -> text(requiredKey).transform(
       standardTextTransform,
       noTransform
     ).verifying(
       firstError(
-        maxLength(AdviserDetailsFormProvider.adviserNameLength, "messages__error__adviser__name__length"),
-        adviserName("messages__error__adviser__name__invalid")
+        maxLength(AdviserDetailsFormProvider.adviserNameLength, maxLengthKey),
+        adviserName(invalidKey)
       )
     )
   )
@@ -38,5 +39,9 @@ class AdviserDetailsFormProvider @Inject() extends Mappings with Transforms {
 
 object AdviserDetailsFormProvider {
   val adviserNameLength = 107
+
+  val requiredKey = "messages__error__adviser__name__required"
+  val maxLengthKey = "messages__error__adviser__name__length"
+  val invalidKey = "messages__error__adviser__name__invalid"
 }
 
