@@ -93,3 +93,8 @@ messages__psa__id__title = What is the PSA ID of the PSA you are inviting?
 messages__psa__id__heading = What is {0}’s PSA ID?
 messages__error__psa__id__required = Enter the PSA ID of who you are inviting
 messages__error__psa__id__invalid = Enter a PSA ID using the letter A followed by 7 numbers
+
+messages__incorrectPsaDetails__title = The name and PSA ID do not match our records
+messages__incorrectPsaDetails__text1 = You should check these details with {0}.
+messages__incorrectPsaDetails__text2 = Their name should be entered exactly as their registered PSA name.
+messages__incorrectPsaDetails__linkText = Return to {0}
