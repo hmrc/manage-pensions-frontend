@@ -16,20 +16,22 @@
 
 package forms.mappings
 
-import org.scalatest.prop.{TableDrivenPropertyChecks, TableFor1}
+import generators.Generators
+import org.scalacheck.Gen
+import org.scalatest.prop.{PropertyChecks, TableDrivenPropertyChecks, TableFor1}
 import org.scalatest.{Matchers, WordSpec}
 import play.api.data.Form
 import play.api.data.validation.{Constraint, Invalid, Valid}
 
-trait RegexBehaviourSpec extends TableDrivenPropertyChecks {
+trait RegexBehaviourSpec extends TableDrivenPropertyChecks with PropertyChecks with Generators {
 
   this: WordSpec with Matchers =>
 
-  def regexWithValidAndInvalidExamples(
-                                        constraint: String => Constraint[String],
-                                        valid: TableFor1[String], invalid: TableFor1[String],
-                                        invalidMsg: String,
-                                        regexString: String): Unit = {
+  def regexWithValidAndInvalidExamples(constraint: String => Constraint[String],
+                                       valid: Gen[String],
+                                       invalid: TableFor1[String],
+                                       invalidMsg: String,
+                                       regexString: String): Unit = {
     "Accept all valid examples" in {
       forAll(valid) { value: String =>
         constraint(invalidMsg)(value) shouldBe Valid

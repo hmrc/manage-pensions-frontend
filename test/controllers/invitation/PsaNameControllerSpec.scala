@@ -48,6 +48,7 @@ class PsaNameControllerSpec extends ControllerSpecBase {
   "PsaNameController calling onPageLoad" must {
 
     "return OK and the correct view for a GET" in {
+
       val result = controller().onPageLoad(NormalMode)(fakeRequest)
 
       status(result) mustBe OK
@@ -55,19 +56,19 @@ class PsaNameControllerSpec extends ControllerSpecBase {
     }
 
     "populate the view correctly on a GET when the question has previously been answered" in {
+
       val validData = Json.obj(PsaNameId.toString -> "answer")
       val getRelevantData = new FakeDataRetrievalAction(Some(validData))
-
       val result = controller(getRelevantData).onPageLoad(NormalMode)(fakeRequest)
 
       contentAsString(result) mustBe viewAsString(form.fill(testAnswer))
     }
 
     "return 303 if user action is not authenticated" in {
+
       val controller = new PsaNameController(frontendAppConfig, messagesApi, FakeDataCacheConnector,
         new FakeNavigator(onwardRoute), FakeUnAuthorisedAction(),
         getEmptyData, new DataRequiredActionImpl, formProvider)
-
       val result = controller.onPageLoad(NormalMode)(FakeRequest())
 
       status(result) mustBe SEE_OTHER
@@ -78,8 +79,8 @@ class PsaNameControllerSpec extends ControllerSpecBase {
   "PsaNameController calling onSubmit" must {
 
     "redirect to the next page when valid data is submitted" in {
-      val postRequest = fakeRequest.withFormUrlEncodedBody(("psaName", "answer"))
 
+      val postRequest = fakeRequest.withFormUrlEncodedBody(("psaName", "answer"))
       val result = controller().onSubmit(NormalMode)(postRequest)
 
       status(result) mustBe SEE_OTHER
@@ -87,10 +88,9 @@ class PsaNameControllerSpec extends ControllerSpecBase {
     }
 
     "return a Bad Request and errors when invalid data is submitted" in {
-      val postRequest = fakeRequest.withFormUrlEncodedBody(("psaName", ""))
-      val boundForm = form.bind(Map("psaName" -> ""))
 
-      val result = controller().onSubmit(NormalMode)(postRequest)
+      val boundForm = form.bind(Map("psaName" -> ""))
+      val result = controller().onSubmit(NormalMode)(fakeRequest)
 
       status(result) mustBe BAD_REQUEST
       contentAsString(result) mustBe viewAsString(boundForm)

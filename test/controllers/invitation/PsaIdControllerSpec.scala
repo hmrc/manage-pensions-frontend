@@ -20,13 +20,14 @@ import connectors.FakeDataCacheConnector
 import controllers.ControllerSpecBase
 import controllers.actions._
 import forms.invitation.PsaIdFromProvider
+import identifiers.{PSAId, PsaNameId}
 import models.NormalMode
 import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import utils.FakeNavigator
+import utils.{UserAnswers, FakeNavigator}
 import views.html.invitation.psaId
 
 class PsaIdControllerSpec extends ControllerSpecBase {
@@ -36,7 +37,15 @@ class PsaIdControllerSpec extends ControllerSpecBase {
 
   val navigator =  new FakeNavigator(onwardRoute)
 
+  val userAnswer = UserAnswers().set(PsaNameId)("xyz").asOpt.value
+  val userAnswerWithPsaID = userAnswer.set(PSAId)("A0000000").asOpt.value
+  val data = getDataRetrieval(userAnswer)
+
   def onwardRoute = Call("GET", "/foo")
+
+  def getDataRetrieval(userAnswer: UserAnswers) = {
+    new FakeDataRetrievalAction(Some(userAnswer.json))
+  }
 
   def controller(dataRetrievalAction: DataRetrievalAction = getEmptyData) = new PsaIdController(
     frontendAppConfig, messagesApi, FakeAuthAction(), navigator, FakeDataCacheConnector,
@@ -48,7 +57,6 @@ class PsaIdControllerSpec extends ControllerSpecBase {
 
     "return OK and the correct view for a GET" in {
 
-      val data = new FakeDataRetrievalAction(Some(Json.parse("""{"psaName":"xyz"}""")))
       val result =  controller(data).onPageLoad(NormalMode)(FakeRequest())
 
       status(result) mustBe OK
@@ -57,7 +65,7 @@ class PsaIdControllerSpec extends ControllerSpecBase {
 
     "populate the view correctly on a GET when the question has previously been answered" in {
 
-      val data = new FakeDataRetrievalAction(Some(Json.parse("""{"psaId":"A0000000", "psaName":"xyz"}""")))
+      val data = getDataRetrieval(userAnswerWithPsaID)
       val result =  controller(data).onPageLoad(NormalMode)(FakeRequest())
 
       status(result) mustBe OK
@@ -78,6 +86,7 @@ class PsaIdControllerSpec extends ControllerSpecBase {
       val controller =  new PsaIdController(
         frontendAppConfig, messagesApi, FakeUnAuthorisedAction(), navigator, FakeDataCacheConnector,
         getEmptyData, new DataRequiredActionImpl, formProvider)
+
       val result =  controller.onPageLoad(NormalMode)(FakeRequest())
 
       status(result) mustBe SEE_OTHER
@@ -90,7 +99,6 @@ class PsaIdControllerSpec extends ControllerSpecBase {
 
     "return a Bad Request and errors when invalid data is submitted" in {
 
-      val data = new FakeDataRetrievalAction(Some(Json.parse("""{"psaName":"xyz"}""")))
       val boundForm = form.bind(Map("psaId" -> ""))
       val result = controller(data).onSubmit(NormalMode)(fakeRequest)
 
@@ -100,9 +108,7 @@ class PsaIdControllerSpec extends ControllerSpecBase {
 
     "redirect to next screen of valid data is present" in {
 
-      val data = new FakeDataRetrievalAction(Some(Json.parse("""{"psaName":"xyz"}""")))
-      val result = controller(data).onSubmit(NormalMode)(FakeRequest().withJsonBody(
-        Json.toJson(Json.parse("""{"psaId":"A0000000"}"""))))
+      val result = controller(data).onSubmit(NormalMode)(FakeRequest().withJsonBody(userAnswerWithPsaID.json))
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(onwardRoute.url)

@@ -55,7 +55,6 @@ class PsaIdController @Inject()(appConfig: FrontendAppConfig,
           val preparedForm = value.fold(form)(form.fill)
 
           Future.successful(Ok(psaId(appConfig, preparedForm, psaName, mode)))
-
       }
   }
 
