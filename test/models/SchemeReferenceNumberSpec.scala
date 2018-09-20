@@ -14,8 +14,22 @@
  * limitations under the License.
  */
 
-package identifiers
+package models
 
-object PsaNameId extends TypedIdentifier[String] {
-  override def toString: String = "psaName"
+import org.scalatest.{MustMatchers, WordSpec}
+
+class SchemeReferenceNumberSpec extends WordSpec with MustMatchers {
+
+  "SchemeReferenceNumber" must {
+
+    "bind" in {
+      SchemeReferenceNumber.srnPathBindable.bind("schemeReferenceNumber", "S0987654321") mustBe Right(SchemeReferenceNumber("S0987654321"))
+    }
+
+    "not bind" in {
+      SchemeReferenceNumber.srnPathBindable.bind("schemeReferenceNumber", "Invalid") mustBe Left("SchemeReferenceNumber binding failed")
+    }
+
+  }
+
 }

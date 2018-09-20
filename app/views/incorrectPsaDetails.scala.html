@@ -1,4 +1,4 @@
-/*
+@*
  * Copyright 2018 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,10 +12,21 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *@
 
-package identifiers
+@import config.FrontendAppConfig
 
-object PsaNameId extends TypedIdentifier[String] {
-  override def toString: String = "psaName"
+@(appConfig: FrontendAppConfig, invitee: String)(implicit request: Request[_], messages: Messages)
+
+@main_template(
+    title = messages("messages__incorrectPsaDetails__title"),
+    appConfig = appConfig,
+    bodyClasses = None
+) {
+
+    @components.heading(headingKey = "messages__incorrectPsaDetails__title")
+
+    <p>@messages("messages__incorrectPsaDetails__text1", invitee)</p>
+    <p>@messages("messages__incorrectPsaDetails__text2")</p>
+
 }
