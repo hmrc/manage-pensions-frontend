@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.invitations
 
 import connectors.FakeDataCacheConnector
+import controllers.ControllerSpecBase
 import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
-import forms.AdviserDetailsFormProvider
-import identifiers.AdviserNameId
+import forms.invitations.AdviserDetailsFormProvider
+import identifiers.invitations.AdviserNameId
 import models.NormalMode
 import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.api.test.Helpers._
 import utils.FakeNavigator
-import views.html.adviserDetails
+import views.html.invitations.adviserDetails
 
 class AdviserDetailsControllerSpec extends ControllerSpecBase {
 
@@ -40,7 +41,7 @@ class AdviserDetailsControllerSpec extends ControllerSpecBase {
     FakeDataCacheConnector
   )
 
-  def viewAsString(form: Form[_] = form) = adviserDetails(frontendAppConfig, form, NormalMode)(fakeRequest, messages).toString
+  private def viewAsString(form: Form[_] = form) = adviserDetails(frontendAppConfig, form, NormalMode)(fakeRequest, messages).toString
 
   "AdviserDetailsController" when {
     "on a GET" must {

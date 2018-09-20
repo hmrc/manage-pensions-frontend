@@ -18,7 +18,8 @@ package utils.navigators
 
 import base.SpecBase
 import connectors.FakeDataCacheConnector
-import identifiers.{PsaNameId, Identifier}
+import identifiers.Identifier
+import identifiers.invitations.PsaNameId
 import models.requests.IdentifiedRequest
 import org.scalatest.OptionValues
 import org.scalatest.prop.TableFor6

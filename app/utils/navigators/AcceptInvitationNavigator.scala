@@ -18,7 +18,7 @@ package utils.navigators
 
 import connectors.DataCacheConnector
 import controllers.routes
-import identifiers.AdviserNameId
+import identifiers.invitations.AdviserNameId
 import javax.inject.{Inject, Singleton}
 import utils.Navigator
 

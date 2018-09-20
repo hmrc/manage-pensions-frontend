@@ -18,7 +18,8 @@ package utils.navigators
 
 import base.SpecBase
 import connectors.FakeDataCacheConnector
-import identifiers.{AdviserNameId, Identifier}
+import identifiers.Identifier
+import identifiers.invitations.AdviserNameId
 import org.scalatest.OptionValues
 import org.scalatest.prop.TableFor6
 import play.api.libs.json.Json

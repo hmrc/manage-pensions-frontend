@@ -1,5 +1,7 @@
 # microservice specific routes
 
+->         /invitations                                 invitations.Routes
+
 GET        /                                            controllers.IndexController.onPageLoad
 
 GET        /assets/*file                                controllers.Assets.versioned(path="/public", file: Asset)
@@ -24,15 +26,4 @@ GET        /overview/can-scheme-be-registered           controllers.SchemesOverv
 GET        /you-cannot-send-invite                      controllers.YouCannotSendAnInviteController.onPageLoad()
 
 GET        /invite                                      controllers.InviteController.onPageLoad()
-
-GET        /name-of-invited-psa                         controllers.PsaNameController.onPageLoad(mode: Mode = NormalMode)
-POST       /name-of-invited-psa                         controllers.PsaNameController.onSubmit(mode: Mode = NormalMode)
-GET        /change-name-of-invited-psa                  controllers.PsaNameController.onPageLoad(mode: Mode = CheckMode)
-POST       /change-name-of-invited-psa                  controllers.PsaNameController.onSubmit(mode: Mode = CheckMode)
-
-GET        /pension-adviser-name                        controllers.AdviserDetailsController.onPageLoad(mode: Mode = NormalMode)
-POST       /pension-adviser-name                        controllers.AdviserDetailsController.onSubmit(mode: Mode = NormalMode)
-GET        /change-pension-adviser-name                 controllers.AdviserDetailsController.onPageLoad(mode: Mode = CheckMode)
-POST       /change-pension-adviser-name                 controllers.AdviserDetailsController.onSubmit(mode: Mode = CheckMode)
-
 

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package views
+package views.invitations
 
-import forms.AdviserDetailsFormProvider
+import forms.invitations.AdviserDetailsFormProvider
 import models.{CheckMode, NormalMode}
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import views.behaviours.QuestionViewBehaviours
-import views.html.adviserDetails
+import views.html.invitations.adviserDetails
 
 class AdviserDetailsViewSpec extends QuestionViewBehaviours[String] {
 
@@ -47,7 +47,7 @@ class AdviserDetailsViewSpec extends QuestionViewBehaviours[String] {
     behave like pageWithTextFields(
       createViewUsingForm,
       messageKeyPrefix,
-      controllers.routes.AdviserDetailsController.onSubmit(NormalMode).url,
+      controllers.invitations.routes.AdviserDetailsController.onSubmit(NormalMode).url,
       "adviserName"
     )
   }

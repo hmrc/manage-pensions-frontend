@@ -14,9 +14,23 @@
  * limitations under the License.
  */
 
-package identifiers
+package forms.invitations
+
+import forms.mappings.{Mappings, Transforms}
+import javax.inject.Inject
+import play.api.data.Form
 
 
-object PsaNameId extends TypedIdentifier[String] {
-  override def toString: String = "psaName"
+class PsaNameFormProvider @Inject() extends Mappings with Transforms {
+  def apply(): Form[String] = Form(
+    "psaName" -> text("messages__error__psa__name__required").
+      transform(standardTextTransform, noTransform).
+      verifying(firstError(
+        maxLength(PsaNameFormProvider.psaNameLength, "messages__error__psa__name__length"),
+        psaName("messages__error__psa__name__invalid")))
+  )
+}
+
+object PsaNameFormProvider {
+  val psaNameLength = 107
 }

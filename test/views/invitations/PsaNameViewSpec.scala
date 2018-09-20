@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package views
+package views.invitations
 
-import forms.PsaNameFormProvider
+import forms.invitations.PsaNameFormProvider
 import models.{CheckMode, NormalMode}
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import views.behaviours.QuestionViewBehaviours
-import views.html.psaName
+import views.html.invitations.psaName
 
 class PsaNameViewSpec extends QuestionViewBehaviours[String] {
 
@@ -47,7 +47,7 @@ class PsaNameViewSpec extends QuestionViewBehaviours[String] {
     behave like pageWithTextFields(
       createViewUsingForm,
       messageKeyPrefix,
-      controllers.routes.PsaNameController.onSubmit(NormalMode).url,
+      controllers.invitations.routes.PsaNameController.onSubmit(NormalMode).url,
       "psaName"
     )
   }

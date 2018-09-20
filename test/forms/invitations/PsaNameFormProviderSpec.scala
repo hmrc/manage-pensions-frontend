@@ -14,28 +14,36 @@
  * limitations under the License.
  */
 
-package forms
+package forms.invitations
 
 import forms.mappings.Constraints
 import play.api.data.FormError
 import views.behaviours.StringFieldBehaviours
 import wolfendale.scalacheck.regexp.RegexpGen
 
-class AdviserDetailsFormProviderSpec extends StringFieldBehaviours with Constraints {
+class PsaNameFormProviderSpec extends StringFieldBehaviours with Constraints{
 
-  val form = new AdviserDetailsFormProvider().apply()
+  val form = new PsaNameFormProvider().apply()
 
-  ".adviserName" must {
+  ".psaName" must {
 
-    val fieldName = "adviserName"
-    val requiredKey = "messages__error__adviser__name__required"
-    val maxLenghtErrorKey = "messages__error__adviser__name__length"
-    val invalidErrorKey = "messages__error__adviser__name__invalid"
+    val fieldName = "psaName"
+    val requiredKey = "messages__error__psa__name__required"
+    val lengthKey = "messages__error__psa__name__length"
+    val invalidKey = "messages__error__psa__name__invalid"
+    val maxLength = PsaNameFormProvider.psaNameLength
 
     behave like fieldThatBindsValidData(
       form,
       fieldName,
       RegexpGen.from(nameRegex)
+    )
+
+    behave like fieldWithMaxLength(
+      form,
+      fieldName,
+      maxLength = maxLength,
+      lengthError = FormError(fieldName, lengthKey, Seq(maxLength))
     )
 
     behave like mandatoryField(
@@ -44,24 +52,11 @@ class AdviserDetailsFormProviderSpec extends StringFieldBehaviours with Constrai
       requiredError = FormError(fieldName, requiredKey)
     )
 
-    behave like fieldWithMaxLength(
-      form,
-      fieldName,
-      AdviserDetailsFormProvider.adviserNameLength,
-      FormError(fieldName, maxLenghtErrorKey, Seq(AdviserDetailsFormProvider.adviserNameLength))
-    )
-
     behave like fieldWithRegex(
       form,
       fieldName,
       "1234",
-      FormError(fieldName, invalidErrorKey, Seq(nameRegex))
-    )
-
-    behave like formWithTransform[String](
-      form,
-      Map(fieldName -> " test "),
-      "test"
+      FormError(fieldName, invalidKey, Seq(nameRegex))
     )
   }
 }
