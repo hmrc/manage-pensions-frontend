@@ -17,6 +17,7 @@
 package views.accept
 
 import forms.accept.HaveYouEmployedPensionAdviserFormProvider
+import models.NormalMode
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.twirl.api.HtmlFormat
@@ -27,7 +28,7 @@ class HaveYouEmployedPensionAdviserViewSpec extends ViewBehaviours {
 
   val form = new HaveYouEmployedPensionAdviserFormProvider()()
 
-  def createView: () => HtmlFormat.Appendable = () => haveYouEmployedPensionAdviser(frontendAppConfig, form)(fakeRequest, messages)
+  def createView: () => HtmlFormat.Appendable = () => haveYouEmployedPensionAdviser(frontendAppConfig, form, NormalMode)(fakeRequest, messages)
 
   def doc: Document = Jsoup.parse(createView().toString)
 
