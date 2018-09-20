@@ -23,7 +23,5 @@ GET        /your-pension-schemes                        controllers.ListSchemesC
 GET        /overview                                    controllers.SchemesOverviewController.onPageLoad()
 GET        /overview/can-scheme-be-registered           controllers.SchemesOverviewController.onClickCheckIfSchemeCanBeRegistered()
 
-GET        /you-cannot-send-invite                      controllers.YouCannotSendAnInviteController.onPageLoad()
-
 GET        /invite                                      controllers.InviteController.onPageLoad()
 

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package views
+package views.invitations
 
 import org.jsoup.Jsoup
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
-import views.html.youCannotSendAnInvite
+import views.html.invitations.youCannotSendAnInvite
 
 class YouCannotSendAnInviteViewSpec extends ViewBehaviours {
 
