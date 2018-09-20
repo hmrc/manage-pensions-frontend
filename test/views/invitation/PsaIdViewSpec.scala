@@ -30,16 +30,16 @@ class PsaIdViewSpec extends QuestionViewBehaviours[String] {
   val formProvider = new PsaIdFromProvider()
   override val form = formProvider()
 
-  def createView: () => HtmlFormat.Appendable = () => psaId(frontendAppConfig, form, NormalMode)(fakeRequest, messages)
+  def createView: () => HtmlFormat.Appendable = () => psaId(frontendAppConfig, form, "psaName", NormalMode)(fakeRequest, messages)
 
-  def createViewUsingForm: Form[_] => HtmlFormat.Appendable = (form: Form[_]) => psaId(frontendAppConfig, form, CheckMode)(fakeRequest, messages)
+  def createViewUsingForm: Form[_] => HtmlFormat.Appendable = (form: Form[_]) => psaId(frontendAppConfig, form, "psaName", NormalMode)(fakeRequest, messages)
 
   "PsaId view" must {
 
     behave like normalPage(
       createView,
       messageKeyPrefix,
-      messages(s"messages__${messageKeyPrefix}__heading")
+      messages(s"messages__${messageKeyPrefix}__heading",  "psaName")
     )
 
     behave like pageWithBackLink(createView)

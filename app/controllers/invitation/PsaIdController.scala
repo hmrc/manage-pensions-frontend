@@ -55,7 +55,7 @@ class PsaIdController @Inject()(appConfig: FrontendAppConfig,
         form
       }
 
-      Future.successful(Ok(psaId(appConfig, preparedForm, mode)))
+      Future.successful(Ok(psaId(appConfig, preparedForm, "", mode)))
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (authenticate andThen getData).async {
@@ -63,7 +63,7 @@ class PsaIdController @Inject()(appConfig: FrontendAppConfig,
 
       form.bindFromRequest().fold(
         (formWithErrors: Form[_]) =>
-          Future.successful(BadRequest(psaId(appConfig, formWithErrors, mode))),
+          Future.successful(BadRequest(psaId(appConfig, formWithErrors, "", mode))),
 
         (value) =>
           dataCacheConnector.save(request.externalId, PSAId, value).map(

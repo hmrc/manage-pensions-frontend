@@ -19,7 +19,7 @@
 @import controllers.invitation.routes._
 @import models.Mode
 
-@(appConfig: FrontendAppConfig, form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(appConfig: FrontendAppConfig, form: Form[_], psaName: String, mode: Mode)(implicit request: Request[_], messages: Messages)
 
 @main_template(
     title = s"${messages("messages__psa__id__title")}",
@@ -32,11 +32,11 @@
 
         @components.error_summary(form.errors)
 
-        @components.heading("messages__psa__id__heading")
+        @components.headingNew(messages("messages__psa__id__heading", psaName))
 
         @components.input_text(
           field = form("psaId"),
-          label = messages("messages__psa__id__heading"),
+          label = messages("messages__psa__id__heading", psaName),
           labelClass=Some("visually-hidden")
         )
 
