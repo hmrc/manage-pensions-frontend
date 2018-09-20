@@ -4,6 +4,9 @@ site.back = Back
 site.save_and_continue = Save and Continue
 error.summary.title = There was a problem with the page
 
+checkYourAnswers.title = Check Your Answers
+checkYourAnswers.heading = Check Your Answers
+
 messages__manage_pension_schemes__title = Manage Pension Schemes - GOV.UK
 
 messages__unauthorised__title = You can’t access this service with this account

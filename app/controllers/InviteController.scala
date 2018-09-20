@@ -19,6 +19,7 @@ package controllers
 import com.google.inject.{Inject, Singleton}
 import connectors.MinimalPsaConnector
 import controllers.actions.AuthAction
+import models.NormalMode
 import play.api.mvc.{AnyContent, Action}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
@@ -32,7 +33,7 @@ class InviteController@Inject()(authenticate: AuthAction,
         if(subscriptionDetails.isPsaSuspended) {
           Redirect(controllers.routes.YouCannotSendAnInviteController.onPageLoad())
         } else {
-          Ok
+          Redirect(controllers.invitation.routes.PsaNameController.onPageLoad(NormalMode))
         }
       }
   }

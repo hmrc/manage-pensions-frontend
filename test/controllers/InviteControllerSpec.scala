@@ -40,13 +40,14 @@ class InviteControllerSpec extends SpecBase with MockitoSugar with BeforeAndAfte
 
   "InviteController calling onPageLoad" must {
 
-    "return 200 if PSASuspension is false" in {
+    "return 303 if PSASuspension is false" in {
 
       when(mockConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(psaMinimalSubscription))
 
       val result = controller.onPageLoad(fakeRequest)
 
-      status(result) mustBe OK
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(controllers.invitation.routes.PsaNameController.onPageLoad(NormalMode).url)
       verify(mockConnector,  times(1)).getMinimalPsaDetails(any())(any(), any())
 
     }
