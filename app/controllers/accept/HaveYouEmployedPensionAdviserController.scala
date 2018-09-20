@@ -17,7 +17,7 @@
 package controllers.accept
 
 import config.FrontendAppConfig
-import controllers.actions.AuthAction
+import controllers.actions.{AuthAction, DataRetrievalAction}
 import forms.accept.HaveYouEmployedPensionAdviserFormProvider
 import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -29,12 +29,13 @@ class HaveYouEmployedPensionAdviserController @Inject()(
                                                          val appConfig: FrontendAppConfig,
                                                          val auth: AuthAction,
                                                          val messagesApi: MessagesApi,
-                                                         val formProvider: HaveYouEmployedPensionAdviserFormProvider
+                                                         val formProvider: HaveYouEmployedPensionAdviserFormProvider,
+                                                         val getData: DataRetrievalAction
                                                        ) extends FrontendController with I18nSupport {
 
   val form = formProvider()
 
-  def onPageLoad(): Action[AnyContent] = auth {
+  def onPageLoad(): Action[AnyContent] = (auth andThen getData) {
     implicit request =>
       Ok(haveYouEmployedPensionAdviser(appConfig, formProvider()))
   }
