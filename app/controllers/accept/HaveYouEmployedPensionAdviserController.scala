@@ -16,21 +16,20 @@
 
 package controllers.accept
 
-import javax.inject.Inject
-
 import config.FrontendAppConfig
-import controllers.actions.{AuthAction, DataRetrievalAction}
+import connectors.DataCacheConnector
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.accept.HaveYouEmployedPensionAdviserFormProvider
+import identifiers.accept.HaveYouEmployedPensionAdviserId
+import javax.inject.Inject
+import models.Mode
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import views.html.accept.haveYouEmployedPensionAdviser
-import connectors.DataCacheConnector
-import identifiers.accept.EmployedPensionAdviserId
-import models.Mode
-import utils.{Navigator, UserAnswers}
 import utils.annotations.AcceptInvitation
+import utils.{Navigator, UserAnswers}
+import views.html.accept.haveYouEmployedPensionAdviser
 
 import scala.concurrent.Future
 
@@ -41,14 +40,22 @@ class HaveYouEmployedPensionAdviserController @Inject()(
                                                          @AcceptInvitation navigator: Navigator,
                                                          val formProvider: HaveYouEmployedPensionAdviserFormProvider,
                                                          val dataCacheConnector: DataCacheConnector,
-                                                         val getData: DataRetrievalAction
+                                                         val getData: DataRetrievalAction,
+                                                         val requireData: DataRequiredAction
                                                        ) extends FrontendController with I18nSupport {
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (auth andThen getData) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (auth andThen getData andThen requireData) {
     implicit request =>
-      Ok(haveYouEmployedPensionAdviser(appConfig, formProvider(), mode))
+
+      val preparedForm = request.userAnswers.get(HaveYouEmployedPensionAdviserId) match {
+        case None => form
+        case Some(value) => form.fill(value)
+      }
+
+      Ok(haveYouEmployedPensionAdviser(appConfig, preparedForm, mode))
+
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = auth.async {
@@ -56,10 +63,10 @@ class HaveYouEmployedPensionAdviserController @Inject()(
       form.bindFromRequest().fold(
         (formWithErrors: Form[Boolean]) =>
           Future.successful(BadRequest(haveYouEmployedPensionAdviser(appConfig, formWithErrors, mode))),
-        (value) => {
-          dataCacheConnector.save(request.externalId, EmployedPensionAdviserId, value).map(
+        value => {
+          dataCacheConnector.save(request.externalId, HaveYouEmployedPensionAdviserId, value).map(
             cacheMap =>
-              Redirect(navigator.nextPage(EmployedPensionAdviserId, mode, UserAnswers(cacheMap)))
+              Redirect(navigator.nextPage(HaveYouEmployedPensionAdviserId, mode, UserAnswers(cacheMap)))
           )
         }
       )

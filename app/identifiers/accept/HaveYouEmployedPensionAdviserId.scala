@@ -19,6 +19,6 @@ package identifiers.accept
 import identifiers.TypedIdentifier
 import models.LastPage
 
-object EmployedPensionAdviserId extends TypedIdentifier[Boolean] {
-  override def toString: String = "employedPensionAdviser"
+object HaveYouEmployedPensionAdviserId extends TypedIdentifier[Boolean] {
+  override def toString: String = "haveYouEmployedPensionAdviser"
 }
