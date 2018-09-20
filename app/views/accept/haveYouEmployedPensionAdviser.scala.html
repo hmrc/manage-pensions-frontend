@@ -18,7 +18,7 @@
 @import config.FrontendAppConfig
 @import uk.gov.hmrc.play.views.html._
 
-@(appConfig: FrontendAppConfig, form: Form[Boolean])(implicit request: Request[_], messages: Messages)
+@(appConfig: FrontendAppConfig, form: Form[Boolean], mode: Mode)(implicit request: Request[_], messages: Messages)
 
 @main_template(
     title = Messages("messages_haveYouEmployedPensionAdviser__title"),
@@ -43,6 +43,6 @@
 
         @components.submit_button()
 
-    }
+        }
 
 }

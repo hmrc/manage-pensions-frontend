@@ -19,10 +19,14 @@ package controllers.accept
 import controllers.ControllerSpecBase
 import controllers.actions.FakeAuthAction
 import forms.accept.HaveYouEmployedPensionAdviserFormProvider
+import models.NormalMode
+import play.api.mvc.Call
 import play.api.test.Helpers._
 import views.html.accept.haveYouEmployedPensionAdviser
 
 class HaveYouEmployedPensionAdviserControllerSpec extends ControllerSpecBase {
+
+  def onwardRoute = Call("GET", "/foo")
 
   "HaveYouEmployedPensionAdviserSpec" must {
 
@@ -44,6 +48,15 @@ class HaveYouEmployedPensionAdviserControllerSpec extends ControllerSpecBase {
       status(result) mustBe OK
       contentAsString(result) mustBe viewAsString
 
+    }
+
+    "redirect to the next page when valid data is submitted" in {
+      val postRequest = fakeRequest.withFormUrlEncodedBody(("employed", "true"))
+
+      val result = controller.onSubmit()(postRequest)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(onwardRoute.url)
     }
   }
 }
