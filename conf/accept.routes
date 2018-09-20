@@ -1,5 +1,5 @@
 
-GET         /pensionAdviser/             controllers.accept.HaveYouEmployedPensionAdviserController.onPageLoad(mode: Mode = NormalMode)
-POST        /pensionAdviser/             controllers.accept.HaveYouEmployedPensionAdviserController.onSubmit(mode: Mode = NormalMode)
-GET         /checkPensionAdviser/        controllers.accept.HaveYouEmployedPensionAdviserController.onPageLoad(mode: Mode = CheckMode)
-POST        /checkPensionAdviser/        controllers.accept.HaveYouEmployedPensionAdviserController.onSubmit(mode: Mode = CheckMode)
+GET         /pensionAdviser             controllers.accept.HaveYouEmployedPensionAdviserController.onPageLoad(mode: Mode = NormalMode)
+POST        /pensionAdviser             controllers.accept.HaveYouEmployedPensionAdviserController.onSubmit(mode: Mode = NormalMode)
+GET         /checkPensionAdviser        controllers.accept.HaveYouEmployedPensionAdviserController.onPageLoad(mode: Mode = CheckMode)
+POST        /checkPensionAdviser        controllers.accept.HaveYouEmployedPensionAdviserController.onSubmit(mode: Mode = CheckMode)

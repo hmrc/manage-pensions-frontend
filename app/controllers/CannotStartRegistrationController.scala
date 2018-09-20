@@ -28,8 +28,8 @@ class CannotStartRegistrationController @Inject()(appConfig: FrontendAppConfig,
                                        override val messagesApi: MessagesApi,
                                        authenticate: AuthAction) extends FrontendController with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (authenticate) {
+  def onPageLoad: Action[AnyContent] = authenticate {
     implicit request =>
-    Ok(cannotStartRegistration(appConfig))
+      Ok(cannotStartRegistration(appConfig))
   }
 }

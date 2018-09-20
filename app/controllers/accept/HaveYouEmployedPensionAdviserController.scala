@@ -35,7 +35,7 @@ import scala.concurrent.Future
 
 class HaveYouEmployedPensionAdviserController @Inject()(
                                                          val appConfig: FrontendAppConfig,
-                                                         val auth: AuthAction,
+                                                         val authenticate: AuthAction,
                                                          val messagesApi: MessagesApi,
                                                          @AcceptInvitation navigator: Navigator,
                                                          val formProvider: HaveYouEmployedPensionAdviserFormProvider,
@@ -46,7 +46,7 @@ class HaveYouEmployedPensionAdviserController @Inject()(
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (auth andThen getData andThen requireData) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authenticate andThen getData andThen requireData) {
     implicit request =>
 
       val preparedForm = request.userAnswers.get(HaveYouEmployedPensionAdviserId) match {
@@ -58,7 +58,7 @@ class HaveYouEmployedPensionAdviserController @Inject()(
 
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = auth.async {
+  def onSubmit(mode: Mode): Action[AnyContent] = authenticate.async {
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[Boolean]) =>
