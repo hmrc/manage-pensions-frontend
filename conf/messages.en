@@ -93,3 +93,8 @@ messages__incorrectPsaDetails__title = The name and PSA ID do not match our reco
 messages__incorrectPsaDetails__text1 = You should check these details with {0}.
 messages__incorrectPsaDetails__text2 = Their name should be entered exactly as their registered PSA name.
 messages__incorrectPsaDetails__linkText = Return to {0}
+
+messages__adviser__postcode__title=
+messages__error__adviser__postcode__required=
+messages__error__adviser__postcode__length=
+messages__error__adviser__postcode__invalid=
