@@ -22,7 +22,7 @@ import identifiers.PsaNameId
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import connectors.DataCacheConnector
+import connectors.UserAnswersCacheConnector
 import controllers.actions._
 import config.FrontendAppConfig
 import forms.PsaNameFormProvider
@@ -36,7 +36,7 @@ import scala.concurrent.Future
 class PsaNameController @Inject()(
                                         appConfig: FrontendAppConfig,
                                         override val messagesApi: MessagesApi,
-                                        dataCacheConnector: DataCacheConnector,
+                                        dataCacheConnector: UserAnswersCacheConnector,
                                         @Invitation navigator: Navigator,
                                         authenticate: AuthAction,
                                         getData: DataRetrievalAction,

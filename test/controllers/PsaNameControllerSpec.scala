@@ -20,7 +20,7 @@ import identifiers.PsaNameId
 import play.api.data.Form
 import play.api.libs.json.Json
 import utils.FakeNavigator
-import connectors.FakeDataCacheConnector
+import connectors.FakeUserAnswersCacheConnector
 import controllers.actions._
 import play.api.test.Helpers._
 import forms.PsaNameFormProvider
@@ -36,7 +36,7 @@ class PsaNameControllerSpec extends ControllerSpecBase {
   val form = formProvider()
 
   def controller(dataRetrievalAction: DataRetrievalAction = getEmptyData) =
-    new PsaNameController(frontendAppConfig, messagesApi, FakeDataCacheConnector, new FakeNavigator(onwardRoute), FakeAuthAction(),
+    new PsaNameController(frontendAppConfig, messagesApi, FakeUserAnswersCacheConnector, new FakeNavigator(onwardRoute), FakeAuthAction(),
       dataRetrievalAction, new DataRequiredActionImpl, formProvider)
 
   def viewAsString(form: Form[_] = form) = psaName(frontendAppConfig, form, NormalMode)(fakeRequest, messages).toString
