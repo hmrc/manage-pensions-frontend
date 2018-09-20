@@ -30,9 +30,9 @@ POST       /name-of-invited-psa                         controllers.PsaNameContr
 GET        /change-name-of-invited-psa                  controllers.PsaNameController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-name-of-invited-psa                  controllers.PsaNameController.onSubmit(mode: Mode = CheckMode)
 
-GET        /adviser-name                                controllers.AdviserDetailsController.onPageLoad(mode: Mode = NormalMode)
-POST       /adviser-name                                controllers.AdviserDetailsController.onSubmit(mode: Mode = NormalMode)
-GET        /change-adviser-name                         controllers.AdviserDetailsController.onPageLoad(mode: Mode = CheckMode)
-POST       /change-adviser-name                         controllers.AdviserDetailsController.onSubmit(mode: Mode = CheckMode)
+GET        /pension-adviser-name                        controllers.AdviserDetailsController.onPageLoad(mode: Mode = NormalMode)
+POST       /pension-adviser-name                        controllers.AdviserDetailsController.onSubmit(mode: Mode = NormalMode)
+GET        /change-pension-adviser-name                 controllers.AdviserDetailsController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-pension-adviser-name                 controllers.AdviserDetailsController.onSubmit(mode: Mode = CheckMode)
 
 

@@ -27,7 +27,7 @@ import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import utils.annotations.Invitation
+import utils.annotations.AcceptInvitation
 import utils.{Navigator, UserAnswers}
 import views.html.adviserDetails
 
@@ -37,7 +37,7 @@ class AdviserDetailsController @Inject()(
                                           appConfig: FrontendAppConfig,
                                           override val messagesApi: MessagesApi,
                                           authenticate: AuthAction,
-                                          @Invitation navigator: Navigator,
+                                          @AcceptInvitation navigator: Navigator,
                                           getData: DataRetrievalAction,
                                           requiredData: DataRequiredAction,
                                           formProvider: AdviserDetailsFormProvider,
@@ -62,7 +62,7 @@ class AdviserDetailsController @Inject()(
       form.bindFromRequest().fold(
         (formWithErrors: Form[_]) =>
           Future.successful(BadRequest(adviserDetails(appConfig, formWithErrors, mode))),
-        (value) => {
+        value => {
           dataCacheConnector.save(request.externalId, AdviserNameId, value).map(
             cacheMap =>
               Redirect(navigator.nextPage(AdviserNameId, mode, UserAnswers(cacheMap)))
