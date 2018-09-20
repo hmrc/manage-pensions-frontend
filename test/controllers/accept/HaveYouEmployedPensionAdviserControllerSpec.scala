@@ -18,9 +18,10 @@ package controllers.accept
 
 import connectors.FakeDataCacheConnector
 import controllers.ControllerSpecBase
-import controllers.actions.{DataRequiredActionImpl, FakeAuthAction, FakeDataRetrievalAction}
+import controllers.actions._
 import forms.accept.HaveYouEmployedPensionAdviserFormProvider
 import models.NormalMode
+import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.api.test.Helpers._
@@ -34,39 +35,46 @@ class HaveYouEmployedPensionAdviserControllerSpec extends ControllerSpecBase {
   val formProvider = new HaveYouEmployedPensionAdviserFormProvider()
   val form = formProvider()
 
-  "HaveYouEmployedPensionAdviserSpec" must {
+  val controller = new HaveYouEmployedPensionAdviserController(
+    frontendAppConfig,
+    FakeAuthAction(),
+    messagesApi,
+    new FakeNavigator(onwardRoute),
+    formProvider,
+    FakeDataCacheConnector,
+    new FakeDataRetrievalAction(Some(Json.obj())),
+    new DataRequiredActionImpl
+  )
 
-    val controller = new HaveYouEmployedPensionAdviserController(
-      frontendAppConfig,
-      FakeAuthAction(),
-      messagesApi,
-      FakeNavigator,
-      formProvider,
-      FakeDataCacheConnector,
-      new FakeDataRetrievalAction(Some(Json.obj())),
-      new DataRequiredActionImpl
-    )
+  def viewAsString(form: Form[Boolean] = form) = haveYouEmployedPensionAdviser(frontendAppConfig, form, NormalMode)(fakeRequest, messages).toString
 
-    val form = new HaveYouEmployedPensionAdviserFormProvider()()
 
-    val viewAsString = haveYouEmployedPensionAdviser(frontendAppConfig, form, NormalMode)(fakeRequest, messages).toString
+  "HaveYouEmployedPensionAdviser Controller" must {
 
     "Return 200 and view" in {
-
       val result = controller.onPageLoad(NormalMode)(fakeRequest)
 
       status(result) mustBe OK
-      contentAsString(result) mustBe viewAsString
-
+      contentAsString(result) mustBe viewAsString(form)
     }
 
     "redirect to the next page when valid data is submitted" in {
-      val postRequest = fakeRequest.withFormUrlEncodedBody(("employed", "true"))
-
+      val postRequest = fakeRequest.withFormUrlEncodedBody(("value", "true"))
       val result = controller.onSubmit(NormalMode)(postRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(onwardRoute.url)
     }
+
+    "return a Bad Request and errors when invalid data is submitted" in {
+      val postRequest = fakeRequest.withFormUrlEncodedBody(("value", ""))
+      val boundForm = form.bind(Map("value" -> ""))
+
+      val result = controller.onSubmit(NormalMode)(postRequest)
+
+      status(result) mustBe BAD_REQUEST
+      contentAsString(result) mustBe viewAsString(boundForm)
+    }
   }
 }
+
