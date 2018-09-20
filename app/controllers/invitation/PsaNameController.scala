@@ -50,11 +50,7 @@ class PsaNameController @Inject()(appConfig: FrontendAppConfig,
     implicit request =>
 
       val value = request.userAnswers.flatMap(_.get(PsaNameId))
-      val preparedForm = if (value.isDefined) {
-        form.fill(value.get)
-      } else {
-        form
-      }
+      val preparedForm = value.fold(form)(form.fill)
 
       Future.successful(Ok(psaName(appConfig, preparedForm, mode)))
   }

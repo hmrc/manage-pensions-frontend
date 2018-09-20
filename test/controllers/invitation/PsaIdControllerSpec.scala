@@ -42,13 +42,14 @@ class PsaIdControllerSpec extends ControllerSpecBase {
     frontendAppConfig, messagesApi, FakeAuthAction(), navigator, FakeDataCacheConnector,
     dataRetrievalAction, new DataRequiredActionImpl, formProvider)
 
-  def viewAsString(form: Form[_] = form) = psaId(frontendAppConfig, form, "", NormalMode)(fakeRequest, messages).toString
+  def viewAsString(form: Form[_] = form) = psaId(frontendAppConfig, form, "xyz", NormalMode)(fakeRequest, messages).toString
 
   "PsaIdController calling onPageLoad" must {
 
     "return OK and the correct view for a GET" in {
 
-      val result =  controller().onPageLoad(NormalMode)(FakeRequest())
+      val data = new FakeDataRetrievalAction(Some(Json.parse("""{"psaName":"xyz"}""")))
+      val result =  controller(data).onPageLoad(NormalMode)(FakeRequest())
 
       status(result) mustBe OK
       contentAsString(result) mustBe viewAsString()
@@ -56,7 +57,7 @@ class PsaIdControllerSpec extends ControllerSpecBase {
 
     "populate the view correctly on a GET when the question has previously been answered" in {
 
-      val data = new FakeDataRetrievalAction(Some(Json.parse("""{"psaId":"A0000000"}""")))
+      val data = new FakeDataRetrievalAction(Some(Json.parse("""{"psaId":"A0000000", "psaName":"xyz"}""")))
       val result =  controller(data).onPageLoad(NormalMode)(FakeRequest())
 
       status(result) mustBe OK
@@ -64,7 +65,16 @@ class PsaIdControllerSpec extends ControllerSpecBase {
 
     }
 
+    "redirect to Session Expired if no existing data is found" in {
+
+      val result =  controller().onPageLoad(NormalMode)(FakeRequest())
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)
+    }
+
     "return 303 if user action is not authenticated" in {
+
       val controller =  new PsaIdController(
         frontendAppConfig, messagesApi, FakeUnAuthorisedAction(), navigator, FakeDataCacheConnector,
         getEmptyData, new DataRequiredActionImpl, formProvider)
@@ -80,10 +90,9 @@ class PsaIdControllerSpec extends ControllerSpecBase {
 
     "return a Bad Request and errors when invalid data is submitted" in {
 
-      val postRequest = fakeRequest.withFormUrlEncodedBody(("psaId", ""))
+      val data = new FakeDataRetrievalAction(Some(Json.parse("""{"psaName":"xyz"}""")))
       val boundForm = form.bind(Map("psaId" -> ""))
-
-      val result = controller().onSubmit(NormalMode)(postRequest)
+      val result = controller(data).onSubmit(NormalMode)(fakeRequest)
 
       status(result) mustBe BAD_REQUEST
       contentAsString(result) mustBe viewAsString(boundForm)
@@ -91,11 +100,20 @@ class PsaIdControllerSpec extends ControllerSpecBase {
 
     "redirect to next screen of valid data is present" in {
 
-      val result = controller().onSubmit(NormalMode)(FakeRequest().withJsonBody(
+      val data = new FakeDataRetrievalAction(Some(Json.parse("""{"psaName":"xyz"}""")))
+      val result = controller(data).onSubmit(NormalMode)(FakeRequest().withJsonBody(
         Json.toJson(Json.parse("""{"psaId":"A0000000"}"""))))
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(onwardRoute.url)
+    }
+
+    "redirect to Session Expired if no existing data is found" in {
+
+      val result =  controller().onPageLoad(NormalMode)(FakeRequest())
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)
     }
 
   }

@@ -19,9 +19,10 @@ package controllers.invitation
 import com.google.inject.Inject
 import config.FrontendAppConfig
 import connectors.DataCacheConnector
+import controllers.Retrievals
 import controllers.actions._
 import forms.invitation.PsaIdFromProvider
-import identifiers.PSAId
+import identifiers.{PsaNameId, PSAId}
 import models.Mode
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -41,35 +42,39 @@ class PsaIdController @Inject()(appConfig: FrontendAppConfig,
                                 dataCacheConnector: DataCacheConnector,
                                 getData: DataRetrievalAction,
                                 requireData: DataRequiredAction,
-                                formProvider: PsaIdFromProvider) extends FrontendController with I18nSupport {
+                                formProvider: PsaIdFromProvider) extends FrontendController with Retrievals with I18nSupport {
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authenticate andThen getData).async {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
 
-      val value = request.userAnswers.flatMap(_.get(PSAId))
-      val preparedForm = if (value.isDefined) {
-        form.fill(value.get)
-      } else {
-        form
-      }
+      PsaNameId.retrieve.right.map {
+        psaName =>
+          val value = request.userAnswers.get(PSAId)
+          val preparedForm = value.fold(form)(form.fill)
 
-      Future.successful(Ok(psaId(appConfig, preparedForm, "", mode)))
+          Future.successful(Ok(psaId(appConfig, preparedForm, psaName, mode)))
+
+      }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authenticate andThen getData).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
 
-      form.bindFromRequest().fold(
-        (formWithErrors: Form[_]) =>
-          Future.successful(BadRequest(psaId(appConfig, formWithErrors, "", mode))),
+      PsaNameId.retrieve.right.map {
+        psaName =>
 
-        (value) =>
-          dataCacheConnector.save(request.externalId, PSAId, value).map(
-            cacheMap =>
-              Redirect(navigator.nextPage(PSAId, mode, UserAnswers(cacheMap)))
+          form.bindFromRequest().fold(
+            (formWithErrors: Form[_]) =>
+              Future.successful(BadRequest(psaId(appConfig, formWithErrors, psaName, mode))),
+
+            (value) =>
+              dataCacheConnector.save(request.externalId, PSAId, value).map(
+                cacheMap =>
+                  Redirect(navigator.nextPage(PSAId, mode, UserAnswers(cacheMap)))
+              )
           )
-      )
+      }
   }
 }
