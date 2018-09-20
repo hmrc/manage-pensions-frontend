@@ -19,7 +19,8 @@ package utils.navigators
 import base.SpecBase
 import connectors.FakeDataCacheConnector
 import identifiers.Identifier
-import identifiers.invitations.AdviserNameId
+import identifiers.invitations.{AdviserEmailId, AdviserNameId}
+import models.NormalMode
 import org.scalatest.OptionValues
 import org.scalatest.prop.TableFor6
 import play.api.libs.json.Json
@@ -34,7 +35,8 @@ class AcceptInvitationNavigatorSpec extends SpecBase with NavigatorBehaviour {
 
   def routes(): TableFor6[Identifier, UserAnswers, Call, Boolean, Option[Call], Boolean] = Table(
     ("Id",              "User Answers",     "Next Page (NormalMode)",     "Save(NormalMode)",   "Next Page (CheckMode)", "Save(CheckMode"),
-    (AdviserNameId,      emptyAnswers,       index,                         false,                   None,                   false       )
+    (AdviserNameId,      emptyAnswers,       adviserEmailPage,              false,                   None,                   false       ),
+    (AdviserEmailId,     emptyAnswers,       index,                         false,                   None,                   false       )
   )
 
   navigator.getClass.getSimpleName must {
@@ -48,6 +50,7 @@ object AcceptInvitationNavigatorSpec extends OptionValues {
   lazy val emptyAnswers = UserAnswers(Json.obj())
 
   lazy val index: Call = controllers.routes.IndexController.onPageLoad()
+  lazy val adviserEmailPage = controllers.invitations.routes.AdviserEmailAddressController.onPageLoad(NormalMode)
 
   private def dataDescriber(answers: UserAnswers): String = answers.toString
 }

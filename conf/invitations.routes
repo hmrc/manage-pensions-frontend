@@ -12,7 +12,7 @@ POST       /change-pension-adviser-name                 controllers.invitations.
 
 GET        /cannot-send-invite                          controllers.invitations.YouCannotSendAnInviteController.onPageLoad()
 
-GET        /pension-adviser-email-address               controllers.invitations.AdviserDetailsController.onPageLoad(mode: Mode = NormalMode)
-POST       /pension-adviser-email-address               controllers.invitations.AdviserDetailsController.onSubmit(mode: Mode = NormalMode)
-GET        /change-pension-adviser-email-address        controllers.invitations.AdviserDetailsController.onPageLoad(mode: Mode = CheckMode)
-POST       /change-pension-adviser-email-address        controllers.invitations.AdviserDetailsController.onSubmit(mode: Mode = CheckMode)
+GET        /pension-adviser-email-address               controllers.invitations.AdviserEmailAddressController.onPageLoad(mode: Mode = NormalMode)
+POST       /pension-adviser-email-address               controllers.invitations.AdviserEmailAddressController.onSubmit(mode: Mode = NormalMode)
+GET        /change-pension-adviser-email-address        controllers.invitations.AdviserEmailAddressController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-pension-adviser-email-address        controllers.invitations.AdviserEmailAddressController.onSubmit(mode: Mode = CheckMode)

@@ -23,17 +23,20 @@ import play.twirl.api.HtmlFormat
 import views.behaviours.QuestionViewBehaviours
 import views.html.invitations.adviserEmailAddress
 
-class AdviserEmailAddressViewSpec extends QuestionViewBehaviours[String]{
+class AdviserEmailAddressViewSpec extends QuestionViewBehaviours[String] {
 
   val messageKeyPrefix = "adviser__email__address"
   val form = new AdviserEmailFormProvider().apply()
+  val adviserName = "test adviser"
 
-  private val createView: () => HtmlFormat.Appendable = () => adviserEmailAddress(frontendAppConfig, form, NormalMode)(fakeRequest, messages)
+  private val createView: () => HtmlFormat.Appendable = () => adviserEmailAddress(frontendAppConfig, form, NormalMode, adviserName)(fakeRequest, messages)
 
-  private val createViewWithForm: (Form[String]) => HtmlFormat.Appendable =
-    (form: Form[String]) => adviserEmailAddress(frontendAppConfig, form, NormalMode)(fakeRequest, messages)
+  private val createViewWithForm: Form[String] => HtmlFormat.Appendable =
+    (form: Form[String]) => adviserEmailAddress(frontendAppConfig, form, NormalMode, adviserName)(fakeRequest, messages)
 
-  behave like normalPage(createView, messageKeyPrefix, messages("messages__adviser__email__address__heading"), "_p1")
+  behave like normalPage(createView, messageKeyPrefix,
+    messages("messages__adviser__email__address__heading", adviserName),
+    "_p1")
 
   behave like pageWithBackLink(createView)
 

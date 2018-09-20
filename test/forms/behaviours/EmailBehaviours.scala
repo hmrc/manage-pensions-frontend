@@ -62,14 +62,17 @@ trait EmailBehaviours extends FormSpec with StringFieldBehaviours with Constrain
         form,
         Table(
           "valid",
-          Map("email" -> "test@test.com")
+          Map("email" -> "test@test.com"),
+          Map("email" -> "test@t-g.com"),
+          Map("email" -> "\"\"@test.com")
         ),
         Table(
           "invalid",
           Map("email" -> "@test.com"),
           Map("email" -> "test.com"),
           Map("email" -> "test@.com"),
-          Map("email" -> "test@sdff")
+          Map("email" -> "test@sdff"),
+          Map("email" -> "test@-.com")
         )
       )
     }

@@ -17,8 +17,9 @@
 @import config.FrontendAppConfig
 @import models.Mode
 @import uk.gov.hmrc.play.views.html._
+@import controllers.invitations.routes._
 
-@(appConfig: FrontendAppConfig, form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(appConfig: FrontendAppConfig, form: Form[_], mode: Mode, adviserName: String)(implicit request: Request[_], messages: Messages)
 
 @main_template(
     title = s"${messages("messages__adviser__email__address__title")}",
@@ -26,11 +27,12 @@
     bodyClasses = None) {
 
     @helpers.form(action = AdviserEmailAddressController.onSubmit(mode), 'autoComplete -> "off") {
+
         @components.back_link()
 
         @components.error_summary(form.errors)
 
-        @components.heading(s"messages__adviser__email__address__heading")
+        @components.heading(messages(s"messages__adviser__email__address__heading", adviserName))
 
         <p>@messages("messages__adviser__email__address__p1")</p>
 

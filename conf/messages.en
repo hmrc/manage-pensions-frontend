@@ -97,7 +97,7 @@ messages__error__adviser__name__length = Enter a name using less than 108 charac
 messages__error__adviser__name__invalid = Enter a name using only letters
 
 messages__adviser__email__address__title = What is your pension adviser's email address?
-messages__adviser__email__address__heading = What is your pension adviser's email address?
+messages__adviser__email__address__heading = What is {0}’s email address?
 messages__adviser__email__address__p1 = This will be used if HMRC need to contact your pension adviser.
 messages__error__adviser__email__address__required = Enter the adviser name
 messages__error__adviser__email__address__length = Enter a name using less than 108 characters

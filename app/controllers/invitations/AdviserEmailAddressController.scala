@@ -18,30 +18,62 @@ package controllers.invitations
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
+import connectors.DataCacheConnector
+import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.invitations.AdviserEmailFormProvider
-import models.NormalMode
+import identifiers.invitations.{AdviserEmailId, AdviserNameId}
+import models.Mode
+import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import utils.{Navigator, UserAnswers}
+import utils.annotations.AcceptInvitation
 import views.html.invitations.adviserEmailAddress
 
 import scala.concurrent.Future
 
-class AdviserEmailAddressController @Inject() (
-                                              appConfig: FrontendAppConfig,
-                                              override val messagesApi: MessagesApi,
-                                              authenticate: AuthAction,
-                                              getData: DataRetrievalAction,
-                                              requireData: DataRequiredAction,
-                                              formProvider: AdviserEmailFormProvider
-                                              ) extends FrontendController with I18nSupport {
+class AdviserEmailAddressController @Inject()(
+                                               appConfig: FrontendAppConfig,
+                                               override val messagesApi: MessagesApi,
+                                               authenticate: AuthAction,
+                                               @AcceptInvitation navigator: Navigator,
+                                               getData: DataRetrievalAction,
+                                               requireData: DataRequiredAction,
+                                               formProvider: AdviserEmailFormProvider,
+                                               dataCacheConnector: DataCacheConnector
+                                             ) extends FrontendController with I18nSupport with Retrievals {
 
 
   val form = formProvider()
-  def onPageLoad(): Action[AnyContent] = (authenticate andThen getData).async{
+
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
-    Future.successful(Ok(adviserEmailAddress(appConfig, form, NormalMode)))
+      val form = formProvider()
+      AdviserNameId.retrieve.right.map { adviserName =>
+        val preparedForm = request.userAnswers.get(AdviserEmailId) match {
+          case None => form
+          case Some(value) => form.fill(value)
+        }
+        Future.successful(Ok(adviserEmailAddress(appConfig, preparedForm, mode, adviserName)))
+      }
+  }
+
+  def onSubmit(mode: Mode): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
+    implicit request =>
+      AdviserNameId.retrieve.right.map { adviserName =>
+        form.bindFromRequest().fold(
+          (formWithErrors: Form[_]) => {
+            Future.successful(BadRequest(adviserEmailAddress(appConfig, formWithErrors, mode, adviserName)))
+          },
+          value =>
+            dataCacheConnector.save(request.externalId, AdviserEmailId, value).map {
+              cacheMap =>
+                Redirect(navigator.nextPage(AdviserEmailId, mode, UserAnswers(cacheMap)))
+            }
+        )
+      }
   }
 
 }
