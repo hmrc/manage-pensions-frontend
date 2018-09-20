@@ -19,7 +19,7 @@ package controllers.invitation
 import connectors.FakeDataCacheConnector
 import controllers.ControllerSpecBase
 import controllers.actions._
-import forms.invitation.{PsaIdFromProvider, PsaNameFormProvider}
+import forms.invitation.PsaNameFormProvider
 import identifiers.PsaNameId
 import models.NormalMode
 import play.api.data.Form
@@ -95,5 +95,6 @@ class PsaNameControllerSpec extends ControllerSpecBase {
       status(result) mustBe BAD_REQUEST
       contentAsString(result) mustBe viewAsString(boundForm)
     }
+
   }
 }

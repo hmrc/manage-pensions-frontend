@@ -42,7 +42,7 @@ class PsaIdControllerSpec extends ControllerSpecBase {
     frontendAppConfig, messagesApi, FakeAuthAction(), navigator, FakeDataCacheConnector,
     dataRetrievalAction, new DataRequiredActionImpl, formProvider)
 
-  def viewAsString(form: Form[_] = form) = psaId(frontendAppConfig, form, NormalMode)(fakeRequest, messages).toString
+  def viewAsString(form: Form[_] = form) = psaId(frontendAppConfig, form,  NormalMode)(fakeRequest, messages).toString
 
   "PsaIdController calling onPageLoad" must {
 

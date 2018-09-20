@@ -26,6 +26,7 @@ import identifiers.PsaNameId
 import models.Mode
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{AnyContent, Action}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.annotations.Invitation
 import utils.{Navigator, UserAnswers}
@@ -58,7 +59,7 @@ class PsaNameController @Inject()(appConfig: FrontendAppConfig,
       Future.successful(Ok(psaName(appConfig, preparedForm, mode)))
   }
 
-  def onSubmit(mode: Mode) = (authenticate andThen getData).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
 
       form.bindFromRequest().fold(
