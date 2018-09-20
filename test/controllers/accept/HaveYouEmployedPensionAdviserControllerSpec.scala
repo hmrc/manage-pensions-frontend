@@ -18,9 +18,10 @@ package controllers.accept
 
 import connectors.FakeDataCacheConnector
 import controllers.ControllerSpecBase
-import controllers.actions.FakeAuthAction
+import controllers.actions.{FakeAuthAction, FakeDataRetrievalAction}
 import forms.accept.HaveYouEmployedPensionAdviserFormProvider
 import models.NormalMode
+import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.api.test.Helpers._
 import utils.FakeNavigator
@@ -41,7 +42,9 @@ class HaveYouEmployedPensionAdviserControllerSpec extends ControllerSpecBase {
       messagesApi,
       FakeNavigator,
       formProvider,
-      FakeDataCacheConnector)
+      FakeDataCacheConnector,
+      new FakeDataRetrievalAction(Some(Json.obj()))
+    )
 
     val form = new HaveYouEmployedPensionAdviserFormProvider()()
 
