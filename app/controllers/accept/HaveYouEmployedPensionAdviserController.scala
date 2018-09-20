@@ -44,7 +44,7 @@ class HaveYouEmployedPensionAdviserController @Inject()(
                                                          val requireData: DataRequiredAction
                                                        ) extends FrontendController with I18nSupport {
 
-  val form = formProvider()
+  val form: Form[Boolean] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authenticate andThen getData andThen requireData) {
     implicit request =>

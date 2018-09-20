@@ -25,21 +25,21 @@
     appConfig = appConfig
 ){
 
-    @helpers.form(action = controllers.routes.IndexController.onPageLoad(), 'autoComplete -> "off") {
+    @helpers.form(action = controllers.accept.routes.HaveYouEmployedPensionAdviserController.onSubmit(mode), 'autoComplete -> "off") {
+
+        @components.error_summary(form.errors)
 
         @components.heading("messages_haveYouEmployedPensionAdviser__heading")
 
-        @components.fieldSet(
+        <p>A pension adviser is someone who gives you advice on pensions.</p>
+
+        <p>An adviser could be used if a PSA does not have full knowledge of how pensions work.</p>
+
+        @components.input_yes_no(
             field = form("value"),
-            legend = "messages_haveYouEmployedPensionAdviser__heading",
-            hiddenLegend = true
-        ) {
-
-            @components.radio(form("value"), "site.yes", "true")
-
-            @components.radio(form("value"), "site.no", "false")
-
-        }
+            label = messages("messages_haveYouEmployedPensionAdviser__heading"),
+            labelClass = Some("visually-hidden")
+        )
 
         @components.submit_button()
 
