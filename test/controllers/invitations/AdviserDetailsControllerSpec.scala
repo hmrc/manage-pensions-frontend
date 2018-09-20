@@ -52,20 +52,20 @@ class AdviserDetailsControllerSpec extends ControllerSpecBase {
         contentAsString(result) mustBe viewAsString()
       }
 
-      "populate the view correctly on a GET when the question has previously been answered" in {
+      "populate the view correctly on a GET if the question has previously been answered" in {
         val data = new FakeDataRetrievalAction(Some(Json.obj(AdviserNameId.toString -> "test")))
         val result = controller(data).onPageLoad(NormalMode)(fakeRequest)
         contentAsString(result) mustBe viewAsString(form.fill("test"))
       }
 
-      "redirect to the session expired page when there is no user answers" in {
+      "redirect to the session expired page if there is no existing data" in {
         val result = controller(dontGetAnyData).onPageLoad(NormalMode)(fakeRequest)
         redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad().url
       }
     }
 
     "on a POST" must {
-      "redirect to the next page when valid data is submitted" in {
+      "redirect to the next page if valid data is submitted" in {
         val postRequest = fakeRequest.withFormUrlEncodedBody((AdviserNameId.toString, "answer"))
 
         val result = controller().onSubmit(NormalMode)(postRequest)
@@ -74,9 +74,9 @@ class AdviserDetailsControllerSpec extends ControllerSpecBase {
         redirectLocation(result) mustBe Some(onwardRoute.url)
       }
 
-      "return a Bad Request and errors when invalid data is submitted" in {
-        val postRequest = fakeRequest.withFormUrlEncodedBody((AdviserNameId.toString, ""))
-        val boundForm = form.bind(Map(AdviserNameId.toString -> ""))
+      "return a Bad Request and errors if invalid data is submitted" in {
+        val postRequest = fakeRequest.withFormUrlEncodedBody((AdviserNameId.toString, "123"))
+        val boundForm = form.bind(Map(AdviserNameId.toString -> "123"))
 
         val result = controller().onSubmit(NormalMode)(postRequest)
 
@@ -84,7 +84,7 @@ class AdviserDetailsControllerSpec extends ControllerSpecBase {
         contentAsString(result) mustBe viewAsString(boundForm)
       }
 
-      "redirect to the session expired page when there is no user answers" in {
+      "redirect to the session expired page if there is no existing data" in {
         val result = controller(dontGetAnyData).onSubmit(NormalMode)(fakeRequest)
         redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad().url
       }

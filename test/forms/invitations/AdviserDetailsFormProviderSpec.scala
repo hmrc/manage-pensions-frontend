@@ -23,7 +23,7 @@ import wolfendale.scalacheck.regexp.RegexpGen
 
 class AdviserDetailsFormProviderSpec extends StringFieldBehaviours with Constraints {
 
-  val form = new AdviserDetailsFormProvider().apply()
+  val form = new AdviserDetailsFormProvider()()
 
   ".adviserName" must {
 
@@ -62,6 +62,19 @@ class AdviserDetailsFormProviderSpec extends StringFieldBehaviours with Constrai
       form,
       Map(fieldName -> " test "),
       "test"
+    )
+
+    behave like formWithRegex(form,
+      Table(
+        "valid",
+        Map("adviserName" -> "Àtestâ -'‘’")
+      ),
+      Table(
+        "invalid",
+        Map("adviserName" -> "_test"),
+        Map("adviserName" -> "123"),
+        Map("adviserName" -> "{test}")
+      )
     )
   }
 }
