@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package controllers.accept
+package controllers.invite
 
 import config.FrontendAppConfig
 import connectors.DataCacheConnector
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
-import forms.accept.HaveYouEmployedPensionAdviserFormProvider
-import identifiers.accept.HaveYouEmployedPensionAdviserId
+import forms.invite.HaveYouEmployedPensionAdviserFormProvider
+import identifiers.invite.HaveYouEmployedPensionAdviserId
 import javax.inject.Inject
 import models.Mode
 import play.api.data.Form
@@ -29,7 +29,7 @@ import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.annotations.AcceptInvitation
 import utils.{Navigator, UserAnswers}
-import views.html.accept.haveYouEmployedPensionAdviser
+import views.html.invite.haveYouEmployedPensionAdviser
 
 import scala.concurrent.Future
 

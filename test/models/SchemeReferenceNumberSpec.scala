@@ -14,16 +14,22 @@
  * limitations under the License.
  */
 
-package forms.accept
+package models
 
-import forms.mappings.Mappings
-import javax.inject.Inject
-import play.api.data.Form
+import org.scalatest.{MustMatchers, WordSpec}
 
-class HaveYouEmployedPensionAdviserFormProvider @Inject()() extends Mappings {
+class SchemeReferenceNumberSpec extends WordSpec with MustMatchers {
 
-  def apply(): Form[Boolean] = Form(
-    "value" -> boolean()
-  )
+  "SchemeReferenceNumber" must {
+
+    "bind" in {
+      SchemeReferenceNumber.srnPathBindable.bind("schemeReferenceNumber", "S0987654321") mustBe Right(SchemeReferenceNumber("S0987654321"))
+    }
+
+    "not bind" in {
+      SchemeReferenceNumber.srnPathBindable.bind("schemeReferenceNumber", "Invalid") mustBe Left("SchemeReferenceNumber binding failed")
+    }
+
+  }
 
 }

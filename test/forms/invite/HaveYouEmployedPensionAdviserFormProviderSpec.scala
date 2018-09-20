@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package forms.accept
+package forms.invite
 
 import forms.behaviours.BooleanFieldBehaviours
 import play.api.data.FormError
