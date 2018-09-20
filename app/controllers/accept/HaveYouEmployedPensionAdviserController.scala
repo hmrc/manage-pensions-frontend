@@ -16,32 +16,51 @@
 
 package controllers.accept
 
+import javax.inject.Inject
+
 import config.FrontendAppConfig
 import controllers.actions.AuthAction
 import forms.accept.HaveYouEmployedPensionAdviserFormProvider
-import javax.inject.Inject
+import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import views.html.accept.haveYouEmployedPensionAdviser
+import connectors.DataCacheConnector
+import identifiers.accept.EmployedPensionAdviserId
+import models.Mode
+import utils.{Navigator, UserAnswers}
+import utils.annotations.AcceptInvitation
+
+import scala.concurrent.Future
 
 class HaveYouEmployedPensionAdviserController @Inject()(
                                                          val appConfig: FrontendAppConfig,
                                                          val auth: AuthAction,
                                                          val messagesApi: MessagesApi,
-                                                         val formProvider: HaveYouEmployedPensionAdviserFormProvider
+                                                         @AcceptInvitation navigator: Navigator,
+                                                         val formProvider: HaveYouEmployedPensionAdviserFormProvider,
+                                                         val dataCacheConnector: DataCacheConnector
                                                        ) extends FrontendController with I18nSupport {
 
   val form = formProvider()
 
-  def onPageLoad(): Action[AnyContent] = auth {
+  def onPageLoad(mode: Mode): Action[AnyContent] = auth {
     implicit request =>
-      Ok(haveYouEmployedPensionAdviser(appConfig, formProvider()))
+      Ok(haveYouEmployedPensionAdviser(appConfig, formProvider(), mode))
   }
 
-  def onSubmit(): Action[AnyContent] = auth {
+  def onSubmit(mode: Mode): Action[AnyContent] = auth.async {
     implicit request =>
-      ???
+      form.bindFromRequest().fold(
+        (formWithErrors: Form[Boolean]) =>
+          Future.successful(BadRequest(haveYouEmployedPensionAdviser(appConfig, formWithErrors, mode))),
+        (value) => {
+          dataCacheConnector.save(request.externalId, EmployedPensionAdviserId, value).map(
+            cacheMap =>
+              Redirect(navigator.nextPage(EmployedPensionAdviserId, mode, UserAnswers(cacheMap)))
+          )
+        }
+      )
   }
-
 }
