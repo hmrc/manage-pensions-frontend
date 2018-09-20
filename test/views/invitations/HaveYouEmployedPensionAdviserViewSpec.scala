@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package views.invite
+package views.invitations
 
-import forms.invite.HaveYouEmployedPensionAdviserFormProvider
+import forms.invitations.HaveYouEmployedPensionAdviserFormProvider
 import models.NormalMode
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
-import views.html.invite.haveYouEmployedPensionAdviser
+import views.html.invitations.haveYouEmployedPensionAdviser
 
 class HaveYouEmployedPensionAdviserViewSpec extends ViewBehaviours {
 

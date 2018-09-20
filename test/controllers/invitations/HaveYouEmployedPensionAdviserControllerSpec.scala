@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package controllers.invite
+package controllers.invitations
 
 import connectors.FakeDataCacheConnector
 import controllers.ControllerSpecBase
 import controllers.actions._
-import forms.invite.HaveYouEmployedPensionAdviserFormProvider
+import forms.invitations.HaveYouEmployedPensionAdviserFormProvider
 import models.NormalMode
 import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.api.test.Helpers._
 import utils.FakeNavigator
-import views.html.invite.haveYouEmployedPensionAdviser
+import views.html.invitations.haveYouEmployedPensionAdviser
 
 class HaveYouEmployedPensionAdviserControllerSpec extends ControllerSpecBase {
 

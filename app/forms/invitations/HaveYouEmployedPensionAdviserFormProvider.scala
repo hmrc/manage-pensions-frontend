@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
-package identifiers.invite
+package forms.invitations
 
-import identifiers.TypedIdentifier
+import forms.mappings.Mappings
+import javax.inject.Inject
+import play.api.data.Form
 
-object HaveYouEmployedPensionAdviserId extends TypedIdentifier[Boolean] {
-  override def toString: String = "haveYouEmployedPensionAdviser"
+class HaveYouEmployedPensionAdviserFormProvider @Inject()() extends Mappings {
+
+  def apply(): Form[Boolean] = Form(
+    "value" -> boolean()
+  )
+
 }

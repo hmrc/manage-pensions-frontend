@@ -1,0 +1,5 @@
+
+GET        /use-pension-adviser                         controllers.invitations.HaveYouEmployedPensionAdviserController.onPageLoad(mode: Mode = NormalMode)
+POST       /use-pension-adviser                         controllers.invitations.HaveYouEmployedPensionAdviserController.onSubmit(mode: Mode = NormalMode)
+GET        /change-use-pension-adviser                  controllers.invitations.HaveYouEmployedPensionAdviserController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-use-pension-adviser                  controllers.invitations.HaveYouEmployedPensionAdviserController.onSubmit(mode: Mode = CheckMode)

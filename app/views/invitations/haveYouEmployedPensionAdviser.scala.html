@@ -25,7 +25,7 @@
     appConfig = appConfig
 ){
 
-    @helpers.form(action = controllers.invite.routes.HaveYouEmployedPensionAdviserController.onSubmit(mode), 'autoComplete -> "off") {
+    @helpers.form(action = controllers.invitations.routes.HaveYouEmployedPensionAdviserController.onSubmit(mode), 'autoComplete -> "off") {
 
         @components.error_summary(form.errors)
 

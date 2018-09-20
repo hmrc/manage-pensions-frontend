@@ -20,7 +20,7 @@ import javax.inject.{Inject, Singleton}
 import connectors.DataCacheConnector
 import controllers.routes
 import identifiers.PsaNameId
-import identifiers.invite.HaveYouEmployedPensionAdviserId
+import identifiers.invitations.HaveYouEmployedPensionAdviserId
 import utils.Navigator
 
 @Singleton
