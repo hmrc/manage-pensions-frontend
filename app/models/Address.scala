@@ -16,11 +16,32 @@
 
 package models
 
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json._
 
-case class Address(nonUKAddress: Boolean, line1: String, line2: String, line3: Option[String], line4: Option[String],
-                   postalCode: Option[String], countryCode: String)
+case class AddressRecord(address: Address)
+
+object AddressRecord {
+  implicit val addressRecordFormat: Format[AddressRecord] = Json.format[AddressRecord]
+}
+
+case class Address(addressLine1: String,
+                   addressLine2: String,
+                   addressLine3: Option[String],
+                   addressLine4: Option[String],
+                   postcode: Option[String],
+                   country: String) {
+
+  def print: String = {
+    Seq(
+      Some(addressLine1),
+      Some(addressLine2),
+      addressLine3,
+      addressLine4,
+      postcode
+    ).flatten.mkString(", ")
+  }
+}
 
 object Address {
-  implicit val formats: Format[Address] = Json.format[Address]
+  implicit val formatsAddress: Format[Address] = Json.format[Address]
 }
