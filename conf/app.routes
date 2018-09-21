@@ -23,5 +23,10 @@ GET        /your-pension-schemes                        controllers.ListSchemesC
 GET        /overview                                    controllers.SchemesOverviewController.onPageLoad()
 GET        /overview/can-scheme-be-registered           controllers.SchemesOverviewController.onClickCheckIfSchemeCanBeRegistered()
 
+GET        /invalidPsaCredentials/:srn                  controllers.IncorrectPsaDetailsController.onPageLoad(srn: SchemeReferenceNumber)
+
 GET        /invite                                      controllers.InviteController.onPageLoad()
 
+
+GET        /invite-sent/:srn                            controllers.InvitationSuccessController.onPageLoad(srn: SchemeReferenceNumber)
+POST       /invite-sent/:srn                            controllers.InvitationSuccessController.onSubmit(srn: SchemeReferenceNumber)
