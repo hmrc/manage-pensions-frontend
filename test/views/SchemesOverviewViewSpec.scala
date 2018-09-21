@@ -56,7 +56,7 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
     }
 
     "not display the name when there is no name" in {
-      createFreshView().toString() must not include("John Doe")
+      createFreshView().toString() must not include "John Doe"
     }
 
     "have link to view all schemes" in {

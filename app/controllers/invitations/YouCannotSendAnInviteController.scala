@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.invitations
 
 import config.FrontendAppConfig
 import controllers.actions._
@@ -22,14 +22,16 @@ import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import views.html.cannotStartRegistration
+import views.html.invitations.youCannotSendAnInvite
 
-class CannotStartRegistrationController @Inject()(appConfig: FrontendAppConfig,
-                                       override val messagesApi: MessagesApi,
-                                       authenticate: AuthAction) extends FrontendController with I18nSupport {
+class YouCannotSendAnInviteController @Inject()(appConfig: FrontendAppConfig,
+                                                override val messagesApi: MessagesApi,
+                                                authenticate: AuthAction,
+                                                getData: DataRetrievalAction,
+                                                requireData: DataRequiredAction) extends FrontendController with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = authenticate {
+  def onPageLoad: Action[AnyContent] = Action {
     implicit request =>
-      Ok(cannotStartRegistration(appConfig))
+      Ok(youCannotSendAnInvite(appConfig))
   }
 }

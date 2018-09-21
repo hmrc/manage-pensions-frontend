@@ -16,6 +16,7 @@
 
 package forms.invitation
 
+import forms.invitations.PsaIdFromProvider
 import forms.mappings.Constraints
 import play.api.data.FormError
 import views.behaviours.StringFieldBehaviours
