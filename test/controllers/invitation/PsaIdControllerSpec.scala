@@ -18,26 +18,22 @@ package controllers.invitation
 
 import connectors.FakeDataCacheConnector
 import controllers.actions._
-import controllers.behaviours.QuestionPageBehaviours
+import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.invitation.PsaIdFromProvider
-import identifiers.{PSAId, PsaNameId}
 import models.NormalMode
 import play.api.data.Form
 import play.api.test.FakeRequest
 import utils.UserAnswers
 import views.html.invitation.psaId
 
-class PsaIdControllerSpec extends QuestionPageBehaviours {
+class PsaIdControllerSpec extends ControllerWithQuestionPageBehaviours {
 
   val formProvider = new PsaIdFromProvider()
   val form = formProvider()
-  val userAnswer = UserAnswers().set(PsaNameId)("xyz").asOpt.value
-  val userAnswerWithPsaID = userAnswer.set(PSAId)("A0000000").asOpt.value
-  val postRequest = FakeRequest().withJsonBody(userAnswerWithPsaID.json)
+  val userAnswer = UserAnswers().inviteeName("xyz")
+  val userAnswerWithPsaId = userAnswer.inviteeId("A0000000")
+  val postRequest = FakeRequest().withJsonBody(userAnswerWithPsaId.json)
 
-  def getDataRetrieval(userAnswer: UserAnswers) = {
-    new FakeDataRetrievalAction(Some(userAnswer.json))
-  }
 
   def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
@@ -56,10 +52,12 @@ class PsaIdControllerSpec extends QuestionPageBehaviours {
   def viewAsString(form: Form[_] = form) = psaId(frontendAppConfig, form, "xyz", NormalMode)(fakeRequest, messages).toString
 
 
-  behave like onPageLoadMethod(onPageLoadAction, getDataRetrieval(userAnswer), getDataRetrieval(userAnswerWithPsaID), form, form.fill("A0000000"), viewAsString)
+  behave like controllerWithOnPageLoadMethod(onPageLoadAction, userAnswer.dataRetrievalAction, userAnswerWithPsaId.dataRetrievalAction, form, form.fill("A0000000"), viewAsString)
 
-  behave like onSubmitMethod(onSubmitAction, getDataRetrieval(userAnswerWithPsaID), form.bind(Map("psaId" -> "")), viewAsString, postRequest)
+  behave like controllerWithOnSubmitMethod(onSubmitAction, userAnswerWithPsaId.dataRetrievalAction, form.bind(Map("psaId" -> "")), viewAsString, postRequest)
 
-  behave like requiredDataMissing(onPageLoadAction, onSubmitAction, getEmptyData)
+  behave like controllerWithOnPageLoadMethodMissingRequiredData(onPageLoadAction, getEmptyData)
+
+  behave like controllerWithOnSubmitMethodMissingRequiredData(onSubmitAction, getEmptyData)
 
 }

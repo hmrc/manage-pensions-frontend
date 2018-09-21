@@ -24,19 +24,19 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import utils.FakeNavigator
 
-class QuestionPageBehaviours extends ControllerSpecBase {
+class ControllerWithQuestionPageBehaviours extends ControllerSpecBase {
 
   val navigator = new FakeNavigator(onwardRoute)
   val requiredDateAction = new DataRequiredActionImpl
 
   def onwardRoute = Call("GET", "/foo")
 
-  def onPageLoadMethod(onPageLoadAction: (DataRetrievalAction, AuthAction) => Action[AnyContent],
-                       emptyData: DataRetrievalAction,
-                       validDate: DataRetrievalAction,
-                       emptyForm: Form[String],
-                       preparedForm: Form[String],
-                       validView: (Form[_]) => String): Unit = {
+  def controllerWithOnPageLoadMethod(onPageLoadAction: (DataRetrievalAction, AuthAction) => Action[AnyContent],
+                                     emptyData: DataRetrievalAction,
+                                     validDate: DataRetrievalAction,
+                                     emptyForm: Form[String],
+                                     preparedForm: Form[String],
+                                     validView: (Form[_]) => String): Unit = {
 
     "calling onPageLoad" must {
 
@@ -67,11 +67,11 @@ class QuestionPageBehaviours extends ControllerSpecBase {
 
   }
 
-  def onSubmitMethod(onSubmitAction: (DataRetrievalAction, AuthAction) => Action[AnyContent],
-                     validDate: DataRetrievalAction,
-                     form: Form[String],
-                     errorView: (Form[_]) => String,
-                     postRequest: FakeRequest[AnyContentAsJson]): Unit = {
+  def controllerWithOnSubmitMethod(onSubmitAction: (DataRetrievalAction, AuthAction) => Action[AnyContent],
+                                   validDate: DataRetrievalAction,
+                                   form: Form[String],
+                                   errorView: (Form[_]) => String,
+                                   postRequest: FakeRequest[AnyContentAsJson]): Unit = {
 
     "calling onSubmit" must {
 
@@ -93,9 +93,8 @@ class QuestionPageBehaviours extends ControllerSpecBase {
     }
   }
 
-  def requiredDataMissing(onPageLoadAction: (DataRetrievalAction, AuthAction) => Action[AnyContent],
-                          onSubmitAction: (DataRetrievalAction, AuthAction) => Action[AnyContent],
-                          validDate: DataRetrievalAction): Unit = {
+  def controllerWithOnPageLoadMethodMissingRequiredData(onPageLoadAction: (DataRetrievalAction, AuthAction) => Action[AnyContent],
+                                                        validDate: DataRetrievalAction): Unit = {
 
     "when required data is not present" must {
 
@@ -106,6 +105,14 @@ class QuestionPageBehaviours extends ControllerSpecBase {
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)
       }
+    }
+
+  }
+
+  def controllerWithOnSubmitMethodMissingRequiredData(onSubmitAction: (DataRetrievalAction, AuthAction) => Action[AnyContent],
+                                                        validDate: DataRetrievalAction): Unit = {
+
+    "when required data is not present" must {
 
       "onSubmit redirect to Session Expired if no existing data is found" in {
 

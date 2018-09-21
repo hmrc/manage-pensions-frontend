@@ -77,5 +77,6 @@ class FrontendAppConfig @Inject()(override val runModeConfiguration: Configurati
   def routeToSwitchLanguage: String => Call = (lang: String) => routes.LanguageSwitchController.switchToLanguage(lang)
 
   lazy val daysDataSaved: Int = loadConfig("daysDataSaved").toInt
+  lazy val invitationExpiryDays: Int = loadConfig("invitationExpiryDays").toInt
 }
 

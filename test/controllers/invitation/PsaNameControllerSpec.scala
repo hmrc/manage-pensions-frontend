@@ -18,20 +18,18 @@ package controllers.invitation
 
 import connectors.FakeDataCacheConnector
 import controllers.actions._
-import controllers.behaviours.QuestionPageBehaviours
+import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.invitation.PsaNameFormProvider
-import identifiers.PsaNameId
 import models.NormalMode
 import play.api.data.Form
-import play.api.libs.json.Json
-import utils.{UserAnswers, FakeNavigator}
+import utils.{UserAnswers, _}
 import views.html.invitation.psaName
 
-class PsaNameControllerSpec extends QuestionPageBehaviours {
+class PsaNameControllerSpec extends ControllerWithQuestionPageBehaviours {
 
   val formProvider = new PsaNameFormProvider()
   val form = formProvider()
-  val userAnswer = UserAnswers().set(PsaNameId)("xyz").asOpt.value
+  val userAnswer = UserAnswers().inviteeName("xyz")
   val postRequest = fakeRequest.withJsonBody(userAnswer.json)
 
   def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
@@ -48,16 +46,14 @@ class PsaNameControllerSpec extends QuestionPageBehaviours {
       dataRetrievalAction, requiredDateAction, formProvider).onSubmit(NormalMode)
   }
 
-  def validData = Json.obj(PsaNameId.toString -> "xyz")
-
-  def getRelevantData = new FakeDataRetrievalAction(Some(validData))
+  def getRelevantData = userAnswer.dataRetrievalAction
 
   def viewAsString(form: Form[_]) = psaName(frontendAppConfig, form, NormalMode)(fakeRequest, messages).toString
 
 
-  behave like onPageLoadMethod(onPageLoadAction, getEmptyData, getRelevantData, form, form.fill("xyz"), viewAsString)
+  behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, getRelevantData, form, form.fill("xyz"), viewAsString)
 
-  behave like onSubmitMethod(onSubmitAction, getEmptyData, form.bind(Map("psaName" -> "")), viewAsString, postRequest)
+  behave like controllerWithOnSubmitMethod(onSubmitAction, getEmptyData, form.bind(Map("psaName" -> "")), viewAsString, postRequest)
 
 }
 
