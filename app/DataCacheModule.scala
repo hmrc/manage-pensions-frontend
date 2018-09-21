@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import connectors.{DataCacheConnector, MicroserviceCacheConnector, MongoCacheConnector}
+import connectors.DataCacheConnector
+import connectors.cache.microservice.{InvitationsCacheConnector, ManagePensionsCacheConnector, PensionsSchemeCacheConnector}
 import play.api.inject.{Binding, Module}
 import play.api.{Configuration, Environment, Logger}
+import utils.annotations.{InvitationsCache, PensionsSchemeCache}
 
 class DataCacheModule extends Module {
 
@@ -24,15 +26,23 @@ class DataCacheModule extends Module {
 
     configuration.getString("journey-cache") match {
       case Some("public") =>
-        Seq(bind[DataCacheConnector].to[MongoCacheConnector])
+        Seq(
+          bind[DataCacheConnector].to[ManagePensionsCacheConnector],
+          bind[DataCacheConnector].qualifiedWith(classOf[InvitationsCache]).to[InvitationsCacheConnector],
+          bind[DataCacheConnector].qualifiedWith(classOf[PensionsSchemeCache]).to[PensionsSchemeCacheConnector]
+        )
       case Some("protected") =>
         Seq(
-          bind[DataCacheConnector].to[MicroserviceCacheConnector]
-        )
+          bind[DataCacheConnector].to[ManagePensionsCacheConnector],
+          bind[DataCacheConnector].qualifiedWith(classOf[InvitationsCache]).to[InvitationsCacheConnector],
+          bind[DataCacheConnector].qualifiedWith(classOf[PensionsSchemeCache]).to[PensionsSchemeCacheConnector]
+    )
       case _ =>
         Logger.warn("No journey-cache set, defaulting to `protected`")
         Seq(
-          bind[DataCacheConnector].to[MicroserviceCacheConnector]
+          bind[DataCacheConnector].to[ManagePensionsCacheConnector],
+          bind[DataCacheConnector].qualifiedWith(classOf[InvitationsCache]).to[InvitationsCacheConnector],
+          bind[DataCacheConnector].qualifiedWith(classOf[PensionsSchemeCache]).to[PensionsSchemeCacheConnector]
         )
     }
   }
