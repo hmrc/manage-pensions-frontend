@@ -33,15 +33,15 @@ import views.html.invitations.psaName
 import scala.concurrent.Future
 
 class PsaNameController @Inject()(
-                                        appConfig: FrontendAppConfig,
-                                        override val messagesApi: MessagesApi,
-                                        dataCacheConnector: DataCacheConnector,
-                                        @Invitation navigator: Navigator,
-                                        authenticate: AuthAction,
-                                        getData: DataRetrievalAction,
-                                        requireData: DataRequiredAction,
-                                        formProvider: PsaNameFormProvider
-                                      ) extends FrontendController with I18nSupport {
+                                   appConfig: FrontendAppConfig,
+                                   override val messagesApi: MessagesApi,
+                                   dataCacheConnector: DataCacheConnector,
+                                   @Invitation navigator: Navigator,
+                                   authenticate: AuthAction,
+                                   getData: DataRetrievalAction,
+                                   requireData: DataRequiredAction,
+                                   formProvider: PsaNameFormProvider
+                                 ) extends FrontendController with I18nSupport {
 
   val form = formProvider()
 

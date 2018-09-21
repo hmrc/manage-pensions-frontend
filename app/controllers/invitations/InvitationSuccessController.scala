@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.invitations
 
 import config.FrontendAppConfig
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
-import identifiers.invitations.PsaNameId
-import identifiers.{InvitationSuccessId, SchemeDetailId}
+import identifiers.SchemeDetailId
+import identifiers.invitations.{InvitationSuccessId, PsaNameId}
 import javax.inject.Inject
 import models.{NormalMode, SchemeReferenceNumber}
 import org.joda.time.LocalDate
@@ -28,7 +28,7 @@ import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.Navigator
 import utils.annotations.Invitation
-import views.html.invitation_success
+import views.html.invitations.invitation_success
 
 class InvitationSuccessController @Inject() (
   override val messagesApi: MessagesApi,
@@ -42,7 +42,7 @@ class InvitationSuccessController @Inject() (
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate andThen getData andThen requireData) {
     implicit request =>
 
-      val continue = controllers.routes.InvitationSuccessController.onSubmit(srn)
+      val continue = controllers.invitations.routes.InvitationSuccessController.onSubmit(srn)
 
       (for {
         psaName <- request.userAnswers.get(PsaNameId)

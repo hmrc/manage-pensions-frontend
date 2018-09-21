@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.invitations
 
 import base.SpecBase
 import config.FrontendAppConfig
+import controllers.ControllerSpecBase
 import controllers.actions.{DataRequiredActionImpl, FakeAuthAction, FakeUnAuthorisedAction}
 import models.MinimalSchemeDetail
 import org.joda.time.LocalDate
 import play.api.mvc.Call
 import play.api.test.Helpers._
 import utils.{DateHelper, FakeNavigator, UserAnswers}
-import views.html.invitation_success
+import views.html.invitations.invitation_success
 
 class InvitationSuccessControllerSpec extends ControllerSpecBase {
 
@@ -104,7 +105,7 @@ object InvitationSuccessControllerSpec {
 
   private val onwardRoute: Call = controllers.routes.IndexController.onPageLoad()
   private val testNavigator: FakeNavigator = new FakeNavigator(onwardRoute)
-  private lazy val continue: Call = controllers.routes.InvitationSuccessController.onSubmit(testSrn)
+  private lazy val continue: Call = controllers.invitations.routes.InvitationSuccessController.onSubmit(testSrn)
 
   private def createController(base: ControllerSpecBase, authorised: Boolean, hasData: Boolean): InvitationSuccessController = {
 

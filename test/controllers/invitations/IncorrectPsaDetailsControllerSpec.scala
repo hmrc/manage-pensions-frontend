@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.invitations
 
+import controllers.ControllerSpecBase
 import controllers.actions._
 import identifiers.invitations.PsaNameId
-import models.SchemeReferenceNumber
 import play.api.libs.json.Json
 import play.api.test.Helpers._
-import views.html.incorrectPsaDetails
+import views.html.invitations.incorrectPsaDetails
 
 class IncorrectPsaDetailsControllerSpec extends ControllerSpecBase {
 
   "IncorrectPsaDetails Controller" must {
 
-    val srn = SchemeReferenceNumber("S0987654321")
     val invitee = "PSA"
     val FakeDataRetrieval = new FakeDataRetrievalAction(Some(Json.obj(
       PsaNameId.toString -> invitee
@@ -43,12 +42,12 @@ class IncorrectPsaDetailsControllerSpec extends ControllerSpecBase {
     )
 
     "return 200 for a GET" in {
-      val result = controller.onPageLoad(srn)(fakeRequest)
+      val result = controller.onPageLoad()(fakeRequest)
       status(result) mustBe OK
     }
 
     "return the correct view for a GET" in {
-      val result = controller.onPageLoad(srn)(fakeRequest)
+      val result = controller.onPageLoad()(fakeRequest)
       contentAsString(result) mustBe incorrectPsaDetails(frontendAppConfig, invitee)(fakeRequest, messages).toString
     }
   }
