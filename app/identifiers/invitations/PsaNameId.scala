@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-package identifiers
+package identifiers.invitations
 
-object InvitationSuccessId extends Identifier {
-  override def toString: String = "invitationSuccess"
+import identifiers.TypedIdentifier
+
+object PsaNameId extends TypedIdentifier[String] {
+  override def toString: String = "psaName"
 }

@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-package identifiers
+package identifiers.invitations
 
-object PsaNameId extends TypedIdentifier[String] {
-  override def toString: String = "psaName"
+import identifiers.TypedIdentifier
+
+object HaveYouEmployedPensionAdviserId extends TypedIdentifier[Boolean] {
+  override def toString: String = "haveYouEmployedPensionAdviser"
 }
