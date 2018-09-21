@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-package controllers
-
-import javax.inject.Inject
+package controllers.invitations
 
 import config.FrontendAppConfig
 import controllers.actions._
+import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import views.html.youCannotSendAnInvite
+import views.html.invitations.youCannotSendAnInvite
 
 class YouCannotSendAnInviteController @Inject()(appConfig: FrontendAppConfig,
                                                 override val messagesApi: MessagesApi,

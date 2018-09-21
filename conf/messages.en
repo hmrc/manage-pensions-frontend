@@ -108,3 +108,14 @@ messages__invitationSuccess__schemeName = This is for {0}.
 messages__invitationSuccess__emailAdvice = {0} will be sent an email confirming your invitation.
 messages__invitationSuccess__expiryDate = They will have until {0} to accept the invitation. If the invitation is not accepted by this date, it will be deleted and you will have to invite the PSA again.
 
+
+messages__adviser__name__title = Who is your pension adviser?
+messages__adviser__name__heading = Who is your pension adviser?
+messages__adviser__name__p1 = This can be either the name of your adviser or the company they work for.
+messages__error__adviser__name__required = Enter the name of your pension adviser
+messages__error__adviser__name__length = Enter a name using less than 108 characters
+messages__error__adviser__name__invalid = Enter a name using only letters
+
+
+
+

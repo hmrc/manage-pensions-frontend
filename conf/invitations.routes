@@ -13,3 +13,11 @@ POST       /change-name-of-invited-psa                  controllers.invitations.
 
 GET        /invite-sent/:srn                            controllers.invitations.InvitationSuccessController.onPageLoad(srn: SchemeReferenceNumber)
 POST       /invite-sent/:srn                            controllers.invitations.InvitationSuccessController.onSubmit(srn: SchemeReferenceNumber)
+
+GET        /pension-adviser-name                        controllers.invitations.AdviserDetailsController.onPageLoad(mode: Mode = NormalMode)
+POST       /pension-adviser-name                        controllers.invitations.AdviserDetailsController.onSubmit(mode: Mode = NormalMode)
+GET        /change-pension-adviser-name                 controllers.invitations.AdviserDetailsController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-pension-adviser-name                 controllers.invitations.AdviserDetailsController.onSubmit(mode: Mode = CheckMode)
+
+GET        /cannot-send-invite                          controllers.invitations.YouCannotSendAnInviteController.onPageLoad()
+

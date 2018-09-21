@@ -19,7 +19,7 @@ package controllers.invitations
 import connectors.FakeDataCacheConnector
 import controllers.ControllerSpecBase
 import controllers.actions._
-import forms.PsaNameFormProvider
+import forms.invitations.PsaNameFormProvider
 import identifiers.invitations.PsaNameId
 import models.NormalMode
 import play.api.data.Form
