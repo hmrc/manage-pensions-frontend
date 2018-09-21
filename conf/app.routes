@@ -27,7 +27,17 @@ GET        /you-cannot-send-invite                      controllers.YouCannotSen
 
 GET        /invite                                      controllers.InviteController.onPageLoad()
 
+<<<<<<< HEAD
 GET        /name-of-invited-psa                         controllers.PsaNameController.onPageLoad(mode: Mode = NormalMode)
 POST       /name-of-invited-psa                         controllers.PsaNameController.onSubmit(mode: Mode = NormalMode)
 GET        /change-name-of-invited-psa                  controllers.PsaNameController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-name-of-invited-psa                  controllers.PsaNameController.onSubmit(mode: Mode = CheckMode)
+=======
+GET        /name-of-invited-psa                         controllers.PsaNameController.onPageLoad(mode: models.Mode = models.NormalMode)
+POST       /name-of-invited-psa                         controllers.PsaNameController.onSubmit(mode: models.Mode = models.NormalMode)
+GET        /change-name-of-invited-psa                  controllers.PsaNameController.onPageLoad(mode: models.Mode = models.CheckMode)
+POST       /change-name-of-invited-psa                  controllers.PsaNameController.onSubmit(mode: models.Mode = models.CheckMode)
+
+GET        /invite-sent/:srn                            controllers.InvitationSuccessController.onPageLoad(srn: SchemeReferenceNumber)
+POST       /invite-sent/:srn                            controllers.InvitationSuccessController.onSubmit(srn: SchemeReferenceNumber)
+>>>>>>> 57f9b5ae00d5619a543ccf0efd149a753d015278
