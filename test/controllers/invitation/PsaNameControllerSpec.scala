@@ -17,84 +17,47 @@
 package controllers.invitation
 
 import connectors.FakeDataCacheConnector
-import controllers.ControllerSpecBase
 import controllers.actions._
+import controllers.behaviours.QuestionPageBehaviours
 import forms.invitation.PsaNameFormProvider
 import identifiers.PsaNameId
 import models.NormalMode
 import play.api.data.Form
 import play.api.libs.json.Json
-import play.api.mvc.Call
-import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import utils.FakeNavigator
+import utils.{UserAnswers, FakeNavigator}
 import views.html.invitation.psaName
 
-class PsaNameControllerSpec extends ControllerSpecBase {
-
-  def onwardRoute = Call("GET", "/foo")
+class PsaNameControllerSpec extends QuestionPageBehaviours {
 
   val formProvider = new PsaNameFormProvider()
   val form = formProvider()
+  val userAnswer = UserAnswers().set(PsaNameId)("xyz").asOpt.value
+  val postRequest = fakeRequest.withJsonBody(userAnswer.json)
 
-  def controller(dataRetrievalAction: DataRetrievalAction = getEmptyData) =
-    new PsaNameController(frontendAppConfig, messagesApi, FakeDataCacheConnector, new FakeNavigator(onwardRoute), FakeAuthAction(),
-      dataRetrievalAction, new DataRequiredActionImpl, formProvider)
+  def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
-  def viewAsString(form: Form[_] = form) = psaName(frontendAppConfig, form, NormalMode)(fakeRequest, messages).toString
-
-  val testAnswer = ("answer")
-
-  "PsaNameController calling onPageLoad" must {
-
-    "return OK and the correct view for a GET" in {
-
-      val result = controller().onPageLoad(NormalMode)(fakeRequest)
-
-      status(result) mustBe OK
-      contentAsString(result) mustBe viewAsString()
-    }
-
-    "populate the view correctly on a GET when the question has previously been answered" in {
-
-      val validData = Json.obj(PsaNameId.toString -> "answer")
-      val getRelevantData = new FakeDataRetrievalAction(Some(validData))
-      val result = controller(getRelevantData).onPageLoad(NormalMode)(fakeRequest)
-
-      contentAsString(result) mustBe viewAsString(form.fill(testAnswer))
-    }
-
-    "return 303 if user action is not authenticated" in {
-
-      val controller = new PsaNameController(frontendAppConfig, messagesApi, FakeDataCacheConnector,
-        new FakeNavigator(onwardRoute), FakeUnAuthorisedAction(),
-        getEmptyData, new DataRequiredActionImpl, formProvider)
-      val result = controller.onPageLoad(NormalMode)(FakeRequest())
-
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad.url)
-    }
+    new PsaNameController(
+      frontendAppConfig, messagesApi, FakeDataCacheConnector, navigator, fakeAuth,
+      dataRetrievalAction, requiredDateAction, formProvider).onPageLoad(NormalMode)
   }
 
-  "PsaNameController calling onSubmit" must {
+  def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
-    "redirect to the next page when valid data is submitted" in {
-
-      val postRequest = fakeRequest.withFormUrlEncodedBody(("psaName", "answer"))
-      val result = controller().onSubmit(NormalMode)(postRequest)
-
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(onwardRoute.url)
-    }
-
-    "return a Bad Request and errors when invalid data is submitted" in {
-
-      val boundForm = form.bind(Map("psaName" -> ""))
-      val result = controller().onSubmit(NormalMode)(fakeRequest)
-
-      status(result) mustBe BAD_REQUEST
-      contentAsString(result) mustBe viewAsString(boundForm)
-    }
-
+    new PsaNameController(
+      frontendAppConfig, messagesApi, FakeDataCacheConnector, navigator, fakeAuth,
+      dataRetrievalAction, requiredDateAction, formProvider).onSubmit(NormalMode)
   }
+
+  def validData = Json.obj(PsaNameId.toString -> "xyz")
+
+  def getRelevantData = new FakeDataRetrievalAction(Some(validData))
+
+  def viewAsString(form: Form[_]) = psaName(frontendAppConfig, form, NormalMode)(fakeRequest, messages).toString
+
+
+  behave like onPageLoadMethod(onPageLoadAction, getEmptyData, getRelevantData, form, form.fill("xyz"), viewAsString)
+
+  behave like onSubmitMethod(onSubmitAction, getEmptyData, form.bind(Map("psaName" -> "")), viewAsString, postRequest)
+
 }
+
