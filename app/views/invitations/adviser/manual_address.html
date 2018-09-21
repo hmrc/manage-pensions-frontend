@@ -1,10 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+@import config.FrontendAppConfig
+@import uk.gov.hmrc.play.views.html._
+@import controllers.invitations.adviser.routes._
+@import models._
+@import utils.InputOption
 
-</body>
-</html>
+@(appConfig: FrontendAppConfig, form: Form[_], mode: Mode, options: Seq[InputOption])(implicit request: Request[_], messages: Messages)
+
+@main_template(
+    title = messages("messages__benefits_insurance_addr__title"),
+    appConfig = appConfig,
+    bodyClasses = None) {
+
+@helpers.form(action = ManualAddressController.onSubmit(mode), 'autoComplete -> "off") {
+
+        @components.back_link()
+
+        @components.error_summary(form.errors)
+
+        @components.heading(
+            headingKey=messages("")
+        )
+
+        <p>@messages("")</p>
+
+        @components.address(form, options)
+
+        @components.submit_button()
+    }
+}

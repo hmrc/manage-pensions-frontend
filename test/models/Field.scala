@@ -14,23 +14,18 @@
  * limitations under the License.
  */
 
-package views.invitations.adviser
+package models
 
-import views.behaviours.ViewBehaviours
+case class Field(name: String, errorKeys: Map[ErrorType, String])
 
-class ManualAddressSpec extends ViewBehaviours {
+object Field {
 
-  "ManualAddress page" must {
-
-    "behave like normal page" in {
-      pending
-    }
-
-    "display adviser name in title" in {
-      pending
-    }
-
-
-  }
-
+  def apply(name: String, errors: (ErrorType, String)*): Field =
+    Field(name, errors.toMap)
 }
+
+sealed trait ErrorType
+
+case object Required extends ErrorType
+
+case object Invalid extends ErrorType
