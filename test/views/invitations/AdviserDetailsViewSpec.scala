@@ -16,24 +16,24 @@
 
 package views.invitations
 
-import forms.invitations.PsaNameFormProvider
+import forms.invitations.AdviserDetailsFormProvider
 import models.{CheckMode, NormalMode}
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import views.behaviours.QuestionViewBehaviours
-import views.html.invitations.psaName
+import views.html.invitations.adviserDetails
 
-class PsaNameViewSpec extends QuestionViewBehaviours[String] {
+class AdviserDetailsViewSpec extends QuestionViewBehaviours[String] {
 
-  val messageKeyPrefix = "psa__name"
+  val messageKeyPrefix = "adviser__name"
 
-  override val form = new PsaNameFormProvider().apply()
+  override val form = new AdviserDetailsFormProvider().apply()
 
-  def createView: () => HtmlFormat.Appendable = () => psaName(frontendAppConfig, form, NormalMode)(fakeRequest, messages)
+  def createView: () => HtmlFormat.Appendable = () => adviserDetails(frontendAppConfig, form, NormalMode)(fakeRequest, messages)
 
-  def createViewUsingForm: Form[_] => HtmlFormat.Appendable = (form: Form[_]) => psaName(frontendAppConfig, form, CheckMode)(fakeRequest, messages)
+  def createViewUsingForm: Form[_] => HtmlFormat.Appendable = (form: Form[_]) => adviserDetails(frontendAppConfig, form, CheckMode)(fakeRequest, messages)
 
-  "PsaName view" must {
+  "Adviser Details view" must {
 
     behave like normalPage(
       createView,
@@ -47,8 +47,8 @@ class PsaNameViewSpec extends QuestionViewBehaviours[String] {
     behave like pageWithTextFields(
       createViewUsingForm,
       messageKeyPrefix,
-      controllers.invitations.routes.PsaNameController.onSubmit(NormalMode).url,
-      "psaName"
+      controllers.invitations.routes.AdviserDetailsController.onSubmit(NormalMode).url,
+      "adviserName"
     )
   }
 }

@@ -19,7 +19,7 @@ package controllers.invitations
 import config.FrontendAppConfig
 import connectors.DataCacheConnector
 import controllers.actions._
-import forms.PsaNameFormProvider
+import forms.invitations.PsaNameFormProvider
 import identifiers.invitations.PsaNameId
 import javax.inject.Inject
 import models.Mode

@@ -59,7 +59,7 @@ class InviteControllerSpec extends SpecBase with MockitoSugar with BeforeAndAfte
       val result = controller.onPageLoad(fakeRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.routes.YouCannotSendAnInviteController.onPageLoad().url)
+      redirectLocation(result) mustBe Some(controllers.invitations.routes.YouCannotSendAnInviteController.onPageLoad().url)
       verify(mockConnector,  times(1)).getMinimalPsaDetails(any())(any(), any())
 
     }
