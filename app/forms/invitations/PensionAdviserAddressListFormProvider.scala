@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.invitations
+package forms.invitations
 
 import forms.mappings.{Constraints, Mappings}
 import javax.inject.Inject

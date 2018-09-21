@@ -17,6 +17,7 @@
 package controllers.invitations
 
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import forms.invitations.PensionAdviserAddressListFormProvider
 import javax.inject.Inject
 import models.Mode
 import play.api.mvc.{Action, AnyContent}
@@ -28,12 +29,12 @@ class PensionAdviserAddressListController @Inject()(
                                                    val formProvider: PensionAdviserAddressListFormProvider
                                                    ) {
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authenticate andThen getData andThen requireData) {
+  def onPageLoad(): Action[AnyContent] = (authenticate andThen getData andThen requireData) {
     implicit request =>
       ???
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authenticate andThen getData andThen requireData) {
+  def onSubmit(): Action[AnyContent] = (authenticate andThen getData andThen requireData) {
     implicit request =>
       ???
   }

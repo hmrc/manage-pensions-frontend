@@ -17,6 +17,7 @@
 package controllers.invitations
 
 import forms.FormSpec
+import forms.invitations.PensionAdviserAddressListFormProvider
 import org.scalatest.WordSpec
 
 class PensionAdviserAddressListFormProviderSpec extends WordSpec with FormSpec {
@@ -28,7 +29,6 @@ class PensionAdviserAddressListFormProviderSpec extends WordSpec with FormSpec {
   val form = new PensionAdviserAddressListFormProvider()(Seq(0, 1))
 
   "AddressList form" must {
-
 
     "fail to bind when value is omitted" in {
       val expectedError = error("value", "error.required")
