@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-package views
+package views.invitations
 
 import org.jsoup.Jsoup
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
-import views.html.youCannotSendAnInvite
+import views.html.invitations.youCannotSendAnInvite
 
 class YouCannotSendAnInviteViewSpec extends ViewBehaviours {
 
   private val messageKeyPrefix = "youCannotSendAnInvite"
 
-  def createView: (() => HtmlFormat.Appendable) = () =>
-    youCannotSendAnInvite(frontendAppConfig)(fakeRequest, messages)
+  def createView: () => HtmlFormat.Appendable = () => youCannotSendAnInvite(frontendAppConfig)(fakeRequest, messages)
 
   "You Cannot Send An Invite page" must {
     behave like normalPage(

@@ -15,15 +15,20 @@
  */
 
 import connectors.{UserAnswersCacheConnector, MicroserviceCacheConnector}
+import connectors.cache.microservice.{InvitationsCacheConnector, ManagePensionsCacheConnector, PensionsSchemeCacheConnector}
 import play.api.inject.{Binding, Module}
 import play.api.{Configuration, Environment}
+import play.api.{Configuration, Environment, Logger}
+import utils.annotations.{InvitationsCache, PensionsSchemeCache}
 
 class DataCacheModule extends Module {
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
 
     Seq(
-      bind[UserAnswersCacheConnector].to[MicroserviceCacheConnector]
+      bind[UserAnswersCacheConnector].to[ManagePensionsCacheConnector],
+      bind[UserAnswersCacheConnector].qualifiedWith(classOf[InvitationsCache]).to[InvitationsCacheConnector],
+      bind[UserAnswersCacheConnector].qualifiedWith(classOf[PensionsSchemeCache]).to[PensionsSchemeCacheConnector]
     )
 
   }

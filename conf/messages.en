@@ -2,7 +2,12 @@ site.service_name = Manage Pension Schemes
 site.signOut = Log Out
 site.back = Back
 site.save_and_continue = Save and Continue
+site.continue = Continue
+
 error.summary.title = There was a problem with the page
+
+site.yes = Yes
+site.no = No
 
 messages__manage_pension_schemes__title = Manage Pension Schemes - GOV.UK
 
@@ -76,6 +81,9 @@ messages__schemesOverview__UR__head = Help us improve this service
 messages__schemesOverview__UR__text = We want to hear from people who would like to help improve this service by sharing their feedback and testing new features.
 messages__schemesOverview__UR__link = Let us know if you would like to help improve this service.
 
+messages_haveYouEmployedPensionAdviser__title = Do you use a pension adviser to help you?
+messages_haveYouEmployedPensionAdviser__heading = Do you use a pension adviser to help you?
+
 messages__cannotStartRegistration__title = A scheme registration cannot be started
 messages__cannotStartRegistration__heading = A scheme registration cannot be started
 messages__cannotStartRegistration__p1 = A scheme registration cannot be started at the moment.
@@ -88,3 +96,31 @@ messages__psa__name__p1 = This must be the exact name that they used when they r
 messages__error__psa__name__required = Enter the name of who you are inviting
 messages__error__psa__name__length = Enter a name using less than 108 characters
 messages__error__psa__name__invalid = Enter a name using only letters
+
+messages__psa__id__title = What is the PSA ID of the PSA you are inviting?
+messages__psa__id__heading = What is {0}’s PSA ID?
+messages__error__psa__id__required = Enter the PSA ID of who you are inviting
+messages__error__psa__id__invalid = Enter a PSA ID using the letter A followed by 7 numbers
+
+messages__incorrectPsaDetails__title = The name and PSA ID do not match our records
+messages__incorrectPsaDetails__text1 = You should check these details with {0}.
+messages__incorrectPsaDetails__text2 = Their name should be entered exactly as their registered PSA name.
+messages__incorrectPsaDetails__linkText = Return to {0}
+
+messages__invitationSuccess__title = Invitation sent
+messages__invitationSuccess__heading = You have invited {0} to administer the scheme
+messages__invitationSuccess__schemeName = This is for {0}.
+messages__invitationSuccess__emailAdvice = {0} will be sent an email confirming your invitation.
+messages__invitationSuccess__expiryDate = They will have until {0} to accept the invitation. If the invitation is not accepted by this date, it will be deleted and you will have to invite the PSA again.
+
+
+messages__adviser__name__title = Who is your pension adviser?
+messages__adviser__name__heading = Who is your pension adviser?
+messages__adviser__name__p1 = This can be either the name of your adviser or the company they work for.
+messages__error__adviser__name__required = Enter the name of your pension adviser
+messages__error__adviser__name__length = Enter a name using less than 108 characters
+messages__error__adviser__name__invalid = Enter a name using only letters
+
+
+
+

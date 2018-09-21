@@ -30,7 +30,7 @@ class InviteController@Inject()(authenticate: AuthAction,
     implicit request =>
       connector.getMinimalPsaDetails(request.psaId.id) map { subscriptionDetails =>
         if(subscriptionDetails.isPsaSuspended) {
-          Redirect(controllers.routes.YouCannotSendAnInviteController.onPageLoad())
+          Redirect(controllers.invitations.routes.YouCannotSendAnInviteController.onPageLoad())
         } else {
           Ok
         }

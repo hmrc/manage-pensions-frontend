@@ -14,29 +14,31 @@
  * limitations under the License.
  */
 
-package forms
+package forms.invitation
 
+import forms.invitations.PsaIdFromProvider
 import forms.mappings.Constraints
 import play.api.data.FormError
 import views.behaviours.StringFieldBehaviours
 import wolfendale.scalacheck.regexp.RegexpGen
 
-class PsaNameFormProviderSpec extends StringFieldBehaviours with Constraints{
+class PsaIdFromProviderSpec extends StringFieldBehaviours with Constraints{
 
-  val form = new PsaNameFormProvider().apply()
+  val formProvider = new PsaIdFromProvider()
+  val form = formProvider()
 
-  ".psaName" must {
+  ".psaId" must {
 
-    val fieldName = "psaName"
-    val requiredKey = "messages__error__psa__name__required"
-    val lengthKey = "messages__error__psa__name__length"
-    val invalidKey = "messages__error__psa__name__invalid"
-    val maxLength = PsaNameFormProvider.psaNameLength
+    val fieldName = "psaId"
+    val requiredKey = "messages__error__psa__id__required"
+    val lengthKey = "messages__error__psa__id__invalid"
+    val invalidKey = "messages__error__psa__id__invalid"
+    val maxLength = PsaIdFromProvider.psaIdLength
 
     behave like fieldThatBindsValidData(
       form,
       fieldName,
-      RegexpGen.from(psaNameRegx)
+      RegexpGen.from(psaIdRegx)
     )
 
     behave like fieldWithMaxLength(
@@ -55,8 +57,8 @@ class PsaNameFormProviderSpec extends StringFieldBehaviours with Constraints{
     behave like fieldWithRegex(
       form,
       fieldName,
-      "1234",
-      FormError(fieldName, invalidKey, Seq(psaNameRegx))
+      "B1234567",
+      FormError(fieldName, invalidKey, Seq(psaIdRegx))
     )
   }
 }

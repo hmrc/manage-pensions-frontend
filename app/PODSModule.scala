@@ -32,17 +32,19 @@
 
 import com.google.inject.AbstractModule
 import utils.Navigator
-import utils.annotations.Invitation
-import utils.navigators.InvitationNavigator
+import utils.annotations.{AcceptInvitation, Invitation}
+import utils.navigators.{AcceptInvitationNavigator, InvitationNavigator}
 
 class PODSModule extends AbstractModule {
 
   override def configure(): Unit = {
-
     bind(classOf[Navigator])
       .annotatedWith(classOf[Invitation])
       .to(classOf[InvitationNavigator])
 
-  }
+    bind(classOf[Navigator])
+      .annotatedWith(classOf[AcceptInvitation])
+      .to(classOf[AcceptInvitationNavigator])
 
+  }
 }

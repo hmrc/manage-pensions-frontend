@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-package identifiers
+package models
 
-object PSAId extends TypedIdentifier[String] {
+import play.api.libs.json.{Format, Json}
 
-  override def toString: String = "psaId"
+case class MinimalSchemeDetail(srn: String, pstr: Option[String], schemeName: String)
+
+object MinimalSchemeDetail {
+
+  implicit val formatsSchemeDetail: Format[MinimalSchemeDetail] = Json.format[MinimalSchemeDetail]
 
 }
