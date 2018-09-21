@@ -21,6 +21,7 @@ import connectors.FakeDataCacheConnector
 import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
 import forms.invitations.PensionAdviserAddressListFormProvider
 import identifiers.TypedIdentifier
+import identifiers.invitations.{AdviserAddressId, AdviserPostCodeLookupId}
 import models.{Address, TolerantAddress}
 import org.scalatest.{Matchers, WordSpec}
 import play.api.Application
@@ -37,6 +38,10 @@ class PensionAdviserAddressListControllerSpec extends WordSpec with Matchers {
 
   import PensionAdviserAddressListControllerSpec._
 
+  def dataRetrievalAction = new FakeDataRetrievalAction(Some(Json.obj(
+    AdviserPostCodeLookupId.toString -> addresses
+  )))
+
   "get" must {
 
     "return Ok and the correct view when no addresses" in {
@@ -44,7 +49,7 @@ class PensionAdviserAddressListControllerSpec extends WordSpec with Matchers {
       running(_.overrides(
         bind[Navigator].toInstance(FakeNavigator),
         bind[AuthAction].toInstance(FakeAuthAction()),
-        bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(Some(Json.obj())))
+        bind[DataRetrievalAction].toInstance(dataRetrievalAction)
       )) { app =>
         val controller = app.injector.instanceOf[PensionAdviserAddressListController]
         val result = controller.onPageLoad()(FakeRequest())
@@ -60,7 +65,7 @@ class PensionAdviserAddressListControllerSpec extends WordSpec with Matchers {
       running(_.overrides(
         bind[Navigator].toInstance(FakeNavigator),
         bind[AuthAction].toInstance(FakeAuthAction()),
-        bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(Some(Json.obj())))
+        bind[DataRetrievalAction].toInstance(dataRetrievalAction)
       )) { app =>
         val controller = app.injector.instanceOf[PensionAdviserAddressListController]
         val result = controller.onPageLoad()(FakeRequest())
@@ -80,10 +85,10 @@ class PensionAdviserAddressListControllerSpec extends WordSpec with Matchers {
       running(_.overrides(
         bind[Navigator].toInstance(FakeNavigator),
         bind[AuthAction].toInstance(FakeAuthAction()),
-        bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(Some(Json.obj())))
+        bind[DataRetrievalAction].toInstance(dataRetrievalAction)
       )) { app =>
         val controller = app.injector.instanceOf[PensionAdviserAddressListController]
-        val result = controller.onSubmit()(FakeRequest())
+        val result = controller.onSubmit()(FakeRequest().withFormUrlEncodedBody("value"->"1"))
 
         status(result) shouldBe SEE_OTHER
       }
@@ -95,12 +100,12 @@ class PensionAdviserAddressListControllerSpec extends WordSpec with Matchers {
       running(_.overrides(
         bind[Navigator].toInstance(FakeNavigator),
         bind[AuthAction].toInstance(FakeAuthAction()),
-        bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(Some(Json.obj())))
+        bind[DataRetrievalAction].toInstance(dataRetrievalAction)
       )) { app =>
         val controller = app.injector.instanceOf[PensionAdviserAddressListController]
-        val result = controller.onSubmit()(FakeRequest())
+        val result = controller.onSubmit()(FakeRequest().withFormUrlEncodedBody("value" -> "1"))
 
-        redirectLocation(result) shouldBe Some(onwardRoute.url)
+        redirectLocation(result) shouldBe Some(FakeNavigator.desiredRoute)
       }
 
     }
@@ -110,13 +115,13 @@ class PensionAdviserAddressListControllerSpec extends WordSpec with Matchers {
       running(_.overrides(
         bind[Navigator].toInstance(FakeNavigator),
         bind[AuthAction].toInstance(FakeAuthAction()),
-        bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(Some(Json.obj())))
+        bind[DataRetrievalAction].toInstance(dataRetrievalAction)
       )) { app =>
         val controller = app.injector.instanceOf[PensionAdviserAddressListController]
-        val result = controller.onSubmit()(FakeRequest())
+        val result = controller.onSubmit()(FakeRequest().withFormUrlEncodedBody("value" -> "1"))
 
         status(result) shouldBe SEE_OTHER
-        FakeDataCacheConnector.verify(fakeAddressListId, addresses.head)
+        FakeDataCacheConnector.verify(AdviserAddressId.toString, addresses.head)
       }
 
     }
@@ -126,10 +131,10 @@ class PensionAdviserAddressListControllerSpec extends WordSpec with Matchers {
       running(_.overrides(
         bind[Navigator].toInstance(FakeNavigator),
         bind[AuthAction].toInstance(FakeAuthAction()),
-        bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(Some(Json.obj())))
+        bind[DataRetrievalAction].toInstance(dataRetrievalAction)
       )) { app =>
         val controller = app.injector.instanceOf[PensionAdviserAddressListController]
-        val result = controller.onSubmit()(FakeRequest())
+        val result = controller.onSubmit()(FakeRequest().withFormUrlEncodedBody("value"->"1"))
 
         status(result) shouldBe SEE_OTHER
         FakeDataCacheConnector.verifyNot(fakeAddressId)
@@ -142,7 +147,7 @@ class PensionAdviserAddressListControllerSpec extends WordSpec with Matchers {
       running(_.overrides(
         bind[Navigator].toInstance(FakeNavigator),
         bind[AuthAction].toInstance(FakeAuthAction()),
-        bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(Some(Json.obj())))
+        bind[DataRetrievalAction].toInstance(dataRetrievalAction)
       )) { app =>
         val controller = app.injector.instanceOf[PensionAdviserAddressListController]
         val result = controller.onSubmit()(FakeRequest())
@@ -160,12 +165,6 @@ class PensionAdviserAddressListControllerSpec extends WordSpec with Matchers {
 object PensionAdviserAddressListControllerSpec {
 
   val onwardRoute: Call = controllers.routes.IndexController.onPageLoad()
-
-  val fakeAddressListId: TypedIdentifier[TolerantAddress] = new TypedIdentifier[TolerantAddress]() {}
-  val fakeAddressId: TypedIdentifier[Address] = new TypedIdentifier[Address]() {}
-
-  private lazy val postCall = controllers.routes.IndexController.onPageLoad()
-  private lazy val manualInputCall = controllers.routes.SessionExpiredController.onPageLoad()
 
   private val addresses = Seq(
     TolerantAddress(

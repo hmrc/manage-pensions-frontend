@@ -44,6 +44,17 @@ case class TolerantAddress(addressLine1: Option[String],
     lines.mkString(", ")
   }
 
+  def toAddress: Address = {
+    Address(
+      addressLine1.getOrElse(""),
+      addressLine2.getOrElse(""),
+      addressLine3,
+      addressLine4,
+      postcode,
+      country.getOrElse("")
+    )
+  }
+
   def equalsAddress(address: Address): Boolean = {
     address.line1 == addressLine1.getOrElse("") &&
       address.line2 == addressLine2.getOrElse("") &&
@@ -143,15 +154,21 @@ object TolerantAddress {
       (JsPath \ "countryCode").formatNullable[String]
     ) (TolerantAddress.apply, unlift(TolerantAddress.unapply))
 
-  def fromAddress(address: Address): TolerantAddress = {
-    TolerantAddress(
-      Some(address.line1),
-      Some(address.line2),
-      address.line3,
-      address.line4,
-      address.postalCode,
-      Some(address.countryCode)
-    )
+  implicit def convert(tolerant: TolerantAddress): Option[Address] = {
+    for {
+      addressLine1 <- tolerant.addressLine1
+      addressLine2 <- tolerant.addressLine2
+      country <- tolerant.country
+    } yield {
+      Address(
+        addressLine1,
+        addressLine2,
+        tolerant.addressLine3,
+        tolerant.addressLine4,
+        tolerant.postcode,
+        country
+      )
+    }
   }
 
 }
