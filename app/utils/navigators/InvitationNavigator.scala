@@ -17,10 +17,9 @@
 package utils.navigators
 
 import javax.inject.{Inject, Singleton}
-
 import connectors.DataCacheConnector
 import controllers.routes
-import identifiers.PsaNameId
+import identifiers.invitations.PsaNameId
 import models.{CheckMode, NormalMode}
 import play.api.mvc.Call
 import utils.Navigator

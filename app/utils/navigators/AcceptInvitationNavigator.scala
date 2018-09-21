@@ -19,8 +19,7 @@ package utils.navigators
 import javax.inject.{Inject, Singleton}
 import connectors.DataCacheConnector
 import controllers.routes
-import identifiers.PsaNameId
-import identifiers.invitations.HaveYouEmployedPensionAdviserId
+import identifiers.invitations.{HaveYouEmployedPensionAdviserId, PsaNameId}
 import utils.Navigator
 
 @Singleton

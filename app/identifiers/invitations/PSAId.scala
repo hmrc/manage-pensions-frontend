@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package identifiers
+package identifiers.invitations
+
+import identifiers.TypedIdentifier
 
 object PSAId extends TypedIdentifier[String] {
 

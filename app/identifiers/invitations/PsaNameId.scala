@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package identifiers
+package identifiers.invitations
+
+import identifiers.TypedIdentifier
 
 object PsaNameId extends TypedIdentifier[String] {
   override def toString: String = "psaName"

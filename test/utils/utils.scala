@@ -15,7 +15,8 @@
  */
 
 import controllers.actions.{DataRetrievalAction, FakeDataRetrievalAction}
-import identifiers.{LastPageId, PsaNameId, SchemeDetailId}
+import identifiers.invitations.PsaNameId
+import identifiers.{LastPageId, SchemeDetailId}
 import models._
 import org.scalatest.OptionValues
 

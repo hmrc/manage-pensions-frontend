@@ -18,7 +18,7 @@ package controllers.invitations
 
 import controllers.ControllerSpecBase
 import controllers.actions._
-import identifiers.PsaNameId
+import identifiers.invitations.PsaNameId
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import views.html.invitations.incorrectPsaDetails
