@@ -16,8 +16,189 @@
 
 package controllers.invitations
 
-import controllers.ControllerSpecBase
+import config.FrontendAppConfig
+import connectors.FakeDataCacheConnector
+import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
+import forms.invitations.PensionAdviserAddressListFormProvider
+import identifiers.TypedIdentifier
+import models.{Address, TolerantAddress}
+import org.scalatest.{Matchers, WordSpec}
+import play.api.Application
+import play.api.i18n.MessagesApi
+import play.api.inject.bind
+import play.api.libs.json.Json
+import play.api.mvc.Call
+import play.api.test.FakeRequest
+import play.api.test.Helpers._
+import utils.{FakeNavigator, Navigator}
+import views.html.invitations.pension_adviser_address_list
 
-class PensionAdviserAddressListControllerSpec extends ControllerSpecBase {
+class PensionAdviserAddressListControllerSpec extends WordSpec with Matchers {
+
+  import PensionAdviserAddressListControllerSpec._
+
+  "get" must {
+
+    "return Ok and the correct view when no addresses" in {
+
+      running(_.overrides(
+        bind[Navigator].toInstance(FakeNavigator),
+        bind[AuthAction].toInstance(FakeAuthAction()),
+        bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(Some(Json.obj())))
+      )) { app =>
+        val controller = app.injector.instanceOf[PensionAdviserAddressListController]
+        val result = controller.onPageLoad()(FakeRequest())
+
+        status(result) shouldBe OK
+        contentAsString(result) shouldBe viewAsString(app, None)
+      }
+
+    }
+
+    "return Ok and the correct view when addresses are supplied" in {
+
+      running(_.overrides(
+        bind[Navigator].toInstance(FakeNavigator),
+        bind[AuthAction].toInstance(FakeAuthAction()),
+        bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(Some(Json.obj())))
+      )) { app =>
+        val controller = app.injector.instanceOf[PensionAdviserAddressListController]
+        val result = controller.onPageLoad()(FakeRequest())
+
+        status(result) shouldBe OK
+        contentAsString(result) shouldBe viewAsString(app, None)
+      }
+
+    }
+
+  }
+
+  "post" must {
+
+    "return See Other on submission of valid data" in {
+
+      running(_.overrides(
+        bind[Navigator].toInstance(FakeNavigator),
+        bind[AuthAction].toInstance(FakeAuthAction()),
+        bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(Some(Json.obj())))
+      )) { app =>
+        val controller = app.injector.instanceOf[PensionAdviserAddressListController]
+        val result = controller.onSubmit()(FakeRequest())
+
+        status(result) shouldBe SEE_OTHER
+      }
+
+    }
+
+    "redirect to the page specified by the navigator following submission of valid data" in {
+
+      running(_.overrides(
+        bind[Navigator].toInstance(FakeNavigator),
+        bind[AuthAction].toInstance(FakeAuthAction()),
+        bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(Some(Json.obj())))
+      )) { app =>
+        val controller = app.injector.instanceOf[PensionAdviserAddressListController]
+        val result = controller.onSubmit()(FakeRequest())
+
+        redirectLocation(result) shouldBe Some(onwardRoute.url)
+      }
+
+    }
+
+    "save the user answer on submission of valid data" in {
+
+      running(_.overrides(
+        bind[Navigator].toInstance(FakeNavigator),
+        bind[AuthAction].toInstance(FakeAuthAction()),
+        bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(Some(Json.obj())))
+      )) { app =>
+        val controller = app.injector.instanceOf[PensionAdviserAddressListController]
+        val result = controller.onSubmit()(FakeRequest())
+
+        status(result) shouldBe SEE_OTHER
+        FakeDataCacheConnector.verify(fakeAddressListId, addresses.head)
+      }
+
+    }
+
+    "delete any existing address on submission of valid data" in {
+
+      running(_.overrides(
+        bind[Navigator].toInstance(FakeNavigator),
+        bind[AuthAction].toInstance(FakeAuthAction()),
+        bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(Some(Json.obj())))
+      )) { app =>
+        val controller = app.injector.instanceOf[PensionAdviserAddressListController]
+        val result = controller.onSubmit()(FakeRequest())
+
+        status(result) shouldBe SEE_OTHER
+        FakeDataCacheConnector.verifyNot(fakeAddressId)
+      }
+
+    }
+
+    "return Bad Request and the correct view on submission of invalid data" in {
+
+      running(_.overrides(
+        bind[Navigator].toInstance(FakeNavigator),
+        bind[AuthAction].toInstance(FakeAuthAction()),
+        bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(Some(Json.obj())))
+      )) { app =>
+        val controller = app.injector.instanceOf[PensionAdviserAddressListController]
+        val result = controller.onSubmit()(FakeRequest())
+
+        status(result) shouldBe BAD_REQUEST
+        contentAsString(result) shouldBe viewAsString(app, Some(-1))
+      }
+
+    }
+
+  }
+
+}
+
+object PensionAdviserAddressListControllerSpec {
+
+  val onwardRoute: Call = controllers.routes.IndexController.onPageLoad()
+
+  val fakeAddressListId: TypedIdentifier[TolerantAddress] = new TypedIdentifier[TolerantAddress]() {}
+  val fakeAddressId: TypedIdentifier[Address] = new TypedIdentifier[Address]() {}
+
+  private lazy val postCall = controllers.routes.IndexController.onPageLoad()
+  private lazy val manualInputCall = controllers.routes.SessionExpiredController.onPageLoad()
+
+  private val addresses = Seq(
+    TolerantAddress(
+      Some("Address 1 Line 1"),
+      Some("Address 1 Line 2"),
+      Some("Address 1 Line 3"),
+      Some("Address 1 Line 4"),
+      Some("A1 1PC"),
+      Some("GB")
+    ),
+    TolerantAddress(
+      Some("Address 2 Line 1"),
+      Some("Address 2 Line 2"),
+      Some("Address 2 Line 3"),
+      Some("Address 2 Line 4"),
+      Some("123"),
+      Some("FR")
+    )
+  )
+
+  def viewAsString(app: Application, value: Option[Int]): String = {
+
+    val appConfig = app.injector.instanceOf[FrontendAppConfig]
+    val request = FakeRequest()
+    val messages = app.injector.instanceOf[MessagesApi].preferred(request)
+
+    val form = value match {
+      case Some(i) => new PensionAdviserAddressListFormProvider()(addresses).bind(Map("value" -> i.toString))
+      case None => new PensionAdviserAddressListFormProvider()(addresses)
+    }
+
+    pension_adviser_address_list(appConfig, form, addresses)(request, messages).toString()
+
+  }
 
 }
