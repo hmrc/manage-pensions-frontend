@@ -33,6 +33,7 @@ trait MicroService {
     .settings(playSettings: _*)
     .settings(
       RoutesKeys.routesImport ++= Seq(
+        "models.SchemeReferenceNumber",
         "models.Mode",
         "models.CheckMode",
         "models.NormalMode"

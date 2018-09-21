@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package views
+package views.invitations
 
-import views.behaviours.ViewBehaviours
-import views.html.incorrectPsaDetails
 import org.jsoup.Jsoup
+import views.behaviours.ViewBehaviours
+import views.html.invitations.incorrectPsaDetails
 
 class incorrectPsaDetailsViewSpec extends ViewBehaviours {
 

@@ -3,3 +3,5 @@ GET        /use-pension-adviser                         controllers.invitations.
 POST       /use-pension-adviser                         controllers.invitations.HaveYouEmployedPensionAdviserController.onSubmit(mode: Mode = NormalMode)
 GET        /change-use-pension-adviser                  controllers.invitations.HaveYouEmployedPensionAdviserController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-use-pension-adviser                  controllers.invitations.HaveYouEmployedPensionAdviserController.onSubmit(mode: Mode = CheckMode)
+
+GET        /no-psa-match                                controllers.invitations.IncorrectPsaDetailsController.onPageLoad()
