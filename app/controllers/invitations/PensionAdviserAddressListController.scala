@@ -24,7 +24,8 @@ import play.api.mvc.{Action, AnyContent}
 class PensionAdviserAddressListController @Inject()(
                                                    val authenticate: AuthAction,
                                                    val getData: DataRetrievalAction,
-                                                   val requireData: DataRequiredAction
+                                                   val requireData: DataRequiredAction,
+                                                   val formProvider: PensionAdviserAddressListFormProvider
                                                    ) {
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authenticate andThen getData andThen requireData) {
