@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.invitations
 
 import config.FrontendAppConfig
+import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
-import identifiers.PsaNameId
+import identifiers.invitations.PsaNameId
 import javax.inject.Inject
-import models.SchemeReferenceNumber
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import views.html.incorrectPsaDetails
+import views.html.invitations.incorrectPsaDetails
 
 import scala.concurrent.Future
 
@@ -35,7 +35,7 @@ class IncorrectPsaDetailsController @Inject()(val appConfig: FrontendAppConfig,
                                               requireData: DataRequiredAction
                                              ) extends FrontendController with I18nSupport with Retrievals {
 
-  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
+  def onPageLoad(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
       PsaNameId.retrieve.right.map{ psaName =>
         Future.successful(Ok(incorrectPsaDetails(appConfig, psaName)))

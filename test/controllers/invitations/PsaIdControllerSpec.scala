@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package controllers.invitation
+package controllers.invitations
 
 import connectors.FakeDataCacheConnector
 import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
-import forms.invitation.PsaIdFromProvider
+import forms.invitations.PsaIdFromProvider
 import models.NormalMode
 import play.api.data.Form
 import play.api.test.FakeRequest
 import utils.UserAnswers
-import views.html.invitation.psaId
+import views.html.invitations.psaId
 
 class PsaIdControllerSpec extends ControllerWithQuestionPageBehaviours {
 

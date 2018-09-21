@@ -18,7 +18,8 @@ package utils.navigators
 
 import base.SpecBase
 import connectors.FakeDataCacheConnector
-import identifiers.{PSAId, PsaNameId, Identifier}
+import identifiers.Identifier
+import identifiers.invitations.{PSAId, PsaNameId}
 import models.NormalMode
 import models.requests.IdentifiedRequest
 import org.scalatest.OptionValues
@@ -50,7 +51,7 @@ class InvitationNavigatorSpec extends SpecBase with NavigatorBehaviour {
 object InvitationNavigatorSpec extends OptionValues {
   lazy val emptyAnswers = UserAnswers(Json.obj())
   lazy val indexPage: Call = controllers.routes.IndexController.onPageLoad()
-  lazy val psaIdPage: Call = controllers.invitation.routes.PsaIdController.onPageLoad(NormalMode)
+  lazy val psaIdPage: Call = controllers.invitations.routes.PsaIdController.onPageLoad(NormalMode)
 
 
   implicit val ex: IdentifiedRequest = new IdentifiedRequest() {

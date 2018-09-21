@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package controllers.invitation
+package controllers.invitations
 
 import connectors.FakeDataCacheConnector
 import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
-import forms.invitation.PsaNameFormProvider
+import forms.invitations.PsaNameFormProvider
 import models.NormalMode
 import play.api.data.Form
 import utils.{UserAnswers, _}
-import views.html.invitation.psaName
+import views.html.invitations.psaName
 
 class PsaNameControllerSpec extends ControllerWithQuestionPageBehaviours {
 

@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package controllers.invitation
+package controllers.invitations
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
 import connectors.DataCacheConnector
 import controllers.Retrievals
 import controllers.actions._
-import forms.invitation.PsaIdFromProvider
-import identifiers.{PsaNameId, PSAId}
+import forms.invitations.PsaIdFromProvider
+import identifiers.invitations.{PSAId, PsaNameId}
 import models.Mode
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -30,7 +30,7 @@ import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.annotations.Invitation
 import utils.{Navigator, UserAnswers}
-import views.html.invitation.psaId
+import views.html.invitations.psaId
 
 import scala.concurrent.Future
 

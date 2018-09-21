@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package forms.invitation
+package forms.invitations
 
 import javax.inject.Inject
 

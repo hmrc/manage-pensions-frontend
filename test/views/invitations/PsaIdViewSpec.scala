@@ -14,33 +14,32 @@
  * limitations under the License.
  */
 
-package views.invitation
+package views.invitations
 
-import forms.invitation.PsaNameFormProvider
-import models.{CheckMode, NormalMode}
+import forms.invitations.PsaIdFromProvider
+import models.NormalMode
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import views.behaviours.QuestionViewBehaviours
-import views.html.invitation.psaName
+import views.html.invitations.psaId
 
-class PsaNameViewSpec extends QuestionViewBehaviours[String] {
+class PsaIdViewSpec extends QuestionViewBehaviours[String] {
 
-  val messageKeyPrefix = "psa__name"
+  val messageKeyPrefix = "psa__id"
 
-  val formProvider = new PsaNameFormProvider()
+  val formProvider = new PsaIdFromProvider()
   override val form = formProvider()
 
-  def createView: () => HtmlFormat.Appendable = () => psaName(frontendAppConfig, form, NormalMode)(fakeRequest, messages)
+  def createView: () => HtmlFormat.Appendable = () => psaId(frontendAppConfig, form, "psaName", NormalMode)(fakeRequest, messages)
 
-  def createViewUsingForm: Form[_] => HtmlFormat.Appendable = (form: Form[_]) => psaName(frontendAppConfig, form, CheckMode)(fakeRequest, messages)
+  def createViewUsingForm: Form[_] => HtmlFormat.Appendable = (form: Form[_]) => psaId(frontendAppConfig, form, "psaName", NormalMode)(fakeRequest, messages)
 
-  "PsaName view" must {
+  "PsaId view" must {
 
     behave like normalPage(
       createView,
       messageKeyPrefix,
-      messages(s"messages__${messageKeyPrefix}__heading"),
-      s"_p1"
+      messages(s"messages__${messageKeyPrefix}__heading",  "psaName")
     )
 
     behave like pageWithBackLink(createView)
@@ -48,8 +47,8 @@ class PsaNameViewSpec extends QuestionViewBehaviours[String] {
     behave like pageWithTextFields(
       createViewUsingForm,
       messageKeyPrefix,
-      controllers.invitation.routes.PsaNameController.onSubmit(NormalMode).url,
-      "psaName"
+      controllers.invitations.routes.PsaNameController.onSubmit(NormalMode).url,
+      "psaId"
     )
   }
 }

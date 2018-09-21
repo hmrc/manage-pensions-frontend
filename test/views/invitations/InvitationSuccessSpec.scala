@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package views
+package views.invitations
 
 import base.SpecBase
 import org.joda.time.LocalDate
 import play.api.mvc.Call
 import play.twirl.api.HtmlFormat
 import utils.DateHelper
-import views.behaviours.ViewBehaviours
-import views.html.invitation_success
 import viewmodels.Message
+import views.behaviours.ViewBehaviours
+import views.html.invitations.invitation_success
 
 class InvitationSuccessSpec extends ViewBehaviours {
 
@@ -61,7 +61,7 @@ object InvitationSuccessSpec {
 
   val messageKeyPrefix = "invitationSuccess"
 
-  val continue: Call = controllers.routes.InvitationSuccessController.onSubmit("test-srn")
+  val continue: Call = controllers.invitations.routes.InvitationSuccessController.onSubmit("test-srn")
 
   def createView(base: SpecBase): () => HtmlFormat.Appendable = () =>
     invitation_success(
