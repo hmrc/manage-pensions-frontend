@@ -29,8 +29,8 @@ import utils.Navigator
 class InvitationNavigator @Inject()(val dataCacheConnector: DataCacheConnector) extends Navigator {
 
   override def routeMap(from: NavigateFrom): Option[NavigateTo] = from.id match {
-    case PsaNameId => NavigateTo.save(PsaIdController.onPageLoad(NormalMode))
-    case PSAId => NavigateTo.save(IndexController.onPageLoad())
+    case PsaNameId => NavigateTo.dontSave(PsaIdController.onPageLoad(NormalMode))
+    case PSAId => NavigateTo.dontSave(IndexController.onPageLoad())
     case _ => NavigateTo.dontSave(controllers.routes.SessionExpiredController.onPageLoad())
   }
 
