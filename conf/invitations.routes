@@ -26,5 +26,8 @@ POST       /pension-adviser-name                        controllers.invitations.
 GET        /change-pension-adviser-name                 controllers.invitations.AdviserDetailsController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-pension-adviser-name                 controllers.invitations.AdviserDetailsController.onSubmit(mode: Mode = CheckMode)
 
+GET        /check-your-answers                          controllers.invitations.CheckYourAnswersController.onPageLoad()
+POST       /check-your-answers                          controllers.invitations.CheckYourAnswersController.onSubmit()
+
 GET        /cannot-send-invite                          controllers.invitations.YouCannotSendAnInviteController.onPageLoad()
 
