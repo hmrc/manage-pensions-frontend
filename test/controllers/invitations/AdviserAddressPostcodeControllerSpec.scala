@@ -29,6 +29,7 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{MustMatchers, OptionValues, WordSpec}
 import play.api.Application
+import play.api.data.{Form, FormError}
 import play.api.i18n.MessagesApi
 import play.api.inject.bind
 import play.api.libs.json.Json
@@ -77,7 +78,7 @@ class AdviserAddressPostcodeControllerSpec extends WordSpec with MustMatchers wi
       when(addressConnector.addressLookupByPostCode(eqTo(postcode))(any(), any()))
         .thenReturn(Future.successful(Seq(address)))
 
-      when(cacheConnector.save("cacheId", AdviserAddressPostCodeLookupId, eqTo(Seq(address)))(any(), any(), any()))
+      when(cacheConnector.save(any(), eqTo(AdviserAddressPostCodeLookupId), eqTo(Seq(address)))(any(), any(), any()))
         .thenReturn(Future.successful(Json.obj()))
 
       running(_.overrides(
@@ -93,7 +94,7 @@ class AdviserAddressPostcodeControllerSpec extends WordSpec with MustMatchers wi
           val result = controller.onSubmit()(FakeRequest().withFormUrlEncodedBody("value" -> postcode))
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual "www.example.com"
+          redirectLocation(result).value mustEqual controllers.routes.IndexController.onPageLoad().url
       }
     }
 
@@ -103,7 +104,7 @@ class AdviserAddressPostcodeControllerSpec extends WordSpec with MustMatchers wi
         val cacheConnector: DataCacheConnector = mock[DataCacheConnector]
         val addressConnector: AddressLookupConnector = mock[AddressLookupConnector]
 
-        when(addressConnector.addressLookupByPostCode(eqTo(postcode))(any(), any())) thenReturn
+        when(addressConnector.addressLookupByPostCode(any())(any(), any())) thenReturn
           Future.failed(new HttpException("Failed", INTERNAL_SERVER_ERROR))
 
         running(_.overrides(
@@ -113,18 +114,16 @@ class AdviserAddressPostcodeControllerSpec extends WordSpec with MustMatchers wi
           bind[DataRetrievalAction].toInstance(dataRetrievalAction),
           bind[AuthAction].toInstance(FakeAuthAction())
         )) {
-          app =>
+          implicit app =>
 
-            implicit val mat: Materializer = app.materializer
-
-            val appConfig = app.injector.instanceOf[FrontendAppConfig]
             val controller = app.injector.instanceOf[AdviserAddressPostcodeController]
             val result = controller.onSubmit()(FakeRequest().withFormUrlEncodedBody("value" -> postcode))
 
             status(result) mustEqual BAD_REQUEST
-            contentAsString(result) mustEqual ???
+            contentAsString(result) mustEqual viewAsString(Some(postcode), form.withError("value", "error.invalid"))
         }
       }
+
       "the postcode is invalid" in {
 
         val invalidPostcode = "*" * 10
@@ -189,7 +188,7 @@ object AdviserAddressPostcodeControllerSpec {
 
   val form = new AdviserAddressPostcodeLookupFormProvider()()
 
-  def viewAsString(value: Option[String] = Some(postcode))(implicit app: Application): String = {
+  def viewAsString(value: Option[String] = Some(postcode), form: Form[String] = form)(implicit app: Application): String = {
 
     val appConfig = app.injector.instanceOf[FrontendAppConfig]
     val request = FakeRequest()

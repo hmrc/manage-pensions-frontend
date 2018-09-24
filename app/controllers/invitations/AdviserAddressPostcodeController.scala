@@ -17,17 +17,24 @@
 package controllers.invitations
 
 import config.FrontendAppConfig
+import connectors.{AddressLookupConnector, DataCacheConnector}
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.invitations.AdviserAddressPostcodeLookupFormProvider
+import identifiers.TypedIdentifier
 import identifiers.invitations.AdviserAddressPostCodeLookupId
 import javax.inject.Inject
-import models.NormalMode
+import models.requests.DataRequest
+import models.{NormalMode, TolerantAddress}
+import play.api.data.Form
 import play.api.i18n._
 import play.api.mvc._
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import utils.Navigator
 import utils.annotations.AcceptInvitation
+import utils.{Navigator, UserAnswers}
+import viewmodels.Message
 import views.html.invitations.adviserPostcode
+
+import scala.concurrent.Future
 
 class AdviserAddressPostcodeController @Inject()(val appConfig: FrontendAppConfig,
                                                  val messagesApi: MessagesApi,
@@ -35,16 +42,51 @@ class AdviserAddressPostcodeController @Inject()(val appConfig: FrontendAppConfi
                                                  getData: DataRetrievalAction,
                                                  requireData: DataRequiredAction,
                                                  formProvider: AdviserAddressPostcodeLookupFormProvider,
-                                                 @AcceptInvitation navigator: Navigator) extends FrontendController with I18nSupport {
+                                                 @AcceptInvitation navigator: Navigator,
+                                                 val addressLookupConnector: AddressLookupConnector,
+                                                 val cacheConnector: DataCacheConnector
+                                                ) extends FrontendController with I18nSupport {
 
+
+  val form: Form[String] = formProvider()
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData andThen requireData) {
     implicit request =>
       Ok(adviserPostcode(appConfig, formProvider()))
   }
 
-  def onSubmit: Action[AnyContent] = (authenticate andThen getData andThen requireData) {
+  def onSubmit: Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
-      Redirect(navigator.nextPage(AdviserAddressPostCodeLookupId, NormalMode, request.userAnswers))
+      form.bindFromRequest().fold( formWithErrors =>
+        Future.successful(BadRequest(adviserPostcode(appConfig, formWithErrors))),
+        lookup(AdviserAddressPostCodeLookupId)
+      )
+  }
+
+  private def lookup(id: TypedIdentifier[Seq[TolerantAddress]])
+                    (postcode: String)
+                    (implicit request: DataRequest[AnyContent]): Future[Result] = {
+
+    addressLookupConnector.addressLookupByPostCode(postcode).flatMap {
+
+      case Nil => Future.successful(Ok(adviserPostcode(appConfig, formWithError("messages__error__postcode__lookup__no__results"))))
+
+      case addresses =>
+        cacheConnector.save(
+          request.externalId,
+          id,
+          addresses
+        ) map {
+          json =>
+            Redirect(navigator.nextPage(id, NormalMode, UserAnswers(json)))
+        }
+    } recoverWith {
+      case _ =>
+        Future.successful(BadRequest(adviserPostcode(appConfig, formWithError("error.invalid"))))
+    }
+  }
+
+  private def formWithError(message: Message)(implicit request: DataRequest[AnyContent]): Form[String] = {
+    form.withError("value", message.resolve)
   }
 }
