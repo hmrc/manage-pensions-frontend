@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package forms
+package forms.invitations
 
 import forms.mappings.Constraints
 import play.api.data.FormError
@@ -23,7 +23,8 @@ import wolfendale.scalacheck.regexp.RegexpGen
 
 class PsaNameFormProviderSpec extends StringFieldBehaviours with Constraints{
 
-  val form = new PsaNameFormProvider().apply()
+  val formProvider = new PsaNameFormProvider()
+  val form = formProvider()
 
   ".psaName" must {
 

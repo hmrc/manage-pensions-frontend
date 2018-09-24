@@ -6,10 +6,28 @@ POST       /change-use-pension-adviser                  controllers.invitations.
 
 GET        /no-psa-match                                controllers.invitations.IncorrectPsaDetailsController.onPageLoad()
 
-GET        /name-of-invited-psa                         controllers.invitations.PsaNameController.onPageLoad(mode: models.Mode = models.NormalMode)
-POST       /name-of-invited-psa                         controllers.invitations.PsaNameController.onSubmit(mode: models.Mode = models.NormalMode)
-GET        /change-name-of-invited-psa                  controllers.invitations.PsaNameController.onPageLoad(mode: models.Mode = models.CheckMode)
-POST       /change-name-of-invited-psa                  controllers.invitations.PsaNameController.onSubmit(mode: models.Mode = models.CheckMode)
+GET        /name-of-invited-psa                         controllers.invitations.PsaNameController.onPageLoad(mode: Mode = NormalMode)
+POST       /name-of-invited-psa                         controllers.invitations.PsaNameController.onSubmit(mode: Mode = NormalMode)
+GET        /change-name-of-invited-psa                  controllers.invitations.PsaNameController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-name-of-invited-psa                  controllers.invitations.PsaNameController.onSubmit(mode: Mode = CheckMode)
+
+GET        /psa-id-of-invited-psa                       controllers.invitations.PsaIdController.onPageLoad(mode: Mode = NormalMode)
+POST       /psa-id-of-invited-psa                       controllers.invitations.PsaIdController.onSubmit(mode: Mode = NormalMode)
+GET        /change-psa-id-of-invited-psa                controllers.invitations.PsaIdController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-psa-id-of-invited-psa                controllers.invitations.PsaIdController.onSubmit(mode: Mode = CheckMode)
 
 GET        /invite-sent/:srn                            controllers.invitations.InvitationSuccessController.onPageLoad(srn: SchemeReferenceNumber)
 POST       /invite-sent/:srn                            controllers.invitations.InvitationSuccessController.onSubmit(srn: SchemeReferenceNumber)
+
+GET        /pension-adviser-name                        controllers.invitations.AdviserDetailsController.onPageLoad(mode: Mode = NormalMode)
+POST       /pension-adviser-name                        controllers.invitations.AdviserDetailsController.onSubmit(mode: Mode = NormalMode)
+GET        /change-pension-adviser-name                 controllers.invitations.AdviserDetailsController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-pension-adviser-name                 controllers.invitations.AdviserDetailsController.onSubmit(mode: Mode = CheckMode)
+
+GET        /enter-pension-adviser-address               controllers.invitations.ManualAddressController.onPageLoad(mode: Mode = NormalMode)
+POST       /enter-pension-adviser-address               controllers.invitations.ManualAddressController.onSubmit(mode: Mode = NormalMode)
+GET        /change-pension-adviser-address              controllers.invitations.ManualAddressController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-pension-adviser-address              controllers.invitations.ManualAddressController.onSubmit(mode: Mode = CheckMode)
+
+GET        /cannot-send-invite                          controllers.invitations.YouCannotSendAnInviteController.onPageLoad()
+

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package forms.invitations.adviser
+package forms.invitations
 
 import forms.FormSpec
 import forms.behaviours.FormBehaviours

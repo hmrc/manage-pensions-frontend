@@ -23,6 +23,7 @@ import scala.language.implicitConversions
 
 trait Constraints {
 
+  val psaIdRegx = """^A[0-9]{7}$"""
   val psaNameRegx = """^[a-zA-Z\u00C0-\u00FF '‘’\u2014\u2013\u2010\u002d]{1,107}$"""
   val regexAddressLine = """^[A-Za-z0-9 &!'‘’(),./\u2014\u2013\u2010\u002d]{1,35}$"""
   val regexPostcode = """^[A-Z]{1,2}[0-9][0-9A-Z]?\s?[0-9][A-Z]{2}$"""
@@ -104,10 +105,11 @@ trait Constraints {
           .getOrElse(Invalid(errorKey))
     }
 
+  protected def psaId(errorKey: String): Constraint[String] = regexp(psaIdRegx, errorKey)
   protected def psaName(errorKey: String): Constraint[String] = regexp(psaNameRegx, errorKey)
   protected def addressLine(errorKey: String): Constraint[String] = regexp(regexAddressLine, errorKey)
   protected def postCode(errorKey: String): Constraint[String] = regexp(regexPostcode, errorKey)
   protected def postCodeNonUk(errorKey: String): Constraint[String] = regexp(regexPostCodeNonUk, errorKey)
 
-
+  protected def adviserName(errorKey: String): Constraint[String] = regexp(psaNameRegx, errorKey)
 }

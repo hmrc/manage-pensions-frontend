@@ -16,6 +16,22 @@
 
 package controllers.invitations
 
-class ManualAddressControllerSpec {
+import javax.inject.Inject
+import models.Mode
+import play.api.mvc.Action
+
+class ManualAddressController @Inject()(
+
+                                       ) {
+
+  def onPageLoad(mode: Mode) = Action {
+    implicit request =>
+      ???
+  }
+
+  def onSubmit(mode: Mode) = Action {
+    implicit request =>
+      ???
+  }
 
 }

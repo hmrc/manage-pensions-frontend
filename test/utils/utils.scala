@@ -15,7 +15,7 @@
  */
 
 import controllers.actions.{DataRetrievalAction, FakeDataRetrievalAction}
-import identifiers.invitations.PsaNameId
+import identifiers.invitations.{PSAId, PsaNameId}
 import identifiers.{LastPageId, SchemeDetailId}
 import models._
 import org.scalatest.OptionValues
@@ -28,7 +28,12 @@ package object utils {
       answers.set(LastPageId)(page).asOpt.value
     }
 
-    // Invitation
+    // Invitation Id
+    def inviteeId(id: String): UserAnswers = {
+      answers.set(PSAId)(id).asOpt.value
+    }
+
+    // Invitation Name
     def inviteeName(name: String): UserAnswers = {
       answers.set(PsaNameId)(name).asOpt.value
     }

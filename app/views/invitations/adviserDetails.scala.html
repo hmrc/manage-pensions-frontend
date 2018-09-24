@@ -16,28 +16,29 @@
 
 @import config.FrontendAppConfig
 @import uk.gov.hmrc.play.views.html._
-@import controllers.invitations.routes.PsaNameController
+@import controllers.invitations.routes._
+@import models.Mode
 
 @(appConfig: FrontendAppConfig, form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
 
 @main_template(
-    title = s"${messages("messages__psa__name__title")}",
+    title = s"${messages("messages__adviser__name__title")}",
     appConfig = appConfig,
     bodyClasses = None) {
 
-    @helpers.form(action = PsaNameController.onSubmit(mode), 'autoComplete -> "off") {
+    @helpers.form(action = AdviserDetailsController.onSubmit(mode), 'autoComplete -> "off") {
 
         @components.back_link()
 
         @components.error_summary(form.errors)
 
-        @components.heading("messages__psa__name__heading")
+        @components.heading("messages__adviser__name__heading")
 
-        <p>@messages("messages__psa__name__p1")</p>
+        <p>@messages("messages__adviser__name__p1")</p>
 
         @components.input_text(
-          field = form("psaName"),
-          label = messages("messages__psa__name__heading"),
+          field = form("adviserName"),
+          label = messages("messages__adviser__name__heading"),
           labelClass=Some("visually-hidden")
         )
 

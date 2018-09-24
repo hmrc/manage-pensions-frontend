@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-package controllers.invitations
+package identifiers.invitations
 
-class ManualAddressControllerSpec {
+import identifiers.TypedIdentifier
 
+object AdviserNameId extends TypedIdentifier[String] {
+  override def toString: String = "adviserName"
 }

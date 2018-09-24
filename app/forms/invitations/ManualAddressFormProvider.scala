@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package forms.invitations.adviser
+package forms.invitations
 
 import forms.mappings.AddressMapping
 import javax.inject.Inject

@@ -19,26 +19,22 @@ package utils.navigators
 import base.SpecBase
 import connectors.FakeDataCacheConnector
 import identifiers.Identifier
-import identifiers.invitations.{PSAId, PsaNameId}
-import models.NormalMode
-import models.requests.IdentifiedRequest
+import identifiers.invitations.AdviserNameId
 import org.scalatest.OptionValues
 import org.scalatest.prop.TableFor6
 import play.api.libs.json.Json
 import play.api.mvc.Call
-import uk.gov.hmrc.http.HeaderCarrier
 import utils.{NavigatorBehaviour, UserAnswers}
 
-class InvitationNavigatorSpec extends SpecBase with NavigatorBehaviour {
+class AcceptInvitationNavigatorSpec extends SpecBase with NavigatorBehaviour {
 
-  import InvitationNavigatorSpec._
+  import AcceptInvitationNavigatorSpec._
 
-  val navigator = new InvitationNavigator(FakeDataCacheConnector)
+  val navigator = new AcceptInvitationNavigator(FakeDataCacheConnector)
 
   def routes(): TableFor6[Identifier, UserAnswers, Call, Boolean, Option[Call], Boolean] = Table(
-    ("Id", "User Answers", "Next Page (NormalMode)", "Save(NormalMode)", "Next Page (CheckMode)", "Save(CheckMode"),
-    (PsaNameId, emptyAnswers, psaIdPage, false, None, false),
-    (PSAId, emptyAnswers, indexPage, false, None, false)
+    ("Id",              "User Answers",     "Next Page (NormalMode)",     "Save(NormalMode)",   "Next Page (CheckMode)", "Save(CheckMode"),
+    (AdviserNameId,      emptyAnswers,       index,                         false,                   None,                   false       )
   )
 
   navigator.getClass.getSimpleName must {
@@ -48,17 +44,12 @@ class InvitationNavigatorSpec extends SpecBase with NavigatorBehaviour {
   }
 }
 
-object InvitationNavigatorSpec extends OptionValues {
+object AcceptInvitationNavigatorSpec extends OptionValues {
   lazy val emptyAnswers = UserAnswers(Json.obj())
-  lazy val indexPage: Call = controllers.routes.IndexController.onPageLoad()
-  lazy val psaIdPage: Call = controllers.invitations.routes.PsaIdController.onPageLoad(NormalMode)
 
-
-  implicit val ex: IdentifiedRequest = new IdentifiedRequest() {
-    val externalId: String = "test-external-id"
-  }
-  implicit val hc: HeaderCarrier = HeaderCarrier()
+  lazy val index: Call = controllers.routes.IndexController.onPageLoad()
 
   private def dataDescriber(answers: UserAnswers): String = answers.toString
-
 }
+
+

@@ -16,15 +16,17 @@
 
 package controllers.invitations
 
+import javax.inject.Inject
+
 import config.FrontendAppConfig
 import connectors.DataCacheConnector
 import controllers.actions._
-import forms.PsaNameFormProvider
+import forms.invitations.PsaNameFormProvider
 import identifiers.invitations.PsaNameId
-import javax.inject.Inject
 import models.Mode
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.annotations.Invitation
 import utils.{Navigator, UserAnswers}
@@ -32,8 +34,7 @@ import views.html.invitations.psaName
 
 import scala.concurrent.Future
 
-class PsaNameController @Inject()(
-                                   appConfig: FrontendAppConfig,
+class PsaNameController @Inject()(appConfig: FrontendAppConfig,
                                    override val messagesApi: MessagesApi,
                                    dataCacheConnector: DataCacheConnector,
                                    @Invitation navigator: Navigator,
@@ -48,25 +49,23 @@ class PsaNameController @Inject()(
   def onPageLoad(mode: Mode) = (authenticate andThen getData).async {
     implicit request =>
 
-      val preparedForm = request.userAnswers.flatMap(_.get(PsaNameId)) match {
-        case None => form
-        case Some(value) => form.fill(value)
-      }
+      val value = request.userAnswers.flatMap(_.get(PsaNameId))
+      val preparedForm = value.fold(form)(form.fill)
 
       Future.successful(Ok(psaName(appConfig, preparedForm, mode)))
   }
 
-  def onSubmit(mode: Mode) = (authenticate andThen getData).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
 
       form.bindFromRequest().fold(
         (formWithErrors: Form[_]) =>
           Future.successful(BadRequest(psaName(appConfig, formWithErrors, mode))),
-        (value) => {
 
+        (value) => {
           dataCacheConnector.save(request.externalId, PsaNameId, value).map(
             cacheMap =>
-              Redirect(navigator.nextPage(PsaNameId, mode,  UserAnswers(cacheMap)))
+              Redirect(navigator.nextPage(PsaNameId, mode, UserAnswers(cacheMap)))
           )
         }
       )

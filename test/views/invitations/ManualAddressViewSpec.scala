@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package views.invitations.adviser
+package views.invitations
 
-import forms.invitations.adviser.ManualAddressFormProvider
+import forms.invitations.ManualAddressFormProvider
 import models.{Address, NormalMode}
 import org.jsoup.Jsoup
 import play.api.data.Form
 import utils.{FakeCountryOptions, InputOption}
 import views.behaviours.QuestionViewBehaviours
-import views.invitations.adviser.manual_address
+import views.html.invitations.manual_address
+import controllers.invitations.routes._
 
 class ManualAddressViewSpec extends QuestionViewBehaviours[Address] {
 
@@ -33,10 +34,15 @@ class ManualAddressViewSpec extends QuestionViewBehaviours[Address] {
   override val form = new ManualAddressFormProvider(FakeCountryOptions())()
 
   def createView: () => _root_.play.twirl.api.HtmlFormat.Appendable = () =>
-    manual_address(frontendAppConfig, new ManualAddressFormProvider(FakeCountryOptions()).apply())(fakeRequest, messages)
+    manual_address(
+      frontendAppConfig,
+      new ManualAddressFormProvider(FakeCountryOptions())(),
+      NormalMode,
+      countryOptions
+    )(fakeRequest, messages)
 
-  def createViewUsingForm: (Form[_]) => _root_.play.twirl.api.HtmlFormat.Appendable = (form: Form[_]) =>
-    manual_address(frontendAppConfig, form, NormalMode, name)(fakeRequest, messages)
+  def createViewUsingForm: Form[_] => _root_.play.twirl.api.HtmlFormat.Appendable = (form: Form[_]) =>
+    manual_address(frontendAppConfig, form, NormalMode, countryOptions)(fakeRequest, messages)
 
   "ManualAddress view" must {
 
@@ -49,7 +55,7 @@ class ManualAddressViewSpec extends QuestionViewBehaviours[Address] {
     behave like pageWithTextFields(
       createViewUsingForm,
       messageKeyPrefix,
-      routes.ManualAddressController.onSubmit(NormalMode.url),"addressLine1", "addressLine2", "addressLine3", "addressLine4"
+      ManualAddressController.onSubmit(NormalMode).url,"addressLine1", "addressLine2", "addressLine3", "addressLine4"
     )
 
     "have name rendered on the page" in {
