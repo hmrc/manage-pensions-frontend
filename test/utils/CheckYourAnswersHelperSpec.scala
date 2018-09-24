@@ -42,7 +42,8 @@ class CheckYourAnswersHelperSpec extends WordSpec with MustMatchers {
 
     "return answer row if data present" in {
 
-      getHelper(userAnswers.inviteeName("abc")).psaName mustBe Some(AnswerRow("messages__check__your__answer__psa__name__label", Seq("abc"), false, None))
+      getHelper(userAnswers.inviteeName("abc")).psaName mustBe Some(
+        AnswerRow("messages__check__your__answer__psa__name__label", Seq("abc"), true, Some(controllers.invitations.routes.PsaNameController.onPageLoad(CheckMode).url)))
     }
   }
 
@@ -55,7 +56,8 @@ class CheckYourAnswersHelperSpec extends WordSpec with MustMatchers {
 
     "return answer row if data present" in {
 
-      getHelper(userAnswers.inviteeId("A0000000")).psaId mustBe Some(AnswerRow("messages__check__your__answer__psa__id__label", Seq("A0000000"), false, None))
+      getHelper(userAnswers.inviteeId("A0000000")).psaId mustBe Some(
+        AnswerRow("messages__check__your__answer__psa__id__label", Seq("A0000000"), true, Some(controllers.invitations.routes.PsaIdController.onPageLoad(CheckMode).url)))
     }
   }
 

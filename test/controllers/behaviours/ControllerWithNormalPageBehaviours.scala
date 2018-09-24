@@ -30,17 +30,27 @@ class ControllerWithNormalPageBehaviours extends ControllerSpecBase {
 
   def onwardRoute = Call("GET", "/foo")
 
+  // scalastyle:off method.length
   def controllerWithOnPageLoadMethod[T](onPageLoadAction: (DataRetrievalAction, AuthAction) => Action[AnyContent],
                                         emptyData: DataRetrievalAction,
-                                        validDate: Option[DataRetrievalAction],
+                                        validData: Option[DataRetrievalAction],
                                         validView: () => String): Unit = {
 
     "calling onPageLoad" must {
 
-      if (validDate.isDefined) {
+      if (validData.isDefined) {
+
+        "return OK and the correct view for a GET" in {
+
+          val result = onPageLoadAction(validData.getOrElse(emptyData), FakeAuthAction())(fakeRequest)
+
+          status(result) mustBe OK
+          contentAsString(result) mustBe validView()
+        }
+
         "populate the view correctly on a GET when the required data to render page is present" in {
 
-          val result = onPageLoadAction(validDate.getOrElse(getEmptyData), FakeAuthAction())(fakeRequest)
+          val result = onPageLoadAction(validData.getOrElse(getEmptyData), FakeAuthAction())(fakeRequest)
 
           contentAsString(result) mustBe validView()
         }
@@ -52,6 +62,7 @@ class ControllerWithNormalPageBehaviours extends ControllerSpecBase {
           status(result) mustBe SEE_OTHER
           redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)
         }
+
       } else {
 
         "return OK and the correct view for a GET" in {
@@ -71,11 +82,12 @@ class ControllerWithNormalPageBehaviours extends ControllerSpecBase {
         redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad.url)
       }
     }
+
   }
 
   def controllerWithOnSubmitMethod[T](onSubmitAction: (DataRetrievalAction, AuthAction) => Action[AnyContent],
                                       emptyData: DataRetrievalAction,
-                                      validDate: Option[DataRetrievalAction]): Unit = {
+                                      validData: Option[DataRetrievalAction]): Unit = {
 
     "calling onSubmit" must {
 
@@ -87,11 +99,11 @@ class ControllerWithNormalPageBehaviours extends ControllerSpecBase {
         redirectLocation(result) mustBe Some(onwardRoute.url)
       }
 
-      if (validDate.isDefined) {
+      if (validData.isDefined) {
 
-        "return a Bad Request and errors when invalid data is submitted" in {
+        "redirect to Session Expired if no existing data is found" in {
 
-          val result = onSubmitAction(validDate.getOrElse(emptyData), FakeAuthAction())(fakeRequest)
+          val result = onSubmitAction(validData.getOrElse(emptyData), FakeAuthAction())(fakeRequest)
 
           status(result) mustBe SEE_OTHER
           redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)
@@ -99,6 +111,5 @@ class ControllerWithNormalPageBehaviours extends ControllerSpecBase {
       }
     }
   }
-
 
 }

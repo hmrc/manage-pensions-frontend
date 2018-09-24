@@ -37,8 +37,8 @@ class InvitationNavigatorSpec extends SpecBase with NavigatorBehaviour {
 
   def routes(): TableFor6[Identifier, UserAnswers, Call, Boolean, Option[Call], Boolean] = Table(
     ("Id", "User Answers", "Next Page (NormalMode)", "Save(NormalMode)", "Next Page (CheckMode)", "Save(CheckMode"),
-    (PsaNameId, emptyAnswers, psaIdPage, false, None, false),
-    (PSAId, emptyAnswers, checkYourAnswer, false, None, false)
+    (PsaNameId, emptyAnswers, psaIdPage, false, Some(checkYourAnswer), false),
+    (PSAId, emptyAnswers, checkYourAnswer, false, Some(checkYourAnswer), false)
   )
 
   navigator.getClass.getSimpleName must {
