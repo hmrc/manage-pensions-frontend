@@ -121,9 +121,16 @@ messages__invitationSuccess__schemeName = This is for {0}.
 messages__invitationSuccess__emailAdvice = {0} will be sent an email confirming your invitation.
 messages__invitationSuccess__expiryDate = They will have until {0} to accept the invitation. If the invitation is not accepted by this date, it will be deleted and you will have to invite the PSA again.
 
+messages__adviser__name__title = Who is your pension adviser?
+messages__adviser__name__heading = Who is your pension adviser?
+messages__adviser__name__p1 = This can be either the name of your adviser or the company they work for.
+messages__error__adviser__name__required = Enter the name of your pension adviser
+messages__error__adviser__name__length = Enter a name using less than 108 characters
+messages__error__adviser__name__invalid = Enter a name using only letters
+
 messages__declaration__title = Declaration
 messages__declaration__heading = Declaration
-messages__declaration__continue = By continuing you declare that:
+messages__declaration__continue = By continuing you declare that
 messages__declaration__statement1 = you understand that as scheme administrator you are responsible for discharging the functions conferred or imposed on the scheme administrator of the pension scheme by the Finance Act 2004, and you intend to discharge those functions at all times, whether resident in the United Kingdom or another EU member state or non-member EEA state.
 messages__declaration__statement2 = you will comply with all information notices issued to the scheme administrator under the Finance Act 2004 or the Finance Act 2008 and understand that you may be liable to a penalty and the pension scheme may be de-registered if you fail to properly discharge those functions
 messages__declaration__statement3 = the instruments or agreements by which this pension scheme is constituted do not directly or indirectly entitled any person to unauthorised payments and the way in which the pension scheme is to be administered will not knowingly entitle any person to unauthorised payments

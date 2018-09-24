@@ -17,38 +17,61 @@
 @import config.FrontendAppConfig
 @import uk.gov.hmrc.play.views.html._
 @import viewmodels.Message
+@import controllers.invitations.routes._
 
-@(appConfig: FrontendAppConfig, hasAdviser: Boolean, isMasterTrust: Boolean, form: Form[String])(implicit request: Request[_], messages: Messages)
+@(appConfig: FrontendAppConfig, hasAdviser: Boolean, isMasterTrust: Boolean, form: Form[_])(implicit request: Request[_], messages: Messages)
 
 @main_template(
 title = s"${messages("messages__declaration__title")}",
 appConfig = appConfig,
 bodyClasses = None) {
 
+    @components.back_link()
+
+    @components.error_summary(form.errors)
+
     @components.heading(Message("messages__declaration__heading"))
 
-    <p>@messages("messages__declaration__continue")</p>
+    @helpers.form(action = DeclarationController.onSubmit(), 'autoComplete -> "off") {
 
-    <p>@messages("messages__declaration__statement1")</p>
+        @components.paragraph_text(messages("messages__declaration__continue") + ":")
 
-    <p>@messages("messages__declaration__statement2")</p>
+        <ol class="list-number">
 
-    <p>@messages("messages__declaration__statement3")</p>
+            <li>@components.paragraph_text(messages("messages__declaration__statement1"))</li>
 
-    <p>@messages("messages__declaration__statement4")</p>
+            <li>@components.paragraph_text(messages("messages__declaration__statement2"))</li>
 
-    <p>
-        @if(hasAdviser) {
-            @messages("messages__declaration__statement5__with__adviser")
-        } else {
-            @messages("messages__declaration__statement5__no__adviser")
+            <li>@components.paragraph_text(messages("messages__declaration__statement3"))</li>
+
+            <li>@components.paragraph_text(messages("messages__declaration__statement4"))</li>
+
+            <li>
+                @if(hasAdviser) {
+                    @components.paragraph_text(messages("messages__declaration__statement5__with__adviser"))
+                } else {
+                    @components.paragraph_text(messages("messages__declaration__statement5__no__adviser"))
+                }
+            </li>
+
+            <li>@components.paragraph_text(messages("messages__declaration__statement6"))</li>
+
+            @if(isMasterTrust) {
+                <li>@components.paragraph_text(messages("messages__declaration__statement7"))</li>
+            }
+        </ol>
+
+        @components.fieldSet(
+            field = form("agree"),
+            legend = Message("messages__declaration__heading"),
+            hiddenLegend = true
+        ) {
+            <div class="multiple-choice">
+                <input id="agree" name="agree" type="checkbox" value="agreed">
+                <label for="agree">I agree</label>
+            </div>
         }
-    </p>
 
-    <p>@messages("messages__declaration__statement6")</p>
-
-    @if(isMasterTrust) {
-        <p>@messages("messages__declaration__statement7")</p>
+        @components.submit_button("site.continue")
     }
-
 }

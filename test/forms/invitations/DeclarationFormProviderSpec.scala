@@ -16,24 +16,18 @@
 
 package forms.invitations
 
-import forms.behaviours.FieldBehaviours
-import play.api.data.FormError
+import forms.behaviours.CheckboxBehaviour
+import play.api.data.Form
 
-class DeclarationFormProviderSpec extends FieldBehaviours {
+class DeclarationFormProviderSpec extends CheckboxBehaviour {
 
-  val fieldName = "agree"
-  val form = new DeclarationFormProvider()()
+  private val form: Form[Boolean] = new DeclarationFormProvider()()
+  private val fieldName = "agree"
+  private val trueValue = "agreed"
+  private val invalidKey = "messages__error__declaration__required"
 
-  behave like fieldThatBindsValidData(
-    form,
-    fieldName,
-    "agreed"
-  )
-
-  behave like mandatoryField(
-    form,
-    fieldName,
-    requiredError = FormError("agree", "messages__error__declaration__required")
-  )
+  "DeclarationFormProvider" should {
+    behave like formWithCheckbox(form, fieldName, trueValue, acceptTrueOnly = true, invalidKey)
+  }
 
 }

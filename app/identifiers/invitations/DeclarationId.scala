@@ -14,21 +14,10 @@
  * limitations under the License.
  */
 
-package forms.invitations
+package identifiers.invitations
 
-import com.google.inject.Inject
-import forms.mappings.CheckboxMapping
-import play.api.data.Form
+import identifiers.TypedIdentifier
 
-class DeclarationFormProvider @Inject() () extends CheckboxMapping {
-
-  private val fieldName = "agree"
-  private val trueValue = "agreed"
-  private val invalidKey = "messages__error__declaration__required"
-
-  def apply(): Form[Boolean] =
-    Form(
-      fieldName -> checkboxMapping(fieldName, trueValue, acceptTrueOnly = true, invalidKey)
-    )
-
+object DeclarationId extends TypedIdentifier[Boolean] {
+  override def toString: String = "declaration"
 }
