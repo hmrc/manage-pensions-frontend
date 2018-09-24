@@ -113,6 +113,9 @@ messages__invitationSuccess__schemeName = This is for {0}.
 messages__invitationSuccess__emailAdvice = {0} will be sent an email confirming your invitation.
 messages__invitationSuccess__expiryDate = They will have until {0} to accept the invitation. If the invitation is not accepted by this date, it will be deleted and you will have to invite the PSA again.
 
+messages__invitationAccepted__title = Invitation accepted
+messages__invitationAccepted__heading = You are now a PSA of {0}
+messages__invitationAccepted__returnToSchemes__link = Return to your pension schemes
 
 messages__adviser__name__title = Who is your pension adviser?
 messages__adviser__name__heading = Who is your pension adviser?
