@@ -20,7 +20,7 @@
 @import uk.gov.hmrc.play.views.html._
 @import viewmodels.{Section, AnswerSection, RepeaterAnswerSection}
 
-@(appConfig: FrontendAppConfig, answerSections: Seq[Section], secondaryHeader: Option[String], postUrl: Call)(implicit request: Request[_], messages: Messages)
+@(appConfig: FrontendAppConfig, answerSections: Seq[Section], secondaryHeader: Option[String], postUrl: Call, guidance:Option[String], guidanceData:Option[String])(implicit request: Request[_], messages: Messages)
 
     @main_template(
         title = messages("checkYourAnswers.title"),
@@ -33,6 +33,9 @@
                     headingKey=messages("checkYourAnswers.heading").toString,
                     secondaryHeaderKey = secondaryHeader.map{x=>components.hyphen(messages(x)).toString}
             )
+
+            @guidance.map{key=>@guidanceData.map{data=><p>@messages(key, data)}.getOrElse{<p>@messages(key)}</p>}
+
 
             @for((section, i) <- answerSections.zipWithIndex){
                 @{

@@ -52,7 +52,8 @@ class PsaIdControllerSpec extends ControllerWithQuestionPageBehaviours {
   def viewAsString(form: Form[_] = form) = psaId(frontendAppConfig, form, "xyz", NormalMode)(fakeRequest, messages).toString
 
 
-  behave like controllerWithOnPageLoadMethod(onPageLoadAction, userAnswer.dataRetrievalAction, userAnswerWithPsaId.dataRetrievalAction, form, form.fill("A0000000"), viewAsString)
+  behave like controllerWithOnPageLoadMethod(onPageLoadAction, userAnswer.dataRetrievalAction,
+    userAnswerWithPsaId.dataRetrievalAction, form, form.fill("A0000000"), viewAsString)
 
   behave like controllerWithOnSubmitMethod(onSubmitAction, userAnswerWithPsaId.dataRetrievalAction, form.bind(Map("psaId" -> "")), viewAsString, postRequest)
 

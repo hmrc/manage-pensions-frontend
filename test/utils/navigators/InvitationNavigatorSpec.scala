@@ -38,7 +38,7 @@ class InvitationNavigatorSpec extends SpecBase with NavigatorBehaviour {
   def routes(): TableFor6[Identifier, UserAnswers, Call, Boolean, Option[Call], Boolean] = Table(
     ("Id", "User Answers", "Next Page (NormalMode)", "Save(NormalMode)", "Next Page (CheckMode)", "Save(CheckMode"),
     (PsaNameId, emptyAnswers, psaIdPage, false, None, false),
-    (PSAId, emptyAnswers, indexPage, false, None, false)
+    (PSAId, emptyAnswers, checkYourAnswer, false, None, false)
   )
 
   navigator.getClass.getSimpleName must {
@@ -50,7 +50,7 @@ class InvitationNavigatorSpec extends SpecBase with NavigatorBehaviour {
 
 object InvitationNavigatorSpec extends OptionValues {
   lazy val emptyAnswers = UserAnswers(Json.obj())
-  lazy val indexPage: Call = controllers.routes.IndexController.onPageLoad()
+  lazy val checkYourAnswer: Call = controllers.invitations.routes.CheckYourAnswersController.onPageLoad()
   lazy val psaIdPage: Call = controllers.invitations.routes.PsaIdController.onPageLoad(NormalMode)
 
 

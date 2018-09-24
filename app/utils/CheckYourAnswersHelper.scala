@@ -16,8 +16,25 @@
 
 package utils
 
+import identifiers.SchemeDetailId
+import identifiers.invitations.{PSAId, PsaNameId}
+import models.MinimalSchemeDetail
+import viewmodels.AnswerRow
+
+
 
 class CheckYourAnswersHelper(userAnswers: UserAnswers) extends Enumerable.Implicits {
 
+  def psaName: Option[AnswerRow] = {
+    userAnswers.get(PsaNameId) map { answer =>
+      AnswerRow("messages__check__your__answer__psa__name__label", Seq(answer), false, None)
+    }
+  }
+
+  def psaId: Option[AnswerRow] = {
+    userAnswers.get(PSAId) map { answer =>
+      AnswerRow("messages__check__your__answer__psa__id__label", Seq(answer), false, None)
+    }
+  }
 
 }

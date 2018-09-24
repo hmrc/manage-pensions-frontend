@@ -46,7 +46,7 @@ trait CheckYourAnswersBehaviours extends ViewSpecBase {
           assertRenderedByIdWithText(doc, "cya-0-0-question", answerRow.label)
           assertRenderedByIdWithText(doc, "cya-0-0-0-answer", answer1)
           assertRenderedByIdWithText(doc, "cya-0-0-1-answer", answer2)
-          assertLink(doc, "cya-0-0-change", answerRow.changeUrl)
+          assertLink(doc, "cya-0-0-change", answerRow.changeUrl.get)
         }
 
         "correctly display an AnswerSection where answerIsMessageKey is true" in {
@@ -88,7 +88,7 @@ trait CheckYourAnswersBehaviours extends ViewSpecBase {
 
           assertRenderedByIdWithText(doc, "cya-0-relevance-question", relevanceRow.label)
           assertRenderedByIdWithText(doc, "cya-0-relevance-0-answer", relevanceRow.answer.head)
-          assertLink(doc, "cya-0-relevance-change", relevanceRow.changeUrl)
+          assertLink(doc, "cya-0-relevance-change", relevanceRow.changeUrl.get)
 
           assertRenderedByIdWithText(doc, "cya-0-0-answer", answerRow.answer)
           assertLink(doc, "cya-0-0-change", answerRow.changeUrl)
