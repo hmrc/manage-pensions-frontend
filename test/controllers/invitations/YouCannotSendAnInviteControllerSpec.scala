@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.invitations
 
+import controllers.ControllerSpecBase
 import controllers.actions._
 import play.api.test.Helpers._
-import views.html.youCannotSendAnInvite
+import views.html.invitations.youCannotSendAnInvite
 
 class YouCannotSendAnInviteControllerSpec extends ControllerSpecBase {
 
   def controller(dataRetrievalAction: DataRetrievalAction = getEmptyData): YouCannotSendAnInviteController =
-    new YouCannotSendAnInviteController(frontendAppConfig, messagesApi, FakeAuthAction,
+    new YouCannotSendAnInviteController(frontendAppConfig, messagesApi, FakeAuthAction(),
       dataRetrievalAction, new DataRequiredActionImpl)
 
   private def viewAsString() = youCannotSendAnInvite(frontendAppConfig)(fakeRequest, messages).toString

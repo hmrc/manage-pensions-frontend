@@ -1,5 +1,7 @@
 # microservice specific routes
 
+->         /invitations                                 invitations.Routes
+
 GET        /                                            controllers.IndexController.onPageLoad
 
 GET        /assets/*file                                controllers.Assets.versioned(path="/public", file: Asset)
@@ -14,10 +16,15 @@ GET        /logout                                      controllers.LogoutContro
 
 GET        /you-need-to-register                        controllers.YouNeedToRegisterController.onPageLoad()
 
+GET        /cannot-start-registration                   controllers.CannotStartRegistrationController.onPageLoad()
+
 GET        /your-pension-schemes                        controllers.ListSchemesController.onPageLoad
 
 GET        /overview                                    controllers.SchemesOverviewController.onPageLoad()
 
-GET        /you-cannot-send-invite                      controllers.YouCannotSendAnInviteController.onPageLoad()
+GET        /overview/can-scheme-be-registered           controllers.SchemesOverviewController.onClickCheckIfSchemeCanBeRegistered()
+
+GET        /invite                                      controllers.InviteController.onPageLoad()
+
 
 GET        /scheme-details/:index                      controllers.SchemeDetailsController.onPageLoad(index: Int)

@@ -18,20 +18,26 @@ package models
 
 import play.api.libs.json.{Format, Json}
 
-case class IndividualDetails(firstName: String, middleName: Option[String], lastName: String)
+
+case class IndividualDetails(firstName: String, middleName: Option[String], lastName: String){
+  def fullName: String = middleName match {
+    case Some(middle) => s"$firstName $middle $lastName"
+    case None => s"$firstName $lastName"
+  }
+}
 
 object IndividualDetails {
   implicit val format: Format[IndividualDetails] = Json.format[IndividualDetails]
 }
 
-case class MinimalPSADetails(organisationOrPartnershipName: Option[String], individualDetails: Option[IndividualDetails])
-
-object MinimalPSADetails {
-  implicit val format: Format[MinimalPSADetails] = Json.format[MinimalPSADetails]
-}
-
-case class MinimalPSA(psaMinimalDetails: MinimalPSADetails, email: String, psaSuspensionFlag: Boolean)
+case class MinimalPSA(
+                       email: String,
+                       isPsaSuspended: Boolean,
+                       organisationName: Option[String],
+                       individualDetails: Option[IndividualDetails]
+                     )
 
 object MinimalPSA {
   implicit val format: Format[MinimalPSA] = Json.format[MinimalPSA]
 }
+

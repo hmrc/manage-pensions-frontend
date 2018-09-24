@@ -22,9 +22,22 @@ import uk.gov.hmrc.domain.PsaId
 
 import scala.concurrent.Future
 
-object FakeAuthAction extends AuthAction {
-  override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] =
-    block(AuthenticatedRequest(request, "id", PsaId("A0000000")))
+object FakeAuthAction {
+  private val externalId: String = "id"
+  private val defaultPsaId: String = "A0000000"
 
-  val externalId: String = "id"
+  def apply(): AuthAction = {
+    new AuthAction {
+      override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] =
+        block(AuthenticatedRequest(request, externalId, PsaId(defaultPsaId)))
+    }
+  }
+
+  def createWithPsaId(psaId:String): AuthAction = {
+    new AuthAction {
+      override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] =
+        block(AuthenticatedRequest(request, externalId, PsaId(psaId)))
+    }
+  }
 }
+

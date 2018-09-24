@@ -47,7 +47,6 @@ class FrontendAppConfig @Inject()(override val runModeConfiguration: Configurati
   lazy val authUrl: String = baseUrl("auth")
   lazy val pensionsSchemeUrl: String = baseUrl("pensions-scheme")
   lazy val schemeFrontendUrl: String = baseUrl("pensions-scheme-frontend")
-  lazy val pensionAdminUrl: String = baseUrl("pension-administrator")
 
   lazy val loginUrl = loadConfig("urls.login")
   lazy val loginContinueUrl = loadConfig("urls.loginContinue")
@@ -58,10 +57,11 @@ class FrontendAppConfig @Inject()(override val runModeConfiguration: Configurati
   lazy val govUkLink = runModeConfiguration.underlying.getString("urls.govUkLink")
   lazy val continueSchemeUrl = s"${loadConfig("urls.continueSchemeRegistration")}"
   lazy val deleteSchemeUrl = s"${loadConfig("urls.deleteScheme")}"
-  lazy val userResearchUrl = runModeConfiguration.underlying.getString(("urls.userResearch"))
+  lazy val userResearchUrl = runModeConfiguration.underlying.getString("urls.userResearch")
   lazy val pensionSchemeOnlineServiceUrl: String = loadConfig("urls.pensionSchemeOnlineService")
 
   lazy val languageTranslationEnabled: Boolean = runModeConfiguration.getBoolean("features.welsh-translation").getOrElse(true)
+  lazy val isWorkPackageOneEnabled: Boolean = runModeConfiguration.getBoolean("features.work-package-one-enabled").getOrElse(false)
   lazy val registerSchemeUrl = runModeConfiguration.underlying.getString(("urls.registerScheme"))
   lazy val listOfSchemesUrl: String = s"${baseUrl("pensions-scheme")}${runModeConfiguration.underlying.getString("urls.listOfSchemes")}"
   lazy val inviteUrl: String = s"${baseUrl("pension-administrator")}${runModeConfiguration.underlying.getString("urls.invite")}"
@@ -78,5 +78,6 @@ class FrontendAppConfig @Inject()(override val runModeConfiguration: Configurati
   def routeToSwitchLanguage: String => Call = (lang: String) => routes.LanguageSwitchController.switchToLanguage(lang)
 
   lazy val daysDataSaved: Int = loadConfig("daysDataSaved").toInt
+  lazy val invitationExpiryDays: Int = loadConfig("invitationExpiryDays").toInt
 }
 

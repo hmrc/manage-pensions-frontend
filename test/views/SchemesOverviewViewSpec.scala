@@ -32,9 +32,9 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
   val deleteDate: String = LocalDate.now.plusDays(frontendAppConfig.daysDataSaved).toString
 
   def createView: (() => HtmlFormat.Appendable) = () =>
-    schemesOverview(frontendAppConfig, Some(schemeName), Some(lastDate), Some(deleteDate))(fakeRequest, messages)
+    schemesOverview(frontendAppConfig, Some(schemeName), Some(lastDate), Some(deleteDate), Some("John Doe"))(fakeRequest, messages)
 
-  def createFreshView: (() => HtmlFormat.Appendable) = () => schemesOverview(frontendAppConfig, None, None, None)(fakeRequest, messages)
+  def createFreshView: () => HtmlFormat.Appendable = () => schemesOverview(frontendAppConfig, None, None, None, None)(fakeRequest, messages)
 
   "SchemesOverview view when a scheme has been partially defined" must {
     behave like normalPage(
@@ -46,9 +46,18 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
       "_manage__link",
       "_continue__link",
       "_delete__link",
+      "_UR__head",
       "_UR__text",
       "_UR__link"
     )
+
+    "have a name" in {
+      createView().toString() must include("John Doe")
+    }
+
+    "not display the name when there is no name" in {
+      createFreshView().toString() must not include "John Doe"
+    }
 
     "have link to view all schemes" in {
       Jsoup.parse(createView().toString()).select("a[id=view-schemes]") must
@@ -77,7 +86,7 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
 
     "have link for continue registration" in {
       Jsoup.parse(createView().toString()).select("a[id=continue-registration]") must
-        haveLink(frontendAppConfig.continueSchemeUrl)
+        haveLink(controllers.routes.SchemesOverviewController.onClickCheckIfSchemeCanBeRegistered().url)
     }
 
     "have link for delete registration" in {
@@ -115,6 +124,10 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
         haveLink(frontendAppConfig.pensionSchemeOnlineServiceUrl)
     }
 
+    "have link for registration" in {
+      Jsoup.parse(createFreshView().toString()).select("a[id=register-new-scheme]") must
+        haveLink(controllers.routes.SchemesOverviewController.onClickCheckIfSchemeCanBeRegistered().url)
+    }
 
   }
 }

@@ -19,16 +19,16 @@ package views
 import org.jsoup.Jsoup
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
-import views.html.youCannotSendAnInvite
+import views.html.cannotStartRegistration
 
-class YouCannotSendAnInviteViewSpec extends ViewBehaviours {
+class CannotStartRegistrationViewSpec extends ViewBehaviours {
 
-  private val messageKeyPrefix = "youCannotSendAnInvite"
+  private val messageKeyPrefix = "cannotStartRegistration"
 
   def createView: (() => HtmlFormat.Appendable) = () =>
-    youCannotSendAnInvite(frontendAppConfig)(fakeRequest, messages)
+    cannotStartRegistration(frontendAppConfig)(fakeRequest, messages)
 
-  "You Cannot Send An Invite page" must {
+  "Psa Suspended page" must {
     behave like normalPage(
       createView,
       messageKeyPrefix,
@@ -38,8 +38,8 @@ class YouCannotSendAnInviteViewSpec extends ViewBehaviours {
     )
 
     "have link to return to your pension schemes" in {
-      Jsoup.parse(createView().toString()).select("a[id=return-to-schemes]") must
-        haveLink(controllers.routes.ListSchemesController.onPageLoad().url)
+      Jsoup.parse(createView().toString()).select("a[id=return-to-overview]") must
+        haveLink(controllers.routes.SchemesOverviewController.onPageLoad().url)
     }
   }
 }
