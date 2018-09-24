@@ -17,7 +17,8 @@
 package controllers.invitations
 
 import controllers.ControllerSpecBase
-import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction}
+import controllers.actions.{AuthAction, DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction}
+import controllers.behaviours.ControllerWithNormalPageBehaviours
 import models.MinimalSchemeDetail
 import play.api.mvc.Call
 import play.api.test.Helpers._
@@ -25,49 +26,34 @@ import utils.{UserAnswers, CheckYourAnswersFactory}
 import viewmodels.AnswerSection
 import views.html.check_your_answers
 
-class CheckYourAnswersControllerSpec extends ControllerSpecBase {
+class CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours {
 
-  val checkYourAnswersFactory = new CheckYourAnswersFactory()
+  private val testSrn: String = "test-srn"
+  private val testPstr = "test-pstr"
+  private val testSchemeName = "test-scheme-name"
+  private val testSchemeDetail = MinimalSchemeDetail(testSrn, Some(testPstr), testSchemeName)
+
+  private lazy val continue: Call = controllers.invitations.routes.InvitationSuccessController.onSubmit(testSrn)
+
+  private val userAnswer = UserAnswers()
+    .minimalSchemeDetails(testSchemeDetail)
+    .dataRetrievalAction
+
+  private val checkYourAnswersFactory = new CheckYourAnswersFactory()
 
   def call: Call = controllers.invitations.routes.CheckYourAnswersController.onSubmit()
 
-  val testSrn: String = "test-srn"
-  val testInviteeName = "test-invitee-name"
-  val testPstr = "test-pstr"
-  val testSchemeName = "test-scheme-name"
-  val testSchemeDetail = MinimalSchemeDetail(testSrn, Some(testPstr), testSchemeName)
+  def viewAsString() = check_your_answers(frontendAppConfig, Seq(AnswerSection(None, Seq())), None, call,
+    Some("messages__check__your__answer__main__containt__label"), Some(testSchemeName))(fakeRequest, messages).toString
 
-  val userAnswer = UserAnswers().minimalSchemeDetails(testSchemeDetail)
+  def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
-  def controller(dataRetrievalAction: DataRetrievalAction = getEmptyData) =
     new CheckYourAnswersController(
-      frontendAppConfig,
-      messagesApi,
-      FakeAuthAction(),
-      dataRetrievalAction,
-      new DataRequiredActionImpl,
-      checkYourAnswersFactory
-    )
-
-  "Check Your Answers Controller" must {
-
-    "return 200 and the correct view for a GET" in {
-      val result = controller(userAnswer.dataRetrievalAction).onPageLoad()(fakeRequest)
-
-      status(result) mustBe OK
-
-      val expectedViewContent = check_your_answers(frontendAppConfig, Seq(AnswerSection(None, Seq())), None, call,
-        Some("messages__check__your__answer__main__containt__label"), Some(testSchemeName))(fakeRequest, messages).toString
-
-      contentAsString(result) mustBe expectedViewContent
-    }
-
-    "redirect to Session Expired for a GET if not existing data is found" in {
-      val result = controller(dontGetAnyData).onPageLoad()(fakeRequest)
-
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)
-    }
-
+      frontendAppConfig, messagesApi, fakeAuth, dataRetrievalAction, requiredDateAction, checkYourAnswersFactory).onPageLoad()
   }
+
+
+
+  behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, Some(userAnswer), viewAsString)
+
 }
