@@ -17,18 +17,16 @@
 package controllers.invitations
 
 import config.FrontendAppConfig
-import connectors.FakeDataCacheConnector
+import connectors.{DataCacheConnector, FakeDataCacheConnector}
 import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
 import forms.invitations.PensionAdviserAddressListFormProvider
-import identifiers.TypedIdentifier
-import identifiers.invitations.{AdviserAddressId, AdviserPostCodeLookupId}
-import models.{Address, TolerantAddress}
+import identifiers.invitations.{AdviserAddressId, AdviserAddressListId, AdviserAddressPostCodeLookupId}
+import models.TolerantAddress
 import org.scalatest.{Matchers, WordSpec}
 import play.api.Application
 import play.api.i18n.MessagesApi
 import play.api.inject.bind
 import play.api.libs.json.Json
-import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import utils.{FakeNavigator, Navigator}
@@ -39,7 +37,7 @@ class PensionAdviserAddressListControllerSpec extends WordSpec with Matchers {
   import PensionAdviserAddressListControllerSpec._
 
   def dataRetrievalAction = new FakeDataRetrievalAction(Some(Json.obj(
-    AdviserPostCodeLookupId.toString -> addresses
+    AdviserAddressPostCodeLookupId.toString -> addresses
   )))
 
   "get" must {
@@ -80,32 +78,19 @@ class PensionAdviserAddressListControllerSpec extends WordSpec with Matchers {
 
   "post" must {
 
-    "return See Other on submission of valid data" in {
-
-      running(_.overrides(
-        bind[Navigator].toInstance(FakeNavigator),
-        bind[AuthAction].toInstance(FakeAuthAction()),
-        bind[DataRetrievalAction].toInstance(dataRetrievalAction)
-      )) { app =>
-        val controller = app.injector.instanceOf[PensionAdviserAddressListController]
-        val result = controller.onSubmit()(FakeRequest().withFormUrlEncodedBody("value"->"1"))
-
-        status(result) shouldBe SEE_OTHER
-      }
-
-    }
-
     "redirect to the page specified by the navigator following submission of valid data" in {
 
       running(_.overrides(
-        bind[Navigator].toInstance(FakeNavigator),
+        bind[Navigator].toInstance(navigator),
         bind[AuthAction].toInstance(FakeAuthAction()),
-        bind[DataRetrievalAction].toInstance(dataRetrievalAction)
+        bind[DataRetrievalAction].toInstance(dataRetrievalAction),
+        bind[DataCacheConnector].toInstance(FakeDataCacheConnector)
       )) { app =>
         val controller = app.injector.instanceOf[PensionAdviserAddressListController]
         val result = controller.onSubmit()(FakeRequest().withFormUrlEncodedBody("value" -> "1"))
 
-        redirectLocation(result) shouldBe Some(FakeNavigator.desiredRoute)
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result) shouldBe Some(navigator.desiredRoute)
       }
 
     }
@@ -113,15 +98,16 @@ class PensionAdviserAddressListControllerSpec extends WordSpec with Matchers {
     "save the user answer on submission of valid data" in {
 
       running(_.overrides(
-        bind[Navigator].toInstance(FakeNavigator),
+        bind[Navigator].toInstance(navigator),
         bind[AuthAction].toInstance(FakeAuthAction()),
-        bind[DataRetrievalAction].toInstance(dataRetrievalAction)
+        bind[DataRetrievalAction].toInstance(dataRetrievalAction),
+        bind[DataCacheConnector].toInstance(FakeDataCacheConnector)
       )) { app =>
         val controller = app.injector.instanceOf[PensionAdviserAddressListController]
         val result = controller.onSubmit()(FakeRequest().withFormUrlEncodedBody("value" -> "1"))
 
         status(result) shouldBe SEE_OTHER
-        FakeDataCacheConnector.verify(AdviserAddressId.toString, addresses.head)
+        FakeDataCacheConnector.verify(AdviserAddressListId, addresses(1))
       }
 
     }
@@ -129,15 +115,16 @@ class PensionAdviserAddressListControllerSpec extends WordSpec with Matchers {
     "delete any existing address on submission of valid data" in {
 
       running(_.overrides(
-        bind[Navigator].toInstance(FakeNavigator),
+        bind[Navigator].toInstance(navigator),
         bind[AuthAction].toInstance(FakeAuthAction()),
-        bind[DataRetrievalAction].toInstance(dataRetrievalAction)
+        bind[DataRetrievalAction].toInstance(dataRetrievalAction),
+        bind[DataCacheConnector].toInstance(FakeDataCacheConnector)
       )) { app =>
         val controller = app.injector.instanceOf[PensionAdviserAddressListController]
         val result = controller.onSubmit()(FakeRequest().withFormUrlEncodedBody("value"->"1"))
 
         status(result) shouldBe SEE_OTHER
-        FakeDataCacheConnector.verifyNot(fakeAddressId)
+        FakeDataCacheConnector.verifyNot(AdviserAddressId)
       }
 
     }
@@ -145,9 +132,10 @@ class PensionAdviserAddressListControllerSpec extends WordSpec with Matchers {
     "return Bad Request and the correct view on submission of invalid data" in {
 
       running(_.overrides(
-        bind[Navigator].toInstance(FakeNavigator),
+        bind[Navigator].toInstance(navigator),
         bind[AuthAction].toInstance(FakeAuthAction()),
-        bind[DataRetrievalAction].toInstance(dataRetrievalAction)
+        bind[DataRetrievalAction].toInstance(dataRetrievalAction),
+        bind[DataCacheConnector].toInstance(FakeDataCacheConnector)
       )) { app =>
         val controller = app.injector.instanceOf[PensionAdviserAddressListController]
         val result = controller.onSubmit()(FakeRequest())
@@ -164,8 +152,6 @@ class PensionAdviserAddressListControllerSpec extends WordSpec with Matchers {
 
 object PensionAdviserAddressListControllerSpec {
 
-  val onwardRoute: Call = controllers.routes.IndexController.onPageLoad()
-
   private val addresses = Seq(
     TolerantAddress(
       Some("Address 1 Line 1"),
@@ -181,7 +167,7 @@ object PensionAdviserAddressListControllerSpec {
       Some("Address 2 Line 3"),
       Some("Address 2 Line 4"),
       Some("123"),
-      Some("FR")
+      Some("GB")
     )
   )
 
@@ -199,5 +185,7 @@ object PensionAdviserAddressListControllerSpec {
     pension_adviser_address_list(appConfig, form, addresses)(request, messages).toString()
 
   }
+
+  val navigator = new FakeNavigator(controllers.routes.IndexController.onPageLoad())
 
 }

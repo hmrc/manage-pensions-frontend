@@ -17,11 +17,10 @@
 package utils.navigators
 
 import javax.inject.{Inject, Singleton}
-
 import connectors.DataCacheConnector
 import controllers.invitations.routes._
 import controllers.routes._
-import identifiers.invitations.{PSAId, PsaNameId}
+import identifiers.invitations.{AdviserAddressListId, PSAId, PsaNameId}
 import models.NormalMode
 import utils.Navigator
 
@@ -30,7 +29,7 @@ class InvitationNavigator @Inject()(val dataCacheConnector: DataCacheConnector) 
 
   override def routeMap(from: NavigateFrom): Option[NavigateTo] = from.id match {
     case PsaNameId => NavigateTo.dontSave(PsaIdController.onPageLoad(NormalMode))
-    case PSAId => NavigateTo.dontSave(IndexController.onPageLoad())
+    case AdviserAddressListId | PSAId => NavigateTo.dontSave(IndexController.onPageLoad())
     case _ => NavigateTo.dontSave(controllers.routes.SessionExpiredController.onPageLoad())
   }
 

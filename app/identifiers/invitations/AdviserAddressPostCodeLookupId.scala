@@ -19,6 +19,8 @@ package identifiers.invitations
 import identifiers.TypedIdentifier
 import models.TolerantAddress
 
-object AdviserPostCodeLookupId extends TypedIdentifier[Seq[TolerantAddress]] {
-  override def toString: String = "adviserPostCodeLookup"
+case object AdviserAddressPostCodeLookupId extends TypedIdentifier[Seq[TolerantAddress]] {
+  override def toString: String = "adviserAddressPostCodeLookup"
 }
+
+

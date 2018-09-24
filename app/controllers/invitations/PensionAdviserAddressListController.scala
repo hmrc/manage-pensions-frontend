@@ -21,9 +21,9 @@ import connectors.DataCacheConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.invitations.PensionAdviserAddressListFormProvider
-import identifiers.invitations.{AdviserAddressId, AdviserPostCodeLookupId}
+import identifiers.invitations.{AdviserAddressListId, AdviserAddressPostCodeLookupId}
 import javax.inject.Inject
-import models.{Mode, NormalMode, TolerantAddress}
+import models.{NormalMode, TolerantAddress}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
@@ -48,24 +48,23 @@ class PensionAdviserAddressListController @Inject()(
   def form(addresses: Seq[TolerantAddress]): Form[Int] = formProvider(addresses)
 
   def onPageLoad(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
-    implicit request =>
-      AdviserPostCodeLookupId.retrieve.right.map { addresses =>
+    implicit request => AdviserAddressPostCodeLookupId.retrieve.right.map { addresses =>
         Future.successful(Ok(views.html.invitations.pension_adviser_address_list(appConfig, form(addresses), addresses)))
       }
   }
 
   def onSubmit(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
-      AdviserPostCodeLookupId.retrieve.right.map { addresses =>
+      AdviserAddressPostCodeLookupId.retrieve.right.map { addresses =>
         formProvider(addresses).bindFromRequest().fold(
           formWithErrors =>
             Future.successful(BadRequest(pension_adviser_address_list(appConfig, formWithErrors, addresses))),
           addressIndex => {
-            val address = addresses(addressIndex).copy(country = Some("GB")).toAddress
+            val address = addresses(addressIndex).copy(country = Some("GB"))
 
-            cacheConnector.remove(request.externalId, AdviserPostCodeLookupId).flatMap { _ =>
-              cacheConnector.save(request.externalId, AdviserAddressId, address).map { json =>
-                Redirect(navigator.nextPage(AdviserAddressId, NormalMode, UserAnswers(json)))
+            cacheConnector.remove(request.externalId, AdviserAddressPostCodeLookupId).flatMap { _ =>
+              cacheConnector.save(request.externalId, AdviserAddressListId, address).map { json =>
+                Redirect(navigator.nextPage(AdviserAddressListId, NormalMode, UserAnswers(json)))
               }
             }
 
