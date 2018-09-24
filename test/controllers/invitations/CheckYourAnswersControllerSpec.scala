@@ -16,13 +16,11 @@
 
 package controllers.invitations
 
-import controllers.ControllerSpecBase
-import controllers.actions.{AuthAction, DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction}
+import controllers.actions.{AuthAction, DataRetrievalAction}
 import controllers.behaviours.ControllerWithNormalPageBehaviours
 import models.MinimalSchemeDetail
 import play.api.mvc.Call
-import play.api.test.Helpers._
-import utils.{UserAnswers, CheckYourAnswersFactory}
+import utils.{CheckYourAnswersFactory, UserAnswers}
 import viewmodels.AnswerSection
 import views.html.check_your_answers
 
@@ -51,7 +49,6 @@ class CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours 
     new CheckYourAnswersController(
       frontendAppConfig, messagesApi, fakeAuth, dataRetrievalAction, requiredDateAction, checkYourAnswersFactory).onPageLoad()
   }
-
 
 
   behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, Some(userAnswer), viewAsString)
