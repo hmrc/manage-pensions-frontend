@@ -1,4 +1,4 @@
-/*
+@*
  * Copyright 2018 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,26 +12,21 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *@
 
-package forms.invitations
+@import config.FrontendAppConfig
 
-import javax.inject.Inject
+@(appConfig: FrontendAppConfig, invitee: String)(implicit request: Request[_], messages: Messages)
 
-import forms.mappings.{Mappings, Transforms}
-import play.api.data.Form
+@main_template(
+    title = messages("messages__incorrectPsaDetails__title"),
+    appConfig = appConfig,
+    bodyClasses = None
+) {
 
+    @components.heading(headingKey = "messages__incorrectPsaDetails__title")
 
-class PsaNameFormProvider @Inject() extends Mappings with Transforms {
-  def apply(): Form[String] = Form(
-    "psaName" -> text("messages__error__psa__name__required").
-      transform(standardTextTransform, noTransform).
-      verifying(firstError(
-        maxLength(PsaNameFormProvider.psaNameLength, "messages__error__psa__name__length"),
-        psaName("messages__error__psa__name__invalid")))
-  )
-}
+    <p>@messages("messages__incorrectPsaDetails__text1", invitee)</p>
+    <p>@messages("messages__incorrectPsaDetails__text2")</p>
 
-object PsaNameFormProvider {
-  val psaNameLength = 107
 }

@@ -14,24 +14,22 @@
  * limitations under the License.
  */
 
-package forms.invitations
+package models
 
-import javax.inject.Inject
+import org.scalatest.{MustMatchers, WordSpec}
 
-import forms.mappings.{Mappings, Transforms}
-import play.api.data.Form
+class SchemeReferenceNumberSpec extends WordSpec with MustMatchers {
 
+  "SchemeReferenceNumber" must {
 
-class PsaNameFormProvider @Inject() extends Mappings with Transforms {
-  def apply(): Form[String] = Form(
-    "psaName" -> text("messages__error__psa__name__required").
-      transform(standardTextTransform, noTransform).
-      verifying(firstError(
-        maxLength(PsaNameFormProvider.psaNameLength, "messages__error__psa__name__length"),
-        psaName("messages__error__psa__name__invalid")))
-  )
-}
+    "bind" in {
+      SchemeReferenceNumber.srnPathBindable.bind("schemeReferenceNumber", "S0987654321") mustBe Right(SchemeReferenceNumber("S0987654321"))
+    }
 
-object PsaNameFormProvider {
-  val psaNameLength = 107
+    "not bind" in {
+      SchemeReferenceNumber.srnPathBindable.bind("schemeReferenceNumber", "Invalid") mustBe Left("SchemeReferenceNumber binding failed")
+    }
+
+  }
+
 }

@@ -14,24 +14,15 @@
  * limitations under the License.
  */
 
-package forms.invitations
+package utils
 
-import javax.inject.Inject
+import org.joda.time.LocalDate
+import org.joda.time.format.DateTimeFormat
 
-import forms.mappings.{Mappings, Transforms}
-import play.api.data.Form
+object DateHelper {
 
-
-class PsaNameFormProvider @Inject() extends Mappings with Transforms {
-  def apply(): Form[String] = Form(
-    "psaName" -> text("messages__error__psa__name__required").
-      transform(standardTextTransform, noTransform).
-      verifying(firstError(
-        maxLength(PsaNameFormProvider.psaNameLength, "messages__error__psa__name__length"),
-        psaName("messages__error__psa__name__invalid")))
-  )
-}
-
-object PsaNameFormProvider {
-  val psaNameLength = 107
+  def formatDate(date: LocalDate): String = {
+    val dateFormat = DateTimeFormat.forPattern("d MMMM yyyy")
+    dateFormat.print(date)
+  }
 }

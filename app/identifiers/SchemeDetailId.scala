@@ -14,24 +14,10 @@
  * limitations under the License.
  */
 
-package forms.invitations
+package identifiers
 
-import javax.inject.Inject
+import models.MinimalSchemeDetail
 
-import forms.mappings.{Mappings, Transforms}
-import play.api.data.Form
-
-
-class PsaNameFormProvider @Inject() extends Mappings with Transforms {
-  def apply(): Form[String] = Form(
-    "psaName" -> text("messages__error__psa__name__required").
-      transform(standardTextTransform, noTransform).
-      verifying(firstError(
-        maxLength(PsaNameFormProvider.psaNameLength, "messages__error__psa__name__length"),
-        psaName("messages__error__psa__name__invalid")))
-  )
-}
-
-object PsaNameFormProvider {
-  val psaNameLength = 107
+object SchemeDetailId extends TypedIdentifier[MinimalSchemeDetail] {
+  override def toString: String = "schemeDetails"
 }

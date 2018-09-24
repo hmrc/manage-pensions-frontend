@@ -22,6 +22,7 @@ import scala.language.implicitConversions
 
 trait Constraints {
 
+  val psaIdRegx = """^A[0-9]{7}$"""
   val nameRegex = """^[a-zA-Z\u00C0-\u00FF '‘’\u2014\u2013\u2010\u002d]{1,107}$"""
   val emailRegex = "^(?:[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"" +
     "(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")" +
@@ -95,9 +96,11 @@ trait Constraints {
       case _ => Valid
     }
 
+  protected def adviserName(errorKey: String): Constraint[String] = regexp(nameRegex, errorKey)
+
   protected def psaName(errorKey: String): Constraint[String] = regexp(nameRegex, errorKey)
 
-  protected def adviserName(errorKey: String): Constraint[String] = regexp(nameRegex, errorKey)
+  protected def psaId(errorKey: String): Constraint[String] = regexp(psaIdRegx, errorKey)
 
   protected def email(errorKey: String): Constraint[String] = regexp(emailRegex, errorKey)
 }

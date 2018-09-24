@@ -14,24 +14,14 @@
  * limitations under the License.
  */
 
-package forms.invitations
+package models
 
-import javax.inject.Inject
+import play.api.libs.json.{Format, Json}
 
-import forms.mappings.{Mappings, Transforms}
-import play.api.data.Form
+case class MinimalSchemeDetail(srn: String, pstr: Option[String], schemeName: String)
 
+object MinimalSchemeDetail {
 
-class PsaNameFormProvider @Inject() extends Mappings with Transforms {
-  def apply(): Form[String] = Form(
-    "psaName" -> text("messages__error__psa__name__required").
-      transform(standardTextTransform, noTransform).
-      verifying(firstError(
-        maxLength(PsaNameFormProvider.psaNameLength, "messages__error__psa__name__length"),
-        psaName("messages__error__psa__name__invalid")))
-  )
-}
+  implicit val formatsSchemeDetail: Format[MinimalSchemeDetail] = Json.format[MinimalSchemeDetail]
 
-object PsaNameFormProvider {
-  val psaNameLength = 107
 }

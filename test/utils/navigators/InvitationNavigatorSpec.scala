@@ -19,7 +19,8 @@ package utils.navigators
 import base.SpecBase
 import connectors.FakeDataCacheConnector
 import identifiers.Identifier
-import identifiers.invitations.PsaNameId
+import identifiers.invitations.{PSAId, PsaNameId}
+import models.NormalMode
 import models.requests.IdentifiedRequest
 import org.scalatest.OptionValues
 import org.scalatest.prop.TableFor6
@@ -36,7 +37,8 @@ class InvitationNavigatorSpec extends SpecBase with NavigatorBehaviour {
 
   def routes(): TableFor6[Identifier, UserAnswers, Call, Boolean, Option[Call], Boolean] = Table(
     ("Id", "User Answers", "Next Page (NormalMode)", "Save(NormalMode)", "Next Page (CheckMode)", "Save(CheckMode"),
-    (PsaNameId, emptyAnswers, psaNamePage, true, None, false)
+    (PsaNameId, emptyAnswers, psaIdPage, false, None, false),
+    (PSAId, emptyAnswers, indexPage, false, None, false)
   )
 
   navigator.getClass.getSimpleName must {
@@ -48,7 +50,8 @@ class InvitationNavigatorSpec extends SpecBase with NavigatorBehaviour {
 
 object InvitationNavigatorSpec extends OptionValues {
   lazy val emptyAnswers = UserAnswers(Json.obj())
-  lazy val psaNamePage: Call = controllers.routes.IndexController.onPageLoad()
+  lazy val indexPage: Call = controllers.routes.IndexController.onPageLoad()
+  lazy val psaIdPage: Call = controllers.invitations.routes.PsaIdController.onPageLoad(NormalMode)
 
 
   implicit val ex: IdentifiedRequest = new IdentifiedRequest() {

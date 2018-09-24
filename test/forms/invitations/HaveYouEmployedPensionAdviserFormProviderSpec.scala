@@ -16,22 +16,31 @@
 
 package forms.invitations
 
-import javax.inject.Inject
+import forms.behaviours.BooleanFieldBehaviours
+import play.api.data.FormError
 
-import forms.mappings.{Mappings, Transforms}
-import play.api.data.Form
+class HaveYouEmployedPensionAdviserFormProviderSpec extends BooleanFieldBehaviours {
 
+  val requiredKey = "error.required"
+  val invalidKey = "error.boolean"
 
-class PsaNameFormProvider @Inject() extends Mappings with Transforms {
-  def apply(): Form[String] = Form(
-    "psaName" -> text("messages__error__psa__name__required").
-      transform(standardTextTransform, noTransform).
-      verifying(firstError(
-        maxLength(PsaNameFormProvider.psaNameLength, "messages__error__psa__name__length"),
-        psaName("messages__error__psa__name__invalid")))
-  )
-}
+  val form = new HaveYouEmployedPensionAdviserFormProvider()()
 
-object PsaNameFormProvider {
-  val psaNameLength = 107
+  ".value" must {
+
+    val fieldName = "value"
+
+    behave like booleanField(
+      form,
+      fieldName,
+      invalidError = FormError(fieldName, invalidKey)
+    )
+
+    behave like mandatoryField(
+      form,
+      fieldName,
+      requiredError = FormError(fieldName, requiredKey)
+    )
+  }
+
 }
