@@ -45,7 +45,7 @@ class PensionAdviserAddressListControllerSpec extends WordSpec with Matchers {
     "return Ok and the correct view when no addresses" in {
 
       running(_.overrides(
-        bind[Navigator].toInstance(FakeNavigator),
+        bind[Navigator].toInstance(navigator),
         bind[AuthAction].toInstance(FakeAuthAction()),
         bind[DataRetrievalAction].toInstance(dataRetrievalAction)
       )) { app =>
@@ -61,7 +61,7 @@ class PensionAdviserAddressListControllerSpec extends WordSpec with Matchers {
     "return Ok and the correct view when addresses are supplied" in {
 
       running(_.overrides(
-        bind[Navigator].toInstance(FakeNavigator),
+        bind[Navigator].toInstance(navigator),
         bind[AuthAction].toInstance(FakeAuthAction()),
         bind[DataRetrievalAction].toInstance(dataRetrievalAction)
       )) { app =>
@@ -90,7 +90,7 @@ class PensionAdviserAddressListControllerSpec extends WordSpec with Matchers {
         val result = controller.onSubmit()(FakeRequest().withFormUrlEncodedBody("value" -> "1"))
 
         status(result) shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some(navigator.desiredRoute)
+        redirectLocation(result) shouldBe Some(controllers.routes.IndexController.onPageLoad().url)
       }
 
     }
@@ -138,7 +138,7 @@ class PensionAdviserAddressListControllerSpec extends WordSpec with Matchers {
         bind[DataCacheConnector].toInstance(FakeDataCacheConnector)
       )) { app =>
         val controller = app.injector.instanceOf[PensionAdviserAddressListController]
-        val result = controller.onSubmit()(FakeRequest())
+        val result = controller.onSubmit()(FakeRequest().withFormUrlEncodedBody("value" -> "-1"))
 
         status(result) shouldBe BAD_REQUEST
         contentAsString(result) shouldBe viewAsString(app, Some(-1))
@@ -186,6 +186,6 @@ object PensionAdviserAddressListControllerSpec {
 
   }
 
-  val navigator = new FakeNavigator(controllers.routes.IndexController.onPageLoad())
+  def navigator = new FakeNavigator(controllers.routes.IndexController.onPageLoad())
 
 }
