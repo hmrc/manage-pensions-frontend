@@ -165,13 +165,13 @@ class AdviserAddressPostcodeControllerSpec extends WordSpec with MustMatchers wi
         bind[DataRetrievalAction].toInstance(dataRetrievalAction),
         bind[AuthAction].toInstance(FakeAuthAction())
       )) {
-        app =>
+        implicit app =>
 
           val controller = app.injector.instanceOf[AdviserAddressPostcodeController]
           val result = controller.onSubmit()(FakeRequest().withFormUrlEncodedBody("value" -> postcode))
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual ???
+          contentAsString(result) mustEqual viewAsString(Some(postcode), form.withError("value", "messages__error__postcode__lookup__no__results"))
       }
     }
   }
