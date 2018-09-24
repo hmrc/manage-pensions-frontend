@@ -19,41 +19,45 @@ package controllers.invitations
 import connectors.FakeDataCacheConnector
 import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
-import forms.invitations.PsaNameFormProvider
+import forms.invitations.PsaIdFromProvider
 import models.NormalMode
 import play.api.data.Form
-import utils.{UserAnswers, _}
-import views.html.invitations.psaName
+import play.api.test.FakeRequest
+import utils.UserAnswers
+import views.html.invitations.psaId
 
-class PsaNameControllerSpec extends ControllerWithQuestionPageBehaviours {
+class PsaIdControllerSpec extends ControllerWithQuestionPageBehaviours {
 
-  val formProvider = new PsaNameFormProvider()
+  val formProvider = new PsaIdFromProvider()
   val form = formProvider()
   val userAnswer = UserAnswers().inviteeName("xyz")
-  val postRequest = fakeRequest.withJsonBody(userAnswer.json)
+  val userAnswerWithPsaId = userAnswer.inviteeId("A0000000")
+  val postRequest = FakeRequest().withJsonBody(userAnswerWithPsaId.json)
+
 
   def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
-    new PsaNameController(
-      frontendAppConfig, messagesApi, FakeDataCacheConnector, navigator, fakeAuth,
+    new PsaIdController(
+      frontendAppConfig, messagesApi, fakeAuth, navigator, FakeDataCacheConnector,
       dataRetrievalAction, requiredDateAction, formProvider).onPageLoad(NormalMode)
   }
 
   def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
-    new PsaNameController(
-      frontendAppConfig, messagesApi, FakeDataCacheConnector, navigator, fakeAuth,
+    new PsaIdController(
+      frontendAppConfig, messagesApi, fakeAuth, navigator, FakeDataCacheConnector,
       dataRetrievalAction, requiredDateAction, formProvider).onSubmit(NormalMode)
   }
 
-  def getRelevantData = userAnswer.dataRetrievalAction
-
-  def viewAsString(form: Form[_]) = psaName(frontendAppConfig, form, NormalMode)(fakeRequest, messages).toString
+  def viewAsString(form: Form[_] = form) = psaId(frontendAppConfig, form, "xyz", NormalMode)(fakeRequest, messages).toString
 
 
-  behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, getRelevantData, form, form.fill("xyz"), viewAsString)
+  behave like controllerWithOnPageLoadMethod(onPageLoadAction, userAnswer.dataRetrievalAction, userAnswerWithPsaId.dataRetrievalAction, form, form.fill("A0000000"), viewAsString)
 
-  behave like controllerWithOnSubmitMethod(onSubmitAction, getEmptyData, form.bind(Map("psaName" -> "")), viewAsString, postRequest)
+  behave like controllerWithOnSubmitMethod(onSubmitAction, userAnswerWithPsaId.dataRetrievalAction, form.bind(Map("psaId" -> "")), viewAsString, postRequest)
+
+  behave like controllerWithOnPageLoadMethodMissingRequiredData(onPageLoadAction, getEmptyData)
+
+  behave like controllerWithOnSubmitMethodMissingRequiredData(onSubmitAction, getEmptyData)
 
 }
-
