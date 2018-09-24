@@ -25,6 +25,8 @@ import wolfendale.scalacheck.regexp.RegexpGen
 
 class ConstraintsSpec extends WordSpec with Matchers with Constraints with RegexBehaviourSpec {
 
+  import Constraints._
+
   "firstError" must {
 
     "return Valid when all constraints pass" in {
