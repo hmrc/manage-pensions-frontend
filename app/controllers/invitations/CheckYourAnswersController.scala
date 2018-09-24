@@ -21,11 +21,13 @@ import config.FrontendAppConfig
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import identifiers.SchemeDetailId
-import identifiers.invitations.PsaNameId
+import identifiers.invitations.{CheckYourAnswersId, PsaNameId}
+import models.NormalMode
 import org.joda.time.LocalDate
 import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import utils.CheckYourAnswersFactory
+import utils.{Navigator, CheckYourAnswersFactory}
+import utils.annotations.Invitation
 import viewmodels.AnswerSection
 import views.html.check_your_answers
 
@@ -34,6 +36,7 @@ import scala.concurrent.Future
 class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
                                            override val messagesApi: MessagesApi,
                                            authenticate: AuthAction,
+                                           @Invitation navigator: Navigator,
                                            getData: DataRetrievalAction,
                                            requireData: DataRequiredAction,
                                            checkYourAnswersFactory: CheckYourAnswersFactory) extends FrontendController  with Retrievals with I18nSupport {
@@ -52,8 +55,8 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
       }
   }
 
-  def onSubmit() = authenticate {
+  def onSubmit() = (authenticate andThen getData andThen requireData).async {
     implicit request =>
-      Ok
+      Future.successful(Redirect(navigator.nextPage(CheckYourAnswersId, NormalMode, request.userAnswers)))
   }
 }

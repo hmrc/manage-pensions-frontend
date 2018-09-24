@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import com.thoughtworks.selenium.webdriven.commands.IsChecked
 import controllers.actions.{DataRetrievalAction, FakeDataRetrievalAction}
-import identifiers.invitations.{HaveYouEmployedPensionAdviserId, AdviserNameId, PSAId, PsaNameId}
+import identifiers.invitations.{AdviserNameId, HaveYouEmployedPensionAdviserId, PSAId, PsaNameId}
 import identifiers.{LastPageId, SchemeDetailId}
 import models._
 import org.scalatest.OptionValues

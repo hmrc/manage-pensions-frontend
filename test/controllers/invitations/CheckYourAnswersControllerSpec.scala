@@ -47,10 +47,18 @@ class CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours 
   def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
     new CheckYourAnswersController(
-      frontendAppConfig, messagesApi, fakeAuth, dataRetrievalAction, requiredDateAction, checkYourAnswersFactory).onPageLoad()
+      frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction, checkYourAnswersFactory).onPageLoad()
+  }
+
+  def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
+
+    new CheckYourAnswersController(
+      frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction, checkYourAnswersFactory).onSubmit()
   }
 
 
   behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, Some(userAnswer), viewAsString)
+
+  behave like controllerWithOnSubmitMethod(onSubmitAction, getEmptyData,  None)
 
 }

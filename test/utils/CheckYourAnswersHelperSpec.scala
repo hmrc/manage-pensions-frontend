@@ -16,16 +16,9 @@
 
 package utils
 
-import connectors.{DataCacheConnector, FakeDataCacheConnector}
-import identifiers.{LastPageId, TypedIdentifier}
-import models.requests.IdentifiedRequest
-import models.{CheckMode, LastPage, NormalMode}
+import models.CheckMode
 import org.scalatest.{MustMatchers, WordSpec}
-import play.api.mvc.Call
-import uk.gov.hmrc.http.HeaderCarrier
 import viewmodels.AnswerRow
-
-import scala.concurrent.ExecutionContext.Implicits.global
 
 class CheckYourAnswersHelperSpec extends WordSpec with MustMatchers {
 
