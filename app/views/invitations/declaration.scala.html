@@ -18,7 +18,7 @@
 @import uk.gov.hmrc.play.views.html._
 @import viewmodels.Message
 
-@(appConfig: FrontendAppConfig, hasAdviser: Boolean, isMasterTrust: Boolean)(implicit request: Request[_], messages: Messages)
+@(appConfig: FrontendAppConfig, hasAdviser: Boolean, isMasterTrust: Boolean, form: Form[String])(implicit request: Request[_], messages: Messages)
 
 @main_template(
 title = s"${messages("messages__declaration__title")}",

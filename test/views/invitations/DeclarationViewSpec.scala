@@ -16,6 +16,7 @@
 
 package views.invitations
 
+import forms.invitations.DeclarationFormProvider
 import play.twirl.api.HtmlFormat
 import viewmodels.Message
 import views.behaviours.ViewBehaviours
@@ -24,9 +25,10 @@ import views.html.invitations.declaration
 class DeclarationViewSpec extends ViewBehaviours {
 
   val messageKeyPrefix = "declaration"
+  val form = new DeclarationFormProvider()()
 
   def declarationView(hasAdviser: Boolean = true, isMasterTrust: Boolean = false): () => HtmlFormat.Appendable = () =>
-    declaration(frontendAppConfig, hasAdviser, isMasterTrust)(fakeRequest, messages)
+    declaration(frontendAppConfig, hasAdviser, isMasterTrust, form)(fakeRequest, messages)
 
   behave like normalPageWithTitle(
     declarationView(),

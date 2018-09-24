@@ -140,6 +140,4 @@ messages__error__adviser__name__required = Enter the name of your pension advise
 messages__error__adviser__name__length = Enter a name using less than 108 characters
 messages__error__adviser__name__invalid = Enter a name using only letters
 
-
-
-
+messages__error__declaration__required = You need to agree to all the declarations before you can continue
