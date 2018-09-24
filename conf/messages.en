@@ -107,11 +107,6 @@ messages__incorrectPsaDetails__text1 = You should check these details with {0}.
 messages__incorrectPsaDetails__text2 = Their name should be entered exactly as their registered PSA name.
 messages__incorrectPsaDetails__linkText = Return to {0}
 
-messages__adviser__postcode__title=
-messages__error__adviser__postcode__required=
-messages__error__adviser__postcode__length=
-messages__error__adviser__postcode__invalid=
-
 messages__invitationSuccess__title = Invitation sent
 messages__invitationSuccess__heading = You have invited {0} to administer the scheme
 messages__invitationSuccess__schemeName = This is for {0}.
@@ -127,3 +122,7 @@ messages__error__adviser__name__length = Enter a name using less than 108 charac
 messages__error__adviser__name__invalid = Enter a name using only letters
 
 messages__error__postcode__lookup__no__results = There are no addresses for that postcode
+
+error.postcode.length = The postcode cannot be more than 8 characters
+error.postcode.required = Enter the postcode
+error.postcode.invalid = Enter a valid postcode

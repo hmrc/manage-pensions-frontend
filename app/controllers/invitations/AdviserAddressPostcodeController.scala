@@ -82,7 +82,7 @@ class AdviserAddressPostcodeController @Inject()(val appConfig: FrontendAppConfi
         }
     } recoverWith {
       case _ =>
-        Future.successful(BadRequest(adviserPostcode(appConfig, formWithError("error.invalid"))))
+        Future.successful(BadRequest(adviserPostcode(appConfig, formWithError("messages__error__postcode__lookup__invalid"))))
     }
   }
 
