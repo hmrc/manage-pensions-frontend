@@ -19,12 +19,14 @@ package controllers.invitations
 import config.FrontendAppConfig
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.invitations.AdviserAddressPostcodeLookupFormProvider
+import identifiers.invitations.AdviserAddressPostCodeLookupId
 import javax.inject.Inject
-import models.TolerantAddress
-import play.api.data.Form
+import models.NormalMode
 import play.api.i18n._
 import play.api.mvc._
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import utils.Navigator
+import utils.annotations.AcceptInvitation
 import views.html.invitations.adviserPostcode
 
 class AdviserAddressPostcodeController @Inject()(val appConfig: FrontendAppConfig,
@@ -32,7 +34,8 @@ class AdviserAddressPostcodeController @Inject()(val appConfig: FrontendAppConfi
                                                  authenticate: AuthAction,
                                                  getData: DataRetrievalAction,
                                                  requireData: DataRequiredAction,
-                                                 formProvider: AdviserAddressPostcodeLookupFormProvider) extends FrontendController with I18nSupport {
+                                                 formProvider: AdviserAddressPostcodeLookupFormProvider,
+                                                 @AcceptInvitation navigator: Navigator) extends FrontendController with I18nSupport {
 
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData andThen requireData) {
@@ -42,6 +45,6 @@ class AdviserAddressPostcodeController @Inject()(val appConfig: FrontendAppConfi
 
   def onSubmit: Action[AnyContent] = (authenticate andThen getData andThen requireData) {
     implicit request =>
-      ???
+      Redirect(navigator.nextPage(AdviserAddressPostCodeLookupId, NormalMode, request.userAnswers))
   }
 }

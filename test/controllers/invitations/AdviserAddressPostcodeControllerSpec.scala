@@ -20,6 +20,7 @@ import akka.stream.Materializer
 import config.FrontendAppConfig
 import connectors.{AddressLookupConnector, DataCacheConnector}
 import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
+import forms.invitations.AdviserAddressPostcodeLookupFormProvider
 import identifiers.invitations.AdviserAddressPostCodeLookupId
 import models.TolerantAddress
 import org.mockito.Matchers.{eq => eqTo, _}
@@ -88,7 +89,6 @@ class AdviserAddressPostcodeControllerSpec extends WordSpec with MustMatchers wi
       )) {
         app =>
 
-          val request = FakeRequest()
           val controller = app.injector.instanceOf[AdviserAddressPostcodeController]
           val result = controller.onSubmit()(FakeRequest().withFormUrlEncodedBody("value" -> postcode))
 
@@ -187,13 +187,15 @@ object AdviserAddressPostcodeControllerSpec {
 
   val postcode = "ZZ1 1ZZ"
 
+  val form = new AdviserAddressPostcodeLookupFormProvider()()
+
   def viewAsString(value: Option[String] = Some(postcode))(implicit app: Application): String = {
 
     val appConfig = app.injector.instanceOf[FrontendAppConfig]
     val request = FakeRequest()
     val messages = app.injector.instanceOf[MessagesApi].preferred(request)
 
-    adviserPostcode(appConfig, ???)(request, messages).toString()
+    adviserPostcode(appConfig, form)(request, messages).toString()
 
   }
 
