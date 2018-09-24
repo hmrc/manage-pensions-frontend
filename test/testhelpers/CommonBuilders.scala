@@ -30,7 +30,7 @@ object CommonBuilders {
   private val comEstPrevAdd = PreviousAddressDetails(true,Some(Address(true,"addline1","addline2",Some("addline3"),Some("addline4"),Some("ST36TR"),"AD")))
   private val personDetails = PersonDetails(Some("Mr"),"abcdef",Some("fdgdgfggfdg"),"dfgfdgdfg","1955-03-29")
 
-  val schemeDetails = SchemeDetails("S9000000000", "00000000AA", "Pending", "Benefits Scheme", Some(true),
+  val schemeDetails = SchemeDetails("S9000000000", "00000000AA", "Open", "Benefits Scheme", Some(true),
     Some("A single trust under which all of the assets are held for the benefit of all members of the scheme"),
     Some(" "), Some(true), "0", "0", true, true, "Money Purchase benefits only (defined contribution)", "AD", true, true,
     Some("Aviva Insurance"), Some(" "), Some(address), Some(contactDetails))
@@ -46,7 +46,19 @@ object CommonBuilders {
   val psaDetails1 = PsaDetails("A0000000",Some("partnetship name"),Some("Taylor"),Some("Middle"),Some("Rayon"),Some("Primary"),Some("1978-03-22"))
   val psaDetails2 = PsaDetails("A0000001",Some("partnetship name 1"),Some("Smith"),Some("A"),Some("Tony"),Some("Primary"),Some("1977-03-22"))
 
-  val psaSchemeDetailsModel = PsaSchemeDetails(PensionsScheme(schemeDetails, Some(establisherDetails), None, Some(Seq(psaDetails1, psaDetails2))))
-  val schemeDetailsWithPsaOnlyModel = PsaSchemeDetails(PensionsScheme(schemeDetails, None, None, Some(Seq(psaDetails1, psaDetails2))))
+  val psaSchemeDetailsResponse = PsaSchemeDetails(PensionsScheme(schemeDetails, Some(establisherDetails), None, Some(Seq(psaDetails1, psaDetails2))))
+  val schemeDetailsWithPsaOnlyResponse = PsaSchemeDetails(PensionsScheme(schemeDetails, None, None, Some(Seq(psaDetails1, psaDetails2))))
+  val schemeDetailsPendingResponse = PsaSchemeDetails(PensionsScheme(schemeDetails.copy(schemeStatus = "Pending"), None, None, Some(Seq(psaDetails1, psaDetails2))))
+  val schemeDetailsWithoutPsaResponse = PsaSchemeDetails(PensionsScheme(schemeDetails, None, None, None))
+
+
+  private val schemeDetail = SchemeDetail("abcdefghi", "S1000000456", "Pending", Some("2012-10-10"),
+    Some("10000678RE"), Some("Primary PSA"), None)
+
+  private val schemeDetailWithoutDate = SchemeDetail("abcdefghi", "S1000000456", "Pending", None,
+    Some("10000678RE"), Some("Primary PSA"), None)
+
+  val listOfSchemesResponse = ListOfSchemes("2001-12-17T09:30:47Z", "1", Some(List(schemeDetail)))
+  val listOfSchemesPartialResponse = ListOfSchemes("2001-12-17T09:30:47Z", "1", Some(List(schemeDetailWithoutDate)))
 
 }

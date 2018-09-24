@@ -27,4 +27,4 @@ GET        /overview/can-scheme-be-registered           controllers.SchemesOverv
 GET        /invite                                      controllers.InviteController.onPageLoad()
 
 
-GET        /scheme-details/:index                      controllers.SchemeDetailsController.onPageLoad(index: Int)
+GET        /scheme-details/:pstr                      controllers.SchemeDetailsController.onPageLoad(pstr: String)

@@ -19,8 +19,6 @@ package views
 import config.FrontendAppConfig
 import org.jsoup.Jsoup
 import play.api.Environment
-import play.api.inject.Injector
-import play.api.inject.guice.GuiceApplicationBuilder
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
 import views.html.schemeDetails
@@ -31,13 +29,24 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
     val schemeName = "Test Scheme Name"
     val openedDate = "29 February 2017"
     val administrators = Seq("First Psa", "Second User")
+    val srn = "P12345678"
 
   class fakeFrontendAppConfig(invitationsEnabled: Boolean) extends FrontendAppConfig(app.configuration, injector.instanceOf[Environment]) {
-    override lazy val psaInvitationEnabled = invitationsEnabled
+    override lazy val isWorkPackageOneEnabled: Boolean = invitationsEnabled
   }
 
-    def createView(invitations: Boolean = false): () => HtmlFormat.Appendable = () =>
-      schemeDetails(new fakeFrontendAppConfig(invitations), schemeName, Some(openedDate), Some(administrators))(fakeRequest, messages)
+    def createView(date: Option[String] = Some(openedDate),
+                   psaList: Option[Seq[String]] = Some(administrators),
+                   invitations: Boolean = false,
+                   isSchemeOpen: Boolean = true): () => HtmlFormat.Appendable = () =>
+      schemeDetails(
+        new fakeFrontendAppConfig(invitations),
+        schemeName,
+        date,
+        psaList,
+        srn,
+        isSchemeOpen
+      )(fakeRequest, messages)
 
     "SchemesDetails view" must {
       behave like normalPage(
@@ -52,7 +61,7 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
 
       "have link to view scheme details" in {
         Jsoup.parse(createView()().toString()).select("a[id=view-details]") must
-          haveLink(controllers.routes.SchemeDetailsController.onPageLoad(0).url)
+          haveLink(controllers.routes.SchemeDetailsController.onPageLoad(srn).url)
       }
 
       "display the date on which scheme was opened" in {
@@ -60,28 +69,44 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
           haveDynamicText(openedDate)
       }
 
+      "not display the date on which scheme was opened if no date is returned from API" in {
+
+        Jsoup.parse(createView(None)().toString()) mustNot haveDynamicText(messages("messages__schemeDetails__opened_date_head"))
+        Jsoup.parse(createView(None)().toString()) mustNot haveDynamicText(openedDate)
+      }
+
       "contain list of administrators" in {
+        for (psa <- administrators) Jsoup.parse(createView()().toString) must haveDynamicText(psa)
+      }
+
+      "not contain list of administrators if not data is returned from API" in {
+        Jsoup.parse(createView(psaList = None)().toString) mustNot haveDynamicText("messages__schemeDetails__psa_list_head")
         for (psa <- administrators)
-          Jsoup.parse(createView()().toString) must haveDynamicText(psa)
+          Jsoup.parse(createView(psaList = None)().toString) mustNot haveDynamicText(psa)
       }
 
       "have link to Invite another PSA" when {
         "invitations toggle is turned on" in {
           Jsoup.parse(createView(invitations = true)().toString()).select("a[id=invite]") must
-            haveLink(controllers.routes.SchemeDetailsController.onPageLoad(0).url)
+            haveLink(controllers.routes.SchemeDetailsController.onPageLoad(srn).url)
         }
       }
 
       "not have link to Invite another PSA" when {
         "invitations toggle is turned off" in {
           Jsoup.parse(createView()().toString()).select("a[id=invite]") mustNot
-            haveLink(controllers.routes.SchemeDetailsController.onPageLoad(0).url)
+            haveLink(controllers.routes.SchemeDetailsController.onPageLoad(srn).url)
+        }
+
+        "scheme status is not open" in {
+          Jsoup.parse(createView(invitations = true, isSchemeOpen = false)().toString()).select("a[id=invite]") mustNot
+            haveLink(controllers.routes.SchemeDetailsController.onPageLoad(srn).url)
         }
       }
 
       "have link to return to list of schemes page" in {
         Jsoup.parse(createView()().toString()).select("a[id=return]") must
-          haveLink(controllers.routes.ListSchemesController.onPageLoad.url)
+          haveLink(controllers.routes.ListSchemesController.onPageLoad().url)
       }
     }
   }

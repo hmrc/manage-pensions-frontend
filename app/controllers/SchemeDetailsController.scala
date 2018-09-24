@@ -16,47 +16,69 @@
 
 package controllers
 
-import javax.inject.Inject
-
 import config.FrontendAppConfig
-import connectors._
+import connectors.{ListOfSchemesConnector, SchemeDetailsConnector}
 import controllers.actions._
-import models.{PsaDetails, Scheme}
+import javax.inject.Inject
+import models.{ListOfSchemes, PsaDetails, PsaSchemeDetails, SchemeDetail}
+import org.joda.time.LocalDate
 import org.joda.time.format.DateTimeFormat
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.libs.json.JsSuccess
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import views.html.schemeDetails
 
-import scala.concurrent.Future
-
 class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
-                                        override val messagesApi: MessagesApi,
-                                        dataCacheConnector: DataCacheConnector,
-                                        schemeDetailsConnector: SchemeDetailsConnector,
-                                        authenticate: AuthAction,
-                                        getData: DataRetrievalAction) extends FrontendController with I18nSupport {
+                                          override val messagesApi: MessagesApi,
+                                          schemeDetailsConnector: SchemeDetailsConnector,
+                                          listSchemesConnector: ListOfSchemesConnector,
+                                          authenticate: AuthAction,
+                                          getData: DataRetrievalAction) extends FrontendController with I18nSupport {
 
-  private def fullName(psa: PsaDetails) =
+  def onPageLoad(srn: String): Action[AnyContent] = (authenticate andThen getData).async {
+    implicit request =>
+
+      schemeDetailsConnector.getSchemeDetails("srn", srn).flatMap { scheme =>
+        listSchemesConnector.getListOfSchemes(request.psaId.id).map { list =>
+
+          val isSchemeOpen = scheme.psaSchemeDetails.schemeDetails.schemeStatus.equalsIgnoreCase("open")
+
+                Ok(schemeDetails(appConfig,
+                  scheme.psaSchemeDetails.schemeDetails.schemeName,
+                  openedDate(srn, list, isSchemeOpen),
+                  administrators(scheme),
+                  srn,
+                  isSchemeOpen
+                ))
+            }
+      }
+  }
+
+  private def administrators(scheme: PsaSchemeDetails): Option[Seq[String]] = {
+    scheme.psaSchemeDetails.psaDetails match {
+      case Some(psaDetails) => Some(psaDetails.map(fullName(_)))
+      case None => None
+    }
+  }
+
+  private def openedDate(srn: String, list: ListOfSchemes, isSchemeOpen: Boolean): Option[String] = {
+    isSchemeOpen match {
+      case true =>
+        list.schemeDetail.flatMap { listOfSchemes =>
+          val currentScheme = listOfSchemes.filter((i: SchemeDetail) => i.referenceNumber.contains(srn))
+          if (currentScheme.nonEmpty) {
+            currentScheme.head.openDate.map(new LocalDate(_).toString(formatter))
+          } else {
+            None
+          }
+        }
+      case _ => None
+    }
+  }
+
+  private def fullName(psa: PsaDetails): String =
     s"${psa.firstName.getOrElse("")} ${psa.middleName.getOrElse("")} ${psa.lastName.getOrElse("")}"
 
   private val formatter = DateTimeFormat.forPattern("dd MMMM YYYY")
 
-  def onPageLoad(index: Int): Action[AnyContent] = (authenticate andThen getData).async {
-    implicit request =>
-      dataCacheConnector.fetch(request.externalId).flatMap {
-        case None => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
-        case Some(jsValue) => (jsValue \ "schemes").validate[Seq[Scheme]] match {
-          case JsSuccess(schemes, _) =>
-            val pstr = schemes(index - 1).pstr
-            val openedDate = schemes(index - 1).openDate.toString(formatter)
-            schemeDetailsConnector.getSchemeDetails("pstr", pstr)
-              .map(scheme =>
-                Ok(schemeDetails(appConfig, scheme.psaSchemeDetails.schemeDetails.schemeName, Some(openedDate),
-                    Some(scheme.psaSchemeDetails.psaDetails.map(_.map(fullName)).getOrElse(Seq.empty)))))
-          case _ => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
-        }
-      }
-  }
 }

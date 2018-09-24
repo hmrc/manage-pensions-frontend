@@ -18,12 +18,10 @@ package controllers
 
 import connectors._
 import controllers.actions.{DataRetrievalAction, _}
-import models.Scheme
-import org.joda.time.LocalDate
 import org.mockito.Matchers
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.mockito.MockitoSugar
-import play.api.libs.json.{JsObject, Json}
+import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.Helpers.{contentAsString, _}
 import testhelpers.CommonBuilders
 import views.html.schemeDetails
@@ -33,57 +31,84 @@ import scala.concurrent.Future
 class SchemeDetailsControllerSpec extends ControllerSpecBase {
   import SchemeDetailsControllerSpec._
 
+  appRunning()
+
   "SchemeDetailsController" must {
     "return OK and the correct view for a GET" in {
       reset(fakeSchemeDetailsConnector)
       when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(CommonBuilders.schemeDetailsWithPsaOnlyModel))
-      when(fakeManagePensionsCacheConnector.fetch(Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(manageSessionData)))
-      val result = controller().onPageLoad(1)(fakeRequest)
+        .thenReturn(Future.successful(CommonBuilders.schemeDetailsWithPsaOnlyResponse))
+      when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(CommonBuilders.listOfSchemesResponse))
+      val result = controller().onPageLoad(srn)(fakeRequest)
       status(result) mustBe OK
       contentAsString(result) mustBe viewAsString()
     }
 
-    "return redirect when there is no manage pensions data to fetch" in {
+    "return OK and the correct view for a GET when opened date is not returned by API" in {
       reset(fakeSchemeDetailsConnector)
       when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(CommonBuilders.schemeDetailsWithPsaOnlyModel))
-      when(fakeManagePensionsCacheConnector.fetch(Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      val result = controller().onPageLoad(1)(fakeRequest)
-      status(result) mustBe SEE_OTHER
+        .thenReturn(Future.successful(CommonBuilders.schemeDetailsWithPsaOnlyResponse))
+      when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(CommonBuilders.listOfSchemesPartialResponse))
+      val result = controller().onPageLoad(srn)(fakeRequest)
+      status(result) mustBe OK
+      contentAsString(result) mustBe viewAsString(None)
+    }
+
+    "return OK and the correct view for a GET when scheme status is not open" in {
+      reset(fakeSchemeDetailsConnector)
+      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(CommonBuilders.schemeDetailsPendingResponse))
+      when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(CommonBuilders.listOfSchemesResponse))
+      val result = controller().onPageLoad(srn)(fakeRequest)
+      status(result) mustBe OK
+      contentAsString(result) mustBe viewAsString(openDate = None, isSchemeOpen = false)
+    }
+
+    "return OK and the correct view for a GET when PSA data is not returned by API" in {
+      reset(fakeSchemeDetailsConnector)
+      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(CommonBuilders.schemeDetailsWithoutPsaResponse))
+      when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(CommonBuilders.listOfSchemesResponse))
+      val result = controller().onPageLoad(srn)(fakeRequest)
+      status(result) mustBe OK
+      contentAsString(result) mustBe viewAsString(administrators = None)
     }
   }
 }
 
 private object SchemeDetailsControllerSpec extends ControllerSpecBase with MockitoSugar {
 
+  override lazy val app = new GuiceApplicationBuilder().configure(
+    "features.work-package-one-enabled" -> true
+  ).build()
+
   val fakeSchemeDetailsConnector: SchemeDetailsConnector = mock[SchemeDetailsConnector]
-  val fakeManagePensionsCacheConnector: DataCacheConnector = mock[DataCacheConnector]
+  val fakeListOfSchemesConnector: ListOfSchemesConnector = mock[ListOfSchemesConnector]
 
   def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): SchemeDetailsController =
     new SchemeDetailsController(frontendAppConfig,
       messagesApi,
-      fakeManagePensionsCacheConnector,
       fakeSchemeDetailsConnector,
-      FakeAuthAction,
+      fakeListOfSchemesConnector,
+      FakeAuthAction(),
       dataRetrievalAction)
 
   val schemeName = "Test Scheme Name"
   val administrators = Some(Seq("Taylor Middle Rayon", "Smith A Tony"))
-  val openDate = Some("28 February 2018")
-  val pstr = "P12345678"
-  val date: LocalDate = LocalDate.parse("2018-02-28")
+  val openDate = Some("10 October 2012")
+  val srn = "S1000000456"
 
-  val manageSessionData: JsObject = Json.obj(
-    "schemes" -> Seq(Scheme(pstr, date))
-  )
-
-  def viewAsString(): String = schemeDetails(
+  def viewAsString(openDate: Option[String] = openDate, administrators: Option[Seq[String]] = administrators, isSchemeOpen: Boolean = true): String =
+    schemeDetails(
     frontendAppConfig,
     CommonBuilders.schemeDetails.schemeName,
     openDate,
-    administrators
+    administrators,
+    srn,
+    isSchemeOpen
   )(fakeRequest, messages).toString
 }
