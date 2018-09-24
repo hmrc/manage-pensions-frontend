@@ -22,17 +22,9 @@ import play.api.data.Form
 
 class AdviserEmailFormProvider @Inject() extends EmailMapping {
 
-  val requiredKey = "messages__error__adviser__email__address__required"
-  val maxLengthKey = "messages__error__adviser__email__address__length"
-  val invalidKey = "messages__error__adviser__email__address__invalid"
-
   def apply(): Form[String] = {
     Form(
-      "email" -> emailMapping(
-        requiredKey,
-        maxLengthKey,
-        invalidKey
-      )
+      "email" -> emailMapping()
     )
   }
 }

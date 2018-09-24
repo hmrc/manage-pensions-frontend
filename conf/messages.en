@@ -11,6 +11,14 @@ messages__unauthorised__title = You can’t access this service with this accoun
 messages__index__title = Manage Pensions Frontend
 messages__index__guidance = Welcome to your new frontend. Please see the README file for a guide to getting started.
 
+messages__error__common__email__no_at_sign = Enter an email address which includes an @ symbol
+messages__error__common__email__start_with_at_sign = Enter an email address which does not start with @
+messages__error__common__email__dot_after_at_sign = Enter an email address in the correct format with a character between @ and dot
+messages__error__common__email__ends_with_dot = Enter an email address with at least a character after the last dot
+messages__error__common__email__address__required = Enter an email address
+messages__error__common__email__address__length = Enter an email address using less than 133 characters
+messages__error__common__email__address__invalid = Enter an email address in the correct format - you might have to check that you have the correct email
+
 messages__youNeedToRegister__title = You need to register
 messages__youNeedToRegister__heading = Manage and register your pension schemes
 messages__youNeedToRegister__lede = You must register to use this service before you can register a pension scheme.
@@ -96,12 +104,10 @@ messages__error__adviser__name__required = Enter the name of your pension advise
 messages__error__adviser__name__length = Enter a name using less than 108 characters
 messages__error__adviser__name__invalid = Enter a name using only letters
 
-messages__adviser__email__address__title = What is your pension adviser's email address?
+messages__adviser__email__address__title = What is your pension adviser’s email address?
 messages__adviser__email__address__heading = What is {0}’s email address?
 messages__adviser__email__address__p1 = This will be used if HMRC need to contact your pension adviser.
-messages__error__adviser__email__address__required = Enter the adviser name
-messages__error__adviser__email__address__length = Enter a name using less than 108 characters
-messages__error__adviser__email__address__invalid = Enter a name using only letters
+
 
 
 

@@ -28,6 +28,7 @@ class EmailMappingSpec extends EmailBehaviours {
   val mapping: Mapping[String] = emailMapping(requiredKey, maxLengthKey, invalidKey)
 
   val fieldName = "email"
+
   val form = Form(
     fieldName -> mapping
   )

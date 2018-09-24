@@ -23,6 +23,12 @@ import views.behaviours.StringFieldBehaviours
 
 trait EmailBehaviours extends FormSpec with StringFieldBehaviours with Constraints with RegexBehaviourSpec with EmailMapping {
 
+  val keyNoAtSignIncluded: String = "messages__error__common__email__no_at_sign"
+  val keyStartsWithAtSign: String = "messages__error__common__email__start_with_at_sign"
+  val keyDotAfterAtSign: String = "messages__error__common__email__dot_after_at_sign"
+  val keyEndsWithDot: String = "messages__error__common__email__ends_with_dot"
+
+  //scalastyle:off method.length
   def formWithEmailField(
                           form: Form[_],
                           fieldName: String,
@@ -51,10 +57,15 @@ trait EmailBehaviours extends FormSpec with StringFieldBehaviours with Constrain
         requiredError = FormError(fieldName, keyEmailRequired)
       )
 
+      behave like emailWithCorrectFormat(
+        form,
+        fieldName
+      )
+
       behave like fieldWithRegex(
         form,
         fieldName,
-        "ab.com",
+        "test@com",
         FormError(fieldName, keyEmailInvalid, Seq(emailRegex))
       )
 
@@ -68,13 +79,34 @@ trait EmailBehaviours extends FormSpec with StringFieldBehaviours with Constrain
         ),
         Table(
           "invalid",
-          Map("email" -> "@test.com"),
-          Map("email" -> "test.com"),
-          Map("email" -> "test@.com"),
           Map("email" -> "test@sdff"),
           Map("email" -> "test@-.com")
         )
       )
+    }
+  }
+
+  private def emailWithCorrectFormat(
+                                      form: Form[_],
+                                      fieldName: String
+                                    ): Unit = {
+
+    def result(value: String) = form.bind(Map(fieldName -> value)).apply(fieldName)
+
+    "not bind when @ sign not included" in {
+      result("test.com").errors shouldEqual Seq(FormError(fieldName, keyNoAtSignIncluded))
+    }
+
+    "not bind when starts with @ sign" in {
+      result("@test.com").errors shouldEqual Seq(FormError(fieldName, keyStartsWithAtSign))
+    }
+
+    "not bind when nothing is between @ sign and dot(.)" in {
+      result("test@.com").errors shouldEqual Seq(FormError(fieldName, keyDotAfterAtSign))
+    }
+
+    "not bind when ends with a dot(.)" in {
+      result("test@com.").errors shouldEqual Seq(FormError(fieldName, keyEndsWithDot))
     }
   }
 
