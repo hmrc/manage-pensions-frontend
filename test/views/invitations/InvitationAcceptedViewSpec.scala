@@ -39,7 +39,7 @@ class InvitationAcceptedViewSpec extends ViewBehaviours {
       messages(s"messages__${messageKeyPrefix}__heading")
     )
 
-    "have dynamic scheme name" in {
+    "state the scheme name" in {
       Jsoup.parse(createView().toString()) must haveDynamicText("messages__invitationAccepted__heading", testSchemeName)
     }
 
