@@ -28,7 +28,7 @@ import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import utils.annotations.Invitation
+import utils.annotations.{AcceptInvitation, Invitation}
 import utils.{Navigator, UserAnswers}
 import views.html.invitations.pension_adviser_address_list
 
@@ -42,7 +42,7 @@ class PensionAdviserAddressListController @Inject()(
                                                      formProvider: PensionAdviserAddressListFormProvider,
                                                      val messagesApi: MessagesApi,
                                                      val cacheConnector: DataCacheConnector,
-                                                     @Invitation navigator: Navigator
+                                                     @AcceptInvitation navigator: Navigator
                                                    ) extends FrontendController with Retrievals with I18nSupport {
 
   def form(addresses: Seq[TolerantAddress]): Form[Int] = formProvider(addresses)
