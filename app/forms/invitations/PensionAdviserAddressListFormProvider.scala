@@ -24,7 +24,7 @@ class PensionAdviserAddressListFormProvider @Inject()() extends Mappings with Co
 
   def apply(addresses: Seq[_]): Form[Int] =
     Form(
-      "value" -> int()
+      "value" -> int("messages__adviser__address__list__required")
         .verifying(minimumValue(0, "error.invalid"))
         .verifying(maximumValue(addresses.length - 1, "error.invalid"))
     )

@@ -116,6 +116,7 @@ messages__invitationSuccess__expiryDate = They will have until {0} to accept the
 
 messages__adviser__address__list__title = Select the address
 messages__adviser__address__list__heading = Select the address
+messages__adviser__address__list__required = Select an address
 messages__adviser__address__list__select = Select the address from the list below or
 messages__adviser__address__list__link = enter the address manually.
 

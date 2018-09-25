@@ -31,7 +31,7 @@ class PensionAdviserAddressListFormProviderSpec extends WordSpec with FormSpec {
   "AddressList form" must {
 
     "fail to bind when value is omitted" in {
-      val expectedError = error("value", "error.required")
+      val expectedError = error("value", "messages__adviser__address__list__required")
       checkForError(form, emptyForm, expectedError)
     }
 
