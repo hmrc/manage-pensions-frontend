@@ -46,7 +46,7 @@ class ManualAddressFormProviderSpec extends FormBehaviours with FormSpec with Ad
     "country" -> "GB"
   )
 
-  val form = new ManualAddressFormProvider(countryOptions)()
+  val form = new AdviserManualAddressFormProvider(countryOptions)()
 
   "Address form" must {
     behave like questionForm(Address(

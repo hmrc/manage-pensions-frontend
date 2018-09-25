@@ -20,7 +20,7 @@ import javax.inject.Inject
 import models.Mode
 import play.api.mvc.Action
 
-class ManualAddressController @Inject()(
+class AdviserManualAddressController @Inject()(
 
                                        ) {
 

@@ -23,7 +23,7 @@ import play.api.data.Form
 import play.api.data.Forms.mapping
 import utils.CountryOptions
 
-class ManualAddressFormProvider @Inject()(countryOptions: CountryOptions) extends AddressMapping {
+class AdviserManualAddressFormProvider @Inject()(countryOptions: CountryOptions) extends AddressMapping {
 
   def apply(): Form[Address] = Form(
     mapping(

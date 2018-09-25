@@ -1,0 +1,180 @@
+/*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package controllers.invitations
+
+import config.FrontendAppConfig
+import connectors.{DataCacheConnector, FakeDataCacheConnector}
+import forms.invitations.AdviserManualAddressFormProvider
+import models.{Address, NormalMode}
+import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.mockito.MockitoSugar
+import org.scalatest.{MustMatchers, OptionValues, WordSpec}
+import play.api.Application
+import play.api.data.Form
+import play.api.i18n.MessagesApi
+import play.api.inject.bind
+import play.api.mvc.Call
+import play.api.test.FakeRequest
+import play.api.test.Helpers._
+import utils.{CountryOptions, FakeCountryOptions, FakeNavigator, Navigator}
+import views.html.invitations.adviserAddress
+
+class AdviserManualAddressControllerSpec extends WordSpec with MustMatchers with MockitoSugar with ScalaFutures with OptionValues {
+
+  "get" must {
+    "return OK with view" when {
+      "data is not retrieved" in {
+
+        running(_.overrides(
+          bind[CountryOptions].to[FakeCountryOptions],
+          bind[Navigator].to(FakeNavigator)
+        )) {
+          app =>
+
+            val controller = app.injector.instanceOf[AdviserManualAddressController]
+            val result = controller.onPageLoad(NormalMode, false)(FakeRequest())
+
+            status(result) mustEqual OK
+            contentAsString(result) mustEqual ???
+
+        }
+
+      }
+
+      "data is retrieved" in {
+        running(_.overrides(
+          bind[CountryOptions].to[FakeCountryOptions],
+          bind[Navigator].to(FakeNavigator)
+        )) {
+          app =>
+
+            val controller = app.injector.instanceOf[AdviserManualAddressController]
+            val result = controller.onPageLoad(NormalMode, false)(FakeRequest())
+
+            status(result) mustEqual OK
+            contentAsString(result) mustEqual ???
+
+        }
+      }
+
+      "data is not retrieved but there is a selected address" in {
+
+        running(_.overrides(
+          bind[CountryOptions].to[FakeCountryOptions],
+          bind[Navigator].to(FakeNavigator)
+        )) {
+          app =>
+
+            val controller = app.injector.instanceOf[AdviserManualAddressController]
+            val result = controller.onPageLoad(NormalMode, false)(FakeRequest())
+
+            status(result) mustEqual OK
+            contentAsString(result) mustEqual ???
+
+        }
+
+      }
+
+    }
+  }
+
+  "post" must {
+
+    "redirect to the postCall on valid data request" which {
+      "will save address to answers" in {
+
+        val onwardRoute = Call("GET", "/")
+
+        val navigator = new FakeNavigator(onwardRoute, NormalMode)
+
+        running(_.overrides(
+          bind[CountryOptions].to[FakeCountryOptions],
+          bind[DataCacheConnector].to(FakeDataCacheConnector),
+          bind[Navigator].to(navigator)
+        )) {
+          app =>
+
+            val controller = app.injector.instanceOf[AdviserManualAddressController]
+
+            val result = controller.onSubmit(NormalMode, false)(FakeRequest().withFormUrlEncodedBody(
+              ("addressLine1", "value 1"),
+              ("addressLine2", "value 2"),
+              ("postCode", "AB1 1AB"),
+              "country" -> "GB")
+            )
+
+            status(result) mustEqual SEE_OTHER
+            redirectLocation(result).get mustEqual onwardRoute.url
+
+            val address = Address("value 1", "value 2", None, None, Some("AB1 1AB"), "GB")
+
+            FakeDataCacheConnector.verify(???, address)
+        }
+
+      }
+
+    }
+
+    "return BAD_REQUEST with view on invalid data request" in {
+
+      running(_.overrides(
+        bind[CountryOptions].to[FakeCountryOptions],
+        bind[Navigator].toInstance(FakeNavigator)
+      )) {
+        app =>
+
+          val controller = app.injector.instanceOf[AdviserManualAddressController]
+          val result = controller.onSubmit(NormalMode, false)(FakeRequest().withFormUrlEncodedBody())
+
+          status(result) mustEqual BAD_REQUEST
+          contentAsString(result) mustEqual ???
+      }
+
+    }
+
+  }
+
+}
+
+object AdviserManualAddressControllerSpec {
+
+  val addressData: Map[String, String] = Map(
+    "addressLine1" -> "address line 1",
+    "addressLine2" -> "address line 2",
+    "addressLine3" -> "address line 3",
+    "addressLine4" -> "address line 4",
+    "postCode" -> "AB1 1AP",
+    "country" -> "GB"
+  )
+
+  val messageKeyPrefix = "adviser__address"
+
+  private val countryOptions = FakeCountryOptions.fakeCountries
+
+  val form: Form[Address] = new AdviserManualAddressFormProvider(new CountryOptions(countryOptions))()
+
+  def viewAsString(value: Option[Address], form: Form[Address] = form)(implicit app: Application): String = {
+
+    val appConfig = app.injector.instanceOf[FrontendAppConfig]
+    val request = FakeRequest()
+    val messages = app.injector.instanceOf[MessagesApi].preferred(request)
+
+    adviserAddress(appConfig, form, NormalMode, countryOptions, false, messageKeyPrefix)(request, messages).toString()
+
+  }
+
+}

@@ -24,12 +24,12 @@ POST       /pension-adviser-name                        controllers.invitations.
 GET        /change-pension-adviser-name                 controllers.invitations.AdviserDetailsController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-pension-adviser-name                 controllers.invitations.AdviserDetailsController.onSubmit(mode: Mode = CheckMode)
 
-GET        /confirm-pension-adviser-address             controllers.invitations.ManualAddressController.onPageLoad(mode: Mode = NormalMode, prepopulated: Boolean = true)
-POST       /confirm-pension-adviser-address             controllers.invitations.ManualAddressController.onSubmit(mode: Mode = NormalMode, prepopulated: Boolean = true)
-GET        /enter-pension-adviser-address               controllers.invitations.ManualAddressController.onPageLoad(mode: Mode = NormalMode, prepopulated: Boolean = false)
-POST       /enter-pension-adviser-address               controllers.invitations.ManualAddressController.onSubmit(mode: Mode = NormalMode, prepopulated: Boolean = false)
-GET        /change-pension-adviser-address              controllers.invitations.ManualAddressController.onPageLoad(mode: Mode = CheckMode, prepopulated: Boolean = true)
-POST       /change-pension-adviser-address              controllers.invitations.ManualAddressController.onSubmit(mode: Mode = CheckMode, prepopulated: Boolean = true)
+GET        /confirm-pension-adviser-address             controllers.invitations.AdviserManualAddressController.onPageLoad(mode: Mode = NormalMode, prepopulated: Boolean = true)
+POST       /confirm-pension-adviser-address             controllers.invitations.AdviserManualAddressController.onSubmit(mode: Mode = NormalMode, prepopulated: Boolean = true)
+GET        /enter-pension-adviser-address               controllers.invitations.AdviserManualAddressController.onPageLoad(mode: Mode = NormalMode, prepopulated: Boolean = false)
+POST       /enter-pension-adviser-address               controllers.invitations.AdviserManualAddressController.onSubmit(mode: Mode = NormalMode, prepopulated: Boolean = false)
+GET        /change-pension-adviser-address              controllers.invitations.AdviserManualAddressController.onPageLoad(mode: Mode = CheckMode, prepopulated: Boolean = true)
+POST       /change-pension-adviser-address              controllers.invitations.AdviserManualAddressController.onSubmit(mode: Mode = CheckMode, prepopulated: Boolean = true)
 
 GET        /cannot-send-invite                          controllers.invitations.YouCannotSendAnInviteController.onPageLoad()
 

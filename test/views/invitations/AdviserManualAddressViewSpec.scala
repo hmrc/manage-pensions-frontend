@@ -16,27 +16,27 @@
 
 package views.invitations
 
-import forms.invitations.ManualAddressFormProvider
+import forms.invitations.AdviserManualAddressFormProvider
 import models.{Address, NormalMode}
 import org.jsoup.Jsoup
 import play.api.data.Form
 import utils.{FakeCountryOptions, InputOption}
 import views.behaviours.QuestionViewBehaviours
-import views.html.invitations.manual_address
+import views.html.invitations.adviserAddress
 import controllers.invitations.routes._
 
-class ManualAddressViewSpec extends QuestionViewBehaviours[Address] {
+class AdviserManualAddressViewSpec extends QuestionViewBehaviours[Address] {
 
   val messageKeyPrefix = "adviser__address"
   val countryOptions: Seq[InputOption] = Seq(InputOption("AF", "Afghanistan"), InputOption("territory:AE-AZ", "Abu Dhabi"))
   val name: String = "name"
 
-  override val form = new ManualAddressFormProvider(FakeCountryOptions())()
+  override val form = new AdviserManualAddressFormProvider(FakeCountryOptions())()
 
   def createView: () => _root_.play.twirl.api.HtmlFormat.Appendable = () =>
-    manual_address(
+    adviserAddress(
       frontendAppConfig,
-      new ManualAddressFormProvider(FakeCountryOptions())(),
+      new AdviserManualAddressFormProvider(FakeCountryOptions())(),
       NormalMode,
       countryOptions,
       false,
@@ -44,7 +44,7 @@ class ManualAddressViewSpec extends QuestionViewBehaviours[Address] {
     )(fakeRequest, messages)
 
   def createViewUsingForm: Form[_] => _root_.play.twirl.api.HtmlFormat.Appendable = (form: Form[_]) =>
-    manual_address(frontendAppConfig, form, NormalMode, countryOptions, false, messageKeyPrefix)(fakeRequest, messages)
+    adviserAddress(frontendAppConfig, form, NormalMode, countryOptions, false, messageKeyPrefix)(fakeRequest, messages)
 
   "ManualAddress view" must {
 
@@ -57,7 +57,7 @@ class ManualAddressViewSpec extends QuestionViewBehaviours[Address] {
     behave like pageWithTextFields(
       createViewUsingForm,
       messageKeyPrefix,
-      ManualAddressController.onSubmit(NormalMode, false).url,
+      AdviserManualAddressController.onSubmit(NormalMode, false).url,
       "addressLine1", "addressLine2", "addressLine3", "addressLine4"
     )
 
