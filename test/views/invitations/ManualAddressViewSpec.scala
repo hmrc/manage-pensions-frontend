@@ -27,7 +27,7 @@ import controllers.invitations.routes._
 
 class ManualAddressViewSpec extends QuestionViewBehaviours[Address] {
 
-  val messageKeyPrefix = ""
+  val messageKeyPrefix = "adviser__address"
   val countryOptions: Seq[InputOption] = Seq(InputOption("AF", "Afghanistan"), InputOption("territory:AE-AZ", "Abu Dhabi"))
   val name: String = "name"
 
@@ -38,11 +38,12 @@ class ManualAddressViewSpec extends QuestionViewBehaviours[Address] {
       frontendAppConfig,
       new ManualAddressFormProvider(FakeCountryOptions())(),
       NormalMode,
-      countryOptions
+      countryOptions,
+      false
     )(fakeRequest, messages)
 
   def createViewUsingForm: Form[_] => _root_.play.twirl.api.HtmlFormat.Appendable = (form: Form[_]) =>
-    manual_address(frontendAppConfig, form, NormalMode, countryOptions)(fakeRequest, messages)
+    manual_address(frontendAppConfig, form, NormalMode, countryOptions, false)(fakeRequest, messages)
 
   "ManualAddress view" must {
 
@@ -55,7 +56,8 @@ class ManualAddressViewSpec extends QuestionViewBehaviours[Address] {
     behave like pageWithTextFields(
       createViewUsingForm,
       messageKeyPrefix,
-      ManualAddressController.onSubmit(NormalMode).url,"addressLine1", "addressLine2", "addressLine3", "addressLine4"
+      ManualAddressController.onSubmit(NormalMode, false).url,
+      "addressLine1", "addressLine2", "addressLine3", "addressLine4"
     )
 
     "have name rendered on the page" in {

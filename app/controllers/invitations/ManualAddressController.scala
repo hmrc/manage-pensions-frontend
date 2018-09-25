@@ -24,12 +24,12 @@ class ManualAddressController @Inject()(
 
                                        ) {
 
-  def onPageLoad(mode: Mode) = Action {
+  def onPageLoad(mode: Mode, prepopulated: Boolean) = Action {
     implicit request =>
       ???
   }
 
-  def onSubmit(mode: Mode) = Action {
+  def onSubmit(mode: Mode, prepopulated: Boolean) = Action {
     implicit request =>
       ???
   }

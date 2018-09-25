@@ -20,14 +20,14 @@
 @import models._
 @import utils.InputOption
 
-@(appConfig: FrontendAppConfig, form: Form[_], mode: Mode, options: Seq[InputOption])(implicit request: Request[_], messages: Messages)
+@(appConfig: FrontendAppConfig, form: Form[_], mode: Mode, options: Seq[InputOption], prepopulated: Boolean)(implicit request: Request[_], messages: Messages)
 
 @main_template(
     title = messages("messages__benefits_insurance_addr__title"),
     appConfig = appConfig,
     bodyClasses = None) {
 
-@helpers.form(action = ManualAddressController.onSubmit(mode), 'autoComplete -> "off") {
+@helpers.form(action = ManualAddressController.onSubmit(mode, prepopulated), 'autoComplete -> "off") {
 
         @components.back_link()
 
