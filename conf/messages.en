@@ -125,3 +125,10 @@ messages__adviser__name__p1 = This can be either the name of your adviser or the
 messages__error__adviser__name__required = Enter the name of your pension adviser
 messages__error__adviser__name__length = Enter a name using less than 108 characters
 messages__error__adviser__name__invalid = Enter a name using only letters
+
+messages__common__address1 = Address line 1
+messages__common__address2 = Address line 2
+messages__common__address3 = Address line 3 (optional)
+messages__common__address4 = Address line 4 (optional)
+messages__common__address_postcode = Postcode
+messages__common__country = Country
