@@ -18,7 +18,9 @@ package controllers.invitations
 
 import config.FrontendAppConfig
 import connectors.{DataCacheConnector, FakeDataCacheConnector}
+import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
 import forms.invitations.AdviserManualAddressFormProvider
+import identifiers.invitations.AdviserAddressId
 import models.{Address, NormalMode}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
@@ -27,6 +29,7 @@ import play.api.Application
 import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.inject.bind
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -37,13 +40,17 @@ class AdviserManualAddressControllerSpec extends WordSpec with MustMatchers with
 
   import AdviserManualAddressControllerSpec._
 
+  def dataRetrieval(data: Option[JsValue] = Some(Json.obj())) = new FakeDataRetrievalAction(data)
+
   "get" must {
     "return OK with view" when {
       "data is not retrieved" in {
 
         running(_.overrides(
           bind[CountryOptions].to[FakeCountryOptions],
-          bind[Navigator].to(FakeNavigator)
+          bind[Navigator].to(FakeNavigator),
+          bind[DataRetrievalAction].toInstance(dataRetrieval()),
+          bind[AuthAction].toInstance(FakeAuthAction())
         )) {
           implicit app =>
 
@@ -60,15 +67,17 @@ class AdviserManualAddressControllerSpec extends WordSpec with MustMatchers with
       "data is retrieved" in {
         running(_.overrides(
           bind[CountryOptions].to[FakeCountryOptions],
-          bind[Navigator].to(FakeNavigator)
+          bind[Navigator].to(FakeNavigator),
+          bind[DataRetrievalAction].toInstance(dataRetrieval(Some(Json.obj(AdviserAddressId.toString -> address)))),
+          bind[AuthAction].toInstance(FakeAuthAction())
         )) {
-          app =>
+          implicit app =>
 
             val controller = app.injector.instanceOf[AdviserManualAddressController]
-            val result = controller.onPageLoad(NormalMode, false)(FakeRequest())
+            val result = controller.onPageLoad(NormalMode, true)(FakeRequest())
 
             status(result) mustEqual OK
-            contentAsString(result) mustEqual ???
+            contentAsString(result) mustEqual viewAsString(Some(address), prepopulated = true, prefix = "adviser__address__confirm")
 
         }
       }
@@ -77,7 +86,9 @@ class AdviserManualAddressControllerSpec extends WordSpec with MustMatchers with
 
         running(_.overrides(
           bind[CountryOptions].to[FakeCountryOptions],
-          bind[Navigator].to(FakeNavigator)
+          bind[Navigator].to(FakeNavigator),
+          bind[DataRetrievalAction].toInstance(dataRetrieval()),
+          bind[AuthAction].toInstance(FakeAuthAction())
         )) {
           app =>
 
@@ -106,7 +117,9 @@ class AdviserManualAddressControllerSpec extends WordSpec with MustMatchers with
         running(_.overrides(
           bind[CountryOptions].to[FakeCountryOptions],
           bind[DataCacheConnector].to(FakeDataCacheConnector),
-          bind[Navigator].to(navigator)
+          bind[Navigator].to(navigator),
+          bind[DataRetrievalAction].toInstance(dataRetrieval()),
+          bind[AuthAction].toInstance(FakeAuthAction())
         )) {
           app =>
 
@@ -135,7 +148,9 @@ class AdviserManualAddressControllerSpec extends WordSpec with MustMatchers with
 
       running(_.overrides(
         bind[CountryOptions].to[FakeCountryOptions],
-        bind[Navigator].toInstance(FakeNavigator)
+        bind[Navigator].toInstance(FakeNavigator),
+        bind[DataRetrievalAction].toInstance(dataRetrieval()),
+        bind[AuthAction].toInstance(FakeAuthAction())
       )) {
         app =>
 
@@ -178,13 +193,14 @@ object AdviserManualAddressControllerSpec {
 
   val form: Form[Address] = new AdviserManualAddressFormProvider(new CountryOptions(countryOptions))()
 
-  def viewAsString(value: Option[Address], form: Form[Address] = form)(implicit app: Application): String = {
+  def viewAsString(value: Option[Address], form: Form[Address] = form, prepopulated: Boolean = false, prefix: String = messageKeyPrefix)
+                  (implicit app: Application): String = {
 
     val appConfig = app.injector.instanceOf[FrontendAppConfig]
     val request = FakeRequest()
     val messages = app.injector.instanceOf[MessagesApi].preferred(request)
 
-    adviserAddress(appConfig, form, NormalMode, countryOptions, false, messageKeyPrefix)(request, messages).toString()
+    adviserAddress(appConfig, form, NormalMode, countryOptions, prepopulated, prefix)(request, messages).toString()
 
   }
 
