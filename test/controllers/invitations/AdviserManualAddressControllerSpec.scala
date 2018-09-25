@@ -35,6 +35,8 @@ import views.html.invitations.adviserAddress
 
 class AdviserManualAddressControllerSpec extends WordSpec with MustMatchers with MockitoSugar with ScalaFutures with OptionValues {
 
+  import AdviserManualAddressControllerSpec._
+
   "get" must {
     "return OK with view" when {
       "data is not retrieved" in {
@@ -43,13 +45,13 @@ class AdviserManualAddressControllerSpec extends WordSpec with MustMatchers with
           bind[CountryOptions].to[FakeCountryOptions],
           bind[Navigator].to(FakeNavigator)
         )) {
-          app =>
+          implicit app =>
 
             val controller = app.injector.instanceOf[AdviserManualAddressController]
             val result = controller.onPageLoad(NormalMode, false)(FakeRequest())
 
             status(result) mustEqual OK
-            contentAsString(result) mustEqual ???
+            contentAsString(result) mustEqual viewAsString(Some(address), form)
 
         }
 
@@ -151,6 +153,15 @@ class AdviserManualAddressControllerSpec extends WordSpec with MustMatchers with
 }
 
 object AdviserManualAddressControllerSpec {
+
+  val address = Address(
+    "address line 1",
+    "address line 2",
+    Some("address line 3"),
+    Some("address line 4"),
+    Some("ZZ11ZZ"),
+    "GB"
+  )
 
   val addressData: Map[String, String] = Map(
     "addressLine1" -> "address line 1",

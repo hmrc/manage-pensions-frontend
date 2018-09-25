@@ -16,20 +16,41 @@
 
 package controllers.invitations
 
+import config.FrontendAppConfig
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import forms.invitations.AdviserManualAddressFormProvider
 import javax.inject.Inject
-import models.Mode
-import play.api.mvc.Action
+import models.{Address, Mode}
+import play.api.data.Form
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, AnyContent}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import utils.CountryOptions
+import views.html.invitations.adviserAddress
 
 class AdviserManualAddressController @Inject()(
+                                              authenticate: AuthAction,
+                                              getData: DataRetrievalAction,
+                                              requireData: DataRequiredAction,
+                                              appConfig: FrontendAppConfig,
+                                              formProvider: AdviserManualAddressFormProvider,
+                                              val messagesApi: MessagesApi,
+                                              countryOptions: CountryOptions
+                                              ) extends FrontendController with I18nSupport {
 
-                                       ) {
+  val form: Form[Address] = formProvider()
 
-  def onPageLoad(mode: Mode, prepopulated: Boolean) = Action {
+  def onPageLoad(mode: Mode, prepopulated: Boolean): Action[AnyContent] = (authenticate andThen getData andThen requireData) {
     implicit request =>
-      ???
+      val prefix = if(prepopulated){
+        "adviser__address__confirm"
+      } else {
+        "adviser__address"
+      }
+      Ok(adviserAddress(appConfig, form, mode, countryOptions.options, prepopulated, prefix))
   }
 
-  def onSubmit(mode: Mode, prepopulated: Boolean) = Action {
+  def onSubmit(mode: Mode, prepopulated: Boolean): Action[AnyContent] = (authenticate andThen getData andThen requireData) {
     implicit request =>
       ???
   }
