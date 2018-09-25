@@ -18,10 +18,11 @@ package controllers.invitations
 
 import config.FrontendAppConfig
 import connectors.{AddressLookupConnector, DataCacheConnector}
+import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.invitations.AdviserAddressPostcodeLookupFormProvider
 import identifiers.TypedIdentifier
-import identifiers.invitations.AdviserAddressPostCodeLookupId
+import identifiers.invitations.{AdviserAddressPostCodeLookupId, AdviserNameId}
 import javax.inject.Inject
 import models.requests.DataRequest
 import models.{NormalMode, TolerantAddress}
@@ -45,20 +46,24 @@ class AdviserAddressPostcodeLookupController @Inject()(val appConfig: FrontendAp
                                                        @AcceptInvitation navigator: Navigator,
                                                        val addressLookupConnector: AddressLookupConnector,
                                                        val cacheConnector: DataCacheConnector
-                                                      ) extends FrontendController with I18nSupport {
+                                                      ) extends FrontendController with I18nSupport with Retrievals {
 
 
   val form: Form[String] = formProvider()
 
-  def onPageLoad: Action[AnyContent] = (authenticate andThen getData andThen requireData) {
+  def onPageLoad: Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
-      Ok(adviserPostcode(appConfig, formProvider()))
+      AdviserNameId.retrieve.right.map{ name =>
+        Future.successful(Ok(adviserPostcode(appConfig, formProvider(), name)))
+      }
   }
 
   def onSubmit: Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
       form.bindFromRequest().fold( formWithErrors =>
-        Future.successful(BadRequest(adviserPostcode(appConfig, formWithErrors))),
+        AdviserNameId.retrieve.right.map { name =>
+          Future.successful(BadRequest(adviserPostcode(appConfig, formWithErrors, name)))
+        },
         lookup(AdviserAddressPostCodeLookupId)
       )
   }
@@ -69,7 +74,10 @@ class AdviserAddressPostcodeLookupController @Inject()(val appConfig: FrontendAp
 
     addressLookupConnector.addressLookupByPostCode(postcode).flatMap {
 
-      case Nil => Future.successful(Ok(adviserPostcode(appConfig, formWithError("messages__error__postcode__lookup__no__results"))))
+      case Nil =>
+        AdviserNameId.retrieve.right.map { name =>
+          Future.successful(Ok(adviserPostcode(appConfig, formWithError("messages__error__postcode__lookup__no__results"), name)))
+        }
 
       case addresses =>
         cacheConnector.save(
@@ -81,8 +89,9 @@ class AdviserAddressPostcodeLookupController @Inject()(val appConfig: FrontendAp
             Redirect(navigator.nextPage(id, NormalMode, UserAnswers(json)))
         }
     } recoverWith {
-      case _ =>
-        Future.successful(BadRequest(adviserPostcode(appConfig, formWithError("messages__error__postcode__lookup__invalid"))))
+      case _ => AdviserNameId.retrieve.right.map { name =>
+        Future.successful(BadRequest(adviserPostcode(appConfig, formWithError("messages__error__postcode__lookup__invalid"), name)))
+      }
     }
   }
 

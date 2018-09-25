@@ -20,7 +20,7 @@ import config.FrontendAppConfig
 import connectors.{AddressLookupConnector, DataCacheConnector}
 import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
 import forms.invitations.AdviserAddressPostcodeLookupFormProvider
-import identifiers.invitations.AdviserAddressPostCodeLookupId
+import identifiers.invitations.{AdviserAddressPostCodeLookupId, AdviserNameId}
 import models.TolerantAddress
 import org.mockito.Matchers.{eq => eqTo, _}
 import org.mockito.Mockito._
@@ -45,7 +45,7 @@ class AdviserAddressPostcodeLookupControllerSpec extends WordSpec with MustMatch
   import AdviserAddressPostcodeLookupControllerSpec._
 
   def dataRetrievalAction = new FakeDataRetrievalAction(Some(Json.obj(
-
+    AdviserNameId.toString -> name
   )))
 
   "get" must {
@@ -180,7 +180,7 @@ class AdviserAddressPostcodeLookupControllerSpec extends WordSpec with MustMatch
 object AdviserAddressPostcodeLookupControllerSpec {
 
   val postcode = "ZZ1 1ZZ"
-
+  val name = "Pension Adviser"
   val form = new AdviserAddressPostcodeLookupFormProvider()()
 
   def viewAsString(value: Option[String] = Some(postcode), form: Form[String] = form)(implicit app: Application): String = {
@@ -189,7 +189,7 @@ object AdviserAddressPostcodeLookupControllerSpec {
     val request = FakeRequest()
     val messages = app.injector.instanceOf[MessagesApi].preferred(request)
 
-    adviserPostcode(appConfig, form)(request, messages).toString()
+    adviserPostcode(appConfig, form, name)(request, messages).toString()
 
   }
 

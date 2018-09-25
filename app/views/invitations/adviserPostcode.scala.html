@@ -19,8 +19,9 @@
 @import controllers.routes._
 @import models.Mode
 @import controllers.invitations.routes._
+@import viewmodels.Message
 
-@(appConfig: FrontendAppConfig, form: Form[_])(implicit request: Request[_], messages: Messages)
+@(appConfig: FrontendAppConfig, form: Form[_], name: String)(implicit request: Request[_], messages: Messages)
 
 @main_template(
     title = s"${messages("messages__adviser__postcode__title")}",
@@ -33,11 +34,11 @@
 
         @components.error_summary(form.errors)
 
-        @components.heading("messages__adviser__postcode__heading")
+        @components.headingNew(Message("messages__adviser__postcode__heading", name))
 
         @components.input_text(
           field = form("adviserPostcode"),
-          label = messages("messages__adviser__postcode__heading"),
+          label = Message("messages__adviser__postcode__heading", name),
           labelClass=Some("visually-hidden")
         )
 
