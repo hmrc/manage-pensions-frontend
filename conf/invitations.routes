@@ -33,3 +33,4 @@ GET        /cannot-send-invite                          controllers.invitations.
 
 GET        /declaration                                 controllers.invitations.DeclarationController.onPageLoad()
 POST       /declaration                                 controllers.invitations.DeclarationController.onSubmit()
+
