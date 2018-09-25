@@ -19,6 +19,7 @@ package controllers.invitations
 import config.FrontendAppConfig
 import connectors.{AddressLookupConnector, DataCacheConnector}
 import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
+import controllers.invitations.AdviserAddressPostcodeLookupControllerSpec.form
 import forms.invitations.AdviserAddressPostcodeLookupFormProvider
 import identifiers.invitations.{AdviserAddressPostCodeLookupId, AdviserNameId}
 import models.TolerantAddress
@@ -143,9 +144,10 @@ class AdviserAddressPostcodeLookupControllerSpec extends WordSpec with MustMatch
 
             val controller = app.injector.instanceOf[AdviserAddressPostcodeLookupController]
             val result = controller.onSubmit()(FakeRequest().withFormUrlEncodedBody("value" -> invalidPostcode))
+            val invalidForm = form.bind(Map("value" -> invalidPostcode))
 
             status(result) mustEqual BAD_REQUEST
-            contentAsString(result) mustEqual viewAsString(Some(invalidPostcode), form.withError("value", "error.postcode.length"))
+            contentAsString(result) mustEqual viewAsString(Some(invalidPostcode), invalidForm)
         }
       }
     }
