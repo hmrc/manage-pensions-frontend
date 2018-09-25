@@ -40,9 +40,9 @@ import views.html.invitations.adviserPostcode
 
 import scala.concurrent.Future
 
-class AdviserAddressPostcodeControllerSpec extends WordSpec with MustMatchers with MockitoSugar with ScalaFutures with OptionValues {
+class AdviserAddressPostcodeLookupControllerSpec extends WordSpec with MustMatchers with MockitoSugar with ScalaFutures with OptionValues {
 
-  import AdviserAddressPostcodeControllerSpec._
+  import AdviserAddressPostcodeLookupControllerSpec._
 
   def dataRetrievalAction = new FakeDataRetrievalAction(Some(Json.obj(
 
@@ -58,7 +58,7 @@ class AdviserAddressPostcodeControllerSpec extends WordSpec with MustMatchers wi
       )) {
         implicit app =>
 
-          val controller = app.injector.instanceOf[AdviserAddressPostcodeController]
+          val controller = app.injector.instanceOf[AdviserAddressPostcodeLookupController]
           val result = controller.onPageLoad()(FakeRequest())
 
           status(result) mustEqual OK
@@ -89,7 +89,7 @@ class AdviserAddressPostcodeControllerSpec extends WordSpec with MustMatchers wi
       )) {
         app =>
 
-          val controller = app.injector.instanceOf[AdviserAddressPostcodeController]
+          val controller = app.injector.instanceOf[AdviserAddressPostcodeLookupController]
           val result = controller.onSubmit()(FakeRequest().withFormUrlEncodedBody("value" -> postcode))
 
           status(result) mustEqual SEE_OTHER
@@ -115,7 +115,7 @@ class AdviserAddressPostcodeControllerSpec extends WordSpec with MustMatchers wi
         )) {
           implicit app =>
 
-            val controller = app.injector.instanceOf[AdviserAddressPostcodeController]
+            val controller = app.injector.instanceOf[AdviserAddressPostcodeLookupController]
             val result = controller.onSubmit()(FakeRequest().withFormUrlEncodedBody("value" -> postcode))
 
             status(result) mustEqual BAD_REQUEST
@@ -141,7 +141,7 @@ class AdviserAddressPostcodeControllerSpec extends WordSpec with MustMatchers wi
         )) {
           implicit app =>
 
-            val controller = app.injector.instanceOf[AdviserAddressPostcodeController]
+            val controller = app.injector.instanceOf[AdviserAddressPostcodeLookupController]
             val result = controller.onSubmit()(FakeRequest().withFormUrlEncodedBody("value" -> invalidPostcode))
 
             status(result) mustEqual BAD_REQUEST
@@ -167,7 +167,7 @@ class AdviserAddressPostcodeControllerSpec extends WordSpec with MustMatchers wi
       )) {
         implicit app =>
 
-          val controller = app.injector.instanceOf[AdviserAddressPostcodeController]
+          val controller = app.injector.instanceOf[AdviserAddressPostcodeLookupController]
           val result = controller.onSubmit()(FakeRequest().withFormUrlEncodedBody("value" -> postcode))
 
           status(result) mustEqual OK
@@ -177,7 +177,7 @@ class AdviserAddressPostcodeControllerSpec extends WordSpec with MustMatchers wi
   }
 }
 
-object AdviserAddressPostcodeControllerSpec {
+object AdviserAddressPostcodeLookupControllerSpec {
 
   val postcode = "ZZ1 1ZZ"
 

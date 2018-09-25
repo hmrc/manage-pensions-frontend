@@ -36,16 +36,16 @@ import views.html.invitations.adviserPostcode
 
 import scala.concurrent.Future
 
-class AdviserAddressPostcodeController @Inject()(val appConfig: FrontendAppConfig,
-                                                 val messagesApi: MessagesApi,
-                                                 authenticate: AuthAction,
-                                                 getData: DataRetrievalAction,
-                                                 requireData: DataRequiredAction,
-                                                 formProvider: AdviserAddressPostcodeLookupFormProvider,
-                                                 @AcceptInvitation navigator: Navigator,
-                                                 val addressLookupConnector: AddressLookupConnector,
-                                                 val cacheConnector: DataCacheConnector
-                                                ) extends FrontendController with I18nSupport {
+class AdviserAddressPostcodeLookupController @Inject()(val appConfig: FrontendAppConfig,
+                                                       val messagesApi: MessagesApi,
+                                                       authenticate: AuthAction,
+                                                       getData: DataRetrievalAction,
+                                                       requireData: DataRequiredAction,
+                                                       formProvider: AdviserAddressPostcodeLookupFormProvider,
+                                                       @AcceptInvitation navigator: Navigator,
+                                                       val addressLookupConnector: AddressLookupConnector,
+                                                       val cacheConnector: DataCacheConnector
+                                                      ) extends FrontendController with I18nSupport {
 
 
   val form: Form[String] = formProvider()
