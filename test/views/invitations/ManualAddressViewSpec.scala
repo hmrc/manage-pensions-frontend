@@ -39,11 +39,12 @@ class ManualAddressViewSpec extends QuestionViewBehaviours[Address] {
       new ManualAddressFormProvider(FakeCountryOptions())(),
       NormalMode,
       countryOptions,
-      false
+      false,
+      messageKeyPrefix
     )(fakeRequest, messages)
 
   def createViewUsingForm: Form[_] => _root_.play.twirl.api.HtmlFormat.Appendable = (form: Form[_]) =>
-    manual_address(frontendAppConfig, form, NormalMode, countryOptions, false)(fakeRequest, messages)
+    manual_address(frontendAppConfig, form, NormalMode, countryOptions, false, messageKeyPrefix)(fakeRequest, messages)
 
   "ManualAddress view" must {
 
