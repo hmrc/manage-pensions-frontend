@@ -26,3 +26,5 @@ POST       /change-pension-adviser-name                 controllers.invitations.
 
 GET        /cannot-send-invite                          controllers.invitations.YouCannotSendAnInviteController.onPageLoad()
 
+GET        /psa-already-invited                         controllers.invitations.InvitationDuplicateController.onPageLoad()
+
