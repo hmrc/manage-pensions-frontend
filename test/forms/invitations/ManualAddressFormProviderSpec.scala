@@ -35,7 +35,7 @@ class ManualAddressFormProviderSpec extends FormBehaviours with FormSpec with Ad
   private val addressLine4 = alphaString()
   private val postCode = "ZZ1 1ZZ"
 
-  private val countryOptions = FakeCountryOptions()
+  private val countryOptions = new FakeCountryOptions(environment, frontendAppConfig)
 
   val validData: Map[String, String] = Map(
     "addressLine1" -> addressLine1,

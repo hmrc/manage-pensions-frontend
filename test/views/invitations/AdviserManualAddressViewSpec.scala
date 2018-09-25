@@ -28,23 +28,24 @@ import controllers.invitations.routes._
 class AdviserManualAddressViewSpec extends QuestionViewBehaviours[Address] {
 
   val messageKeyPrefix = "adviser__address"
-  val countryOptions: Seq[InputOption] = Seq(InputOption("AF", "Afghanistan"), InputOption("territory:AE-AZ", "Abu Dhabi"))
   val name: String = "name"
 
-  override val form = new AdviserManualAddressFormProvider(FakeCountryOptions())()
+  val countryOptions = new FakeCountryOptions(environment, frontendAppConfig)
+
+  override val form = new AdviserManualAddressFormProvider(countryOptions)()
 
   def createView: () => _root_.play.twirl.api.HtmlFormat.Appendable = () =>
     adviserAddress(
       frontendAppConfig,
-      new AdviserManualAddressFormProvider(FakeCountryOptions())(),
+      new AdviserManualAddressFormProvider(countryOptions)(),
       NormalMode,
-      countryOptions,
+      countryOptions.options,
       false,
       messageKeyPrefix
     )(fakeRequest, messages)
 
   def createViewUsingForm: Form[_] => _root_.play.twirl.api.HtmlFormat.Appendable = (form: Form[_]) =>
-    adviserAddress(frontendAppConfig, form, NormalMode, countryOptions, false, messageKeyPrefix)(fakeRequest, messages)
+    adviserAddress(frontendAppConfig, form, NormalMode, countryOptions.options, false, messageKeyPrefix)(fakeRequest, messages)
 
   "ManualAddress view" must {
 

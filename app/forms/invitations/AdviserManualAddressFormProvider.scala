@@ -21,7 +21,7 @@ import javax.inject.Inject
 import models.Address
 import play.api.data.Form
 import play.api.data.Forms.mapping
-import utils.CountryOptions
+import utils.countryOptions.CountryOptions
 
 class AdviserManualAddressFormProvider @Inject()(countryOptions: CountryOptions) extends AddressMapping {
 

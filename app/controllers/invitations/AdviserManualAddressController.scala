@@ -17,42 +17,73 @@
 package controllers.invitations
 
 import config.FrontendAppConfig
+import connectors.DataCacheConnector
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.invitations.AdviserManualAddressFormProvider
+import identifiers.invitations.{AdviserAddressId, AdviserAddressListId}
 import javax.inject.Inject
 import models.{Address, Mode}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import utils.CountryOptions
+import utils.annotations.AcceptInvitation
+import utils.countryOptions.CountryOptions
+import utils.{Navigator, UserAnswers}
 import views.html.invitations.adviserAddress
 
+import scala.concurrent.Future
+
 class AdviserManualAddressController @Inject()(
-                                              authenticate: AuthAction,
-                                              getData: DataRetrievalAction,
-                                              requireData: DataRequiredAction,
-                                              appConfig: FrontendAppConfig,
-                                              formProvider: AdviserManualAddressFormProvider,
-                                              val messagesApi: MessagesApi,
-                                              countryOptions: CountryOptions
+                                                authenticate: AuthAction,
+                                                getData: DataRetrievalAction,
+                                                requireData: DataRequiredAction,
+                                                appConfig: FrontendAppConfig,
+                                                formProvider: AdviserManualAddressFormProvider,
+                                                val messagesApi: MessagesApi,
+                                                countryOptions: CountryOptions,
+                                                cacheConnector: DataCacheConnector,
+                                                @AcceptInvitation navigator: Navigator
                                               ) extends FrontendController with I18nSupport {
 
   val form: Form[Address] = formProvider()
 
-  def onPageLoad(mode: Mode, prepopulated: Boolean): Action[AnyContent] = (authenticate andThen getData andThen requireData) {
+  def onPageLoad(mode: Mode, prepopulated: Boolean): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
-      val prefix = if(prepopulated){
+      val prefix = if (prepopulated) {
         "adviser__address__confirm"
       } else {
         "adviser__address"
       }
-      Ok(adviserAddress(appConfig, form, mode, countryOptions.options, prepopulated, prefix))
+
+      val preparedForm = request.userAnswers.get(AdviserAddressId) map form.fill getOrElse {
+        request.userAnswers.get(AdviserAddressListId) map { value =>
+          form.fill(value.toAddress)
+        } getOrElse form
+      }
+
+      Future.successful(Ok(adviserAddress(appConfig, preparedForm, mode, countryOptions.options, prepopulated, prefix)))
   }
 
-  def onSubmit(mode: Mode, prepopulated: Boolean): Action[AnyContent] = (authenticate andThen getData andThen requireData) {
+  def onSubmit(mode: Mode, prepopulated: Boolean): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
-      ???
+      val prefix = if (prepopulated) {
+        "adviser__address__confirm"
+      } else {
+        "adviser__address"
+      }
+      form.bindFromRequest().fold(
+        (formWithError: Form[_]) => Future.successful(BadRequest(adviserAddress(appConfig, formWithError, mode, countryOptions.options, prepopulated, prefix))),
+        address =>
+          cacheConnector.save(
+            request.externalId,
+            AdviserAddressId,
+            address
+          ).map {
+            cacheMap =>
+              Redirect(navigator.nextPage(AdviserAddressId, mode, UserAnswers(cacheMap)))
+          }
+      )
   }
 
 }

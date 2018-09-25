@@ -30,8 +30,6 @@ import views.html.invitations.haveYouEmployedPensionAdviser
 
 class HaveYouEmployedPensionAdviserControllerSpec extends ControllerSpecBase {
 
-  def onwardRoute = Call("GET", "/foo")
-
   val formProvider = new HaveYouEmployedPensionAdviserFormProvider()
   val form = formProvider()
 
@@ -39,7 +37,7 @@ class HaveYouEmployedPensionAdviserControllerSpec extends ControllerSpecBase {
     frontendAppConfig,
     FakeAuthAction(),
     messagesApi,
-    new FakeNavigator(onwardRoute),
+    FakeNavigator,
     formProvider,
     FakeDataCacheConnector,
     new FakeDataRetrievalAction(Some(Json.obj())),
@@ -63,7 +61,7 @@ class HaveYouEmployedPensionAdviserControllerSpec extends ControllerSpecBase {
       val result = controller.onSubmit(NormalMode)(postRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(onwardRoute.url)
+      redirectLocation(result) mustBe Some(FakeNavigator.desiredRoute.url)
     }
 
     "return a Bad Request and errors when invalid data is submitted" in {

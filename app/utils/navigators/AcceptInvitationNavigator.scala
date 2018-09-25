@@ -19,15 +19,14 @@ package utils.navigators
 import javax.inject.{Inject, Singleton}
 import connectors.DataCacheConnector
 import controllers.routes
-import identifiers.invitations.{AdviserNameId, HaveYouEmployedPensionAdviserId, PsaNameId}
+import identifiers.invitations.{AdviserAddressId, AdviserNameId, HaveYouEmployedPensionAdviserId, PsaNameId}
 import utils.Navigator
 
 @Singleton
 class AcceptInvitationNavigator @Inject()(val dataCacheConnector: DataCacheConnector) extends Navigator {
 
   override def routeMap(from: NavigateFrom): Option[NavigateTo] = from.id match {
-    case PsaNameId | HaveYouEmployedPensionAdviserId => NavigateTo.save(routes.IndexController.onPageLoad())
-    case AdviserNameId => NavigateTo.dontSave(routes.IndexController.onPageLoad())
+    case AdviserAddressId | AdviserNameId | PsaNameId | HaveYouEmployedPensionAdviserId => NavigateTo.dontSave(routes.IndexController.onPageLoad())
     case _ => NavigateTo.dontSave(controllers.routes.SessionExpiredController.onPageLoad())
   }
 

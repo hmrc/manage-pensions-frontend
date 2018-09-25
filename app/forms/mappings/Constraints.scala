@@ -17,7 +17,7 @@
 package forms.mappings
 
 import play.api.data.validation.{Constraint, Invalid, Valid}
-import utils.CountryOptions
+import utils.countryOptions.CountryOptions
 
 import scala.language.implicitConversions
 

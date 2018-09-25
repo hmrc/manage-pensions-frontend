@@ -20,7 +20,7 @@ import forms.FormSpec
 import forms.mappings.{AddressMapping, Constraints}
 import org.scalacheck.Gen
 import play.api.data.{Form, FormError}
-import utils.CountryOptions
+import utils.countryOptions.CountryOptions
 import wolfendale.scalacheck.regexp.RegexpGen
 
 trait AddressBehaviours extends FormSpec with StringFieldBehaviours with Constraints with AddressMapping {

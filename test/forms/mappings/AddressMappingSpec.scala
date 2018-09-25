@@ -95,7 +95,8 @@ class AddressMappingSpec extends AddressBehaviours {
 
     val keyRequired = "error.required"
     val keyInvalid = "error.invalid"
-    val countryOptions = FakeCountryOptions()
+    
+    val countryOptions = new FakeCountryOptions(environment, frontendAppConfig)
 
     val form = Form("country" -> countryMapping(countryOptions, keyRequired, keyInvalid))
 
