@@ -113,10 +113,10 @@ messages__invitationSuccess__schemeName = This is for {0}.
 messages__invitationSuccess__emailAdvice = {0} will be sent an email confirming your invitation.
 messages__invitationSuccess__expiryDate = They will have until {0} to accept the invitation. If the invitation is not accepted by this date, it will be deleted and you will have to invite the PSA again.
 
-messages__adviser__address__title = Pension adviser’s address
+messages__adviser__address__title = What is your pension adviser’s address?
 messages__adviser__address__heading = What is {0}’s address?
 
-messages__adviser__address__confirm__title = Pension adviser’s address
+messages__adviser__address__confirm__title = What is your pension adviser’s address?
 messages__adviser__address__confirm__heading = Confirm {0}’s address?
 
 messages__adviser__name__title = Who is your pension adviser?

@@ -20,7 +20,7 @@
 @import models._
 @import utils.InputOption
 
-@(appConfig: FrontendAppConfig, form: Form[_], mode: Mode, options: Seq[InputOption], prepopulated: Boolean, prefix: String)(implicit request: Request[_], messages: Messages)
+@(appConfig: FrontendAppConfig, form: Form[_], mode: Mode, options: Seq[InputOption], prepopulated: Boolean, prefix: String, name: String)(implicit request: Request[_], messages: Messages)
 
 @main_template(
     title = messages(s"messages__${prefix}__title"),
@@ -34,8 +34,8 @@
 
         @components.error_summary(form.errors)
 
-        @components.heading(
-            headingKey=messages(s"messages__${prefix}__heading")
+        @components.headingNew(
+            headingKey=messages(s"messages__${prefix}__heading", name)
         )
 
         <p>@messages("")</p>

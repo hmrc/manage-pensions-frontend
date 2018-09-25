@@ -28,7 +28,7 @@ import controllers.invitations.routes._
 class AdviserManualAddressViewSpec extends QuestionViewBehaviours[Address] {
 
   val messageKeyPrefix = "adviser__address"
-  val name: String = "name"
+  val name: String = "Pension Adviser"
 
   val countryOptions = new FakeCountryOptions(environment, frontendAppConfig)
 
@@ -41,15 +41,16 @@ class AdviserManualAddressViewSpec extends QuestionViewBehaviours[Address] {
       NormalMode,
       countryOptions.options,
       false,
-      messageKeyPrefix
+      messageKeyPrefix,
+      name
     )(fakeRequest, messages)
 
   def createViewUsingForm: Form[_] => _root_.play.twirl.api.HtmlFormat.Appendable = (form: Form[_]) =>
-    adviserAddress(frontendAppConfig, form, NormalMode, countryOptions.options, false, messageKeyPrefix)(fakeRequest, messages)
+    adviserAddress(frontendAppConfig, form, NormalMode, countryOptions.options, false, messageKeyPrefix, name)(fakeRequest, messages)
 
   "ManualAddress view" must {
 
-    behave like normalPage(createView, messageKeyPrefix, messages(s"messages__${messageKeyPrefix}__heading"))
+    behave like normalPage(createView, messageKeyPrefix, messages(s"messages__${messageKeyPrefix}__heading", name))
 
     behave like pageWithBackLink(createView)
 

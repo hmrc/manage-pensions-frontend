@@ -20,7 +20,7 @@ import config.FrontendAppConfig
 import connectors.{DataCacheConnector, FakeDataCacheConnector}
 import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
 import forms.invitations.AdviserManualAddressFormProvider
-import identifiers.invitations.{AdviserAddressId, AdviserAddressListId}
+import identifiers.invitations.{AdviserAddressId, AdviserAddressListId, AdviserNameId}
 import models.{Address, NormalMode, TolerantAddress}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
@@ -29,7 +29,7 @@ import play.api.Application
 import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.inject.bind
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import utils.annotations.AcceptInvitation
@@ -41,7 +41,9 @@ class AdviserManualAddressControllerSpec extends WordSpec with MustMatchers with
 
   import AdviserManualAddressControllerSpec._
 
-  def dataRetrieval(data: Option[JsValue] = Some(Json.obj())) = new FakeDataRetrievalAction(data)
+  def dataRetrieval(data: Option[JsValue] = Some(Json.obj())) = new FakeDataRetrievalAction(
+    data.map( _.as[JsObject] ++ Json.obj(AdviserNameId.toString -> name) )
+  )
 
   "get" must {
     "return OK with view" when {
@@ -166,6 +168,8 @@ class AdviserManualAddressControllerSpec extends WordSpec with MustMatchers with
 
 object AdviserManualAddressControllerSpec {
 
+  val name = "Pension Adviser"
+
   val tolerantAddress = TolerantAddress(
     Some("address line 1"),
     Some("address line 2"),
@@ -194,10 +198,9 @@ object AdviserManualAddressControllerSpec {
                   (implicit app: Application): String = {
 
     val appConfig = app.injector.instanceOf[FrontendAppConfig]
-    val request = FakeRequest()
-    val messages = app.injector.instanceOf[MessagesApi].preferred(request)
+    val messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
-    adviserAddress(appConfig, form, NormalMode, countryOptions, prepopulated, prefix)(request, messages).toString()
+    adviserAddress(appConfig, form, NormalMode, countryOptions, prepopulated, prefix, name)(FakeRequest(), messages).toString()
 
   }
 

@@ -18,9 +18,10 @@ package controllers.invitations
 
 import config.FrontendAppConfig
 import connectors.DataCacheConnector
+import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.invitations.AdviserManualAddressFormProvider
-import identifiers.invitations.{AdviserAddressId, AdviserAddressListId}
+import identifiers.invitations.{AdviserAddressId, AdviserAddressListId, AdviserNameId}
 import javax.inject.Inject
 import models.{Address, Mode}
 import play.api.data.Form
@@ -44,36 +45,45 @@ class AdviserManualAddressController @Inject()(
                                                 countryOptions: CountryOptions,
                                                 cacheConnector: DataCacheConnector,
                                                 @AcceptInvitation navigator: Navigator
-                                              ) extends FrontendController with I18nSupport {
+                                              ) extends FrontendController with I18nSupport with Retrievals {
 
   val form: Form[Address] = formProvider()
 
   def onPageLoad(mode: Mode, prepopulated: Boolean): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
-      val prefix = if (prepopulated) {
-        "adviser__address__confirm"
-      } else {
-        "adviser__address"
+
+      AdviserNameId.retrieve.right.map { name =>
+
+        val prefix = if (prepopulated) {
+          "adviser__address__confirm"
+        } else {
+          "adviser__address"
+        }
+
+        val preparedForm = request.userAnswers.get(AdviserAddressId) map form.fill getOrElse {
+          request.userAnswers.get(AdviserAddressListId) map { value =>
+            form.fill(value.toAddress)
+          } getOrElse form
+        }
+
+        Future.successful(Ok(adviserAddress(appConfig, preparedForm, mode, countryOptions.options, prepopulated, prefix, name)))
       }
 
-      val preparedForm = request.userAnswers.get(AdviserAddressId) map form.fill getOrElse {
-        request.userAnswers.get(AdviserAddressListId) map { value =>
-          form.fill(value.toAddress)
-        } getOrElse form
-      }
-
-      Future.successful(Ok(adviserAddress(appConfig, preparedForm, mode, countryOptions.options, prepopulated, prefix)))
   }
 
   def onSubmit(mode: Mode, prepopulated: Boolean): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
+
       val prefix = if (prepopulated) {
         "adviser__address__confirm"
       } else {
         "adviser__address"
       }
+
       form.bindFromRequest().fold(
-        (formWithError: Form[_]) => Future.successful(BadRequest(adviserAddress(appConfig, formWithError, mode, countryOptions.options, prepopulated, prefix))),
+        (formWithError: Form[_]) => AdviserNameId.retrieve.right.map { name =>
+          Future.successful(BadRequest(adviserAddress(appConfig, formWithError, mode, countryOptions.options, prepopulated, prefix, name)))
+        },
         address =>
           cacheConnector.save(
             request.externalId,
@@ -84,6 +94,7 @@ class AdviserManualAddressController @Inject()(
               Redirect(navigator.nextPage(AdviserAddressId, mode, UserAnswers(cacheMap)))
           }
       )
+
   }
 
 }
