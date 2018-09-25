@@ -17,6 +17,7 @@
 package views.invitations
 
 import base.SpecBase
+import org.jsoup.Jsoup
 import play.twirl.api.HtmlFormat
 import viewmodels.Message
 import views.behaviours.ViewBehaviours
@@ -34,8 +35,17 @@ class InvitationDuplicateSpec extends ViewBehaviours {
       Message("messages__invitationDuplicate__heading", testInviteeName)
     )
 
-    "state the scheme name" in {
-      createView(this) must haveElementWithText("schemeName", Message("messages__invitationDuplicate__schemeName", testSchemeName))
+    "state the scheme and invitee names" in {
+      createView(this) must haveElementWithText("schemeName", Message("messages__invitationDuplicate__schemeName", testInviteeName, testSchemeName))
+    }
+
+    "state invite information text" in {
+      createView(this) must haveElementWithText("inviteInformation", Message("messages__invitationDuplicate__inviteInformation"))
+    }
+
+    "have link to return to your pension schemes" in {
+      Jsoup.parse(createView(this).toString()).select("a[id=return-to-schemes]") must
+        haveLink(controllers.routes.ListSchemesController.onPageLoad().url)
     }
   }
 }

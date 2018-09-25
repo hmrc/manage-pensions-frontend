@@ -41,7 +41,6 @@ class InvitationDuplicateController @Inject()(
   def onPageLoad(): Action[AnyContent] = (authenticate andThen getData andThen requireData) {
     implicit request =>
 
-
       (for {
         psaName <- request.userAnswers.get(PsaNameId)
         schemeDetail <- request.userAnswers.get(SchemeDetailId)

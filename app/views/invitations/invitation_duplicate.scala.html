@@ -21,17 +21,14 @@
 @(appConfig: FrontendAppConfig, inviteeName: String, schemeName: String)(implicit request: Request[_], messages: Messages)
 
 @main_template(
-title = messages("messages__invitationDuplicate__title"),
-appConfig = appConfig,
-bodyClasses = None
-) {
+    title = messages("messages__invitationDuplicate__title"),
+    appConfig = appConfig,
+    bodyClasses = None) {
 
-    <div class="govuk-box-highlight">
-        @components.heading(Messages("messages__invitationDuplicate__heading", inviteeName))
-    </div>
+    @components.heading(Messages("messages__invitationDuplicate__heading", inviteeName))
 
-    <p id="schemeName">@Messages("messages__invitationDuplicate__schemeName", schemeName)</p>
-
+    <p id="schemeName">@Messages("messages__invitationDuplicate__schemeName", inviteeName, schemeName)</p>
     <p id="inviteInformation">@Messages("messages__invitationDuplicate__inviteInformation")</p>
 
+    <p><a id="return-to-schemes" href="@controllers.routes.ListSchemesController.onPageLoad()">@messages("messages__invitationDuplicate__returnToSchemes__link")</a></p>
 }

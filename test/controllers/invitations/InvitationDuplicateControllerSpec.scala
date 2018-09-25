@@ -63,7 +63,6 @@ class InvitationDuplicateControllerSpec extends ControllerSpecBase {
   }
 }
 
-// scalastyle:off magic.number
 
 object InvitationDuplicateControllerSpec {
 
