@@ -21,25 +21,31 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import config.FrontendAppConfig
+import controllers.Retrievals
 import identifiers.SchemeDetailId
 import play.api.mvc.{Action, AnyContent}
 import views.html.invitations.invitationAccepted
+
+import scala.concurrent.Future
 
 class InvitationAcceptedController @Inject()(appConfig: FrontendAppConfig,
                                         override val messagesApi: MessagesApi,
                                         authenticate: AuthAction,
                                         getData: DataRetrievalAction,
-                                        requireData: DataRequiredAction) extends FrontendController with I18nSupport {
+                                        requireData: DataRequiredAction) extends FrontendController with Retrievals with I18nSupport {
 
 
-  def onPageLoad: Action[AnyContent] = (authenticate andThen getData andThen requireData) {
+  def onPageLoad: Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
 
-      val schemeName = request.userAnswers.get(SchemeDetailId).map(_.schemeName)
+//      val schemeName = request.userAnswers.get(SchemeDetailId).map(_.schemeName)
 
-      Ok(invitationAccepted(
-        appConfig,
-        schemeName
-      ))
+      SchemeDetailId.retrieve.right.map{
+        schemeDetails =>
+          Future.successful(Ok(invitationAccepted(
+            appConfig,
+            schemeDetails.schemeName
+          )))
+      }
   }
 }

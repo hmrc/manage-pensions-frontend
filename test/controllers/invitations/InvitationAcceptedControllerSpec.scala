@@ -42,13 +42,36 @@ class InvitationAcceptedControllerSpec extends ControllerSpecBase {
         new DataRequiredActionImpl
       )
 
-  def viewAsString(): String = invitationAccepted(frontendAppConfig, Some(testSchemeName))(fakeRequest, messages).toString
+  def viewAsString(): String = invitationAccepted(frontendAppConfig, testSchemeName)(fakeRequest, messages).toString
 
   "InvitationAccepted Controller" must {
     "return OK with correct content on GET" in {
       val result = controller().onPageLoad(fakeRequest)
       status(result) mustBe OK
       contentAsString(result) mustBe viewAsString()
+    }
+
+    "return 303 if required data is missing" in {
+
+      val result = controller(getEmptyData).onPageLoad(fakeRequest)
+      status(result) mustBe SEE_OTHER
+//      contentAsString(result) mustBe viewAsString()
+      redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad.url)
+    }
+
+    "return 303 if user action is not authenticated" in {
+
+      val controller = new InvitationAcceptedController(
+        frontendAppConfig,
+        messagesApi,
+        FakeUnAuthorisedAction(),
+        getEmptyData,
+        new DataRequiredActionImpl
+      )
+      val result = controller.onPageLoad(fakeRequest)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad.url)
     }
   }
 }
