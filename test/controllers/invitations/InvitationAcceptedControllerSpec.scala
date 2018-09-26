@@ -18,18 +18,31 @@ package controllers.invitations
 
 import controllers.ControllerSpecBase
 import controllers.actions._
+import identifiers.SchemeDetailId
+import models.MinimalSchemeDetail
+import play.api.libs.json.{JsObject, Json}
 import play.api.test.Helpers._
 import views.html.invitations.invitationAccepted
 
 class InvitationAcceptedControllerSpec extends ControllerSpecBase {
 
-  def controller(dataRetrievalAction: DataRetrievalAction = getEmptyData): InvitationAcceptedController =
-    new InvitationAcceptedController(frontendAppConfig, messagesApi, FakeAuthAction(),
-      dataRetrievalAction, new DataRequiredActionImpl)
+  val testSchemeName = "test-scheme-name"
 
-  val testSchemeName = "Test Scheme Name"
+  val validData: JsObject = Json.obj(
+    SchemeDetailId.toString -> Json.toJson(MinimalSchemeDetail("srn", Some("pstr"), testSchemeName))
+  )
 
-  private def viewAsString() = invitationAccepted(frontendAppConfig, testSchemeName)(fakeRequest, messages).toString
+  def controller(dataRetrievalAction: DataRetrievalAction =
+    new FakeDataRetrievalAction(Some(validData))): InvitationAcceptedController =
+      new InvitationAcceptedController(
+        frontendAppConfig,
+        messagesApi,
+        FakeAuthAction(),
+        dataRetrievalAction,
+        new DataRequiredActionImpl
+      )
+
+  def viewAsString(): String = invitationAccepted(frontendAppConfig, Some(testSchemeName))(fakeRequest, messages).toString
 
   "InvitationAccepted Controller" must {
     "return OK with correct content on GET" in {

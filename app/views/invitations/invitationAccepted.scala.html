@@ -20,7 +20,7 @@
 @import models.Mode
 @import viewmodels.Message
 
-@(appConfig: FrontendAppConfig, schemeName: String)(implicit request: Request[_], messages: Messages)
+@(appConfig: FrontendAppConfig, schemeName: Option[String])(implicit request: Request[_], messages: Messages)
 
 @main_template(
     title = messages("messages__invitationAccepted__title"),

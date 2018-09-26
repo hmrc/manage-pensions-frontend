@@ -21,6 +21,7 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import config.FrontendAppConfig
+import identifiers.SchemeDetailId
 import play.api.mvc.{Action, AnyContent}
 import views.html.invitations.invitationAccepted
 
@@ -34,9 +35,8 @@ class InvitationAcceptedController @Inject()(appConfig: FrontendAppConfig,
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData andThen requireData) {
     implicit request =>
 
-      val schemeName = "Test Scheme Name"
+      val schemeName = request.userAnswers.get(SchemeDetailId).map(_.schemeName)
 
-      // todo: pass real scheme name instead of placeholder
       Ok(invitationAccepted(
         appConfig,
         schemeName

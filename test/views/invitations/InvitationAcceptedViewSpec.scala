@@ -24,7 +24,7 @@ import views.html.invitations.invitationAccepted
 class InvitationAcceptedViewSpec extends ViewBehaviours {
 
   val messageKeyPrefix = "invitationAccepted"
-  val testSchemeName = "Test Scheme Name"
+  val testSchemeName = Some("Test Scheme Name")
 
   def createView: () => HtmlFormat.Appendable = () =>
     invitationAccepted(
