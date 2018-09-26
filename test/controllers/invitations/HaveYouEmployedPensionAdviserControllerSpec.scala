@@ -16,7 +16,7 @@
 
 package controllers.invitations
 
-import connectors.FakeDataCacheConnector
+import connectors.FakeUserAnswersCacheConnector
 import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.invitations.HaveYouEmployedPensionAdviserFormProvider
@@ -38,14 +38,14 @@ class HaveYouEmployedPensionAdviserControllerSpec extends ControllerWithQuestion
 
     new HaveYouEmployedPensionAdviserController(
       frontendAppConfig, fakeAuth, messagesApi, navigator,formProvider,
-      FakeDataCacheConnector, dataRetrievalAction, requiredDateAction).onPageLoad(NormalMode)
+      FakeUserAnswersCacheConnector, dataRetrievalAction, requiredDateAction).onPageLoad(NormalMode)
   }
 
   private def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
     new HaveYouEmployedPensionAdviserController(
       frontendAppConfig, fakeAuth, messagesApi, navigator, formProvider,
-      FakeDataCacheConnector, dataRetrievalAction, requiredDateAction).onSubmit(NormalMode)
+      FakeUserAnswersCacheConnector, dataRetrievalAction, requiredDateAction).onSubmit(NormalMode)
   }
 
  def viewAsString(form: Form[Boolean] = form) = haveYouEmployedPensionAdviser(frontendAppConfig, form, NormalMode)(fakeRequest, messages).toString

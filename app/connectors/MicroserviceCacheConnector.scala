@@ -35,7 +35,7 @@ class MicroserviceCacheConnector @Inject()(
                                             config: FrontendAppConfig,
                                             http: WSClient,
                                             crypto: ApplicationCrypto
-                                          ) extends DataCacheConnector {
+                                          ) extends UserAnswersCacheConnector {
 
   protected def url(id: String) = s"${config.pensionsSchemeUrl}/pensions-scheme/journey-cache/scheme/$id"
 
@@ -61,23 +61,19 @@ class MicroserviceCacheConnector @Inject()(
     modify(cacheId, _.remove(id))
   }
 
-  private def modify(cacheId: String, modification: UserAnswers => JsResult[UserAnswers])
-                    (implicit
-                     ec: ExecutionContext,
-                     hc: HeaderCarrier
-                    ): Future[JsValue] = {
+  private[connectors] def modify(cacheId: String, modification: (UserAnswers) => JsResult[UserAnswers])
+                                (implicit
+                                 ec: ExecutionContext,
+                                 hc: HeaderCarrier
+                                ): Future[JsValue] = {
 
     fetch(cacheId).flatMap {
       json =>
         modification(UserAnswers(json.getOrElse(Json.obj()))) match {
           case JsSuccess(UserAnswers(updatedJson), _) =>
-
-            val decrypted = PlainText(Json.stringify(updatedJson))
-            val encrypted = crypto.JsonCrypto.encrypt(decrypted)
-
             http.url(url(cacheId))
-              .withHeaders(hc.headers: _*)
-              .post(encrypted.value).flatMap {
+              .withHeaders(hc.withExtraHeaders(("content-type", "application/json")).headers: _*)
+              .post(PlainText(Json.stringify(updatedJson)).value).flatMap {
               response =>
                 response.status match {
                   case OK =>
@@ -99,20 +95,18 @@ class MicroserviceCacheConnector @Inject()(
 
     http.url(url(id))
       .withHeaders(hc.headers: _*)
-      .get().flatMap {
-      response =>
-        response.status match {
-          case NOT_FOUND =>
-            Future.successful(None)
-          case OK => {
-            val decrypted = crypto.JsonCrypto.decrypt(Crypted(response.body))
-            Logger.debug(s"connectors.MicroserviceCacheConnector.fetch: Successful response: $decrypted")
-            Future.successful(Some(Json.parse(decrypted.value)))
+      .get()
+      .flatMap {
+        response =>
+          response.status match {
+            case NOT_FOUND =>
+              Future.successful(None)
+            case OK =>
+              Future.successful(Some(Json.parse(response.body)))
+            case _ =>
+              Future.failed(new HttpException(response.body, response.status))
           }
-          case _ =>
-            Future.failed(new HttpException(response.body, response.status))
-        }
-    }
+      }
   }
 
   override def removeAll(id: String)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[Result] = {

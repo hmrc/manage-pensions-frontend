@@ -16,15 +16,15 @@
 
 package controllers.invitations
 
-import connectors.FakeDataCacheConnector
-import controllers.actions._
+import connectors.FakeUserAnswersCacheConnector
+import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction, _}
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.invitations.AdviserDetailsFormProvider
 import identifiers.invitations.AdviserNameId
 import models.NormalMode
 import play.api.data.Form
 import play.api.test.FakeRequest
-import utils.UserAnswers
+import utils.{FakeNavigator, UserAnswers}
 import views.html.invitations.adviserDetails
 
 class AdviserDetailsControllerSpec extends ControllerWithQuestionPageBehaviours {
@@ -37,15 +37,16 @@ class AdviserDetailsControllerSpec extends ControllerWithQuestionPageBehaviours 
   private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
     new AdviserDetailsController(
-      frontendAppConfig, messagesApi, fakeAuth, navigator,
-      dataRetrievalAction, requiredDateAction, formProvider,FakeDataCacheConnector).onPageLoad(NormalMode)
+      frontendAppConfig, messagesApi,fakeAuth, new FakeNavigator(onwardRoute), dataRetrievalAction,
+      requiredDateAction, formProvider, FakeUserAnswersCacheConnector).onPageLoad(NormalMode)
   }
+
 
   private def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
     new AdviserDetailsController(
-      frontendAppConfig, messagesApi, fakeAuth, navigator,
-      dataRetrievalAction, requiredDateAction, formProvider, FakeDataCacheConnector).onSubmit(NormalMode)
+      frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction,
+      requiredDateAction, formProvider, FakeUserAnswersCacheConnector).onSubmit(NormalMode)
   }
 
   private def viewAsString(form: Form[_] = form) = adviserDetails(frontendAppConfig, form, NormalMode)(fakeRequest, messages).toString

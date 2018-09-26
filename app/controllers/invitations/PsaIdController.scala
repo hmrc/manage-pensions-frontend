@@ -18,7 +18,7 @@ package controllers.invitations
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
-import connectors.DataCacheConnector
+import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
 import controllers.actions._
 import forms.invitations.PsaIdFromProvider
@@ -39,7 +39,7 @@ class PsaIdController @Inject()(appConfig: FrontendAppConfig,
                                 override val messagesApi: MessagesApi,
                                 authenticate: AuthAction,
                                 @Invitation navigator: Navigator,
-                                dataCacheConnector: DataCacheConnector,
+                                dataCacheConnector: UserAnswersCacheConnector,
                                 getData: DataRetrievalAction,
                                 requireData: DataRequiredAction,
                                 formProvider: PsaIdFromProvider) extends FrontendController with Retrievals with I18nSupport {
