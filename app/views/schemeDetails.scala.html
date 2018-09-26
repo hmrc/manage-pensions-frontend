@@ -40,7 +40,7 @@
 
     @admins.map { admins =>
     <h2>@messages("messages__schemeDetails__psa_list_head")</h2>
-        <ul>
+        <ul class = "list list-bullet">
             @for(psa <- admins){
                 <li>@psa</li>
             }
