@@ -23,9 +23,9 @@ import viewmodels.Message
 import views.behaviours.ViewBehaviours
 import views.html.invitations.invitation_duplicate
 
-class InvitationDuplicateSpec extends ViewBehaviours {
+class InvitationDuplicateViewSpec extends ViewBehaviours {
 
-  import InvitationDuplicateSpec._
+  import InvitationDuplicateViewSpec._
 
   "Invitation Success Page" must {
 
@@ -43,14 +43,13 @@ class InvitationDuplicateSpec extends ViewBehaviours {
       createView(this) must haveElementWithText("inviteInformation", Message("messages__invitationDuplicate__inviteInformation"))
     }
 
-    "have link to return to your pension schemes" in {
-      Jsoup.parse(createView(this).toString()).select("a[id=return-to-schemes]") must
-        haveLink(controllers.routes.ListSchemesController.onPageLoad().url)
+    "must have link to list schemes page" in {
+      createView(this) must haveElementWithText("return-to-schemes", Message("messages__invitationDuplicate__returnToSchemes__link"))
     }
   }
 }
 
-object InvitationDuplicateSpec {
+object InvitationDuplicateViewSpec {
 
   val testInviteeName: String = "Joe Bloggs"
   val testSchemeName: String = "Test Scheme Ltd"

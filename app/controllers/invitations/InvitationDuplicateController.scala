@@ -17,6 +17,7 @@
 package controllers.invitations
 
 import config.FrontendAppConfig
+import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import identifiers.SchemeDetailId
 import identifiers.invitations.PsaNameId
@@ -28,6 +29,8 @@ import utils.Navigator
 import utils.annotations.Invitation
 import views.html.invitations.invitation_duplicate
 
+import scala.concurrent.Future
+
 
 class InvitationDuplicateController @Inject()(
                                                override val messagesApi: MessagesApi,
@@ -36,22 +39,19 @@ class InvitationDuplicateController @Inject()(
                                                getData: DataRetrievalAction,
                                                requireData: DataRequiredAction,
                                                @Invitation navigator: Navigator
-                                             ) extends FrontendController with I18nSupport {
 
-  def onPageLoad(): Action[AnyContent] = (authenticate andThen getData andThen requireData) {
+                                             ) extends FrontendController with I18nSupport with Retrievals {
+
+  def onPageLoad(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
-
-      (for {
-        psaName <- request.userAnswers.get(PsaNameId)
-        schemeDetail <- request.userAnswers.get(SchemeDetailId)
-      } yield {
-        Ok(invitation_duplicate(
-          frontendAppConfig,
-          psaName,
-          schemeDetail.schemeName
-        ))
-      }) getOrElse {
-        Redirect(controllers.routes.SessionExpiredController.onPageLoad())
+      (PsaNameId and SchemeDetailId).retrieve.right.map {
+        case name ~ schemeDetails =>
+          Future.successful(
+            Ok(invitation_duplicate(
+              frontendAppConfig,
+              name,
+              schemeDetails.schemeName
+            )))
       }
   }
 }
