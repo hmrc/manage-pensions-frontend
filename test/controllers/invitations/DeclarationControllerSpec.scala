@@ -16,7 +16,7 @@
 
 package controllers.invitations
 
-import connectors.FakeDataCacheConnector
+import connectors.FakeUserAnswersCacheConnector
 import controllers.ControllerSpecBase
 import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
 import forms.invitations.DeclarationFormProvider
@@ -38,7 +38,7 @@ class DeclarationControllerSpec extends ControllerSpecBase {
     FakeAuthAction(),
     dataRetrievalAction,
     new DataRequiredActionImpl,
-    FakeDataCacheConnector,
+    FakeUserAnswersCacheConnector,
     new FakeNavigator(onwardRoute)
   )
 
@@ -85,7 +85,7 @@ class DeclarationControllerSpec extends ControllerSpecBase {
         val result = controller(data).onSubmit()(fakeRequest.withFormUrlEncodedBody("agree" -> "agreed"))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).value mustBe onwardRoute.url
-        FakeDataCacheConnector.verify(DeclarationId, true)
+        FakeUserAnswersCacheConnector.verify(DeclarationId, true)
       }
 
       "return Bad Request if invalid data is submitted" in {

@@ -18,7 +18,7 @@ package controllers.invitations
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
-import connectors.DataCacheConnector
+import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.invitations.DeclarationFormProvider
@@ -41,7 +41,7 @@ class DeclarationController @Inject()(
                                        auth: AuthAction,
                                        getData: DataRetrievalAction,
                                        requireData: DataRequiredAction,
-                                       dataCacheConnector: DataCacheConnector,
+                                       dataCacheConnector: UserAnswersCacheConnector,
                                        @AcceptInvitation navigator: Navigator
                                      ) extends FrontendController with I18nSupport with Retrievals {
   val form: Form[Boolean] = formProvider()
