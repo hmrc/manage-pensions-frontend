@@ -45,5 +45,6 @@ class PODSModule extends AbstractModule {
     bind(classOf[Navigator])
       .annotatedWith(classOf[AcceptInvitation])
       .to(classOf[AcceptInvitationNavigator])
+
   }
 }

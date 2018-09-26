@@ -16,7 +16,7 @@
 
 package utils
 
-import connectors.FakeDataCacheConnector
+import connectors.FakeUserAnswersCacheConnector
 import identifiers.{Identifier, LastPageId}
 import models.requests.IdentifiedRequest
 import models.{CheckMode, LastPage, NormalMode}
@@ -41,7 +41,7 @@ trait NavigatorBehaviour extends PropertyChecks with OptionValues {
   //scalastyle:off regex
   def navigatorWithRoutes[A <: Identifier, B <: Option[Call]](
                                                                navigator: Navigator,
-                                                               dataCacheConnector: FakeDataCacheConnector,
+                                                               dataCacheConnector: FakeUserAnswersCacheConnector,
                                                                routes: TableFor6[A, UserAnswers, Call, Boolean, B, Boolean],
                                                                describer: UserAnswers => String
                                                              ): Unit = {
