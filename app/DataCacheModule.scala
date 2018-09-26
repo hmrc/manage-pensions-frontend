@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import connectors.{UserAnswersCacheConnector, MicroserviceCacheConnector}
-import connectors.cache.microservice.{InvitationsCacheConnector, ManagePensionsCacheConnector, PensionsSchemeCacheConnector}
+import connectors.cache.microservice.PensionsSchemeCacheConnector
+import connectors.{ManagePensionsCacheConnector, UserAnswersCacheConnector}
 import play.api.inject.{Binding, Module}
 import play.api.{Configuration, Environment}
-import play.api.{Configuration, Environment, Logger}
-import utils.annotations.{InvitationsCache, PensionsSchemeCache}
+import utils.annotations.PensionsSchemeCache
 
 class DataCacheModule extends Module {
 
@@ -29,6 +28,6 @@ class DataCacheModule extends Module {
       bind[UserAnswersCacheConnector].to[ManagePensionsCacheConnector],
       bind[UserAnswersCacheConnector].qualifiedWith(classOf[PensionsSchemeCache]).to[PensionsSchemeCacheConnector]
     )
-
   }
 }
+
