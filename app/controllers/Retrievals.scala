@@ -29,15 +29,6 @@ trait Retrievals {
 
   this: FrontendController =>
 
-  private[controllers] def retrieve[A](id: TypedIdentifier[A])
-                                      (f: (A) => Future[Result])
-                                      (implicit request: DataRequest[AnyContent], r: Reads[A]): Future[Result] = {
-    request.userAnswers.get(id).map(f).getOrElse {
-      Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
-    }
-
-  }
-
   case class ~[A, B](a: A, b: B)
 
   trait Retrieval[A] {
