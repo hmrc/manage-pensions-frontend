@@ -8,8 +8,8 @@ site.confirm = Confirm
 site.yes = Yes
 site.no = No
 
-checkYourAnswers.title = Check Your Answers
-checkYourAnswers.heading = Check Your Answers
+checkYourAnswers.title = Check your answers
+checkYourAnswers.heading = Check your answers
 
 error.summary.title = There was a problem with the page
 
