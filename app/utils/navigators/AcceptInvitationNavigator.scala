@@ -16,7 +16,7 @@
 
 package utils.navigators
 
-import connectors.DataCacheConnector
+import connectors.UserAnswersCacheConnector
 import controllers.routes
 import identifiers.invitations.{AdviserEmailId, AdviserNameId, HaveYouEmployedPensionAdviserId, PsaNameId}
 import javax.inject.{Inject, Singleton}
@@ -24,7 +24,7 @@ import models.NormalMode
 import utils.Navigator
 
 @Singleton
-class AcceptInvitationNavigator @Inject()(val dataCacheConnector: DataCacheConnector) extends Navigator {
+class AcceptInvitationNavigator @Inject()(val dataCacheConnector: UserAnswersCacheConnector) extends Navigator {
 
   override def routeMap(from: NavigateFrom): Option[NavigateTo] = from.id match {
     case PsaNameId | HaveYouEmployedPensionAdviserId => NavigateTo.save(routes.IndexController.onPageLoad())

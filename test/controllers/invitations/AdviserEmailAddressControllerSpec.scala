@@ -16,7 +16,7 @@
 
 package controllers.invitations
 
-import connectors.FakeDataCacheConnector
+import connectors.FakeUserAnswersCacheConnector
 import controllers.ControllerSpecBase
 import controllers.actions._
 import forms.invitations.AdviserEmailFormProvider
@@ -42,7 +42,7 @@ class AdviserEmailAddressControllerSpec extends ControllerSpecBase {
 
   def controller(dataRetrievalAction: DataRetrievalAction = minimalAdviserData) = new AdviserEmailAddressController(
     frontendAppConfig, messagesApi, FakeAuthAction(), new FakeNavigator(onwardRoute), dataRetrievalAction, new DataRequiredActionImpl, formProvider,
-    FakeDataCacheConnector
+    FakeUserAnswersCacheConnector
   )
 
   private def viewAsString(form: Form[_] = form) = adviserEmailAddress(frontendAppConfig, form, NormalMode, "test name")(fakeRequest, messages).toString
@@ -81,7 +81,7 @@ class AdviserEmailAddressControllerSpec extends ControllerSpecBase {
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(onwardRoute.url)
-        FakeDataCacheConnector.verify(AdviserEmailId, "test@test.com")
+        FakeUserAnswersCacheConnector.verify(AdviserEmailId, "test@test.com")
       }
 
       "return a Bad Request and errors if invalid data is submitted" in {

@@ -16,14 +16,14 @@
 
 package connectors
 
-import com.fasterxml.jackson.core.JsonParseException
 import com.github.tomakehurst.wiremock.client.WireMock._
 import identifiers.TypedIdentifier
 import org.scalatest.{AsyncWordSpec, MustMatchers, OptionValues}
+import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.mvc.Results._
 import play.api.test.Helpers._
-import uk.gov.hmrc.crypto.{ApplicationCrypto, PlainText}
+import uk.gov.hmrc.crypto.PlainText
 import uk.gov.hmrc.http.{HeaderCarrier, HttpException}
 import utils.WireMockHelper
 
@@ -43,8 +43,8 @@ class MicroserviceCacheConnectorSpec extends AsyncWordSpec with MustMatchers wit
 
   protected def lastUpdatedUrl(id: String) = s"/pensions-scheme/journey-cache/scheme/$id/lastUpdated"
 
-  protected lazy val connector: DataCacheConnector = injector.instanceOf[MicroserviceCacheConnector]
-  protected lazy val crypto = injector.instanceOf[ApplicationCrypto].JsonCrypto
+  protected lazy val connector: UserAnswersCacheConnector = injector.instanceOf[MicroserviceCacheConnector]
+
 
   ".fetch" must {
 
@@ -63,14 +63,11 @@ class MicroserviceCacheConnectorSpec extends AsyncWordSpec with MustMatchers wit
       }
     }
 
-    "return decrypted data when the server returns 200" in {
-
-      val plaintext = PlainText("{}")
-
+    "return data when the server returns 200" in {
       server.stubFor(
         get(urlEqualTo(url("foo")))
           .willReturn(
-            ok(crypto.encrypt(plaintext).value)
+            ok("{}")
           )
       )
 
@@ -78,23 +75,6 @@ class MicroserviceCacheConnectorSpec extends AsyncWordSpec with MustMatchers wit
         result =>
           result.value mustEqual Json.obj()
       }
-    }
-
-    "return a failed future when the body can't be transformed into json" in {
-
-      val plaintext = PlainText("foobar")
-
-      server.stubFor(
-        get(urlEqualTo(url("foo")))
-          .willReturn(
-            ok(crypto.encrypt(plaintext).value)
-          )
-      )
-
-      recoverToSucceededIf[JsonParseException] {
-        connector.fetch("foo")
-      }
-
     }
 
     "return a failed future on upstream error" in {
@@ -109,7 +89,142 @@ class MicroserviceCacheConnectorSpec extends AsyncWordSpec with MustMatchers wit
       recoverToExceptionIf[HttpException] {
         connector.fetch("foo")
       } map {
-        _.responseCode mustEqual INTERNAL_SERVER_ERROR
+        _.responseCode mustEqual Status.INTERNAL_SERVER_ERROR
+      }
+
+    }
+  }
+
+  ".save" must {
+
+    "insert when no data exists" in {
+
+      val json = Json.obj(
+        "fake-identifier" -> "foobar"
+      )
+
+      val value = Json.stringify(json)
+
+      server.stubFor(
+        get(urlEqualTo(url("foo")))
+          .willReturn(
+            notFound
+          )
+      )
+
+      server.stubFor(
+        post(urlEqualTo(url("foo")))
+          .withRequestBody(equalTo(value))
+          .willReturn(
+            ok
+          )
+      )
+
+      connector.save("foo", FakeIdentifier, "foobar") map {
+        _ mustEqual json
+      }
+    }
+
+    "add fields to existing data" in {
+
+      val json = Json.obj(
+        "foo" -> "bar"
+      )
+
+      val updatedJson = Json.obj(
+        "foo" -> "bar",
+        "fake-identifier" -> "foobar"
+      )
+
+      val value = Json.stringify(json)
+      val updatedValue = Json.stringify(updatedJson)
+
+      server.stubFor(
+        get(urlEqualTo(url("foo")))
+          .willReturn(
+            ok(value)
+          )
+      )
+
+      server.stubFor(
+        post(urlEqualTo(url("foo")))
+          .withRequestBody(equalTo(updatedValue))
+          .willReturn(
+            ok
+          )
+      )
+
+      connector.save("foo", FakeIdentifier, "foobar") map {
+        _ mustEqual updatedJson
+      }
+    }
+
+    "update existing data" in {
+
+      val json = Json.obj(
+        "fake-identifier" -> "foo"
+      )
+
+      val updatedJson = Json.obj(
+        "fake-identifier" -> "foobar"
+      )
+
+      val value = Json.stringify(json)
+      val updatedValue = Json.stringify(updatedJson)
+
+      server.stubFor(
+        get(urlEqualTo(url("foo")))
+          .willReturn(
+            ok(value)
+          )
+      )
+
+      server.stubFor(
+        post(urlEqualTo(url("foo")))
+          .withRequestBody(equalTo(updatedValue))
+          .willReturn(
+            ok
+          )
+      )
+
+      connector.save("foo", FakeIdentifier, "foobar") map {
+        _ mustEqual updatedJson
+      }
+    }
+
+    "return a failed future on upstream error" in {
+
+      val json = Json.obj(
+        "fake-identifier" -> "foo"
+      )
+
+      val updatedJson = Json.obj(
+        "fake-identifier" -> "foobar"
+      )
+
+      val value = Json.stringify(json)
+      val updatedValue = Json.stringify(updatedJson)
+
+      server.stubFor(
+        get(urlEqualTo(url("foo")))
+          .willReturn(
+            ok(value)
+          )
+      )
+
+      server.stubFor(
+        post(urlEqualTo(url("foo")))
+          .withRequestBody(equalTo(updatedValue))
+          .willReturn(
+            serverError
+          )
+      )
+
+
+      recoverToExceptionIf[HttpException] {
+        connector.save("foo", FakeIdentifier, "foobar")
+      } map {
+        _.responseCode mustEqual Status.INTERNAL_SERVER_ERROR
       }
 
     }
@@ -171,140 +286,6 @@ class MicroserviceCacheConnectorSpec extends AsyncWordSpec with MustMatchers wit
     }
   }
 
-  ".save" must {
-
-    "insert when no data exists" in {
-
-      val json = Json.obj(
-        "fake-identifier" -> "foobar"
-      )
-
-      val cryptoText = crypto.encrypt(PlainText(Json.stringify(json))).value
-
-      server.stubFor(
-        get(urlEqualTo(url("foo")))
-          .willReturn(
-            notFound
-          )
-      )
-
-      server.stubFor(
-        post(urlEqualTo(url("foo")))
-          .withRequestBody(equalTo(cryptoText))
-          .willReturn(
-            ok
-          )
-      )
-
-      connector.save("foo", FakeIdentifier, "foobar") map {
-        _ mustEqual json
-      }
-    }
-
-    "add fields to existing data" in {
-
-      val json = Json.obj(
-        "foo" -> "bar"
-      )
-
-      val updatedJson = Json.obj(
-        "foo" -> "bar",
-        "fake-identifier" -> "foobar"
-      )
-
-      val cryptoText = crypto.encrypt(PlainText(Json.stringify(json))).value
-      val updatedCrypto = crypto.encrypt(PlainText(Json.stringify(updatedJson))).value
-
-      server.stubFor(
-        get(urlEqualTo(url("foo")))
-          .willReturn(
-            ok(cryptoText)
-          )
-      )
-
-      server.stubFor(
-        post(urlEqualTo(url("foo")))
-          .withRequestBody(equalTo(updatedCrypto))
-          .willReturn(
-            ok
-          )
-      )
-
-      connector.save("foo", FakeIdentifier, "foobar") map {
-        _ mustEqual updatedJson
-      }
-    }
-
-    "update existing data" in {
-
-      val json = Json.obj(
-        "fake-identifier" -> "foo"
-      )
-
-      val updatedJson = Json.obj(
-        "fake-identifier" -> "foobar"
-      )
-
-      val cryptoText = crypto.encrypt(PlainText(Json.stringify(json))).value
-      val updatedCrypto = crypto.encrypt(PlainText(Json.stringify(updatedJson))).value
-
-      server.stubFor(
-        get(urlEqualTo(url("foo")))
-          .willReturn(
-            ok(cryptoText)
-          )
-      )
-
-      server.stubFor(
-        post(urlEqualTo(url("foo")))
-          .withRequestBody(equalTo(updatedCrypto))
-          .willReturn(
-            ok
-          )
-      )
-
-      connector.save("foo", FakeIdentifier, "foobar") map {
-        _ mustEqual updatedJson
-      }
-    }
-
-    "return a failed future on upstream error" in {
-
-      val json = Json.obj(
-        "fake-identifier" -> "foo"
-      )
-
-      val updatedJson = Json.obj(
-        "fake-identifier" -> "foobar"
-      )
-
-      val cryptoText = crypto.encrypt(PlainText(Json.stringify(json))).value
-      val updatedCrypto = crypto.encrypt(PlainText(Json.stringify(updatedJson))).value
-
-      server.stubFor(
-        get(urlEqualTo(url("foo")))
-          .willReturn(
-            ok(cryptoText)
-          )
-      )
-
-      server.stubFor(
-        post(urlEqualTo(url("foo")))
-          .withRequestBody(equalTo(updatedCrypto))
-          .willReturn(
-            serverError
-          )
-      )
-
-      recoverToExceptionIf[HttpException] {
-        connector.save("foo", FakeIdentifier, "foobar")
-      } map {
-        _.responseCode mustEqual INTERNAL_SERVER_ERROR
-      }
-
-    }
-  }
-
   ".remove" must {
     "remove existing data" in {
       val json = Json.obj(
@@ -316,19 +297,19 @@ class MicroserviceCacheConnectorSpec extends AsyncWordSpec with MustMatchers wit
         "other-key" -> "meh"
       )
 
-      val cryptoText = crypto.encrypt(PlainText(Json.stringify(json))).value
-      val updatedCrypto = crypto.encrypt(PlainText(Json.stringify(updatedJson))).value
+      val value = Json.stringify(json)
+      val updatedValue = Json.stringify(updatedJson)
 
       server.stubFor(
         get(urlEqualTo(url("foo")))
           .willReturn(
-            ok(cryptoText)
+            ok(value)
           )
       )
 
       server.stubFor(
         post(urlEqualTo(url("foo")))
-          .withRequestBody(equalTo(updatedCrypto))
+          .withRequestBody(equalTo(updatedValue))
           .willReturn(
             ok
           )

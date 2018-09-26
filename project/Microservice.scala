@@ -41,7 +41,7 @@ trait MicroService {
     )
     .settings(
       ScoverageKeys.coverageExcludedFiles := "<empty>;Reverse.*;.*filters.*;.*handlers.*;.*components.*;.*models.*;.*repositories.*;" +
-        ".*BuildInfo.*;.*javascript.*;.*FrontendAuditConnector.*;.*Routes.*;.*GuiceInjector;.*DataCacheConnector;" +
+        ".*BuildInfo.*;.*javascript.*;.*FrontendAuditConnector.*;.*Routes.*;.*GuiceInjector;.*UserAnswersCacheConnector;" +
         ".*ControllerConfiguration;.*LanguageSwitchController",
       ScoverageKeys.coverageMinimum := 75,
       ScoverageKeys.coverageFailOnMinimum := true,

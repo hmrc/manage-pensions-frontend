@@ -17,7 +17,7 @@
 package controllers
 
 import config.FrontendAppConfig
-import connectors.{DataCacheConnector, MinimalPsaConnector}
+import connectors.{UserAnswersCacheConnector, MinimalPsaConnector}
 import controllers.actions._
 import javax.inject.Inject
 import models.requests.OptionalDataRequest
@@ -28,13 +28,14 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.{JsError, JsResultException, JsSuccess, JsValue}
 import play.api.mvc.{Action, AnyContent, Result}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import utils.annotations.PensionsSchemeCache
 import views.html.schemesOverview
 
 import scala.concurrent.Future
 
 class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
                                           override val messagesApi: MessagesApi,
-                                          dataCacheConnector: DataCacheConnector,
+                                          @PensionsSchemeCache dataCacheConnector: UserAnswersCacheConnector,
                                           minimalPsaConnector: MinimalPsaConnector,
                                           authenticate: AuthAction,
                                           getData: DataRetrievalAction) extends FrontendController with I18nSupport {

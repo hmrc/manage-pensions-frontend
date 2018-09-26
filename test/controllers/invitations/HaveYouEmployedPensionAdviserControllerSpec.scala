@@ -16,7 +16,7 @@
 
 package controllers.invitations
 
-import connectors.FakeDataCacheConnector
+import connectors.FakeUserAnswersCacheConnector
 import controllers.ControllerSpecBase
 import controllers.actions._
 import forms.invitations.HaveYouEmployedPensionAdviserFormProvider
@@ -41,7 +41,7 @@ class HaveYouEmployedPensionAdviserControllerSpec extends ControllerSpecBase {
     messagesApi,
     new FakeNavigator(onwardRoute),
     formProvider,
-    FakeDataCacheConnector,
+    FakeUserAnswersCacheConnector,
     new FakeDataRetrievalAction(Some(Json.obj())),
     new DataRequiredActionImpl
   )

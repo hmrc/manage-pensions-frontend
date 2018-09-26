@@ -18,7 +18,7 @@ package controllers.invitations
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
-import connectors.DataCacheConnector
+import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.invitations.AdviserEmailFormProvider
@@ -42,7 +42,7 @@ class AdviserEmailAddressController @Inject()(
                                                getData: DataRetrievalAction,
                                                requireData: DataRequiredAction,
                                                formProvider: AdviserEmailFormProvider,
-                                               dataCacheConnector: DataCacheConnector
+                                               dataCacheConnector: UserAnswersCacheConnector
                                              ) extends FrontendController with I18nSupport with Retrievals {
 
 
