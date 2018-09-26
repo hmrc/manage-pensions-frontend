@@ -30,9 +30,9 @@ messages__youNeedToRegister__p2__link = pension scheme practitioner
 messages__youNeedToRegister__button = Register as a pension scheme administrator
 messages__youNeedToRegister__govUk__link = Exit to GOV.UK
 
-messages__youCannotSendAnInvite__title = You cannot send an invite
-messages__youCannotSendAnInvite__heading = You cannot send an invite
-messages__youCannotSendAnInvite__p1 = You cannot invite another PSA to administer a scheme at the moment.
+messages__youCannotSendAnInvite__title = An invite cannot be sent
+messages__youCannotSendAnInvite__heading = An invite cannot be sent
+messages__youCannotSendAnInvite__p1 = An invite cannot be sent to another PSA to administer a scheme at the moment.
 messages__youCannotSendAnInvite__p2 = You need to phone Pension Scheme Services on 0300 123 1079.
 messages__youCannotSendAnInvite__returnToSchemes__link = Return to your pension schemes
 
