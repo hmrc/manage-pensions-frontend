@@ -51,15 +51,14 @@ class InvitationAcceptedControllerSpec extends ControllerSpecBase {
       contentAsString(result) mustBe viewAsString()
     }
 
-    "return 303 if required data is missing" in {
+    "redirect to session expired if required data is missing" in {
 
       val result = controller(getEmptyData).onPageLoad(fakeRequest)
       status(result) mustBe SEE_OTHER
-//      contentAsString(result) mustBe viewAsString()
       redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad.url)
     }
 
-    "return 303 if user action is not authenticated" in {
+    "redirect to unauthorised if user action is not authenticated" in {
 
       val controller = new InvitationAcceptedController(
         frontendAppConfig,

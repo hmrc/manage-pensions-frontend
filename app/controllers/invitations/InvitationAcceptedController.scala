@@ -38,8 +38,6 @@ class InvitationAcceptedController @Inject()(appConfig: FrontendAppConfig,
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
 
-//      val schemeName = request.userAnswers.get(SchemeDetailId).map(_.schemeName)
-
       SchemeDetailId.retrieve.right.map{
         schemeDetails =>
           Future.successful(Ok(invitationAccepted(
