@@ -27,7 +27,6 @@ class DataCacheModule extends Module {
 
     Seq(
       bind[UserAnswersCacheConnector].to[ManagePensionsCacheConnector],
-      bind[UserAnswersCacheConnector].qualifiedWith(classOf[InvitationsCache]).to[InvitationsCacheConnector],
       bind[UserAnswersCacheConnector].qualifiedWith(classOf[PensionsSchemeCache]).to[PensionsSchemeCacheConnector]
     )
 

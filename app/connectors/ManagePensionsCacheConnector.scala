@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package connectors.cache.microservice
+package connectors
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
