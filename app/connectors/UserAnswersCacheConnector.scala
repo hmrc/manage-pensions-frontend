@@ -25,7 +25,7 @@ import utils.UserAnswers
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait DataCacheConnector {
+trait UserAnswersCacheConnector {
 
   def save[A, I <: TypedIdentifier[A]](id: I, value: A)
                                       (implicit

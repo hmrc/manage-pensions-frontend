@@ -16,7 +16,7 @@
 
 package utils
 
-import connectors.{DataCacheConnector, FakeDataCacheConnector}
+import connectors.{UserAnswersCacheConnector, FakeUserAnswersCacheConnector}
 import identifiers.{LastPageId, TypedIdentifier}
 import models.requests.IdentifiedRequest
 import models.{CheckMode, LastPage, NormalMode}
@@ -93,7 +93,7 @@ object NavigatorSpec {
   val testSaveId: TypedIdentifier[Nothing] = new TypedIdentifier[Nothing] {}
   val testNotSaveId: TypedIdentifier[Nothing] = new TypedIdentifier[Nothing] {}
 
-  class TestNavigator(val dataCacheConnector: DataCacheConnector) extends Navigator {
+  class TestNavigator(val dataCacheConnector: UserAnswersCacheConnector) extends Navigator {
 
     override protected def routeMap(from: NavigateFrom): Option[NavigateTo] =
       from.id match {
@@ -112,13 +112,13 @@ object NavigatorSpec {
   }
 
   trait TestFixture {
-    def dataCacheConnector: FakeDataCacheConnector
+    def dataCacheConnector: FakeUserAnswersCacheConnector
 
     def navigator: TestNavigator
   }
 
   def testFixture(): TestFixture = new TestFixture {
-    override val dataCacheConnector: FakeDataCacheConnector = new FakeDataCacheConnector {}
+    override val dataCacheConnector: FakeUserAnswersCacheConnector = new FakeUserAnswersCacheConnector {}
     override val navigator: TestNavigator = new TestNavigator(dataCacheConnector)
   }
 

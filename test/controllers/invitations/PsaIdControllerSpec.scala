@@ -16,7 +16,7 @@
 
 package controllers.invitations
 
-import connectors.FakeDataCacheConnector
+import connectors.FakeUserAnswersCacheConnector
 import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.invitations.PsaIdFromProvider
@@ -38,14 +38,14 @@ class PsaIdControllerSpec extends ControllerWithQuestionPageBehaviours {
   def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
     new PsaIdController(
-      frontendAppConfig, messagesApi, fakeAuth, navigator, FakeDataCacheConnector,
+      frontendAppConfig, messagesApi, fakeAuth, navigator, FakeUserAnswersCacheConnector,
       dataRetrievalAction, requiredDateAction, formProvider).onPageLoad(NormalMode)
   }
 
   def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
     new PsaIdController(
-      frontendAppConfig, messagesApi, fakeAuth, navigator, FakeDataCacheConnector,
+      frontendAppConfig, messagesApi, fakeAuth, navigator, FakeUserAnswersCacheConnector,
       dataRetrievalAction, requiredDateAction, formProvider).onSubmit(NormalMode)
   }
 
