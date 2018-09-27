@@ -19,7 +19,7 @@ package utils.navigators
 import base.SpecBase
 import connectors.FakeUserAnswersCacheConnector
 import identifiers.Identifier
-import identifiers.invitations.AdviserNameId
+import identifiers.invitations.{AdviserNameId, DeclarationId}
 import org.scalatest.OptionValues
 import org.scalatest.prop.TableFor6
 import play.api.libs.json.Json
@@ -34,7 +34,8 @@ class AcceptInvitationNavigatorSpec extends SpecBase with NavigatorBehaviour {
 
   def routes(): TableFor6[Identifier, UserAnswers, Call, Boolean, Option[Call], Boolean] = Table(
     ("Id",              "User Answers",     "Next Page (NormalMode)",     "Save(NormalMode)",   "Next Page (CheckMode)", "Save(CheckMode"),
-    (AdviserNameId,      emptyAnswers,       index,                         false,                   None,                   false       )
+    (AdviserNameId,      emptyAnswers,       index,                         false,                   None,                   false       ),
+    (DeclarationId,      emptyAnswers,       index,                         false,                   None,                   false       )
   )
 
   navigator.getClass.getSimpleName must {

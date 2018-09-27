@@ -24,12 +24,6 @@ import play.api.data.{Form, FormError}
 
 trait BooleanFieldBehaviours extends FieldBehaviours with OptionValues with GeneratorDrivenPropertyChecks {
 
-  def nonBooleans: Gen[String] =
-    arbitrary[String]
-      .suchThat(_.nonEmpty)
-      .suchThat(_ != "true")
-      .suchThat(_ != "false")
-
   def booleanField(form: Form[_],
                    fieldName: String,
                    invalidError: FormError): Unit = {

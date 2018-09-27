@@ -16,39 +16,24 @@
 
 package controllers.invitations
 
-import controllers.ControllerSpecBase
 import controllers.actions._
-import identifiers.invitations.PsaNameId
-import play.api.libs.json.Json
-import play.api.test.Helpers._
+import controllers.behaviours.ControllerWithNormalPageBehaviours
+import utils.UserAnswers
 import views.html.invitations.incorrectPsaDetails
 
-class IncorrectPsaDetailsControllerSpec extends ControllerSpecBase {
+class IncorrectPsaDetailsControllerSpec extends ControllerWithNormalPageBehaviours {
 
-  "IncorrectPsaDetails Controller" must {
+  val invitee = "PSA"
+  val userAnswer = UserAnswers().inviteeName(invitee)
 
-    val invitee = "PSA"
-    val FakeDataRetrieval = new FakeDataRetrievalAction(Some(Json.obj(
-      PsaNameId.toString -> invitee
-    )))
-    val DataRequiredAction = new DataRequiredActionImpl()
+  def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
-    val controller = new IncorrectPsaDetailsController(
-      frontendAppConfig,
-      messagesApi,
-      FakeAuthAction(),
-      FakeDataRetrieval,
-      DataRequiredAction
-    )
-
-    "return 200 for a GET" in {
-      val result = controller.onPageLoad()(fakeRequest)
-      status(result) mustBe OK
-    }
-
-    "return the correct view for a GET" in {
-      val result = controller.onPageLoad()(fakeRequest)
-      contentAsString(result) mustBe incorrectPsaDetails(frontendAppConfig, invitee)(fakeRequest, messages).toString
-    }
+    new IncorrectPsaDetailsController(
+      frontendAppConfig, messagesApi, fakeAuth, dataRetrievalAction, requiredDateAction).onPageLoad()
   }
+
+  def viewAsString() = incorrectPsaDetails(frontendAppConfig, invitee)(fakeRequest, messages).toString
+
+  behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, Some(userAnswer.dataRetrievalAction), viewAsString)
+
 }
