@@ -16,10 +16,11 @@
 
 package controllers
 
-import connectors.ListOfSchemesConnector
-import controllers.actions.{FakeAuthAction, AuthAction}
+import connectors.{InvitationsCacheConnector, ListOfSchemesConnector}
+import controllers.actions.{AuthAction, FakeAuthAction}
 import models.requests.AuthenticatedRequest
 import models.{ListOfSchemes, SchemeDetail}
+import org.scalatest.mockito.MockitoSugar
 import play.api.mvc.{Request, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.PsaId
@@ -84,10 +85,11 @@ object ListSchemesControllerSpec {
       )
     )
 
-  def testFixture(app: ControllerSpecBase, psaId: String): TestFixture = new TestFixture {
+  def testFixture(app: ControllerSpecBase, psaId: String): TestFixture = new TestFixture with MockitoSugar {
 
     private def authAction(psaId: String): AuthAction = FakeAuthAction.createWithPsaId(psaId)
 
+    private def mockInvitationsCacheConnector(): InvitationsCacheConnector = mock[InvitationsCacheConnector]
     private def listSchemesConnector(): ListOfSchemesConnector = new ListOfSchemesConnector {
 
       override def getListOfSchemes(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[ListOfSchemes] = {
@@ -119,12 +121,13 @@ object ListSchemesControllerSpec {
         app.frontendAppConfig,
         app.messagesApi,
         authAction(psaId),
-        listSchemesConnector()
+        listSchemesConnector(),
+        mockInvitationsCacheConnector
       )
 
   }
 
   def viewAsString(app: ControllerSpecBase, schemes: List[SchemeDetail]): String =
-    list_schemes(app.frontendAppConfig, schemes)(app.fakeRequest, app.messages).toString()
+    list_schemes(app.frontendAppConfig, schemes, false)(app.fakeRequest, app.messages).toString()
 
 }

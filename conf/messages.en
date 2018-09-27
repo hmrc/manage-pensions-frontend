@@ -37,6 +37,7 @@ messages__session_expired__title = For your security, this service has been rese
 messages__session_expired__guidance = The details you have given have been deleted because you did not continue the service for 1 hour.
 
 messages__listSchemes__title = Your pension schemes
+messages__listSchemes__invitations_link = You have received an invitation to administer a scheme
 messages__listSchemes__open__heading = Schemes that have been opened
 messages__listSchemes__not_open__heading = Schemes that have not been opened
 messages__listSchemes__noSchemes = You have not registered any pension schemes in this service.

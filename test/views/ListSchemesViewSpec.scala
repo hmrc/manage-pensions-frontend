@@ -17,7 +17,7 @@
 package views
 
 import config.FrontendAppConfig
-import models.SchemeDetail
+import models.{Invitation, SchemeDetail}
 import play.api.i18n.Messages
 import play.api.mvc.Request
 import play.twirl.api.HtmlFormat
@@ -35,6 +35,11 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
     behave like normalPage(view(frontendAppConfig), "listSchemes", messages("messages__listSchemes__title"))
 
     behave like pageWithBackLink(view(frontendAppConfig))
+
+    "display a link to invitations page if user has received invitations" in {
+      view(frontendAppConfig, invitationsReceived = true) must haveLink(controllers.routes.ListSchemesController.onPageLoad().url, "invitations-received")
+    }
+
 
     "display a suitable message when there are no schemes to display" in {
       view(frontendAppConfig) must haveElementWithText("noSchemes", messages("messages__listSchemes__noSchemes"))
@@ -372,9 +377,9 @@ object ListSchemesViewSpec {
   )
 
 
-  def view(appConfig: FrontendAppConfig, schemes: List[SchemeDetail] = emptyList)
+  def view(appConfig: FrontendAppConfig, schemes: List[SchemeDetail] = emptyList, invitationsReceived: Boolean = false)
           (implicit request: Request[_], messages: Messages): () => HtmlFormat.Appendable =
-    () => list_schemes(appConfig, schemes)
+    () => list_schemes(appConfig, schemes, invitationsReceived)
 
   def viewAsString(appConfig: FrontendAppConfig, schemes: List[SchemeDetail] = emptyList)
                   (implicit request: Request[_], messages: Messages): String = {
