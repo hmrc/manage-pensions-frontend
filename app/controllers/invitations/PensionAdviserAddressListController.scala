@@ -17,7 +17,7 @@
 package controllers.invitations
 
 import config.FrontendAppConfig
-import connectors.DataCacheConnector
+import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.invitations.PensionAdviserAddressListFormProvider
@@ -28,7 +28,7 @@ import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import utils.annotations.{AcceptInvitation, Invitation}
+import utils.annotations.AcceptInvitation
 import utils.{Navigator, UserAnswers}
 import views.html.invitations.pension_adviser_address_list
 
@@ -41,7 +41,7 @@ class PensionAdviserAddressListController @Inject()(
                                                      requireData: DataRequiredAction,
                                                      formProvider: PensionAdviserAddressListFormProvider,
                                                      val messagesApi: MessagesApi,
-                                                     val cacheConnector: DataCacheConnector,
+                                                     val cacheConnector: UserAnswersCacheConnector,
                                                      @AcceptInvitation navigator: Navigator
                                                    ) extends FrontendController with Retrievals with I18nSupport {
 
