@@ -18,7 +18,7 @@
 @import models.SchemeDetail
 @import views.formatters.Date
 
-@(appConfig: FrontendAppConfig, schemes: List[SchemeDetail])(implicit request: Request[_], messages: Messages)
+@(appConfig: FrontendAppConfig, schemes: List[SchemeDetail], invitationsReceived: Boolean)(implicit request: Request[_], messages: Messages)
 
 @main_template(
     title = messages("messages__listSchemes__title"),
@@ -28,6 +28,10 @@
     @components.back_link()
 
     @components.heading(headingKey = "messages__listSchemes__title")
+
+    @if(invitationsReceived) {
+        <p><a id="invitations-received" href="@routes.ListSchemesController.onPageLoad()">@messages("messages__listSchemes__invitations_link")</a></p>
+    }
 
     @if(schemes.isEmpty) {
         <div class="column-two-thirds">
