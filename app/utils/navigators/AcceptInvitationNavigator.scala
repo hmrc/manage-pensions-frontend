@@ -17,13 +17,13 @@
 package utils.navigators
 
 import javax.inject.{Inject, Singleton}
-import connectors.DataCacheConnector
+import connectors.UserAnswersCacheConnector
 import controllers.routes
 import identifiers.invitations.{AdviserAddressListId, AdviserNameId, HaveYouEmployedPensionAdviserId, PsaNameId}
 import utils.Navigator
 
 @Singleton
-class AcceptInvitationNavigator @Inject()(val dataCacheConnector: DataCacheConnector) extends Navigator {
+class AcceptInvitationNavigator @Inject()(val dataCacheConnector: UserAnswersCacheConnector) extends Navigator {
 
   override def routeMap(from: NavigateFrom): Option[NavigateTo] = from.id match {
     case PsaNameId | HaveYouEmployedPensionAdviserId => NavigateTo.save(routes.IndexController.onPageLoad())

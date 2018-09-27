@@ -19,7 +19,7 @@ package controllers.invitations
 import javax.inject.Inject
 
 import config.FrontendAppConfig
-import connectors.DataCacheConnector
+import connectors.UserAnswersCacheConnector
 import controllers.actions._
 import forms.invitations.PsaNameFormProvider
 import identifiers.invitations.PsaNameId
@@ -36,7 +36,7 @@ import scala.concurrent.Future
 
 class PsaNameController @Inject()(appConfig: FrontendAppConfig,
                                    override val messagesApi: MessagesApi,
-                                   dataCacheConnector: DataCacheConnector,
+                                   dataCacheConnector: UserAnswersCacheConnector,
                                    @Invitation navigator: Navigator,
                                    authenticate: AuthAction,
                                    getData: DataRetrievalAction,

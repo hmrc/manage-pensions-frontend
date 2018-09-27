@@ -17,7 +17,7 @@
 package controllers
 
 import config.FrontendAppConfig
-import connectors.{DataCacheConnector, MicroserviceCacheConnector, MinimalPsaConnector}
+import connectors.{UserAnswersCacheConnector, MicroserviceCacheConnector, MinimalPsaConnector}
 import controllers.actions.{DataRetrievalAction, _}
 import models.{IndividualDetails, MinimalPSA}
 import org.joda.time.format.DateTimeFormat
@@ -39,7 +39,7 @@ import scala.concurrent.Future
 class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar with BeforeAndAfterEach {
  import SchemesOverviewControllerSpec._
 
-  val fakeCacheConnector: DataCacheConnector = mock[MicroserviceCacheConnector]
+  val fakeCacheConnector: UserAnswersCacheConnector = mock[MicroserviceCacheConnector]
   val fakePsaMinimalConnector: MinimalPsaConnector = mock[MinimalPsaConnector]
 
   def getConfig(enabled: Boolean): FrontendAppConfig = {
