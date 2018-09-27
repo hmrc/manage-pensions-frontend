@@ -18,7 +18,7 @@ package controllers.invitations
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
-import connectors.DataCacheConnector
+import connectors.UserAnswersCacheConnector
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.invitations.AdviserDetailsFormProvider
 import identifiers.invitations.AdviserNameId
@@ -41,7 +41,7 @@ class AdviserDetailsController @Inject()(
                                           getData: DataRetrievalAction,
                                           requiredData: DataRequiredAction,
                                           formProvider: AdviserDetailsFormProvider,
-                                          dataCacheConnector: DataCacheConnector
+                                          dataCacheConnector: UserAnswersCacheConnector
                                         ) extends FrontendController with I18nSupport {
 
   val form = formProvider()
