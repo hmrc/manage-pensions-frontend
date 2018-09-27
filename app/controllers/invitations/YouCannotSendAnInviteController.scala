@@ -32,8 +32,8 @@ class YouCannotSendAnInviteController @Inject()(appConfig: FrontendAppConfig,
                                                 getData: DataRetrievalAction,
                                                 requireData: DataRequiredAction) extends FrontendController with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = authenticate.async {
+  def onPageLoad: Action[AnyContent] = authenticate {
     implicit request =>
-      Future.successful(Ok(youCannotSendAnInvite(appConfig)))
+      Ok(youCannotSendAnInvite(appConfig))
   }
 }
