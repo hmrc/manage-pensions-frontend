@@ -14,19 +14,28 @@
  * limitations under the License.
  */
 
-package models
+package forms.invitations
 
-import play.api.libs.json.{Format, Json}
+import forms.behaviours.AddressBehaviours
 
-case class Address(
-                    line1: String,
-                    line2: String,
-                    line3: Option[String],
-                    line4: Option[String],
-                    postalCode: Option[String],
-                    countryCode: String
-                  )
+class AdviserAddressPostcodeLookupFormProviderSpec extends AddressBehaviours {
 
-object Address {
-  implicit val formats: Format[Address] = Json.format[Address]
+
+  private val requiredKey = "error.postcode.required"
+  private val lengthKey = "error.postcode.length"
+  private val invalid = "error.postcode.invalid"
+  private val fieldName = "value"
+
+  val form = new AdviserAddressPostcodeLookupFormProvider()()
+
+  ".value" must {
+    behave like formWithPostCode(
+      form,
+      fieldName,
+      requiredKey,
+      lengthKey,
+      invalid
+    )
+  }
+
 }

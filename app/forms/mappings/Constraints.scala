@@ -17,13 +17,13 @@
 package forms.mappings
 
 import play.api.data.validation.{Constraint, Invalid, Valid}
+import utils.CountryOptions
 
 import scala.language.implicitConversions
 
 trait Constraints {
 
-  val psaIdRegx = """^A[0-9]{7}$"""
-  val nameRegex = """^[a-zA-Z\u00C0-\u00FF '‘’\u2014\u2013\u2010\u002d]{1,107}$"""
+  import Constraints._
 
   protected def firstError[A](constraints: Constraint[A]*): Constraint[A] =
     Constraint {
@@ -96,4 +96,24 @@ trait Constraints {
   protected def psaName(errorKey: String): Constraint[String] = regexp(nameRegex, errorKey)
 
   protected def psaId(errorKey: String): Constraint[String] = regexp(psaIdRegx, errorKey)
+
+  protected def addressLine(errorKey: String): Constraint[String] = regexp(addressLineRegex, errorKey)
+
+  protected def postCode(errorKey: String): Constraint[String] = regexp(postCodeRegex, errorKey)
+
+  protected def country(countryOptions: CountryOptions, errorKey: String): Constraint[String] =
+    Constraint {
+      input =>
+        countryOptions.options
+          .find(_.value == input)
+          .map(_ => Valid)
+          .getOrElse(Invalid(errorKey))
+    }
+}
+
+object Constraints {
+  val psaIdRegx = """^A[0-9]{7}$"""
+  val nameRegex = """^[a-zA-Z\u00C0-\u00FF '‘’\u2014\u2013\u2010\u002d]{1,107}$"""
+  val addressLineRegex = """^[A-Za-z0-9 &!'‘’\"“”(),./\u2014\u2013\u2010\u002d]{1,35}$"""
+  val postCodeRegex = """^[A-Za-z]{1,2}[0-9][0-9A-Za-z]?[ ]?[0-9][A-Za-z]{2}$"""
 }

@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-package models
+package forms.invitations
 
-import play.api.libs.json.{Format, Json}
+import forms.mappings.AddressMapping
+import javax.inject.Inject
+import play.api.data.Form
 
-case class Address(
-                    line1: String,
-                    line2: String,
-                    line3: Option[String],
-                    line4: Option[String],
-                    postalCode: Option[String],
-                    countryCode: String
-                  )
+class AdviserAddressPostcodeLookupFormProvider @Inject() extends AddressMapping {
 
-object Address {
-  implicit val formats: Format[Address] = Json.format[Address]
+  def apply(): Form[String] =
+    Form(
+      "value" -> postCodeMapping(
+        "error.postcode.required",
+        "error.postcode.length",
+        "error.postcode.invalid"
+      )
+    )
 }
+

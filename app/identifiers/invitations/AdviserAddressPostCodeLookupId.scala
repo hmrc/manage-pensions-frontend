@@ -14,19 +14,13 @@
  * limitations under the License.
  */
 
-package models
+package identifiers.invitations
 
-import play.api.libs.json.{Format, Json}
+import identifiers.TypedIdentifier
+import models.TolerantAddress
 
-case class Address(
-                    line1: String,
-                    line2: String,
-                    line3: Option[String],
-                    line4: Option[String],
-                    postalCode: Option[String],
-                    countryCode: String
-                  )
-
-object Address {
-  implicit val formats: Format[Address] = Json.format[Address]
+case object AdviserAddressPostCodeLookupId extends TypedIdentifier[Seq[TolerantAddress]] {
+  override def toString: String = "adviserAddressPostCodeLookup"
 }
+
+
