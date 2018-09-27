@@ -27,7 +27,7 @@ class AcceptInvitationNavigator @Inject()(val dataCacheConnector: UserAnswersCac
 
   override def routeMap(from: NavigateFrom): Option[NavigateTo] = from.id match {
     case PsaNameId | HaveYouEmployedPensionAdviserId => NavigateTo.save(routes.IndexController.onPageLoad())
-    case AdviserNameId | AdviserAddressPostCodeLookupId => NavigateTo.dontSave(routes.IndexController.onPageLoad())
+    case AdviserNameId | AdviserAddressListId | AdviserAddressPostCodeLookupId => NavigateTo.dontSave(routes.IndexController.onPageLoad())
     case DeclarationId => NavigateTo.dontSave(routes.IndexController.onPageLoad())
     case _ => NavigateTo.dontSave(controllers.routes.SessionExpiredController.onPageLoad())
   }

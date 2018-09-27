@@ -21,6 +21,9 @@ POST       /change-psa-id-of-invited-psa                controllers.invitations.
 GET        /invite-sent/:srn                            controllers.invitations.InvitationSuccessController.onPageLoad(srn: SchemeReferenceNumber)
 POST       /invite-sent/:srn                            controllers.invitations.InvitationSuccessController.onSubmit(srn: SchemeReferenceNumber)
 
+GET        /select-pension-adviser-address              controllers.invitations.PensionAdviserAddressListController.onPageLoad()
+POST       /select-pension-adviser-address              controllers.invitations.PensionAdviserAddressListController.onSubmit()
+
 GET        /pension-adviser-name                        controllers.invitations.AdviserDetailsController.onPageLoad(mode: Mode = NormalMode)
 POST       /pension-adviser-name                        controllers.invitations.AdviserDetailsController.onSubmit(mode: Mode = NormalMode)
 GET        /change-pension-adviser-name                 controllers.invitations.AdviserDetailsController.onPageLoad(mode: Mode = CheckMode)

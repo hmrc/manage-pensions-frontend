@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-package models
+package forms.invitations
 
-import play.api.libs.json.{Format, Json}
+import forms.mappings.{Constraints, Mappings}
+import javax.inject.Inject
+import play.api.data.Form
 
-case class Address(line1: String, line2: String, line3: Option[String], line4: Option[String],
-                   postalCode: Option[String], countryCode: String)
+class PensionAdviserAddressListFormProvider @Inject()() extends Mappings with Constraints {
 
-object Address {
-  implicit val formats: Format[Address] = Json.format[Address]
+  def apply(addresses: Seq[_]): Form[Int] =
+    Form(
+      "value" -> int("messages__adviser__address__list__required")
+        .verifying(minimumValue(0, "error.invalid"))
+        .verifying(maximumValue(addresses.length - 1, "error.invalid"))
+    )
+
 }
