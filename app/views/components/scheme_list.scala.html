@@ -31,15 +31,15 @@
 }
 
 @schemeNameId(index: Int) = @{
-    s"schemeName--$index"
+    s"schemeName-$index"
 }
 
 @pstrId(index: Int) = @{
-    s"pstr--$index"
+    s"pstr-$index"
 }
 
 @statusId(index: Int) = @{
-    s"schemeStatus--$index"
+    s"schemeStatus-$index"
 }
 
 @pstrValue(pstr: Option[String]) = @{
@@ -92,7 +92,7 @@
             @if(scheme.pstr.isEmpty) {
                 <div class="column-two-sixths table-column scheme-name">
                     <p id="@{pstrId(index)}" data-title='@messages("messages__listSchemes__pstr_not_assigned")&nbsp;'>
-                        <span aria-hidden="true">@pstrValue(scheme.pstr)</span>
+                        <span aria-hidden="true">@messages("messages__listSchemes__pstr_not_assigned")</span>
                         <span class="visually-hidden">@messages("messages__listSchemes__pstr_not_assigned", scheme.name, scheme.pstr)</span>
                     </p>
                 </div>
