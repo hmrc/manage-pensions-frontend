@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-package forms.invitations
+package viewmodels
 
-import forms.mappings.Mappings
-import javax.inject.Inject
-import play.api.data.Form
-
-class HaveYouEmployedPensionAdviserFormProvider @Inject()() extends Mappings {
-
-  def apply(): Form[Boolean] = Form(
-    "haveYouEmployedPensionAdviser" -> boolean()
-  )
-
-}
+case class RepeaterAnswerSection(headingKey: String,
+                                 relevanceRow: AnswerRow,
+                                 rows: Seq[RepeaterAnswerRow],
+                                 addLinkKey: String,
+                                 addLinkUrl: String) extends Section

@@ -31,12 +31,12 @@ class ControllerWithQuestionPageBehaviours extends ControllerSpecBase {
 
   def onwardRoute = Call("GET", "/foo")
 
-  def controllerWithOnPageLoadMethod(onPageLoadAction: (DataRetrievalAction, AuthAction) => Action[AnyContent],
+  def controllerWithOnPageLoadMethod[T](onPageLoadAction: (DataRetrievalAction, AuthAction) => Action[AnyContent],
                                      emptyData: DataRetrievalAction,
                                      validDate: DataRetrievalAction,
-                                     emptyForm: Form[String],
-                                     preparedForm: Form[String],
-                                     validView: (Form[_]) => String): Unit = {
+                                     emptyForm: Form[T],
+                                     preparedForm: Form[T],
+                                     validView: (Form[T]) => String): Unit = {
 
     "calling onPageLoad" must {
 
@@ -49,7 +49,6 @@ class ControllerWithQuestionPageBehaviours extends ControllerSpecBase {
       }
 
       "populate the view correctly on a GET when the question has previously been answered" in {
-
 
         val result = onPageLoadAction(validDate, FakeAuthAction())(fakeRequest)
 
@@ -67,10 +66,10 @@ class ControllerWithQuestionPageBehaviours extends ControllerSpecBase {
 
   }
 
-  def controllerWithOnSubmitMethod(onSubmitAction: (DataRetrievalAction, AuthAction) => Action[AnyContent],
+  def controllerWithOnSubmitMethod[T](onSubmitAction: (DataRetrievalAction, AuthAction) => Action[AnyContent],
                                    validDate: DataRetrievalAction,
-                                   form: Form[String],
-                                   errorView: (Form[_]) => String,
+                                   form: Form[T],
+                                   errorView: (Form[T]) => String,
                                    postRequest: FakeRequest[AnyContentAsJson]): Unit = {
 
     "calling onSubmit" must {

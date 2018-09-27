@@ -3,11 +3,15 @@ site.signOut = Log Out
 site.back = Back
 site.save_and_continue = Save and Continue
 site.continue = Continue
-
-error.summary.title = There was a problem with the page
-
+site.change = Change
+site.confirm = Confirm
 site.yes = Yes
 site.no = No
+
+checkYourAnswers.title = Check your answers
+checkYourAnswers.heading = Check your answers
+
+error.summary.title = There was a problem with the page
 
 messages__manage_pension_schemes__title = Manage Pension Schemes - GOV.UK
 
@@ -102,6 +106,10 @@ messages__psa__id__heading = What is {0}’s PSA ID?
 messages__error__psa__id__required = Enter the PSA ID of who you are inviting
 messages__error__psa__id__invalid = Enter a PSA ID using the letter A followed by 7 numbers
 
+messages__check__your__answer__main__containt__label = You are inviting this PSA to administer {0}.
+messages__check__your__answer__psa__name__label = PSA’s name
+messages__check__your__answer__psa__id__label = PSA ID
+
 messages__incorrectPsaDetails__title = The name and PSA ID do not match our records
 messages__incorrectPsaDetails__text1 = You should check these details with {0}.
 messages__incorrectPsaDetails__text2 = Their name should be entered exactly as their registered PSA name.
@@ -112,7 +120,6 @@ messages__invitationSuccess__heading = You have invited {0} to administer the sc
 messages__invitationSuccess__schemeName = This is for {0}.
 messages__invitationSuccess__emailAdvice = {0} will be sent an email confirming your invitation.
 messages__invitationSuccess__expiryDate = They will have until {0} to accept the invitation. If the invitation is not accepted by this date, it will be deleted and you will have to invite the PSA again.
-
 
 messages__adviser__name__title = Who is your pension adviser?
 messages__adviser__name__heading = Who is your pension adviser?

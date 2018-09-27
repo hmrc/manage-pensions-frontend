@@ -24,11 +24,12 @@ class HaveYouEmployedPensionAdviserFormProviderSpec extends BooleanFieldBehaviou
   val requiredKey = "error.required"
   val invalidKey = "error.boolean"
 
-  val form = new HaveYouEmployedPensionAdviserFormProvider()()
+  val formProvider = new HaveYouEmployedPensionAdviserFormProvider()
+  val form = formProvider()
 
   ".value" must {
 
-    val fieldName = "value"
+    val fieldName = "haveYouEmployedPensionAdviser"
 
     behave like booleanField(
       form,

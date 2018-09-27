@@ -17,64 +17,44 @@
 package controllers.invitations
 
 import connectors.FakeUserAnswersCacheConnector
-import controllers.ControllerSpecBase
 import controllers.actions._
+import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.invitations.HaveYouEmployedPensionAdviserFormProvider
+import identifiers.invitations.HaveYouEmployedPensionAdviserId
 import models.NormalMode
 import play.api.data.Form
-import play.api.libs.json.Json
-import play.api.mvc.Call
-import play.api.test.Helpers._
-import utils.FakeNavigator
+import play.api.test.FakeRequest
+import utils.UserAnswers
 import views.html.invitations.haveYouEmployedPensionAdviser
 
-class HaveYouEmployedPensionAdviserControllerSpec extends ControllerSpecBase {
-
-  def onwardRoute = Call("GET", "/foo")
+class HaveYouEmployedPensionAdviserControllerSpec extends ControllerWithQuestionPageBehaviours {
 
   val formProvider = new HaveYouEmployedPensionAdviserFormProvider()
   val form = formProvider()
+  val userAnswer = UserAnswers().employedPensionAdviserId(true)
+  val postRequest = FakeRequest().withJsonBody(userAnswer.json)
 
-  val controller = new HaveYouEmployedPensionAdviserController(
-    frontendAppConfig,
-    FakeAuthAction(),
-    messagesApi,
-    new FakeNavigator(onwardRoute),
-    formProvider,
-    FakeUserAnswersCacheConnector,
-    new FakeDataRetrievalAction(Some(Json.obj())),
-    new DataRequiredActionImpl
-  )
+  private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
-  def viewAsString(form: Form[Boolean] = form) = haveYouEmployedPensionAdviser(frontendAppConfig, form, NormalMode)(fakeRequest, messages).toString
-
-
-  "HaveYouEmployedPensionAdviser Controller" must {
-
-    "Return 200 and view" in {
-      val result = controller.onPageLoad(NormalMode)(fakeRequest)
-
-      status(result) mustBe OK
-      contentAsString(result) mustBe viewAsString(form)
-    }
-
-    "redirect to the next page when valid data is submitted" in {
-      val postRequest = fakeRequest.withFormUrlEncodedBody(("value", "true"))
-      val result = controller.onSubmit(NormalMode)(postRequest)
-
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(onwardRoute.url)
-    }
-
-    "return a Bad Request and errors when invalid data is submitted" in {
-      val postRequest = fakeRequest.withFormUrlEncodedBody(("value", ""))
-      val boundForm = form.bind(Map("value" -> ""))
-
-      val result = controller.onSubmit(NormalMode)(postRequest)
-
-      status(result) mustBe BAD_REQUEST
-      contentAsString(result) mustBe viewAsString(boundForm)
-    }
+    new HaveYouEmployedPensionAdviserController(
+      frontendAppConfig, fakeAuth, messagesApi, navigator,formProvider,
+      FakeUserAnswersCacheConnector, dataRetrievalAction, requiredDateAction).onPageLoad(NormalMode)
   }
+
+  private def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
+
+    new HaveYouEmployedPensionAdviserController(
+      frontendAppConfig, fakeAuth, messagesApi, navigator, formProvider,
+      FakeUserAnswersCacheConnector, dataRetrievalAction, requiredDateAction).onSubmit(NormalMode)
+  }
+
+ def viewAsString(form: Form[Boolean] = form) = haveYouEmployedPensionAdviser(frontendAppConfig, form, NormalMode)(fakeRequest, messages).toString
+
+  behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, userAnswer.dataRetrievalAction, form, form.fill(true), viewAsString)
+
+  behave like controllerWithOnSubmitMethod(onSubmitAction, getEmptyData,
+    form.bind(Map(HaveYouEmployedPensionAdviserId.toString -> "")), viewAsString, postRequest)
+
 }
+
 

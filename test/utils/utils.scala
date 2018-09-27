@@ -15,7 +15,7 @@
  */
 
 import controllers.actions.{DataRetrievalAction, FakeDataRetrievalAction}
-import identifiers.invitations.{PSAId, PsaNameId}
+import identifiers.invitations.{AdviserNameId, HaveYouEmployedPensionAdviserId, PSAId, PsaNameId}
 import identifiers.{LastPageId, SchemeDetailId}
 import models._
 import org.scalatest.OptionValues
@@ -40,6 +40,14 @@ package object utils {
 
     def minimalSchemeDetails(detail: MinimalSchemeDetail): UserAnswers = {
       answers.set(SchemeDetailId)(detail).asOpt.value
+    }
+
+    def adviserId(id: String): UserAnswers = {
+      answers.set(AdviserNameId)(id).asOpt.value
+    }
+
+    def employedPensionAdviserId(isChecked: Boolean): UserAnswers = {
+      answers.set(HaveYouEmployedPensionAdviserId)(isChecked).asOpt.value
     }
 
     // Converters
