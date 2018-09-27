@@ -161,4 +161,11 @@ messages__error__adviser__name__required = Enter the name of your pension advise
 messages__error__adviser__name__length = Enter a name using less than 108 characters
 messages__error__adviser__name__invalid = Enter a name using only letters
 
+messages__schemeDetails__title = Pension scheme details
+messages__schemeDetails__view_details_link = View the registered scheme details
+messages__schemeDetails__opened_date_head = This scheme was opened on:
+messages__schemeDetails__psa_list_head = Pension scheme administrators
+messages__schemeDetails__invite_link = Invite another PSA to administer this scheme
+messages__schemeDetails__return_link = Return to your pension schemes
+
 messages__error__declaration__required = You need to agree to all the declarations before you can continue
