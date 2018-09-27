@@ -17,7 +17,7 @@
 package controllers.actions
 
 import base.SpecBase
-import connectors.DataCacheConnector
+import connectors.UserAnswersCacheConnector
 import models.requests.{AuthenticatedRequest, OptionalDataRequest}
 import org.mockito.Matchers.{eq => eqTo, _}
 import org.mockito.Mockito._
@@ -31,14 +31,14 @@ import scala.concurrent.Future
 
 class DataRetrievalActionSpec extends SpecBase with MockitoSugar with ScalaFutures {
 
-  class Harness(dataCacheConnector: DataCacheConnector) extends DataRetrievalActionImpl(dataCacheConnector) {
+  class Harness(dataCacheConnector: UserAnswersCacheConnector) extends DataRetrievalActionImpl(dataCacheConnector) {
     def callTransform[A](request: AuthenticatedRequest[A]): Future[OptionalDataRequest[A]] = transform(request)
   }
 
   "Data Retrieval Action" when {
     "there is no data in the cache" must {
       "set userAnswers to 'None' in the request" in {
-        val dataCacheConnector = mock[DataCacheConnector]
+        val dataCacheConnector = mock[UserAnswersCacheConnector]
         when(dataCacheConnector.fetch(eqTo("id"))(any(), any())) thenReturn Future(None)
         val action = new Harness(dataCacheConnector)
 
@@ -52,7 +52,7 @@ class DataRetrievalActionSpec extends SpecBase with MockitoSugar with ScalaFutur
 
     "there is data in the cache" must {
       "build a userAnswers object and add it to the request" in {
-        val dataCacheConnector = mock[DataCacheConnector]
+        val dataCacheConnector = mock[UserAnswersCacheConnector]
         when(dataCacheConnector.fetch(eqTo("id"))(any(), any())) thenReturn Future.successful(Some(Json.obj()))
         val action = new Harness(dataCacheConnector)
 
