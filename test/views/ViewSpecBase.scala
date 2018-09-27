@@ -38,6 +38,19 @@ trait ViewSpecBase extends SpecBase {
       )
   }
 
+  def haveLinkWithUrlAndContent(linkId: String, url: String, expectedContent: String) = Matcher[Document]{
+    document =>
+    val link = document.select(s"a[id=$linkId]")
+      val actualContent = link.text()
+
+    val href = link.attr("href")
+    MatchResult(
+      href == url && expectedContent == actualContent,
+      s"link id $linkId with link text $actualContent and href $href is not rendered on the page",
+      s"link id $linkId with link text $actualContent and href $href is rendered on the page"
+    )
+  }
+
   def haveDynamicText(messageKey: String, args: Any*): Matcher[Document] = Matcher[Document] {
     document =>
       val text = messages(messageKey, args: _*)

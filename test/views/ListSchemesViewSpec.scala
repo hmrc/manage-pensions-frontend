@@ -31,60 +31,53 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
 
   implicit val request: Request[_] = fakeRequest
 
-  private def config(toggle: Boolean): FrontendAppConfig = {
-   val injector =  new GuiceApplicationBuilder().configure(
-     "features.work-package-one-enabled" -> toggle
-   ).build().injector
+  private def config(toggle: Boolean = true): FrontendAppConfig = {
+    val injector = new GuiceApplicationBuilder().configure(
+      "features.work-package-one-enabled" -> toggle
+    ).build().injector
     injector.instanceOf[FrontendAppConfig]
   }
 
   "list-schemes view" must {
 
-    behave like normalPage(view(frontendAppConfig), "listSchemes", messages("messages__listSchemes__title"))
+    behave like normalPage(view(config()), "listSchemes", messages("messages__listSchemes__title"))
 
-    behave like pageWithBackLink(view(frontendAppConfig))
+    behave like pageWithBackLink(view(config()))
 
     "display a suitable message when there are no schemes to display" in {
-      view(frontendAppConfig) must haveElementWithText("noSchemes", messages("messages__listSchemes__noSchemes"))
+      view(config()) must haveElementWithText("noSchemes", messages("messages__listSchemes__noSchemes"))
     }
 
     "display a link to register a new scheme when there are no schemes to display" in {
-      view(frontendAppConfig) must haveLink(frontendAppConfig.registerSchemeUrl, "registerNewScheme")
+      view(config()) must haveLink(frontendAppConfig.registerSchemeUrl, "registerNewScheme")
     }
 
     "display the correct column headers when there are schemes to display" in {
-      val actual = view(frontendAppConfig, fullList)
+      val actual = view(config(), fullList)
 
       actual must haveElementWithText("schemeNameHeader", messages("messages__listSchemes__column_schemeName"))
       actual must haveElementWithText("pstrHeader", messages("messages__listSchemes__column_pstr"))
       actual must haveElementWithText("statusHeader", messages("messages__listSchemes__column_status"))
     }
 
-    "display the correct scheme names when there are schemes to display" in {
-      val actual = asDocument(view(frontendAppConfig, fullList).apply())
+    (0 to 7).foreach { index =>
+      s"display the correct scheme name with links for row $index when there are schemes to display" in {
+        val actual = asDocument(view(config(), fullList).apply())
 
-      actual must haveLinkOnClick(controllers.routes.SchemesOverviewController.onPageLoad().url, "schemeName-0")
+        actual must haveLinkWithUrlAndContent(s"schemeName-$index", controllers.routes.SchemesOverviewController.onPageLoad().url, s"scheme-name-$index")
+      }
+    }
 
-/*
-      assertEqualsValue(actual, "#schemeName-0 span:nth-child(1)", "scheme-name-0")
+    (0 to 7).foreach { index =>
+      s"display the correct scheme name with row $index when there are schemes to display" in {
+        val actual = asDocument(view(config(false), fullList).apply())
 
-      assertEqualsValue(actual, "#schemeName-1 span:nth-child(1)", "scheme-name-1")
-
-      assertEqualsValue(actual, "#schemeName-2 span:nth-child(1)", "scheme-name-2")
-
-      assertEqualsValue(actual, "#schemeName-3 span:nth-child(1)", "scheme-name-3")
-
-      assertEqualsValue(actual, "#schemeName-4 span:nth-child(1)", "scheme-name-4")
-
-      assertEqualsValue(actual, "#schemeName-5 span:nth-child(1)", "scheme-name-5")
-
-      assertEqualsValue(actual, "#schemeName-6 span:nth-child(1)", "scheme-name-6")
-
-      assertEqualsValue(actual, "#schemeName-7 span:nth-child(1)", "scheme-name-7")*/
+        assertEqualsValue(actual, s"#schemeName-$index span:nth-child(1)", s"scheme-name-$index")
+      }
     }
 
     "display the full status value" in {
-      val actual = asDocument(view(frontendAppConfig, fullList).apply())
+      val actual = asDocument(view(config(), fullList).apply())
 
       assertEqualsValue(actual, "#schemeStatus-4 span:nth-child(1)", "Open")
       assertEqualsValue(actual, "#schemeStatus-5 span:nth-child(1)", "De-registered")
@@ -98,7 +91,7 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
     }
 
     "show the PSTR column with correct values" in {
-      val actual = asDocument(view(frontendAppConfig, fullList).apply())
+      val actual = asDocument(view(config(), fullList).apply())
 
       assertEqualsValue(actual, "#pstr-0 span:nth-child(1)", messages("messages__listSchemes__pstr_not_assigned"))
       assertEqualsValue(actual, "#pstr-1 span:nth-child(1)", messages("messages__listSchemes__pstr_not_assigned"))
