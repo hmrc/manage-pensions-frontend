@@ -30,11 +30,13 @@ class InvitationNavigator @Inject()(val dataCacheConnector: UserAnswersCacheConn
 
   override def routeMap(from: NavigateFrom): Option[NavigateTo] = from.id match {
     case PsaNameId => NavigateTo.dontSave(PsaIdController.onPageLoad(NormalMode))
-    case PSAId => NavigateTo.dontSave(IndexController.onPageLoad())
+    case PSAId => NavigateTo.dontSave(CheckYourAnswersController.onPageLoad())
     case _ => NavigateTo.dontSave(controllers.routes.SessionExpiredController.onPageLoad())
   }
 
   override protected def editRouteMap(from: NavigateFrom): Option[NavigateTo] = from.id match {
+    case PsaNameId => NavigateTo.dontSave(CheckYourAnswersController.onPageLoad())
+    case PSAId => NavigateTo.dontSave(CheckYourAnswersController.onPageLoad())
     case _ => NavigateTo.dontSave(SessionExpiredController.onPageLoad())
   }
 }

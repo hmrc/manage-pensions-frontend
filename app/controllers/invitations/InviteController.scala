@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.invitations
 
 import com.google.inject.{Inject, Singleton}
 import connectors.MinimalPsaConnector
 import controllers.actions.AuthAction
-import play.api.mvc.{AnyContent, Action}
+import models.NormalMode
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 @Singleton
@@ -32,7 +33,7 @@ class InviteController@Inject()(authenticate: AuthAction,
         if(subscriptionDetails.isPsaSuspended) {
           Redirect(controllers.invitations.routes.YouCannotSendAnInviteController.onPageLoad())
         } else {
-          Ok
+          Redirect(controllers.invitations.routes.PsaNameController.onPageLoad(NormalMode))
         }
       }
   }
