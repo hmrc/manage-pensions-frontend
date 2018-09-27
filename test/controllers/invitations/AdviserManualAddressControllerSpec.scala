@@ -17,7 +17,7 @@
 package controllers.invitations
 
 import config.FrontendAppConfig
-import connectors.{DataCacheConnector, FakeDataCacheConnector}
+import connectors.{UserAnswersCacheConnector, FakeUserAnswersCacheConnector}
 import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
 import forms.invitations.AdviserManualAddressFormProvider
 import identifiers.invitations.{AdviserAddressId, AdviserAddressListId, AdviserNameId}
@@ -117,7 +117,7 @@ class AdviserManualAddressControllerSpec extends WordSpec with MustMatchers with
 
         running(_.overrides(
           bind[CountryOptions].to[FakeCountryOptions],
-          bind[DataCacheConnector].to(FakeDataCacheConnector),
+          bind[UserAnswersCacheConnector].to(FakeUserAnswersCacheConnector),
           bind[Navigator].qualifiedWith(classOf[AcceptInvitation]).to(FakeNavigator),
           bind[DataRetrievalAction].toInstance(dataRetrieval()),
           bind[AuthAction].toInstance(FakeAuthAction())
@@ -137,7 +137,7 @@ class AdviserManualAddressControllerSpec extends WordSpec with MustMatchers with
 
             val address = Address("value 1", "value 2", None, None, Some("AB1 1AB"), "GB")
 
-            FakeDataCacheConnector.verify(AdviserAddressId, address)
+            FakeUserAnswersCacheConnector.verify(AdviserAddressId, address)
         }
 
       }

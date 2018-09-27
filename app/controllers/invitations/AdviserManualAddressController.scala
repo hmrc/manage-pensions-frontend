@@ -17,7 +17,7 @@
 package controllers.invitations
 
 import config.FrontendAppConfig
-import connectors.DataCacheConnector
+import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.invitations.AdviserManualAddressFormProvider
@@ -43,7 +43,7 @@ class AdviserManualAddressController @Inject()(
                                                 formProvider: AdviserManualAddressFormProvider,
                                                 val messagesApi: MessagesApi,
                                                 countryOptions: CountryOptions,
-                                                cacheConnector: DataCacheConnector,
+                                                cacheConnector: UserAnswersCacheConnector,
                                                 @AcceptInvitation navigator: Navigator
                                               ) extends FrontendController with I18nSupport with Retrievals {
 
