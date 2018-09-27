@@ -1,4 +1,4 @@
-/*
+@*
  * Copyright 2018 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,15 +12,22 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *@
 
-package models
+@import org.joda.time.DateTime
 
-import org.joda.time.DateTime
-import play.api.libs.json.{Format, Json}
+@(
+schemeName: String,
+expiryDate: DateTime,
+id: String
+)(implicit messages: Messages)
 
-case class Invitation(pstr: String, schemeName: String, inviterPsaId: String, inviteePsaId: String, inviteeName: String, expireAt: DateTime)
 
-object Invitation {
-  implicit val formats: Format[Invitation] = Json.format
-}
+<div>
+    <h2 class="bold">@schemeName</h2>
+    <p>@messages("messages__yourInvitations__scheme_expiry_date", utils.DateHelper.formatDate(expiryDate.toLocalDate))</p>
+    <a id= "accept-invitation-@id" href="@controllers.invitations.routes.YourInvitationsController.onPageLoad().url">
+        @messages("messages__yourInvitations__accept_link")
+    </a>
+</div>
+

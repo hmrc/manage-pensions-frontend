@@ -121,6 +121,11 @@ messages__error__adviser__name__required = Enter the name of your pension advise
 messages__error__adviser__name__length = Enter a name using less than 108 characters
 messages__error__adviser__name__invalid = Enter a name using only letters
 
+messages__yourInvitations__title = Scheme invitations
+messages__yourInvitations__heading = Your invitations
+messages__yourInvitations__lede = You have been invited to administer:
+messages__yourInvitations__scheme_expiry_date = You have until {0} to accept this invitation.
+messages__yourInvitations__accept_link = Accept invitation
 
 
 

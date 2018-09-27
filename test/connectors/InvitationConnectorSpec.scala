@@ -18,6 +18,7 @@ package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import models.{AcceptedInvitation, Invitation}
+import org.joda.time.DateTime
 import org.scalatest.prop.Checkers
 import org.scalatest.{AsyncFlatSpec, Matchers}
 import play.api.http.Status
@@ -256,6 +257,7 @@ object InvitationConnectorSpec {
   private val inviteeName = "test-invitee-name"
   private val declaration = true
   private val declarationDuties = true
+  private val expiryDate = new DateTime("2018-11-10")
 
   private val acceptedInvitation = AcceptedInvitation(
     pstr,
@@ -272,7 +274,8 @@ object InvitationConnectorSpec {
       schemeName,
       inviterPsaId,
       inviteePsaId,
-      inviteeName
+      inviteeName,
+      expiryDate
     )
 
   private val requestJson =
