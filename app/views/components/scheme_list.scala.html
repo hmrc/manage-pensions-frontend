@@ -16,58 +16,34 @@
 
 @import views.formatters.Date
 
-@(schemes: List[SchemeDetail], listId: String)(implicit messages: Messages)
+@(schemes: List[SchemeDetail])(implicit messages: Messages)
 
 @schemeNameHeaderID = @{
-    s"schemeNameHeader$listId"
-}
-
-@srnHeaderID = @{
-    s"srnHeader$listId"
+    s"schemeNameHeader"
 }
 
 @pstrHeaderID = @{
-    s"pstrHeader$listId"
+    s"pstrHeader"
 }
 
 @statusHeaderID = @{
-    s"statusHeader$listId"
-}
-
-@schemeDateHeaderID = @{
-    s"schemeDateHeader$listId"
+    s"statusHeader"
 }
 
 @schemeNameId(index: Int) = @{
-    s"schemeName-$listId-$index"
-}
-
-@srnId(index: Int) = @{
-    s"srn-$listId-$index"
+    s"schemeName--$index"
 }
 
 @pstrId(index: Int) = @{
-    s"pstr-$listId-$index"
+    s"pstr--$index"
 }
 
 @statusId(index: Int) = @{
-    s"schemeStatus-$listId-$index"
-}
-
-@statusDateId(index: Int) = @{
-    s"schemeDate-$listId-$index"
+    s"schemeStatus--$index"
 }
 
 @pstrValue(pstr: Option[String]) = @{
     pstr.getOrElse(messages("messages__listSchemes__pstr_not_assigned"))
-}
-
-@dateValue(date: Option[String]) = @{
-    if(date.nonEmpty){
-        Date.IsoLocalToViewDate(date.getOrElse(""))
-    } else {
-        messages("messages__listSchemes__no_date")
-    }
 }
 
 @statusValue(status: String) = @{
@@ -84,21 +60,7 @@
     }
 }
 
-@statusClass(status: String) = @{
-    status match {
-        case "Pending"                  => "incomplete"
-        case "Pending Info Required"    => "incomplete"
-        case "Pending Info Received"    => "incomplete"
-        case "Rejected"                 => "rejected"
-        case "Open"                     => "complete"
-        case "Deregistered"             => "not-started"
-        case "Wound-up"                 => "not-started"
-        case "Rejected Under Appeal"    => "rejected"
-        case _ => ""
-    }
-}
-
-<div id="schemeList-@{listId}">
+<div id="schemeList">
     <div class="grid-row" aria-hidden="true">
         <div class="column-two-sixths table-header">
             <p id="@schemeNameHeaderID" class="heading-small">@messages("messages__listSchemes__column_schemeName")</p>
@@ -106,7 +68,7 @@
         <div class="column-two-sixths table-header">
             <p id="@pstrHeaderID" class="heading-small">@messages("messages__listSchemes__column_pstr")</p>
         </div>
-        <div class="column-one-sixth table-header">
+        <div class="column-two-sixths table-header">
             <p id="@statusHeaderID" class="heading-small">@messages("messages__listSchemes__column_status")</p>
         </div>
     </div>
@@ -135,7 +97,7 @@
                     </p>
                 </div>
             }
-            <div class="column-one-sixth table-column scheme-name">
+            <div class="column-two-sixths table-column scheme-name">
                 <p id="@{statusId(index)}">
                     <span>@statusValue(scheme.schemeStatus)</span>
                     <span class="visually-hidden">@messages("messages__listSchemes__status__screen_reader", scheme.name, scheme.schemeStatus)</span>
