@@ -17,11 +17,10 @@
 package controllers.invitations
 
 import config.FrontendAppConfig
-import connectors.{AddressLookupConnector, DataCacheConnector}
+import connectors.{AddressLookupConnector, FakeUserAnswersCacheConnector, UserAnswersCacheConnector}
 import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
-import controllers.invitations.AdviserAddressPostcodeLookupControllerSpec.form
 import forms.invitations.AdviserAddressPostcodeLookupFormProvider
-import identifiers.invitations.{AdviserAddressPostCodeLookupId, AdviserNameId}
+import identifiers.invitations.AdviserNameId
 import models.TolerantAddress
 import org.mockito.Matchers.{eq => eqTo, _}
 import org.mockito.Mockito._
@@ -72,18 +71,15 @@ class AdviserAddressPostcodeLookupControllerSpec extends WordSpec with MustMatch
 
     "return a redirect on successful submission" in {
 
-      val cacheConnector: DataCacheConnector = mock[DataCacheConnector]
       val addressConnector: AddressLookupConnector = mock[AddressLookupConnector]
+      val cacheConnector: UserAnswersCacheConnector = FakeUserAnswersCacheConnector
 
       when(addressConnector.addressLookupByPostCode(eqTo(postcode))(any(), any()))
         .thenReturn(Future.successful(Seq(address)))
 
-      when(cacheConnector.save(any(), eqTo(AdviserAddressPostCodeLookupId), eqTo(Seq(address)))(any(), any(), any()))
-        .thenReturn(Future.successful(Json.obj()))
-
       running(_.overrides(
         bind[Navigator].toInstance(FakeNavigator),
-        bind[DataCacheConnector].toInstance(cacheConnector),
+        bind[UserAnswersCacheConnector].toInstance(cacheConnector),
         bind[AddressLookupConnector].toInstance(addressConnector),
         bind[DataRetrievalAction].toInstance(dataRetrievalAction),
         bind[AuthAction].toInstance(FakeAuthAction())
@@ -101,7 +97,6 @@ class AdviserAddressPostcodeLookupControllerSpec extends WordSpec with MustMatch
     "return a bad request" when {
       "the postcode look fails to return result" in {
 
-        val cacheConnector: DataCacheConnector = mock[DataCacheConnector]
         val addressConnector: AddressLookupConnector = mock[AddressLookupConnector]
 
         when(addressConnector.addressLookupByPostCode(eqTo(postcode))(any(), any())) thenReturn
@@ -109,7 +104,7 @@ class AdviserAddressPostcodeLookupControllerSpec extends WordSpec with MustMatch
 
         running(_.overrides(
           bind[Navigator].toInstance(FakeNavigator),
-          bind[DataCacheConnector].toInstance(cacheConnector),
+          bind[UserAnswersCacheConnector].toInstance(FakeUserAnswersCacheConnector),
           bind[AddressLookupConnector].toInstance(addressConnector),
           bind[DataRetrievalAction].toInstance(dataRetrievalAction),
           bind[AuthAction].toInstance(FakeAuthAction())
@@ -128,14 +123,13 @@ class AdviserAddressPostcodeLookupControllerSpec extends WordSpec with MustMatch
 
         val invalidPostcode = "*" * 10
 
-        val cacheConnector: DataCacheConnector = mock[DataCacheConnector]
         val addressConnector: AddressLookupConnector = mock[AddressLookupConnector]
 
         verifyZeroInteractions(addressConnector)
 
         running(_.overrides(
           bind[Navigator].toInstance(FakeNavigator),
-          bind[DataCacheConnector].toInstance(cacheConnector),
+          bind[UserAnswersCacheConnector].toInstance(FakeUserAnswersCacheConnector),
           bind[AddressLookupConnector].toInstance(addressConnector),
           bind[DataRetrievalAction].toInstance(dataRetrievalAction),
           bind[AuthAction].toInstance(FakeAuthAction())
@@ -154,7 +148,6 @@ class AdviserAddressPostcodeLookupControllerSpec extends WordSpec with MustMatch
 
     "return ok when the postcode returns no results which presents with form errors" in {
 
-      val cacheConnector: DataCacheConnector = mock[DataCacheConnector]
       val addressConnector: AddressLookupConnector = mock[AddressLookupConnector]
 
       when(addressConnector.addressLookupByPostCode(eqTo(postcode))(any(), any()))
@@ -162,7 +155,7 @@ class AdviserAddressPostcodeLookupControllerSpec extends WordSpec with MustMatch
 
       running(_.overrides(
         bind[Navigator].toInstance(FakeNavigator),
-        bind[DataCacheConnector].toInstance(cacheConnector),
+        bind[UserAnswersCacheConnector].toInstance(FakeUserAnswersCacheConnector),
         bind[AddressLookupConnector].toInstance(addressConnector),
         bind[DataRetrievalAction].toInstance(dataRetrievalAction),
         bind[AuthAction].toInstance(FakeAuthAction())

@@ -17,7 +17,7 @@
 package controllers.invitations
 
 import config.FrontendAppConfig
-import connectors.{AddressLookupConnector, DataCacheConnector}
+import connectors.{AddressLookupConnector, UserAnswersCacheConnector}
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.invitations.AdviserAddressPostcodeLookupFormProvider
@@ -45,7 +45,7 @@ class AdviserAddressPostcodeLookupController @Inject()(val appConfig: FrontendAp
                                                        formProvider: AdviserAddressPostcodeLookupFormProvider,
                                                        @AcceptInvitation navigator: Navigator,
                                                        val addressLookupConnector: AddressLookupConnector,
-                                                       val cacheConnector: DataCacheConnector
+                                                       val cacheConnector: UserAnswersCacheConnector
                                                       ) extends FrontendController with I18nSupport with Retrievals {
 
 
