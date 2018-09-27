@@ -17,78 +17,44 @@
 package controllers.invitations
 
 import connectors.FakeUserAnswersCacheConnector
-import controllers.ControllerSpecBase
-import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
+import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction, _}
+import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.invitations.AdviserDetailsFormProvider
 import identifiers.invitations.AdviserNameId
 import models.NormalMode
 import play.api.data.Form
-import play.api.libs.json.Json
-import play.api.mvc.Call
-import play.api.test.Helpers._
-import utils.FakeNavigator
+import play.api.test.FakeRequest
+import utils.{FakeNavigator, UserAnswers}
 import views.html.invitations.adviserDetails
 
-class AdviserDetailsControllerSpec extends ControllerSpecBase {
+class AdviserDetailsControllerSpec extends ControllerWithQuestionPageBehaviours {
 
   val formProvider = new AdviserDetailsFormProvider()
   val form = formProvider()
+  val userAnswer = UserAnswers().adviserId("test")
+  val postRequest = FakeRequest().withJsonBody(userAnswer.json)
 
-  def onwardRoute = Call("GET", "/foo")
+  private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
-  def controller(dataRetrievalAction: DataRetrievalAction = getEmptyData) = new AdviserDetailsController(
-    frontendAppConfig, messagesApi, FakeAuthAction(), new FakeNavigator(onwardRoute), dataRetrievalAction, new DataRequiredActionImpl, formProvider,
-    FakeUserAnswersCacheConnector
-  )
+    new AdviserDetailsController(
+      frontendAppConfig, messagesApi,fakeAuth, new FakeNavigator(onwardRoute), dataRetrievalAction,
+      requiredDateAction, formProvider, FakeUserAnswersCacheConnector).onPageLoad(NormalMode)
+  }
+
+
+  private def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
+
+    new AdviserDetailsController(
+      frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction,
+      requiredDateAction, formProvider, FakeUserAnswersCacheConnector).onSubmit(NormalMode)
+  }
 
   private def viewAsString(form: Form[_] = form) = adviserDetails(frontendAppConfig, form, NormalMode)(fakeRequest, messages).toString
 
-  "AdviserDetailsController" when {
-    "on a GET" must {
 
-      "return OK and the correct view" in {
-        val result = controller().onPageLoad(NormalMode)(fakeRequest)
-        status(result) mustBe OK
-        contentAsString(result) mustBe viewAsString()
-      }
+  behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, userAnswer.dataRetrievalAction, form, form.fill("test"), viewAsString)
 
-      "populate the view correctly on a GET if the question has previously been answered" in {
-        val data = new FakeDataRetrievalAction(Some(Json.obj(AdviserNameId.toString -> "test")))
-        val result = controller(data).onPageLoad(NormalMode)(fakeRequest)
-        contentAsString(result) mustBe viewAsString(form.fill("test"))
-      }
-
-      "redirect to the session expired page if there is no existing data" in {
-        val result = controller(dontGetAnyData).onPageLoad(NormalMode)(fakeRequest)
-        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad().url
-      }
-    }
-
-    "on a POST" must {
-      "redirect to the next page if valid data is submitted" in {
-        val postRequest = fakeRequest.withFormUrlEncodedBody((AdviserNameId.toString, "answer"))
-
-        val result = controller().onSubmit(NormalMode)(postRequest)
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(onwardRoute.url)
-      }
-
-      "return a Bad Request and errors if invalid data is submitted" in {
-        val postRequest = fakeRequest.withFormUrlEncodedBody((AdviserNameId.toString, "123"))
-        val boundForm = form.bind(Map(AdviserNameId.toString -> "123"))
-
-        val result = controller().onSubmit(NormalMode)(postRequest)
-
-        status(result) mustBe BAD_REQUEST
-        contentAsString(result) mustBe viewAsString(boundForm)
-      }
-
-      "redirect to the session expired page if there is no existing data" in {
-        val result = controller(dontGetAnyData).onSubmit(NormalMode)(fakeRequest)
-        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad().url
-      }
-    }
-  }
+  behave like controllerWithOnSubmitMethod(onSubmitAction, getEmptyData, form.bind(Map(AdviserNameId.toString -> "")), viewAsString, postRequest)
 
 }
+

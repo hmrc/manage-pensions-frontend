@@ -14,16 +14,6 @@
  * limitations under the License.
  */
 
-package forms.invitations
+package viewmodels
 
-import forms.mappings.Mappings
-import javax.inject.Inject
-import play.api.data.Form
-
-class HaveYouEmployedPensionAdviserFormProvider @Inject()() extends Mappings {
-
-  def apply(): Form[Boolean] = Form(
-    "haveYouEmployedPensionAdviser" -> boolean()
-  )
-
-}
+case class AnswerSection(headingKey: Option[String], rows: Seq[AnswerRow]) extends Section

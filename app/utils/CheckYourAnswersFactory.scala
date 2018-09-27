@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package forms.invitations
+package utils
 
-import forms.mappings.Mappings
-import javax.inject.Inject
-import play.api.data.Form
+import com.google.inject.Inject
 
-class HaveYouEmployedPensionAdviserFormProvider @Inject()() extends Mappings {
+class CheckYourAnswersFactory @Inject()(){
 
-  def apply(): Form[Boolean] = Form(
-    "haveYouEmployedPensionAdviser" -> boolean()
-  )
-
+  def checkYourAnswersHelper(userAnswers: UserAnswers): CheckYourAnswersHelper = {
+    new CheckYourAnswersHelper(userAnswers)
+  }
 }
+
