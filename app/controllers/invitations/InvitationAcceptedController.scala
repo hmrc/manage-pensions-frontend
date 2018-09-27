@@ -28,20 +28,19 @@ import views.html.invitations.invitationAccepted
 
 import scala.concurrent.Future
 
-class InvitationAcceptedController @Inject()(appConfig: FrontendAppConfig,
-                                        override val messagesApi: MessagesApi,
-                                        authenticate: AuthAction,
-                                        getData: DataRetrievalAction,
-                                        requireData: DataRequiredAction) extends FrontendController with Retrievals with I18nSupport {
+class InvitationAcceptedController @Inject()(frontendAppConfig: FrontendAppConfig,
+                                             override val messagesApi: MessagesApi,
+                                             authenticate: AuthAction,
+                                             getData: DataRetrievalAction,
+                                             requireData: DataRequiredAction) extends FrontendController with Retrievals with I18nSupport {
 
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
-
       SchemeDetailId.retrieve.right.map{
         schemeDetails =>
           Future.successful(Ok(invitationAccepted(
-            appConfig,
+            frontendAppConfig,
             schemeDetails.schemeName
           )))
       }

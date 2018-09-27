@@ -18,29 +18,26 @@ package controllers.invitations
 
 import controllers.ControllerSpecBase
 import controllers.actions._
-import identifiers.SchemeDetailId
 import models.MinimalSchemeDetail
-import play.api.libs.json.{JsObject, Json}
 import play.api.test.Helpers._
+import utils.UserAnswers
 import views.html.invitations.invitationAccepted
 
 class InvitationAcceptedControllerSpec extends ControllerSpecBase {
 
-  val testSchemeName = "test-scheme-name"
+  val testSchemeName: String = "Test Scheme Name"
+  val testSchemeDetails: MinimalSchemeDetail = MinimalSchemeDetail("srn", Some("pstr"), testSchemeName)
+  val getRelevantData: DataRetrievalAction = UserAnswers().minimalSchemeDetails(testSchemeDetails).dataRetrievalAction
 
-  val validData: JsObject = Json.obj(
-    SchemeDetailId.toString -> Json.toJson(MinimalSchemeDetail("srn", Some("pstr"), testSchemeName))
-  )
-
-  def controller(dataRetrievalAction: DataRetrievalAction =
-    new FakeDataRetrievalAction(Some(validData))): InvitationAcceptedController =
-      new InvitationAcceptedController(
-        frontendAppConfig,
-        messagesApi,
-        FakeAuthAction(),
-        dataRetrievalAction,
-        new DataRequiredActionImpl
-      )
+  def controller(authAction: AuthAction = FakeAuthAction(), dataRetrievalAction: DataRetrievalAction = getRelevantData):
+  InvitationAcceptedController =
+    new InvitationAcceptedController(
+      frontendAppConfig,
+      messagesApi,
+      authAction,
+      dataRetrievalAction,
+      new DataRequiredActionImpl
+    )
 
   def viewAsString(): String = invitationAccepted(frontendAppConfig, testSchemeName)(fakeRequest, messages).toString
 
@@ -53,24 +50,17 @@ class InvitationAcceptedControllerSpec extends ControllerSpecBase {
 
     "redirect to session expired if required data is missing" in {
 
-      val result = controller(getEmptyData).onPageLoad(fakeRequest)
+      val result = controller(dataRetrievalAction = getEmptyData).onPageLoad(fakeRequest)
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad.url)
+      redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)
     }
 
     "redirect to unauthorised if user action is not authenticated" in {
 
-      val controller = new InvitationAcceptedController(
-        frontendAppConfig,
-        messagesApi,
-        FakeUnAuthorisedAction(),
-        getEmptyData,
-        new DataRequiredActionImpl
-      )
-      val result = controller.onPageLoad(fakeRequest)
+      val result = controller(authAction = FakeUnAuthorisedAction()).onPageLoad(fakeRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad.url)
+      redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)
     }
   }
 }
