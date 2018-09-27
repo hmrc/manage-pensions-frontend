@@ -1,4 +1,6 @@
 
+GET        /invite                                      controllers.invitations.InviteController.onPageLoad()
+
 GET        /use-pension-adviser                         controllers.invitations.HaveYouEmployedPensionAdviserController.onPageLoad(mode: Mode = NormalMode)
 POST       /use-pension-adviser                         controllers.invitations.HaveYouEmployedPensionAdviserController.onSubmit(mode: Mode = NormalMode)
 GET        /change-use-pension-adviser                  controllers.invitations.HaveYouEmployedPensionAdviserController.onPageLoad(mode: Mode = CheckMode)
@@ -24,5 +26,11 @@ POST       /pension-adviser-name                        controllers.invitations.
 GET        /change-pension-adviser-name                 controllers.invitations.AdviserDetailsController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-pension-adviser-name                 controllers.invitations.AdviserDetailsController.onSubmit(mode: Mode = CheckMode)
 
+GET        /check-your-answers                          controllers.invitations.CheckYourAnswersController.onPageLoad()
+POST       /check-your-answers                          controllers.invitations.CheckYourAnswersController.onSubmit()
+
 GET        /cannot-send-invite                          controllers.invitations.YouCannotSendAnInviteController.onPageLoad()
+
+GET        /declaration                                 controllers.invitations.DeclarationController.onPageLoad()
+POST       /declaration                                 controllers.invitations.DeclarationController.onSubmit()
 

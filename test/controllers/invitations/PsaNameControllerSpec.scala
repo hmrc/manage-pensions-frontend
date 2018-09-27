@@ -46,12 +46,10 @@ class PsaNameControllerSpec extends ControllerWithQuestionPageBehaviours {
       dataRetrievalAction, requiredDateAction, formProvider).onSubmit(NormalMode)
   }
 
-  def getRelevantData = userAnswer.dataRetrievalAction
-
   def viewAsString(form: Form[_]) = psaName(frontendAppConfig, form, NormalMode)(fakeRequest, messages).toString
 
 
-  behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, getRelevantData, form, form.fill("xyz"), viewAsString)
+  behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, userAnswer.dataRetrievalAction, form, form.fill("xyz"), viewAsString)
 
   behave like controllerWithOnSubmitMethod(onSubmitAction, getEmptyData, form.bind(Map("psaName" -> "")), viewAsString, postRequest)
 

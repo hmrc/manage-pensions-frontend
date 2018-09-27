@@ -16,14 +16,19 @@
 
 package forms.invitations
 
-import forms.mappings.Mappings
-import javax.inject.Inject
+import com.google.inject.Inject
+import forms.mappings.CheckboxMapping
 import play.api.data.Form
 
-class HaveYouEmployedPensionAdviserFormProvider @Inject()() extends Mappings {
+class DeclarationFormProvider @Inject() () extends CheckboxMapping {
 
-  def apply(): Form[Boolean] = Form(
-    "haveYouEmployedPensionAdviser" -> boolean()
-  )
+  private val fieldName = "agree"
+  private val trueValue = "agreed"
+  private val invalidKey = "messages__error__declaration__required"
+
+  def apply(): Form[Boolean] =
+    Form(
+      fieldName -> checkboxMapping(fieldName, trueValue, acceptTrueOnly = true, invalidKey)
+    )
 
 }

@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-package forms.invitations
+package viewmodels
 
-import forms.mappings.Mappings
-import javax.inject.Inject
-import play.api.data.Form
+case class AnswerRow(label: String, answer: Seq[String], answerIsMessageKey: Boolean, changeUrl: Option[String])
 
-class HaveYouEmployedPensionAdviserFormProvider @Inject()() extends Mappings {
-
-  def apply(): Form[Boolean] = Form(
-    "haveYouEmployedPensionAdviser" -> boolean()
-  )
-
+object AnswerRow {
+  def apply(label: String, answer: Seq[String], answerIsMessageKey: Boolean, changeUrl: String): AnswerRow = {
+    AnswerRow(label, answer, answerIsMessageKey, Some(changeUrl))
+  }
 }

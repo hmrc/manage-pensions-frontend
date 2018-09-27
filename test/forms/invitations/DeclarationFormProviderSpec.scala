@@ -16,14 +16,18 @@
 
 package forms.invitations
 
-import forms.mappings.Mappings
-import javax.inject.Inject
+import forms.behaviours.CheckboxBehaviour
 import play.api.data.Form
 
-class HaveYouEmployedPensionAdviserFormProvider @Inject()() extends Mappings {
+class DeclarationFormProviderSpec extends CheckboxBehaviour {
 
-  def apply(): Form[Boolean] = Form(
-    "haveYouEmployedPensionAdviser" -> boolean()
-  )
+  private val form: Form[Boolean] = new DeclarationFormProvider()()
+  private val fieldName = "agree"
+  private val trueValue = "agreed"
+  private val invalidKey = "messages__error__declaration__required"
+
+  "DeclarationFormProvider" should {
+    behave like formWithCheckbox(form, fieldName, trueValue, acceptTrueOnly = true, invalidKey)
+  }
 
 }
