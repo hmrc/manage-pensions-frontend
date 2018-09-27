@@ -128,6 +128,12 @@ messages__error__adviser__name__required = Enter the name of your pension advise
 messages__error__adviser__name__length = Enter a name using less than 108 characters
 messages__error__adviser__name__invalid = Enter a name using only letters
 
+messages__invitationDuplicate__title = This PSA has already been sent an invite
+messages__invitationDuplicate__heading = {0} has already been sent an invite
+messages__invitationDuplicate__schemeName = {0} has already been invited to administer {1}.
+messages__invitationDuplicate__inviteInformation = They will not be sent another invite.
+messages__invitationDuplicate__returnToSchemes__link = Return to your pension schemes
+
 messages__adviser__postcode__title = What is your pension adviser’s postcode?
 messages__adviser__postcode__heading = What is {0}’s postcode?
 messages__error__postcode__lookup__no__results = There are no addresses for that postcode

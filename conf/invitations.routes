@@ -34,5 +34,7 @@ POST       /check-your-answers                          controllers.invitations.
 
 GET        /cannot-send-invite                          controllers.invitations.YouCannotSendAnInviteController.onPageLoad()
 
+GET        /psa-already-invited                         controllers.invitations.InvitationDuplicateController.onPageLoad()
+
 GET        /declaration                                 controllers.invitations.DeclarationController.onPageLoad()
 POST       /declaration                                 controllers.invitations.DeclarationController.onSubmit()
