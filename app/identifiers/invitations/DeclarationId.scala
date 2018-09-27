@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-package models
+package identifiers.invitations
 
-import play.api.libs.json.Json
+import identifiers.TypedIdentifier
 
-case class LastUpdatedDate(timestamp: Long)
-
-object LastUpdatedDate {
-  implicit val format = Json.format[LastUpdatedDate]
+object DeclarationId extends TypedIdentifier[Boolean] {
+  override def toString: String = "declaration"
 }

@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
-package models
+package forms.invitations
 
-import play.api.libs.json.Json
+import forms.behaviours.CheckboxBehaviour
+import play.api.data.Form
 
-case class LastUpdatedDate(timestamp: Long)
+class DeclarationFormProviderSpec extends CheckboxBehaviour {
 
-object LastUpdatedDate {
-  implicit val format = Json.format[LastUpdatedDate]
+  private val form: Form[Boolean] = new DeclarationFormProvider()()
+  private val fieldName = "agree"
+  private val trueValue = "agreed"
+  private val invalidKey = "messages__error__declaration__required"
+
+  "DeclarationFormProvider" should {
+    behave like formWithCheckbox(form, fieldName, trueValue, acceptTrueOnly = true, invalidKey)
+  }
+
 }

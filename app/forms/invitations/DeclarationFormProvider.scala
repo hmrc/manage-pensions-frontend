@@ -14,12 +14,21 @@
  * limitations under the License.
  */
 
-package models
+package forms.invitations
 
-import play.api.libs.json.Json
+import com.google.inject.Inject
+import forms.mappings.CheckboxMapping
+import play.api.data.Form
 
-case class LastUpdatedDate(timestamp: Long)
+class DeclarationFormProvider @Inject() () extends CheckboxMapping {
 
-object LastUpdatedDate {
-  implicit val format = Json.format[LastUpdatedDate]
+  private val fieldName = "agree"
+  private val trueValue = "agreed"
+  private val invalidKey = "messages__error__declaration__required"
+
+  def apply(): Form[Boolean] =
+    Form(
+      fieldName -> checkboxMapping(fieldName, trueValue, acceptTrueOnly = true, invalidKey)
+    )
+
 }
