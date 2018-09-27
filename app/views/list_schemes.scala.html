@@ -46,19 +46,8 @@
     } else {
         @if(openSchemes(schemes).nonEmpty){
             @components.scheme_list(
-                openSchemes(schemes),
-                messages("messages__listSchemes__open__heading"),
-                "1",
-                true
-            )
-        }
-
-        @if(nonOpenSchemes(schemes).nonEmpty){
-            @components.scheme_list(
-                nonOpenSchemes(schemes),
-                messages("messages__listSchemes__not_open__heading"),
-                "2",
-                false
+                schemes,
+                "1"
             )
         }
     }
