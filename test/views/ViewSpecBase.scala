@@ -92,6 +92,25 @@ trait ViewSpecBase extends SpecBase {
       )
   }
 
+
+/*
+  class IdSelectorWithUrlMatcher(expectedContent: String, selector: String) extends Matcher[Document] {
+    def apply(left: Document): MatchResult = {
+      val elements: String =
+        left.getElementById(selector).attr("href")
+
+      lazy val elementContents = elements.mkString("\t", "\n\t", "")
+
+      MatchResult(
+        elements.contains(expectedContent),
+        s"[$expectedContent] not found in elements with id '$selector':[\n$elementContents]",
+        s"[$expectedContent] element found with id '$selector' and url [$expectedContent]"
+      )
+    }
+  }
+
+  def haveLinkWithUrlWithID(id: String, expectedURL: String) = new IdSelectorWithUrlMatcher(expectedURL, id)*/
+
   def asDocument(html: Html): Document = Jsoup.parse(html.toString())
 
   def assertEqualsMessage(doc: Document, cssSelector: String, expectedMessageKey: String): Assertion =
