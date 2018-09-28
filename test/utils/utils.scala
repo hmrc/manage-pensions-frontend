@@ -15,7 +15,7 @@
  */
 
 import controllers.actions.{DataRetrievalAction, FakeDataRetrievalAction}
-import identifiers.invitations.{AdviserNameId, HaveYouEmployedPensionAdviserId, PSAId, PsaNameId}
+import identifiers.invitations._
 import identifiers.{LastPageId, SchemeDetailId}
 import models._
 import org.scalatest.OptionValues
@@ -28,18 +28,25 @@ package object utils {
       answers.set(LastPageId)(page).asOpt.value
     }
 
-    // Invitation Id
+    // Invitation
     def inviteeId(id: String): UserAnswers = {
       answers.set(PSAId)(id).asOpt.value
     }
 
-    // Invitation Name
     def inviteeName(name: String): UserAnswers = {
       answers.set(PsaNameId)(name).asOpt.value
     }
 
     def minimalSchemeDetails(detail: MinimalSchemeDetail): UserAnswers = {
       answers.set(SchemeDetailId)(detail).asOpt.value
+    }
+
+    def havePensionAdviser(hasAdviser: Boolean): UserAnswers = {
+      answers.set(HaveYouEmployedPensionAdviserId)(hasAdviser).asOpt.value
+    }
+
+    def isMasterTrust(isMaster: Boolean): UserAnswers = {
+      answers.set(IsMasterTrustId)(isMaster).asOpt.value
     }
 
     def adviserId(id: String): UserAnswers = {

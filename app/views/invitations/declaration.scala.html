@@ -1,0 +1,77 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.FrontendAppConfig
+@import uk.gov.hmrc.play.views.html._
+@import viewmodels.Message
+@import controllers.invitations.routes._
+
+@(appConfig: FrontendAppConfig, hasAdviser: Boolean, isMasterTrust: Boolean, form: Form[_])(implicit request: Request[_], messages: Messages)
+
+@main_template(
+title = s"${messages("messages__declaration__title")}",
+appConfig = appConfig,
+bodyClasses = None) {
+
+    @components.back_link()
+
+    @components.error_summary(form.errors)
+
+    @components.heading(Message("messages__declaration__heading"))
+
+    @helpers.form(action = DeclarationController.onSubmit(), 'autoComplete -> "off") {
+
+        @components.paragraph_text(messages("messages__declaration__continue") + ":")
+
+        <ol class="list-number">
+
+            <li>@components.paragraph_text(messages("messages__declaration__statement1"))</li>
+
+            <li>@components.paragraph_text(messages("messages__declaration__statement2"))</li>
+
+            <li>@components.paragraph_text(messages("messages__declaration__statement3"))</li>
+
+            <li>@components.paragraph_text(messages("messages__declaration__statement4"))</li>
+
+            <li>
+                @if(hasAdviser) {
+                    @components.paragraph_text(messages("messages__declaration__statement5__with__adviser"))
+                } else {
+                    @components.paragraph_text(messages("messages__declaration__statement5__no__adviser"))
+                }
+            </li>
+
+            <li>@components.paragraph_text(messages("messages__declaration__statement6"))</li>
+
+            @if(isMasterTrust) {
+                <li>@components.paragraph_text(messages("messages__declaration__statement7"))</li>
+            }
+        </ol>
+
+        @components.fieldSet(
+            field = form("agree"),
+            legend = Message("messages__declaration__heading"),
+            hiddenLegend = true
+        ) {
+            <div class="multiple-choice">
+                <input id="agree" name="agree" type="checkbox" value="agreed">
+                <label for="agree">I agree</label>
+            </div>
+        }
+
+        @components.submit_button("site.continue")
+    }
+}

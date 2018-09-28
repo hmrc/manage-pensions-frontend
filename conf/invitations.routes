@@ -21,13 +21,27 @@ POST       /change-psa-id-of-invited-psa                controllers.invitations.
 GET        /invite-sent/:srn                            controllers.invitations.InvitationSuccessController.onPageLoad(srn: SchemeReferenceNumber)
 POST       /invite-sent/:srn                            controllers.invitations.InvitationSuccessController.onSubmit(srn: SchemeReferenceNumber)
 
+GET        /select-pension-adviser-address              controllers.invitations.PensionAdviserAddressListController.onPageLoad()
+POST       /select-pension-adviser-address              controllers.invitations.PensionAdviserAddressListController.onSubmit()
+
 GET        /pension-adviser-name                        controllers.invitations.AdviserDetailsController.onPageLoad(mode: Mode = NormalMode)
 POST       /pension-adviser-name                        controllers.invitations.AdviserDetailsController.onSubmit(mode: Mode = NormalMode)
 GET        /change-pension-adviser-name                 controllers.invitations.AdviserDetailsController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-pension-adviser-name                 controllers.invitations.AdviserDetailsController.onSubmit(mode: Mode = CheckMode)
+
+GET        /pension-adviser-postcode                    controllers.invitations.AdviserAddressPostcodeLookupController.onPageLoad()
+POST       /pension-adviser-postcode                    controllers.invitations.AdviserAddressPostcodeLookupController.onSubmit()
 
 GET        /check-your-answers                          controllers.invitations.CheckYourAnswersController.onPageLoad()
 POST       /check-your-answers                          controllers.invitations.CheckYourAnswersController.onSubmit()
 
 GET        /cannot-send-invite                          controllers.invitations.YouCannotSendAnInviteController.onPageLoad()
 
+GET        /psa-already-invited                         controllers.invitations.InvitationDuplicateController.onPageLoad()
+
+GET        /declaration                                 controllers.invitations.DeclarationController.onPageLoad()
+POST       /declaration                                 controllers.invitations.DeclarationController.onSubmit()
+GET        /pension-adviser-email-address               controllers.invitations.AdviserEmailAddressController.onPageLoad(mode: Mode = NormalMode)
+POST       /pension-adviser-email-address               controllers.invitations.AdviserEmailAddressController.onSubmit(mode: Mode = NormalMode)
+GET        /change-pension-adviser-email-address        controllers.invitations.AdviserEmailAddressController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-pension-adviser-email-address        controllers.invitations.AdviserEmailAddressController.onSubmit(mode: Mode = CheckMode)
