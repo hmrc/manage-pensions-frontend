@@ -18,6 +18,7 @@ package forms.behaviours
 
 import forms.FormSpec
 import forms.mappings.{Constraints, EmailMapping, RegexBehaviourSpec}
+import play.api.data.validation.Constraint
 import play.api.data.{Form, FormError}
 import views.behaviours.StringFieldBehaviours
 
@@ -66,7 +67,7 @@ trait EmailBehaviours extends FormSpec with StringFieldBehaviours with Constrain
         form,
         fieldName,
         "test@com",
-        FormError(fieldName, keyEmailInvalid, Seq(emailRegex))
+        FormError(fieldName, keyEmailInvalid, Seq(Constraints.emailRegex))
       )
 
       behave like formWithRegex(

@@ -74,3 +74,4 @@ trait Retrievals {
   implicit def merge(f: Either[Future[Result], Future[Result]]): Future[Result] =
     f.merge
 }
+
