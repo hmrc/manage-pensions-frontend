@@ -14,36 +14,20 @@
  * limitations under the License.
  */
 
-import connectors.DataCacheConnector
-import connectors.cache.microservice.{InvitationsCacheConnector, ManagePensionsCacheConnector, PensionsSchemeCacheConnector}
+import connectors.cache.microservice.PensionsSchemeCacheConnector
+import connectors.{ManagePensionsCacheConnector, UserAnswersCacheConnector}
 import play.api.inject.{Binding, Module}
-import play.api.{Configuration, Environment, Logger}
-import utils.annotations.{InvitationsCache, PensionsSchemeCache}
+import play.api.{Configuration, Environment}
+import utils.annotations.PensionsSchemeCache
 
 class DataCacheModule extends Module {
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
 
-    configuration.getString("journey-cache") match {
-      case Some("public") =>
-        Seq(
-          bind[DataCacheConnector].to[ManagePensionsCacheConnector],
-          bind[DataCacheConnector].qualifiedWith(classOf[InvitationsCache]).to[InvitationsCacheConnector],
-          bind[DataCacheConnector].qualifiedWith(classOf[PensionsSchemeCache]).to[PensionsSchemeCacheConnector]
-        )
-      case Some("protected") =>
-        Seq(
-          bind[DataCacheConnector].to[ManagePensionsCacheConnector],
-          bind[DataCacheConnector].qualifiedWith(classOf[InvitationsCache]).to[InvitationsCacheConnector],
-          bind[DataCacheConnector].qualifiedWith(classOf[PensionsSchemeCache]).to[PensionsSchemeCacheConnector]
+    Seq(
+      bind[UserAnswersCacheConnector].to[ManagePensionsCacheConnector],
+      bind[UserAnswersCacheConnector].qualifiedWith(classOf[PensionsSchemeCache]).to[PensionsSchemeCacheConnector]
     )
-      case _ =>
-        Logger.warn("No journey-cache set, defaulting to `protected`")
-        Seq(
-          bind[DataCacheConnector].to[ManagePensionsCacheConnector],
-          bind[DataCacheConnector].qualifiedWith(classOf[InvitationsCache]).to[InvitationsCacheConnector],
-          bind[DataCacheConnector].qualifiedWith(classOf[PensionsSchemeCache]).to[PensionsSchemeCacheConnector]
-        )
-    }
   }
 }
+

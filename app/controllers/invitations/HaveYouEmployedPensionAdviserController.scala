@@ -17,7 +17,7 @@
 package controllers.invitations
 
 import config.FrontendAppConfig
-import connectors.DataCacheConnector
+import connectors.UserAnswersCacheConnector
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.invitations.HaveYouEmployedPensionAdviserFormProvider
 import identifiers.invitations.HaveYouEmployedPensionAdviserId
@@ -39,7 +39,7 @@ class HaveYouEmployedPensionAdviserController @Inject()(
                                                          val messagesApi: MessagesApi,
                                                          @AcceptInvitation navigator: Navigator,
                                                          val formProvider: HaveYouEmployedPensionAdviserFormProvider,
-                                                         val dataCacheConnector: DataCacheConnector,
+                                                         val dataCacheConnector: UserAnswersCacheConnector,
                                                          val getData: DataRetrievalAction,
                                                          val requireData: DataRequiredAction
                                                        ) extends FrontendController with I18nSupport {

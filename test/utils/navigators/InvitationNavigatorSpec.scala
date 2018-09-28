@@ -17,7 +17,7 @@
 package utils.navigators
 
 import base.SpecBase
-import connectors.FakeDataCacheConnector
+import connectors.FakeUserAnswersCacheConnector
 import identifiers.Identifier
 import identifiers.invitations.{PSAId, PsaNameId}
 import models.NormalMode
@@ -33,24 +33,24 @@ class InvitationNavigatorSpec extends SpecBase with NavigatorBehaviour {
 
   import InvitationNavigatorSpec._
 
-  val navigator = new InvitationNavigator(FakeDataCacheConnector)
+  val navigator = new InvitationNavigator(FakeUserAnswersCacheConnector)
 
   def routes(): TableFor6[Identifier, UserAnswers, Call, Boolean, Option[Call], Boolean] = Table(
     ("Id", "User Answers", "Next Page (NormalMode)", "Save(NormalMode)", "Next Page (CheckMode)", "Save(CheckMode"),
-    (PsaNameId, emptyAnswers, psaIdPage, false, None, false),
-    (PSAId, emptyAnswers, indexPage, false, None, false)
+    (PsaNameId, emptyAnswers, psaIdPage, false, Some(checkYourAnswer), false),
+    (PSAId, emptyAnswers, checkYourAnswer, false, Some(checkYourAnswer), false)
   )
 
   navigator.getClass.getSimpleName must {
     appRunning()
     behave like nonMatchingNavigator(navigator)
-    behave like navigatorWithRoutes(navigator, FakeDataCacheConnector, routes(), dataDescriber)
+    behave like navigatorWithRoutes(navigator, FakeUserAnswersCacheConnector, routes(), dataDescriber)
   }
 }
 
 object InvitationNavigatorSpec extends OptionValues {
   lazy val emptyAnswers = UserAnswers(Json.obj())
-  lazy val indexPage: Call = controllers.routes.IndexController.onPageLoad()
+  lazy val checkYourAnswer: Call = controllers.invitations.routes.CheckYourAnswersController.onPageLoad()
   lazy val psaIdPage: Call = controllers.invitations.routes.PsaIdController.onPageLoad(NormalMode)
 
 

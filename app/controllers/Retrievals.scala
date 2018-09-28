@@ -62,7 +62,7 @@ trait Retrievals {
       }
   }
 
-  implicit def fromId[A](id: TypedIdentifier[A])(implicit request: DataRequest[AnyContent], reads: Reads[A]): Retrieval[A] =
+  implicit def fromId[A](id: TypedIdentifier[A])(implicit rds: Reads[A]): Retrieval[A] =
     Retrieval {
       implicit request =>
         request.userAnswers.get(id) match {
@@ -74,3 +74,4 @@ trait Retrievals {
   implicit def merge(f: Either[Future[Result], Future[Result]]): Future[Result] =
     f.merge
 }
+

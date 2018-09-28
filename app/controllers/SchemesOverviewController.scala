@@ -17,7 +17,7 @@
 package controllers
 
 import config.FrontendAppConfig
-import connectors.{DataCacheConnector, MinimalPsaConnector}
+import connectors.{UserAnswersCacheConnector, MinimalPsaConnector}
 import controllers.actions._
 import javax.inject.Inject
 import models.requests.OptionalDataRequest
@@ -35,7 +35,7 @@ import scala.concurrent.Future
 
 class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
                                           override val messagesApi: MessagesApi,
-                                          @PensionsSchemeCache dataCacheConnector: DataCacheConnector,
+                                          @PensionsSchemeCache dataCacheConnector: UserAnswersCacheConnector,
                                           minimalPsaConnector: MinimalPsaConnector,
                                           authenticate: AuthAction,
                                           getData: DataRetrievalAction) extends FrontendController with I18nSupport {

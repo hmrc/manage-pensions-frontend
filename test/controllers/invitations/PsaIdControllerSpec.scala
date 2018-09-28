@@ -16,7 +16,7 @@
 
 package controllers.invitations
 
-import connectors.FakeDataCacheConnector
+import connectors.FakeUserAnswersCacheConnector
 import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.invitations.PsaIdFromProvider
@@ -38,21 +38,22 @@ class PsaIdControllerSpec extends ControllerWithQuestionPageBehaviours {
   def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
     new PsaIdController(
-      frontendAppConfig, messagesApi, fakeAuth, navigator, FakeDataCacheConnector,
+      frontendAppConfig, messagesApi, fakeAuth, navigator, FakeUserAnswersCacheConnector,
       dataRetrievalAction, requiredDateAction, formProvider).onPageLoad(NormalMode)
   }
 
   def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
     new PsaIdController(
-      frontendAppConfig, messagesApi, fakeAuth, navigator, FakeDataCacheConnector,
+      frontendAppConfig, messagesApi, fakeAuth, navigator, FakeUserAnswersCacheConnector,
       dataRetrievalAction, requiredDateAction, formProvider).onSubmit(NormalMode)
   }
 
   def viewAsString(form: Form[_] = form) = psaId(frontendAppConfig, form, "xyz", NormalMode)(fakeRequest, messages).toString
 
 
-  behave like controllerWithOnPageLoadMethod(onPageLoadAction, userAnswer.dataRetrievalAction, userAnswerWithPsaId.dataRetrievalAction, form, form.fill("A0000000"), viewAsString)
+  behave like controllerWithOnPageLoadMethod(onPageLoadAction, userAnswer.dataRetrievalAction,
+    userAnswerWithPsaId.dataRetrievalAction, form, form.fill("A0000000"), viewAsString)
 
   behave like controllerWithOnSubmitMethod(onSubmitAction, userAnswerWithPsaId.dataRetrievalAction, form.bind(Map("psaId" -> "")), viewAsString, postRequest)
 

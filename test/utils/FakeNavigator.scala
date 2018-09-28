@@ -16,7 +16,7 @@
 
 package utils
 
-import connectors.{DataCacheConnector, FakeDataCacheConnector}
+import connectors.{UserAnswersCacheConnector, FakeUserAnswersCacheConnector}
 import identifiers.Identifier
 import models.requests.IdentifiedRequest
 import models.{Mode, NormalMode}
@@ -31,7 +31,7 @@ class FakeNavigator(val desiredRoute: Call, mode: Mode = NormalMode) extends Nav
 
   def lastUserAnswers: Option[UserAnswers] = userAnswers
 
-  override protected def dataCacheConnector: DataCacheConnector = FakeDataCacheConnector
+  override protected def dataCacheConnector: UserAnswersCacheConnector = FakeUserAnswersCacheConnector
 
   override def nextPage(id: Identifier, mode: Mode, answers: UserAnswers)
                        (implicit ex: IdentifiedRequest, ec: ExecutionContext, hc: HeaderCarrier): Call = {
