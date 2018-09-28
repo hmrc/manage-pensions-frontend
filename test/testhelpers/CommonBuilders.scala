@@ -30,9 +30,9 @@ object CommonBuilders {
   private val comEstPrevAdd = PreviousAddressDetails(true,Some(Address("addline1","addline2",Some("addline3"),Some("addline4"),Some("ST36TR"),"AD")))
   private val personDetails = PersonDetails(Some("Mr"),"abcdef",Some("fdgdgfggfdg"),"dfgfdgdfg","1955-03-29")
 
-  val schemeDetails = SchemeDetails("S9000000000", "00000000AA", "Open", "Benefits Scheme", Some(true),
+  val schemeDetails = SchemeDetails("S9000000000", Some("00000000AA"), "Open", "Benefits Scheme", Some(true),
     Some("A single trust under which all of the assets are held for the benefit of all members of the scheme"),
-    Some(" "), Some(true), "0", "0", true, true, "Money Purchase benefits only (defined contribution)", "AD", true, true,
+    Some(" "), Some(true), "0", "0", true, true, "Money Purchase benefits only (defined contribution)", "AD", true,
     Some("Aviva Insurance"), Some(" "), Some(address), Some(contactDetails))
 
   private val indEstablisher = Individual(personDetails,Some("AA999999A"),Some("retxgfdg"),Some("1234567892"),

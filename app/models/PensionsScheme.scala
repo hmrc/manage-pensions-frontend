@@ -18,11 +18,11 @@ package models
 
 import play.api.libs.json.{Format, Json}
 
-case class SchemeDetails(srn: String, pstr: String, schemeStatus: String, schemeName: String, isSchemeMasterTrust: Option[Boolean],
+case class SchemeDetails(srn: String, pstr: Option[String], schemeStatus: String, schemeName: String, isSchemeMasterTrust: Option[Boolean],
                          pensionSchemeStructure: Option[String], otherPensionSchemeStructure: Option[String],
                          hasMoreThanTenTrustees: Option[Boolean], currentSchemeMembers: String, futureSchemeMembers: String,
                          isReguledSchemeInvestment: Boolean, isOccupationalPensionScheme: Boolean, schemeProvideBenefits: String,
-                         schemeEstablishedCountry: String, invalidBankFlag: Boolean, isSchemeBenefitsInsuranceCompany: Boolean,
+                         schemeEstablishedCountry: String, isSchemeBenefitsInsuranceCompany: Boolean,
                          insuranceCompanyName: Option[String], policyNumber: Option[String], insuranceCompanyAddressDetails: Option[Address],
                          insuranceCompanyContactDetails: Option[ContactDetails]
                         )

@@ -68,7 +68,8 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
       s"display the correct scheme name with links for row $index when there are schemes to display" in {
         val actual = asDocument(view(config(), fullList).apply())
 
-        actual must haveLinkWithUrlAndContent(s"schemeName-$index", controllers.routes.SchemesOverviewController.onPageLoad().url, s"scheme-name-$index")
+        actual must haveLinkWithUrlAndContent(s"schemeName-$index",
+          controllers.routes.SchemeDetailsController.onPageLoad(s"reference-number-$index").url, s"scheme-name-$index")
       }
     }
 

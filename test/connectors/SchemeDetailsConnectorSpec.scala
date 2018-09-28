@@ -149,9 +149,9 @@ object SchemeDetailsConnectorSpec extends JsonFileReader with MockDataHelper {
     )
   }
 
-  private val schemeDetails = SchemeDetails("S9000000000", "00000000AA", "Pending", "Benefits Scheme", Some(true),
+  private val schemeDetails = SchemeDetails("S9000000000", Some("00000000AA"), "Pending", "Benefits Scheme", Some(true),
     Some("A single trust under which all of the assets are held for the benefit of all members of the scheme"),
-    Some(" "), Some(true), "0", "0", true, true, "Money Purchase benefits only (defined contribution)", "AD", true, true,
+    Some(" "), Some(true), "0", "0", true, true, "Money Purchase benefits only (defined contribution)", "AD", true,
     Some("Aviva Insurance"), Some(" "), Some(address), Some(contactDetails))
 
   private val indEstablisher = Individual(personDetails,Some("AA999999A"),Some("retxgfdg"),Some("1234567892"),

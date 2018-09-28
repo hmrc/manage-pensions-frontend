@@ -17,10 +17,10 @@
 package controllers
 
 import config.FrontendAppConfig
-import connectors.{ListOfSchemesConnector, SchemeDetailsConnector}
+import connectors.{ListOfSchemesConnector, MinimalPsaConnector, SchemeDetailsConnector}
 import controllers.actions._
 import javax.inject.Inject
-import models.{ListOfSchemes, PsaDetails, PsaSchemeDetails, SchemeDetail}
+import models._
 import org.joda.time.LocalDate
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
@@ -29,11 +29,12 @@ import utils.DateHelper
 import views.html.schemeDetails
 
 class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
-                                          override val messagesApi: MessagesApi,
-                                          schemeDetailsConnector: SchemeDetailsConnector,
-                                          listSchemesConnector: ListOfSchemesConnector,
-                                          authenticate: AuthAction,
-                                          getData: DataRetrievalAction) extends FrontendController with I18nSupport {
+                                        override val messagesApi: MessagesApi,
+                                        schemeDetailsConnector: SchemeDetailsConnector,
+                                        listSchemesConnector: ListOfSchemesConnector,
+                                        minimalPsaConnector: MinimalPsaConnector,
+                                        authenticate: AuthAction,
+                                        getData: DataRetrievalAction) extends FrontendController with I18nSupport {
 
   def onPageLoad(srn: String): Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
@@ -43,14 +44,14 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
 
           val isSchemeOpen = scheme.psaSchemeDetails.schemeDetails.schemeStatus.equalsIgnoreCase("open")
 
-                Ok(schemeDetails(appConfig,
-                  scheme.psaSchemeDetails.schemeDetails.schemeName,
-                  openedDate(srn, list, isSchemeOpen),
-                  administrators(scheme),
-                  srn,
-                  isSchemeOpen
-                ))
-            }
+          Ok(schemeDetails(appConfig,
+            scheme.psaSchemeDetails.schemeDetails.schemeName,
+            openedDate(srn, list, isSchemeOpen),
+            administrators(scheme),
+            srn,
+            isSchemeOpen
+          ))
+        }
       }
   }
 
@@ -62,18 +63,33 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
   }
 
   private def openedDate(srn: String, list: ListOfSchemes, isSchemeOpen: Boolean): Option[String] = {
-      if(isSchemeOpen) {
-        list.schemeDetail.flatMap { listOfSchemes =>
-          val currentScheme = listOfSchemes.filter((i: SchemeDetail) => i.referenceNumber.contains(srn))
-          if (currentScheme.nonEmpty) {
-            currentScheme.head.openDate.map(new LocalDate(_).toString(DateHelper.formatter))
-          } else { None }
+    if (isSchemeOpen) {
+      list.schemeDetail.flatMap { listOfSchemes =>
+        val currentScheme = listOfSchemes.filter((i: SchemeDetail) => i.referenceNumber.contains(srn))
+        if (currentScheme.nonEmpty) {
+          currentScheme.head.openDate.map(new LocalDate(_).toString(DateHelper.formatter))
+        } else {
+          None
         }
       }
-      else { None }
+    }
+    else {
+      None
+    }
   }
 
   private def fullName(psa: PsaDetails): String =
     s"${psa.firstName.getOrElse("")} ${psa.middleName.getOrElse("")} ${psa.lastName.getOrElse("")}"
+
+  def onClickCheckIfPsaCanInvite: Action[AnyContent] = (authenticate).async {
+    implicit request =>
+      minimalPsaConnector.getMinimalPsaDetails(request.psaId.id).map { minimalDetails =>
+        if (minimalDetails.isPsaSuspended) {
+          Redirect(controllers.invitations.routes.YouCannotSendAnInviteController.onPageLoad())
+        } else {
+          Redirect(controllers.invitations.routes.PsaNameController.onPageLoad(NormalMode))
+        }
+      }
+  }
 
 }

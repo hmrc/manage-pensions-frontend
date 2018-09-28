@@ -25,4 +25,6 @@ GET        /overview                                    controllers.SchemesOverv
 GET        /overview/can-scheme-be-registered           controllers.SchemesOverviewController.onClickCheckIfSchemeCanBeRegistered()
 
 
-GET        /scheme-details/:srn                      controllers.SchemeDetailsController.onPageLoad(srn: String)
+GET        /scheme-details/can-invite                   controllers.SchemeDetailsController.onClickCheckIfPsaCanInvite
+
+GET        /scheme-details/:srn                         controllers.SchemeDetailsController.onPageLoad(srn: String)
