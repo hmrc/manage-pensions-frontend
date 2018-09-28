@@ -16,14 +16,41 @@
 
 package forms.behaviours
 
+import generators.Generators
 import org.scalacheck.Gen
 import org.scalatest.prop.PropertyChecks
 import org.scalatest.{Matchers, WordSpec}
 import play.api.data.{Form, FormError}
 
-trait FieldBehaviours extends WordSpec with Matchers with PropertyChecks {
+trait FieldBehaviours extends WordSpec with Matchers with PropertyChecks with Generators {
 
   lazy val emptyForm = Map[String, String]()
+
+  def fieldWithRegex(form: Form[_],
+                     fieldName: String,
+                     invalidString: String,
+                     error: FormError): Unit = {
+
+    "not bind strings invalidated by regex" in {
+      val result = form.bind(Map(fieldName -> invalidString)).apply(fieldName)
+      result.errors shouldEqual Seq(error)
+    }
+  }
+
+  def fieldWithMaxLength(form: Form[_],
+                         fieldName: String,
+                         maxLength: Int,
+                         lengthError: FormError): Unit = {
+
+    s"not bind strings longer than $maxLength characters" in {
+
+      forAll(stringsLongerThan(maxLength) -> "longString") {
+        string =>
+          val result = form.bind(Map(fieldName -> string)).apply(fieldName)
+          result.errors shouldEqual Seq(lengthError)
+      }
+    }
+  }
 
   def fieldThatBindsValidData(form: Form[_],
                               fieldName: String,

@@ -46,7 +46,7 @@ class InvitationsCacheConnectorSpec extends AsyncWordSpec with MustMatchers with
   protected val getForInviteeUrl = "/pension-administrator/invitation/get-for-invitee"
   protected val removeUrl = "/pension-administrator/invitation"
 
-  protected lazy val connector: InvitationsCacheConnector = injector.instanceOf[InvitationsCacheConnector]
+  protected lazy val connector: InvitationsCacheConnector = injector.instanceOf[InvitationsCacheConnectorImpl]
 
 
   "get" must {
@@ -204,7 +204,7 @@ class InvitationsCacheConnectorSpec extends AsyncWordSpec with MustMatchers with
           .willReturn(ok)
       )
       connector.add(invitation1) map {
-        _ mustEqual (())
+        _ mustEqual unit
       }
     }
 
@@ -235,7 +235,7 @@ class InvitationsCacheConnectorSpec extends AsyncWordSpec with MustMatchers with
         )
 
         connector.remove(pstr1, inviteePsaId1) map {
-          _ mustEqual (())
+          _ mustEqual unit
         }
       }
     }
@@ -245,8 +245,6 @@ class InvitationsCacheConnectorSpec extends AsyncWordSpec with MustMatchers with
 object InvitationsCacheConnectorSpec {
 
   private val pstr1 = "S12345"
-  private val schemeName1 = "Test scheme1 name"
-  private val inviterPsaId1 = "I12345"
   private val inviteePsaId1 = "P12345"
   private val inviteeName1 = "Test Invitee1 Name"
   private val expiryDate1 = new DateTime("2018-11-10")
