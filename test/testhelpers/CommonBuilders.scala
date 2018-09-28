@@ -20,14 +20,14 @@ import models._
 
 object CommonBuilders {
 
-  private val address = Address(false, "Telford1", "Telford2", Some("Telford13"), Some("Telford14"), Some("TF3 4ER"), "GB")
-  private val indEstAddress = Address(false,"addressline1","addressline2",Some("addressline3"),Some("addressline4"),Some("TF3 5TR"),"GB")
-  private val comEstAddress = Address(true,"line1","line2",Some("line3"),Some("line4"),Some("LE45RT"),"GB")
+  private val address = Address("Telford1", "Telford2", Some("Telford13"), Some("Telford14"), Some("TF3 4ER"), "GB")
+  private val indEstAddress = Address("addressline1","addressline2",Some("addressline3"),Some("addressline4"),Some("TF3 5TR"),"GB")
+  private val comEstAddress = Address("line1","line2",Some("line3"),Some("line4"),Some("LE45RT"),"GB")
   private val contactDetails = ContactDetails("0044-09876542312", Some("0044-09876542312"), Some("0044-09876542312"), "abc@hmrc.gsi.gov.uk")
   private val indEstcontactDetails = ContactDetails("0044-09876542334",Some("0044-09876542312"),Some("0044-09876542312"),"aaa@gmail.com")
   private val comEstcontactDetails = ContactDetails("0044-09876542312",Some("0044-09876542312"),Some("0044-09876542312"),"abcfe@hmrc.gsi.gov.uk")
-  private val indEstPrevAdd = PreviousAddressDetails(true, Some(Address(true,"sddsfsfsdf","sddsfsdf",Some("sdfdsfsdf"),Some("sfdsfsdf"),Some("456546"),"AD")))
-  private val comEstPrevAdd = PreviousAddressDetails(true,Some(Address(true,"addline1","addline2",Some("addline3"),Some("addline4"),Some("ST36TR"),"AD")))
+  private val indEstPrevAdd = PreviousAddressDetails(true, Some(Address("sddsfsfsdf","sddsfsdf",Some("sdfdsfsdf"),Some("sfdsfsdf"),Some("456546"),"AD")))
+  private val comEstPrevAdd = PreviousAddressDetails(true,Some(Address("addline1","addline2",Some("addline3"),Some("addline4"),Some("ST36TR"),"AD")))
   private val personDetails = PersonDetails(Some("Mr"),"abcdef",Some("fdgdgfggfdg"),"dfgfdgdfg","1955-03-29")
 
   val schemeDetails = SchemeDetails("S9000000000", "00000000AA", "Open", "Benefits Scheme", Some(true),
