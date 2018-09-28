@@ -18,15 +18,7 @@
 @import models.SchemeDetail
 @import views.formatters.Date
 
-@(appConfig: FrontendAppConfig, schemes: List[SchemeDetail])(implicit request: Request[_], messages: Messages)
-
-@openSchemes(schemes: List[SchemeDetail]) = @{
-    schemes.filter((i: SchemeDetail) => i.pstr.nonEmpty)
-}
-
-@nonOpenSchemes(schemes: List[SchemeDetail]) = @{
-    schemes.filter((i: SchemeDetail) => i.pstr.isEmpty)
-}
+@(appConfig: FrontendAppConfig, schemes: List[SchemeDetail], invitationsReceived: Boolean)(implicit request: Request[_], messages: Messages)
 
 @main_template(
     title = messages("messages__listSchemes__title"),
@@ -37,6 +29,9 @@
 
     @components.heading(headingKey = messages("messages__listSchemes__title"))
 
+    @if(invitationsReceived) {
+        <p><a id="invitations-received" href="@routes.ListSchemesController.onPageLoad()">@messages("messages__listSchemes__invitations_link")</a></p>
+    }
 
     @if(schemes.isEmpty) {
         <div class="column-two-thirds">
@@ -44,22 +39,9 @@
             <p><a id="registerNewScheme" href="@appConfig.registerSchemeUrl">@messages("messages__listSchemes__registerNewScheme")</a></p>
         </div>
     } else {
-        @if(openSchemes(schemes).nonEmpty){
-            @components.scheme_list(
-                openSchemes(schemes),
-                messages("messages__listSchemes__open__heading"),
-                "1",
-                true
-            )
-        }
-
-        @if(nonOpenSchemes(schemes).nonEmpty){
-            @components.scheme_list(
-                nonOpenSchemes(schemes),
-                messages("messages__listSchemes__not_open__heading"),
-                "2",
-                false
-            )
-        }
+        @components.scheme_list(
+            schemes,
+            appConfig
+        )
     }
 }

@@ -15,59 +15,37 @@
  *@
 
 @import views.formatters.Date
+@import uk.gov.hmrc.urls.Link
+@import config.FrontendAppConfig
 
-@(schemes: List[SchemeDetail], listHeading: String, listId: String, schemeOpened: Boolean)(implicit messages: Messages)
+@(schemes: List[SchemeDetail], appConfig: FrontendAppConfig)(implicit messages: Messages)
 
 @schemeNameHeaderID = @{
-    s"schemeNameHeader$listId"
-}
-
-@srnHeaderID = @{
-    s"srnHeader$listId"
+    s"schemeNameHeader"
 }
 
 @pstrHeaderID = @{
-    s"pstrHeader$listId"
+    s"pstrHeader"
 }
 
 @statusHeaderID = @{
-    s"statusHeader$listId"
-}
-
-@schemeDateHeaderID = @{
-    s"schemeDateHeader$listId"
+    s"statusHeader"
 }
 
 @schemeNameId(index: Int) = @{
-    s"schemeName-$listId-$index"
-}
-
-@srnId(index: Int) = @{
-    s"srn-$listId-$index"
+    s"schemeName-$index"
 }
 
 @pstrId(index: Int) = @{
-    s"pstr-$listId-$index"
+    s"pstr-$index"
 }
 
 @statusId(index: Int) = @{
-    s"schemeStatus-$listId-$index"
-}
-
-@statusDateId(index: Int) = @{
-    s"schemeDate-$listId-$index"
+    s"schemeStatus-$index"
 }
 
 @pstrValue(pstr: Option[String]) = @{
     pstr.getOrElse(messages("messages__listSchemes__pstr_not_assigned"))
-}
-
-@dateValue(date: Option[String]) = @{
-    if(date.nonEmpty){
-        Date.IsoLocalToViewDate(date.getOrElse(""))
-    } else {
-        messages("messages__listSchemes__no_date")
-    }
 }
 
 @statusValue(status: String) = @{
@@ -84,85 +62,58 @@
     }
 }
 
-@statusClass(status: String) = @{
-    status match {
-        case "Pending"                  => "incomplete"
-        case "Pending Info Required"    => "incomplete"
-        case "Pending Info Received"    => "incomplete"
-        case "Rejected"                 => "rejected"
-        case "Open"                     => "complete"
-        case "Deregistered"             => "not-started"
-        case "Wound-up"                 => "not-started"
-        case "Rejected Under Appeal"    => "rejected"
-        case _ => ""
-    }
-}
-
-<h2 class="heading-medium">@listHeading</h2>
-
-<div id="schemeList-@{listId}">
+<div id="schemeList">
     <div class="grid-row" aria-hidden="true">
         <div class="column-two-sixths table-header">
             <p id="@schemeNameHeaderID" class="heading-small">@messages("messages__listSchemes__column_schemeName")</p>
         </div>
-        @if(!schemeOpened) {
-            <div class="column-two-sixths table-header">
-                <p id="@srnHeaderID" class="heading-small">@messages("messages__listSchemes__column_srn")</p>
-            </div>
-        }
-        @if(schemeOpened) {
-            <div class="column-two-sixths table-header">
-                <p id="@pstrHeaderID" class="heading-small">@messages("messages__listSchemes__column_pstr")</p>
-            </div>
-        }
-        <div class="@if(schemeOpened){column-one-sixth}else{column-two-sixths} table-header">
+        <div class="column-two-sixths table-header">
+            <p id="@pstrHeaderID" class="heading-small">@messages("messages__listSchemes__column_pstr")</p>
+        </div>
+        <div class="column-two-sixths table-header">
             <p id="@statusHeaderID" class="heading-small">@messages("messages__listSchemes__column_status")</p>
         </div>
-        @if(schemeOpened) {
-            <div class="column-one-sixth table-header">
-                <p id="@schemeDateHeaderID" class="heading-small">@messages("messages__listSchemes__column_date")</p>
-            </div>
-        }
     </div>
 
     @for((scheme, index) <- schemes.zipWithIndex) {
         <div class="row-group grid-row">
             <div class="column-two-sixths table-column scheme-name">
-                <p id="@{schemeNameId(index)}">
-                    <span aria-hidden="true">@scheme.name</span>
+               @if(appConfig.isWorkPackageOneEnabled) {
+                    <span aria-hidden="true">
+                        @Link.toInternalPage(
+                            id=Some(s"${schemeNameId(index)}"),
+                            url=controllers.routes.SchemesOverviewController.onPageLoad().url,
+                            value=Some(scheme.name)
+                        ).toHtml
+                    </span>
                     <span class="visually-hidden">@messages("messages__listSchemes__schemeName__screen_reader", scheme.name)</span>
-                </p>
-            </div>
-            @if(!schemeOpened) {
-                <div class="column-two-sixths table-column scheme-name">
-                    <p id="@{srnId(index)}" data-title='@messages("messages__listSchemes__column_srn")&nbsp;'>
-                        <span aria-hidden="true">@scheme.referenceNumber</span>
-                        <span class="visually-hidden">@messages("messages__listSchemes__SRN__screen_reader", scheme.name, scheme.referenceNumber)</span>
+                }else {
+                    <p id="@{schemeNameId(index)}">
+                        <span aria-hidden="true">@scheme.name</span>
+                        <span class="visually-hidden">@messages("messages__listSchemes__schemeName__screen_reader", scheme.name)</span>
                     </p>
-                </div>
-            }
-            @if(schemeOpened) {
+                }
+            </div>
+
                 <div class="column-two-sixths table-column scheme-name">
-                    <p id="@{pstrId(index)}" data-title='@messages("messages__listSchemes__column_pstr")&nbsp;'>
-                        <span aria-hidden="true">@pstrValue(scheme.pstr)</span>
+                    <p id="@{pstrId(index)}">
+                        <span aria-hidden="true">
+                            @if(scheme.pstr.nonEmpty) {
+                                @pstrValue(scheme.pstr)
+                            } else {
+                                @messages("messages__listSchemes__pstr_not_assigned")
+                            }
+                        </span>
                         <span class="visually-hidden">@messages("messages__listSchemes__PSTR__screen_reader", scheme.name, scheme.pstr)</span>
                     </p>
                 </div>
-            }
-            <div class="@if(schemeOpened){column-one-sixth}else{column-two-sixths} table-column scheme-name">
+
+            <div class="column-two-sixths table-column scheme-name">
                 <p id="@{statusId(index)}">
                     <span>@statusValue(scheme.schemeStatus)</span>
                     <span class="visually-hidden">@messages("messages__listSchemes__status__screen_reader", scheme.name, scheme.schemeStatus)</span>
                 </p>
             </div>
-            @if(schemeOpened) {
-                <div class="column-one-sixth table-column scheme-name">
-                    <p id="@{statusDateId(index)}">
-                        <span>@dateValue(scheme.openDate)</span>
-                        <span class="visually-hidden">@messages("messages__listSchemes__date__screen_reader", scheme.name, dateValue(scheme.openDate))</span>
-                    </p>
-                </div>
-            }
         </div>
     }
 </div>
