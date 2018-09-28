@@ -21,18 +21,25 @@ import org.scalatest.{Matchers, WordSpec}
 
 class DateHelperSpec extends WordSpec with Matchers {
 
+  val dateHelper = new DateHelper {
+    override val currentDate = DateTime.parse("2018-01-04T00:00:01Z")
+  }
+
+  val daysAhead = 30
+
   "thirtyDaysFromNowInSeconds" should {
     "respond correctly for a date at 1 second after midnight" in {
-      val result = DateHelper.dateTimeFromNowToMidnightAfterDays(DateTime.parse("2018-01-04T00:00:01Z"), 30).toString
+      val result = dateHelper.dateTimeFromNowToMidnightAfterDays(daysAhead).toString
       result shouldBe "2018-02-04T00:00:00.000Z"
     }
     "respond correctly for a date around the middle of the day" in {
-      val result = DateHelper.dateTimeFromNowToMidnightAfterDays(DateTime.parse("2018-01-04T12:30:01Z"), 30).toString
+      val result = dateHelper.dateTimeFromNowToMidnightAfterDays(daysAhead).toString
       result shouldBe "2018-02-04T00:00:00.000Z"
     }
     "respond correctly for a date at 1 second to midnight" in {
-      val result = DateHelper.dateTimeFromNowToMidnightAfterDays(DateTime.parse("2018-01-04T23:59:59Z"), 30).toString
+      val result = dateHelper.dateTimeFromNowToMidnightAfterDays(daysAhead).toString
       result shouldBe "2018-02-04T00:00:00.000Z"
     }
   }
 }
+
