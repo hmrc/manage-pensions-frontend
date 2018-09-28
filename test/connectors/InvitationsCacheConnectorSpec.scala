@@ -45,7 +45,7 @@ class InvitationsCacheConnectorSpec extends AsyncWordSpec with MustMatchers with
   protected val getForInviteeUrl = "/pension-administrator/invitation/get-for-invitee"
   protected val removeUrl = "/pension-administrator/invitation"
 
-  protected lazy val connector: InvitationsCacheConnector = injector.instanceOf[InvitationsCacheConnector]
+  protected lazy val connector: InvitationsCacheConnector = injector.instanceOf[InvitationsCacheConnectorImpl]
 
 
   "get" must {
