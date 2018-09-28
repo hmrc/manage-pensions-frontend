@@ -16,10 +16,10 @@
 
 package utils.navigators
 
-import javax.inject.{Inject, Singleton}
 import connectors.UserAnswersCacheConnector
 import controllers.routes
 import identifiers.invitations._
+import javax.inject.{Inject, Singleton}
 import utils.Navigator
 
 @Singleton
@@ -29,6 +29,7 @@ class AcceptInvitationNavigator @Inject()(val dataCacheConnector: UserAnswersCac
     case PsaNameId | HaveYouEmployedPensionAdviserId => NavigateTo.save(routes.IndexController.onPageLoad())
     case AdviserNameId | AdviserAddressListId | AdviserAddressPostCodeLookupId => NavigateTo.dontSave(routes.IndexController.onPageLoad())
     case DeclarationId => NavigateTo.dontSave(routes.IndexController.onPageLoad())
+    case AdviserEmailId => NavigateTo.dontSave(routes.IndexController.onPageLoad())
     case _ => NavigateTo.dontSave(controllers.routes.SessionExpiredController.onPageLoad())
   }
 

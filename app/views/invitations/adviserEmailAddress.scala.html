@@ -15,33 +15,34 @@
  *@
 
 @import config.FrontendAppConfig
+@import models.Mode
 @import uk.gov.hmrc.play.views.html._
 @import controllers.invitations.routes._
-@import models.Mode
 
-@(appConfig: FrontendAppConfig, form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(appConfig: FrontendAppConfig, form: Form[_], mode: Mode, adviserName: String)(implicit request: Request[_], messages: Messages)
 
 @main_template(
-    title = s"${messages("messages__adviser__name__title")}",
+    title = s"${messages("messages__adviser__email__address__title")}",
     appConfig = appConfig,
     bodyClasses = None) {
 
-    @helpers.form(action = AdviserDetailsController.onSubmit(mode), 'autoComplete -> "off") {
+    @helpers.form(action = AdviserEmailAddressController.onSubmit(mode), 'autoComplete -> "off") {
 
         @components.back_link()
 
         @components.error_summary(form.errors)
 
-        @components.heading(messages("messages__adviser__name__heading"))
+        @components.heading(messages(s"messages__adviser__email__address__heading", adviserName))
 
-        <p>@messages("messages__adviser__name__p1")</p>
+        <p>@messages("messages__adviser__email__address__p1")</p>
 
         @components.input_text(
-          field = form("adviserName"),
-          label = messages("messages__adviser__name__heading"),
-          labelClass=Some("visually-hidden")
+            field = form("email"),
+            label = messages("messages__adviser__email__address__heading"),
+            labelClass=Some("visually-hidden")
         )
 
         @components.submit_button()
     }
+
 }

@@ -41,3 +41,7 @@ GET        /psa-already-invited                         controllers.invitations.
 
 GET        /declaration                                 controllers.invitations.DeclarationController.onPageLoad()
 POST       /declaration                                 controllers.invitations.DeclarationController.onSubmit()
+GET        /pension-adviser-email-address               controllers.invitations.AdviserEmailAddressController.onPageLoad(mode: Mode = NormalMode)
+POST       /pension-adviser-email-address               controllers.invitations.AdviserEmailAddressController.onSubmit(mode: Mode = NormalMode)
+GET        /change-pension-adviser-email-address        controllers.invitations.AdviserEmailAddressController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-pension-adviser-email-address        controllers.invitations.AdviserEmailAddressController.onSubmit(mode: Mode = CheckMode)
