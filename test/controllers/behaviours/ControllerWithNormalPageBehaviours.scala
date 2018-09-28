@@ -87,7 +87,8 @@ class ControllerWithNormalPageBehaviours extends ControllerSpecBase {
 
   def controllerWithOnSubmitMethod[T](onSubmitAction: (DataRetrievalAction, AuthAction) => Action[AnyContent],
                                       emptyData: DataRetrievalAction,
-                                      validData: Option[DataRetrievalAction]): Unit = {
+                                      validData: Option[DataRetrievalAction],
+                                      redirectionUrl: Option[() => Call]): Unit = {
 
     "calling onSubmit" must {
 
@@ -96,7 +97,10 @@ class ControllerWithNormalPageBehaviours extends ControllerSpecBase {
         val result = onSubmitAction(validData.getOrElse(emptyData), FakeAuthAction())(FakeRequest())
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(onwardRoute.url)
+        redirectionUrl match {
+          case Some(call) => redirectLocation(result) mustBe Some(call().url)
+          case _=> redirectLocation(result) mustBe Some(onwardRoute.url)
+        }
       }
 
       if (validData.isDefined) {
