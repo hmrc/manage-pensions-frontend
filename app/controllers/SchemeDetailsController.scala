@@ -22,11 +22,10 @@ import controllers.actions._
 import javax.inject.Inject
 import models.{ListOfSchemes, PsaDetails, PsaSchemeDetails, SchemeDetail}
 import org.joda.time.LocalDate
-import org.joda.time.format.DateTimeFormat
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import views.html.schemeDetails
+import utils.DateHelper
 
 class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                                           override val messagesApi: MessagesApi,
@@ -56,29 +55,24 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
 
   private def administrators(scheme: PsaSchemeDetails): Option[Seq[String]] = {
     scheme.psaSchemeDetails.psaDetails match {
-      case Some(psaDetails) => Some(psaDetails.map(fullName(_)))
+      case Some(psaDetails) => Some(psaDetails.map(fullName))
       case None => None
     }
   }
 
   private def openedDate(srn: String, list: ListOfSchemes, isSchemeOpen: Boolean): Option[String] = {
-    isSchemeOpen match {
-      case true =>
+      if(isSchemeOpen) {
         list.schemeDetail.flatMap { listOfSchemes =>
           val currentScheme = listOfSchemes.filter((i: SchemeDetail) => i.referenceNumber.contains(srn))
           if (currentScheme.nonEmpty) {
-            currentScheme.head.openDate.map(new LocalDate(_).toString(formatter))
-          } else {
-            None
-          }
+            currentScheme.head.openDate.map(new LocalDate(_).toString(DateHelper.formatter))
+          } else { None }
         }
-      case _ => None
-    }
+      }
+      else { None }
   }
 
   private def fullName(psa: PsaDetails): String =
     s"${psa.firstName.getOrElse("")} ${psa.middleName.getOrElse("")} ${psa.lastName.getOrElse("")}"
-
-  private val formatter = DateTimeFormat.forPattern("dd MMMM YYYY")
 
 }
