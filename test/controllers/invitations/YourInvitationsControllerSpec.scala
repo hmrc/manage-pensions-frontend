@@ -16,14 +16,15 @@
 
 package controllers.invitations
 
-import connectors.InvitationsCacheConnector
+import connectors.{FakeUserAnswersCacheConnector, InvitationsCacheConnector}
 import controllers.ControllerSpecBase
 import controllers.actions.{AuthAction, FakeAuthAction, FakeUnAuthorisedAction}
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 import play.api.test.Helpers._
-import utils.testhelpers.InvitationBuilder._
+import testhelpers.InvitationBuilder._
+import utils.FakeNavigator
 
 import scala.concurrent.Future
 
@@ -38,7 +39,9 @@ class YourInvitationsControllerSpec extends ControllerSpecBase with MockitoSugar
       frontendAppConfig,
       messagesApi,
       authAction,
-      mockInvitationsCacheConnector
+      mockInvitationsCacheConnector,
+      FakeUserAnswersCacheConnector,
+      FakeNavigator
     )
   }
   "YourInvitationsController" must {

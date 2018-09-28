@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2018 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,23 +12,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@import org.joda.time.DateTime
+package identifiers
 
-@(
-schemeName: String,
-expiryDate: DateTime,
-id: String,
-srn: String
-)(implicit messages: Messages)
+case object SchemeSrnId extends TypedIdentifier[String] {
 
+  override def toString: String = "schemeSrn"
 
-<div>
-    <h2 class="bold">@schemeName</h2>
-    <p>@messages("messages__yourInvitations__scheme_expiry_date", utils.DateHelper.formatDate(expiryDate.toLocalDate))</p>
-    <a id= "accept-invitation-@id" href="@controllers.invitations.routes.YourInvitationsController.onSubmit(srn).url">
-        @messages("messages__yourInvitations__accept_link")
-    </a>
-</div>
-
+}

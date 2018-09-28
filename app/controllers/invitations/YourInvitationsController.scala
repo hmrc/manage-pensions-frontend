@@ -17,19 +17,24 @@
 package controllers.invitations
 
 import config.FrontendAppConfig
-import connectors.InvitationsCacheConnector
+import connectors.{InvitationsCacheConnector, UserAnswersCacheConnector}
 import controllers.actions._
+import identifiers.SchemeSrnId
 import javax.inject.Inject
-import org.joda.time.format.DateTimeFormat
+import models.NormalMode
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import utils.annotations.Invitation
+import utils.{Navigator, UserAnswers}
 import views.html.invitations.yourInvitations
 
 class YourInvitationsController @Inject()(appConfig: FrontendAppConfig,
                                   override val messagesApi: MessagesApi,
                                   authenticate: AuthAction,
-                                  invitationsCacheConnector: InvitationsCacheConnector
+                                  invitationsCacheConnector: InvitationsCacheConnector,
+                                  userAnswersCacheConnector: UserAnswersCacheConnector,
+                                  @Invitation navigator: Navigator
                                  ) extends FrontendController with I18nSupport {
 
 
@@ -41,10 +46,12 @@ class YourInvitationsController @Inject()(appConfig: FrontendAppConfig,
       }
   }
 
-//  def onSubmit(): Action[AnyContent] = (authenticate).async {
-//    implicit request =>
-//
-//  }
+  def onSubmit(srn: String): Action[AnyContent] = (authenticate).async {
+    implicit request =>
+      userAnswersCacheConnector.save(request.externalId, SchemeSrnId, srn).map { cacheMap =>
+        Redirect(navigator.nextPage(SchemeSrnId, NormalMode, UserAnswers(cacheMap)))
+      }
+  }
 
 
 

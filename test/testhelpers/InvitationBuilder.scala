@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package utils.testhelpers
+package testhelpers
 
 import models.Invitation
 import org.joda.time.DateTime

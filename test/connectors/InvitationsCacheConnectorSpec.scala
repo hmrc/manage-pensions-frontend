@@ -23,7 +23,7 @@ import play.api.http.Status
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.{HeaderCarrier, HttpException}
 import utils.WireMockHelper
-import utils.testhelpers.InvitationBuilder._
+import testhelpers.InvitationBuilder._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -201,7 +201,7 @@ class InvitationsCacheConnectorSpec extends AsyncWordSpec with MustMatchers with
           .willReturn(ok)
       )
       connector.add(invitation1) map {
-        _ mustEqual unit
+        _ mustEqual (())
       }
     }
 
@@ -232,7 +232,7 @@ class InvitationsCacheConnectorSpec extends AsyncWordSpec with MustMatchers with
         )
 
         connector.remove(pstr1, inviteePsaId1) map {
-          _ mustEqual unit
+          _ mustEqual (())
         }
       }
     }

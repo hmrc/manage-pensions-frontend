@@ -27,14 +27,15 @@
     appConfig = appConfig,
     bodyClasses = None) {
 
-    @components.heading("messages__yourInvitations__heading")
+    @components.heading(messages("messages__yourInvitations__heading"))
 
     <p>@messages("messages__yourInvitations__lede")</p>
 
     @for((invitation, i) <- invitationsList.zipWithIndex) {
         @components.invitation(invitation.schemeName,
         invitation.expireAt,
-        i.toString)
+        i.toString,
+        invitation.srn)
     }
 
 }

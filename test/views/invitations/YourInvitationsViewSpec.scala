@@ -16,15 +16,13 @@
 
 package views.invitations
 
-import models.{CheckMode, NormalMode}
 import org.jsoup.Jsoup
-import play.api.data.Form
 import play.twirl.api.HtmlFormat
-import views.behaviours.ViewBehaviours
-import views.html.invitations.{adviserDetails, yourInvitations}
-import utils.testhelpers.InvitationBuilder._
-import viewmodels.Message
+import testhelpers.InvitationBuilder._
 import utils.DateHelper._
+import viewmodels.Message
+import views.behaviours.ViewBehaviours
+import views.html.invitations.yourInvitations
 
 class YourInvitationsViewSpec extends ViewBehaviours {
 

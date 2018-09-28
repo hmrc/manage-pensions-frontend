@@ -45,5 +45,7 @@ GET        /pension-adviser-email-address               controllers.invitations.
 POST       /pension-adviser-email-address               controllers.invitations.AdviserEmailAddressController.onSubmit(mode: Mode = NormalMode)
 GET        /change-pension-adviser-email-address        controllers.invitations.AdviserEmailAddressController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-pension-adviser-email-address        controllers.invitations.AdviserEmailAddressController.onSubmit(mode: Mode = CheckMode)
+
 GET        /your-invitations                            controllers.invitations.YourInvitationsController.onPageLoad()
+POST       /your-invitations/:srn                       controllers.invitations.YourInvitationsController.onSubmit(srn: String)
 
