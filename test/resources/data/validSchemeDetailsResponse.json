@@ -118,7 +118,7 @@
         }
       ]
     },
-    "psaDetails": {
+    "psaDetails": [{
       "psaid": "A0000000",
       "organizationOrPartnershipName": "partnetship name",
       "firstName": "Taylor",
@@ -126,6 +126,16 @@
       "lastName": "Rayon",
       "relationshipType": "Primary",
       "relationshipDate": "1978-03-22"
-    }
+    },
+      {
+        "psaid": "A0000001",
+        "organizationOrPartnershipName": "partnetship name 1",
+        "firstName": "Smith",
+        "middleName": "A",
+        "lastName": "Tony",
+        "relationshipType": "Primary",
+        "relationshipDate": "1977-03-22"
+      }
+    ]
   }
 }

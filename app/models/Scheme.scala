@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package utils
+package models
 
 import org.joda.time.LocalDate
-import org.joda.time.format.DateTimeFormat
 
-object DateHelper {
+import play.api.libs.json.{Format, Json}
 
-  val formatter = DateTimeFormat.forPattern("d MMMM yyyy")
-  def formatDate(date: LocalDate): String = {
-    formatter.print(date)
-  }
+case class Scheme(pstr: String, openDate: LocalDate)
+
+object Scheme {
+  implicit val format: Format[Scheme] = Json.format[Scheme]
 }

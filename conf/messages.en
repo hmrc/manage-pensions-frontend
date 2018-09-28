@@ -178,3 +178,10 @@ messages__adviser__email__address__heading = What is {0}’s email address?
 messages__adviser__email__address__p1 = This will be used if HMRC need to contact your pension adviser.
 
 messages__error__declaration__required = You need to agree to all the declarations before you can continue
+
+messages__schemeDetails__title = Pension scheme details
+messages__schemeDetails__view_details_link = View the registered scheme details
+messages__schemeDetails__opened_date_head = This scheme was opened on:
+messages__schemeDetails__psa_list_head = Pension scheme administrators
+messages__schemeDetails__invite_link = Invite another PSA to administer this scheme
+messages__schemeDetails__return_link = Return to your pension schemes
