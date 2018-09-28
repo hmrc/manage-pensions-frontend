@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-import connectors.{UserAnswersCacheConnector, MicroserviceCacheConnector}
-import connectors.cache.microservice.{InvitationsCacheConnector, ManagePensionsCacheConnector, PensionsSchemeCacheConnector}
+import connectors.cache.microservice.PensionsSchemeCacheConnector
+import connectors.{InvitationsCacheConnector, InvitationsCacheConnectorImpl, ManagePensionsCacheConnector, UserAnswersCacheConnector}
 import play.api.inject.{Binding, Module}
 import play.api.{Configuration, Environment}
-import play.api.{Configuration, Environment, Logger}
-import utils.annotations.{InvitationsCache, PensionsSchemeCache}
+import utils.annotations.PensionsSchemeCache
 
 class DataCacheModule extends Module {
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
-
     Seq(
       bind[UserAnswersCacheConnector].to[ManagePensionsCacheConnector],
-      bind[UserAnswersCacheConnector].qualifiedWith(classOf[InvitationsCache]).to[InvitationsCacheConnector],
-      bind[UserAnswersCacheConnector].qualifiedWith(classOf[PensionsSchemeCache]).to[PensionsSchemeCacheConnector]
+      bind[UserAnswersCacheConnector].qualifiedWith(classOf[PensionsSchemeCache]).to[PensionsSchemeCacheConnector],
+      bind[InvitationsCacheConnector].to[InvitationsCacheConnectorImpl]
     )
-
   }
 }

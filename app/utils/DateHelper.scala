@@ -21,8 +21,8 @@ import org.joda.time.format.DateTimeFormat
 
 object DateHelper {
 
+  val formatter = DateTimeFormat.forPattern("d MMMM yyyy")
   def formatDate(date: LocalDate): String = {
-    val dateFormat = DateTimeFormat.forPattern("d MMMM yyyy")
-    dateFormat.print(date)
+    formatter.print(date)
   }
 }

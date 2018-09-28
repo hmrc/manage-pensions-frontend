@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2018 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,19 +12,19 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@(headingKey: String, headingSize: String = "heading-xlarge", secondaryHeaderKey: Option[String] = None, subSecHeader: Option[String] = None)(implicit messages: Messages)
+package forms.invitations
 
-<header class="page-header">
-    <h1 class="@headingSize">@Html(headingKey)</h1>
-    @secondaryHeaderKey.map { secHeader =>
-    <p class="heading-secondary"><span class="visuallyhidden">This section is: </span>@Html(secHeader)
-        @subSecHeader.map { subSecHeader =>
-         @Html(subSecHeader)
-        }</p>
-    }
-</header>
+import com.google.inject.Inject
+import forms.mappings.EmailMapping
+import play.api.data.Form
 
+class AdviserEmailFormProvider @Inject() extends EmailMapping {
 
-
+  def apply(): Form[String] = {
+    Form(
+      "email" -> emailMapping()
+    )
+  }
+}

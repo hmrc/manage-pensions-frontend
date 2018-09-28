@@ -18,8 +18,9 @@
 @import config.FrontendAppConfig
 @import models.TolerantAddress
 @import uk.gov.hmrc.play.views.html._
+@import models.Mode
 
-@(appConfig: FrontendAppConfig, form: Form[_], addresses: Seq[TolerantAddress])(implicit request: Request[_], messages: Messages)
+@(appConfig: FrontendAppConfig, form: Form[_], addresses: Seq[TolerantAddress], mode: Mode)(implicit request: Request[_], messages: Messages)
 
 @main_template(
     title = messages("messages__adviser__address__list__title"),
@@ -27,17 +28,17 @@
     bodyClasses = None
 ) {
 
-    @helpers.form(action = PensionAdviserAddressListController.onSubmit(), 'autoComplete -> "off") {
+    @helpers.form(action = PensionAdviserAddressListController.onSubmit(mode), 'autoComplete -> "off") {
 
         @components.error_summary(form.errors)
 
-        @components.headingNew(
+        @components.heading(
             headingKey=messages("messages__adviser__address__list__heading")
         )
 
         <p>
              @messages("messages__adviser__address__list__select")
-             <a id="manual-address-link" href="@PensionAdviserAddressListController.onPageLoad()">
+             <a id="manual-address-link" href="@AdviserManualAddressController.onPageLoad(mode, false)">
                   @messages("messages__adviser__address__list__link")
              </a>
         </p>

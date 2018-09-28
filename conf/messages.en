@@ -20,6 +20,14 @@ messages__unauthorised__title = You can’t access this service with this accoun
 messages__index__title = Manage Pensions Frontend
 messages__index__guidance = Welcome to your new frontend. Please see the README file for a guide to getting started.
 
+messages__error__common__email__no_at_sign = Enter an email address which includes an @ symbol
+messages__error__common__email__start_with_at_sign = Enter an email address which does not start with @
+messages__error__common__email__dot_after_at_sign = Enter an email address in the correct format with a character between @ and dot
+messages__error__common__email__ends_with_dot = Enter an email address with at least a character after the last dot
+messages__error__common__email__address__required = Enter an email address
+messages__error__common__email__address__length = Enter an email address using less than 133 characters
+messages__error__common__email__address__invalid = Enter an email address in the correct format - you might have to check that you have the correct email
+
 messages__youNeedToRegister__title = You need to register
 messages__youNeedToRegister__heading = Manage and register your pension schemes
 messages__youNeedToRegister__lede = You must register to use this service before you can register a pension scheme.
@@ -41,6 +49,7 @@ messages__session_expired__title = For your security, this service has been rese
 messages__session_expired__guidance = The details you have given have been deleted because you did not continue the service for 1 hour.
 
 messages__listSchemes__title = Your pension schemes
+messages__listSchemes__invitations_link = You have received an invitation to administer a scheme
 messages__listSchemes__open__heading = Schemes that have been opened
 messages__listSchemes__not_open__heading = Schemes that have not been opened
 messages__listSchemes__noSchemes = You have not registered any pension schemes in this service.
@@ -49,7 +58,6 @@ messages__listSchemes__column_schemeName = Scheme name
 messages__listSchemes__column_srn = SRN
 messages__listSchemes__column_pstr = PSTR
 messages__listSchemes__column_status = Status
-messages__listSchemes__column_date = Date scheme opened
 messages__listSchemes__no_date = Scheme not open
 messages__listSchemes__pstr_not_assigned = Not assigned
 messages__listSchemes__status_pending = Pending
@@ -61,10 +69,8 @@ messages__listSchemes__status_deregistered = De-registered
 messages__listSchemes__status_wound_up = Wound-up
 messages__listSchemes__status_rejected_appeal = Rejected under appeal
 messages__listSchemes__schemeName__screen_reader = The scheme name is: {0}
-messages__listSchemes__SRN__screen_reader = {0}’s, submission reference number is {1}
 messages__listSchemes__PSTR__screen_reader = {0}’s, Pension Scheme Tax Reference number is {1}
 messages__listSchemes__status__screen_reader = {0}'s' status is {1}
-messages__listSchemes__date__screen_reader = {0} was opened on {1}
 
 messages__schemesOverview__title = Manage and register your pension schemes
 messages__schemesOverview__heading = Manage and register your pension schemes
@@ -196,4 +202,15 @@ messages__error__address_line_3_invalid = The third line of the address contains
 messages__error__address_line_4_invalid = The fourth line of the address contains invalid characters
 messages__error__postcode_invalid = Enter a valid postcode
 
+messages__adviser__email__address__title = What is your pension adviser’s email address?
+messages__adviser__email__address__heading = What is {0}’s email address?
+messages__adviser__email__address__p1 = This will be used if HMRC need to contact your pension adviser.
+
 messages__error__declaration__required = You need to agree to all the declarations before you can continue
+
+messages__schemeDetails__title = Pension scheme details
+messages__schemeDetails__view_details_link = View the registered scheme details
+messages__schemeDetails__opened_date_head = This scheme was opened on:
+messages__schemeDetails__psa_list_head = Pension scheme administrators
+messages__schemeDetails__invite_link = Invite another PSA to administer this scheme
+messages__schemeDetails__return_link = Return to your pension schemes

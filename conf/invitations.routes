@@ -21,8 +21,10 @@ POST       /change-psa-id-of-invited-psa                controllers.invitations.
 GET        /invite-sent/:srn                            controllers.invitations.InvitationSuccessController.onPageLoad(srn: SchemeReferenceNumber)
 POST       /invite-sent/:srn                            controllers.invitations.InvitationSuccessController.onSubmit(srn: SchemeReferenceNumber)
 
-GET        /select-pension-adviser-address              controllers.invitations.PensionAdviserAddressListController.onPageLoad()
-POST       /select-pension-adviser-address              controllers.invitations.PensionAdviserAddressListController.onSubmit()
+GET        /select-pension-adviser-address              controllers.invitations.PensionAdviserAddressListController.onPageLoad(mode: Mode = NormalMode)
+POST       /select-pension-adviser-address              controllers.invitations.PensionAdviserAddressListController.onSubmit(mode: Mode = NormalMode)
+GET        /change-select-pension-adviser-address       controllers.invitations.PensionAdviserAddressListController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-select-pension-adviser-address       controllers.invitations.PensionAdviserAddressListController.onSubmit(mode: Mode = CheckMode)
 
 GET        /pension-adviser-name                        controllers.invitations.AdviserDetailsController.onPageLoad(mode: Mode = NormalMode)
 POST       /pension-adviser-name                        controllers.invitations.AdviserDetailsController.onSubmit(mode: Mode = NormalMode)
@@ -48,3 +50,7 @@ GET        /psa-already-invited                         controllers.invitations.
 
 GET        /declaration                                 controllers.invitations.DeclarationController.onPageLoad()
 POST       /declaration                                 controllers.invitations.DeclarationController.onSubmit()
+GET        /pension-adviser-email-address               controllers.invitations.AdviserEmailAddressController.onPageLoad(mode: Mode = NormalMode)
+POST       /pension-adviser-email-address               controllers.invitations.AdviserEmailAddressController.onSubmit(mode: Mode = NormalMode)
+GET        /change-pension-adviser-email-address        controllers.invitations.AdviserEmailAddressController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-pension-adviser-email-address        controllers.invitations.AdviserEmailAddressController.onSubmit(mode: Mode = CheckMode)
