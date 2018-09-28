@@ -22,6 +22,7 @@ import org.mockito.Matchers
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.mockito.MockitoSugar
 import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.libs.json.Json
 import play.api.test.Helpers.{contentAsString, _}
 import testhelpers.CommonBuilders
 import views.html.schemeDetails
@@ -95,7 +96,8 @@ private object SchemeDetailsControllerSpec extends ControllerSpecBase with Mocki
       fakeSchemeDetailsConnector,
       fakeListOfSchemesConnector,
       FakeAuthAction(),
-      dataRetrievalAction)
+      dataRetrievalAction,
+      FakeUserAnswersCacheConnector)
 
   val schemeName = "Test Scheme Name"
   val administrators = Some(Seq("Taylor Middle Rayon", "Smith A Tony"))

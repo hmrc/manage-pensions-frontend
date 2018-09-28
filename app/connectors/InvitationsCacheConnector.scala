@@ -26,22 +26,10 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpException}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait InvitationsCacheConnector {
-  def add(invitation: Invitation)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[Unit]
-
-  def remove(pstr: String, inviteePsaId: String)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[Unit]
-
-  def get(pstr: String, inviteePsaId: String)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[List[Invitation]]
-
-  def getForScheme(pstr: String)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[List[Invitation]]
-
-  def getForInvitee(inviteePsaId: String)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[List[Invitation]]
-}
-
-class InvitationsCacheConnectorImpl @Inject()(
-                                               config: FrontendAppConfig,
-                                               http: WSClient
-                                             ) extends InvitationsCacheConnector {
+class InvitationsCacheConnector @Inject()(
+                                           config: FrontendAppConfig,
+                                           http: WSClient
+                                         ) {
 
   protected val addUrl = s"${config.pensionAdminUrl}/pension-administrator/invitation/add"
 

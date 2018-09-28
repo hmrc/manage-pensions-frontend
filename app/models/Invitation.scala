@@ -19,7 +19,7 @@ package models
 import org.joda.time.DateTime
 import play.api.libs.json.{Format, Json}
 
-case class Invitation(pstr: String, schemeName: String, inviterPsaId: String, inviteePsaId: String, inviteeName: String, expireAt: DateTime)
+case class Invitation(srn: String, pstr: String, schemeName: String, inviterPsaId: String, inviteePsaId: String, inviteeName: String, expireAt: DateTime)
 
 object Invitation {
   implicit val formats: Format[Invitation] = Json.format

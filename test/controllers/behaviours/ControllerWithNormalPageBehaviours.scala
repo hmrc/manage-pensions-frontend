@@ -93,7 +93,7 @@ class ControllerWithNormalPageBehaviours extends ControllerSpecBase {
 
       "redirect to the next page when valid data is present" in {
 
-        val result = onSubmitAction(emptyData, FakeAuthAction())(FakeRequest())
+        val result = onSubmitAction(validData.getOrElse(emptyData), FakeAuthAction())(FakeRequest())
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(onwardRoute.url)
@@ -103,7 +103,7 @@ class ControllerWithNormalPageBehaviours extends ControllerSpecBase {
 
         "redirect to Session Expired if no existing data is found" in {
 
-          val result = onSubmitAction(validData.getOrElse(emptyData), FakeAuthAction())(fakeRequest)
+          val result = onSubmitAction(emptyData, FakeAuthAction())(fakeRequest)
 
           status(result) mustBe SEE_OTHER
           redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)

@@ -250,11 +250,13 @@ object InvitationConnectorSpec {
 
   private implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 
+  private val srn = "test-srn"
   private val pstr = "test-pstr"
   private val schemeName = "test-scheme-name"
   private val inviterPsaId = "test-inviter-psa-id"
   private val inviteePsaId = "test-invitee-psa-id"
   private val inviteeName = "test-invitee-name"
+  private val expireAt = new DateTime("2018-05-05")
   private val declaration = true
   private val declarationDuties = true
   private val expiryDate = new DateTime("2018-11-10")
@@ -270,12 +272,13 @@ object InvitationConnectorSpec {
 
   private val invitation =
     Invitation(
+      srn,
       pstr,
       schemeName,
       inviterPsaId,
       inviteePsaId,
       inviteeName,
-      expiryDate
+      expireAt
     )
 
   private val requestJson =

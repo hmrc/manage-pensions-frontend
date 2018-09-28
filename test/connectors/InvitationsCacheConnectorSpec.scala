@@ -18,19 +18,16 @@ package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import identifiers.TypedIdentifier
-import models.Invitation
-import org.joda.time.DateTime
 import org.scalatest.{AsyncWordSpec, MustMatchers, OptionValues}
 import play.api.http.Status
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.{HeaderCarrier, HttpException}
 import utils.WireMockHelper
+import utils.testhelpers.InvitationBuilder._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class InvitationsCacheConnectorSpec extends AsyncWordSpec with MustMatchers with WireMockHelper with OptionValues {
-
-  import InvitationsCacheConnectorSpec._
 
   protected object FakeIdentifier extends TypedIdentifier[String] {
     override def toString: String = "fake-identifier"
@@ -46,7 +43,7 @@ class InvitationsCacheConnectorSpec extends AsyncWordSpec with MustMatchers with
   protected val getForInviteeUrl = "/pension-administrator/invitation/get-for-invitee"
   protected val removeUrl = "/pension-administrator/invitation"
 
-  protected lazy val connector: InvitationsCacheConnector = injector.instanceOf[InvitationsCacheConnectorImpl]
+  protected lazy val connector: InvitationsCacheConnector = injector.instanceOf[InvitationsCacheConnector]
 
 
   "get" must {
@@ -240,25 +237,4 @@ class InvitationsCacheConnectorSpec extends AsyncWordSpec with MustMatchers with
       }
     }
   }
-}
-
-object InvitationsCacheConnectorSpec {
-
-  private val pstr1 = "S12345"
-  private val inviteePsaId1 = "P12345"
-  private val inviteeName1 = "Test Invitee1 Name"
-  private val expiryDate1 = new DateTime("2018-11-10")
-
-  private val pstr2 = "D1234"
-  private val schemeName2 = "Test scheme2 name"
-  private val inviterPsaId2 = "Q12345"
-  private val inviteePsaId2 = "T12345"
-  private val inviteeName2 = "Test Invitee2 Name"
-  private val expiryDate2 = new DateTime("2018-11-11")
-
-  private val invitation1 =
-    Invitation(pstr = pstr1, schemeName = schemeName1, inviterPsaId = inviterPsaId1, inviteePsaId = inviteePsaId1, inviteeName = inviteeName1, expireAt = expiryDate1)
-  private val invitation2 =
-    Invitation(pstr = pstr2, schemeName = schemeName2, inviterPsaId = inviterPsaId2, inviteePsaId = inviteePsaId2, inviteeName = inviteeName2, expireAt = expiryDate2)
-  private val invitationList = List(invitation1, invitation2)
 }
