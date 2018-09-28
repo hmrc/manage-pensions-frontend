@@ -31,8 +31,6 @@ class InvitationsCacheConnector @Inject()(
                                            http: WSClient
                                          ) {
 
-  protected val addUrl = s"${config.pensionAdminUrl}/pension-administrator/invitation/add"
-
   protected val getUrl = s"${config.pensionAdminUrl}/pension-administrator/invitation/get"
 
   protected val getForSchemeUrl = s"${config.pensionAdminUrl}/pension-administrator/invitation/get-for-scheme"
@@ -40,23 +38,6 @@ class InvitationsCacheConnector @Inject()(
   protected val getForInviteeUrl = s"${config.pensionAdminUrl}/pension-administrator/invitation/get-for-invitee"
 
   protected val removeUrl = s"${config.pensionAdminUrl}/pension-administrator/invitation"
-
-  def add(invitation: Invitation)(implicit
-                                  ec: ExecutionContext,
-                                  hc: HeaderCarrier
-  ): Future[Unit] = {
-    http.url(addUrl)
-      .withHeaders(hc.withExtraHeaders(("content-type", "application/json")).headers: _*)
-      .post(Json.toJson(invitation)).flatMap {
-      response =>
-        response.status match {
-          case OK =>
-            Future.successful(())
-          case _ =>
-            Future.failed(new HttpException(response.body, response.status))
-        }
-    }
-  }
 
   def remove(pstr: String, inviteePsaId: String)(implicit
                                                  ec: ExecutionContext,
