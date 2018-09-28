@@ -19,9 +19,11 @@ package controllers.invitations
 import connectors.{FakeUserAnswersCacheConnector, InvitationsCacheConnector}
 import controllers.ControllerSpecBase
 import controllers.actions.{AuthAction, FakeAuthAction, FakeUnAuthorisedAction}
+import models.NormalMode
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
+import play.api.mvc.Call
 import play.api.test.Helpers._
 import play.twirl.api.HtmlFormat
 import testhelpers.InvitationBuilder._
@@ -32,6 +34,9 @@ import scala.concurrent.Future
 
 class YourInvitationsControllerSpec extends ControllerSpecBase with MockitoSugar {
 
+  val nextCall = Call("GET", "www.example.com")
+
+  val navigator = new FakeNavigator(nextCall, NormalMode)
 
   val mockInvitationsCacheConnector = mock[InvitationsCacheConnector]
 
@@ -43,7 +48,7 @@ class YourInvitationsControllerSpec extends ControllerSpecBase with MockitoSugar
       authAction,
       mockInvitationsCacheConnector,
       FakeUserAnswersCacheConnector,
-      FakeNavigator
+      navigator
     )
   }
 
@@ -63,7 +68,7 @@ class YourInvitationsControllerSpec extends ControllerSpecBase with MockitoSugar
 
     }
 
-    "return 200 Ok when empty list is returned by connector" in {
+    "return 300 when empty list is returned by connector" in {
 
       when(mockInvitationsCacheConnector.getForInvitee(any())(any(), any()))
         .thenReturn(Future.successful(Nil))
@@ -89,7 +94,7 @@ class YourInvitationsControllerSpec extends ControllerSpecBase with MockitoSugar
       val result = controller().onSubmit(srn)(fakeRequest)
 
       status(result) mustBe SEE_OTHER
-      //redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)
+      redirectLocation(result) mustBe Some(nextCall.url)
     }
 
   }
