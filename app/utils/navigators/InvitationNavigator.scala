@@ -18,23 +18,25 @@ package utils.navigators
 
 import javax.inject.{Inject, Singleton}
 
-import connectors.DataCacheConnector
+import connectors.UserAnswersCacheConnector
 import controllers.invitations.routes._
 import controllers.routes._
-import identifiers.invitations.{PSAId, PsaNameId}
+import identifiers.invitations.{AdviserAddressListId, PSAId, PsaNameId}
 import models.NormalMode
 import utils.Navigator
 
 @Singleton
-class InvitationNavigator @Inject()(val dataCacheConnector: DataCacheConnector) extends Navigator {
+class InvitationNavigator @Inject()(val dataCacheConnector: UserAnswersCacheConnector) extends Navigator {
 
   override def routeMap(from: NavigateFrom): Option[NavigateTo] = from.id match {
     case PsaNameId => NavigateTo.dontSave(PsaIdController.onPageLoad(NormalMode))
-    case PSAId => NavigateTo.dontSave(IndexController.onPageLoad())
+    case PSAId => NavigateTo.dontSave(CheckYourAnswersController.onPageLoad())
     case _ => NavigateTo.dontSave(controllers.routes.SessionExpiredController.onPageLoad())
   }
 
   override protected def editRouteMap(from: NavigateFrom): Option[NavigateTo] = from.id match {
+    case PsaNameId => NavigateTo.dontSave(CheckYourAnswersController.onPageLoad())
+    case PSAId => NavigateTo.dontSave(CheckYourAnswersController.onPageLoad())
     case _ => NavigateTo.dontSave(SessionExpiredController.onPageLoad())
   }
 }

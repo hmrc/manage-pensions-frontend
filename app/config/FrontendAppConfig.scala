@@ -46,6 +46,7 @@ class FrontendAppConfig @Inject()(override val runModeConfiguration: Configurati
 
   lazy val authUrl: String = baseUrl("auth")
   lazy val pensionsSchemeUrl: String = baseUrl("pensions-scheme")
+  lazy val pensionAdminUrl: String = baseUrl("pension-administrator")
   lazy val schemeFrontendUrl: String = baseUrl("pensions-scheme-frontend")
 
   lazy val loginUrl = loadConfig("urls.login")
@@ -78,5 +79,8 @@ class FrontendAppConfig @Inject()(override val runModeConfiguration: Configurati
 
   lazy val daysDataSaved: Int = loadConfig("daysDataSaved").toInt
   lazy val invitationExpiryDays: Int = loadConfig("invitationExpiryDays").toInt
+
+  lazy val locationCanonicalList = loadConfig("location.canonical.list")
+  lazy val addressLookUp = baseUrl("address-lookup")
 }
 

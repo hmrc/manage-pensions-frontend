@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package forms.invitation
+package forms.invitations
 
-import forms.invitations.PsaNameFormProvider
 import forms.mappings.Constraints
+import javax.swing.SpringLayout
 import play.api.data.FormError
 import views.behaviours.StringFieldBehaviours
 import wolfendale.scalacheck.regexp.RegexpGen
@@ -38,7 +38,7 @@ class PsaNameFormProviderSpec extends StringFieldBehaviours with Constraints{
     behave like fieldThatBindsValidData(
       form,
       fieldName,
-      RegexpGen.from(nameRegex)
+      RegexpGen.from(Constraints.nameRegex)
     )
 
     behave like fieldWithMaxLength(
@@ -58,7 +58,7 @@ class PsaNameFormProviderSpec extends StringFieldBehaviours with Constraints{
       form,
       fieldName,
       "1234",
-      FormError(fieldName, invalidKey, Seq(nameRegex))
+      FormError(fieldName, invalidKey, Seq(Constraints.nameRegex))
     )
   }
 }

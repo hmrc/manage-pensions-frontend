@@ -19,5 +19,5 @@ package identifiers
 import models.MinimalSchemeDetail
 
 object SchemeDetailId extends TypedIdentifier[MinimalSchemeDetail] {
-  override def toString: String = "schemeDetails"
+  override def toString: String = "minimalSchemeDetails"
 }

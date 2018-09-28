@@ -16,154 +16,66 @@
 
 package controllers.invitations
 
-import base.SpecBase
 import config.FrontendAppConfig
-import controllers.ControllerSpecBase
-import controllers.actions.{DataRequiredActionImpl, FakeAuthAction, FakeUnAuthorisedAction}
+import controllers.actions._
+import controllers.behaviours.ControllerWithNormalPageBehaviours
 import models.MinimalSchemeDetail
 import org.joda.time.LocalDate
 import play.api.mvc.Call
 import play.api.test.Helpers._
-import utils.{DateHelper, FakeNavigator, UserAnswers}
+import utils.{DateHelper, UserAnswers}
 import views.html.invitations.invitation_success
 
-class InvitationSuccessControllerSpec extends ControllerSpecBase {
+class InvitationSuccessControllerSpec extends ControllerWithNormalPageBehaviours {
 
-  import InvitationSuccessControllerSpec._
-
-  "InvitationSuccessController" must {
-
-    "return 200 Ok and correct content on successful GET" in {
-
-      val fixture = testFixture(this)
-      val result = fixture.controller.onPageLoad(testSrn)(fakeRequest)
-
-      status(result) mustBe OK
-      contentAsString(result) mustBe viewAsString(this)
-
-    }
-
-    "calculate the correct invitation expiry date as today's date plus 30 days" in {
-
-      val expected = DateHelper.formatDate(testExpiryDate(frontendAppConfig))
-
-      val fixture = testFixture(this)
-      val result = fixture.controller.onPageLoad(testSrn)(fakeRequest)
-
-      contentAsString(result) must include (expected)
-
-    }
-
-    "redirect to Unauthorised when not authenticated on GET" in {
-
-      val fixture = unauthorisedTestFixture(this)
-      val result = fixture.controller.onPageLoad(testSrn)(fakeRequest)
-
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)
-
-    }
-
-    "redirect to session expired when there is no user data on GET" in {
-
-      val fixture = noDataTestFixture(this)
-      val result = fixture.controller.onPageLoad(testSrn)(fakeRequest)
-
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)
-
-    }
-
-    "redirect to the next page on successful POST" in {
-
-      val fixture = testFixture(this)
-      val result = fixture.controller.onSubmit(testSrn)(fakeRequest)
-
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(fixture.navigator.desiredRoute.url)
-
-    }
-
-  }
-
-}
-
-// scalastyle:off magic.number
-
-object InvitationSuccessControllerSpec {
-
-  val testSrn: String = "test-srn"
-
-  def testExpiryDate(config: FrontendAppConfig): LocalDate = {
-    LocalDate.now().plusDays(config.invitationExpiryDays)
-  }
-
+  private val testSrn: String = "test-srn"
   private val testInviteeName = "test-invitee-name"
   private val testPstr = "test-pstr"
   private val testSchemeName = "test-scheme-name"
   private val testSchemeDetail = MinimalSchemeDetail(testSrn, Some(testPstr), testSchemeName)
 
-  private val onwardRoute: Call = controllers.routes.IndexController.onPageLoad()
-  private val testNavigator: FakeNavigator = new FakeNavigator(onwardRoute)
   private lazy val continue: Call = controllers.invitations.routes.InvitationSuccessController.onSubmit(testSrn)
 
-  private def createController(base: ControllerSpecBase, authorised: Boolean, hasData: Boolean): InvitationSuccessController = {
+  private val userAnswer = UserAnswers()
+    .inviteeName(testInviteeName)
+    .minimalSchemeDetails(testSchemeDetail)
+    .dataRetrievalAction
 
-    val authAction =
-      if (authorised) {
-        FakeAuthAction()
-      } else {
-        FakeUnAuthorisedAction()
-      }
+  def viewAsString() = invitation_success(frontendAppConfig,
+    testInviteeName,
+    testSchemeName,
+    testExpiryDate(frontendAppConfig),
+    continue)(fakeRequest, messages).toString
 
-    val dataRetrievalAction =
-      if (hasData) {
-        UserAnswers()
-          .inviteeName(testInviteeName)
-          .minimalSchemeDetails(testSchemeDetail)
-          .dataRetrievalAction
-      } else {
-        base.dontGetAnyData
-      }
+  def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
     new InvitationSuccessController(
-      base.messagesApi,
-      base.frontendAppConfig,
-      authAction,
-      dataRetrievalAction,
-      new DataRequiredActionImpl,
-      testNavigator
-    )
+      messagesApi, frontendAppConfig, fakeAuth, dataRetrievalAction, requiredDateAction, navigator).onPageLoad(testSrn)
+  }
+
+  def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
+
+    new InvitationSuccessController(
+      messagesApi, frontendAppConfig, fakeAuth, dataRetrievalAction, requiredDateAction, navigator).onSubmit(testSrn)
+  }
+
+  def testExpiryDate(config: FrontendAppConfig): LocalDate = {
+    LocalDate.now().plusDays(config.invitationExpiryDays)
+  }
+
+
+  behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, Some(userAnswer), viewAsString)
+
+  "calculate the correct invitation expiry date as today's date plus 30 days" in {
+
+    val expected = DateHelper.formatDate(testExpiryDate(frontendAppConfig))
+
+    val result = onPageLoadAction(userAnswer, FakeAuthAction())(fakeRequest)
+
+    contentAsString(result) must include(expected)
 
   }
 
-  trait TestFixture {
-    val controller: InvitationSuccessController
-    val navigator: FakeNavigator
-  }
-
-  private def testFixture(base: ControllerSpecBase, authorised: Boolean, hasData: Boolean): TestFixture =
-    new TestFixture {
-      override val controller: InvitationSuccessController = createController(base, authorised, hasData)
-      override val navigator: FakeNavigator = testNavigator
-    }
-
-  def testFixture(base: ControllerSpecBase): TestFixture = testFixture(base, true, true)
-
-  def unauthorisedTestFixture(base: ControllerSpecBase): TestFixture = testFixture(base, false, true)
-
-  def noDataTestFixture(base: ControllerSpecBase): TestFixture = testFixture(base, true, false)
-
-  def viewAsString(base: SpecBase): String =
-    invitation_success(
-      base.frontendAppConfig,
-      testInviteeName,
-      testSchemeName,
-      testExpiryDate(base.frontendAppConfig),
-      continue
-    )(
-      base.fakeRequest,
-      base.messages
-    ).toString()
+  behave like controllerWithOnSubmitMethod(onSubmitAction, getEmptyData, None)
 
 }

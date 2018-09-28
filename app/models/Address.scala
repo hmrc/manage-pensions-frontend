@@ -18,7 +18,7 @@ package models
 
 import play.api.libs.json.{Format, Json}
 
-case class Address(nonUKAddress: Boolean, line1: String, line2: String, line3: Option[String], line4: Option[String],
+case class Address(line1: String, line2: String, line3: Option[String], line4: Option[String],
                    postalCode: Option[String], countryCode: String)
 
 object Address {
