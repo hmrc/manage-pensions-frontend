@@ -23,12 +23,12 @@ id: String,
 srn: String
 )(implicit messages: Messages)
 
-
-<div>
-    <h2 class="bold">@schemeName</h2>
-    <p>@messages("messages__yourInvitations__scheme_expiry_date", utils.DateHelper.formatDate(expiryDate.toLocalDate))</p>
-    <a id= "accept-invitation-@id" href="@controllers.invitations.routes.YourInvitationsController.onSubmit(srn).url">
-        @messages("messages__yourInvitations__accept_link")
-    </a>
-</div>
-
+<li>
+    <div>
+        <h2 class="bold">@schemeName</h2>
+        <p>@messages("messages__yourInvitations__scheme_expiry_date", utils.DateHelper.formatDate(expiryDate.toLocalDate))</p>
+        <a id= "accept-invitation-@id" href="@controllers.invitations.routes.YourInvitationsController.onSubmit(srn).url">
+            @messages("messages__yourInvitations__accept_link")
+        </a>
+    </div>
+</li>
