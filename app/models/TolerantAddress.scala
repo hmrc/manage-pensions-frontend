@@ -66,6 +66,7 @@ case class TolerantAddress(addressLine1: Option[String],
 }
 
 object TolerantAddress {
+
   val postCodeLookupAddressReads: Reads[TolerantAddress] = (
     (JsPath \ "address" \ "lines").read[List[String]] and
       (JsPath \ "address" \ "postcode").read[String] and
@@ -73,49 +74,47 @@ object TolerantAddress {
       (JsPath \ "address" \ "town").readNullable[String] and
       (JsPath \ "address" \ "county").readNullable[String]
     ) ((lines, postCode, countryCode, town, county) => {
+
     val addressLines: (Option[String], Option[String], Option[String], Option[String]) = {
       lines.size match {
-        case 0 =>  {
+        case 0 =>
           Logger.error(s"[NoAddressLinesFoundException]-$postCode,$countryCode")
-          throw new NoAddressLinesFoundException()
-        }
-        case 1 => {
+          throw NoAddressLinesFoundException()
+        case 1 =>
           val townOrCounty = getTownOrCounty(town, county, lines)
-          (Some(lines(0)), townOrCounty._1, townOrCounty._2, None)
-        }
-        case 2 => {
+          (Some(lines.head), townOrCounty._1, townOrCounty._2, None)
+        case 2 =>
           val townOrCounty = getTownOrCounty(town, county, lines)
-
-          (Some(lines(0)), Some(lines(1)), townOrCounty._1, townOrCounty._2)
-        }
-        case 3 => {
+          (Some(lines.head), Some(lines(1)), townOrCounty._1, townOrCounty._2)
+        case 3 =>
           val townOrCounty = getTownOrCounty(town, county, lines)
           val townOrCountyValue = if (townOrCounty._2.isDefined) townOrCounty._2 else townOrCounty._1
-
-          (Some(lines(0)), Some(lines(1)), Some(lines(2)), townOrCountyValue)
-        }
-        case numberOfLines if numberOfLines >= 4 => (Some(lines(0)), Some(lines(1)), Some(lines(2)), Some(lines(3)))
+          (Some(lines.head), Some(lines(1)), Some(lines(2)), townOrCountyValue)
+        case numberOfLines if numberOfLines >= 4 => (Some(lines.head), Some(lines(1)), Some(lines(2)), Some(lines(3)))
       }
     }
     TolerantAddress(addressLines._1, addressLines._2, addressLines._3, addressLines._4, Some(postCode), Some(countryCode))
+
   })
 
-
-  private def checkIfElementAlreadyExistsInLines(linesWithNoAmpersand: List[String], elementToCheck: String) = {
-    linesWithNoAmpersand.mkString("").toLowerCase().contains(elementToCheck.trim().toLowerCase())
+  private def checkIfElementAlreadyExistsInLines(lines: List[String], elementToCheck: String) = {
+    lines.mkString("").toLowerCase().contains(elementToCheck.trim().toLowerCase())
   }
 
-  private def getTownOrCounty(town: Option[String], county: Option[String], addressLines: List[String]) = {
+  private def getTownOrCounty(
+                               town: Option[String],
+                               county: Option[String],
+                               addressLines: List[String]
+                             ): (Option[String], Option[String]) = {
+
     (town, county) match {
-      case (Some(town), None) => {
+      case (Some(town), None) =>
         val formattedTown = town
         (if (checkIfElementAlreadyExistsInLines(addressLines, formattedTown)) None else Some(formattedTown), None)
-      }
-      case (None, Some(county)) => {
+      case (None, Some(county)) =>
         val formattedCounty = county
         (if (checkIfElementAlreadyExistsInLines(addressLines, formattedCounty)) None else Some(formattedCounty), None)
-      }
-      case (Some(town), Some(county)) => {
+      case (Some(town), Some(county)) =>
         val formattedTown = town
         val formattedCounty = county
         val townAlreadyExists = checkIfElementAlreadyExistsInLines(addressLines, formattedTown)
@@ -127,7 +126,6 @@ object TolerantAddress {
           case (true, true) => (None, None)
           case _ => (Some(town), Some(county))
         }
-      }
       case _ => (None, None)
     }
   }

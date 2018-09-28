@@ -25,6 +25,8 @@ import wolfendale.scalacheck.regexp.RegexpGen
 
 class ConstraintsSpec extends WordSpec with Matchers with Constraints with RegexBehaviourSpec {
 
+  import Constraints._
+
   "firstError" must {
 
     "return Valid when all constraints pass" in {
@@ -122,7 +124,7 @@ class ConstraintsSpec extends WordSpec with Matchers with Constraints with Regex
 
   "psaName" must {
 
-    val validText = RegexpGen.from(psaNameRegx)
+    val validText = RegexpGen.from(Constraints.psaNameRegex)
 
     val invalidText = Table(
       "test<name",
@@ -133,7 +135,7 @@ class ConstraintsSpec extends WordSpec with Matchers with Constraints with Regex
 
     val invalidMsg = "Invalid text"
 
-    behave like regexWithValidAndInvalidExamples(psaName, validText, invalidText, invalidMsg, psaNameRegx)
+    behave like regexWithValidAndInvalidExamples(psaName, validText, invalidText, invalidMsg, Constraints.psaNameRegex)
   }
 
   "PSAId" must {

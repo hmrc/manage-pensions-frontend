@@ -35,7 +35,7 @@ class AdviserDetailsFormProviderSpec extends StringFieldBehaviours with Constrai
     behave like fieldThatBindsValidData(
       form,
       fieldName,
-      RegexpGen.from(psaNameRegx)
+      RegexpGen.from(Constraints.psaNameRegex)
     )
 
     behave like mandatoryField(
@@ -55,7 +55,7 @@ class AdviserDetailsFormProviderSpec extends StringFieldBehaviours with Constrai
       form,
       fieldName,
       "1234",
-      FormError(fieldName, invalidErrorKey, Seq(psaNameRegx))
+      FormError(fieldName, invalidErrorKey, Seq(Constraints.psaNameRegex))
     )
 
     behave like formWithTransform[String](

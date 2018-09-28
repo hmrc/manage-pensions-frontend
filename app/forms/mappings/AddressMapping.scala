@@ -19,10 +19,9 @@ package forms.mappings
 import play.api.data.{FormError, Mapping}
 import utils.countryOptions.CountryOptions
 
-trait AddressMapping extends Mappings with Transforms {
+trait AddressMapping extends Mappings with Transforms with Constraints {
 
-  val maxAddressLineLength = 35
-  val maxPostCodeLength = 8
+  import AddressMapping._
 
   def addressLineMapping(keyRequired: String, keyLength: String, keyInvalid: String): Mapping[String] = {
     text(keyRequired)
@@ -55,15 +54,10 @@ trait AddressMapping extends Mappings with Transforms {
   }
 
   private[mappings] def postCodeValidTransform(value: String): String = {
-    if (value.matches(regexPostcode)) {
-      if (value.contains(" ")) {
-        value
-      } else {
+    value match {
+      case postCodeRegex(_*) if !value.contains(" ") =>
         value.substring(0, value.length - 3) + " " + value.substring(value.length - 3, value.length)
-      }
-    }
-    else {
-      value
+      case _ => value
     }
   }
 
@@ -100,7 +94,7 @@ trait AddressMapping extends Mappings with Transforms {
       val maxLengthNonUKPostCode = 10
 
       (postCode, country) match {
-        case (Some(zip), Some("GB")) if zip.matches(regexPostcode) => Right(Some(postCodeValidTransform(zip)))
+        case (Some(zip@postCodeRegex(_*)), Some("GB")) => Right(Some(postCodeValidTransform(zip)))
         case (Some(_), Some("GB")) => Left(Seq(FormError(fieldName, keyInvalid)))
         case (Some(zip), Some(_)) if zip.length <= maxLengthNonUKPostCode => Right(Some(zip))
         case (Some(_), Some(_)) => Left(Seq(FormError(fieldName, keyNonUKLength)))
@@ -122,4 +116,10 @@ trait AddressMapping extends Mappings with Transforms {
     text(keyRequired)
       .verifying(country(countryOptions, keyInvalid))
   }
+}
+
+object AddressMapping {
+  val maxAddressLineLength = 35
+  val maxPostCodeLength = 8
+  val postCodeRegex = """^[A-Za-z]{1,2}[0-9][0-9A-Za-z]?[ ]?[0-9][A-Za-z]{2}$""".r
 }

@@ -37,7 +37,7 @@ class PsaIdFromProviderSpec extends StringFieldBehaviours with Constraints{
     behave like fieldThatBindsValidData(
       form,
       fieldName,
-      RegexpGen.from(psaIdRegx)
+      RegexpGen.from(Constraints.psaIdRegx)
     )
 
     behave like fieldWithMaxLength(
@@ -57,7 +57,7 @@ class PsaIdFromProviderSpec extends StringFieldBehaviours with Constraints{
       form,
       fieldName,
       "B1234567",
-      FormError(fieldName, invalidKey, Seq(psaIdRegx))
+      FormError(fieldName, invalidKey, Seq(Constraints.psaIdRegx))
     )
   }
 }

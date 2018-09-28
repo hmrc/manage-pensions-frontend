@@ -26,6 +26,8 @@ import scala.util.Random
 
 class ManualAddressFormProviderSpec extends FormBehaviours with FormSpec with AddressBehaviours {
 
+  import forms.mappings.AddressMapping._
+
   private def alphaString(max: Int = maxAddressLineLength) =
     Random.alphanumeric take Random.shuffle(Range(1, max).toList).head mkString ""
 
