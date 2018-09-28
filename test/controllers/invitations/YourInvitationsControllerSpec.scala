@@ -23,8 +23,10 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 import play.api.test.Helpers._
+import play.twirl.api.HtmlFormat
 import testhelpers.InvitationBuilder._
 import utils.FakeNavigator
+import views.html.invitations.yourInvitations
 
 import scala.concurrent.Future
 
@@ -44,6 +46,9 @@ class YourInvitationsControllerSpec extends ControllerSpecBase with MockitoSugar
       FakeNavigator
     )
   }
+
+  private def viewAsString: () => HtmlFormat.Appendable = () => yourInvitations(frontendAppConfig, invitationList)(fakeRequest, messages)
+
   "YourInvitationsController" must {
 
     "return 200 Ok and correct content on successful GET" in {
@@ -54,7 +59,7 @@ class YourInvitationsControllerSpec extends ControllerSpecBase with MockitoSugar
       val result = controller().onPageLoad()(fakeRequest)
 
       status(result) mustBe OK
-      //contentAsString(result) mustBe viewAsString(this)
+      contentAsString(result) mustBe viewAsString().toString()
 
     }
 
@@ -66,6 +71,7 @@ class YourInvitationsControllerSpec extends ControllerSpecBase with MockitoSugar
       val result = controller().onPageLoad()(fakeRequest)
 
       status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)
 
     }
 
@@ -78,6 +84,13 @@ class YourInvitationsControllerSpec extends ControllerSpecBase with MockitoSugar
 
     }
 
+    "redirect to the next page when valid data is submitted" in {
+
+      val result = controller().onSubmit(srn)(fakeRequest)
+
+      status(result) mustBe SEE_OTHER
+      //redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)
+    }
 
   }
 
