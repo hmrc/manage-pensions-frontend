@@ -16,13 +16,16 @@
 
 package controllers
 
-import connectors.ListOfSchemesConnector
-import controllers.actions.{FakeAuthAction, AuthAction}
-import models.requests.AuthenticatedRequest
-import models.{ListOfSchemes, SchemeDetail}
-import play.api.mvc.{Request, Result}
+import config.FrontendAppConfig
+import connectors.{InvitationsCacheConnector, ListOfSchemesConnector}
+import controllers.actions.{AuthAction, FakeAuthAction}
+import models.{Invitation, ListOfSchemes, SchemeDetail}
+import org.joda.time.DateTime
+import org.mockito.Matchers._
+import org.mockito.Mockito._
+import org.scalatest.mockito.MockitoSugar
+import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.Helpers._
-import uk.gov.hmrc.domain.PsaId
 import uk.gov.hmrc.http.HeaderCarrier
 import views.html.list_schemes
 
@@ -32,21 +35,51 @@ class ListSchemesControllerSpec extends ControllerSpecBase {
 
   import ListSchemesControllerSpec._
 
-  "ListSchemesController" must {
-    "return OK and the correct view when there are no schemes" in {
-      val fixture = testFixture(this, psaIdNoSchemes)
-      val result = fixture.controller.onPageLoad(fakeRequest)
+  "ListSchemesController" when {
 
-      status(result) mustBe OK
-      contentAsString(result) mustBe viewAsString(this, emptySchemes)
+    "isWorkPackageOneEnabled is off" must {
+      "return OK and the correct view when there are no schemes" in {
+        val fixture = testFixture(this, psaIdNoSchemes, isWorkPackageOneEnabled = false)
+        val result = fixture.controller.onPageLoad(fakeRequest)
+
+        status(result) mustBe OK
+        contentAsString(result) mustBe viewAsString(this, emptySchemes, isWorkPackageOneEnabled = false)
+      }
+
+      "return OK and the correct view when there are schemes" in {
+        val fixture = testFixture(this, psaIdWithSchemes, Nil, isWorkPackageOneEnabled = false)
+        val result = fixture.controller.onPageLoad(fakeRequest)
+
+        status(result) mustBe OK
+        contentAsString(result) mustBe viewAsString(this, fullSchemes, isWorkPackageOneEnabled = false)
+      }
     }
 
-    "return OK and the correct view when there are schemes" in {
-      val fixture = testFixture(this, psaIdWithSchemes)
-      val result = fixture.controller.onPageLoad(fakeRequest)
+    "isWorkPackageOneEnabled is on" must {
 
-      status(result) mustBe OK
-      contentAsString(result) mustBe viewAsString(this, fullSchemes)
+      "return OK and the correct view when there are no schemes" in {
+        val fixture = testFixture(this, psaIdNoSchemes, isWorkPackageOneEnabled = true)
+        val result = fixture.controller.onPageLoad(fakeRequest)
+
+        status(result) mustBe OK
+        contentAsString(result) mustBe viewAsString(this, emptySchemes, isWorkPackageOneEnabled = true)
+      }
+
+      "return OK and the correct view when there are schemes with invitations" in {
+        val fixture = testFixture(this, psaIdWithSchemes, List(invitation), isWorkPackageOneEnabled = true)
+        val result = fixture.controller.onPageLoad(fakeRequest)
+
+        status(result) mustBe OK
+        contentAsString(result) mustBe viewAsString(this, fullSchemes, invitationReceived = true, isWorkPackageOneEnabled = true)
+      }
+
+      "return OK and the correct view when there are schemes without invitations" in {
+        val fixture = testFixture(this, psaIdWithSchemes, Nil, isWorkPackageOneEnabled = true)
+        val result = fixture.controller.onPageLoad(fakeRequest)
+
+        status(result) mustBe OK
+        contentAsString(result) mustBe viewAsString(this, fullSchemes, isWorkPackageOneEnabled = true)
+      }
     }
   }
 
@@ -84,9 +117,25 @@ object ListSchemesControllerSpec {
       )
     )
 
-  def testFixture(app: ControllerSpecBase, psaId: String): TestFixture = new TestFixture {
+  private def config(isWorkPackageOneEnabled: Boolean = true): FrontendAppConfig = {
+    val injector = new GuiceApplicationBuilder().configure(
+      "features.work-package-one-enabled" -> isWorkPackageOneEnabled
+    ).build().injector
+    injector.instanceOf[FrontendAppConfig]
+  }
+
+  val invitation = Invitation(srn = "ted-srn", pstr = "pstr1", schemeName = "schemeName1",
+    inviterPsaId = "inviterPsaId1", inviteePsaId = "inviteePsaId1", inviteeName = "inviteeName1", expireAt = new DateTime("2018-05-05"))
+
+  def testFixture(app: ControllerSpecBase, psaId: String, invitations: List[Invitation] = Nil,
+                  isWorkPackageOneEnabled: Boolean): TestFixture = new TestFixture with MockitoSugar {
 
     private def authAction(psaId: String): AuthAction = FakeAuthAction.createWithPsaId(psaId)
+
+    private val mockInvitationsCacheConnector: InvitationsCacheConnector = mock[InvitationsCacheConnector]
+
+    when(mockInvitationsCacheConnector.getForInvitee(any())(any(), any())).thenReturn(
+      Future.successful(invitations))
 
     private def listSchemesConnector(): ListOfSchemesConnector = new ListOfSchemesConnector {
 
@@ -116,15 +165,16 @@ object ListSchemesControllerSpec {
 
     override val controller: ListSchemesController =
       new ListSchemesController(
-        app.frontendAppConfig,
+        config(isWorkPackageOneEnabled),
         app.messagesApi,
         authAction(psaId),
-        listSchemesConnector()
+        listSchemesConnector(),
+        mockInvitationsCacheConnector
       )
 
   }
 
-  def viewAsString(app: ControllerSpecBase, schemes: List[SchemeDetail]): String =
-    list_schemes(app.frontendAppConfig, schemes)(app.fakeRequest, app.messages).toString()
+  def viewAsString(app: ControllerSpecBase, schemes: List[SchemeDetail], invitationReceived: Boolean = false, isWorkPackageOneEnabled: Boolean): String =
+    list_schemes(config(isWorkPackageOneEnabled), schemes, invitationReceived)(app.fakeRequest, app.messages).toString()
 
 }
