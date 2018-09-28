@@ -3,11 +3,15 @@ site.signOut = Log Out
 site.back = Back
 site.save_and_continue = Save and Continue
 site.continue = Continue
-
-error.summary.title = There was a problem with the page
-
+site.change = Change
+site.confirm = Confirm
 site.yes = Yes
 site.no = No
+
+checkYourAnswers.title = Check your answers
+checkYourAnswers.heading = Check your answers
+
+error.summary.title = There was a problem with the page
 
 messages__manage_pension_schemes__title = Manage Pension Schemes - GOV.UK
 
@@ -15,6 +19,14 @@ messages__unauthorised__title = You can’t access this service with this accoun
 
 messages__index__title = Manage Pensions Frontend
 messages__index__guidance = Welcome to your new frontend. Please see the README file for a guide to getting started.
+
+messages__error__common__email__no_at_sign = Enter an email address which includes an @ symbol
+messages__error__common__email__start_with_at_sign = Enter an email address which does not start with @
+messages__error__common__email__dot_after_at_sign = Enter an email address in the correct format with a character between @ and dot
+messages__error__common__email__ends_with_dot = Enter an email address with at least a character after the last dot
+messages__error__common__email__address__required = Enter an email address
+messages__error__common__email__address__length = Enter an email address using less than 133 characters
+messages__error__common__email__address__invalid = Enter an email address in the correct format - you might have to check that you have the correct email
 
 messages__youNeedToRegister__title = You need to register
 messages__youNeedToRegister__heading = Manage and register your pension schemes
@@ -100,6 +112,10 @@ messages__psa__id__heading = What is {0}’s PSA ID?
 messages__error__psa__id__required = Enter the PSA ID of who you are inviting
 messages__error__psa__id__invalid = Enter a PSA ID using the letter A followed by 7 numbers
 
+messages__check__your__answer__main__containt__label = You are inviting this PSA to administer {0}.
+messages__check__your__answer__psa__name__label = PSA’s name
+messages__check__your__answer__psa__id__label = PSA ID
+
 messages__incorrectPsaDetails__title = The name and PSA ID do not match our records
 messages__incorrectPsaDetails__text1 = You should check these details with {0}.
 messages__incorrectPsaDetails__text2 = Their name should be entered exactly as their registered PSA name.
@@ -111,6 +127,11 @@ messages__invitationSuccess__schemeName = This is for {0}.
 messages__invitationSuccess__emailAdvice = {0} will be sent an email confirming your invitation.
 messages__invitationSuccess__expiryDate = They will have until {0} to accept the invitation. If the invitation is not accepted by this date, it will be deleted and you will have to invite the PSA again.
 
+messages__adviser__address__list__title = Select the address
+messages__adviser__address__list__heading = Select the address
+messages__adviser__address__list__required = Select an address
+messages__adviser__address__list__select = Select the address from the list below or
+messages__adviser__address__list__link = enter the address manually.
 
 messages__adviser__name__title = Who is your pension adviser?
 messages__adviser__name__heading = Who is your pension adviser?
@@ -119,6 +140,41 @@ messages__error__adviser__name__required = Enter the name of your pension advise
 messages__error__adviser__name__length = Enter a name using less than 108 characters
 messages__error__adviser__name__invalid = Enter a name using only letters
 
+messages__invitationDuplicate__title = This PSA has already been sent an invite
+messages__invitationDuplicate__heading = {0} has already been sent an invite
+messages__invitationDuplicate__schemeName = {0} has already been invited to administer {1}.
+messages__invitationDuplicate__inviteInformation = They will not be sent another invite.
+messages__invitationDuplicate__returnToSchemes__link = Return to your pension schemes
 
+messages__adviser__postcode__title = What is your pension adviser’s postcode?
+messages__adviser__postcode__heading = What is {0}’s postcode?
+messages__error__postcode__lookup__no__results = There are no addresses for that postcode
 
+error.postcode.length = The postcode cannot be more than 8 characters
+error.postcode.required = Enter the postcode
+error.postcode.invalid = Enter a valid postcode
 
+messages__declaration__title = Declaration
+messages__declaration__heading = Declaration
+messages__declaration__continue = By continuing you declare that
+messages__declaration__statement1 = you understand that as scheme administrator you are responsible for discharging the functions conferred or imposed on the scheme administrator of the pension scheme by the Finance Act 2004 and you intend to discharge those functions at all times, whether resident in the United Kingdom or another EU member state or non-member EEA state.
+messages__declaration__statement2 = you will comply with all information notices issued to the scheme administrator under the Finance Act 2004 or the Finance Act 2008 and understand that you may be liable to a penalty and the pension scheme may be de-registered if you fail to properly discharge those functions
+messages__declaration__statement3 = the instruments or agreements by which this pension scheme is constituted do not directly or indirectly entitle any person to unauthorised payments and the way in which the pension scheme is to be administered will not knowingly entitle any person to unauthorised payments
+messages__declaration__statement4 = you understand that you may be liable to a penalty and the pension scheme may be de-registered if a false statement is made in any information you provide and that false statements may also lead to prosecution
+messages__declaration__statement5__no__adviser = you are a fit and proper person to be the scheme administrator, with a working knowledge of pensions and the scheme administrator duties and liabilities
+messages__declaration__statement5__with__adviser = you do not have a working knowledge of pensions and the scheme administrator duties and liabilities but you are otherwise a fit and proper person and have appointed an adviser to the pension scheme who does have that knowledge
+messages__declaration__statement6 = you understand that where HMRC believes that if any of the persons who are the scheme administrator are not a fit and proper person, HMRC may refuse to register the scheme or, if the scheme is already registered, HMRC may de-register the scheme
+messages__declaration__statement7 = the scheme is a Master Trust as defined in Section 1 Pension Act 2017, or corresponding legislation in Northern Ireland and you understand the scheme trustees must apply to the Pensions Regulator for authorisation to operate as a Master Trust and that if the pensions regulator do not grant authorisation, HMRC may refuse to register the scheme and if the Master Trust loses its authorisation, HMRC may de-register the scheme
+
+messages__adviser__name__title = Who is your pension adviser?
+messages__adviser__name__heading = Who is your pension adviser?
+messages__adviser__name__p1 = This can be either the name of your adviser or the company they work for.
+messages__error__adviser__name__required = Enter the name of your pension adviser
+messages__error__adviser__name__length = Enter a name using less than 108 characters
+messages__error__adviser__name__invalid = Enter a name using only letters
+
+messages__adviser__email__address__title = What is your pension adviser’s email address?
+messages__adviser__email__address__heading = What is {0}’s email address?
+messages__adviser__email__address__p1 = This will be used if HMRC need to contact your pension adviser.
+
+messages__error__declaration__required = You need to agree to all the declarations before you can continue

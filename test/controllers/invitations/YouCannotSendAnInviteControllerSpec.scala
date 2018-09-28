@@ -18,22 +18,23 @@ package controllers.invitations
 
 import controllers.ControllerSpecBase
 import controllers.actions._
+import controllers.behaviours.ControllerWithNormalPageBehaviours
 import play.api.test.Helpers._
+import utils.UserAnswers
 import views.html.invitations.youCannotSendAnInvite
 
-class YouCannotSendAnInviteControllerSpec extends ControllerSpecBase {
+class YouCannotSendAnInviteControllerSpec extends ControllerWithNormalPageBehaviours {
 
-  def controller(dataRetrievalAction: DataRetrievalAction = getEmptyData): YouCannotSendAnInviteController =
-    new YouCannotSendAnInviteController(frontendAppConfig, messagesApi, FakeAuthAction(),
-      dataRetrievalAction, new DataRequiredActionImpl)
+  val userAnswer = UserAnswers()
 
-  private def viewAsString() = youCannotSendAnInvite(frontendAppConfig)(fakeRequest, messages).toString
+  def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
-  "YouCannotSendAnInvite Controller" must {
-    "return OK and the correct view for a GET" in {
-      val result = controller().onPageLoad(fakeRequest)
-      status(result) mustBe OK
-      contentAsString(result) mustBe viewAsString()
-    }
+    new YouCannotSendAnInviteController(
+      frontendAppConfig, messagesApi, fakeAuth, dataRetrievalAction, requiredDateAction).onPageLoad()
   }
+
+  def viewAsString() = youCannotSendAnInvite(frontendAppConfig)(fakeRequest, messages).toString
+
+  behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, None, viewAsString)
+
 }

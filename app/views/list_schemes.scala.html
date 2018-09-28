@@ -27,7 +27,7 @@
 
     @components.back_link()
 
-    @components.heading(headingKey = "messages__listSchemes__title")
+    @components.heading(headingKey = messages("messages__listSchemes__title"))
 
     @if(invitationsReceived) {
         <p><a id="invitations-received" href="@routes.ListSchemesController.onPageLoad()">@messages("messages__listSchemes__invitations_link")</a></p>
