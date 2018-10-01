@@ -18,15 +18,15 @@ package controllers.invitations
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
+import connectors.InvitationConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import identifiers.SchemeDetailId
-import identifiers.invitations.{CheckYourAnswersId, PsaNameId}
+import identifiers.invitations.{CheckYourAnswersId, PSAId, PsaNameId}
 import models.NormalMode
-import org.joda.time.LocalDate
 import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import utils.{Navigator, CheckYourAnswersFactory}
+import utils.{CheckYourAnswersFactory, DateHelper, Navigator}
 import utils.annotations.Invitation
 import viewmodels.AnswerSection
 import views.html.check_your_answers
@@ -39,7 +39,8 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
                                            @Invitation navigator: Navigator,
                                            getData: DataRetrievalAction,
                                            requireData: DataRequiredAction,
-                                           checkYourAnswersFactory: CheckYourAnswersFactory) extends FrontendController  with Retrievals with I18nSupport {
+                                           checkYourAnswersFactory: CheckYourAnswersFactory,
+                                           invitationConnector: InvitationConnector) extends FrontendController  with Retrievals with I18nSupport {
 
   def onPageLoad() = (authenticate andThen getData andThen requireData).async {
     implicit request =>
@@ -57,6 +58,26 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
 
   def onSubmit() = (authenticate andThen getData andThen requireData).async {
     implicit request =>
-      Future.successful(Redirect(navigator.nextPage(CheckYourAnswersId, NormalMode, request.userAnswers)))
+      (SchemeDetailId and PsaNameId and PSAId).retrieve.right.map {
+        case (schemeDetails ~ inviteeName ~ inviterPsaId) if (schemeDetails.pstr.isDefined) =>
+        val invitation = models.Invitation(schemeDetails.srn,
+          schemeDetails.pstr.get,
+          schemeDetails.schemeName,
+          request.psaId.id,
+          inviterPsaId,
+          inviteeName,
+          getExpireAt
+        )
+
+        invitationConnector.invite(invitation).map{
+          case CREATED => Redirect(controllers.invitations.routes.InvitationSuccessController.onPageLoad(schemeDetails.srn))
+          case _ => Redirect(controllers.routes.SessionExpiredController.onPageLoad())
+        }
+        case _ => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+      }
   }
+
+  private def getExpireAt = DateHelper.dateTimeFromNowToMidnightAfterDays(appConfig.invitationExpiryDays)
+
+
 }
