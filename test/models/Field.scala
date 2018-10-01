@@ -14,22 +14,18 @@
  * limitations under the License.
  */
 
-package forms.invitations
+package models
 
-import javax.inject.Inject
-import forms.mappings.{Mappings, Transforms}
-import play.api.data.Form
+case class Field(name: String, errorKeys: Map[ErrorType, String])
 
-class PsaNameFormProvider @Inject() extends Mappings with Transforms {
-  def apply(): Form[String] = Form(
-    "psaName" -> text("messages__error__psa__name__required").
-      transform(standardTextTransform, noTransform).
-      verifying(firstError(
-        maxLength(PsaNameFormProvider.psaNameLength, "messages__error__psa__name__length"),
-        psaName("messages__error__psa__name__invalid")))
-  )
+object Field {
+
+  def apply(name: String, errors: (ErrorType, String)*): Field =
+    Field(name, errors.toMap)
 }
 
-object PsaNameFormProvider {
-  val psaNameLength = 107
-}
+sealed trait ErrorType
+
+case object Required extends ErrorType
+
+case object Invalid extends ErrorType

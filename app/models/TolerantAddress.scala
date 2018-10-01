@@ -63,7 +63,6 @@ case class TolerantAddress(addressLine1: Option[String],
       address.countryCode == country.getOrElse("") &&
       address.postalCode == postcode
   }
-
 }
 
 object TolerantAddress {
@@ -170,7 +169,7 @@ object TolerantAddress {
       )
     }
   }
-
 }
 
 final case class NoAddressLinesFoundException() extends Exception("Address with no address lines received")
+

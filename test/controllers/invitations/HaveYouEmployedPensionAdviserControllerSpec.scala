@@ -23,8 +23,9 @@ import forms.invitations.HaveYouEmployedPensionAdviserFormProvider
 import identifiers.invitations.HaveYouEmployedPensionAdviserId
 import models.NormalMode
 import play.api.data.Form
+import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import utils.UserAnswers
+import utils.{FakeNavigator, UserAnswers}
 import views.html.invitations.haveYouEmployedPensionAdviser
 
 class HaveYouEmployedPensionAdviserControllerSpec extends ControllerWithQuestionPageBehaviours {
@@ -36,6 +37,16 @@ class HaveYouEmployedPensionAdviserControllerSpec extends ControllerWithQuestion
 
   private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
+  val controller = new HaveYouEmployedPensionAdviserController(
+    frontendAppConfig,
+    FakeAuthAction(),
+    messagesApi,
+    FakeNavigator,
+    formProvider,
+    FakeUserAnswersCacheConnector,
+    new FakeDataRetrievalAction(Some(Json.obj())),
+    new DataRequiredActionImpl
+  )
     new HaveYouEmployedPensionAdviserController(
       frontendAppConfig, fakeAuth, messagesApi, navigator,formProvider,
       FakeUserAnswersCacheConnector, dataRetrievalAction, requiredDateAction).onPageLoad(NormalMode)
@@ -56,5 +67,4 @@ class HaveYouEmployedPensionAdviserControllerSpec extends ControllerWithQuestion
     form.bind(Map(HaveYouEmployedPensionAdviserId.toString -> "")), viewAsString, postRequest)
 
 }
-
 
