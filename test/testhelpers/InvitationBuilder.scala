@@ -20,38 +20,28 @@ import models.Invitation
 import org.joda.time.DateTime
 
 object InvitationBuilder {
-
+  val unit:Unit = ()
   val srn = "test-srn"
   val pstr1 = "S12345"
-  val schemeName1 = "Test scheme1 name"
-  val inviterPsaId1 = "I12345"
   val inviteePsaId1 = "P12345"
-  val inviteeName1 = "Test Invitee1 Name"
-  val expiryDate1 = new DateTime("2018-11-10")
-
-  val pstr2 = "D1234"
-  val schemeName2 = "Test scheme2 name"
-  val inviterPsaId2 = "Q12345"
-  val inviteePsaId2 = "T12345"
-  val inviteeName2 = "Test Invitee2 Name"
-  val expiryDate2 = new DateTime("2018-11-11")
-
-  val invitation1 = Invitation(
-    srn,
-    pstr = pstr1,
-    schemeName = schemeName1,
-    inviterPsaId = inviterPsaId1,
-    inviteePsaId = inviteePsaId1,
-    inviteeName = inviteeName1,
-    expireAt = expiryDate1)
-
-  val invitation2 = Invitation(srn,
-    pstr = pstr2,
-    schemeName = schemeName2,
-    inviterPsaId = inviterPsaId2,
-    inviteePsaId = inviteePsaId2,
-    inviteeName = inviteeName2,
-    expireAt = expiryDate2)
-
+  val invitation1:Invitation = {
+    val schemeName1 = "Test scheme1 name"
+    val inviterPsaId1 = "I12345"
+    val inviteeName1 = "Test Invitee1 Name"
+    val expiryDate1 = new DateTime("2018-11-10")
+    Invitation(srn = srn, pstr = pstr1, schemeName = schemeName1, inviterPsaId = inviterPsaId1,
+      inviteePsaId = inviteePsaId1, inviteeName = inviteeName1, expireAt = expiryDate1)
+  }
+  val invitation2:Invitation = {
+    val pstr2 = "D1234"
+    val schemeName2 = "Test scheme2 name"
+    val inviterPsaId2 = "Q12345"
+    val inviteePsaId2 = "T12345"
+    val inviteeName2 = "Test Invitee2 Name"
+    val expiryDate2 = new DateTime("2018-11-11")
+    Invitation(srn = srn, pstr = pstr2, schemeName = schemeName2, inviterPsaId = inviterPsaId2,
+      inviteePsaId = inviteePsaId2, inviteeName = inviteeName2,  expireAt = expiryDate2)
+  }
   val invitationList = List(invitation1, invitation2)
 }
+

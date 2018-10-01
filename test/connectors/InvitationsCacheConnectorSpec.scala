@@ -201,7 +201,7 @@ class InvitationsCacheConnectorSpec extends AsyncWordSpec with MustMatchers with
           .willReturn(ok)
       )
       connector.add(invitation1) map {
-        _ mustEqual (())
+        _ mustEqual unit
       }
     }
 
@@ -232,7 +232,7 @@ class InvitationsCacheConnectorSpec extends AsyncWordSpec with MustMatchers with
         )
 
         connector.remove(pstr1, inviteePsaId1) map {
-          _ mustEqual (())
+          _ mustEqual unit
         }
       }
     }

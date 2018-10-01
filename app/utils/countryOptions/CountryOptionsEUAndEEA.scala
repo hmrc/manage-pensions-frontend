@@ -14,22 +14,18 @@
  * limitations under the License.
  */
 
-package forms.invitations
+package utils.countryOptions
 
-import javax.inject.Inject
-import forms.mappings.{Mappings, Transforms}
-import play.api.data.Form
+import com.google.inject.Inject
+import config.FrontendAppConfig
+import javax.inject.Singleton
+import play.api.Environment
+import utils.InputOption
 
-class PsaNameFormProvider @Inject() extends Mappings with Transforms {
-  def apply(): Form[String] = Form(
-    "psaName" -> text("messages__error__psa__name__required").
-      transform(standardTextTransform, noTransform).
-      verifying(firstError(
-        maxLength(PsaNameFormProvider.psaNameLength, "messages__error__psa__name__length"),
-        psaName("messages__error__psa__name__invalid")))
-  )
-}
-
-object PsaNameFormProvider {
-  val psaNameLength = 107
+@Singleton
+class CountryOptionsEUAndEEA @Inject()(
+                                        environment: Environment,
+                                        config: FrontendAppConfig
+                                      ) extends CountryOptions(environment, config) {
+  override def options: Seq[InputOption] = CountryOptions.getCountries(environment, config.locationCanonicalListEUAndEEA)
 }

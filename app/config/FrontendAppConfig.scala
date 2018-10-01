@@ -81,6 +81,7 @@ class FrontendAppConfig @Inject()(override val runModeConfiguration: Configurati
   lazy val invitationExpiryDays: Int = loadConfig("invitationExpiryDays").toInt
 
   lazy val locationCanonicalList = loadConfig("location.canonical.list")
+  lazy val locationCanonicalListEUAndEEA: String = loadConfig("location.canonical.list.EUAndEEA")
   lazy val addressLookUp = baseUrl("address-lookup")
 }
 
