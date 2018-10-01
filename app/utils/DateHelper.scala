@@ -16,19 +16,13 @@
 
 package utils
 
+import org.joda.time.LocalDate
 import org.joda.time.format.DateTimeFormat
-import org.joda.time.{DateTime, DateTimeZone, LocalDate}
 
-trait DateHelper {
-  def currentDate = DateTime.now(DateTimeZone.UTC)
+object DateHelper {
 
   val formatter = DateTimeFormat.forPattern("d MMMM yyyy")
   def formatDate(date: LocalDate): String = {
     formatter.print(date)
   }
-
-  def dateTimeFromNowToMidnightAfterDays(daysAhead:Int): DateTime =
-    currentDate.toLocalDate.plusDays(daysAhead + 1).toDateTimeAtStartOfDay()
 }
-
-object DateHelper extends DateHelper

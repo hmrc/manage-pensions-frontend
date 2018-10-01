@@ -76,6 +76,6 @@ class InvitationSuccessControllerSpec extends ControllerWithNormalPageBehaviours
 
   }
 
-  behave like controllerWithOnSubmitMethod(onSubmitAction, getEmptyData, None, None)
+  behave like controllerWithOnSubmitMethod(onSubmitAction, getEmptyData, None)
 
 }
