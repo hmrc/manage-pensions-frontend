@@ -87,23 +87,27 @@ class ControllerWithNormalPageBehaviours extends ControllerSpecBase {
 
   def controllerWithOnSubmitMethod[T](onSubmitAction: (DataRetrievalAction, AuthAction) => Action[AnyContent],
                                       emptyData: DataRetrievalAction,
-                                      validData: Option[DataRetrievalAction]): Unit = {
+                                      validData: Option[DataRetrievalAction],
+                                      redirectionUrl: Option[() => Call]): Unit = {
 
     "calling onSubmit" must {
 
       "redirect to the next page when valid data is present" in {
 
-        val result = onSubmitAction(emptyData, FakeAuthAction())(FakeRequest())
+        val result = onSubmitAction(validData.getOrElse(emptyData), FakeAuthAction())(FakeRequest())
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(onwardRoute.url)
+        redirectionUrl match {
+          case Some(call) => redirectLocation(result) mustBe Some(call().url)
+          case _=> redirectLocation(result) mustBe Some(onwardRoute.url)
+        }
       }
 
       if (validData.isDefined) {
 
         "redirect to Session Expired if no existing data is found" in {
 
-          val result = onSubmitAction(validData.getOrElse(emptyData), FakeAuthAction())(fakeRequest)
+          val result = onSubmitAction(emptyData, FakeAuthAction())(fakeRequest)
 
           status(result) mustBe SEE_OTHER
           redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)
