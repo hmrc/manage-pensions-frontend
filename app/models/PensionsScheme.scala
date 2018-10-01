@@ -16,160 +16,60 @@
 
 package models
 
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.{Format, Json, OFormat}
 
-case class SchemeDetails(srn: String, pstr: String, schemeStatus: String, schemeName: String, isSchemeMasterTrust: Option[Boolean],
-                         pensionSchemeStructure: Option[String], otherPensionSchemeStructure: Option[String],
-                         hasMoreThanTenTrustees: Option[Boolean], currentSchemeMembers: String, futureSchemeMembers: String,
-                         isReguledSchemeInvestment: Boolean, isOccupationalPensionScheme: Boolean, schemeProvideBenefits: String,
-                         schemeEstablishedCountry: String, invalidBankFlag: Boolean, isSchemeBenefitsInsuranceCompany: Boolean,
-                         insuranceCompanyName: Option[String], policyNumber: Option[String], insuranceCompanyAddressDetails: Option[Address],
-                         insuranceCompanyContactDetails: Option[ContactDetails]
-                        )
+case class Name(firstName: Option[String], middleName: Option[String], lastName: Option[String])
 
-object SchemeDetails{
+object Name {
+  implicit val formats: OFormat[Name] = Json.format[Name]
+}
+
+case class PsaDetails(id: String, organisationOrPartnershipName: Option[String], individual: Option[Name])
+
+object PsaDetails {
+  implicit val formats: OFormat[PsaDetails] = Json.format[PsaDetails]
+}
+
+case class CorrespondenceAddress(addressLine1: String, addressLine2: String, addressLine3: Option[String],
+                                 addressLine4: Option[String], countryCode: String, postalCode: Option[String])
+
+object CorrespondenceAddress {
+  implicit val formats: OFormat[CorrespondenceAddress] = Json.format[CorrespondenceAddress]
+}
+
+case class SchemeMemberNumbers(current: String, future: String)
+
+object SchemeMemberNumbers {
+  implicit val formats: OFormat[SchemeMemberNumbers] = Json.format[SchemeMemberNumbers]
+}
+
+case class InsuranceCompany(name: Option[String], policyNumber: Option[String], address: Option[CorrespondenceAddress])
+
+object InsuranceCompany {
+  implicit val formats: Format[InsuranceCompany] = Json.format[InsuranceCompany]
+}
+
+case class SchemeDetails(srn: Option[String],
+                         pstr: Option[String],
+                         status: String,
+                         name: String,
+                         isMasterTrust: Boolean,
+                         typeOfScheme: Option[String],
+                         otherTypeOfScheme: Option[String],
+                         hasMoreThanTenTrustees: Boolean,
+                         members: SchemeMemberNumbers,
+                         isInvestmentRegulated: Boolean,
+                         isOccupational: Boolean,
+                         benefits: String,
+                         country: String,
+                         areBenefitsSecured: Boolean,
+                         insuranceCompany: Option[InsuranceCompany])
+
+object SchemeDetails {
   implicit val formats: Format[SchemeDetails] = Json.format[SchemeDetails]
 }
 
-case class PersonDetails(title: Option[String] = None, firstName: String, middleName: Option[String] = None,
-                         lastName: String, dateOfBirth: String)
-
-object PersonDetails {
-  implicit val formats: Format[PersonDetails] = Json.format[PersonDetails]
-}
-
-case class PreviousAddressDetails(isPreviousAddressLast12Month: Boolean, previousAddress: Option[Address])
-
-object PreviousAddressDetails {
-  implicit val formats: Format[PreviousAddressDetails] = Json.format[PreviousAddressDetails]
-}
-
-case class Individual(
-                       personDetails: PersonDetails,
-                       nino: Option[String] = None,
-                       noNinoReason: Option[String] = None,
-                       utr: Option[String] = None,
-                       noUtrReason: Option[String] = None,
-                       correspondenceAddressDetails: Address,
-                       correspondenceContactDetails: ContactDetails,
-                       previousAddressDetails: PreviousAddressDetails
-                     )
-
-object Individual{
-  implicit val formats: Format[Individual] = Json.format[Individual]
-}
-
-case class CompanyEstablisher(
-                               organisationName: String,
-                               utr: Option[String] = None,
-                               noUtrReason: Option[String] = None,
-                               crnNumber: Option[String] = None,
-                               noCrnReason: Option[String] = None,
-                               vatRegistrationNumber: Option[String] = None,
-                               payeReference: Option[String] = None,
-                               haveMoreThanTenDirectors: Option[Boolean],
-                               correspondenceAddressDetails: Address,
-                               correspondenceContactDetails: ContactDetails,
-                               previousAddressDetails: Option[PreviousAddressDetails],
-                               directorDetails: Option[Seq[Individual]]
-                             )
-
-object CompanyEstablisher{
-  implicit val formats: Format[CompanyEstablisher] = Json.format[CompanyEstablisher]
-}
-
-case class Partnership(
-                        partnershipName: String,
-                        utr: Option[String] = None,
-                        noUtrReason: Option[String] = None,
-                        vatRegistrationNumber: Option[String] = None,
-                        payeReference: Option[String] = None,
-                        areMorethanTenPartners: Boolean,
-                        correspondenceAddressDetails: Address,
-                        correspondenceContactDetails: ContactDetails,
-                        previousAddressDetails: PreviousAddressDetails,
-                        partnerDetails: Seq[Individual]
-                      )
-
-object Partnership{
-  implicit val formats: Format[Partnership] = Json.format[Partnership]
-}
-
-
-case class EstablisherDetails(
-                               individualDetails: Option[Seq[Individual]],
-                               companyOrOrganisationDetails: Option[Seq[CompanyEstablisher]],
-                               partnershipTrusteeDetail: Option[Seq[Partnership]]
-                             )
-
-object EstablisherDetails{
-  implicit val formats: Format[EstablisherDetails] = Json.format[EstablisherDetails]
-}
-
-case class CompanyTrustee(
-                           organizationName: String,
-                           utr: Option[String] = None,
-                           noUtrReason: Option[String] = None,
-                           crnNumber: Option[String] = None,
-                           noCrnReason: Option[String] = None,
-                           vatRegistrationNumber: Option[String] = None,
-                           payeReference: Option[String] = None,
-                           correspondenceAddressDetails: Address,
-                           correspondenceContactDetails: ContactDetails,
-                           previousAddressDetails: PreviousAddressDetails
-                         )
-
-object CompanyTrustee{
-  implicit val formats: Format[CompanyTrustee] = Json.format[CompanyTrustee]
-}
-
-case class PartnershipTrustee(
-                               partnershipName: String,
-                               utr: Option[String] = None,
-                               noUtrReason: Option[String] = None,
-                               vatRegistrationNumber: Option[String] = None,
-                               payeReference: Option[String] = None,
-                               correspondenceAddressDetails: Address,
-                               correspondenceContactDetails: ContactDetails,
-                               previousAddressDetails: PreviousAddressDetails
-                             )
-
-object PartnershipTrustee{
-  implicit val formats: Format[PartnershipTrustee] = Json.format[PartnershipTrustee]
-}
-
-case class TrusteeDetails(
-                           individualTrusteeDetail: Seq[Individual],
-                           companyTrusteeDetail: Seq[CompanyTrustee],
-                           partnershipTrusteeDetail: Seq[PartnershipTrustee]
-                         )
-
-object TrusteeDetails{
-  implicit val formats: Format[TrusteeDetails] = Json.format[TrusteeDetails]
-}
-
-case class PsaDetails(
-                       psaid: String,
-                       organizationOrPartnershipName: Option[String] = None,
-                       firstName: Option[String] = None,
-                       middleName: Option[String] = None,
-                       lastName: Option[String] = None,
-                       relationshipType: Option[String] = None,
-                       relationshipDate: Option[String] = None
-                     )
-
-object PsaDetails{
-  implicit val formats: Format[PsaDetails] = Json.format[PsaDetails]
-}
-
-case class PensionsScheme(schemeDetails: SchemeDetails, establisherDetails: Option[EstablisherDetails],
-                          trusteeDetails: Option[TrusteeDetails], psaDetails: Option[Seq[PsaDetails]])
-
-object PensionsScheme {
-  implicit val formats: Format[PensionsScheme] = Json.format[PensionsScheme]
-}
-
-case class PsaSchemeDetails(psaSchemeDetails: PensionsScheme)
+case class PsaSchemeDetails(schemeDetails: SchemeDetails, psaDetails: Option[Seq[PsaDetails]])
 
 object PsaSchemeDetails {
   implicit val formats: Format[PsaSchemeDetails] = Json.format[PsaSchemeDetails]

@@ -28,6 +28,27 @@ trait MockDataHelper {
   protected val comEstcontactDetails = ContactDetails("0044-09876542312",Some("0044-09876542312"),Some("0044-09876542312"),"abcfe@hmrc.gsi.gov.uk")
   protected val indEstPrevAdd = PreviousAddressDetails(true, Some(Address("sddsfsfsdf","sddsfsdf",Some("sdfdsfsdf"),Some("sfdsfsdf"),Some("456546"),"AD")))
   protected val comEstPrevAdd = PreviousAddressDetails(true,Some(Address("addline1","addline2",Some("addline3"),Some("addline4"),Some("ST36TR"),"AD")))
-  protected val personDetails = PersonDetails(Some("Mr"),"abcdef",Some("fdgdgfggfdg"),"dfgfdgdfg","1955-03-29")
+
+
+  val mockSchemeDetails = SchemeDetails(Some("S9000000000"), Some("00000000AA"), "Open", "Benefits Scheme", true, None, None, false,
+    SchemeMemberNumbers("0","0"), false, false, "AD", "GB", false, None)
+
+  val psaDetails1 = PsaDetails("A0000000",Some("partnetship name"),Some(Name(Some("Taylor"),Some("Middle"),Some("Rayon"))))
+  val psaDetails2 = PsaDetails("A0000001",Some("partnetship name 1"),Some(Name(Some("Smith"),Some("A"),Some("Tony"))))
+
+  val psaSchemeDetailsResponse = PsaSchemeDetails(mockSchemeDetails, Some(Seq(psaDetails1, psaDetails2)))
+  val schemeDetailsWithPsaOnlyResponse = PsaSchemeDetails(mockSchemeDetails, Some(Seq(psaDetails1, psaDetails2)))
+  val schemeDetailsPendingResponse = PsaSchemeDetails(mockSchemeDetails.copy(status = "Pending"), Some(Seq(psaDetails1, psaDetails2)))
+  val schemeDetailsWithoutPsaResponse = PsaSchemeDetails(mockSchemeDetails, None)
+
+
+  val schemeDetail = SchemeDetail("abcdefghi", "S1000000456", "Pending", Some("2012-10-10"),
+    Some("10000678RE"), Some("Primary PSA"), None)
+
+  val schemeDetailWithoutDate = SchemeDetail("abcdefghi", "S1000000456", "Pending", None,
+    Some("10000678RE"), Some("Primary PSA"), None)
+
+  val listOfSchemesResponse = ListOfSchemes("2001-12-17T09:30:47Z", "1", Some(List(schemeDetail)))
+  val listOfSchemesPartialResponse = ListOfSchemes("2001-12-17T09:30:47Z", "1", Some(List(schemeDetailWithoutDate)))
 
 }

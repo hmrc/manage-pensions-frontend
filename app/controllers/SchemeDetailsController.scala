@@ -43,15 +43,15 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
 
       schemeDetailsConnector.getSchemeDetails("srn", srn).flatMap { scheme =>
         listSchemesConnector.getListOfSchemes(request.psaId.id).flatMap { list =>
-          val schemeDetail = scheme.psaSchemeDetails.schemeDetails
-          val minimalSchemeDetails = MinimalSchemeDetail(srn, Some(schemeDetail.pstr), schemeDetail.schemeName)
+          val schemeDetail = scheme.schemeDetails
+          val minimalSchemeDetails = MinimalSchemeDetail(srn, schemeDetail.pstr, schemeDetail.name)
 
           userAnswersCacheConnector.save(request.externalId, SchemeDetailId, minimalSchemeDetails).map { _ =>
 
-            val isSchemeOpen = schemeDetail.schemeStatus.equalsIgnoreCase("open")
+            val isSchemeOpen = schemeDetail.status.equalsIgnoreCase("open")
 
             Ok(schemeDetails(appConfig,
-              schemeDetail.schemeName,
+              schemeDetail.name,
               openedDate(srn, list, isSchemeOpen),
               administrators(scheme),
               srn,
@@ -63,10 +63,13 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
 
   }
 
-  private def administrators(scheme: PsaSchemeDetails): Option[Seq[String]] = {
-    scheme.psaSchemeDetails.psaDetails match {
-      case Some(psaDetails) => Some(psaDetails.map(fullName))
-      case None => None
+  private def administrators(psaSchemeDetails: PsaSchemeDetails): Option[Seq[String]] = {
+    psaSchemeDetails.psaDetails.map { psaDetails =>
+      psaDetails.map { details =>
+        details.individual.map { individual =>
+          fullName(individual)
+        }.getOrElse("")
+      }
     }
   }
 
@@ -82,7 +85,8 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
       else { None }
   }
 
-  private def fullName(psa: PsaDetails): String =
-    s"${psa.firstName.getOrElse("")} ${psa.middleName.getOrElse("")} ${psa.lastName.getOrElse("")}"
+  private def fullName(individual: Name): String =
+    s"${individual.firstName.getOrElse("")} ${individual.middleName.getOrElse("")} ${individual.lastName.getOrElse("")}"
+
 
 }

@@ -28,37 +28,6 @@ object CommonBuilders {
   private val comEstcontactDetails = ContactDetails("0044-09876542312",Some("0044-09876542312"),Some("0044-09876542312"),"abcfe@hmrc.gsi.gov.uk")
   private val indEstPrevAdd = PreviousAddressDetails(true, Some(Address("sddsfsfsdf","sddsfsdf",Some("sdfdsfsdf"),Some("sfdsfsdf"),Some("456546"),"AD")))
   private val comEstPrevAdd = PreviousAddressDetails(true,Some(Address("addline1","addline2",Some("addline3"),Some("addline4"),Some("ST36TR"),"AD")))
-  private val personDetails = PersonDetails(Some("Mr"),"abcdef",Some("fdgdgfggfdg"),"dfgfdgdfg","1955-03-29")
 
-  val schemeDetails = SchemeDetails("S9000000000", "00000000AA", "Open", "Benefits Scheme", Some(true),
-    Some("A single trust under which all of the assets are held for the benefit of all members of the scheme"),
-    Some(" "), Some(true), "0", "0", true, true, "Money Purchase benefits only (defined contribution)", "AD", true, true,
-    Some("Aviva Insurance"), Some(" "), Some(address), Some(contactDetails))
-
-  private val indEstablisher = Individual(personDetails,Some("AA999999A"),Some("retxgfdg"),Some("1234567892"),
-    Some("asdgdgdsg"),indEstAddress,indEstcontactDetails,indEstPrevAdd)
-
-  private val compEstablisher = CompanyEstablisher("abc organisation",Some("7897700000"),Some("reason forutr"),Some("sdfsfs"),
-    Some("crn no reason"),Some("789770000"),Some("9999"),Some(true),comEstAddress,comEstcontactDetails,Some(comEstPrevAdd),None)
-
-  private val establisherDetails = EstablisherDetails(Some(List(indEstablisher)), Some(List(compEstablisher)), None)
-
-  val psaDetails1 = PsaDetails("A0000000",Some("partnetship name"),Some("Taylor"),Some("Middle"),Some("Rayon"),Some("Primary"),Some("1978-03-22"))
-  val psaDetails2 = PsaDetails("A0000001",Some("partnetship name 1"),Some("Smith"),Some("A"),Some("Tony"),Some("Primary"),Some("1977-03-22"))
-
-  val psaSchemeDetailsResponse = PsaSchemeDetails(PensionsScheme(schemeDetails, Some(establisherDetails), None, Some(Seq(psaDetails1, psaDetails2))))
-  val schemeDetailsWithPsaOnlyResponse = PsaSchemeDetails(PensionsScheme(schemeDetails, None, None, Some(Seq(psaDetails1, psaDetails2))))
-  val schemeDetailsPendingResponse = PsaSchemeDetails(PensionsScheme(schemeDetails.copy(schemeStatus = "Pending"), None, None, Some(Seq(psaDetails1, psaDetails2))))
-  val schemeDetailsWithoutPsaResponse = PsaSchemeDetails(PensionsScheme(schemeDetails, None, None, None))
-
-
-  private val schemeDetail = SchemeDetail("abcdefghi", "S1000000456", "Pending", Some("2012-10-10"),
-    Some("10000678RE"), Some("Primary PSA"), None)
-
-  private val schemeDetailWithoutDate = SchemeDetail("abcdefghi", "S1000000456", "Pending", None,
-    Some("10000678RE"), Some("Primary PSA"), None)
-
-  val listOfSchemesResponse = ListOfSchemes("2001-12-17T09:30:47Z", "1", Some(List(schemeDetail)))
-  val listOfSchemesPartialResponse = ListOfSchemes("2001-12-17T09:30:47Z", "1", Some(List(schemeDetailWithoutDate)))
 
 }

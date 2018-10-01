@@ -24,12 +24,12 @@ import org.scalatest.mockito.MockitoSugar
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import play.api.test.Helpers.{contentAsString, _}
-import testhelpers.CommonBuilders
+import utils.MockDataHelper
 import views.html.schemeDetails
 
 import scala.concurrent.Future
 
-class SchemeDetailsControllerSpec extends ControllerSpecBase {
+class SchemeDetailsControllerSpec extends ControllerSpecBase{
   import SchemeDetailsControllerSpec._
 
   appRunning()
@@ -38,9 +38,9 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
     "return OK and the correct view for a GET" in {
       reset(fakeSchemeDetailsConnector)
       when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(CommonBuilders.schemeDetailsWithPsaOnlyResponse))
+        .thenReturn(Future.successful(schemeDetailsWithPsaOnlyResponse))
       when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(CommonBuilders.listOfSchemesResponse))
+        .thenReturn(Future.successful(listOfSchemesResponse))
       val result = controller().onPageLoad(srn)(fakeRequest)
       status(result) mustBe OK
       contentAsString(result) mustBe viewAsString()
@@ -49,9 +49,9 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
     "return OK and the correct view for a GET when opened date is not returned by API" in {
       reset(fakeSchemeDetailsConnector)
       when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(CommonBuilders.schemeDetailsWithPsaOnlyResponse))
+        .thenReturn(Future.successful(schemeDetailsWithPsaOnlyResponse))
       when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(CommonBuilders.listOfSchemesPartialResponse))
+        .thenReturn(Future.successful(listOfSchemesPartialResponse))
       val result = controller().onPageLoad(srn)(fakeRequest)
       status(result) mustBe OK
       contentAsString(result) mustBe viewAsString(None)
@@ -60,9 +60,9 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
     "return OK and the correct view for a GET when scheme status is not open" in {
       reset(fakeSchemeDetailsConnector)
       when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(CommonBuilders.schemeDetailsPendingResponse))
+        .thenReturn(Future.successful(schemeDetailsPendingResponse))
       when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(CommonBuilders.listOfSchemesResponse))
+        .thenReturn(Future.successful(listOfSchemesResponse))
       val result = controller().onPageLoad(srn)(fakeRequest)
       status(result) mustBe OK
       contentAsString(result) mustBe viewAsString(openDate = None, isSchemeOpen = false)
@@ -71,9 +71,9 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
     "return OK and the correct view for a GET when PSA data is not returned by API" in {
       reset(fakeSchemeDetailsConnector)
       when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(CommonBuilders.schemeDetailsWithoutPsaResponse))
+        .thenReturn(Future.successful(schemeDetailsWithoutPsaResponse))
       when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(CommonBuilders.listOfSchemesResponse))
+        .thenReturn(Future.successful(listOfSchemesResponse))
       val result = controller().onPageLoad(srn)(fakeRequest)
       status(result) mustBe OK
       contentAsString(result) mustBe viewAsString(administrators = None)
@@ -81,7 +81,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
   }
 }
 
-private object SchemeDetailsControllerSpec extends ControllerSpecBase with MockitoSugar {
+private object SchemeDetailsControllerSpec extends ControllerSpecBase with MockitoSugar with MockDataHelper {
 
   override lazy val app = new GuiceApplicationBuilder().configure(
     "features.work-package-one-enabled" -> true
@@ -107,10 +107,10 @@ private object SchemeDetailsControllerSpec extends ControllerSpecBase with Mocki
   def viewAsString(openDate: Option[String] = openDate, administrators: Option[Seq[String]] = administrators, isSchemeOpen: Boolean = true): String =
     schemeDetails(
     frontendAppConfig,
-    CommonBuilders.schemeDetails.schemeName,
+    mockSchemeDetails.name,
     openDate,
     administrators,
     srn,
     isSchemeOpen
-  )(fakeRequest, messages).toString
+  )(fakeRequest, messages).toString()
 }
