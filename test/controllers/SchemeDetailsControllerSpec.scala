@@ -18,7 +18,7 @@ package controllers
 
 import connectors._
 import controllers.actions.{DataRetrievalAction, _}
-import models.{IndividualDetails, MinimalPSA, NormalMode}
+import models.{IndividualDetails, MinimalPSA, MinimalSchemeDetail, NormalMode}
 import org.mockito.Matchers._
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
@@ -27,6 +27,7 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.Helpers.{contentAsString, _}
 import testhelpers.CommonBuilders
 import views.html.schemeDetails
+import identifiers.SchemeDetailId
 
 import scala.concurrent.Future
 
@@ -47,6 +48,17 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
         val result = controller().onPageLoad(srn)(fakeRequest)
         status(result) mustBe OK
         contentAsString(result) mustBe viewAsString()
+      }
+
+      "save the minimal scheme details data and return OK with the correct view" in {
+        when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any())(any(), any()))
+          .thenReturn(Future.successful(CommonBuilders.schemeDetailsWithPsaOnlyResponse))
+        when(fakeListOfSchemesConnector.getListOfSchemes(any())(any(), any()))
+          .thenReturn(Future.successful(CommonBuilders.listOfSchemesResponse))
+        val result = controller().onPageLoad(srn)(fakeRequest)
+        status(result) mustBe OK
+        contentAsString(result) mustBe viewAsString()
+        FakeUserAnswersCacheConnector.verify(SchemeDetailId, minimalSchemeDetail)
       }
 
       "return OK and the correct view when opened date is not returned by API" in {
@@ -122,6 +134,7 @@ private object SchemeDetailsControllerSpec extends ControllerSpecBase with Mocki
       fakeSchemeDetailsConnector,
       fakeListOfSchemesConnector,
       fakeMinimalPsaConnector,
+      FakeUserAnswersCacheConnector,
       FakeAuthAction(),
       dataRetrievalAction)
 
@@ -129,6 +142,7 @@ private object SchemeDetailsControllerSpec extends ControllerSpecBase with Mocki
   val administrators = Some(Seq("Taylor Middle Rayon", "Smith A Tony"))
   val openDate = Some("10 October 2012")
   val srn = "S1000000456"
+  val minimalSchemeDetail = MinimalSchemeDetail(CommonBuilders.schemeDetails.srn, CommonBuilders.schemeDetails.pstr, CommonBuilders.schemeDetails.schemeName)
 
   def viewAsString(openDate: Option[String] = openDate, administrators: Option[Seq[String]] = administrators, isSchemeOpen: Boolean = true): String =
     schemeDetails(

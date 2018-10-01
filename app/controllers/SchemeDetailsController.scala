@@ -17,8 +17,9 @@
 package controllers
 
 import config.FrontendAppConfig
-import connectors.{ListOfSchemesConnector, MinimalPsaConnector, SchemeDetailsConnector}
+import connectors._
 import controllers.actions._
+import identifiers.SchemeDetailId
 import javax.inject.Inject
 import models._
 import org.joda.time.LocalDate
@@ -33,26 +34,33 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                                         schemeDetailsConnector: SchemeDetailsConnector,
                                         listSchemesConnector: ListOfSchemesConnector,
                                         minimalPsaConnector: MinimalPsaConnector,
+                                        userAnswersCacheConnector: UserAnswersCacheConnector,
                                         authenticate: AuthAction,
                                         getData: DataRetrievalAction) extends FrontendController with I18nSupport {
 
   def onPageLoad(srn: String): Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
+      for {
+        scheme <- schemeDetailsConnector.getSchemeDetails("srn", srn)
+        listOfSchemes <- listSchemesConnector.getListOfSchemes(request.psaId.id)
+        _ <- userAnswersCacheConnector.save(request.externalId, SchemeDetailId, minimalDetails(scheme))
+      } yield {
+        val details = scheme.psaSchemeDetails.schemeDetails
+        val isSchemeOpen = details.schemeStatus.equalsIgnoreCase("open")
 
-      schemeDetailsConnector.getSchemeDetails("srn", srn).flatMap { scheme =>
-        listSchemesConnector.getListOfSchemes(request.psaId.id).map { list =>
-
-          val isSchemeOpen = scheme.psaSchemeDetails.schemeDetails.schemeStatus.equalsIgnoreCase("open")
-
-          Ok(schemeDetails(appConfig,
-            scheme.psaSchemeDetails.schemeDetails.schemeName,
-            openedDate(srn, list, isSchemeOpen),
-            administrators(scheme),
-            srn,
-            isSchemeOpen
-          ))
-        }
+        Ok(schemeDetails(appConfig,
+          details.schemeName,
+          openedDate(srn, listOfSchemes, isSchemeOpen),
+          administrators(scheme),
+          srn,
+          isSchemeOpen
+        ))
       }
+  }
+
+  private def minimalDetails(scheme: PsaSchemeDetails): MinimalSchemeDetail = {
+    val schemeDetails = scheme.psaSchemeDetails.schemeDetails
+    MinimalSchemeDetail(schemeDetails.srn, schemeDetails.pstr, schemeDetails.schemeName)
   }
 
   private def administrators(scheme: PsaSchemeDetails): Option[Seq[String]] = {
@@ -81,7 +89,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
   private def fullName(psa: PsaDetails): String =
     s"${psa.firstName.getOrElse("")} ${psa.middleName.getOrElse("")} ${psa.lastName.getOrElse("")}"
 
-  def onClickCheckIfPsaCanInvite: Action[AnyContent] = (authenticate).async {
+  def onClickCheckIfPsaCanInvite: Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
       minimalPsaConnector.getMinimalPsaDetails(request.psaId.id).map { minimalDetails =>
         if (minimalDetails.isPsaSuspended) {
