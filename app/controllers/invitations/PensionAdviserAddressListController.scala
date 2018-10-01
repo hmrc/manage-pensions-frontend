@@ -23,7 +23,7 @@ import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.invitations.PensionAdviserAddressListFormProvider
 import identifiers.invitations.{AdviserAddressListId, AdviserAddressPostCodeLookupId}
 import javax.inject.Inject
-import models.{NormalMode, TolerantAddress}
+import models.{Mode, NormalMode, TolerantAddress}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
@@ -47,18 +47,18 @@ class PensionAdviserAddressListController @Inject()(
 
   def form(addresses: Seq[TolerantAddress]): Form[Int] = formProvider(addresses)
 
-  def onPageLoad(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request => AdviserAddressPostCodeLookupId.retrieve.right.map { addresses =>
-        Future.successful(Ok(views.html.invitations.pension_adviser_address_list(appConfig, form(addresses), addresses)))
+        Future.successful(Ok(views.html.invitations.pension_adviser_address_list(appConfig, form(addresses), addresses, mode)))
       }
   }
 
-  def onSubmit(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
       AdviserAddressPostCodeLookupId.retrieve.right.map { addresses =>
         formProvider(addresses).bindFromRequest().fold(
           formWithErrors =>
-            Future.successful(BadRequest(pension_adviser_address_list(appConfig, formWithErrors, addresses))),
+            Future.successful(BadRequest(pension_adviser_address_list(appConfig, formWithErrors, addresses, mode))),
           addressIndex => {
             val address = addresses(addressIndex).copy(country = Some("GB"))
 

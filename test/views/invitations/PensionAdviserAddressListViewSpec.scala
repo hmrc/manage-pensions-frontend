@@ -17,7 +17,7 @@
 package views.invitations
 
 import forms.invitations.PensionAdviserAddressListFormProvider
-import models.TolerantAddress
+import models.{NormalMode, TolerantAddress}
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
@@ -31,7 +31,7 @@ class PensionAdviserAddressListViewSpec extends ViewBehaviours {
 
   private val addresses = Seq(address("postcode 1"), address("postcode 2"))
   private val addressIndexes = Seq.range(0, 2)
-  private val call = controllers.invitations.routes.PensionAdviserAddressListController.onPageLoad()
+  private def call = controllers.invitations.routes.AdviserManualAddressController.onPageLoad(NormalMode, false)
 
   def address(postCode: String): TolerantAddress = TolerantAddress(
     Some("address line 1"),
@@ -47,7 +47,8 @@ class PensionAdviserAddressListViewSpec extends ViewBehaviours {
       pension_adviser_address_list(
         frontendAppConfig,
         form,
-        addresses
+        addresses,
+        NormalMode
       )(fakeRequest, messages)
 
   private def createViewUsingForm: Form[_] => HtmlFormat.Appendable =
@@ -55,7 +56,8 @@ class PensionAdviserAddressListViewSpec extends ViewBehaviours {
       pension_adviser_address_list(
         frontendAppConfig,
         form,
-        addresses
+        addresses,
+        NormalMode
       )(fakeRequest, messages)
 
   "AddressListView view" must {

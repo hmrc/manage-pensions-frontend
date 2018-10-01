@@ -31,7 +31,7 @@
 
         @components.error_summary(form.errors)
 
-        @components.headingNew(messages("messages__psa__id__heading", psaName))
+        @components.heading(Messages("messages__psa__id__heading", psaName))
 
         @components.input_text(
           field = form("psaId"),

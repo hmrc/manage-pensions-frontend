@@ -38,6 +38,19 @@ trait ViewSpecBase extends SpecBase {
       )
   }
 
+  def haveLinkWithUrlAndContent(linkId: String, url: String, expectedContent: String) = Matcher[Document]{
+    document =>
+    val link = document.select(s"a[id=$linkId]")
+      val actualContent = link.text()
+
+    val href = link.attr("href")
+    MatchResult(
+      href == url && expectedContent == actualContent,
+      s"link id $linkId with link text $actualContent and href $href is not rendered on the page",
+      s"link id $linkId with link text $actualContent and href $href is rendered on the page"
+    )
+  }
+
   def haveDynamicText(messageKey: String, args: Any*): Matcher[Document] = Matcher[Document] {
     document =>
       val text = messages(messageKey, args: _*)
@@ -91,6 +104,25 @@ trait ViewSpecBase extends SpecBase {
         s"link $linkId onClick $onClick is equal to $action"
       )
   }
+
+
+/*
+  class IdSelectorWithUrlMatcher(expectedContent: String, selector: String) extends Matcher[Document] {
+    def apply(left: Document): MatchResult = {
+      val elements: String =
+        left.getElementById(selector).attr("href")
+
+      lazy val elementContents = elements.mkString("\t", "\n\t", "")
+
+      MatchResult(
+        elements.contains(expectedContent),
+        s"[$expectedContent] not found in elements with id '$selector':[\n$elementContents]",
+        s"[$expectedContent] element found with id '$selector' and url [$expectedContent]"
+      )
+    }
+  }
+
+  def haveLinkWithUrlWithID(id: String, expectedURL: String) = new IdSelectorWithUrlMatcher(expectedURL, id)*/
 
   def asDocument(html: Html): Document = Jsoup.parse(html.toString())
 

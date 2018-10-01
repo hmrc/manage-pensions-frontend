@@ -62,7 +62,7 @@ trait Retrievals {
       }
   }
 
-  implicit def fromId[A](id: TypedIdentifier[A])(implicit request: DataRequest[AnyContent], reads: Reads[A]): Retrieval[A] =
+  implicit def fromId[A](id: TypedIdentifier[A])(implicit rds: Reads[A]): Retrieval[A] =
     Retrieval {
       implicit request =>
         request.userAnswers.get(id) match {
