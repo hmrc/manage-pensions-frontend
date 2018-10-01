@@ -21,7 +21,7 @@ import javax.inject.{Inject, Singleton}
 import connectors.UserAnswersCacheConnector
 import controllers.invitations.routes._
 import controllers.routes._
-import identifiers.invitations.{AdviserAddressListId, PSAId, PsaNameId}
+import identifiers.invitations.{CheckYourAnswersId, AdviserAddressListId, PSAId, PsaNameId}
 import models.NormalMode
 import utils.Navigator
 
