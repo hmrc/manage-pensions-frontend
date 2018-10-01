@@ -22,7 +22,8 @@ import org.scalatest.{AsyncFlatSpec, Matchers}
 import play.api.http.Status
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
-import utils.{MockDataHelper, WireMockHelper}
+import utils.WireMockHelper
+import testhelpers.CommonBuilders._
 
 class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper {
 
@@ -129,7 +130,7 @@ class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
 
 }
 
-object SchemeDetailsConnectorSpec extends JsonFileReader with MockDataHelper {
+object SchemeDetailsConnectorSpec extends JsonFileReader {
 
   private val schemeIdType = "pstr"
   private val idNumber = "00000000AA"

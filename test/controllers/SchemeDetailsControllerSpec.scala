@@ -22,10 +22,9 @@ import org.mockito.Matchers
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.mockito.MockitoSugar
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.json.Json
 import play.api.test.Helpers.{contentAsString, _}
-import utils.MockDataHelper
 import views.html.schemeDetails
+import testhelpers.CommonBuilders._
 
 import scala.concurrent.Future
 
@@ -81,7 +80,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase{
   }
 }
 
-private object SchemeDetailsControllerSpec extends ControllerSpecBase with MockitoSugar with MockDataHelper {
+private object SchemeDetailsControllerSpec extends ControllerSpecBase with MockitoSugar {
 
   override lazy val app = new GuiceApplicationBuilder().configure(
     "features.work-package-one-enabled" -> true
