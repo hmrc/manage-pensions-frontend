@@ -29,7 +29,7 @@ class IncorrectPsaDetailsControllerSpec extends ControllerWithNormalPageBehaviou
   def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
     new IncorrectPsaDetailsController(
-      frontendAppConfig, messagesApi, fakeAuth, dataRetrievalAction, requiredDateAction).onPageLoad()
+      frontendAppConfig, messagesApi, fakeAuth, dataRetrievalAction, requiredDataAction).onPageLoad()
   }
 
   def viewAsString() = incorrectPsaDetails(frontendAppConfig, invitee)(fakeRequest, messages).toString

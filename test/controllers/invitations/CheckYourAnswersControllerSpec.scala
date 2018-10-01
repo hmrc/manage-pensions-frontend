@@ -16,13 +16,17 @@
 
 package controllers.invitations
 
+import connectors.InvitationConnector
 import controllers.actions.{AuthAction, DataRetrievalAction}
 import controllers.behaviours.ControllerWithNormalPageBehaviours
-import models.MinimalSchemeDetail
+import models.{AcceptedInvitation, Invitation, MinimalSchemeDetail}
 import play.api.mvc.Call
+import uk.gov.hmrc.http.HeaderCarrier
 import utils.{CheckYourAnswersFactory, UserAnswers}
 import viewmodels.AnswerSection
 import views.html.check_your_answers
+
+import scala.concurrent.{ExecutionContext, Future}
 
 class CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours {
 
@@ -33,7 +37,7 @@ class CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours 
 
   private lazy val continue: Call = controllers.invitations.routes.InvitationSuccessController.onSubmit(testSrn)
 
-  private val userAnswer = UserAnswers()
+  private val userAnswerOnPageLoad = UserAnswers()
     .minimalSchemeDetails(testSchemeDetail)
     .dataRetrievalAction
 
@@ -44,21 +48,34 @@ class CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours 
   def viewAsString() = check_your_answers(frontendAppConfig, Seq(AnswerSection(None, Seq())), None, call,
     Some("messages__check__your__answer__main__containt__label"), Some(testSchemeName))(fakeRequest, messages).toString
 
+  class FakeInvitationConnector extends InvitationConnector {
+    override def invite(invitation: Invitation)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = Future.successful(())
+
+    override def acceptInvite(acceptedInvitation: AcceptedInvitation)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = Future.successful(())
+  }
+
+  val userAnswerOnSubmit = UserAnswers()
+    .inviteeName("test invitee name")
+    .inviteeId("psaId")
+    .minimalSchemeDetails(testSchemeDetail)
+    .dataRetrievalAction
+
+  object FakeInvitationConnector extends FakeInvitationConnector
+
   def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
     new CheckYourAnswersController(
-      frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction, checkYourAnswersFactory).onPageLoad()
+      frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDataAction, FakeInvitationConnector, checkYourAnswersFactory).onPageLoad()
   }
 
-  def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
+  def onSubmitAction(dataRetrievalAction: DataRetrievalAction , fakeAuth: AuthAction) = {
 
     new CheckYourAnswersController(
-      frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction, checkYourAnswersFactory).onSubmit()
+      frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDataAction, FakeInvitationConnector, checkYourAnswersFactory).onSubmit()
   }
 
+  behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, Some(userAnswerOnPageLoad), viewAsString)
 
-  behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, Some(userAnswer), viewAsString)
-
-  behave like controllerWithOnSubmitMethod(onSubmitAction, getEmptyData,  None)
+  behave like controllerWithOnSubmitMethod(onSubmitAction, getEmptyData,  Some(userAnswerOnSubmit))
 
 }

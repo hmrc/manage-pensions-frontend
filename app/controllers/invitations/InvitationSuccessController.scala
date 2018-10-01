@@ -17,6 +17,7 @@
 package controllers.invitations
 
 import config.FrontendAppConfig
+import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import identifiers.SchemeDetailId
 import identifiers.invitations.{InvitationSuccessId, PsaNameId}
@@ -30,6 +31,8 @@ import utils.Navigator
 import utils.annotations.Invitation
 import views.html.invitations.invitation_success
 
+import scala.concurrent.Future
+
 class InvitationSuccessController @Inject() (
   override val messagesApi: MessagesApi,
   frontendAppConfig: FrontendAppConfig,
@@ -37,12 +40,12 @@ class InvitationSuccessController @Inject() (
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   @Invitation navigator: Navigator
-) extends FrontendController with I18nSupport {
+) extends FrontendController with I18nSupport with Retrievals {
 
-  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate andThen getData andThen requireData) {
+  def onPageLoad: Action[AnyContent] = (authenticate andThen getData andThen requireData) {
     implicit request =>
 
-      val continue = controllers.invitations.routes.InvitationSuccessController.onSubmit(srn)
+      val continue = controllers.invitations.routes.InvitationSuccessController.onSubmit
 
       (for {
         psaName <- request.userAnswers.get(PsaNameId)
@@ -61,9 +64,11 @@ class InvitationSuccessController @Inject() (
 
   }
 
-  def onSubmit(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate andThen getData andThen requireData) {
+  def onSubmit: Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
-      Redirect(navigator.nextPage(InvitationSuccessId, NormalMode, request.userAnswers))
+     SchemeDetailId.retrieve.right.map { schemeDetail =>
+        Future.successful(Redirect(controllers.routes.SchemeDetailsController.onPageLoad(schemeDetail.srn)))
+      }
   }
 
 }

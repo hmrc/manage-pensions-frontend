@@ -45,11 +45,11 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
         listOfSchemes <- listSchemesConnector.getListOfSchemes(request.psaId.id)
         _ <- userAnswersCacheConnector.save(request.externalId, SchemeDetailId, minimalDetails(scheme))
       } yield {
-        val details = scheme.psaSchemeDetails.schemeDetails
-        val isSchemeOpen = details.schemeStatus.equalsIgnoreCase("open")
+        val details = scheme.schemeDetails
+        val isSchemeOpen = details.status.equalsIgnoreCase("open")
 
         Ok(schemeDetails(appConfig,
-          details.schemeName,
+          details.name,
           openedDate(srn, listOfSchemes, isSchemeOpen),
           administrators(scheme),
           srn,
@@ -59,14 +59,17 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
   }
 
   private def minimalDetails(scheme: PsaSchemeDetails): MinimalSchemeDetail = {
-    val schemeDetails = scheme.psaSchemeDetails.schemeDetails
-    MinimalSchemeDetail(schemeDetails.srn, schemeDetails.pstr, schemeDetails.schemeName)
+    val schemeDetails = scheme.schemeDetails
+    MinimalSchemeDetail(schemeDetails.srn.getOrElse(""), schemeDetails.pstr, schemeDetails.name)
   }
 
-  private def administrators(scheme: PsaSchemeDetails): Option[Seq[String]] = {
-    scheme.psaSchemeDetails.psaDetails match {
-      case Some(psaDetails) => Some(psaDetails.map(fullName))
-      case None => None
+  private def administrators(psaSchemeDetails: PsaSchemeDetails): Option[Seq[String]] = {
+    psaSchemeDetails.psaDetails.map { psaDetails =>
+      psaDetails.map { details =>
+        details.individual.map { individual =>
+          fullName(individual)
+        }.getOrElse("")
+      }
     }
   }
 
@@ -86,8 +89,8 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
     }
   }
 
-  private def fullName(psa: PsaDetails): String =
-    s"${psa.firstName.getOrElse("")} ${psa.middleName.getOrElse("")} ${psa.lastName.getOrElse("")}"
+  private def fullName(individual: Name): String =
+    s"${individual.firstName.getOrElse("")} ${individual.middleName.getOrElse("")} ${individual.lastName.getOrElse("")}"
 
   def onClickCheckIfPsaCanInvite: Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>

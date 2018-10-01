@@ -18,8 +18,8 @@ POST       /psa-id-of-invited-psa                       controllers.invitations.
 GET        /change-psa-id-of-invited-psa                controllers.invitations.PsaIdController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-psa-id-of-invited-psa                controllers.invitations.PsaIdController.onSubmit(mode: Mode = CheckMode)
 
-GET        /invite-sent/:srn                            controllers.invitations.InvitationSuccessController.onPageLoad(srn: SchemeReferenceNumber)
-POST       /invite-sent/:srn                            controllers.invitations.InvitationSuccessController.onSubmit(srn: SchemeReferenceNumber)
+GET        /invite-sent                            controllers.invitations.InvitationSuccessController.onPageLoad()
+POST       /invite-sent                            controllers.invitations.InvitationSuccessController.onSubmit()
 
 GET        /select-pension-adviser-address              controllers.invitations.PensionAdviserAddressListController.onPageLoad()
 POST       /select-pension-adviser-address              controllers.invitations.PensionAdviserAddressListController.onSubmit()

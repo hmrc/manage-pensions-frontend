@@ -18,16 +18,17 @@ package controllers.invitations
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
+import connectors.InvitationConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import identifiers.SchemeDetailId
-import identifiers.invitations.{CheckYourAnswersId, PsaNameId}
+import identifiers.invitations.{CheckYourAnswersId, PSAId, PsaNameId}
 import models.NormalMode
-import org.joda.time.LocalDate
 import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import utils.{Navigator, CheckYourAnswersFactory}
 import utils.annotations.Invitation
+import play.api.mvc.{Action, AnyContent}
+import utils.{CheckYourAnswersFactory, Navigator}
 import viewmodels.AnswerSection
 import views.html.check_your_answers
 
@@ -39,12 +40,13 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
                                            @Invitation navigator: Navigator,
                                            getData: DataRetrievalAction,
                                            requireData: DataRequiredAction,
-                                           checkYourAnswersFactory: CheckYourAnswersFactory) extends FrontendController  with Retrievals with I18nSupport {
+                                           invitationConnector: InvitationConnector,
+                                           checkYourAnswersFactory: CheckYourAnswersFactory) extends FrontendController with Retrievals with I18nSupport {
 
-  def onPageLoad() = (authenticate andThen getData andThen requireData).async {
+  def onPageLoad(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
 
-      SchemeDetailId.retrieve.right.map {schemeDetail =>
+      SchemeDetailId.retrieve.right.map { schemeDetail =>
 
         val checkYourAnswersHelper = checkYourAnswersFactory.checkYourAnswersHelper(request.userAnswers)
         val sections = Seq(AnswerSection(None, Seq(checkYourAnswersHelper.psaName, checkYourAnswersHelper.psaId).flatten))
@@ -55,8 +57,15 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
       }
   }
 
-  def onSubmit() = (authenticate andThen getData andThen requireData).async {
+  def onSubmit(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
-      Future.successful(Redirect(navigator.nextPage(CheckYourAnswersId, NormalMode, request.userAnswers)))
+      (PsaNameId and PSAId and SchemeDetailId).retrieve.right.map {
+        case inviteeName ~ inviteePsaId ~ schemeDetail =>
+          val invitation = models.Invitation(schemeDetail.pstr.getOrElse(""), schemeDetail.schemeName, request.psaId.id, inviteePsaId, inviteeName)
+          invitationConnector.invite(invitation).map { _ =>
+            Redirect(navigator.nextPage(CheckYourAnswersId, NormalMode, request.userAnswers))
+          }
+      }
   }
+
 }

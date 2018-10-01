@@ -26,7 +26,7 @@ import utils.FakeNavigator
 class ControllerWithNormalPageBehaviours extends ControllerSpecBase {
 
   val navigator = new FakeNavigator(onwardRoute)
-  val requiredDateAction = new DataRequiredActionImpl
+  val requiredDataAction = new DataRequiredActionImpl
 
   def onwardRoute = Call("GET", "/foo")
 
@@ -91,23 +91,23 @@ class ControllerWithNormalPageBehaviours extends ControllerSpecBase {
 
     "calling onSubmit" must {
 
-      "redirect to the next page when valid data is present" in {
-
-        val result = onSubmitAction(emptyData, FakeAuthAction())(FakeRequest())
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(onwardRoute.url)
-      }
-
       if (validData.isDefined) {
 
-        "redirect to Session Expired if no existing data is found" in {
+        "redirect to the next page when valid data is present" in {
 
-          val result = onSubmitAction(validData.getOrElse(emptyData), FakeAuthAction())(fakeRequest)
+          val result = onSubmitAction(validData.getOrElse(emptyData), FakeAuthAction())(FakeRequest())
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)
+          redirectLocation(result) mustBe Some(onwardRoute.url)
         }
+      }
+
+      "redirect to Session Expired if no existing data is found" in {
+
+        val result = onSubmitAction(getEmptyData, FakeAuthAction())(fakeRequest)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)
       }
     }
   }

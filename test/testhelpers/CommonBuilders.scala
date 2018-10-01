@@ -21,6 +21,7 @@ import models._
 object CommonBuilders {
 
   private val address = Address("Telford1", "Telford2", Some("Telford13"), Some("Telford14"), Some("TF3 4ER"), "GB")
+  val correspondenceAddress = CorrespondenceAddress("Telford1", "Telford2", Some("Telford13"), Some("Telford14"), Some("TF3 4ER"), "GB")
   private val indEstAddress = Address("addressline1","addressline2",Some("addressline3"),Some("addressline4"),Some("TF3 5TR"),"GB")
   private val comEstAddress = Address("line1","line2",Some("line3"),Some("line4"),Some("LE45RT"),"GB")
   private val contactDetails = ContactDetails("0044-09876542312", Some("0044-09876542312"), Some("0044-09876542312"), "abc@hmrc.gsi.gov.uk")
@@ -32,8 +33,8 @@ object CommonBuilders {
 
   val schemeDetails = SchemeDetails("S9000000000", Some("00000000AA"), "Open", "Benefits Scheme", Some(true),
     Some("A single trust under which all of the assets are held for the benefit of all members of the scheme"),
-    Some(" "), Some(true), "0", "0", true, true, "Money Purchase benefits only (defined contribution)", "AD", true,
-    Some("Aviva Insurance"), Some(" "), Some(address), Some(contactDetails))
+    Some(" "), true, SchemeMemberNumbers("0", "0"), true, true, "Money Purchase benefits only (defined contribution)", "AD", true,
+    Some(InsuranceCompany(Some("Aviva Insurance"), Some(" "), Some(address)))
 
   private val indEstablisher = Individual(personDetails,Some("AA999999A"),Some("retxgfdg"),Some("1234567892"),
     Some("asdgdgdsg"),indEstAddress,indEstcontactDetails,indEstPrevAdd)
