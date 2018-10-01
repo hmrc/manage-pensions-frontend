@@ -17,11 +17,10 @@
 package controllers
 
 import config.FrontendAppConfig
-import connectors.{ListOfSchemesConnector, SchemeDetailsConnector, UserAnswersCacheConnector}
+import connectors.{ListOfSchemesConnector, SchemeDetailsConnector}
 import controllers.actions._
-import identifiers.SchemeDetailId
 import javax.inject.Inject
-import models._
+import models.{ListOfSchemes, PsaDetails, PsaSchemeDetails, SchemeDetail}
 import org.joda.time.LocalDate
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
@@ -34,33 +33,25 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                                           schemeDetailsConnector: SchemeDetailsConnector,
                                           listSchemesConnector: ListOfSchemesConnector,
                                           authenticate: AuthAction,
-                                          getData: DataRetrievalAction,
-                                        userAnswersCacheConnector: UserAnswersCacheConnector
-                                       ) extends FrontendController with I18nSupport {
+                                          getData: DataRetrievalAction) extends FrontendController with I18nSupport {
 
   def onPageLoad(srn: String): Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
 
       schemeDetailsConnector.getSchemeDetails("srn", srn).flatMap { scheme =>
-        listSchemesConnector.getListOfSchemes(request.psaId.id).flatMap { list =>
-          val schemeDetail = scheme.psaSchemeDetails.schemeDetails
-          val minimalSchemeDetails = MinimalSchemeDetail(srn, Some(schemeDetail.pstr), schemeDetail.schemeName)
+        listSchemesConnector.getListOfSchemes(request.psaId.id).map { list =>
 
-          userAnswersCacheConnector.save(request.externalId, SchemeDetailId, minimalSchemeDetails).map { _ =>
+          val isSchemeOpen = scheme.psaSchemeDetails.schemeDetails.schemeStatus.equalsIgnoreCase("open")
 
-            val isSchemeOpen = schemeDetail.schemeStatus.equalsIgnoreCase("open")
-
-            Ok(schemeDetails(appConfig,
-              schemeDetail.schemeName,
-              openedDate(srn, list, isSchemeOpen),
-              administrators(scheme),
-              srn,
-              isSchemeOpen
-            ))
-          }
-        }
+                Ok(schemeDetails(appConfig,
+                  scheme.psaSchemeDetails.schemeDetails.schemeName,
+                  openedDate(srn, list, isSchemeOpen),
+                  administrators(scheme),
+                  srn,
+                  isSchemeOpen
+                ))
+            }
       }
-
   }
 
   private def administrators(scheme: PsaSchemeDetails): Option[Seq[String]] = {

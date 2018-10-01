@@ -20,7 +20,6 @@ import config.FrontendAppConfig
 import connectors.{InvitationsCacheConnector, ListOfSchemesConnector}
 import controllers.actions.{AuthAction, FakeAuthAction}
 import models.{Invitation, ListOfSchemes, SchemeDetail}
-import org.joda.time.DateTime
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
@@ -124,8 +123,8 @@ object ListSchemesControllerSpec {
     injector.instanceOf[FrontendAppConfig]
   }
 
-  val invitation = Invitation(srn = "ted-srn", pstr = "pstr1", schemeName = "schemeName1",
-    inviterPsaId = "inviterPsaId1", inviteePsaId = "inviteePsaId1", inviteeName = "inviteeName1", expireAt = new DateTime("2018-05-05"))
+  val invitation = Invitation(pstr = "pstr1", schemeName = "schemeName1",
+    inviterPsaId = "inviterPsaId1", inviteePsaId = "inviteePsaId1", inviteeName = "inviteeName1")
 
   def testFixture(app: ControllerSpecBase, psaId: String, invitations: List[Invitation] = Nil,
                   isWorkPackageOneEnabled: Boolean): TestFixture = new TestFixture with MockitoSugar {
