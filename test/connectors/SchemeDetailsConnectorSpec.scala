@@ -22,6 +22,7 @@ import models._
 import org.scalatest.{AsyncFlatSpec, Matchers}
 import play.api.http.Status
 import play.api.libs.json.Json
+import testhelpers.CommonBuilders
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
 import utils.{MockDataHelper, WireMockHelper}
 
@@ -149,23 +150,10 @@ object SchemeDetailsConnectorSpec extends JsonFileReader with MockDataHelper {
     )
   }
 
-  private val schemeDetails = SchemeDetails("S9000000000", Some("00000000AA"), "Pending", "Benefits Scheme", Some(true),
-    Some("A single trust under which all of the assets are held for the benefit of all members of the scheme"),
-    Some(" "), Some(true), "0", "0", true, true, "Money Purchase benefits only (defined contribution)", "AD", true,
-    Some("Aviva Insurance"), Some(" "), Some(address), Some(contactDetails))
-
-  private val indEstablisher = Individual(personDetails,Some("AA999999A"),Some("retxgfdg"),Some("1234567892"),
-    Some("asdgdgdsg"),indEstAddress,indEstcontactDetails,indEstPrevAdd)
-
-  private val compEstablisher = CompanyEstablisher("abc organisation",Some("7897700000"),Some("reason forutr"),Some("sdfsfs"),
-      Some("crn no reason"),Some("789770000"),Some("9999"),Some(true),comEstAddress,comEstcontactDetails,Some(comEstPrevAdd),None)
-
-  private val establisherDetails = EstablisherDetails(Some(List(indEstablisher)), Some(List(compEstablisher)), None)
-
   private val psaDetails1 = PsaDetails("A0000000",Some("partnetship name"),Some("Taylor"),Some("Middle"),Some("Rayon"),Some("Primary"),Some("1978-03-22"))
   private val psaDetails2 = PsaDetails("A0000001",Some("partnetship name 1"),Some("Smith"),Some("A"),Some("Tony"),Some("Primary"),Some("1977-03-22"))
 
-  private val expectedResponse = PsaSchemeDetails(PensionsScheme(schemeDetails, Some(establisherDetails), None, Some(Seq(psaDetails1, psaDetails2))))
+  private val expectedResponse = PsaSchemeDetails(CommonBuilders.schemeDetails, None)
 
 }
 
