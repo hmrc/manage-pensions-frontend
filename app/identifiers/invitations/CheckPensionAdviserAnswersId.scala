@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-package utils
+package identifiers.invitations
 
-import com.google.inject.Inject
-import utils.countryOptions.CountryOptions
+import identifiers.TypedIdentifier
 
-class CheckYourAnswersFactory @Inject()(countryOptions: CountryOptions){
+object CheckPensionAdviserAnswersId extends TypedIdentifier[String] {
 
-  def checkYourAnswersHelper(userAnswers: UserAnswers): CheckYourAnswersHelper = {
-    new CheckYourAnswersHelper(userAnswers, countryOptions)
-  }
+  override def toString: String = "checkPensionAdviserAnswers"
+
 }
-

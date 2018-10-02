@@ -218,3 +218,8 @@ messages__schemeDetails__opened_date_head = This scheme was opened on:
 messages__schemeDetails__psa_list_head = Pension scheme administrators
 messages__schemeDetails__invite_link = Invite another PSA to administer this scheme
 messages__schemeDetails__return_link = Return to your pension schemes
+
+messages__check__your__answer__main__containt__label = You are inviting this PSA to administer {0}.
+messages__check__your__answer__adviser__name__label = Who is your pension adviser?
+messages__check__your__answer__adviser__email__label = {0}’s email address
+messages__check__your__answer__adviser__address__label = {0}’s address
