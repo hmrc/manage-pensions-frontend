@@ -22,7 +22,7 @@ import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction, Fak
 import forms.invitations.PensionAdviserAddressListFormProvider
 import identifiers.invitations.{AdviserAddressId, AdviserAddressListId, AdviserAddressPostCodeLookupId}
 import models.{NormalMode, TolerantAddress}
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
 import play.api.Application
 import play.api.i18n.MessagesApi
 import play.api.inject.bind
@@ -32,13 +32,17 @@ import play.api.test.Helpers._
 import utils.{FakeNavigator, Navigator}
 import views.html.invitations.pension_adviser_address_list
 
-class PensionAdviserAddressListControllerSpec extends WordSpec with Matchers {
+class PensionAdviserAddressListControllerSpec extends WordSpec with Matchers with BeforeAndAfterEach {
 
   import PensionAdviserAddressListControllerSpec._
 
   def dataRetrievalAction = new FakeDataRetrievalAction(Some(Json.obj(
     AdviserAddressPostCodeLookupId.toString -> addresses
   )))
+
+  override def beforeEach(): Unit = {
+    FakeUserAnswersCacheConnector.reset()
+  }
 
   "get" must {
 
