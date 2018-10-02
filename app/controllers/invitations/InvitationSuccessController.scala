@@ -20,9 +20,8 @@ import config.FrontendAppConfig
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import identifiers.SchemeDetailId
-import identifiers.invitations.{InvitationSuccessId, PsaNameId}
+import identifiers.invitations.PsaNameId
 import javax.inject.Inject
-import models.{NormalMode, SchemeReferenceNumber}
 import org.joda.time.LocalDate
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}

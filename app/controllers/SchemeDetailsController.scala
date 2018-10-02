@@ -88,5 +88,4 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
   private def fullName(individual: Name): String =
     s"${individual.firstName.getOrElse("")} ${individual.middleName.getOrElse("")} ${individual.lastName.getOrElse("")}"
 
-
 }

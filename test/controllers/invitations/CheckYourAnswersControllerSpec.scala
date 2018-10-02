@@ -41,7 +41,7 @@ class CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours 
 
   private val mockInvitationConnector = mock[InvitationConnector]
 
-  when(mockInvitationConnector.invite(any())(any(), any())).thenReturn(Future.successful(201))
+  when(mockInvitationConnector.invite(any())(any(), any())).thenReturn(Future.successful(CREATED))
 
   private lazy val continue: Call = controllers.invitations.routes.InvitationSuccessController.onSubmit
 
@@ -76,17 +76,15 @@ class CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours 
       checkYourAnswersFactory, mockInvitationConnector).onSubmit()
   }
 
-  def redirectionCall() = controllers.invitations.routes.InvitationSuccessController.onPageLoad
-
   behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, Some(userAnswer), viewAsString)
 
-  behave like controllerWithOnSubmitMethod(onSubmitAction, getEmptyData,  Some(userAnswerUpdated), Some(redirectionCall))
+  behave like controllerWithOnSubmitMethod(onSubmitAction, getEmptyData,  Some(userAnswerUpdated), None)
 
   "calling submit" must {
 
     "redirect to session expired page if invitation was not created" in {
 
-      when(mockInvitationConnector.invite(any())(any(), any())).thenReturn(Future.successful(400))
+      when(mockInvitationConnector.invite(any())(any(), any())).thenReturn(Future.successful(BAD_REQUEST))
 
       val result = onSubmitAction(userAnswerUpdated, FakeAuthAction())(FakeRequest())
 

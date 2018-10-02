@@ -63,6 +63,7 @@ class InvitationSuccessControllerSpec extends ControllerWithNormalPageBehaviours
     LocalDate.now().plusDays(config.invitationExpiryDays)
   }
 
+  def redirectionCall() = controllers.routes.SchemeDetailsController.onPageLoad(testSrn)
 
   behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, Some(userAnswer), viewAsString)
 
@@ -76,6 +77,6 @@ class InvitationSuccessControllerSpec extends ControllerWithNormalPageBehaviours
 
   }
 
-  behave like controllerWithOnSubmitMethod(onSubmitAction, getEmptyData, None, None)
+  behave like controllerWithOnSubmitMethod(onSubmitAction, getEmptyData, Some(userAnswer), Some(redirectionCall))
 
 }
