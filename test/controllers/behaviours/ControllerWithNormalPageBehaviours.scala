@@ -26,7 +26,7 @@ import utils.FakeNavigator
 class ControllerWithNormalPageBehaviours extends ControllerSpecBase {
 
   val navigator = new FakeNavigator(onwardRoute)
-  val requiredDataAction = new DataRequiredActionImpl
+  val requiredDateAction = new DataRequiredActionImpl
 
   def onwardRoute = Call("GET", "/foo")
 
@@ -87,27 +87,31 @@ class ControllerWithNormalPageBehaviours extends ControllerSpecBase {
 
   def controllerWithOnSubmitMethod[T](onSubmitAction: (DataRetrievalAction, AuthAction) => Action[AnyContent],
                                       emptyData: DataRetrievalAction,
-                                      validData: Option[DataRetrievalAction]): Unit = {
+                                      validData: Option[DataRetrievalAction],
+                                      redirectionUrl: Option[() => Call]): Unit = {
 
     "calling onSubmit" must {
 
-      if (validData.isDefined) {
+      "redirect to the next page when valid data is present" in {
 
-        "redirect to the next page when valid data is present" in {
+        val result = onSubmitAction(validData.getOrElse(emptyData), FakeAuthAction())(FakeRequest())
 
-          val result = onSubmitAction(validData.getOrElse(emptyData), FakeAuthAction())(FakeRequest())
-
-          status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(onwardRoute.url)
+        status(result) mustBe SEE_OTHER
+        redirectionUrl match {
+          case Some(call) => redirectLocation(result) mustBe Some(call().url)
+          case _=> redirectLocation(result) mustBe Some(onwardRoute.url)
         }
       }
 
-      "redirect to Session Expired if no existing data is found" in {
+      if (validData.isDefined) {
 
-        val result = onSubmitAction(getEmptyData, FakeAuthAction())(fakeRequest)
+        "redirect to Session Expired if no existing data is found" in {
 
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)
+          val result = onSubmitAction(emptyData, FakeAuthAction())(fakeRequest)
+
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)
+        }
       }
     }
   }

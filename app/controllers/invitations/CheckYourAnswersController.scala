@@ -26,9 +26,8 @@ import identifiers.invitations.{CheckYourAnswersId, PSAId, PsaNameId}
 import models.NormalMode
 import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import utils.{CheckYourAnswersFactory, DateHelper, Navigator}
 import utils.annotations.Invitation
-import play.api.mvc.{Action, AnyContent}
-import utils.{CheckYourAnswersFactory, Navigator}
 import viewmodels.AnswerSection
 import views.html.check_your_answers
 
@@ -40,13 +39,13 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
                                            @Invitation navigator: Navigator,
                                            getData: DataRetrievalAction,
                                            requireData: DataRequiredAction,
-                                           invitationConnector: InvitationConnector,
-                                           checkYourAnswersFactory: CheckYourAnswersFactory) extends FrontendController with Retrievals with I18nSupport {
+                                           checkYourAnswersFactory: CheckYourAnswersFactory,
+                                           invitationConnector: InvitationConnector) extends FrontendController  with Retrievals with I18nSupport {
 
-  def onPageLoad(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
+  def onPageLoad() = (authenticate andThen getData andThen requireData).async {
     implicit request =>
 
-      SchemeDetailId.retrieve.right.map { schemeDetail =>
+      SchemeDetailId.retrieve.right.map {schemeDetail =>
 
         val checkYourAnswersHelper = checkYourAnswersFactory.checkYourAnswersHelper(request.userAnswers)
         val sections = Seq(AnswerSection(None, Seq(checkYourAnswersHelper.psaName, checkYourAnswersHelper.psaId).flatten))
@@ -57,15 +56,28 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
       }
   }
 
-  def onSubmit(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
+  def onSubmit() = (authenticate andThen getData andThen requireData).async {
     implicit request =>
-      (PsaNameId and PSAId and SchemeDetailId).retrieve.right.map {
-        case inviteeName ~ inviteePsaId ~ schemeDetail =>
-          val invitation = models.Invitation(schemeDetail.pstr.getOrElse(""), schemeDetail.schemeName, request.psaId.id, inviteePsaId, inviteeName)
-          invitationConnector.invite(invitation).map { _ =>
-            Redirect(navigator.nextPage(CheckYourAnswersId, NormalMode, request.userAnswers))
-          }
+      (SchemeDetailId and PsaNameId and PSAId).retrieve.right.map {
+        case (schemeDetails ~ inviteeName ~ inviterPsaId) if (schemeDetails.pstr.isDefined) =>
+        val invitation = models.Invitation(schemeDetails.srn,
+          schemeDetails.pstr.get,
+          schemeDetails.schemeName,
+          request.psaId.id,
+          inviterPsaId,
+          inviteeName,
+          getExpireAt
+        )
+
+        invitationConnector.invite(invitation).map{
+          case CREATED => Redirect(controllers.invitations.routes.InvitationSuccessController.onPageLoad)
+          case _ => Redirect(controllers.routes.SessionExpiredController.onPageLoad())
+        }
+        case _ => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
       }
   }
+
+  private def getExpireAt = DateHelper.dateTimeFromNowToMidnightAfterDays(appConfig.invitationExpiryDays)
+
 
 }

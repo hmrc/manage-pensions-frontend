@@ -18,13 +18,12 @@ package connectors
 
 import base.JsonFileReader
 import com.github.tomakehurst.wiremock.client.WireMock._
-import models._
 import org.scalatest.{AsyncFlatSpec, Matchers}
 import play.api.http.Status
 import play.api.libs.json.Json
-import testhelpers.CommonBuilders
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
-import utils.{MockDataHelper, WireMockHelper}
+import utils.WireMockHelper
+import testhelpers.CommonBuilders._
 
 class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper {
 
@@ -50,7 +49,7 @@ class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
     val connector = injector.instanceOf[SchemeDetailsConnector]
 
     connector.getSchemeDetails(schemeIdType, idNumber).map(schemeDetails =>
-      schemeDetails shouldBe expectedResponse
+      schemeDetails shouldBe psaSchemeDetailsResponse
     )
 
   }
@@ -131,7 +130,7 @@ class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
 
 }
 
-object SchemeDetailsConnectorSpec extends JsonFileReader with MockDataHelper {
+object SchemeDetailsConnectorSpec extends JsonFileReader {
 
   private val schemeIdType = "pstr"
   private val idNumber = "00000000AA"
@@ -149,11 +148,6 @@ object SchemeDetailsConnectorSpec extends JsonFileReader with MockDataHelper {
       )
     )
   }
-
-  private val psaDetails1 = PsaDetails("A0000000",Some("partnetship name"),Some("Taylor"),Some("Middle"),Some("Rayon"),Some("Primary"),Some("1978-03-22"))
-  private val psaDetails2 = PsaDetails("A0000001",Some("partnetship name 1"),Some("Smith"),Some("A"),Some("Tony"),Some("Primary"),Some("1977-03-22"))
-
-  private val expectedResponse = PsaSchemeDetails(CommonBuilders.schemeDetails, None)
 
 }
 

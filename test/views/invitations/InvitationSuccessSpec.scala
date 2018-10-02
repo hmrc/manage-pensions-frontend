@@ -61,7 +61,7 @@ object InvitationSuccessSpec {
 
   val messageKeyPrefix = "invitationSuccess"
 
-  val continue: Call = controllers.invitations.routes.InvitationSuccessController.onSubmit("test-srn")
+  val continue: Call = controllers.invitations.routes.InvitationSuccessController.onSubmit
 
   def createView(base: SpecBase): () => HtmlFormat.Appendable = () =>
     invitation_success(

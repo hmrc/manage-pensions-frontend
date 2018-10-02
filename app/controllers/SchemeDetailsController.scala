@@ -17,7 +17,7 @@
 package controllers
 
 import config.FrontendAppConfig
-import connectors._
+import connectors.{ListOfSchemesConnector, SchemeDetailsConnector, UserAnswersCacheConnector}
 import controllers.actions._
 import identifiers.SchemeDetailId
 import javax.inject.Inject
@@ -30,37 +30,37 @@ import utils.DateHelper
 import views.html.schemeDetails
 
 class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
-                                        override val messagesApi: MessagesApi,
-                                        schemeDetailsConnector: SchemeDetailsConnector,
-                                        listSchemesConnector: ListOfSchemesConnector,
-                                        minimalPsaConnector: MinimalPsaConnector,
-                                        userAnswersCacheConnector: UserAnswersCacheConnector,
-                                        authenticate: AuthAction,
-                                        getData: DataRetrievalAction) extends FrontendController with I18nSupport {
+                                          override val messagesApi: MessagesApi,
+                                          schemeDetailsConnector: SchemeDetailsConnector,
+                                          listSchemesConnector: ListOfSchemesConnector,
+                                          authenticate: AuthAction,
+                                          getData: DataRetrievalAction,
+                                        userAnswersCacheConnector: UserAnswersCacheConnector
+                                       ) extends FrontendController with I18nSupport {
 
   def onPageLoad(srn: String): Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
-      for {
-        scheme <- schemeDetailsConnector.getSchemeDetails("srn", srn)
-        listOfSchemes <- listSchemesConnector.getListOfSchemes(request.psaId.id)
-        _ <- userAnswersCacheConnector.save(request.externalId, SchemeDetailId, minimalDetails(scheme))
-      } yield {
-        val details = scheme.schemeDetails
-        val isSchemeOpen = details.status.equalsIgnoreCase("open")
 
-        Ok(schemeDetails(appConfig,
-          details.name,
-          openedDate(srn, listOfSchemes, isSchemeOpen),
-          administrators(scheme),
-          srn,
-          isSchemeOpen
-        ))
+      schemeDetailsConnector.getSchemeDetails("srn", srn).flatMap { scheme =>
+        listSchemesConnector.getListOfSchemes(request.psaId.id).flatMap { list =>
+          val schemeDetail = scheme.schemeDetails
+          val minimalSchemeDetails = MinimalSchemeDetail(srn, schemeDetail.pstr, schemeDetail.name)
+
+          userAnswersCacheConnector.save(request.externalId, SchemeDetailId, minimalSchemeDetails).map { _ =>
+
+            val isSchemeOpen = schemeDetail.status.equalsIgnoreCase("open")
+
+            Ok(schemeDetails(appConfig,
+              schemeDetail.name,
+              openedDate(srn, list, isSchemeOpen),
+              administrators(scheme),
+              srn,
+              isSchemeOpen
+            ))
+          }
+        }
       }
-  }
 
-  private def minimalDetails(scheme: PsaSchemeDetails): MinimalSchemeDetail = {
-    val schemeDetails = scheme.schemeDetails
-    MinimalSchemeDetail(schemeDetails.srn.getOrElse(""), schemeDetails.pstr, schemeDetails.name)
   }
 
   private def administrators(psaSchemeDetails: PsaSchemeDetails): Option[Seq[String]] = {
@@ -74,33 +74,19 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
   }
 
   private def openedDate(srn: String, list: ListOfSchemes, isSchemeOpen: Boolean): Option[String] = {
-    if (isSchemeOpen) {
-      list.schemeDetail.flatMap { listOfSchemes =>
-        val currentScheme = listOfSchemes.filter((i: SchemeDetail) => i.referenceNumber.contains(srn))
-        if (currentScheme.nonEmpty) {
-          currentScheme.head.openDate.map(new LocalDate(_).toString(DateHelper.formatter))
-        } else {
-          None
+      if(isSchemeOpen) {
+        list.schemeDetail.flatMap { listOfSchemes =>
+          val currentScheme = listOfSchemes.filter((i: SchemeDetail) => i.referenceNumber.contains(srn))
+          if (currentScheme.nonEmpty) {
+            currentScheme.head.openDate.map(new LocalDate(_).toString(DateHelper.formatter))
+          } else { None }
         }
       }
-    }
-    else {
-      None
-    }
+      else { None }
   }
 
   private def fullName(individual: Name): String =
     s"${individual.firstName.getOrElse("")} ${individual.middleName.getOrElse("")} ${individual.lastName.getOrElse("")}"
 
-  def onClickCheckIfPsaCanInvite: Action[AnyContent] = (authenticate andThen getData).async {
-    implicit request =>
-      minimalPsaConnector.getMinimalPsaDetails(request.psaId.id).map { minimalDetails =>
-        if (minimalDetails.isPsaSuspended) {
-          Redirect(controllers.invitations.routes.YouCannotSendAnInviteController.onPageLoad())
-        } else {
-          Redirect(controllers.invitations.routes.PsaNameController.onPageLoad(NormalMode))
-        }
-      }
-  }
 
 }

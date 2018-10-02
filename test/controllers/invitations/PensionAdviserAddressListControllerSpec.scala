@@ -17,12 +17,12 @@
 package controllers.invitations
 
 import config.FrontendAppConfig
-import connectors.{UserAnswersCacheConnector, FakeUserAnswersCacheConnector}
+import connectors.{FakeUserAnswersCacheConnector, UserAnswersCacheConnector}
 import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
 import forms.invitations.PensionAdviserAddressListFormProvider
 import identifiers.invitations.{AdviserAddressId, AdviserAddressListId, AdviserAddressPostCodeLookupId}
-import models.TolerantAddress
-import org.scalatest.{Matchers, WordSpec}
+import models.{NormalMode, TolerantAddress}
+import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
 import play.api.Application
 import play.api.i18n.MessagesApi
 import play.api.inject.bind
@@ -32,13 +32,17 @@ import play.api.test.Helpers._
 import utils.{FakeNavigator, Navigator}
 import views.html.invitations.pension_adviser_address_list
 
-class PensionAdviserAddressListControllerSpec extends WordSpec with Matchers {
+class PensionAdviserAddressListControllerSpec extends WordSpec with Matchers with BeforeAndAfterEach {
 
   import PensionAdviserAddressListControllerSpec._
 
   def dataRetrievalAction = new FakeDataRetrievalAction(Some(Json.obj(
     AdviserAddressPostCodeLookupId.toString -> addresses
   )))
+
+  override def beforeEach(): Unit = {
+    FakeUserAnswersCacheConnector.reset()
+  }
 
   "get" must {
 
@@ -50,7 +54,7 @@ class PensionAdviserAddressListControllerSpec extends WordSpec with Matchers {
         bind[DataRetrievalAction].toInstance(dataRetrievalAction)
       )) { app =>
         val controller = app.injector.instanceOf[PensionAdviserAddressListController]
-        val result = controller.onPageLoad()(FakeRequest())
+        val result = controller.onPageLoad(NormalMode)(FakeRequest())
 
         status(result) shouldBe OK
         contentAsString(result) shouldBe viewAsString(app, None)
@@ -66,7 +70,7 @@ class PensionAdviserAddressListControllerSpec extends WordSpec with Matchers {
         bind[DataRetrievalAction].toInstance(dataRetrievalAction)
       )) { app =>
         val controller = app.injector.instanceOf[PensionAdviserAddressListController]
-        val result = controller.onPageLoad()(FakeRequest())
+        val result = controller.onPageLoad(NormalMode)(FakeRequest())
 
         status(result) shouldBe OK
         contentAsString(result) shouldBe viewAsString(app, None)
@@ -87,7 +91,7 @@ class PensionAdviserAddressListControllerSpec extends WordSpec with Matchers {
         bind[UserAnswersCacheConnector].toInstance(FakeUserAnswersCacheConnector)
       )) { app =>
         val controller = app.injector.instanceOf[PensionAdviserAddressListController]
-        val result = controller.onSubmit()(FakeRequest().withFormUrlEncodedBody("value" -> "1"))
+        val result = controller.onSubmit(NormalMode)(FakeRequest().withFormUrlEncodedBody("value" -> "1"))
 
         status(result) shouldBe SEE_OTHER
         redirectLocation(result) shouldBe Some(controllers.routes.IndexController.onPageLoad().url)
@@ -104,7 +108,7 @@ class PensionAdviserAddressListControllerSpec extends WordSpec with Matchers {
         bind[UserAnswersCacheConnector].toInstance(FakeUserAnswersCacheConnector)
       )) { app =>
         val controller = app.injector.instanceOf[PensionAdviserAddressListController]
-        val result = controller.onSubmit()(FakeRequest().withFormUrlEncodedBody("value" -> "1"))
+        val result = controller.onSubmit(NormalMode)(FakeRequest().withFormUrlEncodedBody("value" -> "1"))
 
         status(result) shouldBe SEE_OTHER
         FakeUserAnswersCacheConnector.verify(AdviserAddressListId, addresses(1))
@@ -121,7 +125,7 @@ class PensionAdviserAddressListControllerSpec extends WordSpec with Matchers {
         bind[UserAnswersCacheConnector].toInstance(FakeUserAnswersCacheConnector)
       )) { app =>
         val controller = app.injector.instanceOf[PensionAdviserAddressListController]
-        val result = controller.onSubmit()(FakeRequest().withFormUrlEncodedBody("value"->"1"))
+        val result = controller.onSubmit(NormalMode)(FakeRequest().withFormUrlEncodedBody("value"->"1"))
 
         status(result) shouldBe SEE_OTHER
         FakeUserAnswersCacheConnector.verifyNot(AdviserAddressId)
@@ -138,7 +142,7 @@ class PensionAdviserAddressListControllerSpec extends WordSpec with Matchers {
         bind[UserAnswersCacheConnector].toInstance(FakeUserAnswersCacheConnector)
       )) { app =>
         val controller = app.injector.instanceOf[PensionAdviserAddressListController]
-        val result = controller.onSubmit()(FakeRequest().withFormUrlEncodedBody("value" -> "-1"))
+        val result = controller.onSubmit(NormalMode)(FakeRequest().withFormUrlEncodedBody("value" -> "-1"))
 
         status(result) shouldBe BAD_REQUEST
         contentAsString(result) shouldBe viewAsString(app, Some(-1))
@@ -182,7 +186,7 @@ object PensionAdviserAddressListControllerSpec {
       case None => new PensionAdviserAddressListFormProvider()(addresses)
     }
 
-    pension_adviser_address_list(appConfig, form, addresses)(request, messages).toString()
+    pension_adviser_address_list(appConfig, form, addresses, NormalMode)(request, messages).toString()
 
   }
 

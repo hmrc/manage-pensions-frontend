@@ -34,7 +34,7 @@ class InvitationSuccessControllerSpec extends ControllerWithNormalPageBehaviours
   private val testSchemeName = "test-scheme-name"
   private val testSchemeDetail = MinimalSchemeDetail(testSrn, Some(testPstr), testSchemeName)
 
-  private lazy val continue: Call = controllers.invitations.routes.InvitationSuccessController.onSubmit(testSrn)
+  private lazy val continue: Call = controllers.invitations.routes.InvitationSuccessController.onSubmit
 
   private val userAnswer = UserAnswers()
     .inviteeName(testInviteeName)
@@ -50,13 +50,13 @@ class InvitationSuccessControllerSpec extends ControllerWithNormalPageBehaviours
   def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
     new InvitationSuccessController(
-      messagesApi, frontendAppConfig, fakeAuth, dataRetrievalAction, requiredDataAction, navigator).onPageLoad(testSrn)
+      messagesApi, frontendAppConfig, fakeAuth, dataRetrievalAction, requiredDateAction, navigator).onPageLoad
   }
 
   def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
     new InvitationSuccessController(
-      messagesApi, frontendAppConfig, fakeAuth, dataRetrievalAction, requiredDataAction, navigator).onSubmit(testSrn)
+      messagesApi, frontendAppConfig, fakeAuth, dataRetrievalAction, requiredDateAction, navigator).onSubmit
   }
 
   def testExpiryDate(config: FrontendAppConfig): LocalDate = {
@@ -76,6 +76,6 @@ class InvitationSuccessControllerSpec extends ControllerWithNormalPageBehaviours
 
   }
 
-  behave like controllerWithOnSubmitMethod(onSubmitAction, getEmptyData, None)
+  behave like controllerWithOnSubmitMethod(onSubmitAction, getEmptyData, None, None)
 
 }

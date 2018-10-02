@@ -25,8 +25,8 @@ class DataCacheModule extends Module {
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
     Seq(
       bind[UserAnswersCacheConnector].to[ManagePensionsCacheConnector],
-      bind[UserAnswersCacheConnector].qualifiedWith(classOf[PensionsSchemeCache]).to[PensionsSchemeCacheConnector],
-      bind[InvitationsCacheConnector].to[InvitationsCacheConnectorImpl]
+      bind[InvitationsCacheConnector].to[InvitationsCacheConnectorImpl],
+      bind[UserAnswersCacheConnector].qualifiedWith(classOf[PensionsSchemeCache]).to[PensionsSchemeCacheConnector]
     )
   }
 }

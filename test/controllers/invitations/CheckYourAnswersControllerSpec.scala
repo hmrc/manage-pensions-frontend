@@ -17,28 +17,42 @@
 package controllers.invitations
 
 import connectors.InvitationConnector
-import controllers.actions.{AuthAction, DataRetrievalAction}
+import controllers.actions.{FakeAuthAction, AuthAction, DataRetrievalAction}
 import controllers.behaviours.ControllerWithNormalPageBehaviours
-import models.{AcceptedInvitation, Invitation, MinimalSchemeDetail}
+import models.MinimalSchemeDetail
+import org.mockito.Matchers.any
+import org.mockito.Mockito.when
+import org.scalatest.mockito.MockitoSugar
 import play.api.mvc.Call
-import uk.gov.hmrc.http.HeaderCarrier
+import play.api.test.FakeRequest
+import play.api.test.Helpers._
 import utils.{CheckYourAnswersFactory, UserAnswers}
 import viewmodels.AnswerSection
 import views.html.check_your_answers
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-class CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours {
-
+class CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours with MockitoSugar{
+  //scalastyle:off magic.number
   private val testSrn: String = "test-srn"
   private val testPstr = "test-pstr"
   private val testSchemeName = "test-scheme-name"
   private val testSchemeDetail = MinimalSchemeDetail(testSrn, Some(testPstr), testSchemeName)
 
-  private lazy val continue: Call = controllers.invitations.routes.InvitationSuccessController.onSubmit(testSrn)
+  private val mockInvitationConnector = mock[InvitationConnector]
 
-  private val userAnswerOnPageLoad = UserAnswers()
+  when(mockInvitationConnector.invite(any())(any(), any())).thenReturn(Future.successful(201))
+
+  private lazy val continue: Call = controllers.invitations.routes.InvitationSuccessController.onSubmit
+
+  private val userAnswer = UserAnswers()
     .minimalSchemeDetails(testSchemeDetail)
+    .dataRetrievalAction
+
+  private val userAnswerUpdated = UserAnswers()
+    .minimalSchemeDetails(testSchemeDetail)
+    .inviteeId("test-invite-id")
+    .inviteeName("test-invite-name")
     .dataRetrievalAction
 
   private val checkYourAnswersFactory = new CheckYourAnswersFactory()
@@ -48,34 +62,36 @@ class CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours 
   def viewAsString() = check_your_answers(frontendAppConfig, Seq(AnswerSection(None, Seq())), None, call,
     Some("messages__check__your__answer__main__containt__label"), Some(testSchemeName))(fakeRequest, messages).toString
 
-  class FakeInvitationConnector extends InvitationConnector {
-    override def invite(invitation: Invitation)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = Future.successful(())
-
-    override def acceptInvite(acceptedInvitation: AcceptedInvitation)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = Future.successful(())
-  }
-
-  val userAnswerOnSubmit = UserAnswers()
-    .inviteeName("test invitee name")
-    .inviteeId("psaId")
-    .minimalSchemeDetails(testSchemeDetail)
-    .dataRetrievalAction
-
-  object FakeInvitationConnector extends FakeInvitationConnector
-
   def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
     new CheckYourAnswersController(
-      frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDataAction, FakeInvitationConnector, checkYourAnswersFactory).onPageLoad()
+      frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction,
+      checkYourAnswersFactory, mockInvitationConnector).onPageLoad()
   }
 
-  def onSubmitAction(dataRetrievalAction: DataRetrievalAction , fakeAuth: AuthAction) = {
+  def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
     new CheckYourAnswersController(
-      frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDataAction, FakeInvitationConnector, checkYourAnswersFactory).onSubmit()
+      frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction,
+      checkYourAnswersFactory, mockInvitationConnector).onSubmit()
   }
 
-  behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, Some(userAnswerOnPageLoad), viewAsString)
+  def redirectionCall() = controllers.invitations.routes.InvitationSuccessController.onPageLoad
 
-  behave like controllerWithOnSubmitMethod(onSubmitAction, getEmptyData,  Some(userAnswerOnSubmit))
+  behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, Some(userAnswer), viewAsString)
 
+  behave like controllerWithOnSubmitMethod(onSubmitAction, getEmptyData,  Some(userAnswerUpdated), Some(redirectionCall))
+
+  "calling submit" must {
+
+    "redirect to session expired page if invitation was not created" in {
+
+      when(mockInvitationConnector.invite(any())(any(), any())).thenReturn(Future.successful(400))
+
+      val result = onSubmitAction(userAnswerUpdated, FakeAuthAction())(FakeRequest())
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)
+    }
+  }
 }
