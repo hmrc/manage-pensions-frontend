@@ -17,6 +17,7 @@
 @import config.FrontendAppConfig
 @import models.SchemeDetail
 @import views.formatters.Date
+@import controllers.invitations.routes
 
 @(appConfig: FrontendAppConfig, schemes: List[SchemeDetail], invitationsReceived: Boolean)(implicit request: Request[_], messages: Messages)
 
@@ -30,7 +31,7 @@
     @components.heading(headingKey = messages("messages__listSchemes__title"))
 
     @if(invitationsReceived) {
-        <p><a id="invitations-received" href="@routes.ListSchemesController.onPageLoad()">@messages("messages__listSchemes__invitations_link")</a></p>
+        <p><a id="invitations-received" href="@routes.YourInvitationsController.onPageLoad()">@messages("messages__listSchemes__invitations_link")</a></p>
     }
 
     @if(schemes.isEmpty) {
