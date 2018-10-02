@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.testonly
 
 import com.google.inject.Inject
 import connectors.MongoDiagnosticsConnector

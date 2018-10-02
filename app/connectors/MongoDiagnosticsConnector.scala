@@ -16,13 +16,14 @@
 
 package connectors
 
-import com.google.inject.Inject
+import com.google.inject.{ImplementedBy, Inject}
 import config.FrontendAppConfig
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
 import scala.concurrent.{ExecutionContext, Future}
 
+@ImplementedBy(classOf[MongoDiagnosticsConnectorImpl])
 trait MongoDiagnosticsConnector {
 
   def fetchDiagnostics()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[String]
