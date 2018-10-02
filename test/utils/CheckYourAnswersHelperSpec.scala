@@ -16,15 +16,18 @@
 
 package utils
 
+import base.SpecBase
 import models.CheckMode
 import org.scalatest.{MustMatchers, WordSpec}
+import utils.countryOptions.CountryOptions
 import viewmodels.AnswerRow
 
-class CheckYourAnswersHelperSpec extends WordSpec with MustMatchers {
+class CheckYourAnswersHelperSpec extends SpecBase with MustMatchers {
 
   val userAnswers = UserAnswers()
 
-  def getHelper(userAnswers : UserAnswers = userAnswers) = new CheckYourAnswersHelper(userAnswers)
+  private val countryOptions = new CountryOptions(environment, frontendAppConfig)
+  def getHelper(userAnswers : UserAnswers = userAnswers) = new CheckYourAnswersHelper(userAnswers, countryOptions)
 
   "calling psaName" must {
 

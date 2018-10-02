@@ -32,8 +32,6 @@ import views.html.invitations.yourInvitations
 class YourInvitationsController @Inject()(appConfig: FrontendAppConfig,
                                   override val messagesApi: MessagesApi,
                                   authenticate: AuthAction,
-                                          getData: DataRetrievalAction,
-                                          requireData: DataRequiredAction,
                                   invitationsCacheConnector: InvitationsCacheConnector,
                                   userAnswersCacheConnector: UserAnswersCacheConnector,
                                   @AcceptInvitation navigator: Navigator
@@ -42,11 +40,9 @@ class YourInvitationsController @Inject()(appConfig: FrontendAppConfig,
 
   def onPageLoad(): Action[AnyContent] = (authenticate).async {
     implicit request =>
-      println("\n\n\n onpage load: ")
       invitationsCacheConnector.getForInvitee(request.psaId.id).map {
         case Nil => Redirect(controllers.routes.SessionExpiredController.onPageLoad())
         case invitationsList => {
-          println("\n\n\n invitationsList : "+invitationsList)
           Ok(yourInvitations(appConfig, invitationsList))
         }
       }
@@ -54,13 +50,9 @@ class YourInvitationsController @Inject()(appConfig: FrontendAppConfig,
 
   def onSubmit(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate).async {
     implicit request =>
-      println("\n\n\n srn: "+srn.id)
       userAnswersCacheConnector.save(request.externalId, SchemeSrnId, srn.id).map { cacheMap =>
         Redirect(navigator.nextPage(SchemeSrnId, NormalMode, UserAnswers(cacheMap)))
       }
   }
-
-
-
 
 }

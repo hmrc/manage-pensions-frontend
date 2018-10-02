@@ -41,7 +41,7 @@ class AcceptInvitationNavigator @Inject()(val dataCacheConnector: UserAnswersCac
     case AdviserAddressListId =>
       NavigateTo.dontSave(controllers.invitations.routes.AdviserManualAddressController.onPageLoad(NormalMode, true))
     case AdviserAddressId =>
-      NavigateTo.dontSave(controllers.invitations.routes.CheckYourAnswersController.onPageLoad())
+      NavigateTo.dontSave(controllers.invitations.routes.CheckPensionAdviserAnswersController.onPageLoad())
     case DeclarationId => NavigateTo.dontSave(routes.IndexController.onPageLoad())
 
     case _ => NavigateTo.dontSave(controllers.routes.SessionExpiredController.onPageLoad())

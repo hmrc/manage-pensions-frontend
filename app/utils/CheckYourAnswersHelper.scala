@@ -16,14 +16,15 @@
 
 package utils
 
-import identifiers.SchemeDetailId
-import identifiers.invitations.{PSAId, PsaNameId}
-import models.{CheckMode, MinimalSchemeDetail}
+import identifiers.invitations._
+import models.{Address, CheckMode}
+import play.api.i18n.Messages.Message
+import utils.countryOptions.CountryOptions
 import viewmodels.AnswerRow
 
 
 
-class CheckYourAnswersHelper(userAnswers: UserAnswers) extends Enumerable.Implicits {
+class CheckYourAnswersHelper(userAnswers: UserAnswers, countryOptions: CountryOptions) extends Enumerable.Implicits {
 
   def psaName: Option[AnswerRow] = {
     userAnswers.get(PsaNameId) map { answer =>
@@ -35,6 +36,33 @@ class CheckYourAnswersHelper(userAnswers: UserAnswers) extends Enumerable.Implic
     userAnswers.get(PSAId) map { answer =>
       AnswerRow("messages__check__your__answer__psa__id__label", Seq(answer), true, Some(controllers.invitations.routes.PsaIdController.onPageLoad(CheckMode).url))
     }
+  }
+
+  def adviserName: Option[AnswerRow] = {
+    userAnswers.get(AdviserNameId) map { answer =>
+      AnswerRow("messages__check__your__answer__adviser__name__label", Seq(answer),
+        true, Some(controllers.invitations.routes.AdviserDetailsController.onPageLoad(CheckMode).url))
+    }
+  }
+
+  def adviserEmail(label: String): Option[AnswerRow] = {
+    userAnswers.get(AdviserEmailId) map { answer =>
+      AnswerRow(label, Seq(answer),
+        false, Some(controllers.invitations.routes.AdviserEmailAddressController.onPageLoad(CheckMode).url))
+    }
+  }
+
+  def adviserAddress(label: String): Option[AnswerRow] = {
+    userAnswers.get(AdviserAddressId) map { answer =>
+      AnswerRow(label, addressAnswer(answer),
+        false, Some(controllers.invitations.routes.AdviserManualAddressController.onPageLoad(CheckMode, true).url))
+    }
+  }
+
+  def addressAnswer(address: Address): Seq[String] = {
+    val country = countryOptions.options.find(_.value == address.countryCode).map(_.label).getOrElse(address.countryCode)
+    Seq(Some(s"${address.line1},"), Some(s"${address.line2},"), address.line3.map(line3 => s"$line3,"),
+      address.line4.map(line4 => s"$line4,"), address.postalCode.map(postCode => s"$postCode,"), Some(country)).flatten
   }
 
 }

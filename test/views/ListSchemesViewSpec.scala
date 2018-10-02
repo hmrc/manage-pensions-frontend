@@ -44,8 +44,9 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
 
     behave like pageWithBackLink(view(config()))
 
-    "display a link to invitations page if user has received invitations" in {
-      view(frontendAppConfig, invitationsReceived = true) must haveLink(controllers.routes.ListSchemesController.onPageLoad().url, "invitations-received")
+    "display a link to your invitations page if user has received invitations" in {
+      view(frontendAppConfig, invitationsReceived = true) must haveLink(
+        controllers.invitations.routes.YourInvitationsController.onPageLoad().url, "invitations-received")
     }
 
     "display a suitable message when there are no schemes to display" in {
