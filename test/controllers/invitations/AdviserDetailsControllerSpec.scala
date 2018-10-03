@@ -31,7 +31,7 @@ class AdviserDetailsControllerSpec extends ControllerWithQuestionPageBehaviours 
 
   val formProvider = new AdviserDetailsFormProvider()
   val form = formProvider()
-  val userAnswer = UserAnswers().adviserId("test")
+  val userAnswer = UserAnswers().adviserName("test")
   val postRequest = FakeRequest().withJsonBody(userAnswer.json)
 
   private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {

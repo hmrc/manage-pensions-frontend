@@ -52,7 +52,7 @@ trait CheckYourAnswersBehaviours extends ViewSpecBase {
         "correctly display an AnswerSection where answerIsMessageKey is true" in {
           val headingKey = "test-headingKey"
 
-          val answerRow = AnswerRow("test-label", Seq("date.day"), answerIsMessageKey = true, "http//:google.com")
+          val answerRow = AnswerRow("test-label", Seq("site.yes"), answerIsMessageKey = true, "http//:google.com")
 
           val section = AnswerSection(
             Some(headingKey),
@@ -63,7 +63,7 @@ trait CheckYourAnswersBehaviours extends ViewSpecBase {
 
           val doc = asDocument(view(Seq(section)))
 
-          assertRenderedByIdWithText(doc, "cya-0-0-0-answer", "Day")
+          assertRenderedByIdWithText(doc, "cya-0-0-0-answer", "Yes")
         }
 
         "correctly display a RepeaterAnswerSection" in {

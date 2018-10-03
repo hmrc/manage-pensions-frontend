@@ -61,3 +61,6 @@ POST       /change-pension-adviser-email-address        controllers.invitations.
 GET        /your-invitations                            controllers.invitations.YourInvitationsController.onPageLoad()
 POST       /your-invitations/:srn                       controllers.invitations.YourInvitationsController.onSubmit(srn: String)
 
+
+GET        /check-pension-adviser-answers               controllers.invitations.CheckPensionAdviserAnswersController.onPageLoad()
+POST       /check-pension-adviser-answers               controllers.invitations.CheckPensionAdviserAnswersController.onSubmit()
