@@ -17,12 +17,13 @@
 package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
-import models.{AcceptedInvitation, Invitation}
+import models.{AcceptedInvitation, Invitation, SchemeReferenceNumber}
 import org.joda.time.DateTime
 import org.scalatest.prop.Checkers
 import org.scalatest.{AsyncFlatSpec, Matchers}
 import play.api.http.Status
 import play.api.libs.json.Json
+import uk.gov.hmrc.domain.PsaId
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import utils.WireMockHelper
 
@@ -250,16 +251,15 @@ object InvitationConnectorSpec {
 
   private implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 
-  private val srn = "test-srn"
+  private val srn = SchemeReferenceNumber("S0987654321")
   private val pstr = "test-pstr"
   private val schemeName = "test-scheme-name"
-  private val inviterPsaId = "test-inviter-psa-id"
-  private val inviteePsaId = "test-invitee-psa-id"
+  private val inviterPsaId = PsaId("A7654321")
+  private val inviteePsaId = PsaId("A1234567")
   private val inviteeName = "test-invitee-name"
   private val expireAt = new DateTime("2018-05-05")
   private val declaration = true
   private val declarationDuties = true
-  private val expiryDate = new DateTime("2018-11-10")
 
   private val acceptedInvitation = AcceptedInvitation(
     pstr,

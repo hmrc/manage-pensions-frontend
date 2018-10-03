@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package identifiers
+package identifiers.invitations
 
-import models.MinimalSchemeDetail
+import identifiers.TypedIdentifier
 
-object SchemeDetailId extends TypedIdentifier[MinimalSchemeDetail] {
-  override def toString: String = "minimalSchemeDetails"
+object InviteePSAId extends TypedIdentifier[String] {
+
+  override def toString: String = "psaId"
+
 }

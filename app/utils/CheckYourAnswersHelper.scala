@@ -16,8 +16,8 @@
 
 package utils
 
-import identifiers.SchemeDetailId
-import identifiers.invitations.{PSAId, PsaNameId}
+import identifiers.MinimalSchemeDetailId
+import identifiers.invitations.{InviteePSAId, InviteeNameId}
 import models.{CheckMode, MinimalSchemeDetail}
 import viewmodels.AnswerRow
 
@@ -26,13 +26,13 @@ import viewmodels.AnswerRow
 class CheckYourAnswersHelper(userAnswers: UserAnswers) extends Enumerable.Implicits {
 
   def psaName: Option[AnswerRow] = {
-    userAnswers.get(PsaNameId) map { answer =>
+    userAnswers.get(InviteeNameId) map { answer =>
       AnswerRow("messages__check__your__answer__psa__name__label", Seq(answer), true, Some(controllers.invitations.routes.PsaNameController.onPageLoad(CheckMode).url))
     }
   }
 
   def psaId: Option[AnswerRow] = {
-    userAnswers.get(PSAId) map { answer =>
+    userAnswers.get(InviteePSAId) map { answer =>
       AnswerRow("messages__check__your__answer__psa__id__label", Seq(answer), true, Some(controllers.invitations.routes.PsaIdController.onPageLoad(CheckMode).url))
     }
   }

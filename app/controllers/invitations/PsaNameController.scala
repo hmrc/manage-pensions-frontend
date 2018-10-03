@@ -22,7 +22,7 @@ import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import controllers.actions._
 import forms.invitations.PsaNameFormProvider
-import identifiers.invitations.PsaNameId
+import identifiers.invitations.InviteeNameId
 import models.Mode
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -49,7 +49,7 @@ class PsaNameController @Inject()(appConfig: FrontendAppConfig,
   def onPageLoad(mode: Mode) = (authenticate andThen getData).async {
     implicit request =>
 
-      val value = request.userAnswers.flatMap(_.get(PsaNameId))
+      val value = request.userAnswers.flatMap(_.get(InviteeNameId))
       val preparedForm = value.fold(form)(form.fill)
 
       Future.successful(Ok(psaName(appConfig, preparedForm, mode)))
@@ -63,9 +63,9 @@ class PsaNameController @Inject()(appConfig: FrontendAppConfig,
           Future.successful(BadRequest(psaName(appConfig, formWithErrors, mode))),
 
         (value) => {
-          dataCacheConnector.save(request.externalId, PsaNameId, value).map(
+          dataCacheConnector.save(request.externalId, InviteeNameId, value).map(
             cacheMap =>
-              Redirect(navigator.nextPage(PsaNameId, mode, UserAnswers(cacheMap)))
+              Redirect(navigator.nextPage(InviteeNameId, mode, UserAnswers(cacheMap)))
           )
         }
       )

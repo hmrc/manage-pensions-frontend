@@ -21,13 +21,14 @@ import config.FrontendAppConfig
 import connectors.InvitationConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
-import identifiers.SchemeDetailId
-import identifiers.invitations.{CheckYourAnswersId, PSAId, PsaNameId}
-import models.NormalMode
+import identifiers.MinimalSchemeDetailId
+import identifiers.invitations.{InviteeNameId, InviteePSAId}
+import models.SchemeReferenceNumber
 import play.api.i18n.{I18nSupport, MessagesApi}
+import uk.gov.hmrc.domain.PsaId
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import utils.{CheckYourAnswersFactory, DateHelper, Navigator}
 import utils.annotations.Invitation
+import utils.{CheckYourAnswersFactory, DateHelper, Navigator}
 import viewmodels.AnswerSection
 import views.html.check_your_answers
 
@@ -45,7 +46,7 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
   def onPageLoad() = (authenticate andThen getData andThen requireData).async {
     implicit request =>
 
-      SchemeDetailId.retrieve.right.map {schemeDetail =>
+      MinimalSchemeDetailId.retrieve.right.map { schemeDetail =>
 
         val checkYourAnswersHelper = checkYourAnswersFactory.checkYourAnswersHelper(request.userAnswers)
         val sections = Seq(AnswerSection(None, Seq(checkYourAnswersHelper.psaName, checkYourAnswersHelper.psaId).flatten))
@@ -58,13 +59,14 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
 
   def onSubmit() = (authenticate andThen getData andThen requireData).async {
     implicit request =>
-      (SchemeDetailId and PsaNameId and PSAId).retrieve.right.map {
-        case (schemeDetails ~ inviteeName ~ inviterPsaId) if (schemeDetails.pstr.isDefined) =>
-        val invitation = models.Invitation(schemeDetails.srn,
+      (MinimalSchemeDetailId and InviteeNameId and InviteePSAId).retrieve.right.map {
+        case schemeDetails ~ inviteeName ~ inviteePsaId if schemeDetails.pstr.isDefined =>
+        val invitation = models.Invitation(
+          SchemeReferenceNumber(schemeDetails.srn),
           schemeDetails.pstr.get,
           schemeDetails.schemeName,
-          request.psaId.id,
-          inviterPsaId,
+          request.psaId,
+          PsaId(inviteePsaId),
           inviteeName,
           getExpireAt
         )
