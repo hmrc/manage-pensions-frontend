@@ -49,6 +49,10 @@ package object utils {
       answers.set(HaveYouEmployedPensionAdviserId)(hasAdviser).asOpt.value
     }
 
+    def pstr(pstr: String): UserAnswers = {
+      answers.set(PSTRId)(pstr).asOpt.value
+    }
+
     def isMasterTrust(isMaster: Boolean): UserAnswers = {
       answers.set(IsMasterTrustId)(isMaster).asOpt.value
     }

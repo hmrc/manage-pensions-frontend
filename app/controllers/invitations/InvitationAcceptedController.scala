@@ -16,33 +16,34 @@
 
 package controllers.invitations
 
+import config.FrontendAppConfig
+import connectors.UserAnswersCacheConnector
+import controllers.Retrievals
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import identifiers.invitations.SchemeNameId
 import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
-import config.FrontendAppConfig
-import controllers.Retrievals
-import identifiers.SchemeDetailId
-import identifiers.invitations.SchemeNameId
 import play.api.mvc.{Action, AnyContent}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import views.html.invitations.invitationAccepted
-
-import scala.concurrent.Future
 
 class InvitationAcceptedController @Inject()(frontendAppConfig: FrontendAppConfig,
                                              override val messagesApi: MessagesApi,
                                              authenticate: AuthAction,
                                              getData: DataRetrievalAction,
-                                             requireData: DataRequiredAction) extends FrontendController with Retrievals with I18nSupport {
+                                             requireData: DataRequiredAction,
+                                             userAnswersCacheConnector: UserAnswersCacheConnector) extends FrontendController with Retrievals with I18nSupport {
 
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
       SchemeNameId.retrieve.right.map { schemeName =>
-        Future.successful(Ok(invitationAccepted(
-          frontendAppConfig,
-          schemeName
-        )))
+        userAnswersCacheConnector.removeAll(request.externalId).map { _ =>
+          Ok(invitationAccepted(
+            frontendAppConfig,
+            schemeName
+          ))
+        }
       }
   }
 }

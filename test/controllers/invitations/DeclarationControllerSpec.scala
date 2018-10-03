@@ -16,12 +16,12 @@
 
 package controllers.invitations
 
-import connectors.{FakeUserAnswersCacheConnector, SchemeDetailsConnector}
+import connectors.{FakeUserAnswersCacheConnector, InvitationsCacheConnector, SchemeDetailsConnector}
 import controllers.ControllerSpecBase
 import controllers.SchemeDetailsControllerSpec.mock
 import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
 import forms.invitations.DeclarationFormProvider
-import identifiers.invitations.{DeclarationId, IsMasterTrustId, SchemeNameId}
+import identifiers.invitations.{DeclarationId, IsMasterTrustId, PSTRId, SchemeNameId}
 import org.scalatest.mockito.MockitoSugar
 import play.api.data.Form
 import play.api.mvc.Call
@@ -39,7 +39,8 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
 
   import DeclarationControllerSpec._
 
-  val fakeSchemeDetailsConnector: SchemeDetailsConnector =  mock[SchemeDetailsConnector]
+  private val fakeSchemeDetailsConnector: SchemeDetailsConnector =  mock[SchemeDetailsConnector]
+  private val fakeInvitationCacheConnector = mock[InvitationsCacheConnector]
 
   def controller(dataRetrievalAction: DataRetrievalAction = getEmptyData) = new DeclarationController(
     frontendAppConfig,
@@ -50,11 +51,13 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
     new DataRequiredActionImpl,
     FakeUserAnswersCacheConnector,
     fakeSchemeDetailsConnector,
+    fakeInvitationCacheConnector,
     new FakeNavigator(onwardRoute)
   )
 
   override def beforeEach(): Unit = {
     reset(fakeSchemeDetailsConnector)
+    reset(fakeInvitationCacheConnector)
     super.beforeEach()
   }
 
@@ -76,6 +79,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
         contentAsString(result) mustBe viewAsString()
         FakeUserAnswersCacheConnector.verify(SchemeNameId, schemeDetailsData.schemeDetails.name)
         FakeUserAnswersCacheConnector.verify(IsMasterTrustId, schemeDetailsData.schemeDetails.isMasterTrust)
+        FakeUserAnswersCacheConnector.verify(PSTRId, schemeDetailsData.schemeDetails.pstr.getOrElse(""))
         verify(fakeSchemeDetailsConnector, times(1)).getSchemeDetails(any(), any())(any(), any())
       }
 
@@ -98,10 +102,12 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
     "on a POST" must {
 
       "save the answer and redirect to next page when valid data is submitted" in {
+        when(fakeInvitationCacheConnector.remove(any(), any())(any(), any())).thenReturn(Future.successful(()))
         val result = controller(data).onSubmit()(fakeRequest.withFormUrlEncodedBody("agree" -> "agreed"))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).value mustBe onwardRoute.url
         FakeUserAnswersCacheConnector.verify(DeclarationId, true)
+        verify(fakeInvitationCacheConnector, times(1)).remove(any(), any())(any(), any())
       }
 
       "return Bad Request if invalid data is submitted" in {
@@ -141,13 +147,15 @@ object DeclarationControllerSpec {
   val hasAdviser = true
   val isMasterTrust = true
   val srn = "S9000000000"
+  val pstr = "00000000AA"
 
   def onwardRoute = Call("GET", "/foo")
 
   val data = new FakeDataRetrievalAction(Some(UserAnswers().
     havePensionAdviser(hasAdviser).
     srn(srn).
-    isMasterTrust(true).json
+    isMasterTrust(true).
+    pstr(pstr).json
   ))
 
   val formProvider = new DeclarationFormProvider()

@@ -18,7 +18,7 @@ package controllers.invitations
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
-import connectors.{SchemeDetailsConnector, UserAnswersCacheConnector}
+import connectors.{InvitationsCacheConnector, SchemeDetailsConnector, UserAnswersCacheConnector}
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.invitations.DeclarationFormProvider
@@ -44,6 +44,7 @@ class DeclarationController @Inject()(
                                        requireData: DataRequiredAction,
                                        userAnswersCacheConnector: UserAnswersCacheConnector,
                                        schemeDetailsConnector: SchemeDetailsConnector,
+                                       invitationsCacheConnector: InvitationsCacheConnector,
                                        @AcceptInvitation navigator: Navigator
                                      ) extends FrontendController with I18nSupport with Retrievals {
   val form: Form[Boolean] = formProvider()
@@ -56,6 +57,7 @@ class DeclarationController @Inject()(
             details <- schemeDetailsConnector.getSchemeDetails("srn", srn)
             _ <- userAnswersCacheConnector.save(SchemeNameId, details.schemeDetails.name)
             _ <- userAnswersCacheConnector.save(IsMasterTrustId, details.schemeDetails.isMasterTrust)
+            _ <- userAnswersCacheConnector.save(PSTRId, details.schemeDetails.pstr.getOrElse(""))
           } yield {
             Ok(declaration(appConfig, havePensionAdviser, details.schemeDetails.isMasterTrust, form))
           }
@@ -72,10 +74,13 @@ class DeclarationController @Inject()(
               Future.successful(BadRequest(declaration(appConfig, havePensionAdviser, isMasterTrust, formWithErrors)))
           },
         value => {
-          userAnswersCacheConnector.save(request.externalId, DeclarationId, value).map(
-            cacheMap =>
-              Redirect(navigator.nextPage(DeclarationId, NormalMode, UserAnswers(cacheMap)))
-          )
+          PSTRId.retrieve.right.map { pstr =>
+            userAnswersCacheConnector.save(request.externalId, DeclarationId, value).flatMap { cacheMap =>
+              invitationsCacheConnector.remove(pstr, request.psaId.id).map { _ =>
+                Redirect(navigator.nextPage(DeclarationId, NormalMode, UserAnswers(cacheMap)))
+              }
+            }
+          }
         }
       )
   }

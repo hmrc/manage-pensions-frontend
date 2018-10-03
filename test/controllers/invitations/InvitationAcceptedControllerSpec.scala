@@ -16,6 +16,7 @@
 
 package controllers.invitations
 
+import connectors.FakeUserAnswersCacheConnector
 import controllers.ControllerSpecBase
 import controllers.actions._
 import models.MinimalSchemeDetail
@@ -35,7 +36,8 @@ class InvitationAcceptedControllerSpec extends ControllerSpecBase {
       messagesApi,
       authAction,
       dataRetrievalAction,
-      new DataRequiredActionImpl
+      new DataRequiredActionImpl,
+      FakeUserAnswersCacheConnector
     )
 
   def viewAsString(): String = invitationAccepted(frontendAppConfig, testSchemeName)(fakeRequest, messages).toString
@@ -46,6 +48,7 @@ class InvitationAcceptedControllerSpec extends ControllerSpecBase {
       val result = controller().onPageLoad(fakeRequest)
       status(result) mustBe OK
       contentAsString(result) mustBe viewAsString()
+      FakeUserAnswersCacheConnector.verifyAllDataRemoved()
     }
 
     "redirect to session expired if required data is missing" in {
