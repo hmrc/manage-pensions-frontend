@@ -26,6 +26,7 @@ import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.Helpers._
+import testhelpers.InvitationBuilder._
 import uk.gov.hmrc.http.HeaderCarrier
 import views.html.list_schemes
 
@@ -66,7 +67,7 @@ class ListSchemesControllerSpec extends ControllerSpecBase {
       }
 
       "return OK and the correct view when there are schemes with invitations" in {
-        val fixture = testFixture(this, psaIdWithSchemes, List(invitation), isWorkPackageOneEnabled = true)
+        val fixture = testFixture(this, psaIdWithSchemes, invitationList, isWorkPackageOneEnabled = true)
         val result = fixture.controller.onPageLoad(fakeRequest)
 
         status(result) mustBe OK
@@ -123,9 +124,6 @@ object ListSchemesControllerSpec {
     ).build().injector
     injector.instanceOf[FrontendAppConfig]
   }
-
-  val invitation = Invitation(srn = "ted-srn", pstr = "pstr1", schemeName = "schemeName1",
-    inviterPsaId = "inviterPsaId1", inviteePsaId = "inviteePsaId1", inviteeName = "inviteeName1", expireAt = new DateTime("2018-05-05"))
 
   def testFixture(app: ControllerSpecBase, psaId: String, invitations: List[Invitation] = Nil,
                   isWorkPackageOneEnabled: Boolean): TestFixture = new TestFixture with MockitoSugar {

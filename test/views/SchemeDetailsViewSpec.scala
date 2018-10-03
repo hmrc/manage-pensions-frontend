@@ -88,7 +88,7 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
       "have link to Invite another PSA" when {
         "invitations toggle is turned on" in {
           Jsoup.parse(createView(invitations = true)().toString()).select("a[id=invite]") must
-            haveLink(controllers.routes.SchemeDetailsController.onPageLoad(srn).url)
+            haveLink(controllers.invitations.routes.InviteController.onPageLoad().url)
         }
       }
 

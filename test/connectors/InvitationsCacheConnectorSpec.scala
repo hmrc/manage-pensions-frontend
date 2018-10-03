@@ -23,7 +23,7 @@ import play.api.http.Status
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.{HeaderCarrier, HttpException}
 import utils.WireMockHelper
-import utils.testhelpers.InvitationBuilder._
+import testhelpers.InvitationBuilder._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
