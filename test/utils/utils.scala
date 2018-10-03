@@ -49,8 +49,8 @@ package object utils {
       answers.set(IsMasterTrustId)(isMaster).asOpt.value
     }
 
-    def adviserId(id: String): UserAnswers = {
-      answers.set(AdviserNameId)(id).asOpt.value
+    def adviserName(name: String): UserAnswers = {
+      answers.set(AdviserNameId)(name).asOpt.value
     }
 
     def employedPensionAdviserId(isChecked: Boolean): UserAnswers = {
