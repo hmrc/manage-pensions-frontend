@@ -21,7 +21,7 @@ import controllers.routes
 import identifiers.SchemeSrnId
 import identifiers.invitations._
 import javax.inject.{Inject, Singleton}
-import models.NormalMode
+import models.{CheckMode, NormalMode}
 import utils.{Navigator, UserAnswers}
 
 @Singleton
@@ -42,8 +42,10 @@ class AcceptInvitationNavigator @Inject()(val dataCacheConnector: UserAnswersCac
       NavigateTo.dontSave(controllers.invitations.routes.AdviserManualAddressController.onPageLoad(NormalMode, true))
     case AdviserAddressId =>
       NavigateTo.dontSave(controllers.invitations.routes.CheckPensionAdviserAnswersController.onPageLoad())
-    case DeclarationId => NavigateTo.dontSave(routes.IndexController.onPageLoad())
-
+    case CheckPensionAdviserAnswersId =>
+      NavigateTo.dontSave(controllers.invitations.routes.DeclarationController.onPageLoad())
+    case DeclarationId =>
+      NavigateTo.dontSave(controllers.invitations.routes.InvitationAcceptedController.onPageLoad())
     case _ => NavigateTo.dontSave(controllers.routes.SessionExpiredController.onPageLoad())
   }
 
@@ -59,6 +61,8 @@ class AcceptInvitationNavigator @Inject()(val dataCacheConnector: UserAnswersCac
   }
 
   override protected def editRouteMap(from: NavigateFrom): Option[NavigateTo] = from.id match {
+    case AdviserNameId | AdviserEmailId | AdviserAddressId =>
+      NavigateTo.dontSave(controllers.invitations.routes.CheckPensionAdviserAnswersController.onPageLoad())
     case _ => NavigateTo.dontSave(controllers.routes.SessionExpiredController.onPageLoad())
   }
 }

@@ -44,7 +44,8 @@ class AcceptInvitationNavigatorSpec extends SpecBase with NavigatorBehaviour {
     (AdviserAddressPostCodeLookupId,     emptyAnswers,       adviserAddressList,            false,                   None,                   false       ),
     (AdviserAddressListId,               emptyAnswers,       adviserManualAddress,          false,                   None,                   false       ),
     (AdviserAddressId,                   emptyAnswers,       checkYourAnswers,              false,                   None,                   false       ),
-    (DeclarationId,                      emptyAnswers,       index,                         false,                   None,                   false       )
+    (CheckPensionAdviserAnswersId,       emptyAnswers,       declaration,                   false,                   None,                   false       ),
+    (DeclarationId,                      emptyAnswers,       inviteAccepted,                false,                   None,                   false       )
   )
 
   navigator.getClass.getSimpleName must {
@@ -66,6 +67,7 @@ object AcceptInvitationNavigatorSpec extends OptionValues {
   lazy val adviserAddressList = controllers.invitations.routes.PensionAdviserAddressListController.onPageLoad(NormalMode)
   lazy val adviserManualAddress = controllers.invitations.routes.AdviserManualAddressController.onPageLoad(NormalMode, true)
   lazy val checkYourAnswers = controllers.invitations.routes.CheckPensionAdviserAnswersController.onPageLoad()
+  lazy val inviteAccepted = controllers.invitations.routes.InvitationAcceptedController.onPageLoad()
   lazy val index: Call = controllers.routes.IndexController.onPageLoad()
 
   private def dataDescriber(answers: UserAnswers): String = answers.toString

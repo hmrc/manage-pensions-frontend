@@ -16,20 +16,30 @@
 
 package controllers.invitations
 
-import connectors.FakeUserAnswersCacheConnector
+import connectors.{FakeUserAnswersCacheConnector, SchemeDetailsConnector}
 import controllers.ControllerSpecBase
+import controllers.SchemeDetailsControllerSpec.mock
 import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
 import forms.invitations.DeclarationFormProvider
 import identifiers.invitations.DeclarationId
+import org.scalatest.mockito.MockitoSugar
 import play.api.data.Form
 import play.api.mvc.Call
 import play.api.test.Helpers._
 import utils._
+import org.mockito.Matchers.{eq => eqTo, _}
+import org.mockito.Mockito.{times, verify, when, reset}
+import org.scalatest.BeforeAndAfterEach
+import testhelpers.CommonBuilders
 import views.html.invitations.declaration
 
-class DeclarationControllerSpec extends ControllerSpecBase {
+import scala.concurrent.Future
+
+class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar with BeforeAndAfterEach {
 
   import DeclarationControllerSpec._
+
+  val fakeSchemeDetailsConnector: SchemeDetailsConnector =  mock[SchemeDetailsConnector]
 
   def controller(dataRetrievalAction: DataRetrievalAction = getEmptyData) = new DeclarationController(
     frontendAppConfig,
@@ -39,8 +49,15 @@ class DeclarationControllerSpec extends ControllerSpecBase {
     dataRetrievalAction,
     new DataRequiredActionImpl,
     FakeUserAnswersCacheConnector,
+    fakeSchemeDetailsConnector,
     new FakeNavigator(onwardRoute)
   )
+
+  override def beforeEach(): Unit = {
+    reset(fakeSchemeDetailsConnector)
+    super.beforeEach()
+  }
+
 
   private def viewAsString(form: Form[_] = form) = declaration(frontendAppConfig, hasAdviser, isMasterTrust, form)(fakeRequest, messages).toString
 
@@ -49,22 +66,17 @@ class DeclarationControllerSpec extends ControllerSpecBase {
     "on a GET" must {
 
       "return OK and the correct view" in {
+        when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any())(any(), any()))
+          .thenReturn(Future.successful(CommonBuilders.schemeDetailsWithPsaOnlyResponse))
         val result = controller(data).onPageLoad()(fakeRequest)
 
         status(result) mustBe OK
         contentAsString(result) mustBe viewAsString()
+        verify(fakeSchemeDetailsConnector, times(1)).getSchemeDetails(any(), any())(any(), any())
       }
 
       "redirect to Session Expired page if there is no user answers for HaveYouEmployedPensionAdviser" in {
-        val data = new FakeDataRetrievalAction(Some(UserAnswers().isMasterTrust(isMasterTrust).json))
-        val result = controller(data).onPageLoad()(fakeRequest)
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).value mustBe sessionExpired
-      }
-
-      "redirect to Session Expired page if there is no user answers for isMasterTrust" in {
-        val data = new FakeDataRetrievalAction(Some(UserAnswers().havePensionAdviser(hasAdviser).json))
+        val data = new FakeDataRetrievalAction(Some(UserAnswers().json))
         val result = controller(data).onPageLoad()(fakeRequest)
 
         status(result) mustBe SEE_OTHER
@@ -86,13 +98,17 @@ class DeclarationControllerSpec extends ControllerSpecBase {
         status(result) mustBe SEE_OTHER
         redirectLocation(result).value mustBe onwardRoute.url
         FakeUserAnswersCacheConnector.verify(DeclarationId, true)
+
       }
 
       "return Bad Request if invalid data is submitted" in {
+        when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any())(any(), any()))
+          .thenReturn(Future.successful(CommonBuilders.schemeDetailsWithPsaOnlyResponse))
         val formWithErrors = form.withError("agree", messages("messages__error__declaration__required"))
         val result = controller(data).onSubmit()(fakeRequest)
         status(result) mustBe BAD_REQUEST
         contentAsString(result) mustBe viewAsString(formWithErrors)
+        verify(fakeSchemeDetailsConnector, times(1)).getSchemeDetails(eqTo("srn"), eqTo(srn))(any(), any())
       }
 
       "redirect to Session Expired page if there is no cached data" in {
@@ -103,14 +119,14 @@ class DeclarationControllerSpec extends ControllerSpecBase {
       }
 
       "redirect to Session Expired page if there is no user answers for HaveYouEmployedPensionAdviser for an invalid request" in {
-        val data = new FakeDataRetrievalAction(Some(UserAnswers().isMasterTrust(isMasterTrust).json))
+        val data = new FakeDataRetrievalAction(Some(UserAnswers().srn(srn).json))
         val result = controller(data).onSubmit()(fakeRequest)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).value mustBe sessionExpired
       }
 
-      "redirect to Session Expired page if there is no user answers for isMasterTrust for an invalid request" in {
+      "redirect to Session Expired page if there is no user answers for srn for an invalid request" in {
         val data = new FakeDataRetrievalAction(Some(UserAnswers().havePensionAdviser(hasAdviser).json))
         val result = controller(data).onSubmit()(fakeRequest)
 
@@ -123,13 +139,14 @@ class DeclarationControllerSpec extends ControllerSpecBase {
 
 object DeclarationControllerSpec {
   val hasAdviser = true
-  val isMasterTrust = false
+  val isMasterTrust = true
+  val srn = "S9000000000"
 
   def onwardRoute = Call("GET", "/foo")
 
   val data = new FakeDataRetrievalAction(Some(UserAnswers().
     havePensionAdviser(hasAdviser).
-    isMasterTrust(isMasterTrust).json
+    srn(srn).json
   ))
 
   val formProvider = new DeclarationFormProvider()

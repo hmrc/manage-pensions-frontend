@@ -16,7 +16,7 @@
 
 import controllers.actions.{DataRetrievalAction, FakeDataRetrievalAction}
 import identifiers.invitations._
-import identifiers.{LastPageId, SchemeDetailId}
+import identifiers.{LastPageId, SchemeDetailId, SchemeSrnId}
 import models._
 import org.scalatest.OptionValues
 
@@ -47,6 +47,10 @@ package object utils {
 
     def isMasterTrust(isMaster: Boolean): UserAnswers = {
       answers.set(IsMasterTrustId)(isMaster).asOpt.value
+    }
+
+    def srn(srn: String): UserAnswers = {
+      answers.set(SchemeSrnId)(srn).asOpt.value
     }
 
     def adviserName(name: String): UserAnswers = {
