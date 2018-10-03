@@ -91,7 +91,7 @@ class YourInvitationsControllerSpec extends ControllerSpecBase with MockitoSugar
 
     "redirect to the next page when valid data is submitted" in {
 
-      val result = controller().onSubmit(srn)(fakeRequest)
+      val result = controller().onSelect(srn)(fakeRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(nextCall.url)

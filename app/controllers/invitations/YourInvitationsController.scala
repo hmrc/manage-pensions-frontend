@@ -48,7 +48,7 @@ class YourInvitationsController @Inject()(appConfig: FrontendAppConfig,
       }
   }
 
-  def onSubmit(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate).async {
+  def onSelect(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate).async {
     implicit request =>
       userAnswersCacheConnector.save(request.externalId, SchemeSrnId, srn.id).map { cacheMap =>
         Redirect(navigator.nextPage(SchemeSrnId, NormalMode, UserAnswers(cacheMap)))

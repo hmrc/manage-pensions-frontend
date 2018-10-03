@@ -27,11 +27,12 @@ import utils.{Navigator, UserAnswers}
 @Singleton
 class AcceptInvitationNavigator @Inject()(val dataCacheConnector: UserAnswersCacheConnector) extends Navigator {
 
+  //scalastyle:off cyclomatic.complexity
   override def routeMap(from: NavigateFrom): Option[NavigateTo] = from.id match {
     case SchemeSrnId =>
       NavigateTo.dontSave(controllers.invitations.routes.HaveYouEmployedPensionAdviserController.onPageLoad(NormalMode))
     case HaveYouEmployedPensionAdviserId =>
-      normalAdviserRoutes(from.userAnswers)
+      haveYouEmployedPensionAdviserRoutes(from.userAnswers)
     case AdviserNameId =>
       NavigateTo.dontSave(controllers.invitations.routes.AdviserEmailAddressController.onPageLoad(NormalMode))
     case AdviserEmailId =>
@@ -39,17 +40,19 @@ class AcceptInvitationNavigator @Inject()(val dataCacheConnector: UserAnswersCac
     case AdviserAddressPostCodeLookupId =>
       NavigateTo.dontSave(controllers.invitations.routes.PensionAdviserAddressListController.onPageLoad(NormalMode))
     case AdviserAddressListId =>
-      NavigateTo.dontSave(controllers.invitations.routes.AdviserManualAddressController.onPageLoad(NormalMode, true))
+      NavigateTo.dontSave(controllers.invitations.routes.AdviserManualAddressController.onPageLoad(NormalMode, prepopulated = true))
     case AdviserAddressId =>
       NavigateTo.dontSave(controllers.invitations.routes.CheckPensionAdviserAnswersController.onPageLoad())
     case CheckPensionAdviserAnswersId =>
       NavigateTo.dontSave(controllers.invitations.routes.DeclarationController.onPageLoad())
     case DeclarationId =>
       NavigateTo.dontSave(controllers.invitations.routes.InvitationAcceptedController.onPageLoad())
-    case _ => NavigateTo.dontSave(controllers.routes.SessionExpiredController.onPageLoad())
+    case _ =>
+      NavigateTo.dontSave(controllers.routes.SessionExpiredController.onPageLoad())
   }
+  //scalastyle:on cyclomatic.complexity
 
-  private def normalAdviserRoutes(userAnswers: UserAnswers) = {
+  private def haveYouEmployedPensionAdviserRoutes(userAnswers: UserAnswers) = {
     userAnswers.get(HaveYouEmployedPensionAdviserId) match {
       case Some(true) =>
         NavigateTo.dontSave(controllers.invitations.routes.AdviserDetailsController.onPageLoad(NormalMode))
