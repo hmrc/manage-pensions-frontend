@@ -17,7 +17,7 @@
 @import config.FrontendAppConfig
 @import uk.gov.hmrc.play.views.html._
 @import controllers.routes._
-@import models.Mode
+@import models.NormalMode
 @import controllers.invitations.routes._
 @import viewmodels.Message
 
@@ -36,11 +36,17 @@
 
         @components.heading(Message("messages__adviser__postcode__heading", name))
 
+        @components.paragraph_text(Message("messages__adviser__postcode__lede"))
+
         @components.input_text(
           field = form("value"),
-          label = Message("messages__adviser__postcode__heading", name),
-          labelClass=Some("visually-hidden")
+          label = Message("messages__adviser__postcode__label")
         )
+
+        <p>
+            @messages("messages__common__postcode_lookup__enter_postcode_lhs")
+            <a id="manual-address-link" href="@AdviserManualAddressController.onPageLoad(NormalMode, false)"> @messages("messages__common__postcode_lookup__enter_postcode_link")</a> @messages("messages__common__postcode_lookup__enter_postcode_rhs")
+        </p>
 
         @components.submit_button()
     }
