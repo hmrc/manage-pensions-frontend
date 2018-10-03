@@ -23,7 +23,7 @@ import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.invitations.DeclarationFormProvider
 import identifiers.SchemeSrnId
-import identifiers.invitations.{DeclarationId, HaveYouEmployedPensionAdviserId, IsMasterTrustId}
+import identifiers.invitations._
 import models.NormalMode
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -42,7 +42,7 @@ class DeclarationController @Inject()(
                                        auth: AuthAction,
                                        getData: DataRetrievalAction,
                                        requireData: DataRequiredAction,
-                                       dataCacheConnector: UserAnswersCacheConnector,
+                                       userAnswersCacheConnector: UserAnswersCacheConnector,
                                        schemeDetailsConnector: SchemeDetailsConnector,
                                        @AcceptInvitation navigator: Navigator
                                      ) extends FrontendController with I18nSupport with Retrievals {
@@ -52,7 +52,11 @@ class DeclarationController @Inject()(
     implicit request =>
       (HaveYouEmployedPensionAdviserId and SchemeSrnId).retrieve.right.map {
         case havePensionAdviser ~ srn =>
-          schemeDetailsConnector.getSchemeDetails("srn", srn).map { details =>
+          for {
+            details <- schemeDetailsConnector.getSchemeDetails("srn", srn)
+            _ <- userAnswersCacheConnector.save(SchemeNameId, details.schemeDetails.name)
+            _ <- userAnswersCacheConnector.save(IsMasterTrustId, details.schemeDetails.isMasterTrust)
+          } yield {
             Ok(declaration(appConfig, havePensionAdviser, details.schemeDetails.isMasterTrust, form))
           }
       }
@@ -63,14 +67,12 @@ class DeclarationController @Inject()(
 
       form.bindFromRequest().fold(
         (formWithErrors: Form[Boolean]) =>
-          (HaveYouEmployedPensionAdviserId and SchemeSrnId).retrieve.right.map {
-            case havePensionAdviser ~ srn =>
-              schemeDetailsConnector.getSchemeDetails("srn", srn).map { details =>
-                BadRequest(declaration(appConfig, havePensionAdviser, details.schemeDetails.isMasterTrust, formWithErrors))
-              }
+          (HaveYouEmployedPensionAdviserId and SchemeSrnId and IsMasterTrustId).retrieve.right.map {
+            case havePensionAdviser ~ srn ~ isMasterTrust =>
+              Future.successful(BadRequest(declaration(appConfig, havePensionAdviser, isMasterTrust, formWithErrors)))
           },
         value => {
-          dataCacheConnector.save(request.externalId, DeclarationId, value).map(
+          userAnswersCacheConnector.save(request.externalId, DeclarationId, value).map(
             cacheMap =>
               Redirect(navigator.nextPage(DeclarationId, NormalMode, UserAnswers(cacheMap)))
           )

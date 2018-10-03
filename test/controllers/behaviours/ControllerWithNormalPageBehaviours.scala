@@ -62,7 +62,6 @@ class ControllerWithNormalPageBehaviours extends ControllerSpecBase {
           status(result) mustBe SEE_OTHER
           redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)
         }
-
       } else {
 
         "return OK and the correct view for a GET" in {

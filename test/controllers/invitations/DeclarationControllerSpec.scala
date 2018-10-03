@@ -21,14 +21,14 @@ import controllers.ControllerSpecBase
 import controllers.SchemeDetailsControllerSpec.mock
 import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
 import forms.invitations.DeclarationFormProvider
-import identifiers.invitations.DeclarationId
+import identifiers.invitations.{DeclarationId, IsMasterTrustId, SchemeNameId}
 import org.scalatest.mockito.MockitoSugar
 import play.api.data.Form
 import play.api.mvc.Call
 import play.api.test.Helpers._
 import utils._
 import org.mockito.Matchers.{eq => eqTo, _}
-import org.mockito.Mockito.{times, verify, when, reset}
+import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import testhelpers.CommonBuilders
 import views.html.invitations.declaration
@@ -58,6 +58,8 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
     super.beforeEach()
   }
 
+  val schemeDetailsData = CommonBuilders.schemeDetailsWithPsaOnlyResponse
+
 
   private def viewAsString(form: Form[_] = form) = declaration(frontendAppConfig, hasAdviser, isMasterTrust, form)(fakeRequest, messages).toString
 
@@ -67,11 +69,13 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
 
       "return OK and the correct view" in {
         when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any())(any(), any()))
-          .thenReturn(Future.successful(CommonBuilders.schemeDetailsWithPsaOnlyResponse))
+          .thenReturn(Future.successful(schemeDetailsData))
         val result = controller(data).onPageLoad()(fakeRequest)
 
         status(result) mustBe OK
         contentAsString(result) mustBe viewAsString()
+        FakeUserAnswersCacheConnector.verify(SchemeNameId, schemeDetailsData.schemeDetails.name)
+        FakeUserAnswersCacheConnector.verify(IsMasterTrustId, schemeDetailsData.schemeDetails.isMasterTrust)
         verify(fakeSchemeDetailsConnector, times(1)).getSchemeDetails(any(), any())(any(), any())
       }
 
@@ -98,17 +102,13 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
         status(result) mustBe SEE_OTHER
         redirectLocation(result).value mustBe onwardRoute.url
         FakeUserAnswersCacheConnector.verify(DeclarationId, true)
-
       }
 
       "return Bad Request if invalid data is submitted" in {
-        when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any())(any(), any()))
-          .thenReturn(Future.successful(CommonBuilders.schemeDetailsWithPsaOnlyResponse))
         val formWithErrors = form.withError("agree", messages("messages__error__declaration__required"))
         val result = controller(data).onSubmit()(fakeRequest)
         status(result) mustBe BAD_REQUEST
         contentAsString(result) mustBe viewAsString(formWithErrors)
-        verify(fakeSchemeDetailsConnector, times(1)).getSchemeDetails(eqTo("srn"), eqTo(srn))(any(), any())
       }
 
       "redirect to Session Expired page if there is no cached data" in {
@@ -146,7 +146,8 @@ object DeclarationControllerSpec {
 
   val data = new FakeDataRetrievalAction(Some(UserAnswers().
     havePensionAdviser(hasAdviser).
-    srn(srn).json
+    srn(srn).
+    isMasterTrust(true).json
   ))
 
   val formProvider = new DeclarationFormProvider()

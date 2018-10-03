@@ -26,8 +26,7 @@ import views.html.invitations.invitationAccepted
 class InvitationAcceptedControllerSpec extends ControllerSpecBase {
 
   val testSchemeName: String = "Test Scheme Name"
-  val testSchemeDetails: MinimalSchemeDetail = MinimalSchemeDetail("srn", Some("pstr"), testSchemeName)
-  val getRelevantData: DataRetrievalAction = UserAnswers().minimalSchemeDetails(testSchemeDetails).dataRetrievalAction
+  val getRelevantData: DataRetrievalAction = UserAnswers().schemeName(testSchemeName).dataRetrievalAction
 
   def controller(authAction: AuthAction = FakeAuthAction(), dataRetrievalAction: DataRetrievalAction = getRelevantData):
   InvitationAcceptedController =
@@ -42,6 +41,7 @@ class InvitationAcceptedControllerSpec extends ControllerSpecBase {
   def viewAsString(): String = invitationAccepted(frontendAppConfig, testSchemeName)(fakeRequest, messages).toString
 
   "InvitationAccepted Controller" must {
+
     "return OK with correct content on GET" in {
       val result = controller().onPageLoad(fakeRequest)
       status(result) mustBe OK

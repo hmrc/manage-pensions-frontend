@@ -23,6 +23,7 @@ import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import config.FrontendAppConfig
 import controllers.Retrievals
 import identifiers.SchemeDetailId
+import identifiers.invitations.SchemeNameId
 import play.api.mvc.{Action, AnyContent}
 import views.html.invitations.invitationAccepted
 
@@ -37,12 +38,11 @@ class InvitationAcceptedController @Inject()(frontendAppConfig: FrontendAppConfi
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
-      SchemeDetailId.retrieve.right.map{
-        schemeDetails =>
-          Future.successful(Ok(invitationAccepted(
-            frontendAppConfig,
-            schemeDetails.schemeName
-          )))
+      SchemeNameId.retrieve.right.map { schemeName =>
+        Future.successful(Ok(invitationAccepted(
+          frontendAppConfig,
+          schemeName
+        )))
       }
   }
 }
