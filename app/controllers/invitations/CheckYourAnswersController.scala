@@ -71,7 +71,7 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
 
         invitationConnector.invite(invitation).map{
           case CREATED =>
-            Redirect(navigator.nextPage(CheckYourAnswersId, NormalMode, request.userAnswers))
+            Redirect(navigator.nextPage(CheckYourAnswersId(schemeDetails.srn), NormalMode, request.userAnswers))
           case _ =>
             Redirect(controllers.routes.SessionExpiredController.onPageLoad())
         }

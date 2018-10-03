@@ -38,7 +38,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                                         userAnswersCacheConnector: UserAnswersCacheConnector
                                        ) extends FrontendController with I18nSupport {
 
-  def onPageLoad(srn: String): Action[AnyContent] = (authenticate andThen getData).async {
+  def onPageLoad(srn: String): Action[AnyContent] = authenticate.async {
     implicit request =>
 
       schemeDetailsConnector.getSchemeDetails("srn", srn).flatMap { scheme =>

@@ -43,7 +43,7 @@ class CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours 
 
   when(mockInvitationConnector.invite(any())(any(), any())).thenReturn(Future.successful(CREATED))
 
-  private lazy val continue: Call = controllers.invitations.routes.InvitationSuccessController.onSubmit
+  private lazy val continue: Call = controllers.invitations.routes.InvitationSuccessController.onSubmit(testSrn)
 
   private val userAnswer = UserAnswers()
     .minimalSchemeDetails(testSchemeDetail)

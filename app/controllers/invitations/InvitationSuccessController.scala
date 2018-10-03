@@ -17,57 +17,59 @@
 package controllers.invitations
 
 import config.FrontendAppConfig
+import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import identifiers.SchemeDetailId
-import identifiers.invitations.PsaNameId
+import identifiers.invitations.{InvitationSuccessId, PsaNameId}
 import javax.inject.Inject
+import models.{NormalMode, SchemeReferenceNumber}
 import org.joda.time.LocalDate
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import utils.Navigator
+import utils.{Navigator, UserAnswers}
 import utils.annotations.Invitation
 import views.html.invitations.invitation_success
 
 import scala.concurrent.Future
 
-class InvitationSuccessController @Inject() (
-  override val messagesApi: MessagesApi,
-  frontendAppConfig: FrontendAppConfig,
-  authenticate: AuthAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction,
-  @Invitation navigator: Navigator
-) extends FrontendController with I18nSupport with Retrievals {
+class InvitationSuccessController @Inject()(
+                                             override val messagesApi: MessagesApi,
+                                             frontendAppConfig: FrontendAppConfig,
+                                             authenticate: AuthAction,
+                                             getData: DataRetrievalAction,
+                                             requireData: DataRequiredAction,
+                                             userAnswersCacheConnector: UserAnswersCacheConnector,
+                                             @Invitation navigator: Navigator
+                                           ) extends FrontendController with I18nSupport with Retrievals {
 
-  def onPageLoad: Action[AnyContent] = (authenticate andThen getData andThen requireData) {
+  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
 
-      val continue = controllers.invitations.routes.InvitationSuccessController.onSubmit
+      val continue = controllers.invitations.routes.InvitationSuccessController.onSubmit(srn)
 
       (for {
         psaName <- request.userAnswers.get(PsaNameId)
         schemeDetail <- request.userAnswers.get(SchemeDetailId)
       } yield {
-        Ok(invitation_success(
-          frontendAppConfig,
-          psaName,
-          schemeDetail.schemeName,
-          LocalDate.now().plusDays(frontendAppConfig.invitationExpiryDays),
-          continue
-        ))
+        userAnswersCacheConnector.removeAll(request.externalId).map { _ =>
+          Ok(invitation_success(
+            frontendAppConfig,
+            psaName,
+            schemeDetail.schemeName,
+            LocalDate.now().plusDays(frontendAppConfig.invitationExpiryDays),
+            continue
+          ))
+        }
       }) getOrElse {
-        Redirect(controllers.routes.SessionExpiredController.onPageLoad())
+        Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
       }
-
   }
 
-  def onSubmit: Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
+  def onSubmit(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate).async {
     implicit request =>
-     SchemeDetailId.retrieve.right.map { schemeDetail =>
-        Future.successful(Redirect(controllers.routes.SchemeDetailsController.onPageLoad(schemeDetail.srn)))
-      }
+      Future.successful(Redirect(navigator.nextPage(InvitationSuccessId(srn), NormalMode, UserAnswers())))
   }
 
 }
