@@ -30,12 +30,12 @@ import utils.{Navigator, UserAnswers}
 import views.html.invitations.yourInvitations
 
 class YourInvitationsController @Inject()(appConfig: FrontendAppConfig,
-                                  override val messagesApi: MessagesApi,
-                                  authenticate: AuthAction,
-                                  invitationsCacheConnector: InvitationsCacheConnector,
-                                  userAnswersCacheConnector: UserAnswersCacheConnector,
-                                  @AcceptInvitation navigator: Navigator
-                                 ) extends FrontendController with I18nSupport {
+                                          override val messagesApi: MessagesApi,
+                                          authenticate: AuthAction,
+                                          invitationsCacheConnector: InvitationsCacheConnector,
+                                          userAnswersCacheConnector: UserAnswersCacheConnector,
+                                          @AcceptInvitation navigator: Navigator
+                                         ) extends FrontendController with I18nSupport {
 
 
   def onPageLoad(): Action[AnyContent] = (authenticate).async {
@@ -50,9 +50,10 @@ class YourInvitationsController @Inject()(appConfig: FrontendAppConfig,
 
   def onSelect(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate).async {
     implicit request =>
-      userAnswersCacheConnector.save(request.externalId, SchemeSrnId, srn.id).map { cacheMap =>
-        Redirect(navigator.nextPage(SchemeSrnId, NormalMode, UserAnswers(cacheMap)))
+      userAnswersCacheConnector.removeAll(request.externalId).flatMap { _ =>
+        userAnswersCacheConnector.save(request.externalId, SchemeSrnId, srn.id).map { cacheMap =>
+          Redirect(navigator.nextPage(SchemeSrnId, NormalMode, UserAnswers(cacheMap)))
+        }
       }
   }
-
 }

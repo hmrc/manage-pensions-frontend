@@ -19,6 +19,7 @@ package controllers.invitations
 import connectors.{FakeUserAnswersCacheConnector, InvitationsCacheConnector}
 import controllers.ControllerSpecBase
 import controllers.actions.{AuthAction, FakeAuthAction, FakeUnAuthorisedAction}
+import identifiers.SchemeSrnId
 import models.NormalMode
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -95,8 +96,9 @@ class YourInvitationsControllerSpec extends ControllerSpecBase with MockitoSugar
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(nextCall.url)
+      FakeUserAnswersCacheConnector.verifyAllDataRemoved()
+      FakeUserAnswersCacheConnector.verify(SchemeSrnId, srn)
     }
-
   }
 
 }
