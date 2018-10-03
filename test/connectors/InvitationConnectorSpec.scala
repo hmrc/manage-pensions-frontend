@@ -259,6 +259,7 @@ object InvitationConnectorSpec {
   private val expireAt = new DateTime("2018-05-05")
   private val declaration = true
   private val declarationDuties = true
+  private val expiryDate = new DateTime("2018-11-10")
 
   private val acceptedInvitation = AcceptedInvitation(
     pstr,

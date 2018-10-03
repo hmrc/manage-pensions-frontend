@@ -25,7 +25,8 @@ import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.BeforeAndAfter
 import org.scalatest.mockito.MockitoSugar
 import play.api.test.Helpers._
-import utils.MockDataHelper
+import testhelpers.CommonBuilders._
+
 
 import scala.concurrent.Future
 
@@ -78,7 +79,7 @@ class InviteControllerSpec extends SpecBase with MockitoSugar with BeforeAndAfte
   }
 }
 
-object InviteControllerSpec extends MockDataHelper {
+object InviteControllerSpec {
   private val email = "test@test.com"
 
   private val psaMinimalSubscription = MinimalPSA(email,false,None,Some(IndividualDetails("First",Some("Middle"),"Last")))

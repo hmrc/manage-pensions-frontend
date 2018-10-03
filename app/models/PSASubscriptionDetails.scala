@@ -18,6 +18,12 @@ package models
 
 import play.api.libs.json.{Json, Format}
 
+case class PreviousAddressDetails(isPreviousAddressLast12Month: Boolean, previousAddress: Option[Address])
+
+object PreviousAddressDetails {
+  implicit val formats: Format[PreviousAddressDetails] = Json.format[PreviousAddressDetails]
+}
+
 case class SubscriptionDetails(psaSubscriptionDetails:PsaSubscriptionDetails)
 
 object SubscriptionDetails {
