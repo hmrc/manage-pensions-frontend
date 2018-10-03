@@ -48,7 +48,6 @@ class AdviserDetailsController @Inject()(
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authenticate andThen getData andThen requiredData).async {
     implicit request =>
-
       val preparedForm = request.userAnswers.get(AdviserNameId) match {
         case None => form
         case Some(value) => form.fill(value)

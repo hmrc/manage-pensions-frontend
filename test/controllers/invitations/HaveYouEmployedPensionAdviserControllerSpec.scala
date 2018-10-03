@@ -51,14 +51,14 @@ class HaveYouEmployedPensionAdviserControllerSpec extends ControllerWithQuestion
   )
     new HaveYouEmployedPensionAdviserController(
       frontendAppConfig, fakeAuth, messagesApi, navigator,formProvider,
-      FakeUserAnswersCacheConnector, dataRetrievalAction, requiredDateAction).onPageLoad(NormalMode)
+      FakeUserAnswersCacheConnector, dataRetrievalAction, requiredDataAction).onPageLoad(NormalMode)
   }
 
   private def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
     new HaveYouEmployedPensionAdviserController(
       frontendAppConfig, fakeAuth, messagesApi, navigator, formProvider,
-      FakeUserAnswersCacheConnector, dataRetrievalAction, requiredDateAction).onSubmit(NormalMode)
+      FakeUserAnswersCacheConnector, dataRetrievalAction, requiredDataAction).onSubmit(NormalMode)
   }
 
  def viewAsString(form: Form[Boolean] = form) = haveYouEmployedPensionAdviser(frontendAppConfig, form, NormalMode)(fakeRequest, messages).toString
