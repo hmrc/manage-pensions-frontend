@@ -1,5 +1,5 @@
 
-GET        /invite                                      controllers.invitations.InviteController.onPageLoad()
+GET        /invite/:srn                                 controllers.invitations.InviteController.onPageLoad(srn: SchemeReferenceNumber)
 
 GET        /use-pension-adviser                         controllers.invitations.HaveYouEmployedPensionAdviserController.onPageLoad(mode: Mode = NormalMode)
 POST       /use-pension-adviser                         controllers.invitations.HaveYouEmployedPensionAdviserController.onSubmit(mode: Mode = NormalMode)

@@ -17,23 +17,36 @@
 package controllers.invitations
 
 import com.google.inject.{Inject, Singleton}
-import connectors.MinimalPsaConnector
+import connectors.{MinimalPsaConnector, SchemeDetailsConnector, UserAnswersCacheConnector}
 import controllers.actions.AuthAction
-import models.NormalMode
+import identifiers.SchemeDetailId
+import models.{MinimalSchemeDetail, NormalMode, SchemeReferenceNumber}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-@Singleton
-class InviteController@Inject()(authenticate: AuthAction,
-                                connector:MinimalPsaConnector) extends FrontendController {
+import scala.concurrent.Future
 
-  def onPageLoad: Action[AnyContent] = authenticate.async{
+@Singleton
+class InviteController @Inject()(authenticate: AuthAction,
+                                 schemeDetailsConnector: SchemeDetailsConnector,
+                                 userAnswersCacheConnector: UserAnswersCacheConnector,
+                                 minimalPsaConnector: MinimalPsaConnector) extends FrontendController {
+
+  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate.async {
     implicit request =>
-      connector.getMinimalPsaDetails(request.psaId.id) map { subscriptionDetails =>
-        if(subscriptionDetails.isPsaSuspended) {
-          Redirect(controllers.invitations.routes.YouCannotSendAnInviteController.onPageLoad())
+      minimalPsaConnector.getMinimalPsaDetails(request.psaId.id).flatMap { minimalPsaDetails =>
+        if (minimalPsaDetails.isPsaSuspended) {
+          Future.successful(Redirect(controllers.invitations.routes.YouCannotSendAnInviteController.onPageLoad()))
         } else {
-          Redirect(controllers.invitations.routes.PsaNameController.onPageLoad(NormalMode))
+          schemeDetailsConnector.getSchemeDetails("srn", srn).map{ scheme =>
+            userAnswersCacheConnector.save(request.externalId, SchemeDetailId, MinimalSchemeDetail(srn, scheme.schemeDetails.pstr, scheme.schemeDetails.name))
+          }
+          for {
+            scheme <- schemeDetailsConnector.getSchemeDetails("srn", srn)
+            _ <- userAnswersCacheConnector.save(request.externalId, SchemeDetailId, MinimalSchemeDetail(srn, scheme.schemeDetails.pstr, scheme.schemeDetails.name))
+          } yield {
+            Redirect(controllers.invitations.routes.PsaNameController.onPageLoad(NormalMode))
+          }
         }
       }
   }

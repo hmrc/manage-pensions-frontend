@@ -17,7 +17,7 @@
 package controllers.invitations
 
 import base.SpecBase
-import connectors.MinimalPsaConnector
+import connectors.{FakeUserAnswersCacheConnector, MinimalPsaConnector, SchemeDetailsConnector}
 import controllers.actions.{FakeAuthAction, FakeUnAuthorisedAction}
 import models._
 import org.mockito.Matchers.any
@@ -27,53 +27,56 @@ import org.scalatest.mockito.MockitoSugar
 import play.api.test.Helpers._
 import testhelpers.CommonBuilders._
 
-
 import scala.concurrent.Future
 
 class InviteControllerSpec extends SpecBase with MockitoSugar with BeforeAndAfter{
 
   import InviteControllerSpec._
 
-  val mockConnector = mock[MinimalPsaConnector]
-  val controller = new InviteController(mockAuthAction, mockConnector)
+  val srn = "test-srn"
+  val mockMinimalPsaConnector = mock[MinimalPsaConnector]
+  val mockSchemeDetailsConnector = mock[SchemeDetailsConnector]
+  val controller = new InviteController(mockAuthAction, mockSchemeDetailsConnector, FakeUserAnswersCacheConnector, mockMinimalPsaConnector)
 
-  before(reset(mockConnector))
+  before{
+    reset(mockMinimalPsaConnector)
+  }
 
-  "InviteController calling onPageLoad" must {
+  "InviteController calling onPageLoad(srn)" must {
 
     "return 303 if PSASuspension is false" in {
 
-      when(mockConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(psaMinimalSubscription))
+      when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(psaMinimalSubscription))
 
-      val result = controller.onPageLoad(fakeRequest)
+      val result = controller.onPageLoad(srn)(fakeRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.invitations.routes.PsaNameController.onPageLoad(NormalMode).url)
-      verify(mockConnector,  times(1)).getMinimalPsaDetails(any())(any(), any())
+      redirectLocation(result) mustBe Some(controllers.invitations.routes.PsaNameController.onPageLoad(srn)(NormalMode).url)
+      verify(mockMinimalPsaConnector,  times(1)).getMinimalPsaDetails(any())(any(), any())
 
     }
 
     "return 303 if PSASuspension is true" in {
 
-      when(mockConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(
+      when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(
         psaMinimalSubscription.copy(isPsaSuspended = true)))
 
-      val result = controller.onPageLoad(fakeRequest)
+      val result = controller.onPageLoad(srn)(fakeRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.invitations.routes.YouCannotSendAnInviteController.onPageLoad().url)
-      verify(mockConnector,  times(1)).getMinimalPsaDetails(any())(any(), any())
+      redirectLocation(result) mustBe Some(controllers.invitations.routes.YouCannotSendAnInviteController.onPageLoad(srn)().url)
+      verify(mockMinimalPsaConnector,  times(1)).getMinimalPsaDetails(any())(any(), any())
 
     }
 
     "return 303 if request is unauthorised" in {
 
-      val controller = new InviteController(FakeUnAuthorisedAction(), mockConnector)
-      val result = controller.onPageLoad(fakeRequest)
+      val controller = new InviteController(FakeUnAuthorisedAction(), mockSchemeDetailsConnector, FakeUserAnswersCacheConnector, mockMinimalPsaConnector)
+      val result = controller.onPageLoad(srn)(fakeRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad.url)
-      verify(mockConnector,  times(0)).getMinimalPsaDetails(any())(any(), any())
+      redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad(srn).url)
+      verify(mockMinimalPsaConnector,  times(0)).getMinimalPsaDetails(any())(any(), any())
 
     }
   }
