@@ -22,7 +22,7 @@ import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import config.FrontendAppConfig
 import controllers.Retrievals
-import identifiers.SchemeDetailId
+import identifiers.MinimalSchemeDetailId
 import play.api.mvc.{Action, AnyContent}
 import views.html.invitations.invitationAccepted
 
@@ -37,7 +37,7 @@ class InvitationAcceptedController @Inject()(frontendAppConfig: FrontendAppConfi
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
-      SchemeDetailId.retrieve.right.map{
+      MinimalSchemeDetailId.retrieve.right.map{
         schemeDetails =>
           Future.successful(Ok(invitationAccepted(
             frontendAppConfig,

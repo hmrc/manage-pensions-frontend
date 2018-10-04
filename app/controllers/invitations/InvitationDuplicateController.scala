@@ -19,8 +19,8 @@ package controllers.invitations
 import config.FrontendAppConfig
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
-import identifiers.SchemeDetailId
-import identifiers.invitations.PsaNameId
+import identifiers.MinimalSchemeDetailId
+import identifiers.invitations.InviteeNameId
 import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
@@ -44,7 +44,7 @@ class InvitationDuplicateController @Inject()(
 
   def onPageLoad(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
-      (PsaNameId and SchemeDetailId).retrieve.right.map {
+      (InviteeNameId and MinimalSchemeDetailId).retrieve.right.map {
         case name ~ schemeDetails =>
           Future.successful(
             Ok(invitation_duplicate(

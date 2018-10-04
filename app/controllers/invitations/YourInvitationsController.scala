@@ -38,15 +38,15 @@ class YourInvitationsController @Inject()(appConfig: FrontendAppConfig,
                                  ) extends FrontendController with I18nSupport {
 
 
-  def onPageLoad(): Action[AnyContent] = (authenticate).async {
+  def onPageLoad(): Action[AnyContent] = authenticate.async {
     implicit request =>
-      invitationsCacheConnector.getForInvitee(request.psaId.id).map {
+      invitationsCacheConnector.getForInvitee(request.psaId).map {
         case Nil => Redirect(controllers.routes.SessionExpiredController.onPageLoad())
         case invitationsList => Ok(yourInvitations(appConfig, invitationsList))
       }
   }
 
-  def onSubmit(srn: String): Action[AnyContent] = (authenticate).async {
+  def onSubmit(srn: String): Action[AnyContent] = authenticate.async {
     implicit request =>
       userAnswersCacheConnector.save(request.externalId, SchemeSrnId, srn).map { cacheMap =>
         Redirect(navigator.nextPage(SchemeSrnId, NormalMode, UserAnswers(cacheMap)))

@@ -44,15 +44,13 @@ class CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours 
 
   when(mockInvitationConnector.invite(any())(any(), any())).thenReturn(Future.successful(201))
 
-  private lazy val continue: Call = controllers.invitations.routes.InvitationSuccessController.onSubmit(testSrn)
-
   private val userAnswer = UserAnswers()
     .minimalSchemeDetails(testSchemeDetail)
     .dataRetrievalAction
 
   private val userAnswerUpdated = UserAnswers()
     .minimalSchemeDetails(testSchemeDetail)
-    .inviteeId("test-invite-id")
+    .inviteeId("A7654321")
     .inviteeName("test-invite-name")
     .dataRetrievalAction
 
