@@ -16,11 +16,11 @@
 
 package utils.navigators
 
-import javax.inject.{Inject, Singleton}
 import connectors.UserAnswersCacheConnector
 import controllers.invitations.routes._
 import controllers.routes._
 import identifiers.invitations._
+import javax.inject.{Inject, Singleton}
 import models.NormalMode
 import utils.Navigator
 
