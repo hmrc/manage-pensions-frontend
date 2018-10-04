@@ -38,14 +38,11 @@ class InviteController @Inject()(authenticate: AuthAction,
         if (minimalPsaDetails.isPsaSuspended) {
           Future.successful(Redirect(controllers.invitations.routes.YouCannotSendAnInviteController.onPageLoad()))
         } else {
-          schemeDetailsConnector.getSchemeDetails("srn", srn).map{ scheme =>
-            userAnswersCacheConnector.save(request.externalId, SchemeDetailId, MinimalSchemeDetail(srn, scheme.schemeDetails.pstr, scheme.schemeDetails.name))
-          }
-          for {
-            scheme <- schemeDetailsConnector.getSchemeDetails("srn", srn)
-            _ <- userAnswersCacheConnector.save(request.externalId, SchemeDetailId, MinimalSchemeDetail(srn, scheme.schemeDetails.pstr, scheme.schemeDetails.name))
-          } yield {
-            Redirect(controllers.invitations.routes.PsaNameController.onPageLoad(NormalMode))
+          schemeDetailsConnector.getSchemeDetails("srn", srn).flatMap { scheme =>
+            val minimalSchemeDetail = MinimalSchemeDetail(srn, scheme.schemeDetails.pstr, scheme.schemeDetails.name)
+            userAnswersCacheConnector.save(request.externalId, SchemeDetailId, minimalSchemeDetail).map { _ =>
+              Redirect(controllers.invitations.routes.PsaNameController.onPageLoad(NormalMode))
+            }
           }
         }
       }
