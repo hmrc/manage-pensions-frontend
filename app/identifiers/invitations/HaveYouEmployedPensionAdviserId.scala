@@ -17,7 +17,25 @@
 package identifiers.invitations
 
 import identifiers.TypedIdentifier
+import play.api.libs.json.JsResult
+import utils.UserAnswers
 
 object HaveYouEmployedPensionAdviserId extends TypedIdentifier[Boolean] {
   override def toString: String = "haveYouEmployedPensionAdviser"
+
+  override def cleanup(value: Option[Boolean], userAnswers: UserAnswers): JsResult[UserAnswers] = {
+    value match {
+      case Some(false) =>
+        userAnswers.remove(AdviserNameId).flatMap(
+          _.remove(AdviserEmailId).flatMap(
+            _.remove(AdviserAddressPostCodeLookupId).flatMap(
+              _.remove(AdviserAddressListId).flatMap(
+                _.remove(AdviserAddressId)
+              )
+            )
+          )
+        )
+      case _ => super.cleanup(value, userAnswers)
+    }
+  }
 }
