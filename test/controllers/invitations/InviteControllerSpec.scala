@@ -19,7 +19,7 @@ package controllers.invitations
 import base.SpecBase
 import connectors.{FakeUserAnswersCacheConnector, MinimalPsaConnector, SchemeDetailsConnector}
 import controllers.actions.{FakeAuthAction, FakeUnAuthorisedAction}
-import identifiers.SchemeDetailId
+import identifiers.MinimalSchemeDetailId
 import models._
 import org.scalatest.mockito.MockitoSugar
 import play.api.test.Helpers._
@@ -55,7 +55,7 @@ class InviteControllerSpec extends SpecBase with MockitoSugar {
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.invitations.routes.YouCannotSendAnInviteController.onPageLoad().url)
 
-      FakeUserAnswersCacheConnector.verifyNot(SchemeDetailId)
+      FakeUserAnswersCacheConnector.verifyNot(MinimalSchemeDetailId)
     }
 
     "save minimal scheme details and then redirect to psa name page if PSASuspension is false" in {
@@ -64,7 +64,7 @@ class InviteControllerSpec extends SpecBase with MockitoSugar {
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.invitations.routes.PsaNameController.onPageLoad(NormalMode).url)
 
-      FakeUserAnswersCacheConnector.verify(SchemeDetailId, MinimalSchemeDetail(srn, Some(pstr), schemeName))
+      FakeUserAnswersCacheConnector.verify(MinimalSchemeDetailId, MinimalSchemeDetail(srn, Some(pstr), schemeName))
     }
 
     "redirect to unauthorised page if user is not authenticated" in {

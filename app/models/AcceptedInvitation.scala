@@ -17,11 +17,12 @@
 package models
 
 import play.api.libs.json.{Format, Json}
+import uk.gov.hmrc.domain.PsaId
 
 case class AcceptedInvitation(
                                pstr: String,
-                               inviteePsaId: String,
-                               inviterPsaId: String,
+                               inviteePsaId: PsaId,
+                               inviterPsaId: PsaId,
                                declaration: Boolean,
                                declarationDuties: Boolean,
                                pensionAdviserDetail: Option[PensionAdviserDetail]

@@ -19,7 +19,7 @@
 @import uk.gov.hmrc.play.views.html._
 @import viewmodels.{Section, AnswerSection, RepeaterAnswerSection}
 
-@(appConfig: FrontendAppConfig, answerSections: Seq[Section], secondaryHeader: Option[String], postUrl: Call, guidance:Option[String], guidanceData:Option[String])(implicit request: Request[_], messages: Messages)
+@(appConfig: FrontendAppConfig, answerSections: Seq[Section], secondaryHeader: Option[String], postUrl: Call, guidance:Option[String] = None, guidanceData:Option[String] = None)(implicit request: Request[_], messages: Messages)
 
     @main_template(
         title = messages("checkYourAnswers.title"),

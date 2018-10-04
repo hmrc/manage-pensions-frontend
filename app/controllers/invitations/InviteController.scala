@@ -19,7 +19,7 @@ package controllers.invitations
 import com.google.inject.{Inject, Singleton}
 import connectors.{MinimalPsaConnector, SchemeDetailsConnector, UserAnswersCacheConnector}
 import controllers.actions.AuthAction
-import identifiers.SchemeDetailId
+import identifiers.MinimalSchemeDetailId
 import models.{MinimalSchemeDetail, NormalMode, SchemeReferenceNumber}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
@@ -40,7 +40,7 @@ class InviteController @Inject()(authenticate: AuthAction,
         } else {
           schemeDetailsConnector.getSchemeDetails("srn", srn).flatMap { scheme =>
             val minimalSchemeDetail = MinimalSchemeDetail(srn, scheme.schemeDetails.pstr, scheme.schemeDetails.name)
-            userAnswersCacheConnector.save(request.externalId, SchemeDetailId, minimalSchemeDetail).map { _ =>
+            userAnswersCacheConnector.save(request.externalId, MinimalSchemeDetailId, minimalSchemeDetail).map { _ =>
               Redirect(controllers.invitations.routes.PsaNameController.onPageLoad(NormalMode))
             }
           }
