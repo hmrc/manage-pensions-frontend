@@ -19,7 +19,7 @@ package utils.navigators
 import base.SpecBase
 import connectors.FakeUserAnswersCacheConnector
 import identifiers.Identifier
-import identifiers.invitations.{CheckYourAnswersId, InvitationSuccessId, PSAId, PsaNameId}
+import identifiers.invitations._
 import models.NormalMode
 import models.requests.IdentifiedRequest
 import org.scalatest.OptionValues
@@ -36,9 +36,9 @@ class InvitationNavigatorSpec extends SpecBase with NavigatorBehaviour {
   val navigator = new InvitationNavigator(FakeUserAnswersCacheConnector)
 
   def routes(): TableFor6[Identifier, UserAnswers, Call, Boolean, Option[Call], Boolean] = Table(
-    ("Id",                          "User Answers",     "Next Page(NormalMode)",  "Save(NormalMode)",     "Next Page (CheckMode)",    "Save(CheckMode"),
-    (PsaNameId,                       emptyAnswers,     psaIdPage,                  false,                Some(checkYourAnswer),          false),
-    (PSAId,                           emptyAnswers,     checkYourAnswer,            false,                Some(checkYourAnswer),          false),
+    ("Id", "User Answers", "Next Page (NormalMode)", "Save(NormalMode)", "Next Page (CheckMode)", "Save(CheckMode"),
+    (InviteeNameId, emptyAnswers, psaIdPage, false, Some(checkYourAnswer), false),
+    (InviteePSAId, emptyAnswers, checkYourAnswer, false, Some(checkYourAnswer), false),
     (CheckYourAnswersId(testSrn),     emptyAnswers,     invitationSuccess,          false,                None,                           false),
     (InvitationSuccessId(testSrn),    emptyAnswers,     schemeDetails,              false,                None,                           false)
   )

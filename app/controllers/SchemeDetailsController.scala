@@ -19,7 +19,7 @@ package controllers
 import config.FrontendAppConfig
 import connectors.{ListOfSchemesConnector, SchemeDetailsConnector, UserAnswersCacheConnector}
 import controllers.actions._
-import identifiers.SchemeDetailId
+import identifiers.MinimalSchemeDetailId
 import javax.inject.Inject
 import models._
 import org.joda.time.LocalDate
@@ -46,7 +46,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
           val schemeDetail = scheme.schemeDetails
           val minimalSchemeDetails = MinimalSchemeDetail(srn, schemeDetail.pstr, schemeDetail.name)
 
-          userAnswersCacheConnector.save(request.externalId, SchemeDetailId, minimalSchemeDetails).map { _ =>
+          userAnswersCacheConnector.save(request.externalId, MinimalSchemeDetailId, minimalSchemeDetails).map { _ =>
 
             val isSchemeOpen = schemeDetail.status.equalsIgnoreCase("open")
 

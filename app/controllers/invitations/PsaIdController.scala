@@ -22,7 +22,7 @@ import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
 import controllers.actions._
 import forms.invitations.PsaIdFromProvider
-import identifiers.invitations.{PSAId, PsaNameId}
+import identifiers.invitations.{InviteePSAId, InviteeNameId}
 import models.Mode
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -49,9 +49,9 @@ class PsaIdController @Inject()(appConfig: FrontendAppConfig,
   def onPageLoad(mode: Mode): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
 
-      PsaNameId.retrieve.right.map {
+      InviteeNameId.retrieve.right.map {
         psaName =>
-          val value = request.userAnswers.get(PSAId)
+          val value = request.userAnswers.get(InviteePSAId)
           val preparedForm = value.fold(form)(form.fill)
 
           Future.successful(Ok(psaId(appConfig, preparedForm, psaName, mode)))
@@ -60,20 +60,18 @@ class PsaIdController @Inject()(appConfig: FrontendAppConfig,
 
   def onSubmit(mode: Mode): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
-
-      PsaNameId.retrieve.right.map {
-        psaName =>
-
           form.bindFromRequest().fold(
             (formWithErrors: Form[_]) =>
-              Future.successful(BadRequest(psaId(appConfig, formWithErrors, psaName, mode))),
-
-            (value) =>
-              dataCacheConnector.save(request.externalId, PSAId, value).map(
+              InviteeNameId.retrieve.right.map {
+                psaName =>
+                  Future.successful(BadRequest(psaId(appConfig, formWithErrors, psaName, mode)))
+              },
+            value =>
+              dataCacheConnector.save(request.externalId, InviteePSAId, value).map(
                 cacheMap =>
-                  Redirect(navigator.nextPage(PSAId, mode, UserAnswers(cacheMap)))
+                  Redirect(navigator.nextPage(InviteePSAId, mode, UserAnswers(cacheMap)))
               )
           )
-      }
+
   }
 }

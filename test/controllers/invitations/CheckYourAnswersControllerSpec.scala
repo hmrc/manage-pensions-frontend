@@ -17,7 +17,7 @@
 package controllers.invitations
 
 import connectors.InvitationConnector
-import controllers.actions.{FakeAuthAction, AuthAction, DataRetrievalAction}
+import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction}
 import controllers.behaviours.ControllerWithNormalPageBehaviours
 import models.MinimalSchemeDetail
 import org.mockito.Matchers.any
@@ -26,6 +26,7 @@ import org.scalatest.mockito.MockitoSugar
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import utils.countryOptions.CountryOptions
 import utils.{CheckYourAnswersFactory, UserAnswers}
 import viewmodels.AnswerSection
 import views.html.check_your_answers
@@ -43,19 +44,18 @@ class CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours 
 
   when(mockInvitationConnector.invite(any())(any(), any())).thenReturn(Future.successful(CREATED))
 
-  private lazy val continue: Call = controllers.invitations.routes.InvitationSuccessController.onSubmit(testSrn)
-
   private val userAnswer = UserAnswers()
     .minimalSchemeDetails(testSchemeDetail)
     .dataRetrievalAction
 
   private val userAnswerUpdated = UserAnswers()
     .minimalSchemeDetails(testSchemeDetail)
-    .inviteeId("test-invite-id")
+    .inviteeId("A7654321")
     .inviteeName("test-invite-name")
     .dataRetrievalAction
 
-  private val checkYourAnswersFactory = new CheckYourAnswersFactory()
+  private val countryOptions = new CountryOptions(environment, frontendAppConfig)
+  private val checkYourAnswersFactory = new CheckYourAnswersFactory(countryOptions)
 
   def call: Call = controllers.invitations.routes.CheckYourAnswersController.onSubmit()
 
