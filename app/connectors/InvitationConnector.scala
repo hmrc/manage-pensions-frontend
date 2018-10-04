@@ -24,21 +24,22 @@ import play.api.http.Status._
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import utils.HttpResponseHelper
+
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Failure
 
 @ImplementedBy(classOf[InvitationConnectorImpl])
 trait InvitationConnector {
 
-  def invite(invitation: Invitation)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Int]
+  def invite(invitation: Invitation)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit]
 
   def acceptInvite(acceptedInvitation: AcceptedInvitation)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit]
 
 }
 
 abstract class InvitationException extends Exception
-class PsaIdInvalidException extends InvitationException
-class PsaIdNotFoundException extends InvitationException
+class NameMatchingFailedException extends InvitationException
+class PsaAlreadyInvitedException extends InvitationException
 
 abstract class AcceptInvitationException extends Exception
 class PstrInvalidException extends AcceptInvitationException
@@ -49,14 +50,16 @@ class ActiveRelationshipExistsException extends AcceptInvitationException
 
 class InvitationConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) extends InvitationConnector with HttpResponseHelper {
 
-  override def invite(invitation: Invitation)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Int] = {
+  override def invite(invitation: Invitation)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
+    val nameMatchingFailedMessage = "The name and PSA Id do not match"
+    val psaAlreadyInvitedMessage = "The invitation is to a PSA already associated with this scheme"
 
     http.POST[Invitation, HttpResponse](config.inviteUrl, invitation) map {
       response =>
         response.status match {
-          case CREATED => response.status
-          case BAD_REQUEST if response.body.contains("INVALID_PSAID") => throw new PsaIdInvalidException()
-          case NOT_FOUND => throw new PsaIdNotFoundException()
+          case CREATED => ()
+          case NOT_FOUND if response.body.contains(nameMatchingFailedMessage) => throw new NameMatchingFailedException()
+          case FORBIDDEN if response.body.contains(psaAlreadyInvitedMessage) => throw new PsaAlreadyInvitedException()
           case _ => handleErrorResponse("POST", config.inviteUrl)(response)
         }
     } andThen {

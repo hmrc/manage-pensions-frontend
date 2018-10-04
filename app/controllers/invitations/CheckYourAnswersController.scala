@@ -18,13 +18,14 @@ package controllers.invitations
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
-import connectors.InvitationConnector
+import connectors.{InvitationConnector, NameMatchingFailedException, PsaAlreadyInvitedException}
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import identifiers.MinimalSchemeDetailId
 import identifiers.invitations.{CheckYourAnswersId, InviteeNameId, InviteePSAId}
 import models.{NormalMode, SchemeReferenceNumber}
 import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.domain.PsaId
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.annotations.Invitation
@@ -41,9 +42,9 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
                                            getData: DataRetrievalAction,
                                            requireData: DataRequiredAction,
                                            checkYourAnswersFactory: CheckYourAnswersFactory,
-                                           invitationConnector: InvitationConnector) extends FrontendController  with Retrievals with I18nSupport {
+                                           invitationConnector: InvitationConnector) extends FrontendController with Retrievals with I18nSupport {
 
-  def onPageLoad() = (authenticate andThen getData andThen requireData).async {
+  def onPageLoad(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
 
       MinimalSchemeDetailId.retrieve.right.map { schemeDetail =>
@@ -57,32 +58,35 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
       }
   }
 
-  def onSubmit() = (authenticate andThen getData andThen requireData).async {
+  def onSubmit(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
       (MinimalSchemeDetailId and InviteeNameId and InviteePSAId).retrieve.right.map {
         case schemeDetails ~ inviteeName ~ inviteePsaId if schemeDetails.pstr.isDefined =>
-        val invitation = models.Invitation(
-          SchemeReferenceNumber(schemeDetails.srn),
-          schemeDetails.pstr.get,
-          schemeDetails.schemeName,
-          request.psaId,
-          PsaId(inviteePsaId),
-          inviteeName,
-          getExpireAt
-        )
+          val invitation = models.Invitation(
+            SchemeReferenceNumber(schemeDetails.srn),
+            schemeDetails.pstr.get,
+            schemeDetails.schemeName,
+            request.psaId,
+            PsaId(inviteePsaId),
+            inviteeName,
+            getExpireAt
+          )
 
-        invitationConnector.invite(invitation).map{
-          case CREATED =>
+          invitationConnector.invite(invitation).map { _ =>
             Redirect(navigator.nextPage(CheckYourAnswersId(schemeDetails.srn), NormalMode, request.userAnswers))
-          case _ =>
-            Redirect(controllers.routes.SessionExpiredController.onPageLoad())
-        }
+          }.recoverWith {
+            case _: NameMatchingFailedException =>
+              Future.successful(Redirect(controllers.invitations.routes.IncorrectPsaDetailsController.onPageLoad()))
+            case _: PsaAlreadyInvitedException =>
+              Future.successful(Redirect(controllers.invitations.routes.InvitationDuplicateController.onPageLoad()))
+            case _ =>
+              Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+          }
         case _ =>
           Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
       }
   }
 
   private def getExpireAt = DateHelper.dateTimeFromNowToMidnightAfterDays(appConfig.invitationExpiryDays)
-
 
 }
