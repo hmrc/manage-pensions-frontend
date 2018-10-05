@@ -22,6 +22,7 @@ import models.Invitation
 import play.api.http.Status._
 import play.api.libs.json._
 import play.api.libs.ws.{WSClient, WSRequest}
+import uk.gov.hmrc.domain.PsaId
 import uk.gov.hmrc.http.{HeaderCarrier, HttpException}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -29,13 +30,13 @@ import scala.concurrent.{ExecutionContext, Future}
 trait InvitationsCacheConnector {
   def add(invitation: Invitation)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[Unit]
 
-  def remove(pstr: String, inviteePsaId: String)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[Unit]
+  def remove(pstr: String, inviteePsaId: PsaId)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[Unit]
 
-  def get(pstr: String, inviteePsaId: String)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[List[Invitation]]
+  def get(pstr: String, inviteePsaId: PsaId)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[List[Invitation]]
 
   def getForScheme(pstr: String)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[List[Invitation]]
 
-  def getForInvitee(inviteePsaId: String)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[List[Invitation]]
+  def getForInvitee(inviteePsaId: PsaId)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[List[Invitation]]
 }
 
 class InvitationsCacheConnectorImpl @Inject()(
@@ -70,12 +71,12 @@ class InvitationsCacheConnectorImpl @Inject()(
     }
   }
 
-  def remove(pstr: String, inviteePsaId: String)(implicit
+  def remove(pstr: String, inviteePsaId: PsaId)(implicit
                                                  ec: ExecutionContext,
                                                  hc: HeaderCarrier
   ): Future[Unit] = {
     http.url(removeUrl)
-      .withHeaders(hc.withExtraHeaders("content-type" -> "application/json", "pstr" -> pstr, "inviteePsaId" -> inviteePsaId).headers: _*)
+      .withHeaders(hc.withExtraHeaders("content-type" -> "application/json", "pstr" -> pstr, "inviteePsaId" -> inviteePsaId.id).headers: _*)
       .delete().flatMap {
       response =>
         response.status match {
@@ -106,13 +107,13 @@ class InvitationsCacheConnectorImpl @Inject()(
       }
   }
 
-  def get(pstr: String, inviteePsaId: String)(implicit
+  def get(pstr: String, inviteePsaId: PsaId)(implicit
                                               ec: ExecutionContext,
                                               hc: HeaderCarrier
   ): Future[List[Invitation]] =
     getCommon(
       http.url(getUrl)
-        .withHeaders(hc.withExtraHeaders("pstr" -> pstr, "inviteePsaId" -> inviteePsaId).headers: _*)
+        .withHeaders(hc.withExtraHeaders("pstr" -> pstr, "inviteePsaId" -> inviteePsaId.id).headers: _*)
     )
 
   def getForScheme(pstr: String)(implicit
@@ -124,12 +125,12 @@ class InvitationsCacheConnectorImpl @Inject()(
         .withHeaders(hc.withExtraHeaders("pstr" -> pstr).headers: _*)
     )
 
-  def getForInvitee(inviteePsaId: String)(implicit
+  def getForInvitee(inviteePsaId: PsaId)(implicit
                                           ec: ExecutionContext,
                                           hc: HeaderCarrier
   ): Future[List[Invitation]] =
     getCommon(
       http.url(getForInviteeUrl)
-        .withHeaders(hc.withExtraHeaders("inviteePsaId" -> inviteePsaId).headers: _*)
+        .withHeaders(hc.withExtraHeaders("inviteePsaId" -> inviteePsaId.id).headers: _*)
     )
 }

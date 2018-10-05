@@ -18,8 +18,8 @@ package controllers.invitations
 
 import config.FrontendAppConfig
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
-import identifiers.SchemeDetailId
-import identifiers.invitations.{InvitationSuccessId, PsaNameId}
+import identifiers.MinimalSchemeDetailId
+import identifiers.invitations.{InvitationSuccessId, InviteeNameId}
 import javax.inject.Inject
 import models.{NormalMode, SchemeReferenceNumber}
 import org.joda.time.LocalDate
@@ -45,8 +45,8 @@ class InvitationSuccessController @Inject() (
       val continue = controllers.invitations.routes.InvitationSuccessController.onSubmit(srn)
 
       (for {
-        psaName <- request.userAnswers.get(PsaNameId)
-        schemeDetail <- request.userAnswers.get(SchemeDetailId)
+        psaName <- request.userAnswers.get(InviteeNameId)
+        schemeDetail <- request.userAnswers.get(MinimalSchemeDetailId)
       } yield {
         Ok(invitation_success(
           frontendAppConfig,

@@ -19,7 +19,7 @@ package controllers.invitations
 import config.FrontendAppConfig
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
-import identifiers.invitations.PsaNameId
+import identifiers.invitations.InviteeNameId
 import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
@@ -37,7 +37,7 @@ class IncorrectPsaDetailsController @Inject()(val appConfig: FrontendAppConfig,
 
   def onPageLoad(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
-      PsaNameId.retrieve.right.map{ psaName =>
+      InviteeNameId.retrieve.right.map{ psaName =>
         Future.successful(Ok(incorrectPsaDetails(appConfig, psaName)))
       }
   }

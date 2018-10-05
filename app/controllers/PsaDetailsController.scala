@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-package models
+package controllers
 
-import org.joda.time.DateTime
-import play.api.libs.json.{Format, Json}
-import uk.gov.hmrc.domain.PsaId
+import com.google.inject.Inject
+import controllers.actions.AuthAction
+import play.api.mvc.{Action, AnyContent}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-case class Invitation(srn: SchemeReferenceNumber,
-                      pstr: String,
-                      schemeName: String,
-                      inviterPsaId: PsaId,
-                      inviteePsaId: PsaId,
-                      inviteeName: String,
-                      expireAt: DateTime
-                     )
+import scala.concurrent.Future
 
-object Invitation {
-  implicit val formats: Format[Invitation] = Json.format
+class PsaDetailsController @Inject()(authenticate: AuthAction) extends FrontendController {
+
+  def onPageLoad: Action[AnyContent] = authenticate.async {
+    Future.successful(Ok)
+  }
+
 }

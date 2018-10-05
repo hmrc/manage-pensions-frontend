@@ -76,7 +76,7 @@ class DeclarationController @Inject()(
         value => {
           PSTRId.retrieve.right.map { pstr =>
             userAnswersCacheConnector.save(request.externalId, DeclarationId, value).flatMap { cacheMap =>
-              invitationsCacheConnector.remove(pstr, request.psaId.id).map { _ =>
+              invitationsCacheConnector.remove(pstr, request.psaId).map { _ =>
                 Redirect(navigator.nextPage(DeclarationId, NormalMode, UserAnswers(cacheMap)))
               }
             }

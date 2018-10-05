@@ -16,31 +16,34 @@
 
 package testhelpers
 
-import models.Invitation
+import models.{Invitation, SchemeReferenceNumber}
 import org.joda.time.DateTime
+import uk.gov.hmrc.domain.PsaId
 
 object InvitationBuilder {
   val unit:Unit = ()
-  val srn = "test-srn"
+  val srn = SchemeReferenceNumber("S0987654321")
   val pstr1 = "S12345"
-  val inviteePsaId1 = "P12345"
+  val inviteePsaId1 = PsaId("P1234567")
   val invitation1:Invitation = {
     val schemeName1 = "Test scheme1 name"
-    val inviterPsaId1 = "I12345"
+    val inviterPsaId1 = PsaId("I1234567")
     val inviteeName1 = "Test Invitee1 Name"
     val expiryDate1 = new DateTime("2018-11-10")
-    Invitation(srn = srn, pstr = pstr1, schemeName = schemeName1, inviterPsaId = inviterPsaId1,
-      inviteePsaId = inviteePsaId1, inviteeName = inviteeName1, expireAt = expiryDate1)
+
+    Invitation(srn, pstr1, schemeName1, inviterPsaId1, inviteePsaId1, inviteeName1, expiryDate1)
+
   }
   val invitation2:Invitation = {
     val pstr2 = "D1234"
     val schemeName2 = "Test scheme2 name"
-    val inviterPsaId2 = "Q12345"
-    val inviteePsaId2 = "T12345"
+    val inviterPsaId2 = PsaId("Q1234567")
+    val inviteePsaId2 = PsaId("T1234567")
     val inviteeName2 = "Test Invitee2 Name"
     val expiryDate2 = new DateTime("2018-11-11")
-    Invitation(srn = srn, pstr = pstr2, schemeName = schemeName2, inviterPsaId = inviterPsaId2,
-      inviteePsaId = inviteePsaId2, inviteeName = inviteeName2,  expireAt = expiryDate2)
+
+    Invitation(srn, pstr2, schemeName2, inviterPsaId2, inviteePsaId2, inviteeName2, expiryDate2)
+
   }
   val invitationList = List(invitation1, invitation2)
 }
