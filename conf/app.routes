@@ -26,3 +26,4 @@ GET        /overview/can-scheme-be-registered           controllers.SchemesOverv
 
 GET        /scheme-details/:srn                         controllers.SchemeDetailsController.onPageLoad(srn: String)
 
+GET        /psa-view                                    controllers.PsaDetailsController.onPageLoad()
