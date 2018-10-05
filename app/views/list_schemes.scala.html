@@ -46,10 +46,6 @@
         )
     }
 
-    @Link.toInternalPage(
-        id=Some("return-to-overview"),
-        url=routes.SchemesOverviewController.onPageLoad().url,
-        value=Some(messages("messages__listSchemes__return_to_overview"))
-    ).toHtml
+    <p class="govuk-margin-top-7"><a id="return-to-overview" href="@routes.SchemesOverviewController.onPageLoad().url">@messages("messages__listSchemes__return_to_overview")</a></p>
 
 }
