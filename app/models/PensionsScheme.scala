@@ -16,7 +16,7 @@
 
 package models
 
-import play.api.libs.json.{Format, Json, OFormat}
+import play.api.libs.json._
 
 case class Name(firstName: Option[String], middleName: Option[String], lastName: Option[String])
 
@@ -46,7 +46,81 @@ object SchemeMemberNumbers {
 case class InsuranceCompany(name: Option[String], policyNumber: Option[String], address: Option[CorrespondenceAddress])
 
 object InsuranceCompany {
-  implicit val formats: Format[InsuranceCompany] = Json.format[InsuranceCompany]
+  implicit val formats: OFormat[InsuranceCompany] = Json.format[InsuranceCompany]
+}
+
+case class PreviousAddressInfo(isPreviousAddressLast12Month: Boolean,
+                               previousAddress: Option[CorrespondenceAddress] = None)
+
+object PreviousAddressInfo {
+  implicit val formats: OFormat[PreviousAddressInfo] = Json.format[PreviousAddressInfo]
+}
+
+case class PersonalInfo(name: IndividualName, dateOfBirth: String)
+
+object PersonalInfo {
+  implicit val formats: OFormat[PersonalInfo] = Json.format[PersonalInfo]
+}
+
+case class IndividualName(firstName: String, middleName: Option[String], lastName: String)
+
+object IndividualName {
+  implicit val formats : OFormat[IndividualName] = Json.format[IndividualName]
+}
+
+case class IndividualInfo(personalDetails: PersonalInfo,
+                             nino: Option[String],
+                             utr: Option[String],
+                             address: CorrespondenceAddress,
+                             contact: ContactDetails,
+                             previousAddress: PreviousAddressInfo)
+
+object IndividualInfo {
+  implicit val formats: OFormat[IndividualInfo] = Json.format[IndividualInfo]
+}
+
+case class PartnershipDetails(partnershipName: String,
+                              utr: Option[String],
+                              vatRegistration: Option[String],
+                              payeRef: Option[String],
+                              address: CorrespondenceAddress,
+                              contact: ContactDetails,
+                              previousAddress: PreviousAddressInfo,
+                              partnerDetails: Seq[IndividualInfo])
+
+object PartnershipDetails {
+  implicit val formats: OFormat[PartnershipDetails] = Json.format[PartnershipDetails]
+}
+
+case class CompanyDetails(organizationName: String,
+                          utr: Option[String],
+                          crn: Option[String],
+                          vatRegistration: Option[String],
+                          payeRef: Option[String],
+                          address: CorrespondenceAddress,
+                          contact: ContactDetails,
+                          previousAddress: Option[PreviousAddressInfo],
+                          directorsDetails: Seq[IndividualInfo])
+
+
+object CompanyDetails {
+  implicit val formats: OFormat[CompanyDetails] = Json.format[CompanyDetails]
+}
+
+case class EstablisherInfo(individual: Seq[IndividualInfo],
+                           company: Seq[CompanyDetails],
+                           partnership: Seq[PartnershipDetails])
+
+object EstablisherInfo {
+  implicit val formats: OFormat[EstablisherInfo] = Json.format[EstablisherInfo]
+}
+
+case class TrusteeInfo(individual: Seq[IndividualInfo],
+                       company: Seq[CompanyDetails],
+                       partnership: Seq[PartnershipDetails])
+
+object TrusteeInfo {
+  implicit val formats: OFormat[TrusteeInfo] = Json.format[TrusteeInfo]
 }
 
 case class SchemeDetails(srn: Option[String],
@@ -66,11 +140,14 @@ case class SchemeDetails(srn: Option[String],
                          insuranceCompany: Option[InsuranceCompany])
 
 object SchemeDetails {
-  implicit val formats: Format[SchemeDetails] = Json.format[SchemeDetails]
+  implicit val formats: OFormat[SchemeDetails] = Json.format[SchemeDetails]
 }
 
-case class PsaSchemeDetails(schemeDetails: SchemeDetails, psaDetails: Option[Seq[PsaDetails]])
+case class PsaSchemeDetails(schemeDetails: SchemeDetails,
+                            establisherDetails: Seq[EstablisherInfo],
+                            truesteeDetails: Seq[TrusteeInfo],
+                            psaDetails: Option[Seq[PsaDetails]])
 
 object PsaSchemeDetails {
-  implicit val formats: Format[PsaSchemeDetails] = Json.format[PsaSchemeDetails]
+  implicit val formats: OFormat[PsaSchemeDetails] = Json.format[PsaSchemeDetails]
 }
