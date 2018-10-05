@@ -17,6 +17,7 @@
 @import config.FrontendAppConfig
 @import models.SchemeDetail
 @import views.formatters.Date
+@import uk.gov.hmrc.urls.Link
 
 @(appConfig: FrontendAppConfig, schemes: List[SchemeDetail], invitationsReceived: Boolean)(implicit request: Request[_], messages: Messages)
 
@@ -44,4 +45,11 @@
             appConfig
         )
     }
+
+    @Link.toInternalPage(
+        id=Some("return-to-overview"),
+        url=routes.SchemesOverviewController.onPageLoad().url,
+        value=Some(messages("messages__listSchemes__return_to_overview"))
+    ).toHtml
+
 }

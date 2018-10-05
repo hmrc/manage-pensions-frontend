@@ -107,6 +107,10 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
       assertEqualsValue(actual, "#pstr-6 span:nth-child(1)", messages("PSTR-6"))
       assertEqualsValue(actual, "#pstr-7 span:nth-child(1)", messages("messages__listSchemes__pstr_not_assigned"))
     }
+
+    "display a link to return to overview page" in {
+      view(frontendAppConfig) must haveLink(controllers.routes.SchemesOverviewController.onPageLoad().url, "return-to-overview")
+    }
   }
 }
 
