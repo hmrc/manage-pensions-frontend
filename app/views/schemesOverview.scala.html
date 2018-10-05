@@ -30,8 +30,11 @@
     bodyClasses = None) {
 
     @name.map{ psaName =>
-        <p>@psaName</p>
+        <a id="psaLink" href="@controllers.routes.PsaDetailsController.onPageLoad()">
+            <p id="psaName">@psaName</p>
+        </a>
     }
+
     @components.heading(messages("messages__schemesOverview__heading"))
 
     <h2>@messages("messages__schemesOverview__manage__head")</h2>

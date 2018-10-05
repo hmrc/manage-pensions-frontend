@@ -31,7 +31,7 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
   val lastDate: String = LocalDate.now.toString
   val deleteDate: String = LocalDate.now.plusDays(frontendAppConfig.daysDataSaved).toString
 
-  def createView: (() => HtmlFormat.Appendable) = () =>
+  def createView: () => HtmlFormat.Appendable = () =>
     schemesOverview(frontendAppConfig, Some(schemeName), Some(lastDate), Some(deleteDate), Some("John Doe"))(fakeRequest, messages)
 
   def createFreshView: () => HtmlFormat.Appendable = () => schemesOverview(frontendAppConfig, None, None, None, None)(fakeRequest, messages)
@@ -52,7 +52,8 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
     )
 
     "have a name" in {
-      createView().toString() must include("John Doe")
+      createView must haveLink(controllers.routes.PsaDetailsController.onPageLoad().url, "psaLink")
+      createView must haveElementWithText("psaName", "John Doe")
     }
 
     "not display the name when there is no name" in {
@@ -61,7 +62,7 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
 
     "have link to view all schemes" in {
       Jsoup.parse(createView().toString()).select("a[id=view-schemes]") must
-        haveLink(controllers.routes.ListSchemesController.onPageLoad.url)
+        haveLink(controllers.routes.ListSchemesController.onPageLoad().url)
     }
 
     "have link to redirect to Pension Schemes Online service" in {
@@ -116,7 +117,7 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
 
     "have link to view all schemes" in {
       Jsoup.parse(createFreshView().toString()).select("a[id=view-schemes]") must
-        haveLink(controllers.routes.ListSchemesController.onPageLoad.url)
+        haveLink(controllers.routes.ListSchemesController.onPageLoad().url)
     }
 
     "have link to redirect to Pension Schemes Online service" in {
