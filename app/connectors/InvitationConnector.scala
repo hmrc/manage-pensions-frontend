@@ -83,7 +83,7 @@ class InvitationConnectorImpl @Inject()(http: HttpClient, config: FrontendAppCon
     http.POST[AcceptedInvitation, HttpResponse](config.acceptInvitationUrl, acceptedInvitation) map {
       response =>
         response.status match {
-          case OK => ()
+          case CREATED => ()
           case BAD_REQUEST => handleBadResponse(response.body)
           case CONFLICT if response.body.contains("ACTIVE_RELATIONSHIP_EXISTS") => throw new ActiveRelationshipExistsException
           case _ => handleErrorResponse("POST", config.acceptInvitationUrl)(response)

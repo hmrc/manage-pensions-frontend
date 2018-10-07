@@ -16,21 +16,20 @@
 
 package controllers.invitations
 
-import connectors.{FakeUserAnswersCacheConnector, InvitationsCacheConnector, SchemeDetailsConnector}
+import connectors.{FakeUserAnswersCacheConnector, InvitationConnector, InvitationsCacheConnector, SchemeDetailsConnector}
 import controllers.ControllerSpecBase
-import controllers.SchemeDetailsControllerSpec.mock
 import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
 import forms.invitations.DeclarationFormProvider
-import identifiers.invitations.{DeclarationId, IsMasterTrustId, PSTRId, SchemeNameId}
+import identifiers.invitations.{IsMasterTrustId, PSTRId, SchemeNameId}
+import org.mockito.Matchers.{eq => eqTo, _}
+import org.mockito.Mockito.{reset, times, verify, when}
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import play.api.data.Form
 import play.api.mvc.Call
 import play.api.test.Helpers._
+import testhelpers.{CommonBuilders, InvitationBuilder}
 import utils._
-import org.mockito.Matchers.{eq => eqTo, _}
-import org.mockito.Mockito.{reset, times, verify, when}
-import org.scalatest.BeforeAndAfterEach
-import testhelpers.CommonBuilders
 import views.html.invitations.declaration
 
 import scala.concurrent.Future
@@ -39,8 +38,9 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
 
   import DeclarationControllerSpec._
 
-  private val fakeSchemeDetailsConnector: SchemeDetailsConnector =  mock[SchemeDetailsConnector]
+  private val fakeSchemeDetailsConnector: SchemeDetailsConnector = mock[SchemeDetailsConnector]
   private val fakeInvitationCacheConnector = mock[InvitationsCacheConnector]
+  private val fakeInvitationConnector = mock[InvitationConnector]
 
   def controller(dataRetrievalAction: DataRetrievalAction = getEmptyData) = new DeclarationController(
     frontendAppConfig,
@@ -52,17 +52,17 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
     FakeUserAnswersCacheConnector,
     fakeSchemeDetailsConnector,
     fakeInvitationCacheConnector,
+    fakeInvitationConnector,
     new FakeNavigator(onwardRoute)
   )
 
   override def beforeEach(): Unit = {
     reset(fakeSchemeDetailsConnector)
     reset(fakeInvitationCacheConnector)
-    super.beforeEach()
+    reset(fakeInvitationConnector)
   }
 
   val schemeDetailsData = CommonBuilders.schemeDetailsWithPsaOnlyResponse
-
 
   private def viewAsString(form: Form[_] = form) = declaration(frontendAppConfig, hasAdviser, isMasterTrust, form)(fakeRequest, messages).toString
 
@@ -101,13 +101,25 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
 
     "on a POST" must {
 
-      "save the answer and redirect to next page when valid data is submitted" in {
-        when(fakeInvitationCacheConnector.remove(any(), any())(any(), any())).thenReturn(Future.successful(()))
+      "accept invitation and redirect to next page when valid data with adviser details is submitted" in {
+        when(fakeInvitationCacheConnector.get(eqTo(pstr), any())(any(), any())).thenReturn(Future.successful(InvitationBuilder.invitationList))
+        when(fakeInvitationCacheConnector.remove(eqTo(pstr), any())(any(), any())).thenReturn(Future.successful(()))
+        when(fakeInvitationConnector.acceptInvite(eqTo(InvitationBuilder.acceptedInvitation))(any(), any())).thenReturn(Future.successful(()))
+
         val result = controller(data).onSubmit()(fakeRequest.withFormUrlEncodedBody("agree" -> "agreed"))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).value mustBe onwardRoute.url
-        FakeUserAnswersCacheConnector.verify(DeclarationId, true)
-        verify(fakeInvitationCacheConnector, times(1)).remove(any(), any())(any(), any())
+        verify(fakeInvitationCacheConnector, times(1)).get(eqTo(pstr), any())(any(), any())
+        verify(fakeInvitationCacheConnector, times(1)).remove(eqTo(pstr), any())(any(), any())
+        verify(fakeInvitationConnector, times(1)).acceptInvite(eqTo(InvitationBuilder.acceptedInvitation))(any(), any())
+      }
+
+      "redirect to session expired page when there is no matching invitation" in {
+        when(fakeInvitationCacheConnector.get(eqTo(pstr), any())(any(), any())).thenReturn(Future.successful(Nil))
+
+        val result = controller(data).onSubmit()(fakeRequest.withFormUrlEncodedBody("agree" -> "agreed"))
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).value mustBe sessionExpired
       }
 
       "return Bad Request if invalid data is submitted" in {
@@ -124,15 +136,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
         redirectLocation(result).value mustBe sessionExpired
       }
 
-      "redirect to Session Expired page if there is no user answers for HaveYouEmployedPensionAdviser for an invalid request" in {
-        val data = new FakeDataRetrievalAction(Some(UserAnswers().srn(srn).json))
-        val result = controller(data).onSubmit()(fakeRequest)
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).value mustBe sessionExpired
-      }
-
-      "redirect to Session Expired page if there is no user answers for srn for an invalid request" in {
+      "redirect to Session Expired page if there is no user answers for pstr for an invalid request" in {
         val data = new FakeDataRetrievalAction(Some(UserAnswers().havePensionAdviser(hasAdviser).json))
         val result = controller(data).onSubmit()(fakeRequest)
 
@@ -147,15 +151,18 @@ object DeclarationControllerSpec {
   val hasAdviser = true
   val isMasterTrust = true
   val srn = "S9000000000"
-  val pstr = "00000000AA"
+  val pstr = "S12345"
 
   def onwardRoute = Call("GET", "/foo")
 
   val data = new FakeDataRetrievalAction(Some(UserAnswers().
     havePensionAdviser(hasAdviser).
+    adviserName(InvitationBuilder.pensionAdviser.name).
+    adviserEmail(InvitationBuilder.pensionAdviser.email).
     srn(srn).
     isMasterTrust(true).
-    pstr(pstr).json
+    pstr(pstr).
+    adviserAddress(InvitationBuilder.address).json
   ))
 
   val formProvider = new DeclarationFormProvider()

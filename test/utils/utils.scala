@@ -65,6 +65,14 @@ package object utils {
       answers.set(AdviserNameId)(name).asOpt.value
     }
 
+    def adviserAddress(address: Address): UserAnswers = {
+      answers.set(AdviserAddressId)(address).asOpt.value
+    }
+
+    def adviserEmail(email: String): UserAnswers = {
+      answers.set(AdviserEmailId)(email).asOpt.value
+    }
+
     def employedPensionAdviserId(isChecked: Boolean): UserAnswers = {
       answers.set(HaveYouEmployedPensionAdviserId)(isChecked).asOpt.value
     }
