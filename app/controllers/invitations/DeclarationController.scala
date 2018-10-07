@@ -28,7 +28,7 @@ import models._
 import models.requests.DataRequest
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, Result}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.Navigator
 import utils.annotations.AcceptInvitation
@@ -76,27 +76,27 @@ class DeclarationController @Inject()(
               Future.successful(BadRequest(declaration(appConfig, havePensionAdviser, isMasterTrust, formWithErrors)))
           },
         declaration => {
-          PSTRId.retrieve.right.map { pstr =>
-            acceptInviteAndRedirect(pstr, declaration)
+          (PSTRId and HaveYouEmployedPensionAdviserId).retrieve.right.map {
+            case pstr ~ havePensionAdviser =>
+              acceptInviteAndRedirect(pstr, havePensionAdviser, declaration)
           }
         }
       )
   }
 
-  private def acceptInviteAndRedirect(pstr: String, declaration: Boolean)(implicit request: DataRequest[AnyContent]) = {
+  private def acceptInviteAndRedirect(pstr: String, havePensionAdviser: Boolean, declaration: Boolean)
+                                     (implicit request: DataRequest[AnyContent]): Future[Result] = {
     val userAnswers = request.userAnswers
 
     invitationsCacheConnector.get(pstr, request.psaId).flatMap { invitations =>
       invitations.headOption match {
         case Some(invitation) =>
-          HaveYouEmployedPensionAdviserId.retrieve.right.map { havePensionAdviser =>
-            val acceptedInvitation = AcceptedInvitation(invitation.pstr, request.psaId, invitation.inviterPsaId, declaration,
-              !havePensionAdviser, userAnswers.json.validate[PensionAdviserDetails].asOpt)
+          val acceptedInvitation = AcceptedInvitation(invitation.pstr, request.psaId, invitation.inviterPsaId, declaration,
+            !havePensionAdviser, userAnswers.json.validate[PensionAdviserDetails].asOpt)
 
-            invitationConnector.acceptInvite(acceptedInvitation).flatMap { _ =>
-              invitationsCacheConnector.remove(invitation.pstr, request.psaId).map { _ =>
-                Redirect(navigator.nextPage(DeclarationId, NormalMode, userAnswers))
-              }
+          invitationConnector.acceptInvite(acceptedInvitation).flatMap { _ =>
+            invitationsCacheConnector.remove(invitation.pstr, request.psaId).map { _ =>
+              Redirect(navigator.nextPage(DeclarationId, NormalMode, userAnswers))
             }
           }
         case _ =>

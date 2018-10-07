@@ -83,14 +83,6 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
         verify(fakeSchemeDetailsConnector, times(1)).getSchemeDetails(any(), any())(any(), any())
       }
 
-      "redirect to Session Expired page if there is no user answers for HaveYouEmployedPensionAdviser" in {
-        val data = new FakeDataRetrievalAction(Some(UserAnswers().json))
-        val result = controller(data).onPageLoad()(fakeRequest)
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).value mustBe sessionExpired
-      }
-
       "redirect to Session Expired page if there is no cached data" in {
         val result = controller(dontGetAnyData).onPageLoad()(fakeRequest)
 
@@ -131,14 +123,6 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
 
       "redirect to Session Expired page if there is no cached data" in {
         val result = controller(dontGetAnyData).onSubmit()(fakeRequest)
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).value mustBe sessionExpired
-      }
-
-      "redirect to Session Expired page if there is no user answers for pstr for an invalid request" in {
-        val data = new FakeDataRetrievalAction(Some(UserAnswers().havePensionAdviser(hasAdviser).json))
-        val result = controller(data).onSubmit()(fakeRequest)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).value mustBe sessionExpired
