@@ -18,6 +18,6 @@ package identifiers.invitations
 
 import identifiers.TypedIdentifier
 
-object PsaNameId extends TypedIdentifier[String] {
+object InviteeNameId extends TypedIdentifier[String] {
   override def toString: String = "psaName"
 }

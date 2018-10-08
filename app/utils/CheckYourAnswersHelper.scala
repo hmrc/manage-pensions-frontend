@@ -18,7 +18,6 @@ package utils
 
 import identifiers.invitations._
 import models.{Address, CheckMode}
-import play.api.i18n.Messages.Message
 import utils.countryOptions.CountryOptions
 import viewmodels.AnswerRow
 
@@ -27,13 +26,13 @@ import viewmodels.AnswerRow
 class CheckYourAnswersHelper(userAnswers: UserAnswers, countryOptions: CountryOptions) extends Enumerable.Implicits {
 
   def psaName: Option[AnswerRow] = {
-    userAnswers.get(PsaNameId) map { answer =>
+    userAnswers.get(InviteeNameId) map { answer =>
       AnswerRow("messages__check__your__answer__psa__name__label", Seq(answer), true, Some(controllers.invitations.routes.PsaNameController.onPageLoad(CheckMode).url))
     }
   }
 
   def psaId: Option[AnswerRow] = {
-    userAnswers.get(PSAId) map { answer =>
+    userAnswers.get(InviteePSAId) map { answer =>
       AnswerRow("messages__check__your__answer__psa__id__label", Seq(answer), true, Some(controllers.invitations.routes.PsaIdController.onPageLoad(CheckMode).url))
     }
   }

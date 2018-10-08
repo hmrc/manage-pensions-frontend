@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-package identifiers.invitations
+package controllers
 
-import identifiers.TypedIdentifier
-import models.SchemeReferenceNumber
+import com.google.inject.Inject
+import controllers.actions.AuthAction
+import play.api.mvc.{Action, AnyContent}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-case class InvitationSuccessId(srn: SchemeReferenceNumber) extends TypedIdentifier[String]
+import scala.concurrent.Future
 
-object InvitationSuccessId {
-  override def toString: String = "invitationSuccess"
+class PsaDetailsController @Inject()(authenticate: AuthAction) extends FrontendController {
+
+  def onPageLoad: Action[AnyContent] = authenticate.async {
+    Future.successful(Ok)
+  }
+
 }

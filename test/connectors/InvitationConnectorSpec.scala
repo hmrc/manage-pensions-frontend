@@ -17,12 +17,13 @@
 package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
-import models.{AcceptedInvitation, Invitation}
+import models.{AcceptedInvitation, Invitation, SchemeReferenceNumber}
 import org.joda.time.DateTime
 import org.scalatest.prop.Checkers
 import org.scalatest.{AsyncFlatSpec, Matchers}
 import play.api.http.Status
 import play.api.libs.json.Json
+import uk.gov.hmrc.domain.PsaId
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import utils.WireMockHelper
 
@@ -52,21 +53,20 @@ class InvitationConnectorSpec extends AsyncFlatSpec with Matchers with WireMockH
 
   }
 
-  it should "throw PsaIdInvalidException for a Bad Request (INVALID_PSAID) response" in {
+  it should "throw NameMatchingFailedException for a Not Found response if name matching fails" in {
 
     server.stubFor(
       post(urlEqualTo(inviteUrl))
         .willReturn(
           aResponse()
-            .withStatus(Status.BAD_REQUEST)
-            .withHeader("Content-Type", "application/json")
-            .withBody(invalidPsaIdResponse)
+            .withStatus(Status.NOT_FOUND)
+            .withBody(namePsaIdDoNotMatchResponse)
         )
     )
 
     val connector = injector.instanceOf[InvitationConnector]
 
-    recoverToExceptionIf[PsaIdInvalidException] {
+    recoverToExceptionIf[NameMatchingFailedException] {
       connector.invite(invitation)
     } map {
       _ =>
@@ -75,19 +75,20 @@ class InvitationConnectorSpec extends AsyncFlatSpec with Matchers with WireMockH
 
   }
 
-  it should "throw PsaIdNotFoundException for a Not Found response" in {
+  it should "throw PsaAlreadyInvitedException for a Forbidden response if Psa already invited" in {
 
     server.stubFor(
       post(urlEqualTo(inviteUrl))
         .willReturn(
           aResponse()
-            .withStatus(Status.NOT_FOUND)
+            .withStatus(Status.FORBIDDEN)
+            .withBody(psaAlreadyInvitedResponse)
         )
     )
 
     val connector = injector.instanceOf[InvitationConnector]
 
-    recoverToExceptionIf[PsaIdNotFoundException] {
+    recoverToExceptionIf[PsaAlreadyInvitedException] {
       connector.invite(invitation)
     } map {
       _ =>
@@ -250,16 +251,15 @@ object InvitationConnectorSpec {
 
   private implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 
-  private val srn = "test-srn"
+  private val srn = SchemeReferenceNumber("S0987654321")
   private val pstr = "test-pstr"
   private val schemeName = "test-scheme-name"
-  private val inviterPsaId = "test-inviter-psa-id"
-  private val inviteePsaId = "test-invitee-psa-id"
+  private val inviterPsaId = PsaId("A7654321")
+  private val inviteePsaId = PsaId("A1234567")
   private val inviteeName = "test-invitee-name"
   private val expireAt = new DateTime("2018-05-05")
   private val declaration = true
   private val declarationDuties = true
-  private val expiryDate = new DateTime("2018-11-10")
 
   private val acceptedInvitation = AcceptedInvitation(
     pstr,
@@ -286,13 +286,8 @@ object InvitationConnectorSpec {
       Json.toJson(invitation)
     )
 
-  private val invalidPsaIdResponse =
-    Json.stringify(
-      Json.obj(
-        "code" -> "INVALID_PSAID",
-        "reason" -> "Reason for INVALID_PSAID"
-      )
-    )
+  private val namePsaIdDoNotMatchResponse = "The name and PSA Id do not match"
+  private val psaAlreadyInvitedResponse = "The invitation is to a PSA already associated with this scheme"
 
   private def invalidResponse(code: String) =
     Json.stringify(

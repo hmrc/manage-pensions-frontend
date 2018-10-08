@@ -97,7 +97,7 @@ class YourInvitationsControllerSpec extends ControllerSpecBase with MockitoSugar
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(nextCall.url)
       FakeUserAnswersCacheConnector.verifyAllDataRemoved()
-      FakeUserAnswersCacheConnector.verify(SchemeSrnId, srn)
+      FakeUserAnswersCacheConnector.verify(SchemeSrnId, srn.id)
     }
   }
 

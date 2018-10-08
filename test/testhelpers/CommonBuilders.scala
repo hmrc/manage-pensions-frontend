@@ -36,10 +36,10 @@ object CommonBuilders {
   val psaDetails1 = PsaDetails("A0000000",Some("partnetship name"),Some(Name(Some("Taylor"),Some("Middle"),Some("Rayon"))))
   val psaDetails2 = PsaDetails("A0000001",Some("partnetship name 1"),Some(Name(Some("Smith"),Some("A"),Some("Tony"))))
 
-  val psaSchemeDetailsResponse = PsaSchemeDetails(mockSchemeDetails, Some(Seq(psaDetails1, psaDetails2)))
-  val schemeDetailsWithPsaOnlyResponse = PsaSchemeDetails(mockSchemeDetails, Some(Seq(psaDetails1, psaDetails2)))
-  val schemeDetailsPendingResponse = PsaSchemeDetails(mockSchemeDetails.copy(status = "Pending"), Some(Seq(psaDetails1, psaDetails2)))
-  val schemeDetailsWithoutPsaResponse = PsaSchemeDetails(mockSchemeDetails, None)
+  val psaSchemeDetailsResponse = PsaSchemeDetails(mockSchemeDetails, None, None, Some(Seq(psaDetails1, psaDetails2)))
+  val schemeDetailsWithPsaOnlyResponse = PsaSchemeDetails(mockSchemeDetails, None, None, Some(Seq(psaDetails1, psaDetails2)))
+  val schemeDetailsPendingResponse = PsaSchemeDetails(mockSchemeDetails.copy(status = "Pending"), None, None, Some(Seq(psaDetails1, psaDetails2)))
+  val schemeDetailsWithoutPsaResponse = PsaSchemeDetails(mockSchemeDetails, None, None, None)
 
 
   val schemeDetail = SchemeDetail("abcdefghi", "S1000000456", "Pending", Some("2012-10-10"),
