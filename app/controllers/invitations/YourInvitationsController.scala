@@ -25,7 +25,7 @@ import models.{NormalMode, SchemeReferenceNumber}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import utils.annotations.{AcceptInvitation, Invitation}
+import utils.annotations.AcceptInvitation
 import utils.{Navigator, UserAnswers}
 import views.html.invitations.yourInvitations
 
@@ -41,14 +41,14 @@ class YourInvitationsController @Inject()(appConfig: FrontendAppConfig,
   def onPageLoad(): Action[AnyContent] = authenticate.async {
     implicit request =>
       invitationsCacheConnector.getForInvitee(request.psaId).map {
-        case Nil => Redirect(controllers.routes.SessionExpiredController.onPageLoad())
-        case invitationsList => {
+        case Nil =>
+          Redirect(controllers.routes.SessionExpiredController.onPageLoad())
+        case invitationsList =>
           Ok(yourInvitations(appConfig, invitationsList))
-        }
       }
   }
 
-  def onSelect(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate).async {
+  def onSelect(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate.async {
     implicit request =>
       userAnswersCacheConnector.removeAll(request.externalId).flatMap { _ =>
         userAnswersCacheConnector.save(request.externalId, SchemeSrnId, srn.id).map { cacheMap =>

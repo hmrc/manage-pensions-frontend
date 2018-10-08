@@ -17,11 +17,10 @@
 package utils.navigators
 
 import connectors.UserAnswersCacheConnector
-import controllers.routes
 import identifiers.SchemeSrnId
 import identifiers.invitations._
 import javax.inject.{Inject, Singleton}
-import models.{CheckMode, NormalMode}
+import models.NormalMode
 import utils.{Navigator, UserAnswers}
 
 @Singleton

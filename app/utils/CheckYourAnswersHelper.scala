@@ -59,9 +59,9 @@ class CheckYourAnswersHelper(userAnswers: UserAnswers, countryOptions: CountryOp
   }
 
   def addressAnswer(address: Address): Seq[String] = {
-    val country = countryOptions.options.find(_.value == address.countryCode).map(_.label).getOrElse(address.countryCode)
-    Seq(Some(s"${address.line1},"), Some(s"${address.line2},"), address.line3.map(line3 => s"$line3,"),
-      address.line4.map(line4 => s"$line4,"), address.postalCode.map(postCode => s"$postCode,"), Some(country)).flatten
+    val country = countryOptions.options.find(_.value == address.country).map(_.label).getOrElse(address.country)
+    Seq(Some(s"${address.addressLine1},"), Some(s"${address.addressLine2},"), address.addressLine3.map(line3 => s"$line3,"),
+      address.addressLine4.map(line4 => s"$line4,"), address.postcode.map(postCode => s"$postCode,"), Some(country)).flatten
   }
 
 }

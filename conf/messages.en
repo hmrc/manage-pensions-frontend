@@ -216,7 +216,7 @@ messages__adviser__email__address__title = What is your pension adviser’s emai
 messages__adviser__email__address__heading = What is {0}’s email address?
 messages__adviser__email__address__p1 = This will be used if HMRC need to contact your pension adviser.
 
-messages__yourInvitations__title = Scheme invitations
+messages__yourInvitations__title = Your invitations
 messages__yourInvitations__heading = Your invitations
 messages__yourInvitations__lede = You have been invited to administer:
 messages__yourInvitations__scheme_expiry_date = You have until {0} to accept this invitation.

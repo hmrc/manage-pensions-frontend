@@ -64,3 +64,6 @@ POST       /check-pension-adviser-answers               controllers.invitations.
 GET        /your-invitations                            controllers.invitations.YourInvitationsController.onPageLoad()
 GET        /your-invitations/:srn                       controllers.invitations.YourInvitationsController.onSelect(srn: SchemeReferenceNumber)
 
+
+GET        /check-pension-adviser-answers               controllers.invitations.CheckPensionAdviserAnswersController.onPageLoad()
+POST       /check-pension-adviser-answers               controllers.invitations.CheckPensionAdviserAnswersController.onSubmit()

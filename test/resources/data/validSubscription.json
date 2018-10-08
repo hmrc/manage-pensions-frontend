@@ -13,12 +13,12 @@
       "lastName": "abcdefjkl"
     },
     "correspondenceAddressDetails": {
-      "line1": "Telford1",
-      "line2": "Telford2",
-      "line3": "Telford3",
-      "line4": "Telford3",
-      "postalCode": "TF3 4ER",
-      "countryCode": "GB"
+      "addressLine1": "Telford1",
+      "addressLine2": "Telford2",
+      "addressLine3": "Telford3",
+      "addressLine4": "Telford3",
+      "postcode": "TF3 4ER",
+      "country": "GB"
     },
     "correspondenceContactDetails": {
       "telephone": " ",
@@ -29,12 +29,12 @@
     "previousAddressDetails": {
       "isPreviousAddressLast12Month": true,
       "previousAddress": {
-        "line1": "London1",
-        "line2": "London2",
-        "line3": "London3",
-        "line4": "London4",
-        "postalCode": "LN12 4DC",
-        "countryCode": "GB"
+        "addressLine1": "London1",
+        "addressLine2": "London2",
+        "addressLine3": "London3",
+        "addressLine4": "London4",
+        "postcode": "LN12 4DC",
+        "country": "GB"
       }
     },
     "numberOfDirectorsOrPartnersDetails": {
@@ -56,12 +56,12 @@
         "noUtrReason": "sfdsfsdf",
         "correspondenceCommonDetails": {
           "addressDetails": {
-            "line1": "addressline1",
-            "line2": "addressline2",
-            "line3": "addressline3",
-            "line4": "addressline4",
-            "postalCode": "B5 9EX",
-            "countryCode": "GB"
+            "addressLine1": "addressaddressLine1",
+            "addressLine2": "addressaddressLine2",
+            "addressLine3": "addressaddressLine3",
+            "addressLine4": "addressaddressLine4",
+            "postcode": "B5 9EX",
+            "country": "GB"
           },
           "contactDetails": {
             "telephone": "0044-09876542312",
@@ -73,12 +73,12 @@
         "previousAddressDetails": {
           "isPreviousAddressLast12Month": true,
           "previousAddress": {
-            "line1": "line1",
-            "line2": "line2",
-            "line3": "line3",
-            "line4": "line4",
-            "postalCode": "567253",
-            "countryCode": "AD"
+            "addressLine1": "addressLine1",
+            "addressLine2": "addressLine2",
+            "addressLine3": "addressLine3",
+            "addressLine4": "addressLine4",
+            "postcode": "567253",
+            "country": "AD"
           }
         }
       },
@@ -96,12 +96,12 @@
         "noUtrReason": "dfgfdg",
         "correspondenceCommonDetails": {
           "addressDetails": {
-            "line1": "fgfdgdfgfd",
-            "line2": "dfgfdgdfg",
-            "line3": "fdrtetegfdgdg",
-            "line4": "dfgfdgdfg",
-            "postalCode": "56546",
-            "countryCode": "AD"
+            "addressLine1": "fgfdgdfgfd",
+            "addressLine2": "dfgfdgdfg",
+            "addressLine3": "fdrtetegfdgdg",
+            "addressLine4": "dfgfdgdfg",
+            "postcode": "56546",
+            "country": "AD"
           },
           "contactDetails": {
             "telephone": "0044-09876542334",
@@ -113,12 +113,12 @@
         "previousAddressDetails": {
           "isPreviousAddressLast12Month": true,
           "previousAddress": {
-            "line1": "werrertqe",
-            "line2": "ereretfdg",
-            "line3": "asafafg",
-            "line4": "fgdgdasdf",
-            "postalCode": "23424",
-            "countryCode": "AD"
+            "addressLine1": "werrertqe",
+            "addressLine2": "ereretfdg",
+            "addressLine3": "asafafg",
+            "addressLine4": "fgdgdasdf",
+            "postcode": "23424",
+            "country": "AD"
           }
         }
       }
@@ -134,12 +134,12 @@
       "pensionAdvisorDetails": {
         "name": "sgfdgssd",
         "addressDetails": {
-          "line1": "addline1",
-          "line2": "addline2",
-          "line3": "addline3",
-          "line4": "addline4 ",
-          "postalCode": "56765",
-          "countryCode": "AD"
+          "addressLine1": "addaddressLine1",
+          "addressLine2": "addaddressLine2",
+          "addressLine3": "addaddressLine3",
+          "addressLine4": "addaddressLine4 ",
+          "postcode": "56765",
+          "country": "AD"
         },
         "contactDetails": {
           "telephone": "0044-0987654232",
