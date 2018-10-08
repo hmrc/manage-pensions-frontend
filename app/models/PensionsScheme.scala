@@ -145,7 +145,7 @@ object SchemeDetails {
 
 case class PsaSchemeDetails(schemeDetails: SchemeDetails,
                             establisherDetails: Seq[EstablisherInfo],
-                            truesteeDetails: Seq[TrusteeInfo],
+                            trusteeDetails: Seq[TrusteeInfo],
                             psaDetails: Option[Seq[PsaDetails]])
 
 object PsaSchemeDetails {
