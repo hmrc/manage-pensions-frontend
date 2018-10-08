@@ -40,6 +40,8 @@ class YourInvitationsViewSpec extends ViewBehaviours {
       s"_lede"
     )
 
+    behave like pageWithBackLink(createView)
+
     "display details for all invitations" in {
       Jsoup.parse(createView().toString) must haveDynamicText(invitation1.schemeName)
       Jsoup.parse(createView().toString) must
