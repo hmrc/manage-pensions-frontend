@@ -17,9 +17,10 @@
 package identifiers.invitations
 
 import identifiers.TypedIdentifier
+import models.SchemeReferenceNumber
 
-object CheckYourAnswersId extends TypedIdentifier[String] {
+case class CheckYourAnswersId(srn: SchemeReferenceNumber) extends TypedIdentifier[String]
 
+object CheckYourAnswersId {
   override def toString: String = "checkYourAnswers"
-
 }

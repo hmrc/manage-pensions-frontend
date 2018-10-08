@@ -30,6 +30,7 @@ trait FakeUserAnswersCacheConnector extends UserAnswersCacheConnector with Match
 
   private val data: mutable.HashMap[String, JsValue] = mutable.HashMap()
   private val removed: mutable.ListBuffer[String] = mutable.ListBuffer()
+  private var isAllDataRemoved: Boolean = false
 
   override def save[A, I <: TypedIdentifier[A]](cacheId: String, id: I, value: A)
                                                (implicit
@@ -83,7 +84,12 @@ trait FakeUserAnswersCacheConnector extends UserAnswersCacheConnector with Match
     removed should contain(id.toString)
   }
 
+  def verifyAllDataRemoved(): Unit = {
+    isAllDataRemoved shouldBe true
+  }
+
   override def removeAll(cacheId: String)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[Result] = {
+    isAllDataRemoved = true
     Future.successful(Ok)
   }
 

@@ -53,21 +53,20 @@ class InvitationConnectorSpec extends AsyncFlatSpec with Matchers with WireMockH
 
   }
 
-  it should "throw PsaIdInvalidException for a Bad Request (INVALID_PSAID) response" in {
+  it should "throw NameMatchingFailedException for a Not Found response if name matching fails" in {
 
     server.stubFor(
       post(urlEqualTo(inviteUrl))
         .willReturn(
           aResponse()
-            .withStatus(Status.BAD_REQUEST)
-            .withHeader("Content-Type", "application/json")
-            .withBody(invalidPsaIdResponse)
+            .withStatus(Status.NOT_FOUND)
+            .withBody(namePsaIdDoNotMatchResponse)
         )
     )
 
     val connector = injector.instanceOf[InvitationConnector]
 
-    recoverToExceptionIf[PsaIdInvalidException] {
+    recoverToExceptionIf[NameMatchingFailedException] {
       connector.invite(invitation)
     } map {
       _ =>
@@ -76,19 +75,20 @@ class InvitationConnectorSpec extends AsyncFlatSpec with Matchers with WireMockH
 
   }
 
-  it should "throw PsaIdNotFoundException for a Not Found response" in {
+  it should "throw PsaAlreadyInvitedException for a Forbidden response if Psa already invited" in {
 
     server.stubFor(
       post(urlEqualTo(inviteUrl))
         .willReturn(
           aResponse()
-            .withStatus(Status.NOT_FOUND)
+            .withStatus(Status.FORBIDDEN)
+            .withBody(psaAlreadyInvitedResponse)
         )
     )
 
     val connector = injector.instanceOf[InvitationConnector]
 
-    recoverToExceptionIf[PsaIdNotFoundException] {
+    recoverToExceptionIf[PsaAlreadyInvitedException] {
       connector.invite(invitation)
     } map {
       _ =>
@@ -286,13 +286,8 @@ object InvitationConnectorSpec {
       Json.toJson(invitation)
     )
 
-  private val invalidPsaIdResponse =
-    Json.stringify(
-      Json.obj(
-        "code" -> "INVALID_PSAID",
-        "reason" -> "Reason for INVALID_PSAID"
-      )
-    )
+  private val namePsaIdDoNotMatchResponse = "The name and PSA Id do not match"
+  private val psaAlreadyInvitedResponse = "The invitation is to a PSA already associated with this scheme"
 
   private def invalidResponse(code: String) =
     Json.stringify(

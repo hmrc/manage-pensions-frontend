@@ -17,7 +17,10 @@
 package identifiers.invitations
 
 import identifiers.TypedIdentifier
+import models.SchemeReferenceNumber
 
-object InvitationSuccessId extends TypedIdentifier[String] {
+case class InvitationSuccessId(srn: SchemeReferenceNumber) extends TypedIdentifier[String]
+
+object InvitationSuccessId {
   override def toString: String = "invitationSuccess"
 }

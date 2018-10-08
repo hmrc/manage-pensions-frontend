@@ -36,8 +36,6 @@
         <p>@openedDate</p>
     }
 
-
-
     @admins.map { admins =>
     <h2>@messages("messages__schemeDetails__psa_list_head")</h2>
         <ul class = "list list-bullet">
@@ -48,7 +46,7 @@
     }
 
     @if(appConfig.isWorkPackageOneEnabled && isSchemeOpen){
-        <p><a id="invite" href="@controllers.invitations.routes.InviteController.onPageLoad()">@messages("messages__schemeDetails__invite_link")</a></p>
+        <p><a id="invite" href="@controllers.invitations.routes.InviteController.onPageLoad(srn)">@messages("messages__schemeDetails__invite_link")</a></p>
     }
 
     <p><a id="return" href="@routes.ListSchemesController.onPageLoad()">@messages("messages__schemeDetails__return_link")</a></p>
