@@ -42,8 +42,6 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
 
     behave like normalPage(view(config()), "listSchemes", messages("messages__listSchemes__title"))
 
-    behave like pageWithBackLink(view(config()))
-
     "display a link to your invitations page if user has received invitations" in {
       view(frontendAppConfig, invitationsReceived = true) must haveLink(
         controllers.invitations.routes.YourInvitationsController.onPageLoad().url, "invitations-received")
@@ -69,7 +67,8 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
       s"display the correct scheme name with links for row $index when there are schemes to display" in {
         val actual = asDocument(view(config(), fullList).apply())
 
-        actual must haveLinkWithUrlAndContent(s"schemeName-$index", controllers.routes.SchemesOverviewController.onPageLoad().url, s"scheme-name-$index")
+        actual must haveLinkWithUrlAndContent(s"schemeName-$index",
+          controllers.routes.SchemeDetailsController.onPageLoad(s"reference-number-$index").url, s"scheme-name-$index")
       }
     }
 
@@ -106,6 +105,10 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
       assertEqualsValue(actual, "#pstr-5 span:nth-child(1)", messages("PSTR-5"))
       assertEqualsValue(actual, "#pstr-6 span:nth-child(1)", messages("PSTR-6"))
       assertEqualsValue(actual, "#pstr-7 span:nth-child(1)", messages("messages__listSchemes__pstr_not_assigned"))
+    }
+
+    "display a link to return to overview page" in {
+      view(frontendAppConfig) must haveLink(controllers.routes.SchemesOverviewController.onPageLoad().url, "return-to-overview")
     }
   }
 }

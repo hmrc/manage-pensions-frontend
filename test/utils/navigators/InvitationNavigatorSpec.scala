@@ -19,7 +19,7 @@ package utils.navigators
 import base.SpecBase
 import connectors.FakeUserAnswersCacheConnector
 import identifiers.Identifier
-import identifiers.invitations.{InviteePSAId, InviteeNameId}
+import identifiers.invitations.{CheckYourAnswersId, InvitationSuccessId, InviteeNameId, InviteePSAId}
 import models.NormalMode
 import models.requests.IdentifiedRequest
 import org.scalatest.OptionValues
@@ -36,9 +36,11 @@ class InvitationNavigatorSpec extends SpecBase with NavigatorBehaviour {
   val navigator = new InvitationNavigator(FakeUserAnswersCacheConnector)
 
   def routes(): TableFor6[Identifier, UserAnswers, Call, Boolean, Option[Call], Boolean] = Table(
-    ("Id", "User Answers", "Next Page (NormalMode)", "Save(NormalMode)", "Next Page (CheckMode)", "Save(CheckMode"),
-    (InviteeNameId, emptyAnswers, psaIdPage, false, Some(checkYourAnswer), false),
-    (InviteePSAId, emptyAnswers, checkYourAnswer, false, Some(checkYourAnswer), false)
+    ("Id",                            "User Answers",     "Next Page (NormalMode)",     "Save(NormalMode)",     "Next Page (CheckMode)",  "Save(CheckMode"),
+    (InviteeNameId,                     emptyAnswers,       psaIdPage,                    false,                  Some(checkYourAnswer),      false),
+    (InviteePSAId,                      emptyAnswers,       checkYourAnswer,              false,                  Some(checkYourAnswer),      false),
+    (CheckYourAnswersId(testSrn),       emptyAnswers,       invitationSuccess,            false,                  None,                       false),
+    (InvitationSuccessId(testSrn),      emptyAnswers,       schemeDetails,                false,                  None,                       false)
   )
 
   navigator.getClass.getSimpleName must {
@@ -49,10 +51,12 @@ class InvitationNavigatorSpec extends SpecBase with NavigatorBehaviour {
 }
 
 object InvitationNavigatorSpec extends OptionValues {
+  private val testSrn = "test-srn"
   lazy val emptyAnswers = UserAnswers(Json.obj())
   lazy val checkYourAnswer: Call = controllers.invitations.routes.CheckYourAnswersController.onPageLoad()
+  lazy val invitationSuccess: Call = controllers.invitations.routes.InvitationSuccessController.onPageLoad(testSrn)
+  lazy val schemeDetails: Call = controllers.routes.SchemeDetailsController.onPageLoad(testSrn)
   lazy val psaIdPage: Call = controllers.invitations.routes.PsaIdController.onPageLoad(NormalMode)
-
 
   implicit val ex: IdentifiedRequest = new IdentifiedRequest() {
     val externalId: String = "test-external-id"

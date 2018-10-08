@@ -26,8 +26,6 @@
     appConfig = appConfig,
     bodyClasses = Some("full-width")) {
 
-    @components.back_link()
-
     @components.heading(headingKey = messages("messages__listSchemes__title"))
 
     @if(invitationsReceived) {
@@ -45,4 +43,7 @@
             appConfig
         )
     }
+
+    <p class="govuk-margin-top-7"><a id="return-to-overview" href="@controllers.routes.SchemesOverviewController.onPageLoad().url">@messages("messages__listSchemes__return_to_overview")</a></p>
+
 }

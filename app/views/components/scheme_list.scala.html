@@ -82,7 +82,7 @@
                     <span aria-hidden="true">
                         @Link.toInternalPage(
                             id=Some(s"${schemeNameId(index)}"),
-                            url=controllers.routes.SchemesOverviewController.onPageLoad().url,
+                            url=controllers.routes.SchemeDetailsController.onPageLoad(scheme.referenceNumber).url,
                             value=Some(scheme.name)
                         ).toHtml
                     </span>

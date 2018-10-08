@@ -29,13 +29,13 @@
     appConfig = appConfig,
     bodyClasses = None) {
 
-    @components.heading(messages("messages__schemesOverview__heading"))
-
     @name.map{ psaName =>
         <a id="psaLink" href="@controllers.routes.PsaDetailsController.onPageLoad()">
             <p id="psaName">@psaName</p>
         </a>
     }
+
+    @components.heading(messages("messages__schemesOverview__heading"))
 
     <h2>@messages("messages__schemesOverview__manage__head")</h2>
     <p>@messages("messages__schemesOverview__manage__text")</p>

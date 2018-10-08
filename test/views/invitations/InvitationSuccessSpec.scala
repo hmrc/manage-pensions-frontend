@@ -55,13 +55,14 @@ class InvitationSuccessSpec extends ViewBehaviours {
 
 object InvitationSuccessSpec {
 
+  val testSrn = "test-srn"
   val testInviteeName: String = "Joe Bloggs"
   val testSchemeName: String = "Test Scheme Ltd"
   val testExpiryDate: LocalDate = LocalDate.now()
 
   val messageKeyPrefix = "invitationSuccess"
 
-  val continue: Call = controllers.invitations.routes.InvitationSuccessController.onSubmit("test-srn")
+  val continue: Call = controllers.invitations.routes.InvitationSuccessController.onSubmit(testSrn)
 
   def createView(base: SpecBase): () => HtmlFormat.Appendable = () =>
     invitation_success(
