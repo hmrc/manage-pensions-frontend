@@ -35,5 +35,7 @@
         "lastName": "Tony"
       }
     }
-  ]
+  ],
+  "establisherDetails" : [],
+  "trusteeDetails" : []
 }
