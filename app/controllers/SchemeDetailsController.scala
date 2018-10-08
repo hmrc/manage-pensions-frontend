@@ -47,13 +47,13 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
           val schemeDetail = scheme.schemeDetails
           val isSchemeOpen = schemeDetail.status.equalsIgnoreCase("open")
 
-          Future.successful((Ok(schemeDetails(appConfig,
+          Future.successful(Ok(schemeDetails(appConfig,
             schemeDetail.name,
             openedDate(srn, list, isSchemeOpen),
             administrators(scheme),
             srn,
             isSchemeOpen
-          ))))
+          )))
         }
       }
 
@@ -72,7 +72,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
   private def openedDate(srn: String, list: ListOfSchemes, isSchemeOpen: Boolean): Option[String] = {
     if (isSchemeOpen) {
       list.schemeDetail.flatMap { listOfSchemes =>
-        val currentScheme = listOfSchemes.filter((i: SchemeDetail) => i.referenceNumber.contains(srn))
+        val currentScheme = listOfSchemes.filter(_.referenceNumber.contains(srn))
         if (currentScheme.nonEmpty) {
           currentScheme.head.openDate.map(new LocalDate(_).toString(DateHelper.formatter))
         } else {
