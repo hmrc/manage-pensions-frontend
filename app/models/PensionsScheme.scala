@@ -16,7 +16,7 @@
 
 package models
 
-import play.api.libs.json._
+import play.api.libs.json.{Format, Json, OFormat}
 
 case class Name(firstName: Option[String], middleName: Option[String], lastName: Option[String])
 
@@ -72,19 +72,27 @@ case class IndividualInfo(personalDetails: PersonalInfo,
                              nino: Option[String],
                              utr: Option[String],
                              address: CorrespondenceAddress,
-                             contact: ContactDetails,
+                             contact: IndividualContactDetails,
                              previousAddress: PreviousAddressInfo)
 
 object IndividualInfo {
   implicit val formats: OFormat[IndividualInfo] = Json.format[IndividualInfo]
 }
 
+case class IndividualContactDetails(telephone: String, email: String)
+
+object IndividualContactDetails {
+
+  implicit val formats: OFormat[IndividualContactDetails] = Json.format[IndividualContactDetails]
+}
+
+
 case class PartnershipDetails(partnershipName: String,
                               utr: Option[String],
                               vatRegistration: Option[String],
                               payeRef: Option[String],
                               address: CorrespondenceAddress,
-                              contact: ContactDetails,
+                              contact: IndividualContactDetails,
                               previousAddress: PreviousAddressInfo,
                               partnerDetails: Seq[IndividualInfo])
 
@@ -98,7 +106,7 @@ case class CompanyDetails(organizationName: String,
                           vatRegistration: Option[String],
                           payeRef: Option[String],
                           address: CorrespondenceAddress,
-                          contact: ContactDetails,
+                          contact: IndividualContactDetails,
                           previousAddress: Option[PreviousAddressInfo],
                           directorsDetails: Seq[IndividualInfo])
 
@@ -144,8 +152,8 @@ object SchemeDetails {
 }
 
 case class PsaSchemeDetails(schemeDetails: SchemeDetails,
-                            establisherDetails: Seq[EstablisherInfo],
-                            trusteeDetails: Seq[TrusteeInfo],
+                            establisherDetails: Option[EstablisherInfo],
+                            trusteeDetails: Option[TrusteeInfo],
                             psaDetails: Option[Seq[PsaDetails]])
 
 object PsaSchemeDetails {
