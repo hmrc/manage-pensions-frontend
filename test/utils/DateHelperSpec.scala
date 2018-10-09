@@ -16,6 +16,7 @@
 
 package utils
 
+import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
 import org.joda.time.{DateTime, LocalDate}
 import org.scalatest.{Matchers, WordSpec}
 
@@ -43,13 +44,10 @@ class DateHelperSpec extends WordSpec with Matchers {
   }
 
   "displayExpiryDate " should {
-    val year = 2018
-    val month = 10
-    val day = 11
 
     "return one day less with the correct format" in {
-      val result = dateHelper.displayExpiryDate(new LocalDate(year, month, day))
-      result shouldBe s"${day - 1} October $year"
+      val result = dateHelper.displayExpiryDate(dateHelper.currentDate.toLocalDate)
+      result shouldBe "3 January 2018"
     }
   }
 }
