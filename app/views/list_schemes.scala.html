@@ -35,18 +35,18 @@
     }
         </div>
     </div>
-    <div class="grid-row">
     @if(schemes.isEmpty) {
+    <div class="grid-row">
         <div class="column-two-thirds">
             <p id="noSchemes">@messages("messages__listSchemes__noSchemes")</p>
         </div>
+    </div>
     } else {
         @components.scheme_list(
             schemes,
             appConfig
         )
     }
-    </div>
     <div class="grid-row">
         <div class="column-two-thirds">
             <p class="govuk-margin-top-7"><a id="return-to-overview" href="@controllers.routes.SchemesOverviewController.onPageLoad().url">@messages("messages__listSchemes__return_to_overview")</a></p>
