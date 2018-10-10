@@ -26,15 +26,8 @@ object HaveYouEmployedPensionAdviserId extends TypedIdentifier[Boolean] {
   override def cleanup(value: Option[Boolean], userAnswers: UserAnswers): JsResult[UserAnswers] = {
     value match {
       case Some(false) =>
-        userAnswers.remove(AdviserNameId).flatMap(
-          _.remove(AdviserEmailId).flatMap(
-            _.remove(AdviserAddressPostCodeLookupId).flatMap(
-              _.remove(AdviserAddressListId).flatMap(
-                _.remove(AdviserAddressId)
-              )
-            )
-          )
-        )
+        userAnswers.removeAllOf(List(
+          AdviserNameId, AdviserEmailId, AdviserAddressPostCodeLookupId, AdviserAddressListId, AdviserAddressId))
       case _ => super.cleanup(value, userAnswers)
     }
   }
