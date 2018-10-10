@@ -58,9 +58,8 @@ POST       /pension-adviser-email-address               controllers.invitations.
 GET        /change-pension-adviser-email-address        controllers.invitations.AdviserEmailAddressController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-pension-adviser-email-address        controllers.invitations.AdviserEmailAddressController.onSubmit(mode: Mode = CheckMode)
 
-GET        /your-invitations                            controllers.invitations.YourInvitationsController.onPageLoad()
-GET        /your-invitations/:srn                       controllers.invitations.YourInvitationsController.onSelect(srn: SchemeReferenceNumber)
-
-
 GET        /check-pension-adviser-answers               controllers.invitations.CheckPensionAdviserAnswersController.onPageLoad()
 POST       /check-pension-adviser-answers               controllers.invitations.CheckPensionAdviserAnswersController.onSubmit()
+
+GET        /your-invitations                            controllers.invitations.YourInvitationsController.onPageLoad()
+GET        /your-invitations/:srn                       controllers.invitations.YourInvitationsController.onSelect(srn: SchemeReferenceNumber)
