@@ -27,13 +27,15 @@ import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import utils.{FakeNavigator, UserAnswers}
 import views.html.invitations.haveYouEmployedPensionAdviser
+import utils.UserAnswerOps
 
 class HaveYouEmployedPensionAdviserControllerSpec extends ControllerWithQuestionPageBehaviours {
 
   val formProvider = new HaveYouEmployedPensionAdviserFormProvider()
   val form = formProvider()
   val userAnswer = UserAnswers().employedPensionAdviserId(true)
-  val postRequest = FakeRequest().withJsonBody(userAnswer.json)
+  val postRequest = FakeRequest().withJsonBody(Json.obj("value" -> true))
+  val data = UserAnswers().employedPensionAdviserId(true).dataRetrievalAction
 
   private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
@@ -49,22 +51,21 @@ class HaveYouEmployedPensionAdviserControllerSpec extends ControllerWithQuestion
   )
     new HaveYouEmployedPensionAdviserController(
       frontendAppConfig, fakeAuth, messagesApi, navigator,formProvider,
-      FakeUserAnswersCacheConnector, dataRetrievalAction, requiredDateAction).onPageLoad(NormalMode)
+      FakeUserAnswersCacheConnector, dataRetrievalAction, requiredDataAction).onPageLoad(NormalMode)
   }
 
   private def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
     new HaveYouEmployedPensionAdviserController(
       frontendAppConfig, fakeAuth, messagesApi, navigator, formProvider,
-      FakeUserAnswersCacheConnector, dataRetrievalAction, requiredDateAction).onSubmit(NormalMode)
+      FakeUserAnswersCacheConnector, dataRetrievalAction, requiredDataAction).onSubmit(NormalMode)
   }
 
  def viewAsString(form: Form[Boolean] = form) = haveYouEmployedPensionAdviser(frontendAppConfig, form, NormalMode)(fakeRequest, messages).toString
 
   behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, userAnswer.dataRetrievalAction, form, form.fill(true), viewAsString)
 
-  behave like controllerWithOnSubmitMethod(onSubmitAction, getEmptyData,
-    form.bind(Map(HaveYouEmployedPensionAdviserId.toString -> "")), viewAsString, postRequest)
-
+  behave like controllerWithOnSubmitMethod(onSubmitAction, data,
+    form.bind(Map("value" -> "")), viewAsString, postRequest)
 }
 

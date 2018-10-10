@@ -38,6 +38,8 @@ class HaveYouEmployedPensionAdviserViewSpec extends ViewBehaviours {
 
     behave like normalPageWithTitle(createView, prefix, messages(prefix + "title"), messages(prefix + "heading"))
 
+    behave like pageWithBackLink(createView)
+
     behave like pageWithSubmitButton(createView)
 
     "contain true option" in assertContainsRadioButton(doc, "value-yes", "value", "true", false)

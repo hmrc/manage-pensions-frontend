@@ -81,7 +81,7 @@ class ManualAddressFormProviderSpec extends FormBehaviours with FormSpec with Ad
         "addressLine1" -> addressLine1,
         "addressLine2" -> addressLine2
       ),
-      (address: Address) => address.postalCode.getOrElse("")
+      (address: Address) => address.postcode.getOrElse("")
     )
 
     "behave like a form with address lines" when {
@@ -108,7 +108,7 @@ class ManualAddressFormProviderSpec extends FormBehaviours with FormSpec with Ad
         "messages__error__address_line_3_length",
         "messages__error__address_line_3_invalid",
         validData,
-        (address: Address) => address.line3
+        (address: Address) => address.addressLine3
       )
 
       behave like formWithOptionalAddressField(
@@ -117,7 +117,7 @@ class ManualAddressFormProviderSpec extends FormBehaviours with FormSpec with Ad
         "messages__error__address_line_4_length",
         "messages__error__address_line_4_invalid",
         validData,
-        (address: Address) => address.line4
+        (address: Address) => address.addressLine4
       )
     }
   }

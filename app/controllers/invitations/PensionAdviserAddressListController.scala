@@ -62,12 +62,9 @@ class PensionAdviserAddressListController @Inject()(
           addressIndex => {
             val address = addresses(addressIndex).copy(country = Some("GB"))
 
-            cacheConnector.remove(request.externalId, AdviserAddressPostCodeLookupId).flatMap { _ =>
-              cacheConnector.save(request.externalId, AdviserAddressListId, address).map { json =>
-                Redirect(navigator.nextPage(AdviserAddressListId, NormalMode, UserAnswers(json)))
-              }
+            cacheConnector.save(request.externalId, AdviserAddressListId, address).map { json =>
+              Redirect(navigator.nextPage(AdviserAddressListId, NormalMode, UserAnswers(json)))
             }
-
           }
         )
       }

@@ -56,12 +56,12 @@ case class TolerantAddress(addressLine1: Option[String],
   }
 
   def equalsAddress(address: Address): Boolean = {
-    address.line1 == addressLine1.getOrElse("") &&
-      address.line2 == addressLine2.getOrElse("") &&
-      address.line3 == addressLine3 &&
-      address.line4 == addressLine4 &&
-      address.countryCode == country.getOrElse("") &&
-      address.postalCode == postcode
+    address.addressLine1 == addressLine1.getOrElse("") &&
+      address.addressLine2 == addressLine2.getOrElse("") &&
+      address.addressLine3 == addressLine3 &&
+      address.addressLine4 == addressLine4 &&
+      address.country == country.getOrElse("") &&
+      address.postcode == postcode
   }
 }
 

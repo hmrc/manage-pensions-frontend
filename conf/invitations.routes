@@ -59,7 +59,7 @@ GET        /change-pension-adviser-email-address        controllers.invitations.
 POST       /change-pension-adviser-email-address        controllers.invitations.AdviserEmailAddressController.onSubmit(mode: Mode = CheckMode)
 
 GET        /your-invitations                            controllers.invitations.YourInvitationsController.onPageLoad()
-POST       /your-invitations/:srn                       controllers.invitations.YourInvitationsController.onSubmit(srn: String)
+GET        /your-invitations/:srn                       controllers.invitations.YourInvitationsController.onSelect(srn: SchemeReferenceNumber)
 
 
 GET        /check-pension-adviser-answers               controllers.invitations.CheckPensionAdviserAnswersController.onPageLoad()

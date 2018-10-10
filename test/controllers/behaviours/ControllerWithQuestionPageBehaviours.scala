@@ -27,16 +27,16 @@ import utils.FakeNavigator
 class ControllerWithQuestionPageBehaviours extends ControllerSpecBase {
 
   val navigator = new FakeNavigator(onwardRoute)
-  val requiredDateAction = new DataRequiredActionImpl
+  val requiredDataAction = new DataRequiredActionImpl
 
   def onwardRoute = Call("GET", "/foo")
 
   def controllerWithOnPageLoadMethod[T](onPageLoadAction: (DataRetrievalAction, AuthAction) => Action[AnyContent],
-                                     emptyData: DataRetrievalAction,
-                                     validDate: DataRetrievalAction,
-                                     emptyForm: Form[T],
-                                     preparedForm: Form[T],
-                                     validView: (Form[T]) => String): Unit = {
+                                        emptyData: DataRetrievalAction,
+                                        validData: DataRetrievalAction,
+                                        emptyForm: Form[T],
+                                        preparedForm: Form[T],
+                                        validView: (Form[T]) => String): Unit = {
 
     "calling onPageLoad" must {
 
@@ -50,7 +50,7 @@ class ControllerWithQuestionPageBehaviours extends ControllerSpecBase {
 
       "populate the view correctly on a GET when the question has previously been answered" in {
 
-        val result = onPageLoadAction(validDate, FakeAuthAction())(fakeRequest)
+        val result = onPageLoadAction(validData, FakeAuthAction())(fakeRequest)
 
         contentAsString(result) mustBe validView(preparedForm)
       }
@@ -67,16 +67,16 @@ class ControllerWithQuestionPageBehaviours extends ControllerSpecBase {
   }
 
   def controllerWithOnSubmitMethod[T](onSubmitAction: (DataRetrievalAction, AuthAction) => Action[AnyContent],
-                                   validDate: DataRetrievalAction,
-                                   form: Form[T],
-                                   errorView: (Form[T]) => String,
-                                   postRequest: FakeRequest[AnyContentAsJson]): Unit = {
+                                      validData: DataRetrievalAction,
+                                      form: Form[T],
+                                      errorView: (Form[T]) => String,
+                                      postRequest: FakeRequest[AnyContentAsJson]): Unit = {
 
     "calling onSubmit" must {
 
       "redirect to the next page when valid data is submitted" in {
 
-        val result = onSubmitAction(validDate, FakeAuthAction())(postRequest)
+        val result = onSubmitAction(validData, FakeAuthAction())(postRequest)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(onwardRoute.url)
@@ -84,7 +84,7 @@ class ControllerWithQuestionPageBehaviours extends ControllerSpecBase {
 
       "return a Bad Request and errors when invalid data is submitted" in {
 
-        val result = onSubmitAction(validDate, FakeAuthAction())(fakeRequest)
+        val result = onSubmitAction(validData, FakeAuthAction())(fakeRequest)
 
         status(result) mustBe BAD_REQUEST
         contentAsString(result) mustBe errorView(form)
@@ -93,13 +93,13 @@ class ControllerWithQuestionPageBehaviours extends ControllerSpecBase {
   }
 
   def controllerWithOnPageLoadMethodMissingRequiredData(onPageLoadAction: (DataRetrievalAction, AuthAction) => Action[AnyContent],
-                                                        validDate: DataRetrievalAction): Unit = {
+                                                        validData: DataRetrievalAction): Unit = {
 
     "when required data is not present" must {
 
       "onPageLoad redirect to Session Expired if no existing data is found" in {
 
-        val result = onPageLoadAction(validDate, FakeAuthAction())(fakeRequest)
+        val result = onPageLoadAction(validData, FakeAuthAction())(fakeRequest)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)

@@ -18,18 +18,20 @@ package controllers.invitations
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
-import connectors.UserAnswersCacheConnector
+import connectors.{InvitationConnector, InvitationsCacheConnector, SchemeDetailsConnector, UserAnswersCacheConnector}
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.invitations.DeclarationFormProvider
-import identifiers.invitations.{DeclarationId, HaveYouEmployedPensionAdviserId, IsMasterTrustId}
-import models.NormalMode
+import identifiers.SchemeSrnId
+import identifiers.invitations._
+import models._
+import models.requests.DataRequest
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, Result}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import utils.Navigator
 import utils.annotations.AcceptInvitation
-import utils.{Navigator, UserAnswers}
 import views.html.invitations.declaration
 
 import scala.concurrent.Future
@@ -41,16 +43,26 @@ class DeclarationController @Inject()(
                                        auth: AuthAction,
                                        getData: DataRetrievalAction,
                                        requireData: DataRequiredAction,
-                                       dataCacheConnector: UserAnswersCacheConnector,
+                                       userAnswersCacheConnector: UserAnswersCacheConnector,
+                                       schemeDetailsConnector: SchemeDetailsConnector,
+                                       invitationsCacheConnector: InvitationsCacheConnector,
+                                       invitationConnector: InvitationConnector,
                                        @AcceptInvitation navigator: Navigator
                                      ) extends FrontendController with I18nSupport with Retrievals {
   val form: Form[Boolean] = formProvider()
 
   def onPageLoad(): Action[AnyContent] = (auth andThen getData andThen requireData).async {
     implicit request =>
-      (HaveYouEmployedPensionAdviserId and IsMasterTrustId).retrieve.right.map {
-        case havePensionAdviser ~ isMasterTrust =>
-          Future.successful(Ok(declaration(appConfig, havePensionAdviser, isMasterTrust, form)))
+      (HaveYouEmployedPensionAdviserId and SchemeSrnId).retrieve.right.map {
+        case havePensionAdviser ~ srn =>
+          for {
+            details <- schemeDetailsConnector.getSchemeDetails("srn", srn)
+            _ <- userAnswersCacheConnector.save(SchemeNameId, details.schemeDetails.name)
+            _ <- userAnswersCacheConnector.save(IsMasterTrustId, details.schemeDetails.isMasterTrust)
+            _ <- userAnswersCacheConnector.save(PSTRId, details.schemeDetails.pstr.getOrElse(""))
+          } yield {
+            Ok(declaration(appConfig, havePensionAdviser, details.schemeDetails.isMasterTrust, form))
+          }
       }
   }
 
@@ -63,12 +75,33 @@ class DeclarationController @Inject()(
             case havePensionAdviser ~ isMasterTrust =>
               Future.successful(BadRequest(declaration(appConfig, havePensionAdviser, isMasterTrust, formWithErrors)))
           },
-        value => {
-          dataCacheConnector.save(request.externalId, DeclarationId, value).map(
-            cacheMap =>
-              Redirect(navigator.nextPage(DeclarationId, NormalMode, UserAnswers(cacheMap)))
-          )
+        declaration => {
+          (PSTRId and HaveYouEmployedPensionAdviserId).retrieve.right.map {
+            case pstr ~ havePensionAdviser =>
+              acceptInviteAndRedirect(pstr, havePensionAdviser, declaration)
+          }
         }
       )
+  }
+
+  private def acceptInviteAndRedirect(pstr: String, havePensionAdviser: Boolean, declaration: Boolean)
+                                     (implicit request: DataRequest[AnyContent]): Future[Result] = {
+    val userAnswers = request.userAnswers
+
+    invitationsCacheConnector.get(pstr, request.psaId).flatMap { invitations =>
+      invitations.headOption match {
+        case Some(invitation) =>
+          val acceptedInvitation = AcceptedInvitation(invitation.pstr, request.psaId, invitation.inviterPsaId, declaration,
+            !havePensionAdviser, userAnswers.json.validate[PensionAdviserDetails](PensionAdviserDetails.userAnswerReads).asOpt)
+
+          invitationConnector.acceptInvite(acceptedInvitation).flatMap { _ =>
+            invitationsCacheConnector.remove(invitation.pstr, request.psaId).map { _ =>
+              Redirect(navigator.nextPage(DeclarationId, NormalMode, userAnswers))
+            }
+          }
+        case _ =>
+          Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+      }
+    }
   }
 }

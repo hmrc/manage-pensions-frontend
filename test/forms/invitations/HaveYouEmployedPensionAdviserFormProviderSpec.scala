@@ -29,7 +29,7 @@ class HaveYouEmployedPensionAdviserFormProviderSpec extends BooleanFieldBehaviou
 
   ".value" must {
 
-    val fieldName = "haveYouEmployedPensionAdviser"
+    val fieldName = "value"
 
     behave like booleanField(
       form,

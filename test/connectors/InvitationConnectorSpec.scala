@@ -104,7 +104,7 @@ class InvitationConnectorSpec extends AsyncFlatSpec with Matchers with WireMockH
         .withRequestBody(equalToJson(Json.stringify(Json.toJson(acceptedInvitation))))
         .willReturn(
           aResponse()
-            .withStatus(Status.OK)
+            .withStatus(Status.CREATED)
         )
     )
 
@@ -247,7 +247,7 @@ class InvitationConnectorSpec extends AsyncFlatSpec with Matchers with WireMockH
 object InvitationConnectorSpec {
 
   private val inviteUrl = "/pension-administrator/invite"
-  private val acceptInviteUrl = "/pension-administrator/accept-invite"
+  private val acceptInviteUrl = "/pension-administrator/accept-invitation"
 
   private implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 

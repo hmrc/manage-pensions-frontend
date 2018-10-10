@@ -19,6 +19,7 @@ package controllers.invitations
 import connectors.{FakeUserAnswersCacheConnector, InvitationsCacheConnector}
 import controllers.ControllerSpecBase
 import controllers.actions.{AuthAction, FakeAuthAction, FakeUnAuthorisedAction}
+import identifiers.SchemeSrnId
 import models.NormalMode
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -91,12 +92,13 @@ class YourInvitationsControllerSpec extends ControllerSpecBase with MockitoSugar
 
     "redirect to the next page when valid data is submitted" in {
 
-      val result = controller().onSubmit(srn)(fakeRequest)
+      val result = controller().onSelect(srn)(fakeRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(nextCall.url)
+      FakeUserAnswersCacheConnector.verifyAllDataRemoved()
+      FakeUserAnswersCacheConnector.verify(SchemeSrnId, srn.id)
     }
-
   }
 
 }

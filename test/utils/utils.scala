@@ -16,7 +16,7 @@
 
 import controllers.actions.{DataRetrievalAction, FakeDataRetrievalAction}
 import identifiers.invitations._
-import identifiers.{LastPageId, MinimalSchemeDetailId}
+import identifiers.{LastPageId, MinimalSchemeDetailId, SchemeSrnId}
 import models._
 import org.scalatest.OptionValues
 
@@ -41,16 +41,36 @@ package object utils {
       answers.set(MinimalSchemeDetailId)(detail).asOpt.value
     }
 
+    def schemeName(name: String): UserAnswers = {
+      answers.set(SchemeNameId)(name).asOpt.value
+    }
+
     def havePensionAdviser(hasAdviser: Boolean): UserAnswers = {
       answers.set(HaveYouEmployedPensionAdviserId)(hasAdviser).asOpt.value
+    }
+
+    def pstr(pstr: String): UserAnswers = {
+      answers.set(PSTRId)(pstr).asOpt.value
     }
 
     def isMasterTrust(isMaster: Boolean): UserAnswers = {
       answers.set(IsMasterTrustId)(isMaster).asOpt.value
     }
 
+    def srn(srn: String): UserAnswers = {
+      answers.set(SchemeSrnId)(srn).asOpt.value
+    }
+
     def adviserName(name: String): UserAnswers = {
       answers.set(AdviserNameId)(name).asOpt.value
+    }
+
+    def adviserAddress(address: Address): UserAnswers = {
+      answers.set(AdviserAddressId)(address).asOpt.value
+    }
+
+    def adviserEmail(email: String): UserAnswers = {
+      answers.set(AdviserEmailId)(email).asOpt.value
     }
 
     def employedPensionAdviserId(isChecked: Boolean): UserAnswers = {

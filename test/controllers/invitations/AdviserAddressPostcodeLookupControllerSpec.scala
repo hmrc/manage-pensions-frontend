@@ -35,6 +35,7 @@ import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.HttpException
+import utils.annotations.AcceptInvitation
 import utils.{FakeNavigator, Navigator}
 import views.html.invitations.adviserPostcode
 
@@ -71,6 +72,7 @@ class AdviserAddressPostcodeLookupControllerSpec extends WordSpec with MustMatch
 
     "return a redirect on successful submission" in {
 
+      val onwardRoute = controllers.routes.IndexController.onPageLoad()
       val addressConnector: AddressLookupConnector = mock[AddressLookupConnector]
       val cacheConnector: UserAnswersCacheConnector = FakeUserAnswersCacheConnector
 
@@ -78,7 +80,7 @@ class AdviserAddressPostcodeLookupControllerSpec extends WordSpec with MustMatch
         .thenReturn(Future.successful(Seq(address)))
 
       running(_.overrides(
-        bind[Navigator].toInstance(FakeNavigator),
+        bind[Navigator].qualifiedWith(classOf[AcceptInvitation]).toInstance(new FakeNavigator(onwardRoute)),
         bind[UserAnswersCacheConnector].toInstance(cacheConnector),
         bind[AddressLookupConnector].toInstance(addressConnector),
         bind[DataRetrievalAction].toInstance(dataRetrievalAction),
@@ -90,7 +92,7 @@ class AdviserAddressPostcodeLookupControllerSpec extends WordSpec with MustMatch
           val result = controller.onSubmit()(FakeRequest().withFormUrlEncodedBody("value" -> postcode))
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual controllers.routes.IndexController.onPageLoad().url
+          redirectLocation(result).value mustEqual onwardRoute.url
       }
     }
 

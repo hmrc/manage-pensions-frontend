@@ -16,7 +16,7 @@
 
 package testhelpers
 
-import models.{Invitation, SchemeReferenceNumber}
+import models._
 import org.joda.time.DateTime
 import uk.gov.hmrc.domain.PsaId
 
@@ -25,9 +25,9 @@ object InvitationBuilder {
   val srn = SchemeReferenceNumber("S0987654321")
   val pstr1 = "S12345"
   val inviteePsaId1 = PsaId("P1234567")
+  val inviterPsaId1 = PsaId("I1234567")
   val invitation1:Invitation = {
     val schemeName1 = "Test scheme1 name"
-    val inviterPsaId1 = PsaId("I1234567")
     val inviteeName1 = "Test Invitee1 Name"
     val expiryDate1 = new DateTime("2018-11-10")
 
@@ -45,6 +45,23 @@ object InvitationBuilder {
     Invitation(srn, pstr2, schemeName2, inviterPsaId2, inviteePsaId2, inviteeName2, expiryDate2)
 
   }
+  val address = Address("line 1", "line 2", Some("line 3"), Some("line 4"), postcode = Some("AB11AB"), country = "GB")
+  val pensionAdviser = PensionAdviserDetails(
+    name = "test adviser",
+    addressDetail = address,
+    email = "test@test.com"
+  )
+
+  val acceptedInvitation = AcceptedInvitation(
+    pstr = pstr1,
+    inviteePsaId = PsaId("A0000000"),
+    inviterPsaId = inviterPsaId1,
+    declaration = true,
+    declarationDuties = false,
+    pensionAdviserDetails = Some(pensionAdviser)
+  )
   val invitationList = List(invitation1, invitation2)
+
+
 }
 

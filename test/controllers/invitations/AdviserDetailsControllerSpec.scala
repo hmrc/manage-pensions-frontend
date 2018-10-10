@@ -38,7 +38,7 @@ class AdviserDetailsControllerSpec extends ControllerWithQuestionPageBehaviours 
 
     new AdviserDetailsController(
       frontendAppConfig, messagesApi,fakeAuth, new FakeNavigator(onwardRoute), dataRetrievalAction,
-      requiredDateAction, formProvider, FakeUserAnswersCacheConnector).onPageLoad(NormalMode)
+      requiredDataAction, formProvider, FakeUserAnswersCacheConnector).onPageLoad(NormalMode)
   }
 
 
@@ -46,7 +46,7 @@ class AdviserDetailsControllerSpec extends ControllerWithQuestionPageBehaviours 
 
     new AdviserDetailsController(
       frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction,
-      requiredDateAction, formProvider, FakeUserAnswersCacheConnector).onSubmit(NormalMode)
+      requiredDataAction, formProvider, FakeUserAnswersCacheConnector).onSubmit(NormalMode)
   }
 
   private def viewAsString(form: Form[_] = form) = adviserDetails(frontendAppConfig, form, NormalMode)(fakeRequest, messages).toString

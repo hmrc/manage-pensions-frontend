@@ -16,7 +16,8 @@
 
 package utils
 
-import org.joda.time.DateTime
+import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
+import org.joda.time.{DateTime, LocalDate}
 import org.scalatest.{Matchers, WordSpec}
 
 class DateHelperSpec extends WordSpec with Matchers {
@@ -39,6 +40,14 @@ class DateHelperSpec extends WordSpec with Matchers {
     "respond correctly for a date at 1 second to midnight" in {
       val result = dateHelper.dateTimeFromNowToMidnightAfterDays(daysAhead).toString
       result shouldBe "2018-02-04T00:00:00.000Z"
+    }
+  }
+
+  "displayExpiryDate " should {
+
+    "return one day less with the correct format" in {
+      val result = dateHelper.displayExpiryDate(dateHelper.currentDate.toLocalDate)
+      result shouldBe "3 January 2018"
     }
   }
 }

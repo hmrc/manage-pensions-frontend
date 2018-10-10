@@ -29,6 +29,7 @@ import play.api.inject.bind
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import utils.annotations.AcceptInvitation
 import utils.{FakeNavigator, Navigator}
 import views.html.invitations.pension_adviser_address_list
 
@@ -83,9 +84,9 @@ class PensionAdviserAddressListControllerSpec extends WordSpec with Matchers wit
   "post" must {
 
     "redirect to the page specified by the navigator following submission of valid data" in {
-
+      val onwardRoute = controllers.routes.IndexController.onPageLoad()
       running(_.overrides(
-        bind[Navigator].toInstance(navigator),
+        bind[Navigator].qualifiedWith(classOf[AcceptInvitation]).toInstance(new FakeNavigator(onwardRoute)),
         bind[AuthAction].toInstance(FakeAuthAction()),
         bind[DataRetrievalAction].toInstance(dataRetrievalAction),
         bind[UserAnswersCacheConnector].toInstance(FakeUserAnswersCacheConnector)
@@ -94,7 +95,7 @@ class PensionAdviserAddressListControllerSpec extends WordSpec with Matchers wit
         val result = controller.onSubmit(NormalMode)(FakeRequest().withFormUrlEncodedBody("value" -> "1"))
 
         status(result) shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some(controllers.routes.IndexController.onPageLoad().url)
+        redirectLocation(result) shouldBe Some(onwardRoute.url)
       }
 
     }

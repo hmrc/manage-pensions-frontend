@@ -153,7 +153,13 @@ messages__invitationDuplicate__returnToSchemes__link = Return to your pension sc
 
 messages__adviser__postcode__title = What is your pension adviser’s postcode?
 messages__adviser__postcode__heading = What is {0}’s postcode?
+messages__adviser__postcode__label = Postcode
+messages__adviser__postcode__lede = You can enter any postcode you have for your adviser.
 messages__error__postcode__lookup__no__results = There are no addresses for that postcode
+messages__adviser__postcode__enter_postcode_lhs = You can
+messages__adviser__postcode__enter_postcode_link = enter the address manually
+messages__adviser__postcode__enter_postcode_rhs = if it is overseas.
+
 
 error.postcode.length = The postcode cannot be more than 8 characters
 error.postcode.required = Enter the postcode
@@ -210,7 +216,7 @@ messages__adviser__email__address__title = What is your pension adviser’s emai
 messages__adviser__email__address__heading = What is {0}’s email address?
 messages__adviser__email__address__p1 = This will be used if HMRC need to contact your pension adviser.
 
-messages__yourInvitations__title = Scheme invitations
+messages__yourInvitations__title = Your invitations
 messages__yourInvitations__heading = Your invitations
 messages__yourInvitations__lede = You have been invited to administer:
 messages__yourInvitations__scheme_expiry_date = You have until {0} to accept this invitation.

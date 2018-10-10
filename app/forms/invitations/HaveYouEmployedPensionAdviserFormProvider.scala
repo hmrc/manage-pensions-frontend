@@ -23,7 +23,7 @@ import play.api.data.Form
 class HaveYouEmployedPensionAdviserFormProvider @Inject()() extends Mappings {
 
   def apply(): Form[Boolean] = Form(
-    "haveYouEmployedPensionAdviser" -> boolean()
+    "value" -> boolean()
   )
 
 }

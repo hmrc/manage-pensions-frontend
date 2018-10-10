@@ -15,6 +15,7 @@
  *@
 
 @import org.joda.time.DateTime
+@import utils.DateHelper._
 
 @(
 schemeName: String,
@@ -26,8 +27,8 @@ srn: String
 <li>
     <div>
         <h2 class="bold">@schemeName</h2>
-        <p>@messages("messages__yourInvitations__scheme_expiry_date", utils.DateHelper.formatDate(expiryDate.toLocalDate))</p>
-        <a id= "accept-invitation-@id" href="@controllers.invitations.routes.YourInvitationsController.onSubmit(srn).url">
+        <p>@messages("messages__yourInvitations__scheme_expiry_date", displayExpiryDate(expiryDate.toLocalDate))</p>
+        <a id= "accept-invitation-@id" href="@controllers.invitations.routes.YourInvitationsController.onSelect(srn)">
             @messages("messages__yourInvitations__accept_link")
         </a>
     </div>

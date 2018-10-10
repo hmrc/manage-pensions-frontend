@@ -16,8 +16,21 @@
 
 package models
 
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json._
 import uk.gov.hmrc.domain.PsaId
+import play.api.libs.functional.syntax._
+
+case class PensionAdviserDetails(name: String, addressDetail: Address, email: String)
+
+object PensionAdviserDetails {
+  val userAnswerReads: Reads[PensionAdviserDetails] = (
+    (JsPath \ "adviserName").read[String] and
+      (JsPath \ "adviserAddress").read[Address] and
+      (JsPath \ "adviserEmail").read[String]
+    ) ((name, address, email) => PensionAdviserDetails(name, address, email))
+
+  implicit val formats: OFormat[PensionAdviserDetails] = Json.format[PensionAdviserDetails]
+}
 
 case class AcceptedInvitation(
                                pstr: String,
@@ -25,16 +38,11 @@ case class AcceptedInvitation(
                                inviterPsaId: PsaId,
                                declaration: Boolean,
                                declarationDuties: Boolean,
-                               pensionAdviserDetail: Option[PensionAdviserDetail]
+                               pensionAdviserDetails: Option[PensionAdviserDetails]
                              )
 
 object AcceptedInvitation {
-  implicit val formats: Format[AcceptedInvitation] = Json.format
+  implicit val formats: Format[AcceptedInvitation] = Json.format[AcceptedInvitation]
 }
 
-case class PensionAdviserDetail(name: String, addressDetail: Address, contactDetail: ContactDetails)
-
-object PensionAdviserDetail {
-  implicit val formats: Format[PensionAdviserDetail] = Json.format
-}
 
