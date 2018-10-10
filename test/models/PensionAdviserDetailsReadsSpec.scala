@@ -25,18 +25,16 @@ class PensionAdviserDetailsReadsSpec extends WordSpec with MustMatchers {
   import PensionAdviserDetailsReadsSpec._
 
   "PensionAdviserDetails" must {
+    val result = inputJson.as[PensionAdviserDetails](PensionAdviserDetails.userAnswerReads)
     "read the adviser name" in {
-      val result = inputJson.as[PensionAdviserDetails]
       result.name mustBe InvitationBuilder.pensionAdviser.name
     }
 
     "read the adviser address" in {
-      val result = inputJson.as[PensionAdviserDetails]
       result.addressDetail mustBe InvitationBuilder.pensionAdviser.addressDetail
     }
 
     "read the adviser email" in {
-      val result = inputJson.as[PensionAdviserDetails]
       result.email mustBe InvitationBuilder.pensionAdviser.email
     }
   }

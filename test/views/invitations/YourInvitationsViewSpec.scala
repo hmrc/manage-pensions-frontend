@@ -45,13 +45,13 @@ class YourInvitationsViewSpec extends ViewBehaviours {
     "display details for all invitations" in {
       Jsoup.parse(createView().toString) must haveDynamicText(invitation1.schemeName)
       Jsoup.parse(createView().toString) must
-        haveDynamicText(Message("messages__yourInvitations__scheme_expiry_date", formatDate(invitation1.expireAt.toLocalDate)))
+        haveDynamicText(Message("messages__yourInvitations__scheme_expiry_date", displayExpiryDate(invitation1.expireAt.toLocalDate)))
       Jsoup.parse(createView().toString).select("a[id=accept-invitation-0]") must
         haveLink(controllers.invitations.routes.YourInvitationsController.onSelect(srn).url)
 
       Jsoup.parse(createView().toString) must haveDynamicText(invitation2.schemeName)
       Jsoup.parse(createView().toString) must
-        haveDynamicText(Message("messages__yourInvitations__scheme_expiry_date", formatDate(invitation2.expireAt.toLocalDate)))
+        haveDynamicText(Message("messages__yourInvitations__scheme_expiry_date", displayExpiryDate(invitation2.expireAt.toLocalDate)))
       Jsoup.parse(createView().toString).select("a[id=accept-invitation-1]") must
         haveLink(controllers.invitations.routes.YourInvitationsController.onSelect(srn).url)
     }
