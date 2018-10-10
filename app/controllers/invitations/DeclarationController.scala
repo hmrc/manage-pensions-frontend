@@ -92,7 +92,7 @@ class DeclarationController @Inject()(
       invitations.headOption match {
         case Some(invitation) =>
           val acceptedInvitation = AcceptedInvitation(invitation.pstr, request.psaId, invitation.inviterPsaId, declaration,
-            !havePensionAdviser, userAnswers.json.validate[PensionAdviserDetails].asOpt)
+            !havePensionAdviser, userAnswers.json.validate[PensionAdviserDetails](PensionAdviserDetails.userAnswerReads).asOpt)
 
           invitationConnector.acceptInvite(acceptedInvitation).flatMap { _ =>
             invitationsCacheConnector.remove(invitation.pstr, request.psaId).map { _ =>

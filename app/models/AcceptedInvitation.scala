@@ -16,20 +16,20 @@
 
 package models
 
-import play.api.libs.json.{Format, JsPath, Json, Writes}
+import play.api.libs.json._
 import uk.gov.hmrc.domain.PsaId
 import play.api.libs.functional.syntax._
 
 case class PensionAdviserDetails(name: String, addressDetail: Address, email: String)
 
 object PensionAdviserDetails {
-  implicit val apiReads = (
+  val userAnswerReads: Reads[PensionAdviserDetails] = (
     (JsPath \ "adviserName").read[String] and
       (JsPath \ "adviserAddress").read[Address] and
       (JsPath \ "adviserEmail").read[String]
     ) ((name, address, email) => PensionAdviserDetails(name, address, email))
 
-  implicit val defaultWrites: Writes[PensionAdviserDetails] = Json.writes[PensionAdviserDetails]
+  implicit val formats: OFormat[PensionAdviserDetails] = Json.format[PensionAdviserDetails]
 }
 
 case class AcceptedInvitation(
