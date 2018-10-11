@@ -16,14 +16,17 @@
 
 package controllers.invitations
 
-import connectors.{InvitationConnector, NameMatchingFailedException, PsaAlreadyInvitedException}
+import connectors.{InvitationConnector, NameMatchingFailedException, PsaAlreadyInvitedException, SchemeDetailsConnector}
 import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction}
 import controllers.behaviours.ControllerWithNormalPageBehaviours
 import models.{AcceptedInvitation, Invitation, MinimalSchemeDetail}
+import org.mockito.Matchers.any
+import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import testhelpers.CommonBuilders
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.countryOptions.CountryOptions
 import utils.{CheckYourAnswersFactory, UserAnswers}
@@ -38,6 +41,8 @@ class CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours 
 
   private val countryOptions = new CountryOptions(environment, frontendAppConfig)
   private val checkYourAnswersFactory = new CheckYourAnswersFactory(countryOptions)
+
+  private val fakeSchemeDetailsConnector: SchemeDetailsConnector = mock[SchemeDetailsConnector]
 
   private def fakeInvitationConnector(response: Future[Unit] = Future.successful(())): InvitationConnector = new InvitationConnector {
 
@@ -55,21 +60,21 @@ class CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours 
 
     new CheckYourAnswersController(
       frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction,
-      checkYourAnswersFactory, fakeInvitationConnector()).onPageLoad()
+      checkYourAnswersFactory, fakeSchemeDetailsConnector, fakeInvitationConnector()).onPageLoad()
   }
 
   def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
     new CheckYourAnswersController(
       frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction,
-      checkYourAnswersFactory, fakeInvitationConnector()).onSubmit()
+      checkYourAnswersFactory, fakeSchemeDetailsConnector, fakeInvitationConnector()).onSubmit()
   }
 
   def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction, invitationResponse: Future[Unit]) = {
 
     new CheckYourAnswersController(
       frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction,
-      checkYourAnswersFactory, fakeInvitationConnector(invitationResponse)).onSubmit()
+      checkYourAnswersFactory, fakeSchemeDetailsConnector, fakeInvitationConnector(invitationResponse)).onSubmit()
   }
 
 
@@ -80,6 +85,9 @@ class CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours 
   "calling submit" must {
 
     "redirect to duplicate invitation page if invitation failed with Psa already invited error" in {
+      when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any())(any(), any()))
+        .thenReturn(Future.successful(schemeDetailsData))
+
       val result = onSubmitAction(userAnswerUpdated, FakeAuthAction(), Future.failed(new PsaAlreadyInvitedException))(FakeRequest())
 
       status(result) mustBe SEE_OTHER
@@ -87,6 +95,9 @@ class CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours 
     }
 
     "redirect to incorrect psa details page if invitation failed with name matching error" in {
+      when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any())(any(), any()))
+        .thenReturn(Future.successful(schemeDetailsData))
+
       val result = onSubmitAction(userAnswerUpdated, FakeAuthAction(), Future.failed(new NameMatchingFailedException))(FakeRequest())
 
       status(result) mustBe SEE_OTHER
@@ -110,5 +121,7 @@ object CheckYourAnswersControllerSpec {
     .inviteeId("A7654321")
     .inviteeName("test-invite-name")
     .dataRetrievalAction
+
+  private val schemeDetailsData = CommonBuilders.schemeDetailsWithPsaOnlyResponse
 
 }
