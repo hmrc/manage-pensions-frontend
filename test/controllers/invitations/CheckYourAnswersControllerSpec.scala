@@ -16,14 +16,17 @@
 
 package controllers.invitations
 
-import connectors.{InvitationConnector, NameMatchingFailedException, PsaAlreadyInvitedException}
+import connectors.{InvitationConnector, NameMatchingFailedException, PsaAlreadyInvitedException, SchemeDetailsConnector}
 import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction}
 import controllers.behaviours.ControllerWithNormalPageBehaviours
 import models.{AcceptedInvitation, Invitation, MinimalSchemeDetail}
+import org.mockito.Matchers.any
+import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import testhelpers.CommonBuilders
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.countryOptions.CountryOptions
 import utils.{CheckYourAnswersFactory, UserAnswers}
@@ -38,6 +41,8 @@ class CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours 
 
   private val countryOptions = new CountryOptions(environment, frontendAppConfig)
   private val checkYourAnswersFactory = new CheckYourAnswersFactory(countryOptions)
+
+  private val fakeSchemeDetailsConnector: SchemeDetailsConnector = mock[SchemeDetailsConnector]
 
   private def fakeInvitationConnector(response: Future[Unit] = Future.successful(())): InvitationConnector = new InvitationConnector {
 
@@ -55,21 +60,24 @@ class CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours 
 
     new CheckYourAnswersController(
       frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction,
-      checkYourAnswersFactory, fakeInvitationConnector()).onPageLoad()
+      checkYourAnswersFactory, fakeSchemeDetailsConnector, fakeInvitationConnector()).onPageLoad()
   }
 
   def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
+    when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any())(any(), any()))
+      .thenReturn(Future.successful(CommonBuilders.schemeDetailsWithPsaOnlyResponse))
+
     new CheckYourAnswersController(
       frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction,
-      checkYourAnswersFactory, fakeInvitationConnector()).onSubmit()
+      checkYourAnswersFactory, fakeSchemeDetailsConnector, fakeInvitationConnector()).onSubmit()
   }
 
   def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction, invitationResponse: Future[Unit]) = {
 
     new CheckYourAnswersController(
       frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction,
-      checkYourAnswersFactory, fakeInvitationConnector(invitationResponse)).onSubmit()
+      checkYourAnswersFactory, fakeSchemeDetailsConnector, fakeInvitationConnector(invitationResponse)).onSubmit()
   }
 
 
@@ -92,6 +100,14 @@ class CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.invitations.routes.IncorrectPsaDetailsController.onPageLoad().url)
     }
+
+    "redirect to psa already invited page if scheme already has invitee psa id associated with it" in {
+      when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any())(any(), any()))
+        .thenReturn(Future.successful(CommonBuilders.schemeDetailsWithPsaOnlyResponse))
+      val result = onSubmitAction(userAnswerUpdatedPsaAlreadyInvited, FakeAuthAction(), Future.successful(()))(FakeRequest())
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(controllers.invitations.routes.PsaAlreadyAssociatedController.onPageLoad().url)
+    }
   }
 }
 
@@ -100,6 +116,7 @@ object CheckYourAnswersControllerSpec {
   private val testPstr = "test-pstr"
   private val testSchemeName = "test-scheme-name"
   private val testSchemeDetail = MinimalSchemeDetail(testSrn, Some(testPstr), testSchemeName)
+  private val srn = "S9000000000"
 
   private val userAnswer = UserAnswers()
     .minimalSchemeDetails(testSchemeDetail)
@@ -109,6 +126,13 @@ object CheckYourAnswersControllerSpec {
     .minimalSchemeDetails(testSchemeDetail)
     .inviteeId("A7654321")
     .inviteeName("test-invite-name")
+      .srn(srn)
     .dataRetrievalAction
 
+  private val userAnswerUpdatedPsaAlreadyInvited = UserAnswers()
+    .minimalSchemeDetails(testSchemeDetail)
+    .inviteeId("A0000000")
+    .inviteeName("test-invite-name")
+    .srn(srn)
+    .dataRetrievalAction
 }
