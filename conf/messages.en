@@ -145,13 +145,13 @@ messages__error__adviser__name__required = Enter the name of your pension advise
 messages__error__adviser__name__length = Enter a name using less than 108 characters
 messages__error__adviser__name__invalid = Enter a name using only letters
 
-messages__invitationDuplicate__title = This administrator is already associated with the scheme
+messages__invitationDuplicate__title = This PSA has already been sent an invite
 messages__invitationDuplicate__heading = {0} has already been sent an invite
 messages__invitationDuplicate__schemeName = {0} has already been invited to administer {1}.
 messages__invitationDuplicate__inviteInformation = They will not be sent another invite.
 messages__invitationDuplicate__returnToSchemes__link = Return to your pension schemes
 
-messages__psaAlreadyAssociated__title = The PSA is already associated with the scheme
+messages__psaAlreadyAssociated__title = This administrator is already associated with the scheme
 messages__psaAlreadyAssociated__heading = {0} is already associated with this scheme
 messages__psaAlreadyAssociated__schemeName = {0} has already accepted an invitation to administer {1}.
 messages__psaAlreadyAssociated__inviteInformation = They will not be sent another invitation.
