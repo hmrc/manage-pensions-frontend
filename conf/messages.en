@@ -151,6 +151,12 @@ messages__invitationDuplicate__schemeName = {0} has already been invited to admi
 messages__invitationDuplicate__inviteInformation = They will not be sent another invite.
 messages__invitationDuplicate__returnToSchemes__link = Return to your pension schemes
 
+messages__psaAlreadyAssociated__title = The PSA is already associated with the scheme
+messages__psaAlreadyAssociated__heading = {0} is already associated with this scheme
+messages__psaAlreadyAssociated__schemeName = {0} has already accepted an invitation to administer {1}.
+messages__psaAlreadyAssociated__inviteInformation = They will not be sent another invitation.
+messages__psaAlreadyAssociated__returnToSchemes__link = Return to your pension schemes
+
 messages__adviser__postcode__title = What is your pension adviser’s postcode?
 messages__adviser__postcode__heading = What is {0}’s postcode?
 messages__adviser__postcode__label = Postcode
