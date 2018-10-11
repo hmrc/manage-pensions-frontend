@@ -65,6 +65,9 @@ class CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours 
 
   def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
+    when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any())(any(), any()))
+      .thenReturn(Future.successful(schemeDetailsData))
+
     new CheckYourAnswersController(
       frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction,
       checkYourAnswersFactory, fakeSchemeDetailsConnector, fakeInvitationConnector()).onSubmit()
@@ -85,9 +88,6 @@ class CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours 
   "calling submit" must {
 
     "redirect to duplicate invitation page if invitation failed with Psa already invited error" in {
-      when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any())(any(), any()))
-        .thenReturn(Future.successful(schemeDetailsData))
-
       val result = onSubmitAction(userAnswerUpdated, FakeAuthAction(), Future.failed(new PsaAlreadyInvitedException))(FakeRequest())
 
       status(result) mustBe SEE_OTHER
@@ -95,13 +95,20 @@ class CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours 
     }
 
     "redirect to incorrect psa details page if invitation failed with name matching error" in {
-      when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any())(any(), any()))
-        .thenReturn(Future.successful(schemeDetailsData))
-
       val result = onSubmitAction(userAnswerUpdated, FakeAuthAction(), Future.failed(new NameMatchingFailedException))(FakeRequest())
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.invitations.routes.IncorrectPsaDetailsController.onPageLoad().url)
+    }
+
+    "redirect to psa already invited page if scheme already has invitee psa id associated with it" in {
+      when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any())(any(), any()))
+        .thenReturn(Future.successful(schemeDetailsData))
+
+      val result = onSubmitAction(userAnswerUpdatedPsaAlreadyInvited, FakeAuthAction(), Future.successful(()))(FakeRequest())
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(controllers.invitations.routes.PsaAlreadyAssociatedController.onPageLoad().url)
     }
   }
 }
@@ -111,6 +118,7 @@ object CheckYourAnswersControllerSpec {
   private val testPstr = "test-pstr"
   private val testSchemeName = "test-scheme-name"
   private val testSchemeDetail = MinimalSchemeDetail(testSrn, Some(testPstr), testSchemeName)
+  private val srn = "S9000000000"
 
   private val userAnswer = UserAnswers()
     .minimalSchemeDetails(testSchemeDetail)
@@ -120,6 +128,14 @@ object CheckYourAnswersControllerSpec {
     .minimalSchemeDetails(testSchemeDetail)
     .inviteeId("A7654321")
     .inviteeName("test-invite-name")
+      .srn(srn)
+    .dataRetrievalAction
+
+  private val userAnswerUpdatedPsaAlreadyInvited = UserAnswers()
+    .minimalSchemeDetails(testSchemeDetail)
+    .inviteeId("A0000000")
+    .inviteeName("test-invite-name")
+    .srn(srn)
     .dataRetrievalAction
 
   private val schemeDetailsData = CommonBuilders.schemeDetailsWithPsaOnlyResponse

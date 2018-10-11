@@ -21,8 +21,8 @@ import config.FrontendAppConfig
 import connectors.{InvitationConnector, NameMatchingFailedException, PsaAlreadyInvitedException, SchemeDetailsConnector}
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
-import identifiers.{MinimalSchemeDetailId, SchemeSrnId}
 import identifiers.invitations.{CheckYourAnswersId, InviteeNameId, InviteePSAId}
+import identifiers.{MinimalSchemeDetailId, SchemeSrnId}
 import models.{NormalMode, PsaDetails, SchemeReferenceNumber}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
@@ -61,8 +61,8 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
 
   def onSubmit(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
-      (MinimalSchemeDetailId and InviteeNameId and InviteePSAId and SchemeSrnId).retrieve.right.map {
-        case schemeDetails ~ inviteeName ~ inviteePsaId ~ srn if schemeDetails.pstr.isDefined =>
+      (MinimalSchemeDetailId and InviteeNameId and InviteePSAId).retrieve.right.map {
+        case schemeDetails ~ inviteeName ~ inviteePsaId if schemeDetails.pstr.isDefined =>
           val invitation = models.Invitation(
             SchemeReferenceNumber(schemeDetails.srn),
             schemeDetails.pstr.get,
@@ -72,23 +72,23 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
             inviteeName,
             getExpireAt
           )
-          schemeDetailsConnector.getSchemeDetails("srn", srn)
+          schemeDetailsConnector.getSchemeDetails("srn", schemeDetails.srn)
             .map(_.psaDetails.fold[Seq[PsaDetails]](Seq.empty)(identity).exists(_.id == inviteePsaId))
             .flatMap { isPsaAlreadyAssociated =>
-              if(isPsaAlreadyAssociated) {
-                Future.successful(Ok("waa"))
+              if (isPsaAlreadyAssociated) {
+                Future.successful(Redirect(routes.PsaAlreadyAssociatedController.onPageLoad()))
               } else {
                 invitationConnector.invite(invitation)
                   .map(_ => Redirect(navigator.nextPage(CheckYourAnswersId(schemeDetails.srn), NormalMode, request.userAnswers)))
               }
             }.recoverWith {
-            case _: NameMatchingFailedException =>
-              Future.successful(Redirect(controllers.invitations.routes.IncorrectPsaDetailsController.onPageLoad()))
-            case _: PsaAlreadyInvitedException =>
-              Future.successful(Redirect(controllers.invitations.routes.InvitationDuplicateController.onPageLoad()))
-            case _ =>
-              Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
-          }
+              case _: NameMatchingFailedException =>
+                Future.successful(Redirect(controllers.invitations.routes.IncorrectPsaDetailsController.onPageLoad()))
+              case _: PsaAlreadyInvitedException =>
+                Future.successful(Redirect(controllers.invitations.routes.InvitationDuplicateController.onPageLoad()))
+              case _ =>
+                Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+            }
         case _ =>
           Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
       }
