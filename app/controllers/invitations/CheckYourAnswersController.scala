@@ -21,8 +21,8 @@ import config.FrontendAppConfig
 import connectors.{InvitationConnector, NameMatchingFailedException, PsaAlreadyInvitedException, SchemeDetailsConnector}
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import identifiers.MinimalSchemeDetailId
 import identifiers.invitations.{CheckYourAnswersId, InviteeNameId, InviteePSAId}
-import identifiers.{MinimalSchemeDetailId, SchemeSrnId}
 import models.{NormalMode, PsaDetails, SchemeReferenceNumber}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Request}
@@ -77,20 +77,19 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
             getExpireAt
           )
           isSchemeAssociatedWithInvitee(schemeDetails.srn, inviteePsaId).flatMap {
-              if (_) {
-                Future.successful(Redirect(routes.PsaAlreadyAssociatedController.onPageLoad()))
-              } else {
-                invitationConnector.invite(invitation)
-                  .map(_ => Redirect(navigator.nextPage(CheckYourAnswersId(schemeDetails.srn), NormalMode, request.userAnswers)))
-              }
-            }.recoverWith {
-              case _: NameMatchingFailedException =>
-                Future.successful(Redirect(controllers.invitations.routes.IncorrectPsaDetailsController.onPageLoad()))
-              case _: PsaAlreadyInvitedException =>
-                Future.successful(Redirect(controllers.invitations.routes.InvitationDuplicateController.onPageLoad()))
-              case _ =>
-                Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
-            }
+            case true =>
+              Future.successful(Redirect(routes.PsaAlreadyAssociatedController.onPageLoad()))
+            case _ =>
+              invitationConnector.invite(invitation)
+                .map(_ => Redirect(navigator.nextPage(CheckYourAnswersId(schemeDetails.srn), NormalMode, request.userAnswers)))
+          }.recoverWith {
+            case _: NameMatchingFailedException =>
+              Future.successful(Redirect(controllers.invitations.routes.IncorrectPsaDetailsController.onPageLoad()))
+            case _: PsaAlreadyInvitedException =>
+              Future.successful(Redirect(controllers.invitations.routes.InvitationDuplicateController.onPageLoad()))
+            case _ =>
+              Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+          }
         case _ =>
           Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
       }
