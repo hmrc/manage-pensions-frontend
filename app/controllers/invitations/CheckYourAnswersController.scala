@@ -25,7 +25,7 @@ import identifiers.invitations.{CheckYourAnswersId, InviteeNameId, InviteePSAId}
 import identifiers.{MinimalSchemeDetailId, SchemeSrnId}
 import models.{NormalMode, PsaDetails, SchemeReferenceNumber}
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, Request}
 import uk.gov.hmrc.domain.PsaId
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.annotations.Invitation
@@ -59,6 +59,10 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
       }
   }
 
+  private def isSchemeAssociatedWithInvitee(srn: String, inviteePsaId: String)(implicit request: Request[_]): Future[Boolean] =
+    schemeDetailsConnector.getSchemeDetails("srn", srn)
+      .map(_.psaDetails.fold[Seq[PsaDetails]](Seq.empty)(identity).exists(_.id == inviteePsaId))
+
   def onSubmit(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
       (MinimalSchemeDetailId and InviteeNameId and InviteePSAId).retrieve.right.map {
@@ -72,10 +76,8 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
             inviteeName,
             getExpireAt
           )
-          schemeDetailsConnector.getSchemeDetails("srn", schemeDetails.srn)
-            .map(_.psaDetails.fold[Seq[PsaDetails]](Seq.empty)(identity).exists(_.id == inviteePsaId))
-            .flatMap { isPsaAlreadyAssociated =>
-              if (isPsaAlreadyAssociated) {
+          isSchemeAssociatedWithInvitee(schemeDetails.srn, inviteePsaId).flatMap {
+              if (_) {
                 Future.successful(Redirect(routes.PsaAlreadyAssociatedController.onPageLoad()))
               } else {
                 invitationConnector.invite(invitation)

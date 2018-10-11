@@ -66,7 +66,7 @@ class CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours 
   def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
     when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any())(any(), any()))
-      .thenReturn(Future.successful(schemeDetailsData))
+      .thenReturn(Future.successful(CommonBuilders.schemeDetailsWithPsaOnlyResponse))
 
     new CheckYourAnswersController(
       frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction,
@@ -103,10 +103,8 @@ class CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours 
 
     "redirect to psa already invited page if scheme already has invitee psa id associated with it" in {
       when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any())(any(), any()))
-        .thenReturn(Future.successful(schemeDetailsData))
-
+        .thenReturn(Future.successful(CommonBuilders.schemeDetailsWithPsaOnlyResponse))
       val result = onSubmitAction(userAnswerUpdatedPsaAlreadyInvited, FakeAuthAction(), Future.successful(()))(FakeRequest())
-
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.invitations.routes.PsaAlreadyAssociatedController.onPageLoad().url)
     }
@@ -137,7 +135,4 @@ object CheckYourAnswersControllerSpec {
     .inviteeName("test-invite-name")
     .srn(srn)
     .dataRetrievalAction
-
-  private val schemeDetailsData = CommonBuilders.schemeDetailsWithPsaOnlyResponse
-
 }
