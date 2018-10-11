@@ -104,13 +104,13 @@
                                 @messages("messages__listSchemes__pstr_not_assigned")
                             }
                         </span>
-                        <span class="visually-hidden">@messages("messages__listSchemes__PSTR__screen_reader", scheme.name, scheme.pstr)</span>
+                        <span class="visually-hidden">@messages("messages__listSchemes__PSTR__screen_reader", scheme.name, pstrValue(scheme.pstr))</span>
                     </p>
                 </div>
 
             <div class="column-two-sixths table-column scheme-name">
                 <p id="@{statusId(index)}">
-                    <span>@statusValue(scheme.schemeStatus)</span>
+                    <span aria-hidden="true">@statusValue(scheme.schemeStatus)</span>
                     <span class="visually-hidden">@messages("messages__listSchemes__status__screen_reader", scheme.name, scheme.schemeStatus)</span>
                 </p>
             </div>
