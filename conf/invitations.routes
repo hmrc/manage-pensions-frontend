@@ -47,6 +47,7 @@ POST       /change-pension-adviser-address              controllers.invitations.
 GET        /cannot-send-invite                          controllers.invitations.YouCannotSendAnInviteController.onPageLoad()
 
 GET        /psa-already-invited                         controllers.invitations.InvitationDuplicateController.onPageLoad()
+GET        /administrator-already-associated            controllers.invitations.PsaAlreadyAssociatedController.onPageLoad()
 
 GET        /declaration                                 controllers.invitations.DeclarationController.onPageLoad()
 POST       /declaration                                 controllers.invitations.DeclarationController.onSubmit()

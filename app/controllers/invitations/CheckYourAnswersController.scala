@@ -18,14 +18,14 @@ package controllers.invitations
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
-import connectors.{InvitationConnector, NameMatchingFailedException, PsaAlreadyInvitedException}
+import connectors.{InvitationConnector, NameMatchingFailedException, PsaAlreadyInvitedException, SchemeDetailsConnector}
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import identifiers.MinimalSchemeDetailId
 import identifiers.invitations.{CheckYourAnswersId, InviteeNameId, InviteePSAId}
-import models.{NormalMode, SchemeReferenceNumber}
+import models.{NormalMode, PsaDetails, SchemeReferenceNumber}
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, Request}
 import uk.gov.hmrc.domain.PsaId
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.annotations.Invitation
@@ -42,6 +42,7 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
                                            getData: DataRetrievalAction,
                                            requireData: DataRequiredAction,
                                            checkYourAnswersFactory: CheckYourAnswersFactory,
+                                           schemeDetailsConnector: SchemeDetailsConnector,
                                            invitationConnector: InvitationConnector) extends FrontendController with Retrievals with I18nSupport {
 
   def onPageLoad(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
@@ -58,6 +59,10 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
       }
   }
 
+  private def isSchemeAssociatedWithInvitee(srn: String, inviteePsaId: String)(implicit request: Request[_]): Future[Boolean] =
+    schemeDetailsConnector.getSchemeDetails("srn", srn)
+      .map(_.psaDetails.fold[Seq[PsaDetails]](Seq.empty)(identity).exists(_.id == inviteePsaId))
+
   def onSubmit(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
       (MinimalSchemeDetailId and InviteeNameId and InviteePSAId).retrieve.right.map {
@@ -71,9 +76,12 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
             inviteeName,
             getExpireAt
           )
-
-          invitationConnector.invite(invitation).map { _ =>
-            Redirect(navigator.nextPage(CheckYourAnswersId(schemeDetails.srn), NormalMode, request.userAnswers))
+          isSchemeAssociatedWithInvitee(schemeDetails.srn, inviteePsaId).flatMap {
+            case true =>
+              Future.successful(Redirect(routes.PsaAlreadyAssociatedController.onPageLoad()))
+            case _ =>
+              invitationConnector.invite(invitation)
+                .map(_ => Redirect(navigator.nextPage(CheckYourAnswersId(schemeDetails.srn), NormalMode, request.userAnswers)))
           }.recoverWith {
             case _: NameMatchingFailedException =>
               Future.successful(Redirect(controllers.invitations.routes.IncorrectPsaDetailsController.onPageLoad()))
