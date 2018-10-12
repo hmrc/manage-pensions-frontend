@@ -52,7 +52,7 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
     )
 
     "have a name" in {
-      createView must haveLink(controllers.routes.PsaDetailsController.onPageLoad().url, "psaLink")
+      createView must haveLink(frontendAppConfig.registeredPsaDetailsUrl, "psaLink")
       createView must haveElementWithText("psaName", "John Doe")
     }
 
