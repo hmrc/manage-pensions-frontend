@@ -17,6 +17,7 @@
 package controllers
 
 import connectors._
+import controllers.SchemeDetailsControllerSpec.{administrators, fakeRequest, frontendAppConfig, messages, openDate}
 import controllers.actions.{DataRetrievalAction, _}
 import org.mockito.Matchers
 import org.mockito.Mockito.{reset, when}
@@ -38,6 +39,28 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase{
       reset(fakeSchemeDetailsConnector)
       when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(schemeDetailsWithPsaOnlyResponse))
+      when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(listOfSchemesResponse))
+      val result = controller().onPageLoad(srn)(fakeRequest)
+      status(result) mustBe OK
+      contentAsString(result) mustBe viewAsString()
+    }
+
+    "return OK and the correct view for a GET where administrators a mix of individual and org" in {
+      val administrators = Some(Seq("partnetship name 2", "Smith A Tony"))
+      def viewAsString(openDate: Option[String] = openDate, administrators: Option[Seq[String]] = administrators, isSchemeOpen: Boolean = true): String =
+        schemeDetails(
+          frontendAppConfig,
+          mockSchemeDetails.name,
+          openDate,
+          administrators,
+          srn,
+          isSchemeOpen
+        )(fakeRequest, messages).toString()
+
+      reset(fakeSchemeDetailsConnector)
+      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(schemeDetailsWithPsaOnlyResponseMixOfIndividualAndOrg))
       when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(listOfSchemesResponse))
       val result = controller().onPageLoad(srn)(fakeRequest)
