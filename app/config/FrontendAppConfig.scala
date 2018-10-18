@@ -60,6 +60,7 @@ class FrontendAppConfig @Inject()(override val runModeConfiguration: Configurati
   lazy val deleteSchemeUrl = s"${loadConfig("urls.deleteScheme")}"
   lazy val userResearchUrl = runModeConfiguration.underlying.getString("urls.userResearch")
   lazy val pensionSchemeOnlineServiceUrl: String = loadConfig("urls.pensionSchemeOnlineService")
+  lazy val registeredPsaDetailsUrl: String = loadConfig("urls.psaDetails")
 
   lazy val languageTranslationEnabled: Boolean = runModeConfiguration.getBoolean("features.welsh-translation").getOrElse(true)
   lazy val isWorkPackageOneEnabled: Boolean = runModeConfiguration.getBoolean("features.work-package-one-enabled").getOrElse(false)

@@ -30,7 +30,7 @@
     bodyClasses = None) {
 
     @name.map{ psaName =>
-        <a id="psaLink" href="@controllers.routes.PsaDetailsController.onPageLoad()">
+        <a id="psaLink" href="@appConfig.registeredPsaDetailsUrl">
             <p id="psaName">@psaName</p>
         </a>
     }
