@@ -61,7 +61,7 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
 
       "have link to view scheme details" in {
         Jsoup.parse(createView()().toString()).select("a[id=view-details]") must
-          haveLink(controllers.routes.SchemeDetailsController.onPageLoad(srn).url)
+          haveLink(s"http://localhost:8200/register-pension-scheme/scheme-details/${srn}")
       }
 
       "display the date on which scheme was opened" in {
