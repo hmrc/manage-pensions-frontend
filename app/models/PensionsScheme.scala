@@ -27,6 +27,17 @@ object Name {
 case class PsaDetails(id: String, organisationOrPartnershipName: Option[String], individual: Option[Name])
 
 object PsaDetails {
+  def getPsaName(psaDetails: PsaDetails): Option[String] = {
+    (psaDetails.individual, psaDetails.organisationOrPartnershipName) match {
+      case (Some(individual), _) => Some(fullName(individual))
+      case (_, Some(org)) => Some(s"$org")
+      case _ => None
+    }
+  }
+
+  private def fullName(individual: Name): String =
+    s"${individual.firstName.getOrElse("")} ${individual.middleName.getOrElse("")} ${individual.lastName.getOrElse("")}"
+
   implicit val formats: OFormat[PsaDetails] = Json.format[PsaDetails]
 }
 

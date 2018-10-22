@@ -59,15 +59,8 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
 
   }
 
-  private def administrators(psaSchemeDetails: PsaSchemeDetails): Option[Seq[String]] = {
-    psaSchemeDetails.psaDetails.map { psaDetails =>
-      psaDetails.map { details =>
-        details.individual.map { individual =>
-          fullName(individual)
-        }.getOrElse("")
-      }
-    }
-  }
+  private def administrators(psaSchemeDetails: PsaSchemeDetails): Option[Seq[String]] =
+    psaSchemeDetails.psaDetails.map(_.flatMap(PsaDetails.getPsaName))
 
   private def openedDate(srn: String, list: ListOfSchemes, isSchemeOpen: Boolean): Option[String] = {
     if (isSchemeOpen) {
@@ -84,8 +77,4 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
       None
     }
   }
-
-  private def fullName(individual: Name): String =
-    s"${individual.firstName.getOrElse("")} ${individual.middleName.getOrElse("")} ${individual.lastName.getOrElse("")}"
-
 }
