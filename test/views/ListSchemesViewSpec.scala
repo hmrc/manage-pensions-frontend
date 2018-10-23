@@ -51,10 +51,6 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
       view(config()) must haveElementWithText("noSchemes", messages("messages__listSchemes__noSchemes"))
     }
 
-    "display a link to register a new scheme when there are no schemes to display" in {
-      view(config()) must haveLink(frontendAppConfig.registerSchemeUrl, "registerNewScheme")
-    }
-
     "display the correct column headers when there are schemes to display" in {
       val actual = view(config(), fullList)
 

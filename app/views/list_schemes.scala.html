@@ -26,24 +26,30 @@
     appConfig = appConfig,
     bodyClasses = Some("full-width")) {
 
+    <div class="grid-row">
+        <div class="column-two-thirds">
     @components.heading(headingKey = messages("messages__listSchemes__title"))
 
     @if(invitationsReceived) {
         <p><a id="invitations-received" href="@routes.YourInvitationsController.onPageLoad()">@messages("messages__listSchemes__invitations_link")</a></p>
     }
-
+        </div>
+    </div>
     @if(schemes.isEmpty) {
+    <div class="grid-row">
         <div class="column-two-thirds">
             <p id="noSchemes">@messages("messages__listSchemes__noSchemes")</p>
-            <p><a id="registerNewScheme" href="@appConfig.registerSchemeUrl">@messages("messages__listSchemes__registerNewScheme")</a></p>
         </div>
+    </div>
     } else {
         @components.scheme_list(
             schemes,
             appConfig
         )
     }
-
-    <p class="govuk-margin-top-7"><a id="return-to-overview" href="@controllers.routes.SchemesOverviewController.onPageLoad().url">@messages("messages__listSchemes__return_to_overview")</a></p>
-
+    <div class="grid-row">
+        <div class="column-two-thirds">
+            <p class="govuk-margin-top-5"><a id="return-to-overview" href="@controllers.routes.SchemesOverviewController.onPageLoad().url">@messages("messages__listSchemes__return_to_overview")</a></p>
+        </div>
+    </div>
 }
