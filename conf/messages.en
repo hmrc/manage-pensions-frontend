@@ -225,7 +225,7 @@ messages__adviser__email__address__p1 = This will be used if HMRC need to contac
 messages__yourInvitations__title = Your invitations
 messages__yourInvitations__heading = Your invitations
 messages__yourInvitations__lede = You have been invited to administer:
-messages__yourInvitations__scheme_expiry_date = You have until {0} to accept this invitation.
+messages__yourInvitations__scheme_expiry_date = This invitation will be deleted on {0}.
 messages__yourInvitations__accept_link = Accept invitation
 
 messages__error__declaration__required = You need to agree to all the declarations before you can continue
