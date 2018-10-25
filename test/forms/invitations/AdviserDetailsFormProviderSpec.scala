@@ -54,7 +54,7 @@ class AdviserDetailsFormProviderSpec extends StringFieldBehaviours with Constrai
     behave like fieldWithRegex(
       form,
       fieldName,
-      "1234",
+      "1£234",
       FormError(fieldName, invalidErrorKey, Seq(Constraints.psaNameRegex))
     )
 
@@ -67,12 +67,12 @@ class AdviserDetailsFormProviderSpec extends StringFieldBehaviours with Constrai
     behave like formWithRegex(form,
       Table(
         "valid",
-        Map("adviserName" -> "Àtestâ -'‘’")
+        Map("adviserName" -> "Àtestâ 123 -'‘’")
       ),
       Table(
         "invalid",
         Map("adviserName" -> "_test"),
-        Map("adviserName" -> "123"),
+        Map("adviserName" -> "1*23"),
         Map("adviserName" -> "{test}")
       )
     )

@@ -56,8 +56,21 @@ class PsaNameFormProviderSpec extends StringFieldBehaviours with Constraints{
     behave like fieldWithRegex(
       form,
       fieldName,
-      "1234",
+      "abc12-d'ef *& g\\/",
       FormError(fieldName, invalidKey, Seq(Constraints.psaNameRegex))
+    )
+
+    behave like formWithRegex(form,
+      Table(
+        "valid",
+        Map("psaName" -> "Àtestâ 123 -'‘’")
+      ),
+      Table(
+        "invalid",
+        Map("psaName" -> "_test"),
+        Map("psaName" -> "1*23"),
+        Map("psaName" -> "{test}")
+      )
     )
   }
 }
