@@ -92,7 +92,7 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
 
     "have link for delete registration" in {
       Jsoup.parse(createView().toString()).select("a[id=delete-registration]") must
-        haveLink(frontendAppConfig.deleteSchemeUrl)
+        haveLink(controllers.routes.DeleteSchemeController.onPageLoad().url)
     }
 
     "have link for user research participation" in {
