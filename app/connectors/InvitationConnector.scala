@@ -78,6 +78,7 @@ class InvitationConnectorImpl @Inject()(http: HttpClient, config: FrontendAppCon
       case InvalidPayloadPattern(_) => throw new InvalidInvitationPayloadException
       case InvalidInviteePattern(_) => throw new InviteePsaIdInvalidException
       case InvalidInviterPattern(_) => throw new InviterPsaIdInvalidException
+      case _ => throw new BadRequestException(badRequestMessage("POST", config.acceptInvitationUrl, response))
     }
   }
 
