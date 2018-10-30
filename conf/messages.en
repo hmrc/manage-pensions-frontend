@@ -241,3 +241,7 @@ messages__check__your__answer__main__containt__label = You are inviting this PSA
 messages__check__your__answer__adviser__name__label = Who is your pension adviser?
 messages__check__your__answer__adviser__email__label = {0}’s email address
 messages__check__your__answer__adviser__address__label = {0}’s address
+
+messages__deleteScheme__title = Are you sure you want to delete this scheme?
+messages__deleteScheme__heading = Are you sure you want to delete {0} scheme?
+messages__deleteScheme__error__required = Select yes if you want to cancel your registration
