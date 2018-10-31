@@ -48,7 +48,7 @@ messages__session_expired__title = For your security, this service has been rese
 messages__session_expired__guidance = The details you have given have been deleted because you did not continue the service for 1 hour.
 
 messages__listSchemes__title = Your pension schemes
-messages__listSchemes__invitations_link = You have received an invitation to administer a scheme
+messages__listSchemes__invitations_link = You have an invitation to be a scheme administrator for another scheme
 messages__listSchemes__open__heading = Schemes that have been opened
 messages__listSchemes__not_open__heading = Schemes that have not been opened
 messages__listSchemes__noSchemes = You have not registered any pension schemes in this service.
@@ -183,8 +183,8 @@ messages__declaration__statement5__with__adviser = you do not have a working kno
 messages__declaration__statement6 = you understand that where HMRC believes that if any of the persons who are the scheme administrator are not a fit and proper person, HMRC may refuse to register the scheme or, if the scheme is already registered, HMRC may de-register the scheme
 messages__declaration__statement7 = the scheme is a Master Trust as defined in Section 1 Pension Act 2017, or corresponding legislation in Northern Ireland and you understand the scheme trustees must apply to the Pensions Regulator for authorisation to operate as a Master Trust and that if the pensions regulator do not grant authorisation, HMRC may refuse to register the scheme and if the Master Trust loses its authorisation, HMRC may de-register the scheme
 
-messages__invitationAccepted__title = You are now a PSA of the scheme you were invited to
-messages__invitationAccepted__heading = You are now a PSA of {0}
+messages__invitationAccepted__title = You have been added as a scheme administrator
+messages__invitationAccepted__heading = You have been added as a scheme administrator of {0}
 messages__invitationAccepted__returnToSchemes__link = Return to your pension schemes
 
 messages__adviser__name__title = Who is your pension adviser?
@@ -224,7 +224,7 @@ messages__adviser__email__address__p1 = This will be used if HMRC need to contac
 
 messages__yourInvitations__title = Your invitations
 messages__yourInvitations__heading = Your invitations
-messages__yourInvitations__lede = You have been invited to administer:
+messages__yourInvitations__lede = You have been invited to be a scheme administrator for:
 messages__yourInvitations__scheme_expiry_date = This invitation will be deleted on {0}.
 messages__yourInvitations__accept_link = Accept invitation
 
