@@ -25,3 +25,7 @@ GET        /overview                                    controllers.SchemesOverv
 GET        /overview/can-scheme-be-registered           controllers.SchemesOverviewController.onClickCheckIfSchemeCanBeRegistered()
 
 GET        /scheme-details/:srn                         controllers.SchemeDetailsController.onPageLoad(srn: String)
+
+GET        /discard                                     controllers.DeleteSchemeController.onPageLoad
+
+POST       /discard                                     controllers.DeleteSchemeController.onSubmit
