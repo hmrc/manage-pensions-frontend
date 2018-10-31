@@ -92,6 +92,11 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
         }
       }
 
+      "have the invite paragraph of content when invitations is toggled on" in {
+        Jsoup.parse(createView(invitations = true)().toString()) must
+          haveDynamicText("")
+      }
+
       "not have link to Invite another PSA" when {
         "invitations toggle is turned off" in {
           Jsoup.parse(createView()().toString()).select("a[id=invite]") mustNot

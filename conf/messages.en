@@ -100,32 +100,32 @@ messages__cannotStartRegistration__p1 = A scheme registration cannot be started 
 messages__cannotStartRegistration__p2 = You need to phone Pension Scheme Services on 0300 123 1079.
 messages__cannotStartRegistration__returnToOverview__link = Return to manage and register pension schemes
 
-messages__psa__name__title = What is the name of the PSA you are inviting?
-messages__psa__name__heading = What is the name of the PSA you are inviting?
+messages__psa__name__title = What is the name of the scheme administrator you want to add?
+messages__psa__name__heading = What is the name of the scheme administrator you want to add?
 messages__psa__name__p1 = This must be the exact name that they used when they registered as a PSA.
 messages__error__psa__name__required = Enter the name of who you are inviting
 messages__error__psa__name__length = Enter a name using less than 108 characters
 messages__error__psa__name__invalid = Enter a name using only letters
 
-messages__psa__id__title = What is the PSA ID of the PSA you are inviting?
-messages__psa__id__heading = What is {0}’s PSA ID?
+messages__psa__id__title = What is the scheme administrator’s administrator ID?
+messages__psa__id__heading = What is {0}’s administrator ID?
 messages__error__psa__id__required = Enter the PSA ID of who you are inviting
 messages__error__psa__id__invalid = Enter a PSA ID using the letter A followed by 7 numbers
 
 messages__check__your__answer__main__containt__label = You are inviting this PSA to administer {0}.
-messages__check__your__answer__psa__name__label = PSA’s name
-messages__check__your__answer__psa__id__label = PSA ID
+messages__check__your__answer__psa__name__label = Scheme administrator’s name
+messages__check__your__answer__psa__id__label = Administrator ID
 
 messages__incorrectPsaDetails__title = The name and PSA ID do not match our records
 messages__incorrectPsaDetails__text1 = You should check these details with {0}.
 messages__incorrectPsaDetails__text2 = Their name should be entered exactly as their registered PSA name.
 messages__incorrectPsaDetails__linkText = Return to {0}
 
-messages__invitationSuccess__title = Invitation sent
-messages__invitationSuccess__heading = You have invited {0} to administer the scheme
-messages__invitationSuccess__schemeName = This is for {0}.
+messages__invitationSuccess__title = An invitation has been sent to the scheme administrator
+messages__invitationSuccess__heading = An invitation has been sent to {0}
+messages__invitationSuccess__schemeName = This is to be added as a scheme administrator of {0}.
 messages__invitationSuccess__emailAdvice = {0} will be sent an email confirming your invitation.
-messages__invitationSuccess__expiryDate = They will have until {0} to accept the invitation. If the invitation is not accepted by this date, it will be deleted and you will have to invite the PSA again.
+messages__invitationSuccess__expiryDate = They will have until {0} to accept the invitation. If the invitation is not accepted by this date, it will be deleted and you will have to add them again.
 
 messages__adviser__address__title = What is your pension adviser’s address?
 messages__adviser__address__heading = What is {0}’s address?
@@ -231,13 +231,14 @@ messages__yourInvitations__accept_link = Accept invitation
 messages__error__declaration__required = You need to agree to all the declarations before you can continue
 
 messages__schemeDetails__title = Pension scheme details
-messages__schemeDetails__view_details_link = View the registered scheme details
+messages__schemeDetails__view_details_link = View or change the registered scheme details
 messages__schemeDetails__opened_date_head = This scheme was opened on:
 messages__schemeDetails__psa_list_head = Pension scheme administrators
-messages__schemeDetails__invite_link = Invite another PSA to administer this scheme
+messages__schemeDetails__invite_link = Add a scheme administrator
+messages__schemeDetails__invite_p1 = You will need the name and administrator ID of who you want to add. They will receive an invitation which they will have to accept.
 messages__schemeDetails__return_link = Return to your pension schemes
 
-messages__check__your__answer__main__containt__label = You are inviting this PSA to administer {0}.
+messages__check__your__answer__main__containt__label = You are adding this scheme administrator to {0}.
 messages__check__your__answer__adviser__name__label = Who is your pension adviser?
 messages__check__your__answer__adviser__email__label = {0}’s email address
 messages__check__your__answer__adviser__address__label = {0}’s address
