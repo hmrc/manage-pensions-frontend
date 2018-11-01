@@ -41,19 +41,22 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
 
   def onPageLoad(srn: String): Action[AnyContent] = authenticate.async {
     implicit request =>
-
       schemeDetailsConnector.getSchemeDetails("srn", srn).flatMap { scheme =>
-        listSchemesConnector.getListOfSchemes(request.psaId.id).flatMap { list =>
-          val schemeDetail = scheme.schemeDetails
-          val isSchemeOpen = schemeDetail.status.equalsIgnoreCase("open")
+        if (scheme.psaDetails.toSeq.flatten.exists(_.id == request.psaId.id)) {
+          listSchemesConnector.getListOfSchemes(request.psaId.id).flatMap { list =>
+            val schemeDetail = scheme.schemeDetails
+            val isSchemeOpen = schemeDetail.status.equalsIgnoreCase("open")
 
-          Future.successful(Ok(schemeDetails(appConfig,
-            schemeDetail.name,
-            openedDate(srn, list, isSchemeOpen),
-            administrators(scheme),
-            srn,
-            isSchemeOpen
-          )))
+            Future.successful(Ok(schemeDetails(appConfig,
+              schemeDetail.name,
+              openedDate(srn, list, isSchemeOpen),
+              administrators(scheme),
+              srn,
+              isSchemeOpen
+            )))
+          }
+        } else {
+          Future.successful(NotFound)
         }
       }
 
