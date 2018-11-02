@@ -19,6 +19,7 @@ package controllers
 import connectors._
 import controllers.SchemeDetailsControllerSpec.{administrators, fakeRequest, frontendAppConfig, messages, openDate}
 import controllers.actions.{DataRetrievalAction, _}
+import models.{PsaDetails, PsaSchemeDetails}
 import org.mockito.Matchers
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.mockito.MockitoSugar
@@ -90,16 +91,30 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase{
       contentAsString(result) mustBe viewAsString(openDate = None, isSchemeOpen = false)
     }
 
-    "return OK and the correct view for a GET when PSA data is not returned by API" in {
+    "return NOT_FOUND when PSA data is not returned by API (as we don't know who administers the scheme)" in {
       reset(fakeSchemeDetailsConnector)
       when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(schemeDetailsWithoutPsaResponse))
       when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(listOfSchemesResponse))
       val result = controller().onPageLoad(srn)(fakeRequest)
-      status(result) mustBe OK
-      contentAsString(result) mustBe viewAsString(administrators = None)
+      status(result) mustBe NOT_FOUND
     }
+
+    "return NOT_FOUND when PSA data is returned by API which does not include the currently logged-in PSA" in {
+      val psaDetails1 = PsaDetails("A0000001",Some("partnership name no 1"),None)
+      val psaDetails2 = PsaDetails("A0000002",Some("partnership name no 2"),None)
+      val psaSchemeDetailsResponseTwoPSAs = PsaSchemeDetails(mockSchemeDetails, None, None, Some(Seq(psaDetails1, psaDetails2)))
+
+      reset(fakeSchemeDetailsConnector)
+      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(psaSchemeDetailsResponseTwoPSAs))
+      when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(listOfSchemesResponse))
+      val result = controller().onPageLoad(srn)(fakeRequest)
+      status(result) mustBe NOT_FOUND
+    }
+
   }
 }
 
