@@ -29,9 +29,9 @@ class AcceptInvitationNavigator @Inject()(val dataCacheConnector: UserAnswersCac
   //scalastyle:off cyclomatic.complexity
   override def routeMap(from: NavigateFrom): Option[NavigateTo] = from.id match {
     case SchemeSrnId =>
-      NavigateTo.dontSave(controllers.invitations.routes.HaveYouEmployedPensionAdviserController.onPageLoad(NormalMode))
-    case HaveYouEmployedPensionAdviserId =>
-      haveYouEmployedPensionAdviserRoutes(from.userAnswers)
+      NavigateTo.dontSave(controllers.invitations.routes.DoYouHaveWorkingKnowledgeController.onPageLoad(NormalMode))
+    case DoYouHaveWorkingKnowledgeId =>
+      doYouHaveWorkingKnowledgeRoutes(from.userAnswers)
     case AdviserNameId =>
       NavigateTo.dontSave(controllers.invitations.routes.AdviserEmailAddressController.onPageLoad(NormalMode))
     case AdviserEmailId =>
@@ -51,11 +51,11 @@ class AcceptInvitationNavigator @Inject()(val dataCacheConnector: UserAnswersCac
   }
   //scalastyle:on cyclomatic.complexity
 
-  private def haveYouEmployedPensionAdviserRoutes(userAnswers: UserAnswers) = {
-    userAnswers.get(HaveYouEmployedPensionAdviserId) match {
-      case Some(true) =>
-        NavigateTo.dontSave(controllers.invitations.routes.AdviserDetailsController.onPageLoad(NormalMode))
+  private def doYouHaveWorkingKnowledgeRoutes(userAnswers: UserAnswers) = {
+    userAnswers.get(DoYouHaveWorkingKnowledgeId) match {
       case Some(false) =>
+        NavigateTo.dontSave(controllers.invitations.routes.AdviserDetailsController.onPageLoad(NormalMode))
+      case Some(true) =>
         NavigateTo.dontSave(controllers.invitations.routes.DeclarationController.onPageLoad())
       case _ =>
         NavigateTo.dontSave(controllers.routes.SessionExpiredController.onPageLoad())

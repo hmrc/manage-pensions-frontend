@@ -30,11 +30,11 @@ class DeclarationViewSpec extends QuestionViewBehaviours[Boolean] {
   override val errorMessage = messages("messages__error__declaration__required")
   override val error = FormError("agree", messages("messages__error__declaration__required"))
 
-  def declarationView(hasAdviser: Boolean = true, isMasterTrust: Boolean = false): () => HtmlFormat.Appendable = () =>
-    declaration(frontendAppConfig, hasAdviser, isMasterTrust, form)(fakeRequest, messages)
+  def declarationView(haveWorkingKnowledge: Boolean = false, isMasterTrust: Boolean = false): () => HtmlFormat.Appendable = () =>
+    declaration(frontendAppConfig, haveWorkingKnowledge, isMasterTrust, form)(fakeRequest, messages)
 
   private def declarationViewWithForm(form: Form[_]) =
-    declaration(frontendAppConfig, hasAdviser = false, isMasterTrust = false, form)(fakeRequest, messages)
+    declaration(frontendAppConfig, haveWorkingKnowledge = true, isMasterTrust = false, form)(fakeRequest, messages)
 
   "declaration view" must {
 
@@ -76,7 +76,7 @@ class DeclarationViewSpec extends QuestionViewBehaviours[Boolean] {
     }
 
     "have statement5 fit and proper declaration if no adviser" in {
-      val document = asDocument(declarationView(hasAdviser = false)())
+      val document = asDocument(declarationView(haveWorkingKnowledge = true)())
       document must haveDynamicText("messages__declaration__statement5__no__adviser")
       document must not(haveDynamicText("messages__declaration__statement5__with__adviser"))
     }

@@ -22,25 +22,29 @@
 @(appConfig: FrontendAppConfig, form: Form[Boolean], mode: Mode)(implicit request: Request[_], messages: Messages)
 
 @main_template(
-    title = Messages("messages_haveYouEmployedPensionAdviser__title"),
+    title = Messages("messages__doYouHaveWorkingKnowledge__title"),
     appConfig = appConfig
 ){
 
-    @helpers.form(action = controllers.invitations.routes.HaveYouEmployedPensionAdviserController.onSubmit(mode), 'autoComplete -> "off") {
+    @helpers.form(action = controllers.invitations.routes.DoYouHaveWorkingKnowledgeController.onSubmit(mode), 'autoComplete -> "off") {
 
         @components.back_link()
 
         @components.error_summary(form.errors)
 
-        @components.heading(Message("messages_haveYouEmployedPensionAdviser__heading"))
+        @components.heading(Message("messages__doYouHaveWorkingKnowledge__heading"))
 
-        <p>A pension adviser is someone who gives you advice on pensions.</p>
+        @components.paragraph_text(Message("messages__doYouHaveWorkingKnowledge_p1"))
 
-        <p>An adviser could be used if a PSA does not have full knowledge of how pensions work.</p>
+        @components.paragraph_text(Message("messages__doYouHaveWorkingKnowledge_p2"))
+
+        @components.paragraph_text(Message("messages__doYouHaveWorkingKnowledge_p3"))
+
+        @components.paragraph_text(Message("messages__doYouHaveWorkingKnowledge_p4"))
 
         @components.input_yes_no(
             field = form("value"),
-            label = messages("messages_haveYouEmployedPensionAdviser__heading"),
+            label = messages("messages_doYouHaveWorkingKnowledge__heading"),
             labelClass = Some("visually-hidden")
         )
 

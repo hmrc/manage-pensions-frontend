@@ -132,7 +132,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
 }
 
 object DeclarationControllerSpec {
-  val hasAdviser = true
+  val hasAdviser = false
   val isMasterTrust = true
   val srn = "S9000000000"
   val pstr = "S12345"
@@ -140,7 +140,7 @@ object DeclarationControllerSpec {
   def onwardRoute = Call("GET", "/foo")
 
   val data = new FakeDataRetrievalAction(Some(UserAnswers().
-    havePensionAdviser(hasAdviser).
+    haveWorkingKnowledge(hasAdviser).
     adviserName(InvitationBuilder.pensionAdviser.name).
     adviserEmail(InvitationBuilder.pensionAdviser.email).
     srn(srn).

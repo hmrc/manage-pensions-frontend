@@ -19,8 +19,8 @@ package controllers.invitations
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
-import forms.invitations.HaveYouEmployedPensionAdviserFormProvider
-import identifiers.invitations.HaveYouEmployedPensionAdviserId
+import forms.invitations.DoYouHaveWorkingKnowledgeFormProvider
+import identifiers.invitations.DoYouHaveWorkingKnowledgeId
 import javax.inject.Inject
 import models.Mode
 import play.api.data.Form
@@ -29,19 +29,19 @@ import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.annotations.AcceptInvitation
 import utils.{Navigator, UserAnswers}
-import views.html.invitations.haveYouEmployedPensionAdviser
+import views.html.invitations.doYouHaveWorkingKnowledge
 
 import scala.concurrent.Future
 
-class HaveYouEmployedPensionAdviserController @Inject()(
-                                                         val appConfig: FrontendAppConfig,
-                                                         val auth: AuthAction,
-                                                         val messagesApi: MessagesApi,
-                                                         @AcceptInvitation navigator: Navigator,
-                                                         val formProvider: HaveYouEmployedPensionAdviserFormProvider,
-                                                         val dataCacheConnector: UserAnswersCacheConnector,
-                                                         val getData: DataRetrievalAction,
-                                                         val requireData: DataRequiredAction
+class DoYouHaveWorkingKnowledgeController @Inject()(
+                                                     val appConfig: FrontendAppConfig,
+                                                     val auth: AuthAction,
+                                                     val messagesApi: MessagesApi,
+                                                     @AcceptInvitation navigator: Navigator,
+                                                     val formProvider: DoYouHaveWorkingKnowledgeFormProvider,
+                                                     val dataCacheConnector: UserAnswersCacheConnector,
+                                                     val getData: DataRetrievalAction,
+                                                     val requireData: DataRequiredAction
                                                        ) extends FrontendController with I18nSupport {
 
   val form: Form[Boolean] = formProvider()
@@ -49,12 +49,12 @@ class HaveYouEmployedPensionAdviserController @Inject()(
   def onPageLoad(mode: Mode): Action[AnyContent] = (auth andThen getData andThen requireData) {
     implicit request =>
 
-      val preparedForm = request.userAnswers.get(HaveYouEmployedPensionAdviserId) match {
+      val preparedForm = request.userAnswers.get(DoYouHaveWorkingKnowledgeId) match {
         case None => form
         case Some(value) => form.fill(value)
       }
 
-      Ok(haveYouEmployedPensionAdviser(appConfig, preparedForm, mode))
+      Ok(doYouHaveWorkingKnowledge(appConfig, preparedForm, mode))
 
   }
 
@@ -62,11 +62,11 @@ class HaveYouEmployedPensionAdviserController @Inject()(
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[Boolean]) =>
-          Future.successful(BadRequest(haveYouEmployedPensionAdviser(appConfig, formWithErrors, mode))),
+          Future.successful(BadRequest(doYouHaveWorkingKnowledge(appConfig, formWithErrors, mode))),
         value => {
-          dataCacheConnector.save(request.externalId, HaveYouEmployedPensionAdviserId, value).map(
+          dataCacheConnector.save(request.externalId, DoYouHaveWorkingKnowledgeId, value).map(
             cacheMap =>
-              Redirect(navigator.nextPage(HaveYouEmployedPensionAdviserId, mode, UserAnswers(cacheMap)))
+              Redirect(navigator.nextPage(DoYouHaveWorkingKnowledgeId, mode, UserAnswers(cacheMap)))
           )
         }
       )

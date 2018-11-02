@@ -45,8 +45,8 @@ package object utils {
       answers.set(SchemeNameId)(name).asOpt.value
     }
 
-    def havePensionAdviser(hasAdviser: Boolean): UserAnswers = {
-      answers.set(HaveYouEmployedPensionAdviserId)(hasAdviser).asOpt.value
+    def haveWorkingKnowledge(workingKnowledge: Boolean): UserAnswers = {
+      answers.set(DoYouHaveWorkingKnowledgeId)(workingKnowledge).asOpt.value
     }
 
     def pstr(pstr: String): UserAnswers = {
@@ -82,7 +82,7 @@ package object utils {
     }
 
     def employedPensionAdviserId(isChecked: Boolean): UserAnswers = {
-      answers.set(HaveYouEmployedPensionAdviserId)(isChecked).asOpt.value
+      answers.set(DoYouHaveWorkingKnowledgeId)(isChecked).asOpt.value
     }
 
     // Converters

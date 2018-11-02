@@ -19,7 +19,7 @@
 @import viewmodels.Message
 @import controllers.invitations.routes._
 
-@(appConfig: FrontendAppConfig, hasAdviser: Boolean, isMasterTrust: Boolean, form: Form[_])(implicit request: Request[_], messages: Messages)
+@(appConfig: FrontendAppConfig, haveWorkingKnowledge: Boolean, isMasterTrust: Boolean, form: Form[_])(implicit request: Request[_], messages: Messages)
 
 @main_template(
 title = s"${messages("messages__declaration__title")}",
@@ -47,10 +47,10 @@ bodyClasses = None) {
             <li>@components.paragraph_text(messages("messages__declaration__statement4"))</li>
 
             <li>
-                @if(hasAdviser) {
-                    @components.paragraph_text(messages("messages__declaration__statement5__with__adviser"))
-                } else {
+                @if(haveWorkingKnowledge) {
                     @components.paragraph_text(messages("messages__declaration__statement5__no__adviser"))
+                } else {
+                    @components.paragraph_text(messages("messages__declaration__statement5__with__adviser"))
                 }
             </li>
 

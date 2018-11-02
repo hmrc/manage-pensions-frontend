@@ -53,15 +53,15 @@ class DeclarationController @Inject()(
 
   def onPageLoad(): Action[AnyContent] = (auth andThen getData andThen requireData).async {
     implicit request =>
-      (HaveYouEmployedPensionAdviserId and SchemeSrnId).retrieve.right.map {
-        case havePensionAdviser ~ srn =>
+      (DoYouHaveWorkingKnowledgeId and SchemeSrnId).retrieve.right.map {
+        case haveWorkingKnowledge ~ srn =>
           for {
             details <- schemeDetailsConnector.getSchemeDetails("srn", srn)
             _ <- userAnswersCacheConnector.save(SchemeNameId, details.schemeDetails.name)
             _ <- userAnswersCacheConnector.save(IsMasterTrustId, details.schemeDetails.isMasterTrust)
             _ <- userAnswersCacheConnector.save(PSTRId, details.schemeDetails.pstr.getOrElse(""))
           } yield {
-            Ok(declaration(appConfig, havePensionAdviser, details.schemeDetails.isMasterTrust, form))
+            Ok(declaration(appConfig, haveWorkingKnowledge, details.schemeDetails.isMasterTrust, form))
           }
       }
   }
@@ -71,20 +71,20 @@ class DeclarationController @Inject()(
 
       form.bindFromRequest().fold(
         (formWithErrors: Form[Boolean]) =>
-          (HaveYouEmployedPensionAdviserId and IsMasterTrustId).retrieve.right.map {
-            case havePensionAdviser ~ isMasterTrust =>
-              Future.successful(BadRequest(declaration(appConfig, havePensionAdviser, isMasterTrust, formWithErrors)))
+          (DoYouHaveWorkingKnowledgeId and IsMasterTrustId).retrieve.right.map {
+            case haveWorkingKnowledge ~ isMasterTrust =>
+              Future.successful(BadRequest(declaration(appConfig, haveWorkingKnowledge, isMasterTrust, formWithErrors)))
           },
         declaration => {
-          (PSTRId and HaveYouEmployedPensionAdviserId).retrieve.right.map {
-            case pstr ~ havePensionAdviser =>
-              acceptInviteAndRedirect(pstr, havePensionAdviser, declaration)
+          (PSTRId and DoYouHaveWorkingKnowledgeId).retrieve.right.map {
+            case pstr ~ haveWorkingKnowledge =>
+              acceptInviteAndRedirect(pstr, haveWorkingKnowledge, declaration)
           }
         }
       )
   }
 
-  private def acceptInviteAndRedirect(pstr: String, havePensionAdviser: Boolean, declaration: Boolean)
+  private def acceptInviteAndRedirect(pstr: String, haveWorkingKnowledge: Boolean, declaration: Boolean)
                                      (implicit request: DataRequest[AnyContent]): Future[Result] = {
     val userAnswers = request.userAnswers
 
@@ -92,7 +92,7 @@ class DeclarationController @Inject()(
       invitations.headOption match {
         case Some(invitation) =>
           val acceptedInvitation = AcceptedInvitation(invitation.pstr, request.psaId, invitation.inviterPsaId, declaration,
-            !havePensionAdviser, userAnswers.json.validate[PensionAdviserDetails](PensionAdviserDetails.userAnswerReads).asOpt)
+            haveWorkingKnowledge, userAnswers.json.validate[PensionAdviserDetails](PensionAdviserDetails.userAnswerReads).asOpt)
 
           invitationConnector.acceptInvite(acceptedInvitation).flatMap { _ =>
             invitationsCacheConnector.remove(invitation.pstr, request.psaId).map { _ =>
