@@ -17,23 +17,45 @@
 package controllers
 
 import connectors._
-import controllers.SchemeDetailsControllerSpec.{administrators, fakeRequest, frontendAppConfig, messages, openDate}
 import controllers.actions.{DataRetrievalAction, _}
 import models.{PsaDetails, PsaSchemeDetails}
 import org.mockito.Matchers
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.mockito.MockitoSugar
+import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.Helpers.{contentAsString, _}
-import views.html.schemeDetails
 import testhelpers.CommonBuilders._
+import views.html.schemeDetails
 
 import scala.concurrent.Future
 
-class SchemeDetailsControllerSpec extends ControllerSpecBase{
+class SchemeDetailsControllerSpec extends ControllerSpecBase {
+
   import SchemeDetailsControllerSpec._
 
-  appRunning()
+  override lazy val app: Application = new GuiceApplicationBuilder().configure(
+    "features.work-package-one-enabled" -> true
+  ).build()
+
+  def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): SchemeDetailsController =
+    new SchemeDetailsController(frontendAppConfig,
+      messagesApi,
+      fakeSchemeDetailsConnector,
+      fakeListOfSchemesConnector,
+      FakeAuthAction(),
+      dataRetrievalAction,
+      FakeUserAnswersCacheConnector)
+
+  def viewAsString(openDate: Option[String] = openDate, administrators: Option[Seq[String]] = administrators, isSchemeOpen: Boolean = true): String =
+    schemeDetails(
+      frontendAppConfig,
+      mockSchemeDetails.name,
+      openDate,
+      administrators,
+      srn,
+      isSchemeOpen
+    )(fakeRequest, messages).toString()
 
   "SchemeDetailsController" must {
     "return OK and the correct view for a GET" in {
@@ -48,17 +70,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase{
     }
 
     "return OK and the correct view for a GET where administrators a mix of individual and org" in {
-      val administrators = Some(Seq("partnetship name 2", "Smith A Tony"))
-      def viewAsString(openDate: Option[String] = openDate, administrators: Option[Seq[String]] = administrators, isSchemeOpen: Boolean = true): String =
-        schemeDetails(
-          frontendAppConfig,
-          mockSchemeDetails.name,
-          openDate,
-          administrators,
-          srn,
-          isSchemeOpen
-        )(fakeRequest, messages).toString()
-
+      val updatedAdministrators = Some(Seq("partnetship name 2", "Smith A Tony"))
       reset(fakeSchemeDetailsConnector)
       when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(schemeDetailsWithPsaOnlyResponseMixOfIndividualAndOrg))
@@ -66,7 +78,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase{
         .thenReturn(Future.successful(listOfSchemesResponse))
       val result = controller().onPageLoad(srn)(fakeRequest)
       status(result) mustBe OK
-      contentAsString(result) mustBe viewAsString()
+      contentAsString(result) mustBe viewAsString(administrators = updatedAdministrators)
     }
 
     "return OK and the correct view for a GET when opened date is not returned by API" in {
@@ -102,8 +114,8 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase{
     }
 
     "return NOT_FOUND when PSA data is returned by API which does not include the currently logged-in PSA" in {
-      val psaDetails1 = PsaDetails("A0000001",Some("partnership name no 1"),None)
-      val psaDetails2 = PsaDetails("A0000002",Some("partnership name no 2"),None)
+      val psaDetails1 = PsaDetails("A0000001", Some("partnership name no 1"), None)
+      val psaDetails2 = PsaDetails("A0000002", Some("partnership name no 2"), None)
       val psaSchemeDetailsResponseTwoPSAs = PsaSchemeDetails(mockSchemeDetails, None, None, Some(Seq(psaDetails1, psaDetails2)))
 
       reset(fakeSchemeDetailsConnector)
@@ -118,36 +130,12 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase{
   }
 }
 
-private object SchemeDetailsControllerSpec extends ControllerSpecBase with MockitoSugar {
-
-  override lazy val app = new GuiceApplicationBuilder().configure(
-    "features.work-package-one-enabled" -> true
-  ).build()
+private object SchemeDetailsControllerSpec extends MockitoSugar {
 
   val fakeSchemeDetailsConnector: SchemeDetailsConnector = mock[SchemeDetailsConnector]
   val fakeListOfSchemesConnector: ListOfSchemesConnector = mock[ListOfSchemesConnector]
-
-  def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): SchemeDetailsController =
-    new SchemeDetailsController(frontendAppConfig,
-      messagesApi,
-      fakeSchemeDetailsConnector,
-      fakeListOfSchemesConnector,
-      FakeAuthAction(),
-      dataRetrievalAction,
-      FakeUserAnswersCacheConnector)
-
   val schemeName = "Test Scheme Name"
   val administrators = Some(Seq("Taylor Middle Rayon", "Smith A Tony"))
   val openDate = Some("10 October 2012")
   val srn = "S1000000456"
-
-  def viewAsString(openDate: Option[String] = openDate, administrators: Option[Seq[String]] = administrators, isSchemeOpen: Boolean = true): String =
-    schemeDetails(
-    frontendAppConfig,
-    mockSchemeDetails.name,
-    openDate,
-    administrators,
-    srn,
-    isSchemeOpen
-  )(fakeRequest, messages).toString()
 }
