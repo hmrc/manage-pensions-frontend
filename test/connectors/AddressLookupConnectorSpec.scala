@@ -109,6 +109,63 @@ class AddressLookupConnectorSpec extends AsyncWordSpec
         }
       }
     }
+
+
+    "returns an ok and Seq of Addresses" which {
+      "means the AddressLookup has found data for the postcode when one of addresses returned has no address lines" in {
+
+        val payload =
+          """[{"uprn":990091234524,
+            |"localCustodian":{"code":121,"name":"North Somerset","J":""},
+            |"id":"GB990091234524",
+            |"language":"en",
+            |"B":"",
+            |"address":{"postcode":"ZZ1 1ZZ","F":"",
+            |"country":{"code":"UK","name":"United Kingdom","R":""},
+            |"county":"Somerset",
+            |"subdivision":{"code":"GB-ENG","name":"England","B":""},
+            |"town":"Anytown",
+            |"lines":[]}
+            |},
+            |{"Y":"",
+            |"uprn":990091234514,
+            |"localCustodian":{"code":121,"name":"North Somerset","H":""},
+            |"id":"GB990091234514",
+            |"language":"en",
+            |"address":{"postcode":"ZZ1 1ZZ",
+            |"country":{"code":"UK","name":"United Kingdom","U":""},
+            |"county":"Somerset",
+            |"subdivision":{"code":"GB-ENG","name":"England","R":""},
+            |"town":"Anytown",
+            |"lines":["2 Other Place","Some District"],"D":""}
+            |}
+            |]
+            |""".stripMargin
+
+
+        val tolerantAddressSample = Seq(
+          TolerantAddress(Some("2 Other Place"), Some("Some District"), Some("Anytown"), Some("Somerset"), Some("ZZ1 1ZZ"), Some("UK"))
+        )
+
+
+        server.stubFor(
+          get(urlEqualTo(url))
+            .withHeader("user-agent", matching(".+"))
+            .willReturn
+            (
+              aResponse().withStatus(OK)
+                .withBody(payload)
+            )
+        )
+        connector.addressLookupByPostCode("ZZ1 1ZZ") map {
+          result =>
+            result mustEqual tolerantAddressSample
+        }
+      }
+    }
+
+
+
     "returns an exception" which {
       "means the Address Lookup has returned a non 200 response " in {
 
