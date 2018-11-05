@@ -19,12 +19,12 @@ package forms.invitations
 import forms.behaviours.BooleanFieldBehaviours
 import play.api.data.FormError
 
-class HaveYouEmployedPensionAdviserFormProviderSpec extends BooleanFieldBehaviours {
+class DoYouHaveWorkingKnowledgeFormProviderSpec extends BooleanFieldBehaviours {
 
   val requiredKey = "error.required"
   val invalidKey = "error.boolean"
 
-  val formProvider = new HaveYouEmployedPensionAdviserFormProvider()
+  val formProvider = new DoYouHaveWorkingKnowledgeFormProvider()
   val form = formProvider()
 
   ".value" must {

@@ -1,10 +1,10 @@
 
 GET        /invite/:srn                                 controllers.invitations.InviteController.onPageLoad(srn: SchemeReferenceNumber)
 
-GET        /use-pension-adviser                         controllers.invitations.HaveYouEmployedPensionAdviserController.onPageLoad(mode: Mode = NormalMode)
-POST       /use-pension-adviser                         controllers.invitations.HaveYouEmployedPensionAdviserController.onSubmit(mode: Mode = NormalMode)
-GET        /change-use-pension-adviser                  controllers.invitations.HaveYouEmployedPensionAdviserController.onPageLoad(mode: Mode = CheckMode)
-POST       /change-use-pension-adviser                  controllers.invitations.HaveYouEmployedPensionAdviserController.onSubmit(mode: Mode = CheckMode)
+GET        /having-pensions-working-knowledge           controllers.invitations.DoYouHaveWorkingKnowledgeController.onPageLoad(mode: Mode = NormalMode)
+POST       /having-pensions-working-knowledge           controllers.invitations.DoYouHaveWorkingKnowledgeController.onSubmit(mode: Mode = NormalMode)
+GET        /change-having-pensions-working-knowledge    controllers.invitations.DoYouHaveWorkingKnowledgeController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-having-pensions-working-knowledge    controllers.invitations.DoYouHaveWorkingKnowledgeController.onSubmit(mode: Mode = CheckMode)
 
 GET        /no-psa-match                                controllers.invitations.IncorrectPsaDetailsController.onPageLoad()
 

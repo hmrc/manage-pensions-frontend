@@ -19,19 +19,19 @@ package controllers.invitations
 import connectors.FakeUserAnswersCacheConnector
 import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
-import forms.invitations.HaveYouEmployedPensionAdviserFormProvider
-import identifiers.invitations.HaveYouEmployedPensionAdviserId
+import forms.invitations.DoYouHaveWorkingKnowledgeFormProvider
+import identifiers.invitations.DoYouHaveWorkingKnowledgeId
 import models.NormalMode
 import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import utils.{FakeNavigator, UserAnswers}
-import views.html.invitations.haveYouEmployedPensionAdviser
+import views.html.invitations.doYouHaveWorkingKnowledge
 import utils.UserAnswerOps
 
-class HaveYouEmployedPensionAdviserControllerSpec extends ControllerWithQuestionPageBehaviours {
+class DoYouHaveWorkingKnowledgeControllerSpec extends ControllerWithQuestionPageBehaviours {
 
-  val formProvider = new HaveYouEmployedPensionAdviserFormProvider()
+  val formProvider = new DoYouHaveWorkingKnowledgeFormProvider()
   val form = formProvider()
   val userAnswer = UserAnswers().employedPensionAdviserId(true)
   val postRequest = FakeRequest().withJsonBody(Json.obj("value" -> true))
@@ -39,7 +39,7 @@ class HaveYouEmployedPensionAdviserControllerSpec extends ControllerWithQuestion
 
   private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
-  val controller = new HaveYouEmployedPensionAdviserController(
+  val controller = new DoYouHaveWorkingKnowledgeController(
     frontendAppConfig,
     FakeAuthAction(),
     messagesApi,
@@ -49,19 +49,19 @@ class HaveYouEmployedPensionAdviserControllerSpec extends ControllerWithQuestion
     new FakeDataRetrievalAction(Some(Json.obj())),
     new DataRequiredActionImpl
   )
-    new HaveYouEmployedPensionAdviserController(
+    new DoYouHaveWorkingKnowledgeController(
       frontendAppConfig, fakeAuth, messagesApi, navigator,formProvider,
       FakeUserAnswersCacheConnector, dataRetrievalAction, requiredDataAction).onPageLoad(NormalMode)
   }
 
   private def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
-    new HaveYouEmployedPensionAdviserController(
+    new DoYouHaveWorkingKnowledgeController(
       frontendAppConfig, fakeAuth, messagesApi, navigator, formProvider,
       FakeUserAnswersCacheConnector, dataRetrievalAction, requiredDataAction).onSubmit(NormalMode)
   }
 
- def viewAsString(form: Form[Boolean] = form) = haveYouEmployedPensionAdviser(frontendAppConfig, form, NormalMode)(fakeRequest, messages).toString
+ def viewAsString(form: Form[Boolean] = form) = doYouHaveWorkingKnowledge(frontendAppConfig, form, NormalMode)(fakeRequest, messages).toString
 
   behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, userAnswer.dataRetrievalAction, form, form.fill(true), viewAsString)
 

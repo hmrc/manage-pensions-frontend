@@ -20,12 +20,12 @@ import models.{Address, TolerantAddress}
 import org.scalatest.{MustMatchers, OptionValues, WordSpec}
 import utils.UserAnswers
 
-class HaveYouEmployedPensionAdviserIdSpec extends WordSpec with MustMatchers with OptionValues {
+class DoYouHaveWorkingKnowledgeIdSpec extends WordSpec with MustMatchers with OptionValues {
 
   val tolerantAddressSample = Seq(
     TolerantAddress(Some("10 Other Place"), Some("Some District"), Some("Anytown"), Some("Somerset"), Some("ZZ1 1ZZ"), Some("UK"))
   )
-  val userAnswers = UserAnswers().havePensionAdviser(true).
+  val userAnswers = UserAnswers().haveWorkingKnowledge(false).
     adviserName("test").
     adviserEmail("test@test.com").
     adviserPostCodeLookup(Seq(TolerantAddress(Some("10 Other Place"), Some("Some District"), Some("Anytown"), Some("Somerset"), Some("ZZ1 1ZZ"), Some("UK")))).
@@ -34,8 +34,8 @@ class HaveYouEmployedPensionAdviserIdSpec extends WordSpec with MustMatchers wit
 
   "Clean up" when {
 
-    "setting have you employed pension adviser to false" must {
-      val result = userAnswers.havePensionAdviser(false)
+    "setting do you have working knowledge to true" must {
+      val result = userAnswers.haveWorkingKnowledge(true)
 
       "remove Adviser name" in {
 
@@ -63,8 +63,8 @@ class HaveYouEmployedPensionAdviserIdSpec extends WordSpec with MustMatchers wit
       }
     }
 
-    "setting have you employed pension adviser to true" must {
-      val result = userAnswers.set(HaveYouEmployedPensionAdviserId)(true).asOpt.value
+    "setting do you have working knowledge to false" must {
+      val result = userAnswers.set(DoYouHaveWorkingKnowledgeId)(false).asOpt.value
 
       "not remove Adviser name" in {
 

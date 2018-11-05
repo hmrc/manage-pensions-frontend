@@ -20,12 +20,12 @@ import identifiers.TypedIdentifier
 import play.api.libs.json.JsResult
 import utils.UserAnswers
 
-object HaveYouEmployedPensionAdviserId extends TypedIdentifier[Boolean] {
-  override def toString: String = "haveYouEmployedPensionAdviser"
+object DoYouHaveWorkingKnowledgeId extends TypedIdentifier[Boolean] {
+  override def toString: String = "doYouHaveWorkingKnowledge"
 
   override def cleanup(value: Option[Boolean], userAnswers: UserAnswers): JsResult[UserAnswers] = {
     value match {
-      case Some(false) =>
+      case Some(true) =>
         userAnswers.removeAllOf(List(
           AdviserNameId, AdviserEmailId, AdviserAddressPostCodeLookupId, AdviserAddressListId, AdviserAddressId))
       case _ => super.cleanup(value, userAnswers)

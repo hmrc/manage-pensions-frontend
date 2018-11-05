@@ -36,9 +36,9 @@ class AcceptInvitationNavigatorSpec extends SpecBase with NavigatorBehaviour {
 
   def routes(): TableFor6[Identifier, UserAnswers, Call, Boolean, Option[Call], Boolean] = Table(
     ("Id",                             "User Answers",     "Next Page (NormalMode)",     "Save(NormalMode)",   "Next Page (CheckMode)", "Save(CheckMode"),
-    (SchemeSrnId,                        emptyAnswers,       haveYouEmployedAdviser,        false,                   None,                   false       ),
-    (HaveYouEmployedPensionAdviserId,    employedAdviser,    adviserDetails,                false,                   None,                   false       ),
-    (HaveYouEmployedPensionAdviserId,    noEmployedAdviser,  declaration,                   false,                   None,                   false       ),
+    (SchemeSrnId,                        emptyAnswers,       doYouHaveWorkingKnowledge,        false,                   None,                   false       ),
+    (DoYouHaveWorkingKnowledgeId,        employedAdviser,    adviserDetails,                false,                   None,                   false       ),
+    (DoYouHaveWorkingKnowledgeId,        noEmployedAdviser,  declaration,                   false,                   None,                   false       ),
     (AdviserNameId,                      emptyAnswers,       adviserEmail,                  false,                   None,                   false       ),
     (AdviserEmailId,                     emptyAnswers,       adviserPostCodeLookup,         false,                   None,                   false       ),
     (AdviserAddressPostCodeLookupId,     emptyAnswers,       adviserAddressList,            false,                   None,                   false       ),
@@ -57,9 +57,9 @@ class AcceptInvitationNavigatorSpec extends SpecBase with NavigatorBehaviour {
 
 object AcceptInvitationNavigatorSpec extends OptionValues {
   lazy val emptyAnswers = UserAnswers(Json.obj())
-  lazy val employedAdviser = UserAnswers().havePensionAdviser(true)
-  lazy val noEmployedAdviser = UserAnswers().havePensionAdviser(false)
-  lazy val haveYouEmployedAdviser = controllers.invitations.routes.HaveYouEmployedPensionAdviserController.onPageLoad(NormalMode)
+  lazy val employedAdviser = UserAnswers().haveWorkingKnowledge(false)
+  lazy val noEmployedAdviser = UserAnswers().haveWorkingKnowledge(true)
+  lazy val doYouHaveWorkingKnowledge = controllers.invitations.routes.DoYouHaveWorkingKnowledgeController.onPageLoad(NormalMode)
   lazy val adviserDetails = controllers.invitations.routes.AdviserDetailsController.onPageLoad(NormalMode)
   lazy val declaration = controllers.invitations.routes.DeclarationController.onPageLoad()
   lazy val adviserEmail = controllers.invitations.routes.AdviserEmailAddressController.onPageLoad(NormalMode)

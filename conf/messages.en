@@ -91,8 +91,12 @@ messages__schemesOverview__UR__head = Help us improve this service
 messages__schemesOverview__UR__text = We want to hear from people who would like to help improve this service by sharing their feedback and testing new features.
 messages__schemesOverview__UR__link = Let us know if you would like to help improve this service.
 
-messages_haveYouEmployedPensionAdviser__title = Do you use a pension adviser to help you?
-messages_haveYouEmployedPensionAdviser__heading = Do you use a pension adviser to help you?
+messages__doYouHaveWorkingKnowledge__title = Do you have working knowledge of pensions and pensions tax legislation?
+messages__doYouHaveWorkingKnowledge__heading = Do you have working knowledge of pensions and pensions tax legislation?
+messages__doYouHaveWorkingKnowledge_p1 = There needs to be someone with working knowledge of pensions and pensions tax legislation involved with this pension scheme. This could be either you as scheme administrator or a pension practitioner or provider who is helping you.
+messages__doYouHaveWorkingKnowledge_p2 = For example, if you are an employer, or a director of an employer, who has registered a pension scheme, you might not have working knowledge of pensions and pensions tax legislation.
+messages__doYouHaveWorkingKnowledge_p3 = If you do not have that knowledge, you must be helped by a pension practitioner or provider who has the knowledge. You will need to tell HMRC who that is.
+messages__doYouHaveWorkingKnowledge_p4 = HMRC might decide not to register the pension scheme if the scheme administrator does not have working knowledge and is not helped by someone who has that knowledge.
 
 messages__cannotStartRegistration__title = A scheme registration cannot be started
 messages__cannotStartRegistration__heading = A scheme registration cannot be started

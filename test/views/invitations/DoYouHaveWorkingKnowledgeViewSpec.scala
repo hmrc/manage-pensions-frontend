@@ -16,27 +16,27 @@
 
 package views.invitations
 
-import forms.invitations.HaveYouEmployedPensionAdviserFormProvider
+import forms.invitations.DoYouHaveWorkingKnowledgeFormProvider
 import models.NormalMode
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
-import views.html.invitations.haveYouEmployedPensionAdviser
+import views.html.invitations.doYouHaveWorkingKnowledge
 
-class HaveYouEmployedPensionAdviserViewSpec extends ViewBehaviours {
+class DoYouHaveWorkingKnowledgeViewSpec extends ViewBehaviours {
 
-  val form = new HaveYouEmployedPensionAdviserFormProvider()()
+  val form = new DoYouHaveWorkingKnowledgeFormProvider()()
 
-  def createView: () => HtmlFormat.Appendable = () => haveYouEmployedPensionAdviser(frontendAppConfig, form, NormalMode)(fakeRequest, messages)
+  def createView: () => HtmlFormat.Appendable = () => doYouHaveWorkingKnowledge(frontendAppConfig, form, NormalMode)(fakeRequest, messages)
 
   def doc: Document = Jsoup.parse(createView().toString)
 
-  val prefix = "messages_haveYouEmployedPensionAdviser__"
+  val prefix = "doYouHaveWorkingKnowledge"
 
   "HaveYouEmployedPensionAdviser" must {
 
-    behave like normalPageWithTitle(createView, prefix, messages(prefix + "title"), messages(prefix + "heading"))
+    behave like normalPageWithTitle(createView, prefix, messages(s"messages__${prefix}__title"), messages(s"messages__${prefix}__heading"), "p1")
 
     behave like pageWithBackLink(createView)
 
