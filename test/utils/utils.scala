@@ -85,6 +85,10 @@ package object utils {
       answers.set(DoYouHaveWorkingKnowledgeId)(isChecked).asOpt.value
     }
 
+    def removeAsSchemeAdministrator(isChecked: Boolean): UserAnswers = {
+      answers.set(RemoveAsSchemeAdministratorId)(isChecked).asOpt.value
+    }
+
     // Converters
     def dataRetrievalAction: DataRetrievalAction = {
       new FakeDataRetrievalAction(Some(answers.json))

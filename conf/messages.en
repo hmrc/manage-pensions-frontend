@@ -243,3 +243,7 @@ messages__check__your__answer__adviser__address__label = {0}’s address
 messages__deleteScheme__title = Are you sure you want to delete this scheme?
 messages__deleteScheme__heading = Are you sure you want to delete {0} scheme?
 messages__deleteScheme__error__required = Select yes if you want to cancel your registration
+
+messages__removeAsSchemeAdministrator__title = Are you sure you want to remove the scheme admininstrator?
+messages__removeAsSchemeAdministrator__heading = Are you sure you want to remove Mark Wright as scheme administrator for {0}?
+messages__returnToSchemeDetails__link = Return to {0}
