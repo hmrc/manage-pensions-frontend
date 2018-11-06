@@ -20,7 +20,7 @@ class WorkPackageTwoFeatureToggle extends FeatureToggleBehaviours {
 
   "Wonderful new feature toggle" should {
 
-    behave like featureToggle("work-package-two-enabled", appConfig => appConfig.workPackageTwoEnabled)
+    behave like featureToggle(name = "work-package-two-enabled", appConfig => appConfig.workPackageTwoEnabled)
   }
 
 }
