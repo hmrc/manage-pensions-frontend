@@ -142,13 +142,6 @@ messages__adviser__address__list__required = Select an address
 messages__adviser__address__list__select = Select the address from the list below or
 messages__adviser__address__list__link = enter the address manually.
 
-messages__adviser__name__title = Who is your pension adviser?
-messages__adviser__name__heading = Who is your pension adviser?
-messages__adviser__name__p1 = This can be either the name of your adviser or the company they work for.
-messages__error__adviser__name__required = Enter the name of your pension adviser
-messages__error__adviser__name__length = Enter a name using less than 108 characters
-messages__error__adviser__name__invalid = Enter a name using only letters
-
 messages__invitationDuplicate__title = This PSA has already been sent an invite
 messages__invitationDuplicate__heading = {0} has already been sent an invite
 messages__invitationDuplicate__schemeName = {0} has already been invited to administer {1}.
@@ -191,9 +184,9 @@ messages__invitationAccepted__title = You have been added as a scheme administra
 messages__invitationAccepted__heading = You have been added as a scheme administrator of {0}
 messages__invitationAccepted__returnToSchemes__link = Return to your pension schemes
 
-messages__adviser__name__title = Who is your pension adviser?
-messages__adviser__name__heading = Who is your pension adviser?
-messages__adviser__name__p1 = This can be either the name of your adviser or the company they work for.
+messages__adviser__name__title = Who has working knowledge of pensions and pensions tax legislation?
+messages__adviser__name__heading = Who has working knowledge of pensions and pensions tax legislation?
+messages__adviser__name__p1 = This can be either the name of your pension practitioner or provider, or the company they work for.
 messages__error__adviser__name__required = Enter the name of your pension adviser
 messages__error__adviser__name__length = Enter a name using less than 108 characters
 messages__error__adviser__name__invalid = Enter a name using only letters
