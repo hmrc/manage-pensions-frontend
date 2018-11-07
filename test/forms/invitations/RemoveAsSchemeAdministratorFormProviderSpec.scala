@@ -21,7 +21,7 @@ import play.api.data.FormError
 
 class RemoveAsSchemeAdministratorFormProviderSpec extends BooleanFieldBehaviours {
 
-  val requiredKey = "error.required"
+  val requiredKey = "messages__removeAsSchemeAdministrator_required"
   val invalidKey = "error.boolean"
 
   val formProvider = new RemoveAsSchemeAdministratorFormProvider()

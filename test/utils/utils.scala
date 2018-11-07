@@ -89,6 +89,10 @@ package object utils {
       answers.set(RemoveAsSchemeAdministratorId)(isChecked).asOpt.value
     }
 
+    def psaName(psaName: String): UserAnswers = {
+      answers.set(PSANameId)(psaName).asOpt.value
+    }
+
     // Converters
     def dataRetrievalAction: DataRetrievalAction = {
       new FakeDataRetrievalAction(Some(answers.json))

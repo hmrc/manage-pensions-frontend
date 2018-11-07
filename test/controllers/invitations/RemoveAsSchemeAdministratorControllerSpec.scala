@@ -16,21 +16,16 @@
 
 package controllers.invitations
 
-import connectors.{FakeUserAnswersCacheConnector, SchemeDetailsConnector, UserAnswersCacheConnector}
+import connectors.{FakeUserAnswersCacheConnector, UserAnswersCacheConnector}
 import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.invitations.RemoveAsSchemeAdministratorFormProvider
 import identifiers.invitations.RemoveAsSchemeAdministratorId
-import models.PsaSchemeDetails
 import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import testhelpers.CommonBuilders
-import uk.gov.hmrc.http.HeaderCarrier
 import utils.{UserAnswerOps, UserAnswers}
 import views.html.invitations.removeAsSchemeAdministrator
-
-import scala.concurrent.{ExecutionContext, Future}
 
 class RemoveAsSchemeAdministratorControllerSpec extends ControllerWithQuestionPageBehaviours {
 
@@ -39,7 +34,7 @@ class RemoveAsSchemeAdministratorControllerSpec extends ControllerWithQuestionPa
   def controller(dataRetrievalAction: DataRetrievalAction = data, fakeAuth: AuthAction = FakeAuthAction(),
                  userAnswersCacheConnector: UserAnswersCacheConnector = FakeUserAnswersCacheConnector) = new RemoveAsSchemeAdministratorController(
     frontendAppConfig, fakeAuth, messagesApi, navigator, formProvider,
-    userAnswersCacheConnector, dataRetrievalAction, requiredDataAction, fakeSchemeDetailsConnector)
+    userAnswersCacheConnector, dataRetrievalAction, requiredDataAction)
 
   private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
     controller(dataRetrievalAction, fakeAuth).onPageLoad()
@@ -53,8 +48,8 @@ class RemoveAsSchemeAdministratorControllerSpec extends ControllerWithQuestionPa
     controller(userAnswersCacheConnector = userAnswersConnector).onSubmit()
   }
 
-  private def viewAsString(form: Form[Boolean] = form) = removeAsSchemeAdministrator(frontendAppConfig, form, schemeDetails.schemeDetails.name,
-    schemeDetails.schemeDetails.srn.getOrElse(""))(fakeRequest, messages).toString
+  private def viewAsString(form: Form[Boolean] = form) = removeAsSchemeAdministrator(frontendAppConfig, form, schemeName,
+    srn, psaName)(fakeRequest, messages).toString
 
   behave like controllerWithOnPageLoadMethod(onPageLoadAction,
     userAnswer.dataRetrievalAction, validData, form, form.fill(true), viewAsString)
@@ -68,15 +63,12 @@ object RemoveAsSchemeAdministratorControllerSpec {
   private val formProvider = new RemoveAsSchemeAdministratorFormProvider()
   private val form = formProvider()
   private val postRequest = FakeRequest().withJsonBody(Json.obj("value" -> true))
-  private val schemeDetails = CommonBuilders.schemeDetailsWithPsaOnlyResponse
-  private val userAnswer = UserAnswers().schemeName(schemeDetails.schemeDetails.name).srn(schemeDetails.schemeDetails.srn.getOrElse(""))
+  private val schemeName = "test scheme name"
+  private val srn = "test srn"
+  private val psaName = "test psa name"
+
+  private val userAnswer = UserAnswers().schemeName(schemeName).srn(srn).psaName(psaName)
   private val data = userAnswer.dataRetrievalAction
   private val validData = userAnswer.removeAsSchemeAdministrator(true).dataRetrievalAction
-
-  private val fakeSchemeDetailsConnector: SchemeDetailsConnector = new SchemeDetailsConnector {
-    override def getSchemeDetails(schemeIdType: String, idNumber: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[PsaSchemeDetails] = {
-      Future.successful(schemeDetails)
-    }
-  }
 }
 

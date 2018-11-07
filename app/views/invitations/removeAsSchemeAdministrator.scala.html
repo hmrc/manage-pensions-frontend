@@ -19,7 +19,7 @@
 @import uk.gov.hmrc.play.views.html._
 @import viewmodels.Message
 
-@(appConfig: FrontendAppConfig, form: Form[_], schemeName: String, srn: String)(implicit request: Request[_], messages: Messages)
+@(appConfig: FrontendAppConfig, form: Form[_], schemeName: String, srn: String, psaName: String)(implicit request: Request[_], messages: Messages)
 
 @main_template(
     title = Messages("messages__removeAsSchemeAdministrator__title"),
@@ -30,7 +30,7 @@
 
         @components.error_summary(form.errors)
 
-        @components.heading(messages("messages__removeAsSchemeAdministrator__heading", schemeName))
+        @components.heading(messages("messages__removeAsSchemeAdministrator__heading", psaName, schemeName))
 
         @components.input_yes_no(
             field = form("value"),

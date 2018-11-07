@@ -22,7 +22,7 @@ import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.invitations.RemoveAsSchemeAdministratorFormProvider
 import identifiers.SchemeSrnId
-import identifiers.invitations.{RemoveAsSchemeAdministratorId, SchemeNameId}
+import identifiers.invitations.{PSANameId, RemoveAsSchemeAdministratorId, SchemeNameId}
 import javax.inject.Inject
 import models.NormalMode
 import play.api.data.Form
@@ -43,18 +43,17 @@ class RemoveAsSchemeAdministratorController @Inject()(
                                                        val formProvider: RemoveAsSchemeAdministratorFormProvider,
                                                        val userAnswersCacheConnector: UserAnswersCacheConnector,
                                                        val getData: DataRetrievalAction,
-                                                       val requireData: DataRequiredAction,
-                                                       schemeDetailsConnector: SchemeDetailsConnector
+                                                       val requireData: DataRequiredAction
                                                      ) extends FrontendController with I18nSupport with Retrievals {
 
   val form: Form[Boolean] = formProvider()
 
   def onPageLoad: Action[AnyContent] = (auth andThen getData andThen requireData).async {
     implicit request =>
-      (SchemeSrnId and SchemeNameId).retrieve.right.map {
-        case srn ~ schemeName =>
+      (SchemeSrnId and SchemeNameId and PSANameId).retrieve.right.map {
+        case srn ~ schemeName ~ psaName =>
           val preparedForm = request.userAnswers.get(RemoveAsSchemeAdministratorId).fold(form)(form.fill(_))
-          Future.successful(Ok(removeAsSchemeAdministrator(appConfig, preparedForm, schemeName, srn)))
+          Future.successful(Ok(removeAsSchemeAdministrator(appConfig, preparedForm, schemeName, srn, psaName)))
       }
   }
 
@@ -62,9 +61,9 @@ class RemoveAsSchemeAdministratorController @Inject()(
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[Boolean]) =>
-          (SchemeNameId and SchemeSrnId).retrieve.right.map {
-            case schemeName ~ srn =>
-              Future.successful(BadRequest(removeAsSchemeAdministrator(appConfig, formWithErrors, schemeName, srn)))
+          (SchemeNameId and SchemeSrnId and PSANameId).retrieve.right.map {
+            case schemeName ~ srn ~ psaName =>
+              Future.successful(BadRequest(removeAsSchemeAdministrator(appConfig, formWithErrors, schemeName, srn, psaName)))
           },
         value => {
           userAnswersCacheConnector.save(request.externalId, RemoveAsSchemeAdministratorId, value).map(

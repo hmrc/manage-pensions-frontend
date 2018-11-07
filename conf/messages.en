@@ -245,5 +245,7 @@ messages__deleteScheme__heading = Are you sure you want to delete {0} scheme?
 messages__deleteScheme__error__required = Select yes if you want to cancel your registration
 
 messages__removeAsSchemeAdministrator__title = Are you sure you want to remove the scheme admininstrator?
-messages__removeAsSchemeAdministrator__heading = Are you sure you want to remove Mark Wright as scheme administrator for {0}?
+messages__removeAsSchemeAdministrator__heading = Are you sure you want to remove {0} as scheme administrator for {1}?
+messages__removeAsSchemeAdministrator_required = Select if you are sure you want to remove the scheme administrator
 messages__returnToSchemeDetails__link = Return to {0}
+

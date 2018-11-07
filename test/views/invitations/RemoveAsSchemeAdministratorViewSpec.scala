@@ -28,16 +28,18 @@ class RemoveAsSchemeAdministratorViewSpec extends YesNoViewBehaviours {
   val form = new RemoveAsSchemeAdministratorFormProvider()()
   private val schemeName = "test scheme name"
   private val srn = "test srn"
+  private val psaName = "test psa name"
   val prefix = "removeAsSchemeAdministrator"
 
-  private def createView: () => HtmlFormat.Appendable = () => removeAsSchemeAdministrator(frontendAppConfig, form, schemeName, srn)(fakeRequest, messages)
+  private def createView: () => HtmlFormat.Appendable = () =>
+    removeAsSchemeAdministrator(frontendAppConfig, form, schemeName, srn, psaName)(fakeRequest, messages)
 
-  private def createViewUsingForm: Form[_] => HtmlFormat.Appendable = (form: Form[_]) => removeAsSchemeAdministrator(frontendAppConfig,
-    form, schemeName, srn)(fakeRequest, messages)
+  private def createViewUsingForm: Form[_] => HtmlFormat.Appendable = (form: Form[_]) =>
+    removeAsSchemeAdministrator(frontendAppConfig, form, schemeName, srn, psaName)(fakeRequest, messages)
 
   "RemoveAsSchemeAdministrator" must {
 
-    behave like normalPageWithTitle(createView, prefix, messages(s"messages__${prefix}__title"), messages(s"messages__${prefix}__heading", schemeName))
+    behave like normalPageWithTitle(createView, prefix, messages(s"messages__${prefix}__title"), messages(s"messages__${prefix}__heading", psaName, schemeName))
 
     behave like pageWithSubmitButton(createView)
 
