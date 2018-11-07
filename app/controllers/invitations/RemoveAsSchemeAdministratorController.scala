@@ -51,13 +51,10 @@ class RemoveAsSchemeAdministratorController @Inject()(
 
   def onPageLoad: Action[AnyContent] = (auth andThen getData andThen requireData).async {
     implicit request =>
-      SchemeSrnId.retrieve.right.map { srn =>
-        schemeDetailsConnector.getSchemeDetails("srn", srn).flatMap { details =>
+      (SchemeSrnId and SchemeNameId).retrieve.right.map {
+        case srn ~ schemeName =>
           val preparedForm = request.userAnswers.get(RemoveAsSchemeAdministratorId).fold(form)(form.fill(_))
-          userAnswersCacheConnector.save(SchemeNameId, details.schemeDetails.name).map { _ =>
-            Ok(removeAsSchemeAdministrator(appConfig, preparedForm, details.schemeDetails.name, srn))
-          }
-        }
+          Future.successful(Ok(removeAsSchemeAdministrator(appConfig, preparedForm, schemeName, srn)))
       }
   }
 

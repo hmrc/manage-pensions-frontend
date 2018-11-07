@@ -16,10 +16,11 @@
 
 package controllers.invitations
 
-import connectors.{FakeUserAnswersCacheConnector, SchemeDetailsConnector}
+import connectors.{FakeUserAnswersCacheConnector, SchemeDetailsConnector, UserAnswersCacheConnector}
 import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.invitations.RemoveAsSchemeAdministratorFormProvider
+import identifiers.invitations.RemoveAsSchemeAdministratorId
 import models.PsaSchemeDetails
 import play.api.data.Form
 import play.api.libs.json.Json
@@ -33,41 +34,49 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class RemoveAsSchemeAdministratorControllerSpec extends ControllerWithQuestionPageBehaviours {
 
-  val formProvider = new RemoveAsSchemeAdministratorFormProvider()
-  val form = formProvider()
-  val schemeDetails = CommonBuilders.schemeDetailsWithPsaOnlyResponse
-  val userAnswer = UserAnswers().schemeName(schemeDetails.schemeDetails.name).srn(schemeDetails.schemeDetails.srn.getOrElse(""))
-  val data = userAnswer.dataRetrievalAction
-  val validData = userAnswer.removeAsSchemeAdministrator(true).dataRetrievalAction
+  import RemoveAsSchemeAdministratorControllerSpec._
 
+  def controller(dataRetrievalAction: DataRetrievalAction = data, fakeAuth: AuthAction = FakeAuthAction(),
+                 userAnswersCacheConnector: UserAnswersCacheConnector = FakeUserAnswersCacheConnector) = new RemoveAsSchemeAdministratorController(
+    frontendAppConfig, fakeAuth, messagesApi, navigator, formProvider,
+    userAnswersCacheConnector, dataRetrievalAction, requiredDataAction, fakeSchemeDetailsConnector)
 
-  val postRequest = FakeRequest().withJsonBody(Json.obj("value" -> true))
-
-  private val fakeSchemeDetailsConnector: SchemeDetailsConnector = new SchemeDetailsConnector {
-    override def getSchemeDetails(schemeIdType: String, idNumber: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[PsaSchemeDetails] = {
-      Future.successful(schemeDetails)
-    }
-  }
-
-  private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction = data, fakeAuth: AuthAction) = {
-    new RemoveAsSchemeAdministratorController(
-      frontendAppConfig, fakeAuth, messagesApi, navigator, formProvider,
-      FakeUserAnswersCacheConnector, dataRetrievalAction, requiredDataAction, fakeSchemeDetailsConnector).onPageLoad()
+  private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
+    controller(dataRetrievalAction, fakeAuth).onPageLoad()
   }
 
   private def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
-
-    new RemoveAsSchemeAdministratorController(
-      frontendAppConfig, fakeAuth, messagesApi, navigator, formProvider,
-      FakeUserAnswersCacheConnector, dataRetrievalAction, requiredDataAction, fakeSchemeDetailsConnector).onSubmit()
+    controller(dataRetrievalAction, fakeAuth).onSubmit()
   }
 
-  def viewAsString(form: Form[Boolean] = form) = removeAsSchemeAdministrator(frontendAppConfig, form, schemeDetails.schemeDetails.name,
+  private def onSaveAction(userAnswersConnector: UserAnswersCacheConnector = FakeUserAnswersCacheConnector) = {
+    controller(userAnswersCacheConnector = userAnswersConnector).onSubmit()
+  }
+
+  private def viewAsString(form: Form[Boolean] = form) = removeAsSchemeAdministrator(frontendAppConfig, form, schemeDetails.schemeDetails.name,
     schemeDetails.schemeDetails.srn.getOrElse(""))(fakeRequest, messages).toString
 
   behave like controllerWithOnPageLoadMethod(onPageLoadAction,
     userAnswer.dataRetrievalAction, validData, form, form.fill(true), viewAsString)
 
   behave like controllerWithOnSubmitMethod(onSubmitAction, data, form.bind(Map("value" -> "")), viewAsString, postRequest)
+
+  behave like controllerThatSavesUserAnswers(onSaveAction, postRequest, RemoveAsSchemeAdministratorId, true)
+}
+
+object RemoveAsSchemeAdministratorControllerSpec {
+  private val formProvider = new RemoveAsSchemeAdministratorFormProvider()
+  private val form = formProvider()
+  private val postRequest = FakeRequest().withJsonBody(Json.obj("value" -> true))
+  private val schemeDetails = CommonBuilders.schemeDetailsWithPsaOnlyResponse
+  private val userAnswer = UserAnswers().schemeName(schemeDetails.schemeDetails.name).srn(schemeDetails.schemeDetails.srn.getOrElse(""))
+  private val data = userAnswer.dataRetrievalAction
+  private val validData = userAnswer.removeAsSchemeAdministrator(true).dataRetrievalAction
+
+  private val fakeSchemeDetailsConnector: SchemeDetailsConnector = new SchemeDetailsConnector {
+    override def getSchemeDetails(schemeIdType: String, idNumber: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[PsaSchemeDetails] = {
+      Future.successful(schemeDetails)
+    }
+  }
 }
 

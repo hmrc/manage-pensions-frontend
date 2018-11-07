@@ -19,8 +19,6 @@ package controllers
 import config.FrontendAppConfig
 import connectors.{ListOfSchemesConnector, SchemeDetailsConnector, UserAnswersCacheConnector}
 import controllers.actions._
-import identifiers.SchemeSrnId
-import identifiers.invitations.SchemeNameId
 import javax.inject.Inject
 import models._
 import org.joda.time.LocalDate

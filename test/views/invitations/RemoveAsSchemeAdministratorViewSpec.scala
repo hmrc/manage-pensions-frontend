@@ -16,29 +16,24 @@
 
 package views.invitations
 
+import controllers.invitations._
 import forms.invitations.RemoveAsSchemeAdministratorFormProvider
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import views.behaviours.YesNoViewBehaviours
 import views.html.invitations.removeAsSchemeAdministrator
-import controllers.invitations._
 
 class RemoveAsSchemeAdministratorViewSpec extends YesNoViewBehaviours {
 
   val form = new RemoveAsSchemeAdministratorFormProvider()()
-  val schemeName = "test scheme name"
-  val srn = "test srn"
-
-  def createView: () => HtmlFormat.Appendable = () => removeAsSchemeAdministrator(frontendAppConfig, form, schemeName, srn)(fakeRequest, messages)
-
-  def createViewUsingForm: Form[_] => HtmlFormat.Appendable = (form: Form[_]) => removeAsSchemeAdministrator(frontendAppConfig,
-    form, schemeName, srn)(fakeRequest, messages)
-
-  def doc: Document = Jsoup.parse(createView().toString)
-
+  private val schemeName = "test scheme name"
+  private val srn = "test srn"
   val prefix = "removeAsSchemeAdministrator"
+
+  private def createView: () => HtmlFormat.Appendable = () => removeAsSchemeAdministrator(frontendAppConfig, form, schemeName, srn)(fakeRequest, messages)
+
+  private def createViewUsingForm: Form[_] => HtmlFormat.Appendable = (form: Form[_]) => removeAsSchemeAdministrator(frontendAppConfig,
+    form, schemeName, srn)(fakeRequest, messages)
 
   "RemoveAsSchemeAdministrator" must {
 
