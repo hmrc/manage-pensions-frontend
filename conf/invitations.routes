@@ -26,10 +26,10 @@ POST       /select-pension-adviser-address              controllers.invitations.
 GET        /change-select-pension-adviser-address       controllers.invitations.PensionAdviserAddressListController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-select-pension-adviser-address       controllers.invitations.PensionAdviserAddressListController.onSubmit(mode: Mode = CheckMode)
 
-GET        /pension-adviser-name                        controllers.invitations.AdviserDetailsController.onPageLoad(mode: Mode = NormalMode)
-POST       /pension-adviser-name                        controllers.invitations.AdviserDetailsController.onSubmit(mode: Mode = NormalMode)
-GET        /change-pension-adviser-name                 controllers.invitations.AdviserDetailsController.onPageLoad(mode: Mode = CheckMode)
-POST       /change-pension-adviser-name                 controllers.invitations.AdviserDetailsController.onSubmit(mode: Mode = CheckMode)
+GET        /who-has-working-knowledge                        controllers.invitations.AdviserDetailsController.onPageLoad(mode: Mode = NormalMode)
+POST       /who-has-working-knowledge                        controllers.invitations.AdviserDetailsController.onSubmit(mode: Mode = NormalMode)
+GET        /change-who-has-working-knowledge                 controllers.invitations.AdviserDetailsController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-who-has-working-knowledge                 controllers.invitations.AdviserDetailsController.onSubmit(mode: Mode = CheckMode)
 
 GET        /pension-adviser-postcode                    controllers.invitations.AdviserAddressPostcodeLookupController.onPageLoad()
 POST       /pension-adviser-postcode                    controllers.invitations.AdviserAddressPostcodeLookupController.onSubmit()

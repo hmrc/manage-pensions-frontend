@@ -91,7 +91,7 @@ trait Constraints {
       case _ => Valid
     }
 
-  protected def adviserName(errorKey: String): Constraint[String] = regexp(psaNameRegex, errorKey)
+  protected def adviserName(errorKey: String): Constraint[String] = regexp(adviserNameRegex, errorKey)
 
   protected def psaName(errorKey: String): Constraint[String] = regexp(psaNameRegex, errorKey)
 
@@ -115,6 +115,7 @@ trait Constraints {
 
 object Constraints {
   val psaIdRegx = """^A[0-9]{7}$"""
+  val adviserNameRegex = """^[a-zA-Z\u00C0-\u00FF '‘’\u2014\u2013\u2010\u002d]{1,107}$"""
   val psaNameRegex = """^[a-zA-Z0-9-\u00C0-\u00FF '&\\/‘’\u2014\u2013\u2010\u002d]{1,107}$"""
   val addressLineRegex = """^[A-Za-z0-9 &!'‘’\"“”(),./\u2014\u2013\u2010\u002d]{1,35}$"""
   val postCodeRegex = """^[A-Za-z]{1,2}[0-9][0-9A-Za-z]?[ ]?[0-9][A-Za-z]{2}$"""
