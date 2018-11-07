@@ -17,7 +17,7 @@
 package utils
 
 import base.SpecBase
-import models.CheckMode
+import models.{Address, CheckMode}
 import org.scalatest.{MustMatchers, WordSpec}
 import utils.countryOptions.CountryOptions
 import viewmodels.AnswerRow
@@ -57,4 +57,11 @@ class CheckYourAnswersHelperSpec extends SpecBase with MustMatchers {
     }
   }
 
+  "calling addressAnswer" must {
+    "return the address as a sequence" in {
+      val address = Address.apply("addr1", "addr2", Some("addr3"), Some("addr4"), Some("zz11zz"), "GB")
+      val expectedResult = Seq("addr1", "addr2", "addr3", "addr4", "zz11zz", "United Kingdom")
+      getHelper(userAnswers).addressAnswer(address) mustBe expectedResult
+    }
+  }
 }
