@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-package models
+package controllers.invitations
 
+import controllers.ControllerSpecBase
+import controllers.actions._
+import play.api.test.Helpers._
 
-import org.joda.time.LocalDate
-import play.api.libs.json.{Json, OFormat}
+class UnableToRemoveAdministratorControllerSpec extends ControllerSpecBase {
 
-case class PsaToBeRemovedFromScheme(psaId: String, pstr: String, removalDate: LocalDate)
-
-object PsaToBeRemovedFromScheme {
-  implicit val formats: OFormat[PsaToBeRemovedFromScheme] = Json.format[PsaToBeRemovedFromScheme]
+  "UnableToRemoveAdministratorController " must {
+    "return OK on a GET" in {
+      val result = new UnableToRemoveAdministratorController(frontendAppConfig, messagesApi, FakeAuthAction()).onPageLoad()(fakeRequest)
+      status(result) mustBe OK
+    }
+  }
 }

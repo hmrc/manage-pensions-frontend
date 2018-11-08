@@ -68,4 +68,8 @@ GET        /your-invitations/:srn                       controllers.invitations.
 GET        /remove-as-scheme-administrator              controllers.invitations.RemoveAsSchemeAdministratorController.onPageLoad()
 POST       /remove-as-scheme-administrator              controllers.invitations.RemoveAsSchemeAdministratorController.onSubmit()
 
+GET        /unable-to-remove-scheme-administrator       controllers.invitations.UnableToRemoveAdministratorController.onPageLoad()
+
+
+
 
