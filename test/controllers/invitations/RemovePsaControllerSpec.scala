@@ -19,17 +19,16 @@ package controllers.invitations
 import base.SpecBase
 import connectors.{FakeUserAnswersCacheConnector, MinimalPsaConnector, SchemeDetailsConnector}
 import controllers.actions.{FakeAuthAction, FakeUnAuthorisedAction}
-import identifiers.{MinimalSchemeDetailId, SchemeSrnId}
+import identifiers.SchemeSrnId
 import identifiers.invitations.{PSANameId, SchemeNameId}
 import models._
-import org.scalatest.mockito.MockitoSugar
 import play.api.test.Helpers._
 import testhelpers.CommonBuilders
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
+class RemovePsaControllerSpec extends SpecBase {
 
   import RemovePsaControllerSpec._
 
@@ -43,27 +42,25 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
       Future.successful(CommonBuilders.psaSchemeDetailsResponse)
   }
 
-  def controller(isSuspended: Boolean) = new InviteController(mockAuthAction, fakeSchemeDetailsConnector,
+  def controller(isSuspended: Boolean) = new RemovePsaController(FakeAuthAction(), fakeSchemeDetailsConnector,
     FakeUserAnswersCacheConnector, fakeMinimalPsaConnector(isSuspended))
 
 
   "RemovePsaController calling onPageLoad(srn)" must {
 
-    "redirect to they cannot remove psa page if PSASuspension is true" in {
+    "redirect to unable to remove psa page if PSASuspension is true" in {
 
       val result = controller(isSuspended = true).onPageLoad(srn)(fakeRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.invitations.routes.YouCannotSendAnInviteController.onPageLoad().url)
-
-      FakeUserAnswersCacheConnector.verifyNot(MinimalSchemeDetailId)
+      redirectLocation(result) mustBe Some(controllers.invitations.routes.UnableToRemoveAdministratorController.onPageLoad().url)
     }
 
     "save srn, scheme name and psa name, then redirect to remove as scheme administrator page if PSASuspension is false" in {
       val result = controller(isSuspended = false).onPageLoad(srn)(fakeRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.invitations.routes.PsaNameController.onPageLoad(NormalMode).url)
+      redirectLocation(result) mustBe Some(controllers.invitations.routes.RemoveAsSchemeAdministratorController.onPageLoad().url)
 
       FakeUserAnswersCacheConnector.verify(SchemeNameId, schemeName)
       FakeUserAnswersCacheConnector.verify(SchemeSrnId, srn)
@@ -72,7 +69,7 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
 
     "redirect to unauthorised page if user is not authenticated" in {
 
-      val controller = new InviteController(FakeUnAuthorisedAction(), fakeSchemeDetailsConnector,
+      val controller = new RemovePsaController(FakeUnAuthorisedAction(), fakeSchemeDetailsConnector,
         FakeUserAnswersCacheConnector, fakeMinimalPsaConnector(isSuspended = false))
 
       val result = controller.onPageLoad(srn)(fakeRequest)
@@ -85,12 +82,10 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
 
 object RemovePsaControllerSpec {
   private val email = "test@test.com"
-  val srn = "S9000000000"
-  val pstr = "00000000AA"
-  val schemeName = "Benefits Scheme"
+  private val srn = "S9000000000"
+  private val schemeName = "Benefits Scheme"
 
   private val psaMinimalSubscription = MinimalPSA(email, false, None, Some(IndividualDetails("First", Some("Middle"), "Last")))
-  private val mockAuthAction = FakeAuthAction()
 }
 
 

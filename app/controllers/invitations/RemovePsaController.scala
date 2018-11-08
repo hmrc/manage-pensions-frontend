@@ -27,8 +27,6 @@ import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.Future
 
-final class PsaNameNotFoundException extends RuntimeException
-
 @Singleton
 class RemovePsaController @Inject()(authenticate: AuthAction,
                                     schemeDetailsConnector: SchemeDetailsConnector,
@@ -39,7 +37,7 @@ class RemovePsaController @Inject()(authenticate: AuthAction,
     implicit request =>
       minimalPsaConnector.getMinimalPsaDetails(request.psaId.id).flatMap { minimalPsaDetails =>
         if (minimalPsaDetails.isPsaSuspended) {
-          Future.successful(Redirect(controllers.invitations.routes.YouCannotSendAnInviteController.onPageLoad()))
+          Future.successful(Redirect(controllers.invitations.routes.UnableToRemoveAdministratorController.onPageLoad()))
         } else {
           for {
             scheme <- schemeDetailsConnector.getSchemeDetails("srn", srn)
@@ -47,7 +45,7 @@ class RemovePsaController @Inject()(authenticate: AuthAction,
             _ <- userAnswersCacheConnector.save(request.externalId, PSANameId, getPsaName(minimalPsaDetails))
             _ <- userAnswersCacheConnector.save(request.externalId, SchemeNameId, scheme.schemeDetails.name)
           } yield {
-            Redirect(controllers.invitations.routes.PsaNameController.onPageLoad(NormalMode))
+            Redirect(controllers.invitations.routes.RemoveAsSchemeAdministratorController.onPageLoad())
           }
         }
       }
