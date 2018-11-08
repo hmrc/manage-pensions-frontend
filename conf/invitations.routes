@@ -1,6 +1,8 @@
 
 GET        /invite/:srn                                 controllers.invitations.InviteController.onPageLoad(srn: SchemeReferenceNumber)
 
+GET        /remove-psa/:srn                             controllers.invitations.RemovePsaController.onPageLoad(srn: SchemeReferenceNumber)
+
 GET        /having-pensions-working-knowledge           controllers.invitations.DoYouHaveWorkingKnowledgeController.onPageLoad(mode: Mode = NormalMode)
 POST       /having-pensions-working-knowledge           controllers.invitations.DoYouHaveWorkingKnowledgeController.onSubmit(mode: Mode = NormalMode)
 GET        /change-having-pensions-working-knowledge    controllers.invitations.DoYouHaveWorkingKnowledgeController.onPageLoad(mode: Mode = CheckMode)
@@ -64,3 +66,4 @@ POST       /check-pension-adviser-answers               controllers.invitations.
 
 GET        /your-invitations                            controllers.invitations.YourInvitationsController.onPageLoad()
 GET        /your-invitations/:srn                       controllers.invitations.YourInvitationsController.onSelect(srn: SchemeReferenceNumber)
+
