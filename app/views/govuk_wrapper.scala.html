@@ -86,7 +86,8 @@ scriptElem: Option[Html] = None)(implicit request: Request[_], messages: Message
     @uiLayouts.serviceInfo(
         betaBanner = phaseBanner,
         includeGridWrapper = false,
-        serviceInfoContent = Some(serviceInfoContent))
+        serviceInfoContent = Some(serviceInfoContent),
+        includeHMRCBranding = false)
 }
 
 @mainContentHeader = {
