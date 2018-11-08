@@ -32,7 +32,7 @@ trait PsaRemovalConnector {
 
 class PsaRemovalConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) extends PsaRemovalConnector with HttpResponseHelper {
   override def remove(psaToBeRemoved: PsaToBeRemovedFromScheme)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
-    http.POST[PsaToBeRemovedFromScheme, HttpResponse]("/pension-administrator/delete",psaToBeRemoved) map {
+    http.POST[PsaToBeRemovedFromScheme, HttpResponse](config.removePsaUrl,psaToBeRemoved) map {
       _ => ()
     }
   }

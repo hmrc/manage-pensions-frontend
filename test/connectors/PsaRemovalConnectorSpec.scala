@@ -58,7 +58,7 @@ class PsaRemovalConnectorSpec extends AsyncFlatSpec with Matchers with WireMockH
 object PsaRemovalConnectorSpec {
   implicit val hc : HeaderCarrier = HeaderCarrier()
 
-  private val psaToBeRemoved = PsaToBeRemovedFromScheme("238DAJFAS", "XXAJ329AJJ", new LocalDate(2009,1,1))
-  private val deleteUrl = "/pension-administrator/delete"
+  private val psaToBeRemoved = PsaToBeRemovedFromScheme("238DAJFASS", "XXAJ329AJJ", new LocalDate(2009,1,1))
+  private val deleteUrl = "/pension-administrator/remove-psa"
   private val requestJson = Json.stringify(Json.toJson(psaToBeRemoved))
 }
