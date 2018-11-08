@@ -25,5 +25,4 @@ class RemoveAsSchemeAdministratorFormProvider @Inject()() extends Mappings {
   def apply(): Form[Boolean] = Form(
     "value" -> boolean("messages__removeAsSchemeAdministrator_required")
   )
-
 }

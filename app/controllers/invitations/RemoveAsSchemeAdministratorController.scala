@@ -17,7 +17,7 @@
 package controllers.invitations
 
 import config.FrontendAppConfig
-import connectors.{SchemeDetailsConnector, UserAnswersCacheConnector}
+import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.invitations.RemoveAsSchemeAdministratorFormProvider
