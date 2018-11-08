@@ -65,9 +65,11 @@ POST       /check-pension-adviser-answers               controllers.invitations.
 GET        /your-invitations                            controllers.invitations.YourInvitationsController.onPageLoad()
 GET        /your-invitations/:srn                       controllers.invitations.YourInvitationsController.onSelect(srn: SchemeReferenceNumber)
 
+GET        /remove-as-scheme-administrator              controllers.invitations.RemoveAsSchemeAdministratorController.onPageLoad()
+POST       /remove-as-scheme-administrator              controllers.invitations.RemoveAsSchemeAdministratorController.onSubmit()
+
 GET        /unable-to-remove-scheme-administrator       controllers.invitations.UnableToRemoveAdministratorController.onPageLoad()
 
-GET        /remove-as-scheme-administrator              controllers.invitations.RemoveAsSchemeAdministratorController.onPageLoad()
 
 
 

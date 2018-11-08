@@ -17,18 +17,60 @@
 package controllers.invitations
 
 import config.FrontendAppConfig
-import controllers.actions._
+import connectors.UserAnswersCacheConnector
+import controllers.Retrievals
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import forms.invitations.RemoveAsSchemeAdministratorFormProvider
+import identifiers.SchemeSrnId
+import identifiers.invitations.{PSANameId, RemoveAsSchemeAdministratorId, SchemeNameId}
 import javax.inject.Inject
+import models.NormalMode
+import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import utils.annotations.RemovePSA
+import utils.{Navigator, UserAnswers}
+import views.html.invitations.removeAsSchemeAdministrator
 
-class RemoveAsSchemeAdministratorController @Inject()(appConfig: FrontendAppConfig,
-                                                      override val messagesApi: MessagesApi,
-                                                      authenticate: AuthAction) extends FrontendController with I18nSupport {
+import scala.concurrent.Future
 
-  def onPageLoad: Action[AnyContent] = authenticate {
+class RemoveAsSchemeAdministratorController @Inject()(
+                                                       val appConfig: FrontendAppConfig,
+                                                       val auth: AuthAction,
+                                                       val messagesApi: MessagesApi,
+                                                       @RemovePSA navigator: Navigator,
+                                                       val formProvider: RemoveAsSchemeAdministratorFormProvider,
+                                                       val userAnswersCacheConnector: UserAnswersCacheConnector,
+                                                       val getData: DataRetrievalAction,
+                                                       val requireData: DataRequiredAction
+                                                     ) extends FrontendController with I18nSupport with Retrievals {
+
+  val form: Form[Boolean] = formProvider()
+
+  def onPageLoad: Action[AnyContent] = (auth andThen getData andThen requireData).async {
     implicit request =>
-      Ok("")
+      (SchemeSrnId and SchemeNameId and PSANameId).retrieve.right.map {
+        case srn ~ schemeName ~ psaName =>
+          val preparedForm = request.userAnswers.get(RemoveAsSchemeAdministratorId).fold(form)(form.fill(_))
+          Future.successful(Ok(removeAsSchemeAdministrator(appConfig, preparedForm, schemeName, srn, psaName)))
+      }
+  }
+
+  def onSubmit: Action[AnyContent] = (auth andThen getData andThen requireData).async {
+    implicit request =>
+      form.bindFromRequest().fold(
+        (formWithErrors: Form[Boolean]) =>
+          (SchemeNameId and SchemeSrnId and PSANameId).retrieve.right.map {
+            case schemeName ~ srn ~ psaName =>
+              Future.successful(BadRequest(removeAsSchemeAdministrator(appConfig, formWithErrors, schemeName, srn, psaName)))
+          },
+        value => {
+          userAnswersCacheConnector.save(request.externalId, RemoveAsSchemeAdministratorId, value).map(
+            cacheMap =>
+              Redirect(navigator.nextPage(RemoveAsSchemeAdministratorId, NormalMode, UserAnswers(cacheMap)))
+          )
+        }
+      )
   }
 }
