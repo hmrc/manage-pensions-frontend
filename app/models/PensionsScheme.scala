@@ -16,7 +16,7 @@
 
 package models
 
-import play.api.libs.json.{Format, Json, OFormat}
+import play.api.libs.json.{Json, OFormat}
 
 case class Name(firstName: Option[String], middleName: Option[String], lastName: Option[String])
 
@@ -168,5 +168,17 @@ case class PsaSchemeDetails(schemeDetails: SchemeDetails,
                             psaDetails: Option[Seq[PsaDetails]])
 
 object PsaSchemeDetails {
+
   implicit val formats: OFormat[PsaSchemeDetails] = Json.format[PsaSchemeDetails]
+
+  def canRemovePsa(psaId: String, scheme: PsaSchemeDetails): Boolean = {
+
+    SchemeStatus.forValue(scheme.schemeDetails.status).canRemovePsa &&
+      scheme.psaDetails.exists(
+        psas =>
+          psas.exists(psa => !psa.id.equals(psaId))
+      )
+
+  }
+
 }
