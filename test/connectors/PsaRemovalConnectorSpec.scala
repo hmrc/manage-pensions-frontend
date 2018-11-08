@@ -43,7 +43,7 @@ class PsaRemovalConnectorSpec extends AsyncFlatSpec with Matchers with WireMockH
         .withRequestBody(equalToJson(requestJson))
         .willReturn(
           aResponse()
-            .withStatus(Status.OK)
+            .withStatus(Status.NO_CONTENT)
         )
     )
 
@@ -51,6 +51,44 @@ class PsaRemovalConnectorSpec extends AsyncFlatSpec with Matchers with WireMockH
 
     connector.remove(psaToBeRemoved).map {
       _ => server.findAll(postRequestedFor(urlEqualTo(deleteUrl))).size() shouldBe 1
+    }
+  }
+
+  it should "return a FailedPsaRemovalException if the request fails with a Bad Request" in {
+    server.stubFor(
+      post(urlEqualTo(deleteUrl))
+        .willReturn(
+          aResponse()
+            .withStatus(Status.BAD_REQUEST)
+        )
+    )
+
+    val connector = injector.instanceOf[PsaRemovalConnector]
+
+    recoverToExceptionIf[FailedPsaRemovalException] {
+      connector.remove(psaToBeRemoved)
+    } map {
+      _ =>
+        server.findAll(postRequestedFor(urlEqualTo(deleteUrl))).size() shouldBe 1
+    }
+  }
+
+  it should "return a FailedPsaRemovalException if the request fails with any other error" in {
+    server.stubFor(
+      post(urlEqualTo(deleteUrl))
+        .willReturn(
+          aResponse()
+            .withStatus(Status.CONFLICT)
+        )
+    )
+
+    val connector = injector.instanceOf[PsaRemovalConnector]
+
+    recoverToExceptionIf[FailedPsaRemovalException] {
+      connector.remove(psaToBeRemoved)
+    } map {
+      _ =>
+        server.findAll(postRequestedFor(urlEqualTo(deleteUrl))).size() shouldBe 1
     }
   }
 }

@@ -19,21 +19,31 @@ package connectors
 import com.google.inject.{ImplementedBy, Inject}
 import config.FrontendAppConfig
 import models.PsaToBeRemovedFromScheme
+import play.api.Logger
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import utils.HttpResponseHelper
+import play.api.http.Status._
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Failure
 
 @ImplementedBy(classOf[PsaRemovalConnectorImpl])
 trait PsaRemovalConnector {
   def remove(psaToBeRemoved: PsaToBeRemovedFromScheme)(implicit hc: HeaderCarrier, ec: ExecutionContext) : Future[Unit]
 }
 
+class FailedPsaRemovalException extends Exception
+
 class PsaRemovalConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) extends PsaRemovalConnector with HttpResponseHelper {
   override def remove(psaToBeRemoved: PsaToBeRemovedFromScheme)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
     http.POST[PsaToBeRemovedFromScheme, HttpResponse](config.removePsaUrl,psaToBeRemoved) map {
-      _ => ()
+      response => response.status match {
+        case NO_CONTENT => ()
+        case _ => throw new FailedPsaRemovalException()
+      }
+    } andThen {
+      case Failure(t: Throwable) => Logger.warn("Unable to remove PSA from Scheme", t)
     }
   }
 }
