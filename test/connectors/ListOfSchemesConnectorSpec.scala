@@ -17,7 +17,7 @@
 package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
-import models.{ListOfSchemes, SchemeDetail}
+import models.{ListOfSchemes, SchemeDetail, SchemeStatus}
 import org.scalatest.{AsyncFlatSpec, Matchers, OptionValues}
 import play.api.http.Status
 import play.api.libs.json.Json
@@ -147,7 +147,7 @@ object ListOfSchemesConnectorSpec extends OptionValues {
           Json.obj(
             "name" -> "abcdefghi",
             "referenceNumber" -> "S1000000456",
-            "schemeStatus" -> "Pending",
+            "schemeStatus" -> SchemeStatus.Pending.value,
             "openDate" -> "2012-10-10",
             "pstr" -> "10000678RE",
             "relationShip" -> "Primary PSA"
@@ -156,7 +156,7 @@ object ListOfSchemesConnectorSpec extends OptionValues {
       )
     )
 
-  private val schemeDetail = SchemeDetail("abcdefghi", "S1000000456", "Pending", Some("2012-10-10"),
+  private val schemeDetail = SchemeDetail("abcdefghi", "S1000000456", SchemeStatus.Pending.value, Some("2012-10-10"),
     Some("10000678RE"), Some("Primary PSA"), None)
 
   private val expectedResponse = ListOfSchemes("2001-12-17T09:30:47Z", "1", Some(List(schemeDetail)))

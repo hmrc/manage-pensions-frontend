@@ -175,8 +175,7 @@ object PsaSchemeDetails {
 
     SchemeStatus.forValue(scheme.schemeDetails.status).canRemovePsa &&
       scheme.psaDetails.exists(
-        psas =>
-          psas.exists(psa => !psa.id.equals(psaId))
+        _.exists(_.id != psaId)
       )
 
   }
