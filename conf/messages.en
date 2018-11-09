@@ -20,6 +20,31 @@ messages__unauthorised__title = You can’t access this service with this accoun
 messages__index__title = Manage Pensions Frontend
 messages__index__guidance = Welcome to your new frontend. Please see the README file for a guide to getting started.
 
+date = Date
+date_day = Day
+date_month = Month
+date_year = Year
+messages__common__date_hint = For example, 31 3 2018
+
+messages__date_error__all_blank = Enter the date when the scheme administrator stopped for this scheme
+messages__date_error__day_blank = Enter a day for when the scheme administrator stopped for this scheme
+messages__date_error__month_blank = Enter a month for when the scheme administrator stopped for this scheme
+messages__date_error__year_blank = Enter a year for when the scheme administrator stopped for this scheme
+messages__date_error__day_month_blank = Enter a day and month for when the scheme administrator stopped for this scheme
+messages__date_error__month_year_blank = Enter a month and year for when the scheme administrator stopped for this scheme
+messages__date_error__future_date = The date when the scheme administrator stopped for this scheme must be today or in the past
+messages__date_error__nonNumeric_day = Enter a day for when the scheme administrator stopped for this scheme using only numbers
+messages__date_error__nonNumeric_month = Enter a month for when the scheme administrator stopped for this scheme using only numbers
+messages__date_error__nonNumeric_year = Enter a year for when the scheme administrator stopped for this scheme using only numbers
+messages__date_error__nonNumeric_day_month = Enter a day and month for when the scheme administrator stopped for this scheme using only numbers
+messages__date_error__nonNumeric_month_year = Enter a month and year for when the scheme administrator stopped for this scheme using only numbers
+messages__date_error__nonNumeric_all = Enter a date when the scheme administrator stopped for this scheme using only numbers
+messages__date_error__before_scheme_start = The date when the scheme administrator stopped for this scheme cannot be before the scheme was opened
+messages__date_error__invalid_day = Enter a day that is {0} or less
+messages__date_error__invalid_month = Enter a month between 1 and 12
+messages__date_error__invalid_year = Enter a year using 4 numbers
+messages__date_error__common = Enter a correct date using the example format for when the scheme administrator stopped for this scheme
+
 messages__error__common__email__no_at_sign = Enter an email address which includes an @ symbol
 messages__error__common__email__start_with_at_sign = Enter an email address which does not start with @
 messages__error__common__email__dot_after_at_sign = Enter an email address in the correct format with a character between @ and dot
@@ -249,3 +274,8 @@ messages__removeAsSchemeAdministrator__heading = Are you sure you want to remove
 messages__removeAsSchemeAdministrator_required = Select yes if you are sure you want to remove the scheme administrator
 messages__returnToSchemeDetails__link = Return to {0}
 
+
+
+messages__removalDate__title = When did you stop being scheme administrator?
+messages__removalDate__heading = When did {0} stop being scheme administrator for {0}?
+messages__removalDate__lede = This can be any date in the past or today. You cannot enter a future date.

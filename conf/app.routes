@@ -30,3 +30,6 @@ GET        /scheme-details/:srn                         controllers.SchemeDetail
 GET        /discard                                     controllers.DeleteSchemeController.onPageLoad
 
 POST       /discard                                     controllers.DeleteSchemeController.onSubmit
+
+GET        /date-stopped-being-scheme-administrator     controllers.remove.RemovalDateController.onPageLoad
+POST       /date-stopped-being-scheme-administrator     controllers.remove.RemovalDateController.onSubmit
