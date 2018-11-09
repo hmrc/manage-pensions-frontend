@@ -274,8 +274,6 @@ messages__removeAsSchemeAdministrator__heading = Are you sure you want to remove
 messages__removeAsSchemeAdministrator_required = Select yes if you are sure you want to remove the scheme administrator
 messages__returnToSchemeDetails__link = Return to {0}
 
-
-
 messages__removalDate__title = When did you stop being scheme administrator?
 messages__removalDate__heading = When did {0} stop being scheme administrator for {0}?
 messages__removalDate__lede = This can be any date in the past or today. You cannot enter a future date.

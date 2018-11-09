@@ -16,10 +16,10 @@
 
 @import config.FrontendAppConfig
 @import uk.gov.hmrc.play.views.html._
-@import controllers.invitations.routes._
+@import controllers.remove.routes._
 @import models.Mode
 
-@(appConfig: FrontendAppConfig, form: Form[_], psaName: String, schemeName: String)(implicit request: Request[_], messages: Messages)
+@(appConfig: FrontendAppConfig, form: Form[_], psaName: String, schemeName: String, srn: String)(implicit request: Request[_], messages: Messages)
 
 @main_template(
     title = messages("messages__removalDate__title"),
@@ -44,5 +44,8 @@
         )
 
         @components.submit_button()
+
+        <p><a id="return-link" href="@controllers.routes.SchemeDetailsController.onPageLoad(srn)">@messages("messages__returnToSchemeDetails__link", schemeName)</a></p>
+
     }
 }

@@ -16,8 +16,10 @@
 
 import controllers.actions.{DataRetrievalAction, FakeDataRetrievalAction}
 import identifiers.invitations._
+import identifiers.remove.RemovalDateId
 import identifiers.{LastPageId, MinimalSchemeDetailId, SchemeSrnId}
 import models._
+import org.joda.time.LocalDate
 import org.scalatest.OptionValues
 
 package object utils {
@@ -87,6 +89,10 @@ package object utils {
 
     def removeAsSchemeAdministrator(isChecked: Boolean): UserAnswers = {
       answers.set(RemoveAsSchemeAdministratorId)(isChecked).asOpt.value
+    }
+
+    def removalDate(date: LocalDate): UserAnswers = {
+      answers.set(RemovalDateId)(date).asOpt.value
     }
 
     def psaName(psaName: String): UserAnswers = {

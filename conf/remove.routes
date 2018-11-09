@@ -1,1 +1,4 @@
 GET        /removed-as-scheme-administrator             controllers.remove.ConfirmRemovedController.onPageLoad()
+
+GET        /date-stopped-being-scheme-administrator     controllers.remove.RemovalDateController.onPageLoad
+POST       /date-stopped-being-scheme-administrator     controllers.remove.RemovalDateController.onSubmit
