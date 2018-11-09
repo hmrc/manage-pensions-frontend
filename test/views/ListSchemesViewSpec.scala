@@ -17,7 +17,7 @@
 package views
 
 import config.FrontendAppConfig
-import models.SchemeDetail
+import models.{SchemeDetail, SchemeStatus}
 import play.api.i18n.Messages
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.Request
@@ -116,7 +116,7 @@ object ListSchemesViewSpec {
     SchemeDetail(
       "scheme-name-0",
       "reference-number-0",
-      "Pending",
+      SchemeStatus.Pending.value,
       None,
       None,
       None,
@@ -125,7 +125,7 @@ object ListSchemesViewSpec {
     SchemeDetail(
       "scheme-name-1",
       "reference-number-1",
-      "Pending Info Required",
+      SchemeStatus.PendingInfoRequired.value,
       None,
       None,
       None,
@@ -134,7 +134,7 @@ object ListSchemesViewSpec {
     SchemeDetail(
       "scheme-name-2",
       "reference-number-2",
-      "Pending Info Received",
+      SchemeStatus.PendingInfoReceived.value,
       None,
       None,
       None,
@@ -143,7 +143,7 @@ object ListSchemesViewSpec {
     SchemeDetail(
       "scheme-name-3",
       "reference-number-3",
-      "Rejected",
+      SchemeStatus.Rejected.value,
       None,
       None,
       None,
@@ -152,7 +152,7 @@ object ListSchemesViewSpec {
     SchemeDetail(
       "scheme-name-4",
       "reference-number-4",
-      "Open",
+      SchemeStatus.Open.value,
       Option("2017-11-09"),
       Some("PSTR-4"),
       None,
@@ -161,7 +161,7 @@ object ListSchemesViewSpec {
     SchemeDetail(
       "scheme-name-5",
       "reference-number-5",
-      "Deregistered",
+      SchemeStatus.Deregistered.value,
       Option("2017-11-10"),
       Some("PSTR-5"),
       None,
@@ -170,7 +170,7 @@ object ListSchemesViewSpec {
     SchemeDetail(
       "scheme-name-6",
       "reference-number-6",
-      "Wound-up",
+      SchemeStatus.WoundUp.value,
       Option("2017-11-11"),
       Some("PSTR-6"),
       None,
@@ -179,7 +179,7 @@ object ListSchemesViewSpec {
     SchemeDetail(
       "scheme-name-7",
       "reference-number-7",
-      "Rejected Under Appeal",
+      SchemeStatus.RejectedUnderAppeal.value,
       None,
       None,
       None,

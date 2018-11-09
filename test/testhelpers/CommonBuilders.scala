@@ -30,7 +30,7 @@ object CommonBuilders {
   val comEstPrevAdd = PreviousAddressDetails(true,Some(Address("addline1","addline2",Some("addline3"),Some("addline4"),Some("ST36TR"),"AD")))
 
 
-  val mockSchemeDetails = SchemeDetails(Some("S9000000000"), Some("00000000AA"), "Open", "Benefits Scheme", true, None, None, false,
+  val mockSchemeDetails = SchemeDetails(Some("S9000000000"), Some("00000000AA"), SchemeStatus.Open.value, "Benefits Scheme", true, None, None, false,
     SchemeMemberNumbers("0","0"), false, false, "AD", "GB", false, None)
 
   val psaDetails1 = PsaDetails("A0000000",Some("partnetship name"),Some(Name(Some("Taylor"),Some("Middle"),Some("Rayon"))))
@@ -40,13 +40,13 @@ object CommonBuilders {
   val psaSchemeDetailsResponse = PsaSchemeDetails(mockSchemeDetails, None, None, Some(Seq(psaDetails1, psaDetails2)))
   val schemeDetailsWithPsaOnlyResponse = PsaSchemeDetails(mockSchemeDetails, None, None, Some(Seq(psaDetails1, psaDetails2)))
   val schemeDetailsWithPsaOnlyResponseMixOfIndividualAndOrg = PsaSchemeDetails(mockSchemeDetails, None, None, Some(Seq(psaDetails3, psaDetails2)))
-  val schemeDetailsPendingResponse = PsaSchemeDetails(mockSchemeDetails.copy(status = "Pending"), None, None, Some(Seq(psaDetails1, psaDetails2)))
+  val schemeDetailsPendingResponse = PsaSchemeDetails(mockSchemeDetails.copy(status = SchemeStatus.Pending.value), None, None, Some(Seq(psaDetails1, psaDetails2)))
   val schemeDetailsWithoutPsaResponse = PsaSchemeDetails(mockSchemeDetails, None, None, None)
 
-  val schemeDetail = SchemeDetail("abcdefghi", "S1000000456", "Pending", Some("2012-10-10"),
+  val schemeDetail = SchemeDetail("abcdefghi", "S1000000456", SchemeStatus.Pending.value, Some("2012-10-10"),
     Some("10000678RE"), Some("Primary PSA"), None)
 
-  val schemeDetailWithoutDate = SchemeDetail("abcdefghi", "S1000000456", "Pending", None,
+  val schemeDetailWithoutDate = SchemeDetail("abcdefghi", "S1000000456", SchemeStatus.Pending.value, None,
     Some("10000678RE"), Some("Primary PSA"), None)
 
   val listOfSchemesResponse = ListOfSchemes("2001-12-17T09:30:47Z", "1", Some(List(schemeDetail)))

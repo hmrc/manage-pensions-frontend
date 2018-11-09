@@ -17,6 +17,7 @@
 @import views.formatters.Date
 @import uk.gov.hmrc.urls.Link
 @import config.FrontendAppConfig
+@import models.SchemeStatus
 
 @(schemes: List[SchemeDetail], appConfig: FrontendAppConfig)(implicit messages: Messages)
 
@@ -50,14 +51,14 @@
 
 @statusValue(status: String) = @{
     status match {
-        case "Pending"                  => messages("messages__listSchemes__status_pending")
-        case "Pending Info Required"    => messages("messages__listSchemes__status_pending_req")
-        case "Pending Info Received"    => messages("messages__listSchemes__status_pending_rec")
-        case "Rejected"                 => messages("messages__listSchemes__status_rejected")
-        case "Open"                     => messages("messages__listSchemes__status_open")
-        case "Deregistered"             => messages("messages__listSchemes__status_deregistered")
-        case "Wound-up"                 => messages("messages__listSchemes__status_wound_up")
-        case "Rejected Under Appeal"    => messages("messages__listSchemes__status_rejected_appeal")
+        case SchemeStatus.Pending.value             => messages("messages__listSchemes__status_pending")
+        case SchemeStatus.PendingInfoRequired.value => messages("messages__listSchemes__status_pending_req")
+        case SchemeStatus.PendingInfoReceived.value => messages("messages__listSchemes__status_pending_rec")
+        case SchemeStatus.Rejected.value            => messages("messages__listSchemes__status_rejected")
+        case SchemeStatus.Open.value                => messages("messages__listSchemes__status_open")
+        case SchemeStatus.Deregistered.value        => messages("messages__listSchemes__status_deregistered")
+        case SchemeStatus.WoundUp.value             => messages("messages__listSchemes__status_wound_up")
+        case SchemeStatus.RejectedUnderAppeal.value => messages("messages__listSchemes__status_rejected_appeal")
         case _ => status
     }
 }
