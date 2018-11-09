@@ -1,4 +1,4 @@
-messages__youCannotSendAnInvite__titlesite.service_name = Manage Pension Schemes
+site.service_name = Manage Pension Schemes
 site.signOut = Log Out
 site.back = Back
 site.save_and_continue = Save and Continue
