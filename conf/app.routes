@@ -30,3 +30,5 @@ GET        /scheme-details/:srn                         controllers.SchemeDetail
 GET        /discard                                     controllers.DeleteSchemeController.onPageLoad
 
 POST       /discard                                     controllers.DeleteSchemeController.onSubmit
+
+GET        /unable-to-remove-scheme-administrator       controllers.remove.CanNotBeRemovedController.onPageLoad()
