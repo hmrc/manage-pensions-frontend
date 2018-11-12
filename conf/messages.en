@@ -120,9 +120,9 @@ messages__check__your__answer__main__containt__label = You are inviting this PSA
 messages__check__your__answer__psa__name__label = Scheme administrator’s name
 messages__check__your__answer__psa__id__label = Administrator ID
 
-messages__incorrectPsaDetails__title = The name and PSA ID do not match our records
+messages__incorrectPsaDetails__title = The name and scheme administrator ID do not match our records
 messages__incorrectPsaDetails__text1 = You should check these details with {0}.
-messages__incorrectPsaDetails__text2 = Their name should be entered exactly as their registered PSA name.
+messages__incorrectPsaDetails__text2 = Their name should be entered exactly as their registered scheme administrator name.
 messages__incorrectPsaDetails__linkText = Return to {0}
 
 messages__invitationSuccess__title = An invitation has been sent to the scheme administrator
