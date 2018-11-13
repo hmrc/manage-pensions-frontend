@@ -21,7 +21,7 @@ import connectors.UserAnswersCacheConnector
 import controllers.actions._
 import forms.DeleteSchemeFormProvider
 import javax.inject.Inject
-import models.requests.{DataRequest, OptionalDataRequest}
+import models.requests.OptionalDataRequest
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.{JsError, JsSuccess}
@@ -60,9 +60,10 @@ class DeleteSchemeController @Inject()(
           (formWithErrors: Form[_]) =>
             Future.successful(BadRequest(deleteScheme(appConfig, formWithErrors, schemeName))),
           {
-            case true => dataCacheConnector.removeAll(request.externalId).map { _ =>
-                Redirect(appConfig.continueSchemeUrl)
-              }
+            case true => dataCacheConnector.removeAll(request.externalId).map {
+              _ =>
+                overviewPage
+            }
             case false => Future.successful(overviewPage)
           }
         )
