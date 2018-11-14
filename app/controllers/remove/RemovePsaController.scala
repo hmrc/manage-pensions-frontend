@@ -18,7 +18,8 @@ package controllers.remove
 
 import com.google.inject.{Inject, Singleton}
 import connectors.{MinimalPsaConnector, SchemeDetailsConnector, UserAnswersCacheConnector}
-import controllers.actions.AuthAction
+import controllers.Retrievals
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import identifiers.SchemeSrnId
 import identifiers.invitations.{PSANameId, SchemeNameId}
 import models.{MinimalPSA, SchemeReferenceNumber}
@@ -29,23 +30,26 @@ import scala.concurrent.Future
 
 @Singleton
 class RemovePsaController @Inject()(authenticate: AuthAction,
+                                    val getData: DataRetrievalAction,
+                                    val requireData: DataRequiredAction,
                                     schemeDetailsConnector: SchemeDetailsConnector,
                                     userAnswersCacheConnector: UserAnswersCacheConnector,
-                                    minimalPsaConnector: MinimalPsaConnector) extends FrontendController {
+                                    minimalPsaConnector: MinimalPsaConnector) extends FrontendController with Retrievals {
 
-  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate.async {
+  def onPageLoad: Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
-      minimalPsaConnector.getMinimalPsaDetails(request.psaId.id).flatMap { minimalPsaDetails =>
-        if (minimalPsaDetails.isPsaSuspended) {
-          Future.successful(Redirect(controllers.invitations.routes.UnableToRemoveAdministratorController.onPageLoad()))
-        } else {
-          for {
-            scheme <- schemeDetailsConnector.getSchemeDetails("srn", srn)
-            _ <- userAnswersCacheConnector.save(request.externalId, SchemeSrnId, srn.id)
-            _ <- userAnswersCacheConnector.save(request.externalId, PSANameId, getPsaName(minimalPsaDetails))
-            _ <- userAnswersCacheConnector.save(request.externalId, SchemeNameId, scheme.schemeDetails.name)
-          } yield {
-            Redirect(controllers.invitations.routes.RemoveAsSchemeAdministratorController.onPageLoad())
+      SchemeSrnId.retrieve.right.map { srn =>
+        minimalPsaConnector.getMinimalPsaDetails(request.psaId.id).flatMap { minimalPsaDetails =>
+          if (minimalPsaDetails.isPsaSuspended) {
+            Future.successful(Redirect(controllers.remove.routes.CanNotBeRemovedController.onPageLoad()))
+          } else {
+            for {
+              scheme <- schemeDetailsConnector.getSchemeDetails("srn", srn)
+              _ <- userAnswersCacheConnector.save(request.externalId, PSANameId, getPsaName(minimalPsaDetails))
+              _ <- userAnswersCacheConnector.save(request.externalId, SchemeNameId, scheme.schemeDetails.name)
+            } yield {
+              Redirect(controllers.remove.routes.ConfirmRemovePsaController.onPageLoad())
+            }
           }
         }
       }

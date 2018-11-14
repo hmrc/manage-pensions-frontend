@@ -22,19 +22,19 @@
 @(appConfig: FrontendAppConfig, form: Form[_], schemeName: String, srn: String, psaName: String)(implicit request: Request[_], messages: Messages)
 
 @main_template(
-    title = Messages("messages__removeAsSchemeAdministrator__title"),
+    title = Messages("messages__confirmRemovePsa__title"),
     appConfig = appConfig
 ){
 
-    @helpers.form(action = controllers.invitations.routes.RemoveAsSchemeAdministratorController.onSubmit(), 'autoComplete -> "off") {
+    @helpers.form(action = controllers.remove.routes.ConfirmRemovePsaController.onSubmit(), 'autoComplete -> "off") {
 
         @components.error_summary(form.errors)
 
-        @components.heading(messages("messages__removeAsSchemeAdministrator__heading", psaName, schemeName))
+        @components.heading(messages("messages__confirmRemovePsa__heading", psaName, schemeName))
 
         @components.input_yes_no(
             field = form("value"),
-            label = messages("messages__removeAsSchemeAdministrator__title"),
+            label = messages("messages__confirmRemovePsa__title"),
             labelClass = Some("visually-hidden")
         )
 
