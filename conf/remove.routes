@@ -1,3 +1,5 @@
 GET        /removed-as-scheme-administrator             controllers.remove.ConfirmRemovedController.onPageLoad()
 
 GET        /remove-psa/:srn                             controllers.remove.RemovePsaController.onPageLoad(srn: SchemeReferenceNumber)
+
+GET        /unable-to-remove-scheme-administrator       controllers.remove.CanNotBeRemovedController.onPageLoad()

@@ -249,3 +249,15 @@ messages__removeAsSchemeAdministrator__heading = Are you sure you want to remove
 messages__removeAsSchemeAdministrator_required = Select yes if you are sure you want to remove the scheme administrator
 messages__returnToSchemeDetails__link = Return to {0}
 
+
+messages__you_cannot_be_removed__title = You cannot be removed
+messages__you_cannot_be_removed__heading = You cannot be removed
+messages__you_cannot_be_removed__p1 = You cannot be removed as a scheme administrator at the moment.
+messages__you_cannot_be_removed__p2 = You need to phone Pension Scheme Services on 0300 123 1079.
+messages__you_cannot_be_removed__returnToSchemes__link = Return to your pension schemes
+
+messages__psa_cannot_be_removed__title = The scheme administrator cannot be removed
+messages__psa_cannot_be_removed__heading = The scheme administrator cannot be removed
+messages__psa_cannot_be_removed__p1 = The scheme administrator cannot be removed at the moment.
+messages__psa_cannot_be_removed__p2 = You need to phone Pension Scheme Services on 0300 123 1079.
+messages__psa_cannot_be_removed__returnToSchemes__link = Return to your pension schemes
