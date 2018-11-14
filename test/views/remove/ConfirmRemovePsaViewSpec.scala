@@ -14,36 +14,36 @@
  * limitations under the License.
  */
 
-package views.invitations
+package views.remove
 
-import controllers.invitations._
-import forms.invitations.RemoveAsSchemeAdministratorFormProvider
+import controllers.remove._
+import forms.remove.ConfirmRemovePsaFormProvider
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import views.behaviours.YesNoViewBehaviours
-import views.html.invitations.removeAsSchemeAdministrator
+import views.html.remove.confirmRemovePsa
 
-class RemoveAsSchemeAdministratorViewSpec extends YesNoViewBehaviours {
+class ConfirmRemovePsaViewSpec extends YesNoViewBehaviours {
 
-  val form = new RemoveAsSchemeAdministratorFormProvider()()
+  val form = new ConfirmRemovePsaFormProvider()()
   private val schemeName = "test scheme name"
   private val srn = "test srn"
   private val psaName = "test psa name"
-  val prefix = "removeAsSchemeAdministrator"
+  val prefix = "confirmRemovePsa"
 
   private def createView: () => HtmlFormat.Appendable = () =>
-    removeAsSchemeAdministrator(frontendAppConfig, form, schemeName, srn, psaName)(fakeRequest, messages)
+    confirmRemovePsa(frontendAppConfig, form, schemeName, srn, psaName)(fakeRequest, messages)
 
   private def createViewUsingForm: Form[_] => HtmlFormat.Appendable = (form: Form[_]) =>
-    removeAsSchemeAdministrator(frontendAppConfig, form, schemeName, srn, psaName)(fakeRequest, messages)
+    confirmRemovePsa(frontendAppConfig, form, schemeName, srn, psaName)(fakeRequest, messages)
 
-  "RemoveAsSchemeAdministrator" must {
+  "ConfirmRemovePsa" must {
 
     behave like normalPageWithTitle(createView, prefix, messages(s"messages__${prefix}__title"), messages(s"messages__${prefix}__heading", psaName, schemeName))
 
     behave like pageWithSubmitButton(createView)
 
-    behave like yesNoPage(createViewUsingForm, prefix, routes.RemoveAsSchemeAdministratorController.onSubmit().url)
+    behave like yesNoPage(createViewUsingForm, prefix, routes.ConfirmRemovePsaController.onSubmit().url)
 
     behave like pageWithReturnLink(
       createView,

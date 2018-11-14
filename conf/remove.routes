@@ -1,3 +1,6 @@
 GET        /removed-as-scheme-administrator             controllers.remove.ConfirmRemovedController.onPageLoad()
 
+GET        /remove-as-scheme-administrator              controllers.remove.ConfirmRemovePsaController.onPageLoad()
+POST       /remove-as-scheme-administrator              controllers.remove.ConfirmRemovePsaController.onSubmit()
+
 GET        /unable-to-remove-scheme-administrator       controllers.remove.CanNotBeRemovedController.onPageLoad()

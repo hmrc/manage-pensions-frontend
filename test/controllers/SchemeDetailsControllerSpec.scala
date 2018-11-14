@@ -18,7 +18,8 @@ package controllers
 
 import connectors._
 import controllers.actions.{DataRetrievalAction, _}
-import models.{PsaDetails, PsaSchemeDetails}
+import identifiers.SchemeSrnId
+import models.{PsaDetails, PsaSchemeDetails, SchemeReferenceNumber}
 import org.mockito.Matchers
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.mockito.MockitoSugar
@@ -58,7 +59,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
     )(fakeRequest, messages).toString()
 
   "SchemeDetailsController" must {
-    "return OK and the correct view for a GET" in {
+    "save the srn and then return OK and the correct view for a GET" in {
       reset(fakeSchemeDetailsConnector)
       when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(schemeDetailsWithPsaOnlyResponse))
@@ -67,6 +68,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
       val result = controller().onPageLoad(srn)(fakeRequest)
       status(result) mustBe OK
       contentAsString(result) mustBe viewAsString()
+      FakeUserAnswersCacheConnector.verify(SchemeSrnId, srn.id)
     }
 
     "return OK and the correct view for a GET where administrators a mix of individual and org" in {
@@ -137,5 +139,5 @@ private object SchemeDetailsControllerSpec extends MockitoSugar {
   val schemeName = "Test Scheme Name"
   val administrators = Some(Seq("Taylor Middle Rayon", "Smith A Tony"))
   val openDate = Some("10 October 2012")
-  val srn = "S1000000456"
+  val srn = SchemeReferenceNumber("S1000000456")
 }
