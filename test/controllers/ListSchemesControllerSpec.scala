@@ -19,7 +19,7 @@ package controllers
 import config.FrontendAppConfig
 import connectors.{InvitationsCacheConnector, ListOfSchemesConnector}
 import controllers.actions.{AuthAction, FakeAuthAction}
-import models.{Invitation, ListOfSchemes, SchemeDetail}
+import models.{Invitation, ListOfSchemes, SchemeDetail, SchemeStatus}
 import org.joda.time.DateTime
 import org.mockito.Matchers._
 import org.mockito.Mockito._
@@ -101,7 +101,7 @@ object ListSchemesControllerSpec {
       SchemeDetail(
         name = "scheme-0",
         referenceNumber = "srn-0",
-        schemeStatus = "Open",
+        schemeStatus = SchemeStatus.Open.value,
         openDate = None,
         pstr = Some("pstr-0"),
         relationShip = None,
@@ -110,7 +110,7 @@ object ListSchemesControllerSpec {
       SchemeDetail(
         name = "scheme-1",
         referenceNumber = "srn-1",
-        schemeStatus = "Deregistered",
+        schemeStatus = SchemeStatus.Deregistered.value,
         openDate = None,
         pstr = Some("pstr-1"),
         relationShip = None,

@@ -86,7 +86,7 @@ messages__schemesOverview__scheme_name = {0} scheme
 messages__schemesOverview__continue__lastDate = You last entered details about this scheme on {0}.
 messages__schemesOverview__continue__deleteDate = You have until {0} to finish this registration before the details are deleted.
 messages__schemesOverview__continue__link = Continue registering this scheme
-messages__schemesOverview__delete__link = Delete this scheme and start a new registration
+messages__schemesOverview__delete__link = Delete {0}
 messages__schemesOverview__UR__head = Help us improve this service
 messages__schemesOverview__UR__text = We want to hear from people who would like to help improve this service by sharing their feedback and testing new features.
 messages__schemesOverview__UR__link = Let us know if you would like to help improve this service.
@@ -120,9 +120,9 @@ messages__check__your__answer__main__containt__label = You are inviting this PSA
 messages__check__your__answer__psa__name__label = Scheme administrator’s name
 messages__check__your__answer__psa__id__label = Administrator ID
 
-messages__incorrectPsaDetails__title = The name and PSA ID do not match our records
+messages__incorrectPsaDetails__title = The name and scheme administrator ID do not match our records
 messages__incorrectPsaDetails__text1 = You should check these details with {0}.
-messages__incorrectPsaDetails__text2 = Their name should be entered exactly as their registered PSA name.
+messages__incorrectPsaDetails__text2 = Their name should be entered exactly as their registered scheme administrator name.
 messages__incorrectPsaDetails__linkText = Return to {0}
 
 messages__invitationSuccess__title = An invitation has been sent to the scheme administrator
@@ -228,7 +228,7 @@ messages__yourInvitations__accept_link = Accept invitation
 messages__error__declaration__required = You need to agree to all the declarations before you can continue
 
 messages__schemeDetails__title = Pension scheme details
-messages__schemeDetails__view_details_link = View or change the registered scheme details
+messages__schemeDetails__view_details_link = View the registered scheme details
 messages__schemeDetails__opened_date_head = This scheme was opened on:
 messages__schemeDetails__psa_list_head = Pension scheme administrators
 messages__schemeDetails__invite_link = Add a scheme administrator
@@ -243,3 +243,9 @@ messages__check__your__answer__adviser__address__label = {0}’s address
 messages__deleteScheme__title = Are you sure you want to delete this scheme?
 messages__deleteScheme__heading = Are you sure you want to delete {0} scheme?
 messages__deleteScheme__error__required = Select yes if you want to cancel your registration
+
+messages__removeAsSchemeAdministrator__title = Are you sure you want to remove the scheme admininstrator?
+messages__removeAsSchemeAdministrator__heading = Are you sure you want to remove {0} as scheme administrator for {1}?
+messages__removeAsSchemeAdministrator_required = Select yes if you are sure you want to remove the scheme administrator
+messages__returnToSchemeDetails__link = Return to {0}
+

@@ -18,6 +18,6 @@ package identifiers.invitations
 
 import identifiers.TypedIdentifier
 
-object PSANameId extends TypedIdentifier[String] {
-  override def toString: String = "psaName"
+object RemoveAsSchemeAdministratorId extends TypedIdentifier[Boolean] {
+  override def toString: String = "removeAsSchemeAdministrator"
 }

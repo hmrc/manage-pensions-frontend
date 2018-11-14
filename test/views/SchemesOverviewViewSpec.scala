@@ -45,7 +45,6 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
       "_manage__text",
       "_manage__link",
       "_continue__link",
-      "_delete__link",
       "_UR__head",
       "_UR__text",
       "_UR__link"
@@ -88,6 +87,11 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
     "have link for continue registration" in {
       Jsoup.parse(createView().toString()).select("a[id=continue-registration]") must
         haveLink(controllers.routes.SchemesOverviewController.onClickCheckIfSchemeCanBeRegistered().url)
+    }
+
+    "have dyanamic text for delete registration" in {
+      Jsoup.parse(createView().toString()) must
+        haveDynamicText(messages("messages__schemesOverview__delete__link", schemeName))
     }
 
     "have link for delete registration" in {

@@ -23,6 +23,7 @@ import org.mockito.Matchers.any
 import org.mockito.Matchers.{eq => eqTo}
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.mockito.MockitoSugar
+import play.api.Application
 import play.api.data.Form
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
@@ -39,7 +40,7 @@ class DeleteSchemeControllerSpec extends ControllerSpecBase with MockitoSugar {
   val schemeName = "Test Scheme Name"
   val fakeCacheConnector: UserAnswersCacheConnector = mock[MicroserviceCacheConnector]
 
-  override lazy val app = new GuiceApplicationBuilder().configure(
+  override lazy val app: Application = new GuiceApplicationBuilder().configure(
     "features.useManagePensionsFrontend" -> true
   ).build()
 
@@ -69,7 +70,7 @@ class DeleteSchemeControllerSpec extends ControllerSpecBase with MockitoSugar {
       val result = controller().onSubmit(postRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(frontendAppConfig.continueSchemeUrl)
+      redirectLocation(result) mustBe Some(routes.SchemesOverviewController.onPageLoad().url)
       verify(fakeCacheConnector, times(1)).removeAll(any())(any(), any())
     }
 

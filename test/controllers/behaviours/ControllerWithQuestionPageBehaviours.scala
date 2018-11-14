@@ -16,13 +16,17 @@
 
 package controllers.behaviours
 
+import connectors.{FakeUserAnswersCacheConnector, UserAnswersCacheConnector}
 import controllers.ControllerSpecBase
 import controllers.actions._
+import identifiers.TypedIdentifier
 import play.api.data.Form
+import play.api.libs.json.Format
 import play.api.mvc._
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import utils.FakeNavigator
+import org.scalatest.concurrent.ScalaFutures._
 
 class ControllerWithQuestionPageBehaviours extends ControllerSpecBase {
 
@@ -122,5 +126,22 @@ class ControllerWithQuestionPageBehaviours extends ControllerSpecBase {
       }
     }
 
+  }
+
+  def controllerThatSavesUserAnswers[A, I <: TypedIdentifier[A], T](saveAction: UserAnswersCacheConnector => Action[AnyContent],
+                                                                  validRequest: FakeRequest[AnyContentAsJson],
+                                                                  id: I,
+                                                                  value: A
+                                                                )(implicit fmt: Format[A]): Unit = {
+
+    "save user answers to cache" in {
+      val cache = new FakeUserAnswersCacheConnector() {}
+      val result = saveAction(cache)(validRequest)
+
+      whenReady(result) {
+        _ =>
+          cache.verify(id, value)
+      }
+    }
   }
 }

@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-package identifiers.invitations
+package controllers.remove
 
-import identifiers.TypedIdentifier
+import play.api.mvc.Action
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-object PSANameId extends TypedIdentifier[String] {
-  override def toString: String = "psaName"
+class ConfirmRemovedController extends FrontendController {
+
+  def onPageLoad() = Action {
+    Ok
+  }
+
 }
