@@ -119,6 +119,12 @@ trait Constraints {
       case date if !LocalDate.now().isBefore(date) => Valid
       case _ => Invalid(errorKey)
     }
+
+  protected def afterGivenDate(errorKey: String, givenDate: LocalDate): Constraint[LocalDate] =
+    Constraint {
+      case date if givenDate.isBefore(date) => Valid
+      case _ => Invalid(errorKey)
+    }
 }
 
 object Constraints {

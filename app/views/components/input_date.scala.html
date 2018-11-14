@@ -46,7 +46,7 @@ hint: Option[String] = None
     <div class="form-date">
         <div class="form-group form-group-day">
             <label class="form-label" for="@field("day").id">@messages("date_day")</label>
-            <input class="form-control" id="@field("day").id" name="@field("day").name" type="number" min="1" max="31" aria-describedby="@if(field("day").errors.nonEmpty){error-message-@field("day").id} else {@field.id-date-hint}" value="@field("day").value" />
+            <input class="form-control" id="@field("day").id" name="@field("day").name" type="number" aria-describedby="@if(field("day").errors.nonEmpty){error-message-@field("day").id} else {@field.id-date-hint}" value="@field("day").value" />
         </div>
         <div class="form-group form-group-month">
             <label class="form-label" for="@field("month").id">@messages("date_month")</label>

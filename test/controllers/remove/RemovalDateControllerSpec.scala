@@ -16,18 +16,25 @@
 
 package controllers.remove
 
-import connectors.{FakeUserAnswersCacheConnector, UserAnswersCacheConnector}
+import connectors.{FakeUserAnswersCacheConnector, ListOfSchemesConnector, UserAnswersCacheConnector}
 import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.remove.RemovalDateFormProvider
-import identifiers.invitations.RemoveAsSchemeAdministratorId
 import identifiers.remove.RemovalDateId
+import models.{ListOfSchemes, SchemeDetail}
 import org.joda.time.LocalDate
+import org.scalatest.mockito.MockitoSugar
 import play.api.data.Form
 import play.api.libs.json.Json
+import play.api.mvc.AnyContentAsJson
 import play.api.test.FakeRequest
 import utils.UserAnswers
 import views.html.remove.removalDate
+import org.mockito.Matchers.{eq => eqTo, _}
+import org.mockito.Mockito._
+import uk.gov.hmrc.http.HeaderCarrier
+
+import scala.concurrent.{ExecutionContext, Future}
 
 class RemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours {
 
@@ -36,7 +43,7 @@ class RemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours {
   def controller(dataRetrievalAction: DataRetrievalAction = data, fakeAuth: AuthAction = FakeAuthAction(),
                  userAnswersCacheConnector: UserAnswersCacheConnector = FakeUserAnswersCacheConnector) = new RemovalDateController(
     frontendAppConfig, messagesApi, userAnswersCacheConnector, navigator, fakeAuth,
-    dataRetrievalAction, requiredDataAction, formProvider)
+    dataRetrievalAction, requiredDataAction, formProvider, fakeListOfSchemesConnector)
 
   private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
     controller(dataRetrievalAction, fakeAuth).onPageLoad()
@@ -50,12 +57,14 @@ class RemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours {
     controller(userAnswersCacheConnector = userAnswersConnector).onSubmit()
   }
 
-  private def viewAsString(form: Form[LocalDate] = form) = removalDate(frontendAppConfig, form, psaName, schemeName, srn)(fakeRequest, messages).toString
+  private def viewAsString(form: Form[LocalDate]) =
+    removalDate(frontendAppConfig, form, psaName, schemeName, srn)(fakeRequest, messages).toString
+
 
   behave like controllerWithOnPageLoadMethodWithoutPrePopulation(onPageLoadAction,
-    userAnswer.dataRetrievalAction, form, viewAsString)
+    userAnswer.dataRetrievalAction, form(openedDate), viewAsString)
 
-  behave like controllerWithOnSubmitMethod(onSubmitAction, data, form.bind(
+  behave like controllerWithOnSubmitMethod(onSubmitAction, data, form(openedDate).bind(
     Map(
       "removalDate.day" -> "",
       "removalDate.month" -> "",
@@ -65,8 +74,9 @@ class RemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours {
 }
 
 object RemovalDateControllerSpec {
-  private val formProvider = new RemovalDateFormProvider()
-  private val form = formProvider()
+  private val openedDate = LocalDate.parse("2018-01-01")
+  private val formProvider: RemovalDateFormProvider = new RemovalDateFormProvider()
+  private val form = formProvider
   private val schemeName = "test scheme name"
   private val psaName = "test psa name"
   private val srn = "test srn"
@@ -74,18 +84,23 @@ object RemovalDateControllerSpec {
 
   private val userAnswer = UserAnswers().schemeName(schemeName).psaName(psaName).srn(srn)
   private val data = userAnswer.dataRetrievalAction
-  private val validData = userAnswer.removalDate(date).dataRetrievalAction
+
+  val list = ListOfSchemes("", "", Some(List(SchemeDetail("", "", "", Some("2018-01-01"), None, None))))
 
   val day: Int = LocalDate.now().getDayOfMonth
   val month: Int = LocalDate.now().getMonthOfYear
   val year: Int = LocalDate.now().getYear - 1
 
 
-  val postRequest = FakeRequest().withJsonBody(Json.obj(
+  val postRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.obj(
     "removalDate.day" -> day.toString,
     "removalDate.month" -> month.toString,
     "removalDate.year" -> year.toString)
   )
+
+  val fakeListOfSchemesConnector: ListOfSchemesConnector = new ListOfSchemesConnector {
+    override def getListOfSchemes(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[ListOfSchemes] = Future(list)
+  }
 }
 
 

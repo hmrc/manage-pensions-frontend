@@ -26,7 +26,8 @@ import views.html.remove.removalDate
 
 class RemovalDateViewSpec extends QuestionViewBehaviours[LocalDate] {
 
-  val form = new RemovalDateFormProvider()()
+  private val openedDate = LocalDate.parse("2018-01-01")
+  val form = new RemovalDateFormProvider()(openedDate)
   private val schemeName = "test scheme name"
   private val psaName = "test psa name"
   private val srn = "test srn"
@@ -44,7 +45,7 @@ class RemovalDateViewSpec extends QuestionViewBehaviours[LocalDate] {
 
     behave like pageWithSubmitButton(createView)
 
-    behave like pageWithTextFields(createViewUsingForm, prefix, routes.RemovalDateController.onSubmit().url, "removalDate")
+    behave like pageWithTextFieldsWithoutErrors(createViewUsingForm, Seq("removalDate"))
 
     behave like pageWithReturnLink(
       createView,
