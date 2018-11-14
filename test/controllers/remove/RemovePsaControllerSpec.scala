@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.invitations
+package controllers.remove
 
 import base.SpecBase
 import connectors.{FakeUserAnswersCacheConnector, MinimalPsaConnector, SchemeDetailsConnector}

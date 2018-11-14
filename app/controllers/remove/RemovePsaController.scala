@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package controllers.invitations
+package controllers.remove
 
 import com.google.inject.{Inject, Singleton}
 import connectors.{MinimalPsaConnector, SchemeDetailsConnector, UserAnswersCacheConnector}
 import controllers.actions.AuthAction
 import identifiers.SchemeSrnId
 import identifiers.invitations.{PSANameId, SchemeNameId}
-import models.{MinimalPSA, NormalMode, SchemeReferenceNumber}
+import models.{MinimalPSA, SchemeReferenceNumber}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
