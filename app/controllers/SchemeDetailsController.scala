@@ -19,6 +19,7 @@ package controllers
 import config.FrontendAppConfig
 import connectors.{ListOfSchemesConnector, SchemeDetailsConnector, UserAnswersCacheConnector}
 import controllers.actions._
+import identifiers.SchemeSrnId
 import javax.inject.Inject
 import models._
 import org.joda.time.LocalDate
@@ -39,21 +40,22 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                                         userAnswersCacheConnector: UserAnswersCacheConnector
                                        ) extends FrontendController with I18nSupport {
 
-  def onPageLoad(srn: String): Action[AnyContent] = authenticate.async {
+  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate.async {
     implicit request =>
       schemeDetailsConnector.getSchemeDetails("srn", srn).flatMap { scheme =>
         if (scheme.psaDetails.toSeq.flatten.exists(_.id == request.psaId.id)) {
           listSchemesConnector.getListOfSchemes(request.psaId.id).flatMap { list =>
             val schemeDetail = scheme.schemeDetails
             val isSchemeOpen = schemeDetail.status.equalsIgnoreCase("open")
-
-            Future.successful(Ok(schemeDetails(appConfig,
-              schemeDetail.name,
-              openedDate(srn, list, isSchemeOpen),
-              administrators(scheme),
-              srn,
-              isSchemeOpen
-            )))
+            userAnswersCacheConnector.save(request.externalId, SchemeSrnId, srn.id).map { _ =>
+              Ok(schemeDetails(appConfig,
+                schemeDetail.name,
+                openedDate(srn.id, list, isSchemeOpen),
+                administrators(scheme),
+                srn.id,
+                isSchemeOpen
+              ))
+            }
           }
         } else {
           Future.successful(NotFound)
