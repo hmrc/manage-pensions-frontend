@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package forms.invitations
+package forms.remove
 
 import forms.behaviours.BooleanFieldBehaviours
 import play.api.data.FormError
 
-class RemoveAsSchemeAdministratorFormProviderSpec extends BooleanFieldBehaviours {
+class ConfirmRemovePsaFormProviderSpec extends BooleanFieldBehaviours {
 
-  val requiredKey = "messages__removeAsSchemeAdministrator_required"
+  val requiredKey = "messages__confirmRemovePsa_required"
   val invalidKey = "error.boolean"
 
-  val formProvider = new RemoveAsSchemeAdministratorFormProvider()
+  val formProvider = new ConfirmRemovePsaFormProvider()
   val form = formProvider()
 
   ".value" must {
@@ -45,3 +45,4 @@ class RemoveAsSchemeAdministratorFormProviderSpec extends BooleanFieldBehaviours
   }
 
 }
+

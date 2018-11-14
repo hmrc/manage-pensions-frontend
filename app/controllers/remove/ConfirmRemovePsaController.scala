@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package controllers.invitations
+package controllers.remove
 
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
-import forms.invitations.RemoveAsSchemeAdministratorFormProvider
+import forms.remove.ConfirmRemovePsaFormProvider
 import identifiers.SchemeSrnId
-import identifiers.invitations.{PSANameId, RemoveAsSchemeAdministratorId, SchemeNameId}
+import identifiers.invitations.{PSANameId, SchemeNameId}
+import identifiers.remove.ConfirmRemovePsaId
 import javax.inject.Inject
 import models.NormalMode
 import play.api.data.Form
@@ -31,19 +32,19 @@ import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.annotations.RemovePSA
 import utils.{Navigator, UserAnswers}
-import views.html.invitations.removeAsSchemeAdministrator
+import views.html.remove.confirmRemovePsa
 
 import scala.concurrent.Future
 
-class RemoveAsSchemeAdministratorController @Inject()(
-                                                       val appConfig: FrontendAppConfig,
-                                                       val auth: AuthAction,
-                                                       val messagesApi: MessagesApi,
-                                                       @RemovePSA navigator: Navigator,
-                                                       val formProvider: RemoveAsSchemeAdministratorFormProvider,
-                                                       val userAnswersCacheConnector: UserAnswersCacheConnector,
-                                                       val getData: DataRetrievalAction,
-                                                       val requireData: DataRequiredAction
+class ConfirmRemovePsaController @Inject()(
+                                            val appConfig: FrontendAppConfig,
+                                            val auth: AuthAction,
+                                            val messagesApi: MessagesApi,
+                                            @RemovePSA navigator: Navigator,
+                                            val formProvider: ConfirmRemovePsaFormProvider,
+                                            val userAnswersCacheConnector: UserAnswersCacheConnector,
+                                            val getData: DataRetrievalAction,
+                                            val requireData: DataRequiredAction
                                                      ) extends FrontendController with I18nSupport with Retrievals {
 
   val form: Form[Boolean] = formProvider()
@@ -52,8 +53,8 @@ class RemoveAsSchemeAdministratorController @Inject()(
     implicit request =>
       (SchemeSrnId and SchemeNameId and PSANameId).retrieve.right.map {
         case srn ~ schemeName ~ psaName =>
-          val preparedForm = request.userAnswers.get(RemoveAsSchemeAdministratorId).fold(form)(form.fill(_))
-          Future.successful(Ok(removeAsSchemeAdministrator(appConfig, preparedForm, schemeName, srn, psaName)))
+          val preparedForm = request.userAnswers.get(ConfirmRemovePsaId).fold(form)(form.fill(_))
+          Future.successful(Ok(confirmRemovePsa(appConfig, preparedForm, schemeName, srn, psaName)))
       }
   }
 
@@ -63,12 +64,12 @@ class RemoveAsSchemeAdministratorController @Inject()(
         (formWithErrors: Form[Boolean]) =>
           (SchemeNameId and SchemeSrnId and PSANameId).retrieve.right.map {
             case schemeName ~ srn ~ psaName =>
-              Future.successful(BadRequest(removeAsSchemeAdministrator(appConfig, formWithErrors, schemeName, srn, psaName)))
+              Future.successful(BadRequest(confirmRemovePsa(appConfig, formWithErrors, schemeName, srn, psaName)))
           },
         value => {
-          userAnswersCacheConnector.save(request.externalId, RemoveAsSchemeAdministratorId, value).map(
+          userAnswersCacheConnector.save(request.externalId, ConfirmRemovePsaId, value).map(
             cacheMap =>
-              Redirect(navigator.nextPage(RemoveAsSchemeAdministratorId, NormalMode, UserAnswers(cacheMap)))
+              Redirect(navigator.nextPage(ConfirmRemovePsaId, NormalMode, UserAnswers(cacheMap)))
           )
         }
       )

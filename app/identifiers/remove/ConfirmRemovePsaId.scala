@@ -14,18 +14,10 @@
  * limitations under the License.
  */
 
-package controllers.invitations
+package identifiers.remove
 
-import controllers.ControllerSpecBase
-import controllers.actions._
-import play.api.test.Helpers._
+import identifiers.TypedIdentifier
 
-class UnableToRemoveAdministratorControllerSpec extends ControllerSpecBase {
-
-  "UnableToRemoveAdministratorController " must {
-    "return OK on a GET" in {
-      val result = new UnableToRemoveAdministratorController(frontendAppConfig, messagesApi, FakeAuthAction()).onPageLoad()(fakeRequest)
-      status(result) mustBe OK
-    }
-  }
+object ConfirmRemovePsaId extends TypedIdentifier[Boolean] {
+  override def toString: String = "confirmRemovePsa"
 }
