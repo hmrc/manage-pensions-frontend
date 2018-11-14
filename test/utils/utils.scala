@@ -16,6 +16,7 @@
 
 import controllers.actions.{DataRetrievalAction, FakeDataRetrievalAction}
 import identifiers.invitations._
+import identifiers.remove.ConfirmRemovePsaId
 import identifiers.{LastPageId, MinimalSchemeDetailId, SchemeSrnId}
 import models._
 import org.scalatest.OptionValues
@@ -85,8 +86,8 @@ package object utils {
       answers.set(DoYouHaveWorkingKnowledgeId)(isChecked).asOpt.value
     }
 
-    def removeAsSchemeAdministrator(isChecked: Boolean): UserAnswers = {
-      answers.set(RemoveAsSchemeAdministratorId)(isChecked).asOpt.value
+    def confirmRemovePsa(isChecked: Boolean): UserAnswers = {
+      answers.set(ConfirmRemovePsaId)(isChecked).asOpt.value
     }
 
     def psaName(psaName: String): UserAnswers = {

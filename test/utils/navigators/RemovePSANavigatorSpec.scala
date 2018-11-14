@@ -20,6 +20,7 @@ import base.SpecBase
 import connectors.FakeUserAnswersCacheConnector
 import identifiers.Identifier
 import identifiers.invitations._
+import identifiers.remove.ConfirmRemovePsaId
 import org.scalatest.prop.TableFor6
 import play.api.libs.json.Json
 import play.api.mvc.Call
@@ -33,7 +34,7 @@ class RemovePSANavigatorSpec extends SpecBase with NavigatorBehaviour {
 
   def routes(): TableFor6[Identifier, UserAnswers, Call, Boolean, Option[Call], Boolean] = Table(
     ("Id",                          "User Answers",   "Next Page (NormalMode)",   "Save(NormalMode)",   "Next Page (CheckMode)",      "Save(CheckMode"),
-    (RemoveAsSchemeAdministratorId,   emptyAnswers,     sessionExpiredPage,         false,              Some(sessionExpiredPage),       false)
+    (ConfirmRemovePsaId,   emptyAnswers,     sessionExpiredPage,         false,              Some(sessionExpiredPage),       false)
   )
 
   navigator.getClass.getSimpleName must {

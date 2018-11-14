@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-package identifiers.invitations
+package forms.remove
 
-import identifiers.TypedIdentifier
+import forms.mappings.Mappings
+import javax.inject.Inject
+import play.api.data.Form
 
-object RemoveAsSchemeAdministratorId extends TypedIdentifier[Boolean] {
-  override def toString: String = "removeAsSchemeAdministrator"
+class ConfirmRemovePsaFormProvider @Inject()() extends Mappings {
+
+  def apply(): Form[Boolean] = Form(
+    "value" -> boolean("messages__confirmRemovePsa_required")
+  )
 }
