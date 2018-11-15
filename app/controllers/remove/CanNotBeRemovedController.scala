@@ -40,7 +40,8 @@ class CanNotBeRemovedController @Inject()(appConfig: FrontendAppConfig,
           Future.successful(Ok(cannot_be_removed(viewModelIndividual, appConfig)))
         case Organization =>
           Future.successful(Ok(cannot_be_removed(viewModelOrganisation, appConfig)))
-        case _ => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+        case _ =>
+          Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
       }
   }
 
