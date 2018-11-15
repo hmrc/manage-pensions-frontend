@@ -33,8 +33,9 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
   val administratorsNoRemove = Seq(AssociatedPsa("First Psa", false), AssociatedPsa("Second User", false))
   val srn = "P12345678"
 
-  class fakeFrontendAppConfig(invitationsEnabled: Boolean, workPackageTwoEnabled: Boolean) extends FrontendAppConfig(app.configuration, injector.instanceOf[Environment]) {
+  class fakeFrontendAppConfig(invitationsEnabled: Boolean, wp2Enabled: Boolean) extends FrontendAppConfig(app.configuration, injector.instanceOf[Environment]) {
     override lazy val isWorkPackageOneEnabled: Boolean = invitationsEnabled
+    override lazy val workPackageTwoEnabled: Boolean = wp2Enabled
   }
 
     def createView(date: Option[String] = Some(openedDate),
@@ -83,7 +84,8 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
       }
 
       "render the 'Remove' link if a PSA can be removed from the scheme" in {
-        createView(workPackageTwoEnabled = true) must haveLink(controllers.remove.routes.RemovePsaController.onPageLoad(srn).url, "remove-link")
+        appRunning()
+        createView(workPackageTwoEnabled = true) must haveLink(controllers.remove.routes.RemovePsaController.onPageLoad().url, "remove-link")
       }
 
       "not render the 'Remove' link if no PSAs can be removed from the scheme" in {

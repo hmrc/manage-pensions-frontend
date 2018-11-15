@@ -48,7 +48,7 @@
                     </div>
                     <div class="column-two-sixths table-column">
                         @if(appConfig.workPackageTwoEnabled && psa.canRemove){
-                        <a id="remove-link" href="@controllers.remove.routes.RemovePsaController.onPageLoad(srn)">
+                        <a id="remove-link" href="@controllers.remove.routes.RemovePsaController.onPageLoad()">
                             @messages("messages__schemeDetails__remove")
                         </a>
                         }
