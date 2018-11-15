@@ -67,4 +67,3 @@ GET        /your-invitations/:srn                       controllers.invitations.
 
 
 
-

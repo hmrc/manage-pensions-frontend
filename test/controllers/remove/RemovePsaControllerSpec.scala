@@ -49,7 +49,7 @@ class RemovePsaControllerSpec extends SpecBase {
 
   "RemovePsaController calling onPageLoad" must {
 
-    "redirect to unable to remove psa page if PSASuspension is true" in {
+    "redirect to unable to remove psa page if PSA is suspended" in {
 
       val result = controller(isSuspended = true).onPageLoad(fakeRequest)
 
@@ -65,7 +65,7 @@ class RemovePsaControllerSpec extends SpecBase {
       redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)
     }
 
-    "save scheme name and psa name, then redirect to remove as scheme administrator page if PSASuspension is false" in {
+    "save scheme name and psa name, then redirect to remove as scheme administrator page if PSA is not suspended" in {
       val result = controller(isSuspended = false).onPageLoad(fakeRequest)
 
       status(result) mustBe SEE_OTHER
