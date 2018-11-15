@@ -33,16 +33,17 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
   val administratorsNoRemove = Seq(AssociatedPsa("First Psa", false), AssociatedPsa("Second User", false))
   val srn = "P12345678"
 
-  class fakeFrontendAppConfig(invitationsEnabled: Boolean) extends FrontendAppConfig(app.configuration, injector.instanceOf[Environment]) {
+  class fakeFrontendAppConfig(invitationsEnabled: Boolean, workPackageTwoEnabled: Boolean) extends FrontendAppConfig(app.configuration, injector.instanceOf[Environment]) {
     override lazy val isWorkPackageOneEnabled: Boolean = invitationsEnabled
   }
 
     def createView(date: Option[String] = Some(openedDate),
                    psaList: Option[Seq[AssociatedPsa]] = Some(administrators),
                    invitations: Boolean = false,
+                   workPackageTwoEnabled: Boolean = false,
                    isSchemeOpen: Boolean = true): () => HtmlFormat.Appendable = () =>
       schemeDetails(
-        new fakeFrontendAppConfig(invitations),
+        new fakeFrontendAppConfig(invitations, workPackageTwoEnabled),
         schemeName,
         date,
         psaList,
@@ -82,11 +83,11 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
       }
 
       "render the 'Remove' link if a PSA can be removed from the scheme" in {
-        createView() must haveLink(controllers.remove.routes.RemovePsaController.onPageLoad(srn).url, "remove-link")
+        createView(workPackageTwoEnabled = true) must haveLink(controllers.remove.routes.RemovePsaController.onPageLoad(srn).url, "remove-link")
       }
 
       "not render the 'Remove' link if no PSAs can be removed from the scheme" in {
-        createView(psaList = Some(administratorsNoRemove)) must notHaveElementWithId("remove-link")
+        createView(psaList = Some(administratorsNoRemove), workPackageTwoEnabled = true) must notHaveElementWithId("remove-link")
       }
 
       "not contain list of administrators if not data is returned from API" in {
