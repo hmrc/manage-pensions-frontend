@@ -16,6 +16,7 @@
 
 package forms.mappings
 
+import org.joda.time.LocalDate
 import org.scalatest.{Matchers, WordSpec}
 import play.api.data.validation.{Invalid, Valid}
 import utils.InputOption
@@ -119,6 +120,40 @@ class ConstraintsSpec extends WordSpec with Matchers with Constraints with Regex
     "return Invalid for a string longer than the allowed length" in {
       val result = maxLength(10, "error.length")("a" * 11)
       result shouldEqual Invalid("error.length", 10)
+    }
+  }
+
+  "nonFutureDate" must {
+    "return Valid for a date in the past" in {
+      val result = nonFutureDate("error.invalidDate")(LocalDate.now().minusDays(1))
+      result shouldEqual Valid
+    }
+
+    "return Valid for current date" in {
+      val result = nonFutureDate("error.invalidDate")(LocalDate.now())
+      result shouldEqual Valid
+    }
+
+    "return Invalid for a date in the future" in {
+      val result = nonFutureDate("error.invalidDate")(LocalDate.now().plusDays(1))
+      result shouldEqual Invalid("error.invalidDate")
+    }
+  }
+
+  "afterGivenDate" must {
+    "return Valid if the date is after given date" in {
+      val result = afterGivenDate("error.invalidDate", LocalDate.now())(LocalDate.now().plusDays(1))
+      result shouldEqual Valid
+    }
+
+    "return Valid if the date is on the given date" in {
+      val result = afterGivenDate("error.invalidDate", LocalDate.now())(LocalDate.now())
+      result shouldEqual Valid
+    }
+
+    "return Invalid if the date is before given date" in {
+      val result = afterGivenDate("error.invalidDate", LocalDate.now())(LocalDate.now().minusDays(1))
+      result shouldEqual Invalid("error.invalidDate")
     }
   }
 

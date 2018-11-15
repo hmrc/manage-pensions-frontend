@@ -68,19 +68,11 @@ trait DateMapping extends Mappings with Transforms {
     }
 
     tuple("day" -> day(key), "month" -> month(key), "year" -> year(key)
-    ).verifying(
-      firstError(
-        validDate
-      )
-    )
-      .transform(toLocalDate, fromLocalDate)
-
+    ).verifying(validDate).transform(toLocalDate, fromLocalDate)
   }
 }
 
 object DateMapping {
-
-
   val dayRegex = """^(0?[1-9]|[12][0-9]|3[01])$"""
   val monthRegex = """^(0?[1-9]|1[012])$"""
   val yearRegex = """^[1-9]{1}[0-9]{3}$"""
