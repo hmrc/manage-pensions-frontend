@@ -20,8 +20,10 @@ import com.google.inject.{ImplementedBy, Inject}
 import config.FrontendAppConfig
 import controllers.routes
 import models.requests.AuthenticatedRequest
+import models.{OtherUser, UserType}
 import play.api.mvc.Results._
 import play.api.mvc.{ActionBuilder, ActionFunction, Request, Result}
+import uk.gov.hmrc.auth.core.AffinityGroup.{Individual, Organisation}
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.{Retrievals, ~}
 import uk.gov.hmrc.domain.PsaId
@@ -37,9 +39,9 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector, config
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
 
     authorised().retrieve(Retrievals.externalId and
-      Retrievals.allEnrolments) {
-      case Some(id) ~ enrolments =>
-        block(AuthenticatedRequest(request, id.toString, PsaId(getPsaId(enrolments))))
+      Retrievals.allEnrolments and Retrievals.affinityGroup) {
+      case Some(id) ~ enrolments ~ Some(affinityGroup) =>
+        block(AuthenticatedRequest(request, id.toString, PsaId(getPsaId(enrolments)), userType(affinityGroup)))
       case _ =>
         Future.successful(Redirect(routes.UnauthorisedController.onPageLoad))
     } recover {
@@ -63,9 +65,18 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector, config
   private def getPsaId(enrolments: Enrolments) =
     enrolments.getEnrolment("HMRC-PODS-ORG").flatMap(_.getIdentifier("PSAID")).map(_.value).getOrElse(throw new PsaIdNotFound)
 
+  private def userType(affinityGroup: AffinityGroup): UserType = {
+    affinityGroup match {
+      case Individual => models.Individual
+      case Organisation => models.Organization
+      case _ => OtherUser
+    }
+  }
+
 }
 
 @ImplementedBy(classOf[AuthActionImpl])
 trait AuthAction extends ActionBuilder[AuthenticatedRequest] with ActionFunction[Request, AuthenticatedRequest]
 
 case class PsaIdNotFound(msg: String = "PsaIdNotFound") extends AuthorisationException(msg)
+
