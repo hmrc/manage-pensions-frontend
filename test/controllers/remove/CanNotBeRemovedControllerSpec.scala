@@ -16,35 +16,19 @@
 
 package controllers.remove
 
-import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction}
+import controllers.actions.{FakeAuthAction, FakeUnAuthorisedAction}
 import controllers.behaviours.ControllerWithNormalPageBehaviours
-import play.api.mvc.{Action, AnyContent}
+import models.{Individual, Organization, OtherUser}
 import play.api.test.Helpers.{status, _}
-import uk.gov.hmrc.auth.core._
-import uk.gov.hmrc.auth.core.authorise.Predicate
-import uk.gov.hmrc.auth.core.retrieve.Retrieval
-import uk.gov.hmrc.http.HeaderCarrier
 import viewmodels.RemovalViewModel
 import views.html.remove.cannot_be_removed
-
-import scala.concurrent.{ExecutionContext, Future}
 
 class CanNotBeRemovedControllerSpec extends ControllerWithNormalPageBehaviours {
 
   import CanNotBeRemovedControllerSpec._
 
-
-  private def onPageLoadActionIndividual(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
-
-    new CanNotBeRemovedController(
-      frontendAppConfig, messagesApi, fakeAuth, fakeAuthConnector(retrievalResultIndividual)).onPageLoad()
-  }
-
-  private def onPageLoadActionOrganisation(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
-
-    new CanNotBeRemovedController(
-      frontendAppConfig, messagesApi, fakeAuth, fakeAuthConnector(retrievalResultOrganisation)).onPageLoad()
-  }
+  val fakeControllerAction = new CanNotBeRemovedController(
+    frontendAppConfig, messagesApi, FakeUnAuthorisedAction())
 
   def individualViewAsString(): String = cannot_be_removed(viewModelIndividual, frontendAppConfig)(fakeRequest, messages).toString
 
@@ -52,24 +36,50 @@ class CanNotBeRemovedControllerSpec extends ControllerWithNormalPageBehaviours {
 
   "if affinity group Individual" must {
 
-    behave like controllerWithOnPageLoadMethod(onPageLoadActionIndividual, getEmptyData, None, individualViewAsString)
+    "return OK and the correct view for a GET" in {
+
+      val controller = new CanNotBeRemovedController(
+        frontendAppConfig, messagesApi, FakeAuthAction.createUserType(Individual))
+
+      val result = controller.onPageLoad()(fakeRequest)
+
+      status(result) mustBe OK
+      contentAsString(result) mustBe individualViewAsString()
+    }
   }
 
-  "if affinity group not Individual" must {
+  "if affinity group Organization" must {
 
-    behave like controllerWithOnPageLoadMethod(onPageLoadActionOrganisation, getEmptyData, None, organisationViewAsString)
+    "return OK and the correct view for a GET" in {
+
+      val controller = new CanNotBeRemovedController(
+        frontendAppConfig, messagesApi, FakeAuthAction.createUserType(Organization))
+
+      val result = controller.onPageLoad()(fakeRequest)
+
+      status(result) mustBe OK
+      contentAsString(result) mustBe organisationViewAsString()
+    }
   }
 
-  "if affinity group is not present" must {
+  "if affinity group is not Individual or Organization" must {
 
     "redirect to session expired" in {
 
       val controller = new CanNotBeRemovedController(
-        frontendAppConfig, messagesApi, FakeAuthAction(), fakeAuthConnector(Future.successful(None)))
+        frontendAppConfig, messagesApi, FakeAuthAction.createUserType(OtherUser))
 
       val result = controller.onPageLoad()(fakeRequest)
 
       status(result) mustBe SEE_OTHER
+    }
+
+    "return 303 if user action is not authenticated" in {
+
+      val result = fakeControllerAction.onPageLoad()(fakeRequest)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)
     }
   }
 }
@@ -89,16 +99,4 @@ object CanNotBeRemovedControllerSpec {
     "messages__psa_cannot_be_removed__p1",
     "messages__psa_cannot_be_removed__p2",
     "messages__psa_cannot_be_removed__returnToSchemes__link")
-
-  private val retrievalResultIndividual = Future.successful(Some(AffinityGroup.Individual))
-
-  private val retrievalResultOrganisation = Future.successful(Some(AffinityGroup.Organisation))
-
-  private def fakeAuthConnector(stubbedRetrievalResult: Future[_]): AuthConnector = new AuthConnector {
-
-    def authorise[A](predicate: Predicate, retrieval: Retrieval[A])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[A] = {
-      stubbedRetrievalResult.map(_.asInstanceOf[A])
-    }
-  }
-
 }

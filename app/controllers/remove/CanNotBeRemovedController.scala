@@ -19,11 +19,9 @@ package controllers.remove
 import config.FrontendAppConfig
 import controllers.actions.AuthAction
 import javax.inject.Inject
+import models.{Individual, Organization}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.auth.core.AffinityGroup.Individual
-import uk.gov.hmrc.auth.core._
-import uk.gov.hmrc.auth.core.retrieve.Retrievals
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import viewmodels.RemovalViewModel
 import views.html.remove.cannot_be_removed
@@ -32,17 +30,15 @@ import scala.concurrent.Future
 
 class CanNotBeRemovedController @Inject()(appConfig: FrontendAppConfig,
                                           override val messagesApi: MessagesApi,
-                                          authenticate: AuthAction,
-                                          override val authConnector: AuthConnector) extends FrontendController with I18nSupport with AuthorisedFunctions {
+                                          authenticate: AuthAction) extends FrontendController with I18nSupport{
 
   def onPageLoad: Action[AnyContent] = authenticate.async {
     implicit request =>
 
-       authorised(User or Admin).retrieve(Retrievals.affinityGroup) {
-
-        case Some(affinityGroup) if affinityGroup == Individual =>
+       request.userType match {
+        case Individual =>
           Future.successful(Ok(cannot_be_removed(viewModelIndividual, appConfig)))
-        case Some(_) =>
+        case Organization =>
           Future.successful(Ok(cannot_be_removed(viewModelOrganisation, appConfig)))
         case _ => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
       }

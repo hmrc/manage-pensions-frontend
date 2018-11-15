@@ -16,6 +16,7 @@
 
 package controllers.actions
 
+import models.{OtherUser, UserType}
 import models.requests.AuthenticatedRequest
 import play.api.mvc.{Request, Result}
 import uk.gov.hmrc.domain.PsaId
@@ -29,14 +30,21 @@ object FakeAuthAction {
   def apply(): AuthAction = {
     new AuthAction {
       override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] =
-        block(AuthenticatedRequest(request, externalId, PsaId(defaultPsaId)))
+        block(AuthenticatedRequest(request, externalId, PsaId(defaultPsaId), OtherUser))
     }
   }
 
   def createWithPsaId(psaId:String): AuthAction = {
     new AuthAction {
       override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] =
-        block(AuthenticatedRequest(request, externalId, PsaId(psaId)))
+        block(AuthenticatedRequest(request, externalId, PsaId(psaId), OtherUser))
+    }
+  }
+
+  def createUserType(userType:UserType): AuthAction = {
+    new AuthAction {
+      override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] =
+        block(AuthenticatedRequest(request, externalId, PsaId(defaultPsaId), userType))
     }
   }
 }

@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-package models.requests
+package models
 
-import models.UserType
-import play.api.mvc.{Request, WrappedRequest}
-import uk.gov.hmrc.domain.PsaId
+sealed trait UserType
 
-trait IdentifiedRequest {
-  def externalId: String
-}
+case object Individual extends UserType
 
-case class AuthenticatedRequest[A](request: Request[A], externalId: String, psaId: PsaId, userType : UserType)
-  extends WrappedRequest[A](request) with IdentifiedRequest
+case object Organization extends UserType
+
+case object OtherUser extends UserType
