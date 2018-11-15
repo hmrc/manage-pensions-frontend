@@ -252,6 +252,7 @@ messages__returnToSchemeDetails__link = Return to {0}
 
 messages__confirmRemoved__title = You have been removed as scheme administrator from this scheme
 messages__confirmRemoved__heading = {0} has been removed as scheme administrator of {1}
+messages__confirmRemoved__return_link = Return to your pension schemes
 
 messages__you_cannot_be_removed__title = You cannot be removed
 messages__you_cannot_be_removed__heading = You cannot be removed

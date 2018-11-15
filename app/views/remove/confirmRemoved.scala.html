@@ -28,6 +28,6 @@
         @components.heading(Messages("messages__confirmRemoved__heading", psaName, schemeName))
     </div>
 
-    <a id="return-link" href="@controllers.routes.ListSchemesController.onPageLoad().url">Return to your pension schemes</a>
+    <a id="return-link" href="@controllers.routes.ListSchemesController.onPageLoad().url">@messages("messages__confirmRemoved__return_link")</a>
 
 }

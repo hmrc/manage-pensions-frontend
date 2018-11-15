@@ -34,7 +34,7 @@ class ConfirmRemovedViewSpec extends ViewBehaviours {
       Message("messages__confirmRemoved__heading", testPsaName, testSchemeName)
     )
 
-    behave like pageWithReturnLink(createView(this), returnLinkUrl, "Return to your pension schemes")
+    behave like pageWithReturnLink(createView(this), returnLinkUrl, messages("messages__confirmRemoved__return_link"))
 
   }
 
