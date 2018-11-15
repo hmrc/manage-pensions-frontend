@@ -234,6 +234,7 @@ messages__schemeDetails__psa_list_head = Pension scheme administrators
 messages__schemeDetails__invite_link = Add a scheme administrator
 messages__schemeDetails__invite_p1 = You will need the name and administrator ID of who you want to add. They will receive an invitation which they will have to accept.
 messages__schemeDetails__return_link = Return to your pension schemes
+messages__schemeDetails__remove = Remove
 
 messages__check__your__answer__main__containt__label = You are adding this scheme administrator to {0}.
 messages__check__your__answer__adviser__name__label = Who has working knowledge of pensions and pensions tax legislation?

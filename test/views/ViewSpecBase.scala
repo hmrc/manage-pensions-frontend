@@ -38,7 +38,7 @@ trait ViewSpecBase extends SpecBase {
       )
   }
 
-  def haveLinkWithUrlAndContent(linkId: String, url: String, expectedContent: String) = Matcher[Document]{
+  def haveLinkWithUrlAndContent(linkId: String, url: String, expectedContent: String): Matcher[Document] = Matcher[Document]{
     document =>
     val link = document.select(s"a[id=$linkId]")
       val actualContent = link.text()
@@ -104,25 +104,6 @@ trait ViewSpecBase extends SpecBase {
         s"link $linkId onClick $onClick is equal to $action"
       )
   }
-
-
-/*
-  class IdSelectorWithUrlMatcher(expectedContent: String, selector: String) extends Matcher[Document] {
-    def apply(left: Document): MatchResult = {
-      val elements: String =
-        left.getElementById(selector).attr("href")
-
-      lazy val elementContents = elements.mkString("\t", "\n\t", "")
-
-      MatchResult(
-        elements.contains(expectedContent),
-        s"[$expectedContent] not found in elements with id '$selector':[\n$elementContents]",
-        s"[$expectedContent] element found with id '$selector' and url [$expectedContent]"
-      )
-    }
-  }
-
-  def haveLinkWithUrlWithID(id: String, expectedURL: String) = new IdSelectorWithUrlMatcher(expectedURL, id)*/
 
   def asDocument(html: Html): Document = Jsoup.parse(html.toString())
 
@@ -265,6 +246,17 @@ trait ViewSpecBase extends SpecBase {
         list != null && list.size() == size,
         s"Not the correct amount of elements with class $className. Size is ${list.size()}, expected $size",
         s"There are $size Elements with class of $className"
+      )
+  }
+
+  def notHaveElementWithId(id: String): Matcher[View] = Matcher[View] {
+    view =>
+      val element = Jsoup.parse(view().toString()).getElementById(id)
+
+      MatchResult(
+        element == null,
+        s"element$id was rendered but should not have been",
+        s"element $id was not rendered"
       )
   }
 

@@ -27,6 +27,7 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.DateHelper
+import viewmodels.AssociatedPsa
 import views.html.schemeDetails
 
 import scala.concurrent.Future
@@ -51,7 +52,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
               Ok(schemeDetails(appConfig,
                 schemeDetail.name,
                 openedDate(srn.id, list, isSchemeOpen),
-                administrators(scheme),
+                administrators(request.psaId.id, scheme),
                 srn.id,
                 isSchemeOpen
               ))
@@ -64,8 +65,17 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
 
   }
 
-  private def administrators(psaSchemeDetails: PsaSchemeDetails): Option[Seq[String]] =
-    psaSchemeDetails.psaDetails.map(_.flatMap(PsaDetails.getPsaName))
+  private def administrators(psaId: String, psaSchemeDetails: PsaSchemeDetails): Option[Seq[AssociatedPsa]] =
+    psaSchemeDetails.psaDetails.map(
+      _.flatMap {
+          psa =>
+            PsaDetails.getPsaName(psa).map {
+              name =>
+                val canRemove = psa.id.equals(psaId) && PsaSchemeDetails.canRemovePsa(psaId, psaSchemeDetails)
+                AssociatedPsa(name, canRemove)
+            }
+        }
+    )
 
   private def openedDate(srn: String, list: ListOfSchemes, isSchemeOpen: Boolean): Option[String] = {
     if (isSchemeOpen) {
@@ -82,4 +92,5 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
       None
     }
   }
+
 }
