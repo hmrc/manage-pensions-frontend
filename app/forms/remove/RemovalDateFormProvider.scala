@@ -16,19 +16,19 @@
 
 package forms.remove
 
-import forms.mappings.{DateMapping, Mappings}
 import javax.inject.Inject
 import org.joda.time.LocalDate
 import play.api.data.Form
+import forms.mappings.DateMapping
 
-class RemovalDateFormProvider @Inject() extends Mappings {
+class RemovalDateFormProvider @Inject() extends DateMapping {
 
-  val beforeSchemeDateInvalid = "messages__date_error__before_scheme_start"
-  val futureDateInvalid = "messages__date_error__future_date"
+  val beforeSchemeDateInvalid = "messages__removal_date_error__before_scheme_start"
+  val futureDateInvalid = "messages__removal_date_error__future_date"
 
   def apply(givenDate: LocalDate): Form[LocalDate] =
     Form(
-      "removalDate" -> dateMapping("messages__date_error__common")
+      "removalDate" -> dateMapping("removal_date")
         .verifying(
           firstError(
             nonFutureDate(futureDateInvalid),

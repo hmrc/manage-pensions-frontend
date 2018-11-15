@@ -43,27 +43,4 @@ trait Mappings extends Formatters with Constraints {
   protected def enumerable[A](requiredKey: String = "error.required",
                               invalidKey: String = "error.invalid")(implicit ev: Enumerable[A]): FieldMapping[A] =
     of(enumerableFormatter[A](requiredKey, invalidKey))
-
-  protected def dateMapping(invalidKey: String): Mapping[LocalDate] = {
-
-    def toLocalDate(input: (Int, Int, Int)): LocalDate = {
-      new LocalDate(input._3, input._2, input._1)
-    }
-
-    def fromLocalDate(date: LocalDate): (Int, Int, Int) = {
-      (date.getDayOfMonth, date.getMonthOfYear, date.getYear)
-    }
-
-    def validDate(input: (Int, Int, Int)): Boolean = {
-      Try(toLocalDate(input)).isSuccess
-    }
-
-    tuple(
-      "day" -> int(requiredKey = "error.date.day_blank", wholeNumberKey = "error.date.day_invalid", nonNumericKey = "error.date.day_invalid"),
-      "month" -> int(requiredKey = "error.date.month_blank", wholeNumberKey = "error.date.month_invalid", nonNumericKey = "error.date.month_invalid"),
-      "year" -> int(requiredKey = "error.date.year_blank", wholeNumberKey = "error.date.year_invalid", nonNumericKey = "error.date.year_invalid")
-    ).verifying(invalidKey, inputs => validDate(inputs))
-      .transform(toLocalDate, fromLocalDate)
-
-  }
 }

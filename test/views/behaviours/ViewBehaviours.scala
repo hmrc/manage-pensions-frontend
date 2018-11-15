@@ -110,17 +110,19 @@ trait ViewBehaviours extends ViewSpecBase {
     }
   }
 
-  def pageWithDateFields(view: Form[_] => HtmlFormat.Appendable, form: Form[_]): Unit = {
+  //scalastyle:off method.length
+  def pageWithDateFields(view: Form[_] => HtmlFormat.Appendable,
+                         form: Form[_], idkey: String = "date",
+                         msgKey: String = "date"): Unit = {
 
     val day = LocalDate.now().getDayOfMonth
     val year = LocalDate.now().getYear
     val month = LocalDate.now().getMonthOfYear
 
-
     val validData: Map[String, String] = Map(
-      "date.day" -> s"$day",
-      "date.month" -> s"$month",
-      "date.year" -> s"$year"
+      s"${idkey}.day" -> s"$day",
+      s"${idkey}.month" -> s"$month",
+      s"${idkey}.year" -> s"$year"
     )
 
     "display an input text box with the correct label and value for day" in {
@@ -128,60 +130,60 @@ trait ViewBehaviours extends ViewSpecBase {
       val v = view(form.bind(validData))
 
       val doc = asDocument(v)
-      doc must haveLabelAndValue("date_day", messages("messages__common__day"), s"$day")
+      doc must haveLabelAndValue(s"${idkey}_day", messages("date_day"), s"$day")
     }
 
     "display an input text box with the correct label and value for month" in {
       val doc = asDocument(view(form.bind(validData)))
-      doc must haveLabelAndValue("date_month", messages("messages__common__month"), s"$month")
+      doc must haveLabelAndValue(s"${idkey}_month", messages("date_month"), s"$month")
     }
 
     "display an input text box with the correct label and value for year" in {
       val doc = asDocument(view(form.bind(validData)))
-      doc must haveLabelAndValue("date_year", messages("messages__common__year"), s"$year")
+      doc must haveLabelAndValue(s"${idkey}_year", messages("date_year"), s"$year")
     }
 
     "display error for day field on error summary" in {
       val error = "error"
-      val doc = asDocument(view(form.withError(FormError("date.day", error))))
-      doc must haveErrorOnSummary("date_day", error)
+      val doc = asDocument(view(form.withError(FormError(s"${idkey}.day", error))))
+      doc must haveErrorOnSummary(s"${idkey}_day", error)
     }
 
     "display error for month field on error summary" in {
       val error = "error"
-      val doc = asDocument(view(form.withError(FormError("date.month", error))))
-      doc must haveErrorOnSummary("date_month", error)
+      val doc = asDocument(view(form.withError(FormError(s"${idkey}.month", error))))
+      doc must haveErrorOnSummary(s"${idkey}_month", error)
     }
 
     "display error for year field on error summary" in {
       val error = "error"
-      val doc = asDocument(view(form.withError(FormError("date.year", error))))
-      doc must haveErrorOnSummary("date_year", error)
+      val doc = asDocument(view(form.withError(FormError(s"${idkey}.year", error))))
+      doc must haveErrorOnSummary(s"${idkey}_year", error)
     }
 
     "display only one date error when all the date fields are missing" in {
-      val expectedError = messages("messages__error__date")
-      val invalidData: Map[String, String] = Map(
-        "firstName" -> "testFirstName",
-        "lastName" -> "testLastName"
-      )
-      val doc = asDocument(view(form.bind(invalidData)))
+      val expectedError = messages(s"messages__${msgKey}_error__any_blank")
+
+      val doc = asDocument(view(form))
       doc.select("span.error-notification").text() mustEqual expectedError
     }
 
-    "display future date error when date is in future" in {
-      val tomorrow = LocalDate.now.plusDays(1)
-      val expectedError = messages("messages__error__date_future")
-      val invalidData: Map[String, String] = Map(
-        "firstName" -> "testFirstName",
-        "lastName" -> "testLastName",
-        "date.day" -> s"${tomorrow.getDayOfMonth}",
-        "date.month" -> s"${tomorrow.getMonthOfYear}",
-        "date.year" -> s"${tomorrow.getYear}"
-      )
-      val doc = asDocument(view(form.bind(invalidData)))
-      doc.select("span.error-notification").text() mustEqual expectedError
+    "display common error on field when multiple errors are present" in {
+      val expectedError = messages(s"messages__${msgKey}_error__common")
+
+      val doc = asDocument(view(form.bind(validData).withError(FormError(s"${idkey}.year",
+        expectedError)).withError(FormError(s"${idkey}.month", "error"))))
+
+      doc.getElementById("error-message-incorrect-date").text() mustEqual expectedError
     }
 
+    "display specific error on field when single error is present" in {
+      val expectedError = messages(s"messages__date_error__invalid_year")
+
+      val doc = asDocument(view(form.bind(validData).withError(FormError(s"${idkey}.year", expectedError))))
+      doc.getElementById("error-message-incorrect-date").text() mustEqual expectedError
+    }
   }
+
+  //scalastyle:on method.length
 }

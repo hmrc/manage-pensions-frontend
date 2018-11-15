@@ -27,8 +27,10 @@ trait QuestionViewBehaviours[A] extends ViewBehaviours {
 
   val form: Form[A]
 
-  def pageWithTextFieldsWithoutErrors(createView: (Form[A]) => HtmlFormat.Appendable,
-                                      fields: Seq[String]) = {
+  def pageWithTextFields(createView: (Form[A]) => HtmlFormat.Appendable,
+                         messageKeyPrefix: String,
+                         expectedFormAction: String,
+                         fields: String*) = {
 
     "behave like a question page" when {
       "rendered" must {
@@ -44,15 +46,6 @@ trait QuestionViewBehaviours[A] extends ViewBehaviours {
           assertNotRenderedById(doc, "error-summary-heading")
         }
       }
-    }
-  }
-
-  def pageWithTextFields(createView: (Form[A]) => HtmlFormat.Appendable,
-                         messageKeyPrefix: String,
-                         expectedFormAction: String,
-                         fields: String*) = {
-
-    behave like pageWithTextFieldsWithoutErrors(createView, fields)
 
       for (field <- fields) {
         s"rendered with an error with field '$field'" must {
@@ -69,4 +62,5 @@ trait QuestionViewBehaviours[A] extends ViewBehaviours {
         }
       }
     }
+  }
 }

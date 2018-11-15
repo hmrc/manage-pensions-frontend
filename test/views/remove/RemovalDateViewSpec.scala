@@ -16,7 +16,6 @@
 
 package views.remove
 
-import controllers.remove._
 import forms.remove.RemovalDateFormProvider
 import org.joda.time.LocalDate
 import play.api.data.Form
@@ -45,7 +44,7 @@ class RemovalDateViewSpec extends QuestionViewBehaviours[LocalDate] {
 
     behave like pageWithSubmitButton(createView)
 
-    behave like pageWithTextFieldsWithoutErrors(createViewUsingForm, Seq("removalDate"))
+    behave like pageWithDateFields(createViewUsingForm, form, "removalDate", "removal_date")
 
     behave like pageWithReturnLink(
       createView,
