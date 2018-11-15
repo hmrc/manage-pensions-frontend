@@ -30,3 +30,4 @@ GET        /scheme-details/:srn                         controllers.SchemeDetail
 GET        /discard                                     controllers.DeleteSchemeController.onPageLoad
 
 POST       /discard                                     controllers.DeleteSchemeController.onSubmit
+

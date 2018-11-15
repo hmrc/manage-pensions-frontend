@@ -20,6 +20,7 @@ import connectors.{FakeUserAnswersCacheConnector, UserAnswersCacheConnector}
 import controllers.ControllerSpecBase
 import controllers.actions._
 import identifiers.TypedIdentifier
+import org.joda.time.LocalDate
 import play.api.data.Form
 import play.api.libs.json.Format
 import play.api.mvc._
@@ -35,11 +36,9 @@ class ControllerWithQuestionPageBehaviours extends ControllerSpecBase {
 
   def onwardRoute = Call("GET", "/foo")
 
-  def controllerWithOnPageLoadMethod[T](onPageLoadAction: (DataRetrievalAction, AuthAction) => Action[AnyContent],
+  def controllerWithOnPageLoadMethodWithoutPrePopulation[T](onPageLoadAction: (DataRetrievalAction, AuthAction) => Action[AnyContent],
                                         emptyData: DataRetrievalAction,
-                                        validData: DataRetrievalAction,
                                         emptyForm: Form[T],
-                                        preparedForm: Form[T],
                                         validView: (Form[T]) => String): Unit = {
 
     "calling onPageLoad" must {
@@ -52,19 +51,34 @@ class ControllerWithQuestionPageBehaviours extends ControllerSpecBase {
         contentAsString(result) mustBe validView(emptyForm)
       }
 
-      "populate the view correctly on a GET when the question has previously been answered" in {
-
-        val result = onPageLoadAction(validData, FakeAuthAction())(fakeRequest)
-
-        contentAsString(result) mustBe validView(preparedForm)
-      }
-
       "return 303 if user action is not authenticated" in {
 
         val result = onPageLoadAction(emptyData, FakeUnAuthorisedAction())(fakeRequest)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad.url)
+      }
+    }
+
+  }
+
+  def controllerWithOnPageLoadMethod[T](onPageLoadAction: (DataRetrievalAction, AuthAction) => Action[AnyContent],
+                                        emptyData: DataRetrievalAction,
+                                        validData: DataRetrievalAction,
+                                        emptyForm: Form[T],
+                                        preparedForm: Form[T],
+                                        validView: (Form[T]) => String): Unit = {
+
+    "calling onPageLoad" must {
+
+      behave like controllerWithOnPageLoadMethodWithoutPrePopulation(onPageLoadAction,
+        emptyData, emptyForm, validView)
+
+      "populate the view correctly on a GET when the question has previously been answered" in {
+
+        val result = onPageLoadAction(validData, FakeAuthAction())(fakeRequest)
+
+        contentAsString(result) mustBe validView(preparedForm)
       }
     }
 

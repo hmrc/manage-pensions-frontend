@@ -19,8 +19,17 @@ field: Field,
 label: String,
 legendClass: String = "",
 secondaryLabel: Option[String] = None,
-hint: Option[String] = None
+hint: Option[String] = None,
+allFieldsBlankError: String = "messages__date_error__any_blank",
+commonError: String = "messages__date_error__common"
 )(implicit messages: Messages)
+
+@allErrors = @{(field("day").errors ++ field("month").errors ++ field("year").errors ++ field.errors)}
+@isEmpty(field: Field) = @{
+    field.value.map{value =>
+        value.length
+    }.getOrElse(0) == 0
+}
 
 <div class="form-field @if(Seq(field, field("day"), field("month"), field("year")).flatMap(_.errors).nonEmpty){form-field--error}">
 <fieldset id="@field.id">
@@ -34,27 +43,31 @@ hint: Option[String] = None
         <span class="form-hint" id="@{field.id}-date-hint">@hint</span>
         }
 
-        @if(field("day").errors.nonEmpty || field("month").errors.nonEmpty || field("year").errors.nonEmpty){
-            <span class="error-notification" id="error-message-date">@messages("messages__error__date")</span>
+        @if(isEmpty(field("day")) && isEmpty(field("month")) && isEmpty(field("year"))){
+            <span class="error-notification" id="error-message-date">@messages(allFieldsBlankError)</span>
         } else {
-            @field.errors.map { error =>
-                <span class="error-notification" id="error-message-@{field.id}-input">@messages(error.message, error.args: _*)</span>
+            @if(allErrors.length == 1) {
+                @allErrors.map { error =>
+                    <span class="error-notification" id="error-message-incorrect-date">@messages(error.message, error.args: _*)</span>
+                }
+            } else {
+                <span class="error-notification" id="error-message-incorrect-date">@messages(commonError)</span>
             }
         }
 
     </legend>
     <div class="form-date">
         <div class="form-group form-group-day">
-            <label class="form-label" for="@field("day").id">@messages("date.day")</label>
-            <input class="form-control" id="@field("day").id" name="@field("day").name" type="number" min="1" max="31" aria-describedby="@if(field("day").errors.nonEmpty){error-message-@field("day").id} else {@field.id-date-hint}" value="@field("day").value" />
+            <label class="form-label" for="@field("day").id">@messages("date_day")</label>
+            <input class="form-control" id="@field("day").id" name="@field("day").name" aria-describedby="@if(field("day").errors.nonEmpty){error-message-@field("day").id} else {@field.id-date-hint}" value="@field("day").value" />
         </div>
         <div class="form-group form-group-month">
-            <label class="form-label" for="@field("month").id">@messages("date.month")</label>
-            <input class="form-control" id="@field("month").id" name="@field("month").name" type="number" min="1" max="12" aria-describedby="@if(field("month").errors.nonEmpty){error-message-@field("month").id} else {@field.id-date-hint}" value="@field("month").value" />
+            <label class="form-label" for="@field("month").id">@messages("date_month")</label>
+            <input class="form-control" id="@field("month").id" name="@field("month").name" aria-describedby="@if(field("month").errors.nonEmpty){error-message-@field("month").id} else {@field.id-date-hint}" value="@field("month").value" />
         </div>
         <div class="form-group form-group-year">
-            <label class="form-label" for="@field("year").id">@messages("date.year")</label>
-            <input class="form-control" id="@field("year").id" name="@field("year").name" type="number" min="1900" max="2050" aria-describedby="@if(field("year").errors.nonEmpty){error-message-@field("year").id} else {@field.id-date-hint}" value="@field("year").value" />
+            <label class="form-label" for="@field("year").id">@messages("date_year")</label>
+            <input class="form-control" id="@field("year").id" name="@field("year").name" aria-describedby="@if(field("year").errors.nonEmpty){error-message-@field("year").id} else {@field.id-date-hint}" value="@field("year").value" />
         </div>
     </div>
 </fieldset>

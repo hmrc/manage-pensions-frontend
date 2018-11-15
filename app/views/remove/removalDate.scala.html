@@ -1,0 +1,53 @@
+@*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.FrontendAppConfig
+@import uk.gov.hmrc.play.views.html._
+@import controllers.remove.routes._
+@import models.Mode
+
+@(appConfig: FrontendAppConfig, form: Form[_], psaName: String, schemeName: String, srn: String)(implicit request: Request[_], messages: Messages)
+
+@main_template(
+    title = messages("messages__removalDate__title"),
+    appConfig = appConfig,
+    bodyClasses = None) {
+
+    @helpers.form(action = RemovalDateController.onSubmit, 'autoComplete -> "off") {
+
+        @components.back_link()
+
+        @components.error_summary(form.errors)
+
+        @components.heading(messages("messages__removalDate__heading", psaName, schemeName))
+
+        <p>@messages("messages__removalDate__lede")</p>
+
+        @components.input_date(
+            field = form("removalDate"),
+            label = messages("date"),
+            legendClass = "visuallyhidden",
+            hint = Some(messages("messages__common__date_hint")),
+            allFieldsBlankError = "messages__removal_date_error__any_blank",
+            commonError = "messages__removal_date_error__common"
+        )
+
+        @components.submit_button()
+
+        <p><a id="return-link" href="@controllers.routes.SchemeDetailsController.onPageLoad(srn)">@messages("messages__returnToSchemeDetails__link", schemeName)</a></p>
+
+    }
+}
