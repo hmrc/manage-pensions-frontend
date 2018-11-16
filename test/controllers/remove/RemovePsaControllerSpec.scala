@@ -16,11 +16,14 @@
 
 package controllers.remove
 
+import java.lang
+
 import base.SpecBase
 import connectors.{FakeUserAnswersCacheConnector, MinimalPsaConnector, SchemeDetailsConnector}
 import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction, FakeUnAuthorisedAction}
-import identifiers.invitations.{PSANameId, SchemeNameId}
+import identifiers.invitations.{PSANameId, PSTRId, SchemeNameId}
 import models._
+import org.scalatest.concurrent.ScalaFutures
 import play.api.test.Helpers._
 import testhelpers.CommonBuilders
 import uk.gov.hmrc.http.HeaderCarrier
@@ -32,26 +35,29 @@ class RemovePsaControllerSpec extends SpecBase {
 
   import RemovePsaControllerSpec._
 
-  def fakeMinimalPsaConnector(isSuspended: Boolean): MinimalPsaConnector = new MinimalPsaConnector {
+  def fakeMinimalPsaConnector(psaMinimalSubscription: MinimalPSA = psaMinimalSubscription): MinimalPsaConnector = new MinimalPsaConnector {
     override def getMinimalPsaDetails(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSA] =
-      Future.successful(psaMinimalSubscription.copy(isPsaSuspended = isSuspended))
+      Future.successful(psaMinimalSubscription)
   }
 
-  def fakeSchemeDetailsConnector: SchemeDetailsConnector = new SchemeDetailsConnector {
-    override def getSchemeDetails(schemeIdType: String, idNumber: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[PsaSchemeDetails] =
-      Future.successful(CommonBuilders.psaSchemeDetailsResponse)
-  }
+  def fakeSchemeDetailsConnector(psaSchemeDetails: PsaSchemeDetails = psaSchemeDetailsResponse): SchemeDetailsConnector =
+    new SchemeDetailsConnector {
+      override def getSchemeDetails(schemeIdType: String, idNumber: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[PsaSchemeDetails] =
+        Future.successful(psaSchemeDetails)
+    }
 
-  def controller(isSuspended: Boolean, dataRetrievalAction: DataRetrievalAction = data) = new RemovePsaController(FakeAuthAction(), dataRetrievalAction,
-    new DataRequiredActionImpl, fakeSchemeDetailsConnector,
-    FakeUserAnswersCacheConnector, fakeMinimalPsaConnector(isSuspended))
+  def controller(dataRetrievalAction: DataRetrievalAction = data, psaSchemeDetails: PsaSchemeDetails = psaSchemeDetailsResponse,
+                 psaMinimalDetails: MinimalPSA = psaMinimalSubscription) =
+    new RemovePsaController(FakeAuthAction(), dataRetrievalAction,
+      new DataRequiredActionImpl, fakeSchemeDetailsConnector(psaSchemeDetails),
+      FakeUserAnswersCacheConnector, fakeMinimalPsaConnector(psaMinimalDetails))
 
 
   "RemovePsaController calling onPageLoad" must {
 
     "redirect to unable to remove psa page if PSA is suspended" in {
 
-      val result = controller(isSuspended = true).onPageLoad(fakeRequest)
+      val result = controller(psaMinimalDetails = psaMinimalSubscription.copy(isPsaSuspended = true)).onPageLoad(fakeRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.remove.routes.CanNotBeRemovedController.onPageLoad().url)
@@ -59,26 +65,51 @@ class RemovePsaControllerSpec extends SpecBase {
 
     "redirect to session expired page if no srn in userAnswers" in {
 
-      val result = controller(isSuspended = false, UserAnswers().dataRetrievalAction).onPageLoad(fakeRequest)
+      val result = controller(UserAnswers().dataRetrievalAction,
+        psaMinimalDetails = psaMinimalSubscription.copy(isPsaSuspended = false)).onPageLoad(fakeRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)
     }
 
-    "save scheme name and psa name, then redirect to remove as scheme administrator page if PSA is not suspended" in {
-      val result = controller(isSuspended = false).onPageLoad(fakeRequest)
+    "save scheme name,psa name and pstr, then redirect to remove as scheme administrator page if PSA is not suspended" in {
+      val result = controller(psaMinimalDetails = psaMinimalSubscription.copy(isPsaSuspended = false)).onPageLoad(fakeRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.remove.routes.ConfirmRemovePsaController.onPageLoad().url)
 
-      FakeUserAnswersCacheConnector.verify(SchemeNameId, schemeName)
+      FakeUserAnswersCacheConnector.verify(SchemeNameId, schemeDetails.schemeDetails.name)
       FakeUserAnswersCacheConnector.verify(PSANameId, psaMinimalSubscription.individualDetails.map(_.fullName).getOrElse(""))
+      FakeUserAnswersCacheConnector.verify(PSTRId, schemeDetails.schemeDetails.pstr.getOrElse(""))
+    }
+
+    "throw IllegalArgumentException if pstr is not found" in {
+      val schemeDetailsUpdated = psaSchemeDetailsResponse.schemeDetails.copy(pstr = None)
+      val result = controller(psaMinimalDetails = psaMinimalSubscription.copy(isPsaSuspended = false),
+        psaSchemeDetails = psaSchemeDetailsResponse.copy(schemeDetails = schemeDetailsUpdated)).
+        onPageLoad(fakeRequest)
+
+      ScalaFutures.whenReady(result.failed) { e =>
+        e mustBe a[IllegalArgumentException]
+        e.getMessage mustEqual "PSTR missing while removing PSA"
+      }
+    }
+
+    "throw IllegalArgumentException if psa name is not found" in {
+      val result = controller(psaMinimalDetails = psaMinimalSubscription.copy(isPsaSuspended = false,
+        organisationName = None, individualDetails = None)).onPageLoad(fakeRequest)
+
+      ScalaFutures.whenReady(result.failed) { e =>
+        e mustBe a[IllegalArgumentException]
+        e.getMessage mustEqual "Organisation or Individual PSA Name missing"
+      }
     }
 
     "redirect to unauthorised page if user is not authenticated" in {
 
       val controller = new RemovePsaController(FakeUnAuthorisedAction(), data, new DataRequiredActionImpl,
-        fakeSchemeDetailsConnector, FakeUserAnswersCacheConnector, fakeMinimalPsaConnector(isSuspended = false))
+        fakeSchemeDetailsConnector(), FakeUserAnswersCacheConnector,
+        fakeMinimalPsaConnector(psaMinimalSubscription.copy(isPsaSuspended = false)))
 
       val result = controller.onPageLoad(fakeRequest)
 
@@ -89,13 +120,12 @@ class RemovePsaControllerSpec extends SpecBase {
 }
 
 object RemovePsaControllerSpec {
-  private val email = "test@test.com"
-  private val srn = "S9000000000"
-  private val schemeName = "Benefits Scheme"
-  private val userAnswer = UserAnswers().srn(srn)
+  val schemeDetails = CommonBuilders.psaSchemeDetailsResponse
+  private val userAnswer = UserAnswers().srn(schemeDetails.schemeDetails.srn.getOrElse(""))
   private val data = userAnswer.dataRetrievalAction
+  val psaSchemeDetailsResponse = CommonBuilders.psaSchemeDetailsResponse
 
-  private val psaMinimalSubscription = MinimalPSA(email, false, None, Some(IndividualDetails("First", Some("Middle"), "Last")))
+  private val psaMinimalSubscription = MinimalPSA("test@test.com", false, None, Some(IndividualDetails("First", Some("Middle"), "Last")))
 }
 
 

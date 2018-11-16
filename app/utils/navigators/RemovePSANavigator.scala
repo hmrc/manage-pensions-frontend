@@ -18,14 +18,29 @@ package utils.navigators
 
 import connectors.UserAnswersCacheConnector
 import controllers.routes._
+import identifiers.SchemeSrnId
+import identifiers.remove.{ConfirmRemovePsaId, RemovalDateId}
 import javax.inject.{Inject, Singleton}
-import utils.Navigator
+import utils.{Navigator, UserAnswers}
 
 @Singleton
 class RemovePSANavigator @Inject()(val dataCacheConnector: UserAnswersCacheConnector) extends Navigator {
 
   override def routeMap(from: NavigateFrom): Option[NavigateTo] = from.id match {
+    case ConfirmRemovePsaId => confirmRemovePsaRoutes(from.userAnswers)
+    case RemovalDateId => NavigateTo.dontSave(controllers.remove.routes.ConfirmRemovedController.onPageLoad())
     case _ => NavigateTo.dontSave(controllers.routes.SessionExpiredController.onPageLoad())
+  }
+
+  private def confirmRemovePsaRoutes(userAnswers: UserAnswers) = {
+    (userAnswers.get(ConfirmRemovePsaId), userAnswers.get(SchemeSrnId)) match {
+      case (Some(false), Some(srn)) =>
+        NavigateTo.dontSave(controllers.routes.SchemeDetailsController.onPageLoad(srn))
+      case (Some(true), _) =>
+        NavigateTo.dontSave(controllers.remove.routes.RemovalDateController.onPageLoad())
+      case _ =>
+        NavigateTo.dontSave(controllers.routes.SessionExpiredController.onPageLoad())
+    }
   }
 
   override protected def editRouteMap(from: NavigateFrom): Option[NavigateTo] = from.id match {

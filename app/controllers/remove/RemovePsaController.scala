@@ -21,8 +21,8 @@ import connectors.{MinimalPsaConnector, SchemeDetailsConnector, UserAnswersCache
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import identifiers.SchemeSrnId
-import identifiers.invitations.{PSANameId, SchemeNameId}
-import models.{MinimalPSA, SchemeReferenceNumber}
+import identifiers.invitations.{PSANameId, PSTRId, SchemeNameId}
+import models.{MinimalPSA, SchemeDetails}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
@@ -47,6 +47,7 @@ class RemovePsaController @Inject()(authenticate: AuthAction,
               scheme <- schemeDetailsConnector.getSchemeDetails("srn", srn)
               _ <- userAnswersCacheConnector.save(request.externalId, PSANameId, getPsaName(minimalPsaDetails))
               _ <- userAnswersCacheConnector.save(request.externalId, SchemeNameId, scheme.schemeDetails.name)
+              _ <- userAnswersCacheConnector.save(request.externalId, PSTRId, getPstr(scheme.schemeDetails))
             } yield {
               Redirect(controllers.remove.routes.ConfirmRemovePsaController.onPageLoad())
             }
@@ -62,4 +63,7 @@ class RemovePsaController @Inject()(authenticate: AuthAction,
       case _ => throw new IllegalArgumentException("Organisation or Individual PSA Name missing")
     }
   }
+
+  private def getPstr(schemeDetails: SchemeDetails): String =
+    schemeDetails.pstr.getOrElse(throw new IllegalArgumentException("PSTR missing while removing PSA"))
 }
