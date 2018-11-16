@@ -16,7 +16,8 @@
 
 package controllers.remove
 
-import controllers.actions.{FakeAuthAction, FakeUnAuthorisedAction}
+import connectors.FakeUserAnswersCacheConnector
+import controllers.actions.{AuthAction, FakeAuthAction, FakeUnAuthorisedAction}
 import controllers.behaviours.ControllerWithNormalPageBehaviours
 import models.{Individual, Organization, OtherUser}
 import play.api.test.Helpers.{status, _}
@@ -27,8 +28,8 @@ class CanNotBeRemovedControllerSpec extends ControllerWithNormalPageBehaviours {
 
   import CanNotBeRemovedControllerSpec._
 
-  val fakeControllerAction = new CanNotBeRemovedController(
-    frontendAppConfig, messagesApi, FakeUnAuthorisedAction())
+  def fakeControllerAction(authAction: AuthAction = FakeUnAuthorisedAction()) = new CanNotBeRemovedController(
+    frontendAppConfig, messagesApi, authAction, FakeUserAnswersCacheConnector)
 
   def individualViewAsString(): String = cannot_be_removed(viewModelIndividual, frontendAppConfig)(fakeRequest, messages).toString
 
@@ -37,11 +38,7 @@ class CanNotBeRemovedControllerSpec extends ControllerWithNormalPageBehaviours {
   "if affinity group Individual" must {
 
     "return OK and the correct view for a GET" in {
-
-      val controller = new CanNotBeRemovedController(
-        frontendAppConfig, messagesApi, FakeAuthAction.createUserType(Individual))
-
-      val result = controller.onPageLoad()(fakeRequest)
+      val result = fakeControllerAction(FakeAuthAction.createUserType(Individual)).onPageLoad()(fakeRequest)
 
       status(result) mustBe OK
       contentAsString(result) mustBe individualViewAsString()
@@ -51,11 +48,7 @@ class CanNotBeRemovedControllerSpec extends ControllerWithNormalPageBehaviours {
   "if affinity group Organization" must {
 
     "return OK and the correct view for a GET" in {
-
-      val controller = new CanNotBeRemovedController(
-        frontendAppConfig, messagesApi, FakeAuthAction.createUserType(Organization))
-
-      val result = controller.onPageLoad()(fakeRequest)
+      val result = fakeControllerAction(FakeAuthAction.createUserType(Organization)).onPageLoad()(fakeRequest)
 
       status(result) mustBe OK
       contentAsString(result) mustBe organisationViewAsString()
@@ -65,18 +58,14 @@ class CanNotBeRemovedControllerSpec extends ControllerWithNormalPageBehaviours {
   "if affinity group is not Individual or Organization" must {
 
     "redirect to session expired" in {
-
-      val controller = new CanNotBeRemovedController(
-        frontendAppConfig, messagesApi, FakeAuthAction.createUserType(OtherUser))
-
-      val result = controller.onPageLoad()(fakeRequest)
+      val result = fakeControllerAction(FakeAuthAction.createUserType(OtherUser)).onPageLoad()(fakeRequest)
 
       status(result) mustBe SEE_OTHER
     }
 
     "return 303 if user action is not authenticated" in {
 
-      val result = fakeControllerAction.onPageLoad()(fakeRequest)
+      val result = fakeControllerAction().onPageLoad()(fakeRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)

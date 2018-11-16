@@ -43,26 +43,27 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate.async {
     implicit request =>
-      schemeDetailsConnector.getSchemeDetails("srn", srn).flatMap { scheme =>
-        if (scheme.psaDetails.toSeq.flatten.exists(_.id == request.psaId.id)) {
-          listSchemesConnector.getListOfSchemes(request.psaId.id).flatMap { list =>
-            val schemeDetail = scheme.schemeDetails
-            val isSchemeOpen = schemeDetail.status.equalsIgnoreCase("open")
-            userAnswersCacheConnector.save(request.externalId, SchemeSrnId, srn.id).map { _ =>
-              Ok(schemeDetails(appConfig,
-                schemeDetail.name,
-                openedDate(srn.id, list, isSchemeOpen),
-                administrators(request.psaId.id, scheme),
-                srn.id,
-                isSchemeOpen
-              ))
+      userAnswersCacheConnector.removeAll(request.externalId).flatMap {_ =>
+        schemeDetailsConnector.getSchemeDetails("srn", srn).flatMap { scheme =>
+          if (scheme.psaDetails.toSeq.flatten.exists(_.id == request.psaId.id)) {
+            listSchemesConnector.getListOfSchemes(request.psaId.id).flatMap { list =>
+              val schemeDetail = scheme.schemeDetails
+              val isSchemeOpen = schemeDetail.status.equalsIgnoreCase("open")
+              userAnswersCacheConnector.save(request.externalId, SchemeSrnId, srn.id).map { _ =>
+                Ok(schemeDetails(appConfig,
+                  schemeDetail.name,
+                  openedDate(srn.id, list, isSchemeOpen),
+                  administrators(request.psaId.id, scheme),
+                  srn.id,
+                  isSchemeOpen
+                ))
+              }
             }
+          } else {
+            Future.successful(NotFound)
           }
-        } else {
-          Future.successful(NotFound)
         }
       }
-
   }
 
   private def administrators(psaId: String, psaSchemeDetails: PsaSchemeDetails): Option[Seq[AssociatedPsa]] =
