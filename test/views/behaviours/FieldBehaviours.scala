@@ -80,7 +80,7 @@ trait FieldBehaviours extends FormSpec with PropertyChecks with Generators {
     }
   }
 
-  def mandatoryDateField(form: Form[_], fieldName: String, requiredError: FormError): Unit = {
+  def mandatoryDateField(form: Form[_], fieldName: String, key: String): Unit = {
     val dayFieldName = s"$fieldName.day"
     val monthFieldName = s"$fieldName.month"
     val yearFieldName = s"$fieldName.year"
@@ -96,27 +96,27 @@ trait FieldBehaviours extends FormSpec with PropertyChecks with Generators {
     }
 
     "not bind when day key is not present at all" in {
-      keyNotPresent(dayFieldName, "error.date.day_blank")
+      keyNotPresent(dayFieldName, s"messages__${key}_error__day_blank")
     }
 
     "not bind when month key is not present at all" in {
-      keyNotPresent(monthFieldName, "error.date.month_blank")
+      keyNotPresent(monthFieldName, s"messages__${key}_error__month_blank")
     }
 
     "not bind when year key is not present at all" in {
-      keyNotPresent(yearFieldName, "error.date.year_blank")
+      keyNotPresent(yearFieldName, s"messages__${key}_error__year_blank")
     }
 
     "not bind when day key is blank" in {
-      keyBlank(dayFieldName, "error.date.day_blank")
+      keyBlank(dayFieldName, s"messages__${key}_error__day_blank")
     }
 
     "not bind when month key is blank" in {
-      keyBlank(monthFieldName, "error.date.month_blank")
+      keyBlank(monthFieldName, s"messages__${key}_error__month_blank")
     }
 
     "not bind when year key is blank" in {
-      keyBlank(yearFieldName, "error.date.year_blank")
+      keyBlank(yearFieldName, s"messages__${key}_error__year_blank")
     }
   }
 

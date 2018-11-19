@@ -95,6 +95,29 @@ trait Formatters {
         baseFormatter.unbind(key, value.toString)
     }
 
+  private[mappings] def intFormatterWithRegex(requiredKey: String, regexKey: String, nonNumericKey: String, regex: String): Formatter[Int] =
+    new Formatter[Int] {
+
+      private val baseFormatter = stringFormatter(requiredKey)
+
+      override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], Int] =
+        baseFormatter
+          .bind(key, data)
+          .right.map(_.replace(",", ""))
+          .right.flatMap { s =>
+           nonFatalCatch.either(s.toInt) match {
+              case Left(_) => Left(Seq(FormError(key, nonNumericKey)))
+              case Right(_) if (!s.matches(regex)) =>
+                Left(Seq(FormError(key, regexKey)))
+              case Right(value) => Right(value)
+            }
+        }
+
+      override def unbind(key: String, value: Int) =
+        baseFormatter.unbind(key, value.toString)
+    }
+
+
   private[mappings] def enumerableFormatter[A](requiredKey: String, invalidKey: String)(implicit ev: Enumerable[A]): Formatter[A] =
     new Formatter[A] {
 
