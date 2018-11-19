@@ -16,23 +16,20 @@
 
 package controllers.remove
 
-import connectors.{FakeUserAnswersCacheConnector, ListOfSchemesConnector, UserAnswersCacheConnector}
+import connectors.{FakeUserAnswersCacheConnector, ListOfSchemesConnector, PsaRemovalConnector, UserAnswersCacheConnector}
 import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.remove.RemovalDateFormProvider
 import identifiers.remove.RemovalDateId
-import models.{ListOfSchemes, SchemeDetail}
+import models.{ListOfSchemes, PsaToBeRemovedFromScheme, SchemeDetail}
 import org.joda.time.LocalDate
-import org.scalatest.mockito.MockitoSugar
 import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.mvc.AnyContentAsJson
 import play.api.test.FakeRequest
+import uk.gov.hmrc.http.HeaderCarrier
 import utils.UserAnswers
 import views.html.remove.removalDate
-import org.mockito.Matchers.{eq => eqTo, _}
-import org.mockito.Mockito._
-import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -42,8 +39,8 @@ class RemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours {
 
   def controller(dataRetrievalAction: DataRetrievalAction = data, fakeAuth: AuthAction = FakeAuthAction(),
                  userAnswersCacheConnector: UserAnswersCacheConnector = FakeUserAnswersCacheConnector) = new RemovalDateController(
-    frontendAppConfig, messagesApi, userAnswersCacheConnector, navigator, fakeAuth,
-    dataRetrievalAction, requiredDataAction, formProvider, fakeListOfSchemesConnector)
+    frontendAppConfig, messagesApi, userAnswersCacheConnector, navigator, fakeAuth, dataRetrievalAction,
+    requiredDataAction, formProvider, fakeListOfSchemesConnector, fakePsaRemovalConnector)
 
   private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
     controller(dataRetrievalAction, fakeAuth).onPageLoad()
@@ -80,9 +77,10 @@ object RemovalDateControllerSpec {
   private val schemeName = "test scheme name"
   private val psaName = "test psa name"
   private val srn = "test srn"
+  private val pstr = "test pstr"
   private val date = LocalDate.now().minusYears(1)
 
-  private val userAnswer = UserAnswers().schemeName(schemeName).psaName(psaName).srn(srn)
+  private val userAnswer = UserAnswers().schemeName(schemeName).psaName(psaName).srn(srn).pstr(pstr)
   private val data = userAnswer.dataRetrievalAction
 
   val list = ListOfSchemes("", "", Some(List(SchemeDetail("", "", "", Some("2018-01-01"), None, None))))
@@ -100,6 +98,10 @@ object RemovalDateControllerSpec {
 
   val fakeListOfSchemesConnector: ListOfSchemesConnector = new ListOfSchemesConnector {
     override def getListOfSchemes(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[ListOfSchemes] = Future(list)
+  }
+
+  val fakePsaRemovalConnector: PsaRemovalConnector = new PsaRemovalConnector {
+    override def remove(psaToBeRemoved: PsaToBeRemovedFromScheme)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = Future(())
   }
 }
 

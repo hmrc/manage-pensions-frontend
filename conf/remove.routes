@@ -1,5 +1,8 @@
 GET        /removed-as-scheme-administrator             controllers.remove.ConfirmRemovedController.onPageLoad()
 
+GET        /date-stopped-being-scheme-administrator     controllers.remove.RemovalDateController.onPageLoad
+POST       /date-stopped-being-scheme-administrator     controllers.remove.RemovalDateController.onSubmit
+
 GET        /remove-as-scheme-administrator              controllers.remove.ConfirmRemovePsaController.onPageLoad()
 POST       /remove-as-scheme-administrator              controllers.remove.ConfirmRemovePsaController.onSubmit()
 
@@ -7,6 +10,3 @@ GET        /remove-psa                                  controllers.remove.Remov
 
 GET        /unable-to-remove-scheme-administrator       controllers.remove.CanNotBeRemovedController.onPageLoad()
 
-
-GET        /date-stopped-being-scheme-administrator     controllers.remove.RemovalDateController.onPageLoad
-POST       /date-stopped-being-scheme-administrator     controllers.remove.RemovalDateController.onSubmit

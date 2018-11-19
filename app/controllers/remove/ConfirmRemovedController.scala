@@ -18,6 +18,7 @@ package controllers.remove
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
+import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import identifiers.invitations.{PSANameId, SchemeNameId}
@@ -26,24 +27,23 @@ import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import views.html.remove.confirmRemoved
 
-import scala.concurrent.Future
-
 class ConfirmRemovedController @Inject()(
-  config: FrontendAppConfig,
-  override val messagesApi: MessagesApi,
-  authenticate: AuthAction,
-  getData: DataRetrievalAction,
-  requireData: DataRequiredAction
-) extends FrontendController with I18nSupport with Retrievals {
+                                          config: FrontendAppConfig,
+                                          override val messagesApi: MessagesApi,
+                                          authenticate: AuthAction,
+                                          getData: DataRetrievalAction,
+                                          requireData: DataRequiredAction,
+                                          userAnswersCacheConnector: UserAnswersCacheConnector
+                                        ) extends FrontendController with I18nSupport with Retrievals {
 
   def onPageLoad(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
 
       (PSANameId and SchemeNameId).retrieve.right.map {
         case psaName ~ schemeName =>
-          Future.successful(Ok(confirmRemoved(config, psaName, schemeName)))
+          userAnswersCacheConnector.removeAll(request.externalId).map { _ =>
+            Ok(confirmRemoved(config, psaName, schemeName))
+          }
       }
-
   }
-
 }

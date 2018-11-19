@@ -17,6 +17,7 @@
 package controllers.remove
 
 import config.FrontendAppConfig
+import connectors.UserAnswersCacheConnector
 import controllers.actions.AuthAction
 import javax.inject.Inject
 import models.{Individual, Organization}
@@ -26,22 +27,22 @@ import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import viewmodels.RemovalViewModel
 import views.html.remove.cannot_be_removed
 
-import scala.concurrent.Future
-
 class CanNotBeRemovedController @Inject()(appConfig: FrontendAppConfig,
                                           override val messagesApi: MessagesApi,
-                                          authenticate: AuthAction) extends FrontendController with I18nSupport{
+                                          authenticate: AuthAction,
+                                          userAnswersCacheConnector: UserAnswersCacheConnector) extends FrontendController with I18nSupport{
 
   def onPageLoad: Action[AnyContent] = authenticate.async {
     implicit request =>
-
-       request.userType match {
-        case Individual =>
-          Future.successful(Ok(cannot_be_removed(viewModelIndividual, appConfig)))
-        case Organization =>
-          Future.successful(Ok(cannot_be_removed(viewModelOrganisation, appConfig)))
-        case _ =>
-          Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+      userAnswersCacheConnector.removeAll(request.externalId).map {_ =>
+        request.userType match {
+          case Individual =>
+            Ok(cannot_be_removed(viewModelIndividual, appConfig))
+          case Organization =>
+            Ok(cannot_be_removed(viewModelOrganisation, appConfig))
+          case _ =>
+            Redirect(controllers.routes.SessionExpiredController.onPageLoad())
+        }
       }
   }
 

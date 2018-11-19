@@ -17,6 +17,7 @@
 package controllers.remove
 
 import base.SpecBase
+import connectors.FakeUserAnswersCacheConnector
 import controllers.actions.{AuthAction, DataRetrievalAction}
 import controllers.behaviours.ControllerWithNormalPageBehaviours
 import play.api.mvc.{Action, AnyContent}
@@ -46,7 +47,8 @@ object ConfirmRemovedControllerSpec {
       base.messagesApi,
       authAction,
       dataRetrievalAction,
-      base.requiredDateAction
+      base.requiredDateAction,
+      FakeUserAnswersCacheConnector
     ).onPageLoad()
 
   val validData: Option[DataRetrievalAction] = {

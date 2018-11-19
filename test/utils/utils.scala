@@ -16,8 +16,7 @@
 
 import controllers.actions.{DataRetrievalAction, FakeDataRetrievalAction}
 import identifiers.invitations._
-import identifiers.remove.RemovalDateId
-import identifiers.remove.ConfirmRemovePsaId
+import identifiers.remove.{ConfirmRemovePsaId, RemovalDateId}
 import identifiers.{LastPageId, MinimalSchemeDetailId, SchemeSrnId}
 import models._
 import org.joda.time.LocalDate

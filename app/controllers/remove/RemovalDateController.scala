@@ -17,37 +17,39 @@
 package controllers.remove
 
 import config.FrontendAppConfig
-import connectors.{ListOfSchemesConnector, UserAnswersCacheConnector}
+import connectors.{ListOfSchemesConnector, PsaRemovalConnector, UserAnswersCacheConnector}
 import controllers.Retrievals
 import controllers.actions._
 import forms.remove.RemovalDateFormProvider
 import identifiers.SchemeSrnId
-import identifiers.invitations.{PSANameId, SchemeNameId}
+import identifiers.invitations.{PSANameId, PSTRId, SchemeNameId}
 import identifiers.remove.RemovalDateId
 import javax.inject.Inject
-import models.{ListOfSchemes, NormalMode}
+import models.{ListOfSchemes, NormalMode, PsaToBeRemovedFromScheme}
 import org.joda.time.LocalDate
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import utils.annotations.Invitation
+import utils.annotations.RemovePSA
 import utils.{Navigator, UserAnswers}
 import views.html.remove.removalDate
 
 import scala.concurrent.Future
 
 class RemovalDateController @Inject()(appConfig: FrontendAppConfig,
-                                              override val messagesApi: MessagesApi,
-                                              dataCacheConnector: UserAnswersCacheConnector,
-                                              @Invitation navigator: Navigator,
-                                              authenticate: AuthAction,
-                                              getData: DataRetrievalAction,
-                                              requireData: DataRequiredAction,
-                                              formProvider: RemovalDateFormProvider,
-                                              listSchemesConnector: ListOfSchemesConnector) extends FrontendController with I18nSupport with Retrievals {
+                                      override val messagesApi: MessagesApi,
+                                      dataCacheConnector: UserAnswersCacheConnector,
+                                      @RemovePSA navigator: Navigator,
+                                      authenticate: AuthAction,
+                                      getData: DataRetrievalAction,
+                                      requireData: DataRequiredAction,
+                                      formProvider: RemovalDateFormProvider,
+                                      listSchemesConnector: ListOfSchemesConnector,
+                                      psaRemovalConnector: PsaRemovalConnector) extends FrontendController with I18nSupport with Retrievals {
 
   private def form(schemeOpenDate: LocalDate) = formProvider(schemeOpenDate)
+
   val earliestDate = LocalDate.parse("1900-01-01")
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
@@ -66,17 +68,20 @@ class RemovalDateController @Inject()(appConfig: FrontendAppConfig,
 
   def onSubmit: Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
-      (SchemeNameId and PSANameId and SchemeSrnId).retrieve.right.map {
-        case schemeName ~ psaName ~ srn =>
+      (SchemeNameId and PSANameId and SchemeSrnId and PSTRId).retrieve.right.map {
+        case schemeName ~ psaName ~ srn ~ pstr =>
           listSchemesConnector.getListOfSchemes(request.psaId.id).flatMap { list =>
 
-              form(openedDate(srn, list)).bindFromRequest().fold(
-                (formWithErrors: Form[_]) =>
-                  Future.successful(BadRequest(removalDate(appConfig, formWithErrors, psaName, schemeName, srn))),
-                value =>
-                  dataCacheConnector.save(request.externalId, RemovalDateId, value).map(cacheMap =>
-                    Redirect(navigator.nextPage(RemovalDateId, NormalMode, UserAnswers(cacheMap))))
-              )
+            form(openedDate(srn, list)).bindFromRequest().fold(
+              (formWithErrors: Form[_]) =>
+                Future.successful(BadRequest(removalDate(appConfig, formWithErrors, psaName, schemeName, srn))),
+              value =>
+                dataCacheConnector.save(request.externalId, RemovalDateId, value).flatMap { cacheMap =>
+                  psaRemovalConnector.remove(PsaToBeRemovedFromScheme(request.psaId.id, pstr, value)).map { _ =>
+                    Redirect(navigator.nextPage(RemovalDateId, NormalMode, UserAnswers(cacheMap)))
+                  }
+                }
+            )
           }
       }
   }

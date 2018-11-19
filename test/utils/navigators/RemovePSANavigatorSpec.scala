@@ -19,12 +19,11 @@ package utils.navigators
 import base.SpecBase
 import connectors.FakeUserAnswersCacheConnector
 import identifiers.Identifier
-import identifiers.invitations._
-import identifiers.remove.ConfirmRemovePsaId
+import identifiers.remove.{ConfirmRemovePsaId, RemovalDateId}
 import org.scalatest.prop.TableFor6
 import play.api.libs.json.Json
 import play.api.mvc.Call
-import utils.{NavigatorBehaviour, UserAnswers}
+import utils.{NavigatorBehaviour, UserAnswerOps, UserAnswers}
 
 class RemovePSANavigatorSpec extends SpecBase with NavigatorBehaviour {
 
@@ -33,8 +32,11 @@ class RemovePSANavigatorSpec extends SpecBase with NavigatorBehaviour {
   val navigator = new RemovePSANavigator(FakeUserAnswersCacheConnector)
 
   def routes(): TableFor6[Identifier, UserAnswers, Call, Boolean, Option[Call], Boolean] = Table(
-    ("Id",                          "User Answers",   "Next Page (NormalMode)",   "Save(NormalMode)",   "Next Page (CheckMode)",      "Save(CheckMode"),
-    (ConfirmRemovePsaId,   emptyAnswers,     sessionExpiredPage,         false,              Some(sessionExpiredPage),       false)
+    ("Id",                 "User Answers",   "Next Page (NormalMode)",   "Save(NormalMode)",   "Next Page (CheckMode)",      "Save(CheckMode"),
+    (ConfirmRemovePsaId,   removePsa,           removalDatePage,           false,                 None,                       false),
+    (ConfirmRemovePsaId,   dontRemovePsa,       schemeDetailsPage,         false,                 None,                       false),
+    (ConfirmRemovePsaId,   emptyAnswers,        sessionExpiredPage,        false,                 None,                       false),
+    (RemovalDateId,        emptyAnswers,        confirmRemovedPage,        false,                 None,                       false)
   )
 
   navigator.getClass.getSimpleName must {
@@ -45,10 +47,17 @@ class RemovePSANavigatorSpec extends SpecBase with NavigatorBehaviour {
 }
 
 object RemovePSANavigatorSpec {
-  lazy val emptyAnswers = UserAnswers(Json.obj())
+  private val srn = "test srn"
+  private lazy val emptyAnswers = UserAnswers(Json.obj())
+  private lazy val removePsa = UserAnswers().srn(srn).confirmRemovePsa(true)
+  private lazy val dontRemovePsa = UserAnswers().srn(srn).confirmRemovePsa(false)
 
   private def dataDescriber(answers: UserAnswers): String = answers.toString
+
   private val sessionExpiredPage = controllers.routes.SessionExpiredController.onPageLoad()
+  private val schemeDetailsPage = controllers.routes.SchemeDetailsController.onPageLoad(srn)
+  private val removalDatePage = controllers.remove.routes.RemovalDateController.onPageLoad()
+  private val confirmRemovedPage = controllers.remove.routes.ConfirmRemovedController.onPageLoad()
 }
 
 
