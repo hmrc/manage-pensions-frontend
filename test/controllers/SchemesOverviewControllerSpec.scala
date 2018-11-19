@@ -17,20 +17,20 @@
 package controllers
 
 import config.FrontendAppConfig
-import connectors.{UserAnswersCacheConnector, MicroserviceCacheConnector, MinimalPsaConnector}
+import connectors.{MicroserviceCacheConnector, MinimalPsaConnector, UserAnswersCacheConnector}
 import controllers.actions.{DataRetrievalAction, _}
 import models.{IndividualDetails, MinimalPSA}
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTime, DateTimeZone}
-import org.mockito.Matchers._
-import org.mockito.Matchers.{eq => eqTo}
+import org.mockito.Matchers.{eq => eqTo, _}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import play.api.Application
-import play.api.inject.Injector
 import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.inject.{Injector, bind}
 import play.api.libs.json.Json
+import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, _}
 import views.html.schemesOverview
 
@@ -265,6 +265,26 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
         status(result) mustBe SEE_OTHER
         redirectLocation(result).value mustBe frontendAppConfig.continueSchemeUrl
         verify(fakePsaMinimalConnector, never()).getMinimalPsaDetails(any())(any(), any())
+      }
+    }
+  }
+
+  "valid authenticated request" must {
+
+    "redirect to overview page" in {
+
+      running(_.overrides(
+        bind[AuthAction].toInstance(FakeAuthAction())
+      )) {
+        implicit app =>
+
+          val request = FakeRequest("GET", "/manage-pension-schemes")
+
+          route(app, request).foreach { result =>
+
+            status(result) mustBe SEE_OTHER
+            redirectLocation(result).value mustBe controllers.routes.SchemesOverviewController.onPageLoad().url
+          }
       }
     }
   }

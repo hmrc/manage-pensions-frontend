@@ -40,6 +40,8 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
                                           authenticate: AuthAction,
                                           getData: DataRetrievalAction) extends FrontendController with I18nSupport {
 
+  def redirect : Action[AnyContent] = Action.async(Future.successful(Redirect(controllers.routes.SchemesOverviewController.onPageLoad())))
+
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
 
