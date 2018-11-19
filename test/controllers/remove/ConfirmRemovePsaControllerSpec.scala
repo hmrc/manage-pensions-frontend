@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-package controllers.invitations
+package controllers.remove
 
 import connectors.{FakeUserAnswersCacheConnector, UserAnswersCacheConnector}
 import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
-import forms.invitations.RemoveAsSchemeAdministratorFormProvider
-import identifiers.invitations.RemoveAsSchemeAdministratorId
+import forms.remove.ConfirmRemovePsaFormProvider
+import identifiers.remove.ConfirmRemovePsaId
 import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import utils.{UserAnswerOps, UserAnswers}
-import views.html.invitations.removeAsSchemeAdministrator
+import views.html.remove.confirmRemovePsa
 
-class RemoveAsSchemeAdministratorControllerSpec extends ControllerWithQuestionPageBehaviours {
+class ConfirmRemovePsaControllerSpec extends ControllerWithQuestionPageBehaviours {
 
-  import RemoveAsSchemeAdministratorControllerSpec._
+  import ConfirmRemovePsaControllerSpec._
 
   def controller(dataRetrievalAction: DataRetrievalAction = data, fakeAuth: AuthAction = FakeAuthAction(),
-                 userAnswersCacheConnector: UserAnswersCacheConnector = FakeUserAnswersCacheConnector) = new RemoveAsSchemeAdministratorController(
+                 userAnswersCacheConnector: UserAnswersCacheConnector = FakeUserAnswersCacheConnector) = new ConfirmRemovePsaController(
     frontendAppConfig, fakeAuth, messagesApi, navigator, formProvider,
     userAnswersCacheConnector, dataRetrievalAction, requiredDataAction)
 
@@ -48,7 +48,7 @@ class RemoveAsSchemeAdministratorControllerSpec extends ControllerWithQuestionPa
     controller(userAnswersCacheConnector = userAnswersConnector).onSubmit()
   }
 
-  private def viewAsString(form: Form[Boolean] = form) = removeAsSchemeAdministrator(frontendAppConfig, form, schemeName,
+  private def viewAsString(form: Form[Boolean] = form) = confirmRemovePsa(frontendAppConfig, form, schemeName,
     srn, psaName)(fakeRequest, messages).toString
 
   behave like controllerWithOnPageLoadMethod(onPageLoadAction,
@@ -56,11 +56,11 @@ class RemoveAsSchemeAdministratorControllerSpec extends ControllerWithQuestionPa
 
   behave like controllerWithOnSubmitMethod(onSubmitAction, data, form.bind(Map("value" -> "")), viewAsString, postRequest)
 
-  behave like controllerThatSavesUserAnswers(onSaveAction, postRequest, RemoveAsSchemeAdministratorId, true)
+  behave like controllerThatSavesUserAnswers(onSaveAction, postRequest, ConfirmRemovePsaId, true)
 }
 
-object RemoveAsSchemeAdministratorControllerSpec {
-  private val formProvider = new RemoveAsSchemeAdministratorFormProvider()
+object ConfirmRemovePsaControllerSpec {
+  private val formProvider = new ConfirmRemovePsaFormProvider()
   private val form = formProvider()
   private val postRequest = FakeRequest().withJsonBody(Json.obj("value" -> true))
   private val schemeName = "test scheme name"
@@ -69,6 +69,6 @@ object RemoveAsSchemeAdministratorControllerSpec {
 
   private val userAnswer = UserAnswers().schemeName(schemeName).srn(srn).psaName(psaName)
   private val data = userAnswer.dataRetrievalAction
-  private val validData = userAnswer.removeAsSchemeAdministrator(true).dataRetrievalAction
+  private val validData = userAnswer.confirmRemovePsa(true).dataRetrievalAction
 }
 

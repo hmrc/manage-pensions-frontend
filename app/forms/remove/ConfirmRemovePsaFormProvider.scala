@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package models.requests
+package forms.remove
 
-import models.UserType
-import play.api.mvc.{Request, WrappedRequest}
-import uk.gov.hmrc.domain.PsaId
+import forms.mappings.Mappings
+import javax.inject.Inject
+import play.api.data.Form
 
-trait IdentifiedRequest {
-  def externalId: String
+class ConfirmRemovePsaFormProvider @Inject()() extends Mappings {
+
+  def apply(): Form[Boolean] = Form(
+    "value" -> boolean("messages__confirmRemovePsa_required")
+  )
 }
-
-case class AuthenticatedRequest[A](request: Request[A], externalId: String, psaId: PsaId, userType : UserType)
-  extends WrappedRequest[A](request) with IdentifiedRequest

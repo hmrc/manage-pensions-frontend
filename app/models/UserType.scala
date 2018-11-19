@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package identifiers.invitations
+package models
 
-import identifiers.TypedIdentifier
+sealed trait UserType
 
-object RemoveAsSchemeAdministratorId extends TypedIdentifier[Boolean] {
-  override def toString: String = "removeAsSchemeAdministrator"
-}
+case object Individual extends UserType
+
+case object Organization extends UserType
+
+case object OtherUser extends UserType

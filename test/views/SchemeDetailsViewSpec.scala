@@ -20,27 +20,31 @@ import config.FrontendAppConfig
 import org.jsoup.Jsoup
 import play.api.Environment
 import play.twirl.api.HtmlFormat
+import viewmodels.AssociatedPsa
 import views.behaviours.ViewBehaviours
 import views.html.schemeDetails
 
 class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
 
-    val messageKeyPrefix = "schemeDetails"
-    val schemeName = "Test Scheme Name"
-    val openedDate = "29 February 2017"
-    val administrators = Seq("First Psa", "Second User")
-    val srn = "P12345678"
+  val messageKeyPrefix = "schemeDetails"
+  val schemeName = "Test Scheme Name"
+  val openedDate = "29 February 2017"
+  val administrators = Seq(AssociatedPsa("First Psa", true), AssociatedPsa("Second User", false))
+  val administratorsNoRemove = Seq(AssociatedPsa("First Psa", false), AssociatedPsa("Second User", false))
+  val srn = "P12345678"
 
-  class fakeFrontendAppConfig(invitationsEnabled: Boolean) extends FrontendAppConfig(app.configuration, injector.instanceOf[Environment]) {
+  class fakeFrontendAppConfig(invitationsEnabled: Boolean, wp2Enabled: Boolean) extends FrontendAppConfig(app.configuration, injector.instanceOf[Environment]) {
     override lazy val isWorkPackageOneEnabled: Boolean = invitationsEnabled
+    override lazy val workPackageTwoEnabled: Boolean = wp2Enabled
   }
 
     def createView(date: Option[String] = Some(openedDate),
-                   psaList: Option[Seq[String]] = Some(administrators),
+                   psaList: Option[Seq[AssociatedPsa]] = Some(administrators),
                    invitations: Boolean = false,
+                   workPackageTwoEnabled: Boolean = false,
                    isSchemeOpen: Boolean = true): () => HtmlFormat.Appendable = () =>
       schemeDetails(
-        new fakeFrontendAppConfig(invitations),
+        new fakeFrontendAppConfig(invitations, workPackageTwoEnabled),
         schemeName,
         date,
         psaList,
@@ -61,7 +65,7 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
 
       "have link to view scheme details" in {
         Jsoup.parse(createView()().toString()).select("a[id=view-details]") must
-          haveLink(s"http://localhost:8200/register-pension-scheme/scheme-details/${srn}")
+          haveLink(s"http://localhost:8200/register-pension-scheme/scheme-details/$srn")
       }
 
       "display the date on which scheme was opened" in {
@@ -76,13 +80,22 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
       }
 
       "contain list of administrators" in {
-        for (psa <- administrators) Jsoup.parse(createView()().toString) must haveDynamicText(psa)
+        for (psa <- administrators) Jsoup.parse(createView()().toString) must haveDynamicText(psa.name)
+      }
+
+      "render the 'Remove' link if a PSA can be removed from the scheme" in {
+        appRunning()
+        createView(workPackageTwoEnabled = true) must haveLink(controllers.remove.routes.RemovePsaController.onPageLoad().url, "remove-link")
+      }
+
+      "not render the 'Remove' link if no PSAs can be removed from the scheme" in {
+        createView(psaList = Some(administratorsNoRemove), workPackageTwoEnabled = true) must notHaveElementWithId("remove-link")
       }
 
       "not contain list of administrators if not data is returned from API" in {
         Jsoup.parse(createView(psaList = None)().toString) mustNot haveDynamicText("messages__schemeDetails__psa_list_head")
         for (psa <- administrators)
-          Jsoup.parse(createView(psaList = None)().toString) mustNot haveDynamicText(psa)
+          Jsoup.parse(createView(psaList = None)().toString) mustNot haveDynamicText(psa.name)
       }
 
       "have link to Invite another PSA" when {

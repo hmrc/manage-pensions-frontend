@@ -111,7 +111,7 @@ messages__schemesOverview__scheme_name = {0} scheme
 messages__schemesOverview__continue__lastDate = You last entered details about this scheme on {0}.
 messages__schemesOverview__continue__deleteDate = You have until {0} to finish this registration before the details are deleted.
 messages__schemesOverview__continue__link = Continue registering this scheme
-messages__schemesOverview__delete__link = Delete this scheme and start a new registration
+messages__schemesOverview__delete__link = Delete {0}
 messages__schemesOverview__UR__head = Help us improve this service
 messages__schemesOverview__UR__text = We want to hear from people who would like to help improve this service by sharing their feedback and testing new features.
 messages__schemesOverview__UR__link = Let us know if you would like to help improve this service.
@@ -145,9 +145,9 @@ messages__check__your__answer__main__containt__label = You are inviting this PSA
 messages__check__your__answer__psa__name__label = Scheme administrator’s name
 messages__check__your__answer__psa__id__label = Administrator ID
 
-messages__incorrectPsaDetails__title = The name and PSA ID do not match our records
+messages__incorrectPsaDetails__title = The name and scheme administrator ID do not match our records
 messages__incorrectPsaDetails__text1 = You should check these details with {0}.
-messages__incorrectPsaDetails__text2 = Their name should be entered exactly as their registered PSA name.
+messages__incorrectPsaDetails__text2 = Their name should be entered exactly as their registered scheme administrator name.
 messages__incorrectPsaDetails__linkText = Return to {0}
 
 messages__invitationSuccess__title = An invitation has been sent to the scheme administrator
@@ -253,12 +253,13 @@ messages__yourInvitations__accept_link = Accept invitation
 messages__error__declaration__required = You need to agree to all the declarations before you can continue
 
 messages__schemeDetails__title = Pension scheme details
-messages__schemeDetails__view_details_link = View or change the registered scheme details
+messages__schemeDetails__view_details_link = View the registered scheme details
 messages__schemeDetails__opened_date_head = This scheme was opened on:
 messages__schemeDetails__psa_list_head = Pension scheme administrators
 messages__schemeDetails__invite_link = Add a scheme administrator
 messages__schemeDetails__invite_p1 = You will need the name and administrator ID of who you want to add. They will receive an invitation which they will have to accept.
 messages__schemeDetails__return_link = Return to your pension schemes
+messages__schemeDetails__remove = Remove
 
 messages__check__your__answer__main__containt__label = You are adding this scheme administrator to {0}.
 messages__check__your__answer__adviser__name__label = Who has working knowledge of pensions and pensions tax legislation?
@@ -269,11 +270,26 @@ messages__deleteScheme__title = Are you sure you want to delete this scheme?
 messages__deleteScheme__heading = Are you sure you want to delete {0} scheme?
 messages__deleteScheme__error__required = Select yes if you want to cancel your registration
 
-messages__removeAsSchemeAdministrator__title = Are you sure you want to remove the scheme admininstrator?
-messages__removeAsSchemeAdministrator__heading = Are you sure you want to remove {0} as scheme administrator for {1}?
-messages__removeAsSchemeAdministrator_required = Select yes if you are sure you want to remove the scheme administrator
+messages__confirmRemovePsa__title = Are you sure you want to remove the scheme admininstrator?
+messages__confirmRemovePsa__heading = Are you sure you want to remove {0} as scheme administrator for {1}?
+messages__confirmRemovePsa_required = Select yes if you are sure you want to remove the scheme administrator
 messages__returnToSchemeDetails__link = Return to {0}
 
+messages__confirmRemoved__title = You have been removed as scheme administrator from this scheme
+messages__confirmRemoved__heading = {0} has been removed as scheme administrator of {1}
+messages__confirmRemoved__return_link = Return to your pension schemes
+
+messages__you_cannot_be_removed__title = You cannot be removed
+messages__you_cannot_be_removed__heading = You cannot be removed
+messages__you_cannot_be_removed__p1 = You cannot be removed as a scheme administrator at the moment.
+messages__you_cannot_be_removed__p2 = You need to phone Pension Scheme Services on 0300 123 1079.
+messages__you_cannot_be_removed__returnToSchemes__link = Return to your pension schemes
+
+messages__psa_cannot_be_removed__title = The scheme administrator cannot be removed
+messages__psa_cannot_be_removed__heading = The scheme administrator cannot be removed
+messages__psa_cannot_be_removed__p1 = The scheme administrator cannot be removed at the moment.
+messages__psa_cannot_be_removed__p2 = You need to phone Pension Scheme Services on 0300 123 1079.
+messages__psa_cannot_be_removed__returnToSchemes__link = Return to your pension schemes
 messages__removalDate__title = When did you stop being scheme administrator?
 messages__removalDate__heading = When did {0} stop being scheme administrator for {1}?
 messages__removalDate__lede = This can be any date in the past or today. You cannot enter a future date.

@@ -18,21 +18,29 @@ package controllers.invitations
 
 import controllers.actions._
 import controllers.behaviours.ControllerWithNormalPageBehaviours
+import models.MinimalSchemeDetail
+import play.api.mvc.{Action, AnyContent}
 import utils.UserAnswers
 import views.html.invitations.incorrectPsaDetails
 
 class IncorrectPsaDetailsControllerSpec extends ControllerWithNormalPageBehaviours {
 
   val invitee = "PSA"
-  val userAnswer = UserAnswers().inviteeName(invitee)
+  val srn = "test-srn"
+  val schemeName = "test-scheme-name"
 
-  def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
+  val userAnswer: UserAnswers =
+    UserAnswers()
+      .inviteeName(invitee)
+      .minimalSchemeDetails(MinimalSchemeDetail(srn, None, schemeName))
+
+  def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
 
     new IncorrectPsaDetailsController(
       frontendAppConfig, messagesApi, fakeAuth, dataRetrievalAction, requiredDateAction).onPageLoad()
   }
 
-  def viewAsString() = incorrectPsaDetails(frontendAppConfig, invitee)(fakeRequest, messages).toString
+  def viewAsString(): String = incorrectPsaDetails(frontendAppConfig, invitee, srn, schemeName)(fakeRequest, messages).toString
 
   behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, Some(userAnswer.dataRetrievalAction), viewAsString)
 

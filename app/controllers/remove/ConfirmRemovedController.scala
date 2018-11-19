@@ -16,13 +16,34 @@
 
 package controllers.remove
 
-import play.api.mvc.Action
+import com.google.inject.Inject
+import config.FrontendAppConfig
+import controllers.Retrievals
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import identifiers.invitations.{PSANameId, SchemeNameId}
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import views.html.remove.confirmRemoved
 
-class ConfirmRemovedController extends FrontendController {
+import scala.concurrent.Future
 
-  def onPageLoad() = Action {
-    Ok
+class ConfirmRemovedController @Inject()(
+  config: FrontendAppConfig,
+  override val messagesApi: MessagesApi,
+  authenticate: AuthAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction
+) extends FrontendController with I18nSupport with Retrievals {
+
+  def onPageLoad(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
+    implicit request =>
+
+      (PSANameId and SchemeNameId).retrieve.right.map {
+        case psaName ~ schemeName =>
+          Future.successful(Ok(confirmRemoved(config, psaName, schemeName)))
+      }
+
   }
 
 }

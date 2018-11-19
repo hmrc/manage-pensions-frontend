@@ -15,24 +15,24 @@
  *@
 
 @import config.FrontendAppConfig
+@import uk.gov.hmrc.play.views.html._
+@import controllers.routes._
+@import models.Mode
+@import viewmodels.Message
+@import viewmodels.RemovalViewModel
 
-@(appConfig: FrontendAppConfig, invitee: String, srn: String, schemeName: String)(implicit request: Request[_], messages: Messages)
+@(viewModel: RemovalViewModel, appConfig: FrontendAppConfig)(implicit request: Request[_], messages: Messages)
 
 @main_template(
-    title = messages("messages__incorrectPsaDetails__title"),
+    title = messages(viewModel.titleMessageKey),
     appConfig = appConfig,
-    bodyClasses = None
-) {
+    bodyClasses = None) {
 
-    @components.heading(headingKey = Messages("messages__incorrectPsaDetails__title"))
+    @components.heading(messages(viewModel.headingMessageKey))
 
-    <p>@messages("messages__incorrectPsaDetails__text1", invitee)</p>
-    <p>@messages("messages__incorrectPsaDetails__text2")</p>
+    <p>@messages(viewModel.p1MessageKey)</p>
+    <p>@messages(viewModel.p2MessageKey)</p>
 
-    <p>
-        <a id="return-link" href="@controllers.routes.SchemeDetailsController.onPageLoad(srn)">
-            <span id ="return-text">@messages("messages__incorrectPsaDetails__linkText", schemeName)</span>
-        </a>
-    </p>
+    <p><a id="return-to-schemes" href="@controllers.routes.ListSchemesController.onPageLoad()">@messages(viewModel.returnLinkMessageKey)</a></p>
 
 }

@@ -18,7 +18,8 @@ package controllers
 
 import connectors._
 import controllers.actions.{DataRetrievalAction, _}
-import models.{PsaDetails, PsaSchemeDetails}
+import identifiers.SchemeSrnId
+import models.{PsaDetails, PsaSchemeDetails, SchemeReferenceNumber}
 import org.mockito.Matchers
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.mockito.MockitoSugar
@@ -26,6 +27,7 @@ import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.Helpers.{contentAsString, _}
 import testhelpers.CommonBuilders._
+import viewmodels.AssociatedPsa
 import views.html.schemeDetails
 
 import scala.concurrent.Future
@@ -47,7 +49,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
       dataRetrievalAction,
       FakeUserAnswersCacheConnector)
 
-  def viewAsString(openDate: Option[String] = openDate, administrators: Option[Seq[String]] = administrators, isSchemeOpen: Boolean = true): String =
+  def viewAsString(openDate: Option[String] = openDate, administrators: Option[Seq[AssociatedPsa]] = administrators, isSchemeOpen: Boolean = true): String =
     schemeDetails(
       frontendAppConfig,
       mockSchemeDetails.name,
@@ -58,7 +60,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
     )(fakeRequest, messages).toString()
 
   "SchemeDetailsController" must {
-    "return OK and the correct view for a GET" in {
+    "save the srn and then return OK and the correct view for a GET" in {
       reset(fakeSchemeDetailsConnector)
       when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(schemeDetailsWithPsaOnlyResponse))
@@ -67,10 +69,18 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
       val result = controller().onPageLoad(srn)(fakeRequest)
       status(result) mustBe OK
       contentAsString(result) mustBe viewAsString()
+      FakeUserAnswersCacheConnector.verify(SchemeSrnId, srn.id)
     }
 
     "return OK and the correct view for a GET where administrators a mix of individual and org" in {
-      val updatedAdministrators = Some(Seq("partnetship name 2", "Smith A Tony"))
+      val updatedAdministrators =
+        Some(
+          Seq(
+            AssociatedPsa("partnetship name 2", true),
+            AssociatedPsa("Smith A Tony", false)
+          )
+        )
+
       reset(fakeSchemeDetailsConnector)
       when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(schemeDetailsWithPsaOnlyResponseMixOfIndividualAndOrg))
@@ -100,7 +110,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
         .thenReturn(Future.successful(listOfSchemesResponse))
       val result = controller().onPageLoad(srn)(fakeRequest)
       status(result) mustBe OK
-      contentAsString(result) mustBe viewAsString(openDate = None, isSchemeOpen = false)
+      contentAsString(result) mustBe viewAsString(openDate = None, administrators = administratorsCantRemove, isSchemeOpen = false)
     }
 
     "return NOT_FOUND when PSA data is not returned by API (as we don't know who administers the scheme)" in {
@@ -135,7 +145,23 @@ private object SchemeDetailsControllerSpec extends MockitoSugar {
   val fakeSchemeDetailsConnector: SchemeDetailsConnector = mock[SchemeDetailsConnector]
   val fakeListOfSchemesConnector: ListOfSchemesConnector = mock[ListOfSchemesConnector]
   val schemeName = "Test Scheme Name"
-  val administrators = Some(Seq("Taylor Middle Rayon", "Smith A Tony"))
+
+  val administrators =
+    Some(
+      Seq(
+        AssociatedPsa("Taylor Middle Rayon", true),
+        AssociatedPsa("Smith A Tony", false)
+      )
+    )
+
+  val administratorsCantRemove =
+    Some(
+      Seq(
+        AssociatedPsa("Taylor Middle Rayon", false),
+        AssociatedPsa("Smith A Tony", false)
+      )
+    )
+
   val openDate = Some("10 October 2012")
-  val srn = "S1000000456"
+  val srn = SchemeReferenceNumber("S1000000456")
 }

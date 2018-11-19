@@ -19,6 +19,7 @@ package controllers
 import config.FrontendAppConfig
 import connectors.{ListOfSchemesConnector, SchemeDetailsConnector, UserAnswersCacheConnector}
 import controllers.actions._
+import identifiers.SchemeSrnId
 import javax.inject.Inject
 import models._
 import org.joda.time.LocalDate
@@ -26,6 +27,7 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.DateHelper
+import viewmodels.AssociatedPsa
 import views.html.schemeDetails
 
 import scala.concurrent.Future
@@ -39,21 +41,22 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                                         userAnswersCacheConnector: UserAnswersCacheConnector
                                        ) extends FrontendController with I18nSupport {
 
-  def onPageLoad(srn: String): Action[AnyContent] = authenticate.async {
+  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate.async {
     implicit request =>
       schemeDetailsConnector.getSchemeDetails("srn", srn).flatMap { scheme =>
         if (scheme.psaDetails.toSeq.flatten.exists(_.id == request.psaId.id)) {
           listSchemesConnector.getListOfSchemes(request.psaId.id).flatMap { list =>
             val schemeDetail = scheme.schemeDetails
             val isSchemeOpen = schemeDetail.status.equalsIgnoreCase("open")
-
-            Future.successful(Ok(schemeDetails(appConfig,
-              schemeDetail.name,
-              openedDate(srn, list, isSchemeOpen),
-              administrators(scheme),
-              srn,
-              isSchemeOpen
-            )))
+            userAnswersCacheConnector.save(request.externalId, SchemeSrnId, srn.id).map { _ =>
+              Ok(schemeDetails(appConfig,
+                schemeDetail.name,
+                openedDate(srn.id, list, isSchemeOpen),
+                administrators(request.psaId.id, scheme),
+                srn.id,
+                isSchemeOpen
+              ))
+            }
           }
         } else {
           Future.successful(NotFound)
@@ -62,8 +65,17 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
 
   }
 
-  private def administrators(psaSchemeDetails: PsaSchemeDetails): Option[Seq[String]] =
-    psaSchemeDetails.psaDetails.map(_.flatMap(PsaDetails.getPsaName))
+  private def administrators(psaId: String, psaSchemeDetails: PsaSchemeDetails): Option[Seq[AssociatedPsa]] =
+    psaSchemeDetails.psaDetails.map(
+      _.flatMap {
+          psa =>
+            PsaDetails.getPsaName(psa).map {
+              name =>
+                val canRemove = psa.id.equals(psaId) && PsaSchemeDetails.canRemovePsa(psaId, psaSchemeDetails)
+                AssociatedPsa(name, canRemove)
+            }
+        }
+    )
 
   private def openedDate(srn: String, list: ListOfSchemes, isSchemeOpen: Boolean): Option[String] = {
     if (isSchemeOpen) {
@@ -80,4 +92,5 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
       None
     }
   }
+
 }

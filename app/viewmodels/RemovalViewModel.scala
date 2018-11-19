@@ -14,15 +14,10 @@
  * limitations under the License.
  */
 
-package forms.invitations
+package viewmodels
 
-import forms.mappings.Mappings
-import javax.inject.Inject
-import play.api.data.Form
-
-class RemoveAsSchemeAdministratorFormProvider @Inject()() extends Mappings {
-
-  def apply(): Form[Boolean] = Form(
-    "value" -> boolean("messages__removeAsSchemeAdministrator_required")
-  )
-}
+case class RemovalViewModel(titleMessageKey: String,
+                            headingMessageKey: String,
+                            p1MessageKey: String,
+                            p2MessageKey: String,
+                            returnLinkMessageKey: String)

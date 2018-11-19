@@ -14,18 +14,6 @@
  * limitations under the License.
  */
 
-package controllers.invitations
+package viewmodels
 
-import controllers.ControllerSpecBase
-import controllers.actions._
-import play.api.test.Helpers._
-
-class UnableToRemoveAdministratorControllerSpec extends ControllerSpecBase {
-
-  "UnableToRemoveAdministratorController " must {
-    "return OK on a GET" in {
-      val result = new UnableToRemoveAdministratorController(frontendAppConfig, messagesApi, FakeAuthAction()).onPageLoad()(fakeRequest)
-      status(result) mustBe OK
-    }
-  }
-}
+case class AssociatedPsa(name: String, canRemove: Boolean)
