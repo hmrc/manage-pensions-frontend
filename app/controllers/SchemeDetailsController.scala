@@ -44,7 +44,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate.async {
     implicit request =>
       userAnswersCacheConnector.removeAll(request.externalId).flatMap {_ =>
-        schemeDetailsConnector.getSchemeDetails("srn", srn).flatMap { scheme =>
+        schemeDetailsConnector.getSchemeDetails(request.psaId.id, "srn", srn).flatMap { scheme =>
           if (scheme.psaDetails.toSeq.flatten.exists(_.id == request.psaId.id)) {
             listSchemesConnector.getListOfSchemes(request.psaId.id).flatMap { list =>
               val schemeDetail = scheme.schemeDetails

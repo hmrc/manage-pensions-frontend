@@ -56,7 +56,7 @@ class DeclarationController @Inject()(
       (DoYouHaveWorkingKnowledgeId and SchemeSrnId).retrieve.right.map {
         case haveWorkingKnowledge ~ srn =>
           for {
-            details <- schemeDetailsConnector.getSchemeDetails("srn", srn)
+            details <- schemeDetailsConnector.getSchemeDetails(request.psaId.id, "srn", srn)
             _ <- userAnswersCacheConnector.save(SchemeNameId, details.schemeDetails.name)
             _ <- userAnswersCacheConnector.save(IsMasterTrustId, details.schemeDetails.isMasterTrust)
             _ <- userAnswersCacheConnector.save(PSTRId, details.schemeDetails.pstr.getOrElse(""))

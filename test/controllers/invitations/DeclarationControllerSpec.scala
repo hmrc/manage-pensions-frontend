@@ -71,7 +71,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
     "on a GET" must {
 
       "return OK and the correct view" in {
-        when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any())(any(), any()))
+        when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any()))
           .thenReturn(Future.successful(schemeDetailsData))
         val result = controller(data).onPageLoad()(fakeRequest)
 
@@ -80,7 +80,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
         FakeUserAnswersCacheConnector.verify(SchemeNameId, schemeDetailsData.schemeDetails.name)
         FakeUserAnswersCacheConnector.verify(IsMasterTrustId, schemeDetailsData.schemeDetails.isMasterTrust)
         FakeUserAnswersCacheConnector.verify(PSTRId, schemeDetailsData.schemeDetails.pstr.getOrElse(""))
-        verify(fakeSchemeDetailsConnector, times(1)).getSchemeDetails(any(), any())(any(), any())
+        verify(fakeSchemeDetailsConnector, times(1)).getSchemeDetails(any(), any(), any())(any(), any())
       }
 
       "redirect to Session Expired page if there is no cached data" in {

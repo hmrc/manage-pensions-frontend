@@ -59,8 +59,8 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
       }
   }
 
-  private def isSchemeAssociatedWithInvitee(srn: String, inviteePsaId: String)(implicit request: Request[_]): Future[Boolean] =
-    schemeDetailsConnector.getSchemeDetails("srn", srn)
+  private def isSchemeAssociatedWithInvitee(psaId: String, srn: String, inviteePsaId: String)(implicit request: Request[_]): Future[Boolean] =
+    schemeDetailsConnector.getSchemeDetails(psaId, "srn", srn)
       .map(_.psaDetails.fold[Seq[PsaDetails]](Seq.empty)(identity).exists(_.id == inviteePsaId))
 
   def onSubmit(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
@@ -76,7 +76,7 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
             inviteeName,
             getExpireAt
           )
-          isSchemeAssociatedWithInvitee(schemeDetails.srn, inviteePsaId).flatMap {
+          isSchemeAssociatedWithInvitee(request.psaId.id, schemeDetails.srn, inviteePsaId).flatMap {
             case true =>
               Future.successful(Redirect(routes.PsaAlreadyAssociatedController.onPageLoad()))
             case _ =>

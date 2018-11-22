@@ -48,7 +48,7 @@ class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
 
     val connector = injector.instanceOf[SchemeDetailsConnector]
 
-    connector.getSchemeDetails(schemeIdType, idNumber).map(schemeDetails =>
+    connector.getSchemeDetails(psaId, schemeIdType, idNumber).map(schemeDetails =>
       schemeDetails shouldBe psaSchemeDetailsResponse
     )
 
@@ -69,7 +69,7 @@ class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
 
     val connector = injector.instanceOf[SchemeDetailsConnector]
     recoverToSucceededIf[BadRequestException] {
-      connector.getSchemeDetails(schemeIdType, idNumber)
+      connector.getSchemeDetails(psaId, schemeIdType, idNumber)
     }
   }
 
@@ -88,7 +88,7 @@ class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
     val connector = injector.instanceOf[SchemeDetailsConnector]
 
     recoverToSucceededIf[BadRequestException] {
-      connector.getSchemeDetails(schemeIdType, idNumber)
+      connector.getSchemeDetails(psaId, schemeIdType, idNumber)
     }
 
   }
@@ -105,7 +105,7 @@ class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
     val connector = injector.instanceOf[SchemeDetailsConnector]
 
     recoverToSucceededIf[BadRequestException] {
-      connector.getSchemeDetails(schemeIdType, idNumber)
+      connector.getSchemeDetails(psaId, schemeIdType, idNumber)
     }
 
   }
@@ -123,7 +123,7 @@ class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
     val connector = injector.instanceOf[SchemeDetailsConnector]
 
     recoverToSucceededIf[BadRequestException] {
-      connector.getSchemeDetails(schemeIdType, idNumber)
+      connector.getSchemeDetails(psaId, schemeIdType, idNumber)
     }
 
   }
@@ -131,7 +131,7 @@ class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
 }
 
 object SchemeDetailsConnectorSpec extends JsonFileReader {
-
+  private val psaId = "0000"
   private val schemeIdType = "pstr"
   private val idNumber = "00000000AA"
   private val schemeDetailsUrl = s"/pensions-scheme/scheme"

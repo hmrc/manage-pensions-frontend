@@ -44,7 +44,7 @@ class RemovePsaController @Inject()(authenticate: AuthAction,
             Future.successful(Redirect(controllers.remove.routes.CanNotBeRemovedController.onPageLoad()))
           } else {
             for {
-              scheme <- schemeDetailsConnector.getSchemeDetails("srn", srn)
+              scheme <- schemeDetailsConnector.getSchemeDetails(request.psaId.id, "srn", srn)
               _ <- userAnswersCacheConnector.save(request.externalId, PSANameId, getPsaName(minimalPsaDetails))
               _ <- userAnswersCacheConnector.save(request.externalId, SchemeNameId, scheme.schemeDetails.name)
               _ <- userAnswersCacheConnector.save(request.externalId, PSTRId, getPstr(scheme.schemeDetails))
