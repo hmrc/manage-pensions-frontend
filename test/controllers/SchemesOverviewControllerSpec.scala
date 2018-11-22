@@ -66,14 +66,15 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
     Some(schemeName),
     Some(lastDate.toString(formatter)),
     Some(deleteDate),
-    None
+    None,
+    psaId
   )(fakeRequest, messages).toString
 
-  def viewAsStringNewScheme(): String = schemesOverview(frontendAppConfig, None, None, None, None)(fakeRequest, messages).toString
-  def viewWithPsaName(name: Option[String] = None) = schemesOverview(frontendAppConfig, None, None, None, name)(fakeRequest, messages).toString
+  def viewAsStringNewScheme(): String = schemesOverview(frontendAppConfig, None, None, None, None, psaId)(fakeRequest, messages).toString
+  def viewWithPsaName(name: Option[String] = None) = schemesOverview(frontendAppConfig, None, None, None, name, psaId)(fakeRequest, messages).toString
   def viewWithPsaNameAndScheme(name: Option[String]) = schemesOverview(frontendAppConfig, Some(schemeName),
     Some(lastDate.toString(formatter)),
-    Some(deleteDate), name)(fakeRequest, messages).toString
+    Some(deleteDate), name, psaId)(fakeRequest, messages).toString
 
   override def beforeEach(): Unit = {
     reset(fakeCacheConnector)
@@ -85,7 +86,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
     "on a GET" must {
       "return OK and the correct view if no scheme has been defined" in {
         when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
-        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo("A0000000"))(any(), any())).thenReturn(Future.successful(minimalPsaDetailsIndividual))
+        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaDetailsIndividual))
 
         val result = controller().onPageLoad(fakeRequest)
 
@@ -95,7 +96,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
 
       "return OK and the correct view with an individual name for an individual Psa and no scheme has been defined" in {
         when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
-        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo("A0000000"))(any(), any())).thenReturn(Future.successful(minimalPsaDetailsIndividual))
+        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaDetailsIndividual))
         when(fakeCacheConnector.lastUpdated(any())(any(), any())).thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
 
         val result = controller().onPageLoad(fakeRequest)
@@ -105,7 +106,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
 
       "return OK and the correct view with an individual name with no middle name for an individual Psa and no scheme has been defined" in {
         when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
-        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo("A0000000"))(any(), any())).thenReturn(Future.successful(individualPsaDetailsWithNoMiddleName))
+        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo(psaId))(any(), any())).thenReturn(Future.successful(individualPsaDetailsWithNoMiddleName))
         when(fakeCacheConnector.lastUpdated(any())(any(), any())).thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
 
         val expectedName = s"${minimalPsaDetailsIndividual.individualDetails.get.firstName} ${minimalPsaDetailsIndividual.individualDetails.get.lastName}"
@@ -118,7 +119,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
       "return OK and the correct view if a scheme has been partially defined" in {
         when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(Some(Json.obj(
             "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
-        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo("A0000000"))(any(), any())).thenReturn(Future.successful(minimalPsaDetailsIndividual))
+        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaDetailsIndividual))
         when(fakeCacheConnector.lastUpdated(any())(any(), any())).thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
 
         val result = controller().onPageLoad(fakeRequest)
@@ -129,7 +130,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
       "return OK and the correct view with an individual name with no middle name for an individual Psa and if a scheme has been partially defined" in {
         when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(Some(Json.obj(
           "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
-        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo("A0000000"))(any(), any())).thenReturn(Future.successful(individualPsaDetailsWithNoMiddleName))
+        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo(psaId))(any(), any())).thenReturn(Future.successful(individualPsaDetailsWithNoMiddleName))
         when(fakeCacheConnector.lastUpdated(any())(any(), any())).thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
 
         val expectedName = s"${minimalPsaDetailsIndividual.individualDetails.get.firstName} ${minimalPsaDetailsIndividual.individualDetails.get.lastName}"
@@ -142,7 +143,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
       "return OK and the correct view with an individual name for an individual Psa and scheme has been defined" in {
         when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(Some(Json.obj(
           "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
-        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo("A0000000"))(any(), any())).thenReturn(Future.successful(minimalPsaDetailsIndividual))
+        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaDetailsIndividual))
         when(fakeCacheConnector.lastUpdated(any())(any(), any())).thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
 
         val result = controller().onPageLoad(fakeRequest)
@@ -155,7 +156,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
           "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
         when(fakeCacheConnector.lastUpdated(any())(any(), any()))
           .thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
-        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo("A0000000"))(any(), any())).thenReturn(Future.successful(minimalPsaDetailsOrg))
+        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaDetailsOrg))
         val expectedName = s"${minimalPsaDetailsOrg.organisationName.get}"
 
         val result = controller().onPageLoad(fakeRequest)
@@ -169,7 +170,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
         when(fakeCacheConnector.lastUpdated(any())(any(), any()))
           .thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
 
-        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo("A0000000"))(any(), any())).thenReturn(Future.successful(
+        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo(psaId))(any(), any())).thenReturn(Future.successful(
           minimalPsaDetailsOrg.copy(organisationName = None)))
 
         val result = controller().onPageLoad(fakeRequest)
@@ -202,7 +203,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
     "on a POST with isWorkPackageOneEnabled flag is on" must {
 
       "redirect to the cannot start registration page if called without a psa name but psa is suspended" in {
-        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo("A0000000"))(any(), any())).thenReturn(Future.successful(minimalPsaDetails(true)))
+        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaDetails(true)))
         when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
 
         val result = controller().onClickCheckIfSchemeCanBeRegistered(fakeRequest)
@@ -212,7 +213,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
       }
 
       "redirect to the register scheme page if called without psa name but psa is not suspended" in {
-        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo("A0000000"))(any(), any())).thenReturn(Future.successful(minimalPsaDetails(false)))
+        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaDetails(false)))
         when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
 
         val result = controller().onClickCheckIfSchemeCanBeRegistered(fakeRequest)
@@ -222,7 +223,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
       }
 
       "redirect to continue register a scheme page if called with a psa name and psa is not suspended" in {
-        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo("A0000000"))(any(), any())).thenReturn(Future.successful(minimalPsaDetails(false)))
+        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaDetails(false)))
         when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(Some(Json.obj(
           "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
 
@@ -233,7 +234,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
       }
 
       "redirect to cannot start registration page if called with a psa name and psa is suspended" in {
-        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo("A0000000"))(any(), any())).thenReturn(Future.successful(minimalPsaDetails(true)))
+        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaDetails(true)))
         when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(Some(Json.obj(
           "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
 
@@ -295,6 +296,7 @@ object SchemesOverviewControllerSpec {
   private val formatter = DateTimeFormat.forPattern("dd MMMM YYYY")
   val lastDate: DateTime = DateTime.now(DateTimeZone.UTC)
   val timestamp: Long = lastDate.getMillis
+  private val psaId = "A0000000"
 
   def minimalPsaDetails(psaSuspended: Boolean) = MinimalPSA("test@test.com", psaSuspended, Some("Org Name"), None)
   val minimalPsaDetailsIndividual = MinimalPSA("test@test.com", false, None, Some(IndividualDetails("John", Some("Doe"), "Doe")))
