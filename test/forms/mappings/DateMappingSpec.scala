@@ -23,12 +23,22 @@ import play.api.data.{Form, FormError}
 
 class DateMappingSpec extends WordSpec with DateMapping with MustMatchers with OptionValues {
 
+  val dateErrors = DateErrors(
+    "messages__removal_date_error__all_blank",
+    "messages__removal_date_error__day_blank",
+    "messages__removal_date_error__month_blank",
+    "messages__removal_date_error__year_blank",
+    "messages__removal_date_error__day_month_blank",
+    "messages__removal_date_error__month_year_blank",
+    "messages__removal_date_error__common"
+  )
+
   "date" must {
     case class TestClass(date: LocalDate)
 
     val testForm = Form(
       mapping(
-        "date" -> dateMapping("removal_date")
+        "date" -> dateMapping(dateErrors)
       )(TestClass.apply)(TestClass.unapply)
     )
 
@@ -58,12 +68,73 @@ class DateMappingSpec extends WordSpec with DateMapping with MustMatchers with O
         )
       )
 
-      result.errors.size mustBe 3
-      result.errors must contain allOf(
-        FormError("date.day", "messages__removal_date_error__day_blank"),
-        FormError("date.month", "messages__removal_date_error__month_blank"),
-        FormError("date.year", "messages__removal_date_error__year_blank")
+      result.errors.size mustBe 1
+      result.errors must contain (FormError("date", dateErrors.allBlank))
+    }
+
+    "not bind blank dat" in {
+      val result = testForm.bind(
+        Map(
+          "date.day" -> "",
+          "date.month" -> "12",
+          "date.year" -> "2018"
+        )
       )
+
+      result.errors.size mustBe 1
+      result.errors must contain (FormError("date", dateErrors.dayBlank))
+    }
+
+    "not bind blank month" in {
+      val result = testForm.bind(
+        Map(
+          "date.day" -> "2",
+          "date.month" -> "",
+          "date.year" -> "2009"
+        )
+      )
+
+      result.errors.size mustBe 1
+      result.errors must contain (FormError("date", dateErrors.monthBlank))
+    }
+
+    "not bind blank year" in {
+      val result = testForm.bind(
+        Map(
+          "date.day" -> "12",
+          "date.month" -> "12",
+          "date.year" -> ""
+        )
+      )
+
+      result.errors.size mustBe 1
+      result.errors must contain (FormError("date", dateErrors.yearBlank))
+    }
+
+    "not bind blank day and month" in {
+      val result = testForm.bind(
+        Map(
+          "date.day" -> "",
+          "date.month" -> "",
+          "date.year" -> "1999"
+        )
+      )
+
+      result.errors.size mustBe 1
+      result.errors must contain (FormError("date", dateErrors.dayMonthBlank))
+    }
+
+    "not bind blank month and year" in {
+      val result = testForm.bind(
+        Map(
+          "date.day" -> "3",
+          "date.month" -> "",
+          "date.year" -> ""
+        )
+      )
+
+      result.errors.size mustBe 1
+      result.errors must contain (FormError("date", dateErrors.monthYearBlank))
     }
 
     "not bind non-numeric input" in {
@@ -75,12 +146,8 @@ class DateMappingSpec extends WordSpec with DateMapping with MustMatchers with O
         )
       )
 
-      result.errors.size mustBe 3
-      result.errors must contain allOf(
-        FormError("date.day", "messages__removal_date_error__nonNumeric_day"),
-        FormError("date.month", "messages__removal_date_error__nonNumeric_month"),
-        FormError("date.year", "messages__removal_date_error__nonNumeric_year")
-      )
+      result.errors.size mustBe 1
+      result.errors must contain (FormError("date", "messages__date_error__real_date"))
     }
 
     "not bind invalid day" in {
@@ -93,7 +160,7 @@ class DateMappingSpec extends WordSpec with DateMapping with MustMatchers with O
       )
 
       result.errors.size mustBe 1
-      result.errors must contain(FormError("date.day", "messages__date_error__invalid_day_31"))
+      result.errors must contain(FormError("date", "messages__date_error__real_date"))
     }
 
     "not bind invalid month" in {
@@ -106,7 +173,7 @@ class DateMappingSpec extends WordSpec with DateMapping with MustMatchers with O
       )
 
       result.errors.size mustBe 1
-      result.errors must contain(FormError("date.month", "messages__date_error__invalid_month"))
+      result.errors must contain(FormError("date", "messages__date_error__real_date"))
     }
 
     "not bind invalid year" in {
@@ -119,7 +186,7 @@ class DateMappingSpec extends WordSpec with DateMapping with MustMatchers with O
       )
 
       result.errors.size mustBe 1
-      result.errors must contain(FormError("date.year", "messages__date_error__invalid_year"))
+      result.errors must contain(FormError("date", "messages__date_error__invalid_year"))
     }
 
     "fill correctly from model" in {

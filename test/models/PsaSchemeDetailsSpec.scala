@@ -99,9 +99,9 @@ object PsaSchemeDetailsSpec {
     )
 
   val testPsaId1 = "test-psa-id-1"
-  val testPsa1: PsaDetails = PsaDetails(testPsaId1, Some("test-org-1"), None)
+  val testPsa1: PsaDetails = PsaDetails(testPsaId1, Some("test-org-1"), None, Some("2018-10-01"))
 
   val testPsaId2 = "test-psa-id-2"
-  val testPsa2: PsaDetails = PsaDetails(testPsaId2, Some("test-org-2"), None)
+  val testPsa2: PsaDetails = PsaDetails(testPsaId2, Some("test-org-2"), None, None)
 
 }

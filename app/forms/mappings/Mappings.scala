@@ -16,12 +16,9 @@
 
 package forms.mappings
 
-import org.joda.time.LocalDate
-import play.api.data.Forms.{of, _}
-import play.api.data.{FieldMapping, Mapping}
+import play.api.data.FieldMapping
+import play.api.data.Forms.of
 import utils.Enumerable
-
-import scala.util.Try
 
 trait Mappings extends Formatters with Constraints {
 

@@ -16,23 +16,34 @@
 
 package forms.remove
 
+import forms.mappings._
 import javax.inject.Inject
 import org.joda.time.LocalDate
 import play.api.data.Form
-import forms.mappings.DateMapping
 
-class RemovalDateFormProvider @Inject() extends DateMapping {
+class RemovalDateFormProvider @Inject() extends DateMapping with Constraints {
 
-  val beforeSchemeDateInvalid = "messages__removal_date_error__before_scheme_start"
-  val futureDateInvalid = "messages__removal_date_error__future_date"
+  val futureDate = "messages__removal_date_error__future_date"
+  val beforeAssociation = "messages__removal_date_error__before_association"
+  val beforeEarliest = "messages__removal_date_error__before_earliest_date"
+  val dateErrors = DateErrors(
+    "messages__removal_date_error__all_blank",
+    "messages__removal_date_error__day_blank",
+    "messages__removal_date_error__month_blank",
+    "messages__removal_date_error__year_blank",
+    "messages__removal_date_error__day_month_blank",
+    "messages__removal_date_error__month_year_blank",
+    "messages__removal_date_error__common"
+  )
 
-  def apply(givenDate: LocalDate): Form[LocalDate] =
+  def apply(associationDate: LocalDate, earliestDate: LocalDate): Form[LocalDate] =
     Form(
-      "removalDate" -> dateMapping("removal_date")
+      "removalDate" -> dateMapping(dateErrors)
         .verifying(
           firstError(
-            nonFutureDate(futureDateInvalid),
-            afterGivenDate(beforeSchemeDateInvalid, givenDate)
+            nonFutureDate(futureDate),
+            afterGivenDate(beforeEarliest, earliestDate),
+            afterGivenDate(beforeAssociation, associationDate)
           )
         )
     )

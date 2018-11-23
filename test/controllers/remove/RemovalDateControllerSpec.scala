@@ -16,17 +16,18 @@
 
 package controllers.remove
 
-import connectors.{FakeUserAnswersCacheConnector, ListOfSchemesConnector, PsaRemovalConnector, UserAnswersCacheConnector}
+import connectors._
 import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.remove.RemovalDateFormProvider
 import identifiers.remove.RemovalDateId
-import models.{ListOfSchemes, PsaToBeRemovedFromScheme, SchemeDetail}
+import models.{PsaSchemeDetails, PsaToBeRemovedFromScheme}
 import org.joda.time.LocalDate
 import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.mvc.AnyContentAsJson
 import play.api.test.FakeRequest
+import testhelpers.CommonBuilders
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.UserAnswers
 import views.html.remove.removalDate
@@ -37,10 +38,13 @@ class RemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours {
 
   import RemovalDateControllerSpec._
 
+  private val formProvider: RemovalDateFormProvider = new RemovalDateFormProvider()
+  private val form = formProvider
+
   def controller(dataRetrievalAction: DataRetrievalAction = data, fakeAuth: AuthAction = FakeAuthAction(),
                  userAnswersCacheConnector: UserAnswersCacheConnector = FakeUserAnswersCacheConnector) = new RemovalDateController(
     frontendAppConfig, messagesApi, userAnswersCacheConnector, navigator, fakeAuth, dataRetrievalAction,
-    requiredDataAction, formProvider, fakeListOfSchemesConnector, fakePsaRemovalConnector)
+    requiredDataAction, formProvider, fakeSchemeDetailsConnector, fakePsaRemovalConnector)
 
   private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
     controller(dataRetrievalAction, fakeAuth).onPageLoad()
@@ -59,9 +63,9 @@ class RemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours {
 
 
   behave like controllerWithOnPageLoadMethodWithoutPrePopulation(onPageLoadAction,
-    userAnswer.dataRetrievalAction, form(openedDate), viewAsString)
+    userAnswer.dataRetrievalAction, form(associationDate, frontendAppConfig.earliestDatePsaRemoval), viewAsString)
 
-  behave like controllerWithOnSubmitMethod(onSubmitAction, data, form(openedDate).bind(
+  behave like controllerWithOnSubmitMethod(onSubmitAction, data, form(associationDate, frontendAppConfig.earliestDatePsaRemoval).bind(
     Map(
       "removalDate.day" -> "",
       "removalDate.month" -> "",
@@ -71,23 +75,19 @@ class RemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours {
 }
 
 object RemovalDateControllerSpec {
-  private val openedDate = LocalDate.parse("2018-01-01")
-  private val formProvider: RemovalDateFormProvider = new RemovalDateFormProvider()
-  private val form = formProvider
+  private val associationDate = LocalDate.parse("2018-10-01")
   private val schemeName = "test scheme name"
   private val psaName = "test psa name"
   private val srn = "test srn"
   private val pstr = "test pstr"
-  private val date = LocalDate.now().minusYears(1)
+  private val date = LocalDate.now().minusDays(1)
 
   private val userAnswer = UserAnswers().schemeName(schemeName).psaName(psaName).srn(srn).pstr(pstr)
   private val data = userAnswer.dataRetrievalAction
 
-  val list = ListOfSchemes("", "", Some(List(SchemeDetail("", "", "", Some("2018-01-01"), None, None))))
-
-  val day: Int = LocalDate.now().getDayOfMonth
+  val day: Int = LocalDate.now().getDayOfMonth - 1
   val month: Int = LocalDate.now().getMonthOfYear
-  val year: Int = LocalDate.now().getYear - 1
+  val year: Int = LocalDate.now().getYear
 
 
   val postRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.obj(
@@ -96,8 +96,10 @@ object RemovalDateControllerSpec {
     "removalDate.year" -> year.toString)
   )
 
-  val fakeListOfSchemesConnector: ListOfSchemesConnector = new ListOfSchemesConnector {
-    override def getListOfSchemes(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[ListOfSchemes] = Future(list)
+  val fakeSchemeDetailsConnector: SchemeDetailsConnector = new SchemeDetailsConnector {
+    override def getSchemeDetails(schemeIdType: String, idNumber: String)
+                                 (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[PsaSchemeDetails] =
+      Future(CommonBuilders.psaSchemeDetailsResponse)
   }
 
   val fakePsaRemovalConnector: PsaRemovalConnector = new PsaRemovalConnector {

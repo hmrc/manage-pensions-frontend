@@ -17,59 +17,52 @@
 package forms.mappings
 
 import org.joda.time.LocalDate
-import play.api.data.Forms.{of, tuple}
+import play.api.data.Forms.{text, tuple}
+import play.api.data.Mapping
 import play.api.data.validation.{Constraint, Invalid, Valid}
-import play.api.data.{FieldMapping, Mapping}
 
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 
-trait DateMapping extends Mappings with Transforms {
+trait DateMapping extends Constraints {
 
   import DateMapping._
 
-  protected def day(key: String): FieldMapping[Int] =
-
-    of(intFormatterWithRegex(s"messages__${key}_error__day_blank",
-      "messages__date_error__invalid_day_31", s"messages__${key}_error__nonNumeric_day", dayRegex))
-
-  protected def month(key: String): FieldMapping[Int] =
-    of(intFormatterWithRegex(s"messages__${key}_error__month_blank",
-      "messages__date_error__invalid_month", s"messages__${key}_error__nonNumeric_month", monthRegex))
-
-  protected def year(key: String): FieldMapping[Int] =
-    of(intFormatterWithRegex(s"messages__${key}_error__year_blank",
-      "messages__date_error__invalid_year", s"messages__${key}_error__nonNumeric_year", yearRegex))
-
-  //scalastyle:off cyclomatic.complexity
-  protected def dateMapping(key: String): Mapping[LocalDate] = {
-
-    def toLocalDate(input: (Int, Int, Int)): LocalDate = {
-      new LocalDate(input._3, input._2, input._1)
-    }
-
-    def fromLocalDate(date: LocalDate): (Int, Int, Int) = {
-      (date.getDayOfMonth, date.getMonthOfYear, date.getYear)
-    }
-
-    def validDate: Constraint[(Int, Int, Int)] = Constraint {
-      input =>
-        Try(toLocalDate(input)) match {
-          case scala.util.Failure(exception) if exception.getMessage.contains("range [1,28]") =>
-            Invalid(invalidDay28)
-          case scala.util.Failure(exception) if exception.getMessage.contains("range [1,29]") =>
-            Invalid(invalidDay29)
-          case scala.util.Failure(exception) if exception.getMessage.contains("range [1,30]") =>
-            Invalid(invalidDay30)
-          case scala.util.Failure(exception) if exception.getMessage.contains("range [1,31]") =>
-            Invalid(invalidDay31)
-          case scala.util.Success(_) => Valid
-          case _ => Invalid(s"messages__${key}_error__common")
-        }
-    }
-
-    tuple("day" -> day(key), "month" -> month(key), "year" -> year(key)
-    ).verifying(validDate).transform(toLocalDate, fromLocalDate)
+  def individualValidation(errors: DateErrors): Constraint[(String, String, String)] = Constraint {
+        case (day, month, year) if day.isEmpty && month.isEmpty && year.isEmpty => Invalid(errors.allBlank)
+        case (day, month, _) if day.isEmpty && month.isEmpty => Invalid(errors.dayMonthBlank)
+        case (_, month, year) if month.isEmpty && year.isEmpty => Invalid(errors.monthYearBlank)
+        case (day, _, _) if day.isEmpty => Invalid(errors.dayBlank)
+        case (_, month, _) if month.isEmpty => Invalid(errors.monthBlank)
+        case (_, _, year) if year.isEmpty => Invalid(errors.yearBlank)
+        case (_, month, _) if !month.matches(monthRegex) => Invalid(notRealDate)
+        case (_, _, year) if !year.matches(yearRegex) => Invalid(invalidYear)
+        case _ => Valid
   }
+
+  def validDate(genericError: String): Constraint[(String, String, String)] = Constraint {
+    input =>
+      Try(toLocalDate(input)) match {
+        case Failure(exception) if exception.getMessage.contains("range [1,") =>
+          Invalid(notRealDate)
+        case Failure(_) => Invalid(genericError)
+        case Success(_) => Valid
+      }
+  }
+
+  def dateMapping(errors: DateErrors): Mapping[LocalDate] = tuple(
+    "day" -> text,
+    "month" -> text,
+    "year" -> text
+  ).verifying(firstError(individualValidation(errors), validDate(errors.genericError)))
+   .transform[LocalDate](toLocalDate, fromLocalDate)
+
+
+  def toLocalDate(date: (String, String, String)): LocalDate =
+    new LocalDate(date._3.toInt, date._2.toInt, date._1.toInt)
+
+  def fromLocalDate(date: LocalDate): (String, String, String) =
+    (date.dayOfMonth().get().toString, date.monthOfYear().get().toString, date.year().get().toString)
+
 }
 
 object DateMapping {
@@ -78,11 +71,17 @@ object DateMapping {
   val yearRegex = """^[1-9]{1}[0-9]{3}$"""
   val yearRangeRegex = """^(19[0-9][0-9]|20[0-4][0-9]|2050)$"""
 
-  val invalidDay28 = "messages__date_error__invalid_day_28"
-  val invalidDay29 = "messages__date_error__invalid_day_29"
-  val invalidDay30 = "messages__date_error__invalid_day_30"
-  val invalidDay31 = "messages__date_error__invalid_day_31"
-  val invalidMonth = "messages__date_error__invalid_month"
+  val notRealDate = "messages__date_error__real_date"
   val invalidYear = "messages__date_error__invalid_year"
+
 }
 
+case class DateErrors(
+      allBlank: String,
+      dayBlank: String,
+      monthBlank: String,
+      yearBlank: String,
+      dayMonthBlank: String,
+      monthYearBlank: String,
+      genericError : String
+     )

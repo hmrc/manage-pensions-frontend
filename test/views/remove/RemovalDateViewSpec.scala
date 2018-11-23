@@ -25,8 +25,8 @@ import views.html.remove.removalDate
 
 class RemovalDateViewSpec extends QuestionViewBehaviours[LocalDate] {
 
-  private val openedDate = LocalDate.parse("2018-01-01")
-  val form = new RemovalDateFormProvider()(openedDate)
+  private val associationDate = LocalDate.parse("2018-01-01")
+  val form = new RemovalDateFormProvider()(associationDate, frontendAppConfig.earliestDatePsaRemoval)
   private val schemeName = "test scheme name"
   private val psaName = "test psa name"
   private val srn = "test srn"

@@ -24,7 +24,8 @@
         "firstName": "Taylor",
         "middleName": "Middle",
         "lastName": "Rayon"
-      }
+      },
+      "relationshipDate": "2018-10-01"
     },
     {
       "id": "A0000001",
@@ -33,7 +34,8 @@
         "firstName": "Smith",
         "middleName": "A",
         "lastName": "Tony"
-      }
+      },
+      "relationshipDate": "2018-10-02"
     }
   ]
 }

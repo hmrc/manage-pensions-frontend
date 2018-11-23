@@ -33,9 +33,9 @@ object CommonBuilders {
   val mockSchemeDetails = SchemeDetails(Some("S9000000000"), Some("00000000AA"), SchemeStatus.Open.value, "Benefits Scheme", true, None, None, false,
     SchemeMemberNumbers("0","0"), false, false, "AD", "GB", false, None)
 
-  val psaDetails1 = PsaDetails("A0000000",Some("partnetship name"),Some(Name(Some("Taylor"),Some("Middle"),Some("Rayon"))))
-  val psaDetails2 = PsaDetails("A0000001",Some("partnetship name 1"),Some(Name(Some("Smith"),Some("A"),Some("Tony"))))
-  val psaDetails3 = PsaDetails("A0000000",Some("partnetship name 2"),None)
+  val psaDetails1 = PsaDetails("A0000000",Some("partnetship name"),Some(Name(Some("Taylor"),Some("Middle"),Some("Rayon"))), Some("2018-10-01"))
+  val psaDetails2 = PsaDetails("A0000001",Some("partnetship name 1"),Some(Name(Some("Smith"),Some("A"),Some("Tony"))), Some("2018-10-02"))
+  val psaDetails3 = PsaDetails("A0000000",Some("partnetship name 2"),None, None)
 
   val psaSchemeDetailsResponse = PsaSchemeDetails(mockSchemeDetails, None, None, Some(Seq(psaDetails1, psaDetails2)))
   val schemeDetailsWithPsaOnlyResponse = PsaSchemeDetails(mockSchemeDetails, None, None, Some(Seq(psaDetails1, psaDetails2)))

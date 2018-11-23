@@ -24,7 +24,7 @@ object Name {
   implicit val formats: OFormat[Name] = Json.format[Name]
 }
 
-case class PsaDetails(id: String, organisationOrPartnershipName: Option[String], individual: Option[Name])
+case class PsaDetails(id: String, organisationOrPartnershipName: Option[String], individual: Option[Name], relationshipDate: Option[String])
 
 object PsaDetails {
   def getPsaName(psaDetails: PsaDetails): Option[String] = {
