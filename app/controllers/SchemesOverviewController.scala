@@ -49,10 +49,10 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
         case None =>
           if (appConfig.isWorkPackageOneEnabled) {
             minimalPsaConnector.getMinimalPsaDetails(request.psaId.id).map { minimalDetails =>
-              Ok(schemesOverview(appConfig, None, None, None, getPsaName(minimalDetails)))
+              Ok(schemesOverview(appConfig, None, None, None, getPsaName(minimalDetails), request.psaId.id))
             }
           } else {
-            Future.successful(Ok(schemesOverview(appConfig, None, None, None, None)))
+            Future.successful(Ok(schemesOverview(appConfig, None, None, None, None, request.psaId.id)))
           }
         case Some(data) =>
           (data \ "schemeDetails" \ "schemeName").validate[String] match {
@@ -60,10 +60,10 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
               dataCacheConnector.lastUpdated(request.externalId).flatMap { dateOpt =>
                 if (appConfig.isWorkPackageOneEnabled) {
                   minimalPsaConnector.getMinimalPsaDetails(request.psaId.id).map { minimalDetails =>
-                    buildView(name, dateOpt, Some(minimalDetails))
+                    buildView(name, dateOpt, Some(minimalDetails), request.psaId.id)
                   }
                 } else {
-                  Future.successful(buildView(name, dateOpt))
+                  Future.successful(buildView(name, dateOpt, None, request.psaId.id))
                 }
               }
             case JsError(_) => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
@@ -72,7 +72,7 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
   }
 
   private def buildView(name: String, dateOpt: Option[JsValue],
-                        minimalDetails: Option[MinimalPSA] = None)(implicit request: OptionalDataRequest[AnyContent]) = {
+                        minimalDetails: Option[MinimalPSA] = None, psaId: String)(implicit request: OptionalDataRequest[AnyContent]) = {
     val date = dateOpt.map(ts =>
       LastUpdatedDate(
         ts.validate[Long] match {
@@ -87,7 +87,8 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
       Some(name),
       Some(s"${createFormattedDate(date, daysToAdd = 0)}"),
       Some(s"${createFormattedDate(date, appConfig.daysDataSaved)}"),
-      minimalDetails.flatMap(getPsaName)
+      minimalDetails.flatMap(getPsaName),
+      psaId
     ))
   }
 

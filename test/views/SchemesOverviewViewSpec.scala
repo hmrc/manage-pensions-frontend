@@ -30,11 +30,12 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
   val schemeName = "Test Scheme Name"
   val lastDate: String = LocalDate.now.toString
   val deleteDate: String = LocalDate.now.plusDays(frontendAppConfig.daysDataSaved).toString
+  private val psaId = "A0000000"
 
   def createView: () => HtmlFormat.Appendable = () =>
-    schemesOverview(frontendAppConfig, Some(schemeName), Some(lastDate), Some(deleteDate), Some("John Doe"))(fakeRequest, messages)
+    schemesOverview(frontendAppConfig, Some(schemeName), Some(lastDate), Some(deleteDate), Some("John Doe"), psaId)(fakeRequest, messages)
 
-  def createFreshView: () => HtmlFormat.Appendable = () => schemesOverview(frontendAppConfig, None, None, None, None)(fakeRequest, messages)
+  def createFreshView: () => HtmlFormat.Appendable = () => schemesOverview(frontendAppConfig, None, None, None, None, psaId)(fakeRequest, messages)
 
   "SchemesOverview view when a scheme has been partially defined" must {
     behave like normalPage(
@@ -53,6 +54,10 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
     "have a name" in {
       createView must haveLink(frontendAppConfig.registeredPsaDetailsUrl, "psaLink")
       createView must haveElementWithText("psaName", "John Doe")
+    }
+
+    "display psa id" in {
+      createView must haveElementWithText("psaId", psaId)
     }
 
     "not display the name when there is no name" in {
