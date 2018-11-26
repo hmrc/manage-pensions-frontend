@@ -65,11 +65,8 @@ class RemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours {
   behave like controllerWithOnPageLoadMethodWithoutPrePopulation(onPageLoadAction,
     userAnswer.dataRetrievalAction, form(associationDate, frontendAppConfig.earliestDatePsaRemoval), viewAsString)
 
-  behave like controllerWithOnSubmitMethod(onSubmitAction, data, form(associationDate, frontendAppConfig.earliestDatePsaRemoval).bind(
-    Map(
-      "removalDate.day" -> "",
-      "removalDate.month" -> "",
-      "removalDate.year" -> "")), viewAsString, postRequest)
+  behave like controllerWithOnSubmitMethod(onSubmitAction, data, form(associationDate, frontendAppConfig.earliestDatePsaRemoval).bind(dateKeys),
+    viewAsString, postRequest, Some(emptyPostRequest))
 
   behave like controllerThatSavesUserAnswers(onSaveAction, postRequest, RemovalDateId, date)
 }
@@ -89,11 +86,19 @@ object RemovalDateControllerSpec {
   val month: Int = LocalDate.now().getMonthOfYear
   val year: Int = LocalDate.now().getYear
 
+  val dateKeys = Map("removalDate.day" -> "", "removalDate.month" -> "", "removalDate.year" -> "")
+
 
   val postRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.obj(
     "removalDate.day" -> day.toString,
     "removalDate.month" -> month.toString,
     "removalDate.year" -> year.toString)
+  )
+
+  val emptyPostRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.obj(
+    "removalDate.day" -> "",
+    "removalDate.month" -> "",
+    "removalDate.year" -> "")
   )
 
   val fakeSchemeDetailsConnector: SchemeDetailsConnector = new SchemeDetailsConnector {

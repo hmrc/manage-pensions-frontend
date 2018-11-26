@@ -23,7 +23,7 @@ import play.api.data.validation.{Constraint, Invalid, Valid}
 
 import scala.util.{Failure, Success, Try}
 
-trait DateMapping extends Constraints {
+trait DateMapping extends Constraints{
 
   import DateMapping._
 

@@ -28,22 +28,28 @@ class RemovalDateFormProviderSpec extends StringFieldBehaviours with Constraints
   private val associationDate =  new LocalDate(2018, 10, 1)
   private val beforeEarliestDate = new LocalDate(2017, 1,1)
   private val beforeAssociationDate = new LocalDate(2018, 7,1)
-  val form = new RemovalDateFormProvider()(associationDate, frontendAppConfig.earliestDatePsaRemoval)
+  def form() = new RemovalDateFormProvider()(associationDate, frontendAppConfig.earliestDatePsaRemoval)
   // scalastyle:on magic.number
 
   ".date" must {
 
     val fieldName = "removalDate"
 
-    behave like dateFieldThatBindsValidData(
+    behave like mandatoryDateField(
       form,
+      fieldName,
+      "removal"
+    )
+
+    behave like dateFieldThatBindsValidData(
+      form(),
       fieldName,
       historicDate()
     )
 
     val futureDate = LocalDate.now().plusDays(1)
     "not accept a future date" in {
-      form.bind(
+      form().bind(
         Map(
           "removalDate.day" -> futureDate.getDayOfMonth.toString,
           "removalDate.month" -> futureDate.getMonthOfYear.toString,
@@ -53,7 +59,7 @@ class RemovalDateFormProviderSpec extends StringFieldBehaviours with Constraints
     }
 
     "not accept a date before earliest date for psa removal" in {
-      form.bind(
+      form().bind(
         Map(
           "removalDate.day" -> beforeEarliestDate.getDayOfMonth.toString,
           "removalDate.month" -> beforeEarliestDate.getMonthOfYear.toString,
@@ -63,7 +69,7 @@ class RemovalDateFormProviderSpec extends StringFieldBehaviours with Constraints
     }
 
     "not accept a date before association date for psa" in {
-      form.bind(
+      form().bind(
         Map(
           "removalDate.day" -> beforeAssociationDate.getDayOfMonth.toString,
           "removalDate.month" -> beforeAssociationDate.getMonthOfYear.toString,
