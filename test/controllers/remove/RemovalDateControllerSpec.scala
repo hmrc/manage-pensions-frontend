@@ -31,6 +31,7 @@ import testhelpers.CommonBuilders
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.UserAnswers
 import views.html.remove.removalDate
+import utils.DateHelper._
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -59,7 +60,7 @@ class RemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours {
   }
 
   private def viewAsString(form: Form[LocalDate]) =
-    removalDate(frontendAppConfig, form, psaName, schemeName, srn)(fakeRequest, messages).toString
+    removalDate(frontendAppConfig, form, psaName, schemeName, srn, formatDate(associationDate))(fakeRequest, messages).toString
 
 
   behave like controllerWithOnPageLoadMethodWithoutPrePopulation(onPageLoadAction,

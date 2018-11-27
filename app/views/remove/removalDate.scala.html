@@ -19,7 +19,7 @@
 @import controllers.remove.routes._
 @import models.Mode
 
-@(appConfig: FrontendAppConfig, form: Form[_], psaName: String, schemeName: String, srn: String)(implicit request: Request[_], messages: Messages)
+@(appConfig: FrontendAppConfig, form: Form[_], psaName: String, schemeName: String, srn: String, associationDate: String)(implicit request: Request[_], messages: Messages)
 
 @main_template(
     title = messages("messages__removalDate__title"),
@@ -34,7 +34,7 @@
 
         @components.heading(messages("messages__removalDate__heading", psaName, schemeName))
 
-        <p>@messages("messages__removalDate__lede")</p>
+        <p>@messages("messages__removalDate__lede", psaName, associationDate)</p>
 
         @components.input_date(
             field = form("removalDate"),

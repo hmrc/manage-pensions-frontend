@@ -18,9 +18,11 @@ package views.remove
 
 import forms.remove.RemovalDateFormProvider
 import org.joda.time.LocalDate
+import org.jsoup.Jsoup
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import views.behaviours.QuestionViewBehaviours
+import utils.DateHelper._
 import views.html.remove.removalDate
 
 class RemovalDateViewSpec extends QuestionViewBehaviours[LocalDate] {
@@ -33,10 +35,10 @@ class RemovalDateViewSpec extends QuestionViewBehaviours[LocalDate] {
   val prefix = "removalDate"
 
   private def createView: () => HtmlFormat.Appendable = () =>
-    removalDate(frontendAppConfig, form, psaName, schemeName, srn)(fakeRequest, messages)
+    removalDate(frontendAppConfig, form, psaName, schemeName, srn, formatDate(associationDate))(fakeRequest, messages)
 
   private def createViewUsingForm: Form[_] => HtmlFormat.Appendable = (form: Form[_]) =>
-    removalDate(frontendAppConfig, form, psaName, schemeName, srn)(fakeRequest, messages)
+    removalDate(frontendAppConfig, form, psaName, schemeName, srn, formatDate(associationDate))(fakeRequest, messages)
 
   "RemoveAsSchemeAdministrator" must {
 
@@ -51,5 +53,9 @@ class RemovalDateViewSpec extends QuestionViewBehaviours[LocalDate] {
       controllers.routes.SchemeDetailsController.onPageLoad(srn).url,
       messages("messages__returnToSchemeDetails__link", schemeName)
     )
+
+    "display correct opening text" in {
+      Jsoup.parse(createView().toString()) must haveDynamicText("messages__removalDate__lede", psaName, formatDate(associationDate))
+    }
   }
 }

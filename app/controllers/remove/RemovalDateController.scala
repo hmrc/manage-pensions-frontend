@@ -33,6 +33,7 @@ import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.annotations.RemovePSA
 import utils.{Navigator, UserAnswers}
+import utils.DateHelper._
 import views.html.remove.removalDate
 
 import scala.concurrent.Future
@@ -56,7 +57,8 @@ class RemovalDateController @Inject()(appConfig: FrontendAppConfig,
         case schemeName ~ psaName ~ srn =>
 
           schemeDetailsConnector.getSchemeDetails("srn", srn).flatMap { schemeDetails =>
-             Future.successful(Ok(removalDate(appConfig, form(psaAssociationDate(request.psaId.id, schemeDetails)), psaName, schemeName, srn)))
+            val associationDate: LocalDate = psaAssociationDate(request.psaId.id, schemeDetails)
+             Future.successful(Ok(removalDate(appConfig, form(associationDate), psaName, schemeName, srn, formatDate(associationDate))))
 
           }
         case _ => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
@@ -68,9 +70,10 @@ class RemovalDateController @Inject()(appConfig: FrontendAppConfig,
       (SchemeNameId and PSANameId and SchemeSrnId and PSTRId).retrieve.right.map {
         case schemeName ~ psaName ~ srn ~ pstr =>
           schemeDetailsConnector.getSchemeDetails("srn", srn).flatMap { schemeDetails =>
-            form(psaAssociationDate(request.psaId.id, schemeDetails)).bindFromRequest().fold(
+            val associationDate: LocalDate = psaAssociationDate(request.psaId.id, schemeDetails)
+            form(associationDate).bindFromRequest().fold(
               (formWithErrors: Form[_]) =>
-                  Future.successful(BadRequest(removalDate(appConfig, formWithErrors, psaName, schemeName, srn))),
+                  Future.successful(BadRequest(removalDate(appConfig, formWithErrors, psaName, schemeName, srn, formatDate(associationDate)))),
               value =>
                 dataCacheConnector.save(request.externalId, RemovalDateId, value).flatMap { cacheMap =>
                   psaRemovalConnector.remove(PsaToBeRemovedFromScheme(request.psaId.id, pstr, value)).map { _ =>
