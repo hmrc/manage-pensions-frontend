@@ -72,7 +72,7 @@ class DateMappingSpec extends WordSpec with DateMapping with MustMatchers with O
       result.errors must contain (FormError("date", dateErrors.allBlank))
     }
 
-    "not bind blank dat" in {
+    "not bind blank day" in {
       val result = testForm.bind(
         Map(
           "date.day" -> "",
@@ -174,19 +174,6 @@ class DateMappingSpec extends WordSpec with DateMapping with MustMatchers with O
 
       result.errors.size mustBe 1
       result.errors must contain(FormError("date", "messages__date_error__real_date"))
-    }
-
-    "not bind invalid year" in {
-      val result = testForm.bind(
-        Map(
-          "date.day" -> testDate.getDayOfMonth.toString,
-          "date.month" -> testDate.getMonthOfYear.toString,
-          "date.year" -> "123"
-        )
-      )
-
-      result.errors.size mustBe 1
-      result.errors must contain(FormError("date", "messages__date_error__invalid_year"))
     }
 
     "fill correctly from model" in {

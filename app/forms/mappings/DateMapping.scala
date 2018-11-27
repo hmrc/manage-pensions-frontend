@@ -35,7 +35,6 @@ trait DateMapping extends Constraints{
         case (_, month, _) if month.isEmpty => Invalid(errors.monthBlank)
         case (_, _, year) if year.isEmpty => Invalid(errors.yearBlank)
         case (_, month, _) if !month.matches(monthRegex) => Invalid(notRealDate)
-        case (_, _, year) if !year.matches(yearRegex) => Invalid(invalidYear)
         case _ => Valid
   }
 
