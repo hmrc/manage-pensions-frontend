@@ -33,18 +33,16 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
   val administratorsNoRemove = Seq(AssociatedPsa("First Psa", false), AssociatedPsa("Second User", false))
   val srn = "P12345678"
 
-  class fakeFrontendAppConfig(invitationsEnabled: Boolean, wp2Enabled: Boolean) extends FrontendAppConfig(app.configuration, injector.instanceOf[Environment]) {
-    override lazy val isWorkPackageOneEnabled: Boolean = invitationsEnabled
+  class fakeFrontendAppConfig(wp2Enabled: Boolean) extends FrontendAppConfig(app.configuration, injector.instanceOf[Environment]) {
     override lazy val workPackageTwoEnabled: Boolean = wp2Enabled
   }
 
     def createView(date: Option[String] = Some(openedDate),
                    psaList: Option[Seq[AssociatedPsa]] = Some(administrators),
-                   invitations: Boolean = false,
                    workPackageTwoEnabled: Boolean = false,
                    isSchemeOpen: Boolean = true): () => HtmlFormat.Appendable = () =>
       schemeDetails(
-        new fakeFrontendAppConfig(invitations, workPackageTwoEnabled),
+        new fakeFrontendAppConfig(workPackageTwoEnabled),
         schemeName,
         date,
         psaList,
@@ -98,26 +96,20 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
           Jsoup.parse(createView(psaList = None)().toString) mustNot haveDynamicText(psa.name)
       }
 
-      "have link to Invite another PSA" when {
-        "invitations toggle is turned on" in {
-          Jsoup.parse(createView(invitations = true)().toString()).select("a[id=invite]") must
+      "have link to Invite another PSA" in {
+          Jsoup.parse(createView()().toString()).select("a[id=invite]") must
             haveLink(controllers.invitations.routes.InviteController.onPageLoad(srn).url)
-        }
+
       }
 
-      "have the invite paragraph of content when invitations is toggled on" in {
-        Jsoup.parse(createView(invitations = true)().toString()) must
+      "have the invite paragraph of content" in {
+        Jsoup.parse(createView()().toString()) must
           haveDynamicText("")
       }
 
       "not have link to Invite another PSA" when {
-        "invitations toggle is turned off" in {
-          Jsoup.parse(createView()().toString()).select("a[id=invite]") mustNot
-            haveLink(controllers.routes.SchemeDetailsController.onPageLoad(srn).url)
-        }
-
         "scheme status is not open" in {
-          Jsoup.parse(createView(invitations = true, isSchemeOpen = false)().toString()).select("a[id=invite]") mustNot
+          Jsoup.parse(createView(isSchemeOpen = false)().toString()).select("a[id=invite]") mustNot
             haveLink(controllers.routes.SchemeDetailsController.onPageLoad(srn).url)
         }
       }

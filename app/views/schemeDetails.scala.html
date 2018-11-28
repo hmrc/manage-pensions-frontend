@@ -61,7 +61,7 @@
         <br/>
     }
 
-    @if(appConfig.isWorkPackageOneEnabled && isSchemeOpen){
+    @if(isSchemeOpen){
         <p><a id="invite" href="@controllers.invitations.routes.InviteController.onPageLoad(srn)">@messages("messages__schemeDetails__invite_link")</a></p>
         <p>@messages("messages__schemeDetails__invite_p1")</p>
     }

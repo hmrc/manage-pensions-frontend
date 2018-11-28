@@ -31,16 +31,12 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
 
   implicit val request: Request[_] = fakeRequest
 
-  private def config(toggle: Boolean = true): FrontendAppConfig = {
-    val injector = new GuiceApplicationBuilder().configure(
-      "features.work-package-one-enabled" -> toggle
-    ).build().injector
-    injector.instanceOf[FrontendAppConfig]
-  }
+  val config = app.injector.instanceOf[FrontendAppConfig]
+
 
   "list-schemes view" must {
 
-    behave like normalPage(view(config()), "listSchemes", messages("messages__listSchemes__title"))
+    behave like normalPage(view(config), "listSchemes", messages("messages__listSchemes__title"))
 
     "display a link to your invitations page if user has received invitations" in {
       view(frontendAppConfig, invitationsReceived = true) must haveLink(
@@ -48,11 +44,11 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
     }
 
     "display a suitable message when there are no schemes to display" in {
-      view(config()) must haveElementWithText("noSchemes", messages("messages__listSchemes__noSchemes"))
+      view(config) must haveElementWithText("noSchemes", messages("messages__listSchemes__noSchemes"))
     }
 
     "display the correct column headers when there are schemes to display" in {
-      val actual = view(config(), fullList)
+      val actual = view(config, fullList)
 
       actual must haveElementWithText("schemeNameHeader", messages("messages__listSchemes__column_schemeName"))
       actual must haveElementWithText("pstrHeader", messages("messages__listSchemes__column_pstr"))
@@ -61,23 +57,15 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
 
     (0 to 7).foreach { index =>
       s"display the correct scheme name with links for row $index when there are schemes to display" in {
-        val actual = asDocument(view(config(), fullList).apply())
+        val actual = asDocument(view(config, fullList).apply())
 
         actual must haveLinkWithUrlAndContent(s"schemeName-$index",
           controllers.routes.SchemeDetailsController.onPageLoad(s"reference-number-$index").url, s"scheme-name-$index")
       }
     }
 
-    (0 to 7).foreach { index =>
-      s"display the correct scheme name with row $index when there are schemes to display" in {
-        val actual = asDocument(view(config(false), fullList).apply())
-
-        assertEqualsValue(actual, s"#schemeName-$index span:nth-child(1)", s"scheme-name-$index")
-      }
-    }
-
     "display the full status value" in {
-      val actual = asDocument(view(config(), fullList).apply())
+      val actual = asDocument(view(config, fullList).apply())
 
       assertEqualsValue(actual, "#schemeStatus-4 span:nth-child(1)", "Open")
       assertEqualsValue(actual, "#schemeStatus-5 span:nth-child(1)", "De-registered")
@@ -91,7 +79,7 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
     }
 
     "show the PSTR column with correct values" in {
-      val actual = asDocument(view(config(), fullList).apply())
+      val actual = asDocument(view(config, fullList).apply())
 
       assertEqualsValue(actual, "#pstr-0 span:nth-child(1)", messages("messages__listSchemes__pstr_not_assigned"))
       assertEqualsValue(actual, "#pstr-1 span:nth-child(1)", messages("messages__listSchemes__pstr_not_assigned"))
@@ -196,5 +184,6 @@ object ListSchemesViewSpec {
     val v = view(appConfig, schemes)
     v().toString()
   }
+
 
 }
