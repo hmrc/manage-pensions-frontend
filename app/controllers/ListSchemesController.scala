@@ -43,13 +43,9 @@ class ListSchemesController @Inject()(
           val schemes = listOfSchemes.schemeDetail.getOrElse(List.empty[SchemeDetail])
 
           val invitationsReceived: Future[Boolean] = {
-            if (appConfig.isWorkPackageOneEnabled) {
-              invitationsCacheConnector.getForInvitee(request.psaId).map {
-                case Nil => false
-                case _ => true
-              }
-            } else {
-              Future.successful(false)
+            invitationsCacheConnector.getForInvitee(request.psaId).map {
+              case Nil => false
+              case _ => true
             }
           }
 

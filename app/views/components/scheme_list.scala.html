@@ -79,21 +79,14 @@
     @for((scheme, index) <- schemes.zipWithIndex) {
         <div class="row-group grid-row">
             <div class="column-two-sixths table-column scheme-name">
-               @if(appConfig.isWorkPackageOneEnabled) {
-                    <span aria-hidden="true">
-                        @Link.toInternalPage(
-                            id=Some(s"${schemeNameId(index)}"),
-                            url=controllers.routes.SchemeDetailsController.onPageLoad(scheme.referenceNumber).url,
-                            value=Some(scheme.name)
-                        ).toHtml
-                    </span>
-                    <span class="visually-hidden">@messages("messages__listSchemes__schemeName__screen_reader", scheme.name)</span>
-                }else {
-                    <p id="@{schemeNameId(index)}">
-                        <span aria-hidden="true">@scheme.name</span>
-                        <span class="visually-hidden">@messages("messages__listSchemes__schemeName__screen_reader", scheme.name)</span>
-                    </p>
-                }
+                <span aria-hidden="true">
+                    @Link.toInternalPage(
+                        id=Some(s"${schemeNameId(index)}"),
+                        url=controllers.routes.SchemeDetailsController.onPageLoad(scheme.referenceNumber).url,
+                        value=Some(scheme.name)
+                    ).toHtml
+                </span>
+                <span class="visually-hidden">@messages("messages__listSchemes__schemeName__screen_reader", scheme.name)</span>
             </div>
 
                 <div class="column-two-sixths table-column scheme-name">

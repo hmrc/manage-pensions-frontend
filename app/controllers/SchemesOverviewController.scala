@@ -40,30 +40,21 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
                                           authenticate: AuthAction,
                                           getData: DataRetrievalAction) extends FrontendController with I18nSupport {
 
-  def redirect : Action[AnyContent] = Action.async(Future.successful(Redirect(controllers.routes.SchemesOverviewController.onPageLoad())))
+  def redirect: Action[AnyContent] = Action.async(Future.successful(Redirect(controllers.routes.SchemesOverviewController.onPageLoad())))
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
 
       dataCacheConnector.fetch(request.externalId).flatMap {
-        case None =>
-          if (appConfig.isWorkPackageOneEnabled) {
-            minimalPsaConnector.getMinimalPsaDetails(request.psaId.id).map { minimalDetails =>
-              Ok(schemesOverview(appConfig, None, None, None, getPsaName(minimalDetails), request.psaId.id))
-            }
-          } else {
-            Future.successful(Ok(schemesOverview(appConfig, None, None, None, None, request.psaId.id)))
-          }
+        case None => minimalPsaConnector.getMinimalPsaDetails(request.psaId.id).map { minimalDetails =>
+          Ok(schemesOverview(appConfig, None, None, None, getPsaName(minimalDetails), request.psaId.id))
+        }
         case Some(data) =>
           (data \ "schemeDetails" \ "schemeName").validate[String] match {
             case JsSuccess(name, _) =>
               dataCacheConnector.lastUpdated(request.externalId).flatMap { dateOpt =>
-                if (appConfig.isWorkPackageOneEnabled) {
-                  minimalPsaConnector.getMinimalPsaDetails(request.psaId.id).map { minimalDetails =>
-                    buildView(name, dateOpt, Some(minimalDetails), request.psaId.id)
-                  }
-                } else {
-                  Future.successful(buildView(name, dateOpt, None, request.psaId.id))
+                minimalPsaConnector.getMinimalPsaDetails(request.psaId.id).map { minimalDetails =>
+                  buildView(name, dateOpt, Some(minimalDetails), request.psaId.id)
                 }
               }
             case JsError(_) => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
@@ -102,17 +93,11 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
 
   def onClickCheckIfSchemeCanBeRegistered: Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
-      if (appConfig.isWorkPackageOneEnabled) {
-        for {
-          data <- dataCacheConnector.fetch(request.externalId)
-          psaMinimalDetails <- minimalPsaConnector.getMinimalPsaDetails(request.psaId.id)
-        } yield {
-          retrieveResult(data, Some(psaMinimalDetails))
-        }
-      } else {
-        dataCacheConnector.fetch(request.externalId).map { data =>
-          retrieveResult(data, None)
-        }
+      for {
+        data <- dataCacheConnector.fetch(request.externalId)
+        psaMinimalDetails <- minimalPsaConnector.getMinimalPsaDetails(request.psaId.id)
+      } yield {
+        retrieveResult(data, Some(psaMinimalDetails))
       }
   }
 

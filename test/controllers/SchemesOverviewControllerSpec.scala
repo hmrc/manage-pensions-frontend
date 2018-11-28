@@ -41,28 +41,17 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
 
   val fakeCacheConnector: UserAnswersCacheConnector = mock[MicroserviceCacheConnector]
   val fakePsaMinimalConnector: MinimalPsaConnector = mock[MinimalPsaConnector]
+  val appConfig = app.injector.instanceOf[FrontendAppConfig]
 
-  def getConfig(enabled: Boolean): FrontendAppConfig = {
-    val app: Application =
-      new GuiceApplicationBuilder()
-        .configure(
-          "features.work-package-one-enabled" -> enabled
-        )
-        .build()
 
-    def injector: Injector = app.injector
-
-    injector.instanceOf[FrontendAppConfig]
-  }
-
-  def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData, isWorkPackageOneEnabled: Boolean = true): SchemesOverviewController =
-    new SchemesOverviewController(getConfig(isWorkPackageOneEnabled), messagesApi, fakeCacheConnector, fakePsaMinimalConnector, FakeAuthAction(),
+  def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): SchemesOverviewController =
+    new SchemesOverviewController(appConfig, messagesApi, fakeCacheConnector, fakePsaMinimalConnector, FakeAuthAction(),
       dataRetrievalAction)
 
-  val deleteDate: String = DateTime.now(DateTimeZone.UTC).plusDays(getConfig(true).daysDataSaved).toString(formatter)
+  val deleteDate: String = DateTime.now(DateTimeZone.UTC).plusDays(appConfig.daysDataSaved).toString(formatter)
 
   def viewAsString(): String = schemesOverview(
-    getConfig(true),
+    appConfig,
     Some(schemeName),
     Some(lastDate.toString(formatter)),
     Some(deleteDate),
@@ -177,27 +166,6 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
         status(result) mustBe OK
         contentAsString(result) mustBe viewWithPsaNameAndScheme(None)
       }
-
-      "return OK and no name when flag is off and scheme has been defined" in {
-        when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(Some(Json.obj(
-          "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
-        when(fakeCacheConnector.lastUpdated(any())(any(), any()))
-          .thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
-
-        val result = controller(isWorkPackageOneEnabled = false).onPageLoad(fakeRequest)
-        status(result) mustBe OK
-        contentAsString(result) mustBe viewWithPsaNameAndScheme(None)
-      }
-
-      "return OK and no name when flag is off and no scheme has been defined" in {
-        when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(None))
-        when(fakeCacheConnector.lastUpdated(any())(any(), any()))
-          .thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
-
-        val result = controller(isWorkPackageOneEnabled = false).onPageLoad(fakeRequest)
-        status(result) mustBe OK
-        contentAsString(result) mustBe viewWithPsaName()
-      }
     }
 
     "on a POST with isWorkPackageOneEnabled flag is on" must {
@@ -242,30 +210,6 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).value mustBe cannotStartRegistrationUrl.url
-      }
-    }
-
-    "on a POST with isWorkPackageOneEnabled flag is off" must {
-
-      "redirect to the register scheme page if called without psa name" in {
-        when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
-
-        val result = controller(isWorkPackageOneEnabled = false).onClickCheckIfSchemeCanBeRegistered(fakeRequest)
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).value mustBe frontendAppConfig.registerSchemeUrl
-        verify(fakePsaMinimalConnector, never()).getMinimalPsaDetails(any())(any(), any())
-      }
-
-      "redirect to the continue register scheme page if called with psa name" in {
-        when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(Some(Json.obj(
-          "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
-
-        val result = controller(isWorkPackageOneEnabled = false).onClickCheckIfSchemeCanBeRegistered(fakeRequest)
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).value mustBe frontendAppConfig.continueSchemeUrl
-        verify(fakePsaMinimalConnector, never()).getMinimalPsaDetails(any())(any(), any())
       }
     }
   }
