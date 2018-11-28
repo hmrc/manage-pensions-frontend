@@ -42,7 +42,9 @@ class RemovePsaControllerSpec extends SpecBase {
 
   def fakeSchemeDetailsConnector(psaSchemeDetails: PsaSchemeDetails = psaSchemeDetailsResponse): SchemeDetailsConnector =
     new SchemeDetailsConnector {
-      override def getSchemeDetails(schemeIdType: String, idNumber: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[PsaSchemeDetails] =
+      override def getSchemeDetails(psaId: String,
+                                    schemeIdType: String,
+                                    idNumber: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[PsaSchemeDetails] =
         Future.successful(psaSchemeDetails)
     }
 

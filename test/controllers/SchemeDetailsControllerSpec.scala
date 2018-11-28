@@ -62,7 +62,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
   "SchemeDetailsController" must {
     "save the srn and then return OK and the correct view for a GET" in {
       reset(fakeSchemeDetailsConnector)
-      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(schemeDetailsWithPsaOnlyResponse))
       when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(listOfSchemesResponse))
@@ -82,7 +82,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
         )
 
       reset(fakeSchemeDetailsConnector)
-      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(schemeDetailsWithPsaOnlyResponseMixOfIndividualAndOrg))
       when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(listOfSchemesResponse))
@@ -93,7 +93,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
 
     "return OK and the correct view for a GET when opened date is not returned by API" in {
       reset(fakeSchemeDetailsConnector)
-      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(schemeDetailsWithPsaOnlyResponse))
       when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(listOfSchemesPartialResponse))
@@ -104,7 +104,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
 
     "return OK and the correct view for a GET when scheme status is not open" in {
       reset(fakeSchemeDetailsConnector)
-      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(schemeDetailsPendingResponse))
       when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(listOfSchemesResponse))
@@ -115,7 +115,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
 
     "return NOT_FOUND when PSA data is not returned by API (as we don't know who administers the scheme)" in {
       reset(fakeSchemeDetailsConnector)
-      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(schemeDetailsWithoutPsaResponse))
       when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(listOfSchemesResponse))
@@ -129,7 +129,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
       val psaSchemeDetailsResponseTwoPSAs = PsaSchemeDetails(mockSchemeDetails, None, None, Some(Seq(psaDetails1, psaDetails2)))
 
       reset(fakeSchemeDetailsConnector)
-      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(psaSchemeDetailsResponseTwoPSAs))
       when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(listOfSchemesResponse))
