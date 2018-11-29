@@ -25,6 +25,7 @@ import org.scalacheck.Gen
 import org.scalatest.prop.PropertyChecks
 import play.api.data.{Form, FormError}
 
+//noinspection ScalaStyle
 trait FieldBehaviours extends FormSpec with PropertyChecks with Generators {
 
   def fieldThatBindsValidData(form: Form[_],
@@ -80,43 +81,57 @@ trait FieldBehaviours extends FormSpec with PropertyChecks with Generators {
     }
   }
 
-  def mandatoryDateField(form: Form[_], fieldName: String, key: String): Unit = {
+  def mandatoryDateField(form: ()=> Form[_], fieldName: String, key: String): Unit = {
     val dayFieldName = s"$fieldName.day"
     val monthFieldName = s"$fieldName.month"
     val yearFieldName = s"$fieldName.year"
+    val formKeys = Map(
+      s"$dayFieldName" -> "10",
+      s"$monthFieldName" -> "10",
+      s"$yearFieldName" -> "2018"
+    )
 
-    def keyNotPresent(fieldName: String, requiredKey: String): Unit = {
-      val result = form.bind(emptyForm).apply(fieldName)
-      result.errors shouldEqual Seq(FormError(fieldName, requiredKey))
+    def keyNotPresent(dateField:String, requiredKey: String): Unit = {
+      val result = form().bind(formKeys - dateField + (s"dummy" -> ""))
+      result.errors shouldEqual Seq(FormError(dateField, requiredKey))
     }
 
-    def keyBlank(fieldName: String, requiredKey: String): Unit = {
-      val result = form.bind(Map(fieldName -> "")).apply(fieldName)
+    def keyBlank(dateField: String, requiredKey: String): Unit = {
+      val result = form().bind(formKeys - dateField + (s"$dateField" -> ""))
       result.errors shouldEqual Seq(FormError(fieldName, requiredKey))
     }
 
     "not bind when day key is not present at all" in {
-      keyNotPresent(dayFieldName, s"messages__${key}_error__day_blank")
+      keyNotPresent(dayFieldName, s"error.required")
     }
 
     "not bind when month key is not present at all" in {
-      keyNotPresent(monthFieldName, s"messages__${key}_error__month_blank")
+      keyNotPresent(monthFieldName, s"error.required")
     }
 
     "not bind when year key is not present at all" in {
-      keyNotPresent(yearFieldName, s"messages__${key}_error__year_blank")
+      keyNotPresent(yearFieldName, s"error.required")
     }
 
     "not bind when day key is blank" in {
-      keyBlank(dayFieldName, s"messages__${key}_error__day_blank")
+      keyBlank(dayFieldName, s"messages__${key}_date_error__day_blank")
     }
 
     "not bind when month key is blank" in {
-      keyBlank(monthFieldName, s"messages__${key}_error__month_blank")
+      keyBlank(monthFieldName, s"messages__${key}_date_error__month_blank")
     }
 
     "not bind when year key is blank" in {
-      keyBlank(yearFieldName, s"messages__${key}_error__year_blank")
+      keyBlank(yearFieldName, s"messages__${key}_date_error__year_blank")
+    }
+
+    "not bind when all date fields are not present at all" in {
+      val result = form().bind(Map(
+        s"$dayFieldName" -> "",
+        s"$monthFieldName" -> "",
+        s"$yearFieldName" -> ""
+      ))
+      result.errors shouldEqual Seq(FormError(fieldName, s"messages__${key}_date_error__all_blank"))
     }
   }
 

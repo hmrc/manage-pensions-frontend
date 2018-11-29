@@ -118,6 +118,7 @@ trait ViewBehaviours extends ViewSpecBase {
     val day = LocalDate.now().getDayOfMonth
     val year = LocalDate.now().getYear
     val month = LocalDate.now().getMonthOfYear
+    val error = "error"
 
     val validData: Map[String, String] = Map(
       s"${idkey}.day" -> s"$day",
@@ -162,27 +163,15 @@ trait ViewBehaviours extends ViewSpecBase {
     }
 
     "display only one date error when all the date fields are missing" in {
-      val expectedError = messages(s"messages__${msgKey}_error__any_blank")
-
-      val doc = asDocument(view(form))
-      doc.select("span.error-notification").text() mustEqual expectedError
+      val expectedError = messages(s"messages__${msgKey}_error__all_blank")
+      val invalidData: Map[String, String] = Map(
+        "firstName" -> "testFirstName",
+        "lastName" -> "testLastName"
+      )
+      val doc = asDocument(view(form.withError(FormError(s"${idkey}", expectedError))))
+      doc must haveErrorOnSummary(s"${idkey}", expectedError)
     }
 
-    "display common error on field when multiple errors are present" in {
-      val expectedError = messages(s"messages__${msgKey}_error__common")
-
-      val doc = asDocument(view(form.bind(validData).withError(FormError(s"${idkey}.year",
-        expectedError)).withError(FormError(s"${idkey}.month", "error"))))
-
-      doc.getElementById("error-message-incorrect-date").text() mustEqual expectedError
-    }
-
-    "display specific error on field when single error is present" in {
-      val expectedError = messages(s"messages__date_error__invalid_year")
-
-      val doc = asDocument(view(form.bind(validData).withError(FormError(s"${idkey}.year", expectedError))))
-      doc.getElementById("error-message-incorrect-date").text() mustEqual expectedError
-    }
   }
 
   //scalastyle:on method.length

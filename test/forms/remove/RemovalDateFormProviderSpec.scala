@@ -25,24 +25,31 @@ import views.behaviours.StringFieldBehaviours
 class RemovalDateFormProviderSpec extends StringFieldBehaviours with Constraints with Matchers {
 
   // scalastyle:off magic.number
-  private val openedDate =  new LocalDate(2018, 1, 1)
-  private val beforeOpenDate = new LocalDate(2017, 1,1)
-  val form = new RemovalDateFormProvider()(openedDate)
+  private val associationDate =  new LocalDate(2018, 10, 1)
+  private val beforeEarliestDate = new LocalDate(2017, 1,1)
+  private val beforeAssociationDate = new LocalDate(2018, 7,1)
+  def form() = new RemovalDateFormProvider()(associationDate, frontendAppConfig.earliestDatePsaRemoval)
   // scalastyle:on magic.number
 
   ".date" must {
 
     val fieldName = "removalDate"
 
-    behave like dateFieldThatBindsValidData(
+    behave like mandatoryDateField(
       form,
+      fieldName,
+      "removal"
+    )
+
+    behave like dateFieldThatBindsValidData(
+      form(),
       fieldName,
       historicDate()
     )
 
     val futureDate = LocalDate.now().plusDays(1)
     "not accept a future date" in {
-      form.bind(
+      form().bind(
         Map(
           "removalDate.day" -> futureDate.getDayOfMonth.toString,
           "removalDate.month" -> futureDate.getMonthOfYear.toString,
@@ -51,14 +58,24 @@ class RemovalDateFormProviderSpec extends StringFieldBehaviours with Constraints
       ).errors shouldBe Seq(FormError(fieldName, "messages__removal_date_error__future_date"))
     }
 
-    "not accept a date before open date" in {
-      form.bind(
+    "not accept a date before earliest date for psa removal" in {
+      form().bind(
         Map(
-          "removalDate.day" -> beforeOpenDate.getDayOfMonth.toString,
-          "removalDate.month" -> beforeOpenDate.getMonthOfYear.toString,
-          "removalDate.year" -> beforeOpenDate.getYear.toString
+          "removalDate.day" -> beforeEarliestDate.getDayOfMonth.toString,
+          "removalDate.month" -> beforeEarliestDate.getMonthOfYear.toString,
+          "removalDate.year" -> beforeEarliestDate.getYear.toString
         )
-      ).errors shouldBe Seq(FormError(fieldName, "messages__removal_date_error__before_scheme_start"))
+      ).errors shouldBe Seq(FormError(fieldName, "messages__removal_date_error__before_earliest_date"))
+    }
+
+    "not accept a date before association date for psa" in {
+      form().bind(
+        Map(
+          "removalDate.day" -> beforeAssociationDate.getDayOfMonth.toString,
+          "removalDate.month" -> beforeAssociationDate.getMonthOfYear.toString,
+          "removalDate.year" -> beforeAssociationDate.getYear.toString
+        )
+      ).errors shouldBe Seq(FormError(fieldName, "messages__removal_date_error__before_association"))
     }
   }
 

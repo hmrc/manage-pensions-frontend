@@ -17,7 +17,7 @@
 package controllers.remove
 
 import config.FrontendAppConfig
-import connectors.{ListOfSchemesConnector, PsaRemovalConnector, UserAnswersCacheConnector}
+import connectors.{PsaRemovalConnector, SchemeDetailsConnector, UserAnswersCacheConnector}
 import controllers.Retrievals
 import controllers.actions._
 import forms.remove.RemovalDateFormProvider
@@ -25,7 +25,7 @@ import identifiers.SchemeSrnId
 import identifiers.invitations.{PSANameId, PSTRId, SchemeNameId}
 import identifiers.remove.RemovalDateId
 import javax.inject.Inject
-import models.{ListOfSchemes, NormalMode, PsaToBeRemovedFromScheme}
+import models.{NormalMode, PsaSchemeDetails, PsaToBeRemovedFromScheme}
 import org.joda.time.LocalDate
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -33,6 +33,7 @@ import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.annotations.RemovePSA
 import utils.{Navigator, UserAnswers}
+import utils.DateHelper._
 import views.html.remove.removalDate
 
 import scala.concurrent.Future
@@ -45,21 +46,19 @@ class RemovalDateController @Inject()(appConfig: FrontendAppConfig,
                                       getData: DataRetrievalAction,
                                       requireData: DataRequiredAction,
                                       formProvider: RemovalDateFormProvider,
-                                      listSchemesConnector: ListOfSchemesConnector,
+                                      schemeDetailsConnector: SchemeDetailsConnector,
                                       psaRemovalConnector: PsaRemovalConnector) extends FrontendController with I18nSupport with Retrievals {
 
-  private def form(schemeOpenDate: LocalDate) = formProvider(schemeOpenDate)
-
-  val earliestDate = LocalDate.parse("1900-01-01")
+  private def form(schemeOpenDate: LocalDate) = formProvider(schemeOpenDate, appConfig.earliestDatePsaRemoval)
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
       (SchemeNameId and PSANameId and SchemeSrnId).retrieve.right.map {
         case schemeName ~ psaName ~ srn =>
 
-          listSchemesConnector.getListOfSchemes(request.psaId.id).flatMap { list =>
-
-             Future.successful(Ok(removalDate(appConfig, form(openedDate(srn, list)), psaName, schemeName, srn)))
+          schemeDetailsConnector.getSchemeDetails("srn", srn).flatMap { schemeDetails =>
+            val associationDate: LocalDate = psaAssociationDate(request.psaId.id, schemeDetails)
+             Future.successful(Ok(removalDate(appConfig, form(associationDate), psaName, schemeName, srn, formatDate(associationDate))))
 
           }
         case _ => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
@@ -70,11 +69,11 @@ class RemovalDateController @Inject()(appConfig: FrontendAppConfig,
     implicit request =>
       (SchemeNameId and PSANameId and SchemeSrnId and PSTRId).retrieve.right.map {
         case schemeName ~ psaName ~ srn ~ pstr =>
-          listSchemesConnector.getListOfSchemes(request.psaId.id).flatMap { list =>
-
-            form(openedDate(srn, list)).bindFromRequest().fold(
+          schemeDetailsConnector.getSchemeDetails("srn", srn).flatMap { schemeDetails =>
+            val associationDate: LocalDate = psaAssociationDate(request.psaId.id, schemeDetails)
+            form(associationDate).bindFromRequest().fold(
               (formWithErrors: Form[_]) =>
-                Future.successful(BadRequest(removalDate(appConfig, formWithErrors, psaName, schemeName, srn))),
+                  Future.successful(BadRequest(removalDate(appConfig, formWithErrors, psaName, schemeName, srn, formatDate(associationDate)))),
               value =>
                 dataCacheConnector.save(request.externalId, RemovalDateId, value).flatMap { cacheMap =>
                   psaRemovalConnector.remove(PsaToBeRemovedFromScheme(request.psaId.id, pstr, value)).map { _ =>
@@ -86,15 +85,15 @@ class RemovalDateController @Inject()(appConfig: FrontendAppConfig,
       }
   }
 
-
-  private def openedDate(srn: String, list: ListOfSchemes): LocalDate = {
-    list.schemeDetail.flatMap { listOfSchemes =>
-      val currentScheme = listOfSchemes.filter(_.referenceNumber.contains(srn))
-      if (currentScheme.nonEmpty) {
-        currentScheme.head.openDate.map(new LocalDate(_))
+  private def psaAssociationDate(psaId: String, schemeDetails: PsaSchemeDetails): LocalDate = {
+    schemeDetails.psaDetails.flatMap { psaDetails =>
+      val psa = psaDetails.filter(_.id.contains(psaId))
+      if (psa.nonEmpty) {
+        psa.head.relationshipDate.map(new LocalDate(_))
       } else {
         None
       }
     }
-  }.getOrElse(earliestDate)
+  }.getOrElse(appConfig.earliestDatePsaRemoval)
+
 }

@@ -20,14 +20,13 @@ import connectors.{FakeUserAnswersCacheConnector, UserAnswersCacheConnector}
 import controllers.ControllerSpecBase
 import controllers.actions._
 import identifiers.TypedIdentifier
-import org.joda.time.LocalDate
+import org.scalatest.concurrent.ScalaFutures._
 import play.api.data.Form
 import play.api.libs.json.Format
 import play.api.mvc._
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import utils.FakeNavigator
-import org.scalatest.concurrent.ScalaFutures._
 
 class ControllerWithQuestionPageBehaviours extends ControllerSpecBase {
 
@@ -39,7 +38,7 @@ class ControllerWithQuestionPageBehaviours extends ControllerSpecBase {
   def controllerWithOnPageLoadMethodWithoutPrePopulation[T](onPageLoadAction: (DataRetrievalAction, AuthAction) => Action[AnyContent],
                                         emptyData: DataRetrievalAction,
                                         emptyForm: Form[T],
-                                        validView: (Form[T]) => String): Unit = {
+                                        validView: Form[T] => String): Unit = {
 
     "calling onPageLoad" must {
 
@@ -56,7 +55,7 @@ class ControllerWithQuestionPageBehaviours extends ControllerSpecBase {
         val result = onPageLoadAction(emptyData, FakeUnAuthorisedAction())(fakeRequest)
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad.url)
+        redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)
       }
     }
 
@@ -67,7 +66,7 @@ class ControllerWithQuestionPageBehaviours extends ControllerSpecBase {
                                         validData: DataRetrievalAction,
                                         emptyForm: Form[T],
                                         preparedForm: Form[T],
-                                        validView: (Form[T]) => String): Unit = {
+                                        validView: Form[T] => String): Unit = {
 
     "calling onPageLoad" must {
 
@@ -87,8 +86,9 @@ class ControllerWithQuestionPageBehaviours extends ControllerSpecBase {
   def controllerWithOnSubmitMethod[T](onSubmitAction: (DataRetrievalAction, AuthAction) => Action[AnyContent],
                                       validData: DataRetrievalAction,
                                       form: Form[T],
-                                      errorView: (Form[T]) => String,
-                                      postRequest: FakeRequest[AnyContentAsJson]): Unit = {
+                                      errorView: Form[T] => String,
+                                      postRequest: FakeRequest[AnyContentAsJson],
+                                      emptyPostRequest: Option[FakeRequest[AnyContentAsJson]]=None): Unit = {
 
     "calling onSubmit" must {
 
@@ -101,8 +101,9 @@ class ControllerWithQuestionPageBehaviours extends ControllerSpecBase {
       }
 
       "return a Bad Request and errors when invalid data is submitted" in {
+        val request = emptyPostRequest.getOrElse(fakeRequest)
 
-        val result = onSubmitAction(validData, FakeAuthAction())(fakeRequest)
+        val result = onSubmitAction(validData, FakeAuthAction())(request)
 
         status(result) mustBe BAD_REQUEST
         contentAsString(result) mustBe errorView(form)
