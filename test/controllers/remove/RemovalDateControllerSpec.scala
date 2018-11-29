@@ -103,7 +103,7 @@ object RemovalDateControllerSpec {
   )
 
   val fakeSchemeDetailsConnector: SchemeDetailsConnector = new SchemeDetailsConnector {
-    override def getSchemeDetails(schemeIdType: String, idNumber: String)
+    override def getSchemeDetails(psaId: String, schemeIdType: String, idNumber: String)
                                  (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[PsaSchemeDetails] =
       Future(CommonBuilders.psaSchemeDetailsResponse)
   }
