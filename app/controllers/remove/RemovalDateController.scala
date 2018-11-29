@@ -56,7 +56,7 @@ class RemovalDateController @Inject()(appConfig: FrontendAppConfig,
       (SchemeNameId and PSANameId and SchemeSrnId).retrieve.right.map {
         case schemeName ~ psaName ~ srn =>
 
-          schemeDetailsConnector.getSchemeDetails("srn", srn).flatMap { schemeDetails =>
+          schemeDetailsConnector.getSchemeDetails(request.psaId.id,"srn", srn).flatMap { schemeDetails =>
             val associationDate: LocalDate = psaAssociationDate(request.psaId.id, schemeDetails)
              Future.successful(Ok(removalDate(appConfig, form(associationDate), psaName, schemeName, srn, formatDate(associationDate))))
 
@@ -69,7 +69,7 @@ class RemovalDateController @Inject()(appConfig: FrontendAppConfig,
     implicit request =>
       (SchemeNameId and PSANameId and SchemeSrnId and PSTRId).retrieve.right.map {
         case schemeName ~ psaName ~ srn ~ pstr =>
-          schemeDetailsConnector.getSchemeDetails("srn", srn).flatMap { schemeDetails =>
+          schemeDetailsConnector.getSchemeDetails(request.psaId.id, "srn", srn).flatMap { schemeDetails =>
             val associationDate: LocalDate = psaAssociationDate(request.psaId.id, schemeDetails)
             form(associationDate).bindFromRequest().fold(
               (formWithErrors: Form[_]) =>
