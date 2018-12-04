@@ -17,20 +17,14 @@
 package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
-import com.google.inject.{ImplementedBy, Inject}
-import config.FrontendAppConfig
-import connectors.InvitationConnectorSpec.{invitation, inviteUrl, requestJson}
 import models.PsaToBeRemovedFromScheme
 import org.joda.time.LocalDate
-import org.scalatest.{AsyncFlatSpec, Matchers}
 import org.scalatest.prop.Checkers
+import org.scalatest.{AsyncFlatSpec, Matchers}
 import play.api.http.Status
 import play.api.libs.json.Json
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.http.HttpClient
-import utils.{HttpResponseHelper, WireMockHelper}
-
-import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
+import utils.WireMockHelper
 
 class PsaRemovalConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper with Checkers {
 
@@ -54,41 +48,21 @@ class PsaRemovalConnectorSpec extends AsyncFlatSpec with Matchers with WireMockH
     }
   }
 
-  it should "return a FailedPsaRemovalException if the request fails with a Bad Request" in {
+  it should "throw BadRequestException for a 400 INVALID_PAYLOAD response" in {
+
     server.stubFor(
       post(urlEqualTo(deleteUrl))
+        .withRequestBody(equalToJson(requestJson))
         .willReturn(
-          aResponse()
-            .withStatus(Status.BAD_REQUEST)
+          badRequest
+            .withHeader("Content-Type", "application/json")
+            .withBody(errorResponse("INVALID_PAYLOAD"))
         )
     )
 
     val connector = injector.instanceOf[PsaRemovalConnector]
-
-    recoverToExceptionIf[FailedPsaRemovalException] {
+    recoverToSucceededIf[BadRequestException] {
       connector.remove(psaToBeRemoved)
-    } map {
-      _ =>
-        server.findAll(postRequestedFor(urlEqualTo(deleteUrl))).size() shouldBe 1
-    }
-  }
-
-  it should "return a FailedPsaRemovalException if the request fails with any other error" in {
-    server.stubFor(
-      post(urlEqualTo(deleteUrl))
-        .willReturn(
-          aResponse()
-            .withStatus(Status.CONFLICT)
-        )
-    )
-
-    val connector = injector.instanceOf[PsaRemovalConnector]
-
-    recoverToExceptionIf[FailedPsaRemovalException] {
-      connector.remove(psaToBeRemoved)
-    } map {
-      _ =>
-        server.findAll(postRequestedFor(urlEqualTo(deleteUrl))).size() shouldBe 1
     }
   }
 }
@@ -99,4 +73,13 @@ object PsaRemovalConnectorSpec {
   private val psaToBeRemoved = PsaToBeRemovedFromScheme("238DAJFASS", "XXAJ329AJJ", new LocalDate(2009,1,1))
   private val deleteUrl = "/pension-administrator/remove-psa"
   private val requestJson = Json.stringify(Json.toJson(psaToBeRemoved))
+
+  def errorResponse(code: String): String = {
+    Json.stringify(
+      Json.obj(
+        "code" -> code,
+        "reason" -> s"Reason for $code"
+      )
+    )
+  }
 }
