@@ -290,3 +290,8 @@ messages__psa_cannot_be_removed__returnToSchemes__link = Return to your pension 
 messages__removalDate__title = When did you stop being scheme administrator?
 messages__removalDate__heading = When did {0} stop being scheme administrator for {1}?
 messages__removalDate__lede = {0} became scheme administrator on {1}. The date they stopped must be between {1} and today.
+
+messages__pageNotFound404__title = Page not found
+messages__pageNotFound404__heading = Page not found
+messages__pageNotFound404__p1 = If you typed the web address, check it is correct.
+messages__pageNotFound404__p2 = If you pasted the web address, check you copied the entire address.
