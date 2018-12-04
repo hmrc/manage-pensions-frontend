@@ -33,14 +33,12 @@ trait PsaRemovalConnector {
   def remove(psaToBeRemoved: PsaToBeRemovedFromScheme)(implicit hc: HeaderCarrier, ec: ExecutionContext) : Future[Unit]
 }
 
-class FailedPsaRemovalException extends Exception
-
 class PsaRemovalConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) extends PsaRemovalConnector with HttpResponseHelper {
   override def remove(psaToBeRemoved: PsaToBeRemovedFromScheme)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
     http.POST[PsaToBeRemovedFromScheme, HttpResponse](config.removePsaUrl,psaToBeRemoved) map {
       response => response.status match {
         case NO_CONTENT => ()
-        case _ => throw new FailedPsaRemovalException()
+        case _ => handleErrorResponse("POST", config.removePsaUrl)(response)
       }
     } andThen {
       case Failure(t: Throwable) => Logger.warn("Unable to remove PSA from Scheme", t)
