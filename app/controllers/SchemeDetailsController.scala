@@ -19,11 +19,12 @@ package controllers
 import config.FrontendAppConfig
 import connectors.{ListOfSchemesConnector, SchemeDetailsConnector, UserAnswersCacheConnector}
 import controllers.actions._
+import handlers.ErrorHandler
 import identifiers.SchemeSrnId
 import javax.inject.Inject
 import models._
 import org.joda.time.LocalDate
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.DateHelper
@@ -38,7 +39,8 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                                         listSchemesConnector: ListOfSchemesConnector,
                                         authenticate: AuthAction,
                                         getData: DataRetrievalAction,
-                                        userAnswersCacheConnector: UserAnswersCacheConnector
+                                        userAnswersCacheConnector: UserAnswersCacheConnector,
+                                        errorHandler: ErrorHandler
                                        ) extends FrontendController with I18nSupport {
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate.async {
@@ -60,7 +62,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
               }
             }
           } else {
-            Future.successful(NotFound)
+            Future.successful(NotFound(errorHandler.notFoundTemplate))
           }
         }
       }
