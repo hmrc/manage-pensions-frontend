@@ -18,6 +18,7 @@ package controllers
 
 import connectors._
 import controllers.actions.{DataRetrievalAction, _}
+import handlers.ErrorHandler
 import identifiers.SchemeSrnId
 import models.{PsaDetails, PsaSchemeDetails, SchemeReferenceNumber}
 import org.mockito.Matchers
@@ -40,14 +41,16 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
     "features.work-package-one-enabled" -> true
   ).build()
 
-  def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): SchemeDetailsController =
+  def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): SchemeDetailsController = {
+    val eh = new ErrorHandler(frontendAppConfig, messagesApi)
     new SchemeDetailsController(frontendAppConfig,
       messagesApi,
       fakeSchemeDetailsConnector,
       fakeListOfSchemesConnector,
       FakeAuthAction(),
       dataRetrievalAction,
-      FakeUserAnswersCacheConnector)
+      FakeUserAnswersCacheConnector, eh)
+  }
 
   def viewAsString(openDate: Option[String] = openDate, administrators: Option[Seq[AssociatedPsa]] = administrators, isSchemeOpen: Boolean = true): String =
     schemeDetails(
@@ -123,7 +126,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
       status(result) mustBe NOT_FOUND
     }
 
-    "return NOT_FOUND when PSA data is returned by API which does not include the currently logged-in PSA" in {
+    "return NOT_FOUND and the correct not found view when PSA data is returned by API which does not include the currently logged-in PSA" in {
       val psaDetails1 = PsaDetails("A0000001", Some("partnership name no 1"), None, Some("2018-10-01"))
       val psaDetails2 = PsaDetails("A0000002", Some("partnership name no 2"), None, None)
       val psaSchemeDetailsResponseTwoPSAs = PsaSchemeDetails(mockSchemeDetails, None, None, Some(Seq(psaDetails1, psaDetails2)))
@@ -135,8 +138,8 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
         .thenReturn(Future.successful(listOfSchemesResponse))
       val result = controller().onPageLoad(srn)(fakeRequest)
       status(result) mustBe NOT_FOUND
+      contentAsString(result).contains(messages("messages__pageNotFound404__heading")) mustBe true
     }
-
   }
 }
 

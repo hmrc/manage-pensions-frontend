@@ -294,3 +294,8 @@ messages__removalDate__lede = {0} became scheme administrator on {1}. The date t
 messages__psa_cannot_be_removed_delay__p1 = The scheme administrator cannot be removed on the same day they were added to a scheme.
 messages__psa_cannot_be_removed_delay__p2 = Try again tomorrow.
 
+
+messages__pageNotFound404__title = Page not found
+messages__pageNotFound404__heading = Page not found
+messages__pageNotFound404__p1 = If you typed the web address, check it is correct.
+messages__pageNotFound404__p2 = If you pasted the web address, check you copied the entire address.
