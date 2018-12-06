@@ -27,12 +27,14 @@ import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import viewmodels.RemovalViewModel
 import views.html.remove.cannot_be_removed
 
+import scala.concurrent.Future
+
 class CanNotBeRemovedController @Inject()(appConfig: FrontendAppConfig,
                                           override val messagesApi: MessagesApi,
                                           authenticate: AuthAction,
                                           userAnswersCacheConnector: UserAnswersCacheConnector) extends FrontendController with I18nSupport{
 
-  def onPageLoad: Action[AnyContent] = authenticate.async {
+  def onPageLoadWhereSuspended: Action[AnyContent] = authenticate.async {
     implicit request =>
       userAnswersCacheConnector.removeAll(request.externalId).map {_ =>
         request.userType match {
@@ -44,6 +46,11 @@ class CanNotBeRemovedController @Inject()(appConfig: FrontendAppConfig,
             Redirect(controllers.routes.SessionExpiredController.onPageLoad())
         }
       }
+  }
+
+  def onPageLoadWhereRemovalDelay: Action[AnyContent] = authenticate.async {
+    implicit request =>
+      Future.successful(Ok(cannot_be_removed(viewModelRemovalDelay, appConfig)))
   }
 
   private def viewModelIndividual: RemovalViewModel = RemovalViewModel(
@@ -58,5 +65,12 @@ class CanNotBeRemovedController @Inject()(appConfig: FrontendAppConfig,
     "messages__psa_cannot_be_removed__heading",
     "messages__psa_cannot_be_removed__p1",
     "messages__psa_cannot_be_removed__p2",
+    "messages__psa_cannot_be_removed__returnToSchemes__link")
+
+  private def viewModelRemovalDelay: RemovalViewModel = RemovalViewModel(
+    "messages__psa_cannot_be_removed__title",
+    "messages__psa_cannot_be_removed__heading",
+    "messages__psa_cannot_be_removed_delay__p1",
+    "messages__psa_cannot_be_removed_delay__p2",
     "messages__psa_cannot_be_removed__returnToSchemes__link")
 }

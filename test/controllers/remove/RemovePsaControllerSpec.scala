@@ -62,7 +62,7 @@ class RemovePsaControllerSpec extends SpecBase {
       val result = controller(psaMinimalDetails = psaMinimalSubscription.copy(isPsaSuspended = true)).onPageLoad(fakeRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.remove.routes.CanNotBeRemovedController.onPageLoad().url)
+      redirectLocation(result) mustBe Some(controllers.remove.routes.CanNotBeRemovedController.onPageLoadWhereSuspended().url)
     }
 
     "redirect to session expired page if no srn in userAnswers" in {

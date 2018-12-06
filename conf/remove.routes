@@ -8,5 +8,6 @@ POST       /remove-as-scheme-administrator              controllers.remove.Confi
 
 GET        /remove-psa                                  controllers.remove.RemovePsaController.onPageLoad()
 
-GET        /unable-to-remove-scheme-administrator       controllers.remove.CanNotBeRemovedController.onPageLoad()
+GET        /unable-to-remove-scheme-administrator       controllers.remove.CanNotBeRemovedController.onPageLoadWhereSuspended()
+GET        /cannot-remove-scheme-administrator          controllers.remove.CanNotBeRemovedController.onPageLoadWhereRemovalDelay()
 

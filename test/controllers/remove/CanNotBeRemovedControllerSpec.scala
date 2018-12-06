@@ -35,42 +35,54 @@ class CanNotBeRemovedControllerSpec extends ControllerWithNormalPageBehaviours {
 
   def organisationViewAsString(): String = cannot_be_removed(viewModelOrganisation, frontendAppConfig)(fakeRequest, messages).toString
 
-  "if affinity group Individual" must {
+  def removalDelayViewAsString(): String = cannot_be_removed(viewModelRemovalDelay, frontendAppConfig)(fakeRequest, messages).toString
+
+  "if reason is suspended and affinity group Individual" must {
 
     "return OK and the correct view for a GET" in {
-      val result = fakeControllerAction(FakeAuthAction.createUserType(Individual)).onPageLoad()(fakeRequest)
+      val result = fakeControllerAction(FakeAuthAction.createUserType(Individual)).onPageLoadWhereSuspended()(fakeRequest)
 
       status(result) mustBe OK
       contentAsString(result) mustBe individualViewAsString()
     }
   }
 
-  "if affinity group Organization" must {
+  "if reason is suspended and affinity group Organization" must {
 
     "return OK and the correct view for a GET" in {
-      val result = fakeControllerAction(FakeAuthAction.createUserType(Organization)).onPageLoad()(fakeRequest)
+      val result = fakeControllerAction(FakeAuthAction.createUserType(Organization)).onPageLoadWhereSuspended()(fakeRequest)
 
       status(result) mustBe OK
       contentAsString(result) mustBe organisationViewAsString()
     }
   }
 
-  "if affinity group is not Individual or Organization" must {
+  "if reason is suspended and affinity group is not Individual or Organization" must {
 
     "redirect to session expired" in {
-      val result = fakeControllerAction(FakeAuthAction.createUserType(OtherUser)).onPageLoad()(fakeRequest)
+      val result = fakeControllerAction(FakeAuthAction.createUserType(OtherUser)).onPageLoadWhereSuspended()(fakeRequest)
 
       status(result) mustBe SEE_OTHER
     }
 
     "return 303 if user action is not authenticated" in {
 
-      val result = fakeControllerAction().onPageLoad()(fakeRequest)
+      val result = fakeControllerAction().onPageLoadWhereSuspended()(fakeRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)
     }
   }
+
+  "if reason is removal delay" must {
+    "return OK and the correct view for a GET" in {
+      val result = fakeControllerAction(FakeAuthAction.createUserType(Individual)).onPageLoadWhereRemovalDelay()(fakeRequest)
+
+      status(result) mustBe OK
+      contentAsString(result) mustBe removalDelayViewAsString()
+    }
+  }
+
 }
 
 object CanNotBeRemovedControllerSpec {
@@ -87,5 +99,12 @@ object CanNotBeRemovedControllerSpec {
     "messages__psa_cannot_be_removed__heading",
     "messages__psa_cannot_be_removed__p1",
     "messages__psa_cannot_be_removed__p2",
+    "messages__psa_cannot_be_removed__returnToSchemes__link")
+
+  private def viewModelRemovalDelay: RemovalViewModel = RemovalViewModel(
+    "messages__psa_cannot_be_removed__title",
+    "messages__psa_cannot_be_removed__heading",
+    "messages__psa_cannot_be_removed_delay__p1",
+    "messages__psa_cannot_be_removed_delay__p2",
     "messages__psa_cannot_be_removed__returnToSchemes__link")
 }
