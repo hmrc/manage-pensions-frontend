@@ -41,7 +41,7 @@ class RemovePsaController @Inject()(authenticate: AuthAction,
       SchemeSrnId.retrieve.right.map { srn =>
         minimalPsaConnector.getMinimalPsaDetails(request.psaId.id).flatMap { minimalPsaDetails =>
           if (minimalPsaDetails.isPsaSuspended) {
-            Future.successful(Redirect(controllers.remove.routes.CanNotBeRemovedController.onPageLoad()))
+            Future.successful(Redirect(controllers.remove.routes.CanNotBeRemovedController.onPageLoadWhereSuspended()))
           } else {
             for {
               scheme <- schemeDetailsConnector.getSchemeDetails(request.psaId.id, "srn", srn)
