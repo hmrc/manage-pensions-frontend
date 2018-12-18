@@ -30,7 +30,7 @@ import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.annotations.PensionsSchemeCache
 import views.html.deleteScheme
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class DeleteSchemeController @Inject()(
                                         appConfig: FrontendAppConfig,
@@ -40,7 +40,7 @@ class DeleteSchemeController @Inject()(
                                         getData: DataRetrievalAction,
                                         requireData: DataRequiredAction,
                                         formProvider: DeleteSchemeFormProvider
-                                      ) extends FrontendController with I18nSupport with Retrievals {
+                                      )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport with Retrievals {
 
   private val form: Form[Boolean] = formProvider()
   private lazy val overviewPage = Redirect(routes.SchemesOverviewController.onPageLoad())

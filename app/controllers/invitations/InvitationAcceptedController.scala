@@ -27,12 +27,15 @@ import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import views.html.invitations.invitationAccepted
 
+import scala.concurrent.ExecutionContext
+
 class InvitationAcceptedController @Inject()(frontendAppConfig: FrontendAppConfig,
                                              override val messagesApi: MessagesApi,
                                              authenticate: AuthAction,
                                              getData: DataRetrievalAction,
                                              requireData: DataRequiredAction,
-                                             userAnswersCacheConnector: UserAnswersCacheConnector) extends FrontendController with Retrievals with I18nSupport {
+                                             userAnswersCacheConnector: UserAnswersCacheConnector)(
+  implicit val ec: ExecutionContext) extends FrontendController with Retrievals with I18nSupport {
 
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData andThen requireData).async {

@@ -35,7 +35,7 @@ import utils.{Navigator, UserAnswers}
 import viewmodels.Message
 import views.html.invitations.adviserPostcode
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class AdviserAddressPostcodeLookupController @Inject()(val appConfig: FrontendAppConfig,
                                                        val messagesApi: MessagesApi,
@@ -46,7 +46,7 @@ class AdviserAddressPostcodeLookupController @Inject()(val appConfig: FrontendAp
                                                        @AcceptInvitation navigator: Navigator,
                                                        val addressLookupConnector: AddressLookupConnector,
                                                        val cacheConnector: UserAnswersCacheConnector
-                                                      ) extends FrontendController with I18nSupport with Retrievals {
+                                                      )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport with Retrievals {
 
 
   val form: Form[String] = formProvider()

@@ -26,7 +26,7 @@ import models.{MinimalPSA, SchemeDetails}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class RemovePsaController @Inject()(authenticate: AuthAction,
@@ -34,7 +34,8 @@ class RemovePsaController @Inject()(authenticate: AuthAction,
                                     val requireData: DataRequiredAction,
                                     schemeDetailsConnector: SchemeDetailsConnector,
                                     userAnswersCacheConnector: UserAnswersCacheConnector,
-                                    minimalPsaConnector: MinimalPsaConnector) extends FrontendController with Retrievals {
+                                    minimalPsaConnector: MinimalPsaConnector)(
+  implicit val ec: ExecutionContext) extends FrontendController with Retrievals {
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>

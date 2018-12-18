@@ -31,7 +31,7 @@ import utils.DateHelper
 import viewmodels.AssociatedPsa
 import views.html.schemeDetails
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                                         override val messagesApi: MessagesApi,
@@ -41,7 +41,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                                         getData: DataRetrievalAction,
                                         userAnswersCacheConnector: UserAnswersCacheConnector,
                                         errorHandler: ErrorHandler
-                                       ) extends FrontendController with I18nSupport {
+                                       )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport {
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate.async {
     implicit request =>

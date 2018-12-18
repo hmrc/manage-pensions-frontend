@@ -29,7 +29,7 @@ import utils.Navigator
 import utils.annotations.Invitation
 import views.html.invitations.invitation_duplicate
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 
 class InvitationDuplicateController @Inject()(
@@ -40,7 +40,7 @@ class InvitationDuplicateController @Inject()(
                                                requireData: DataRequiredAction,
                                                @Invitation navigator: Navigator
 
-                                             ) extends FrontendController with I18nSupport with Retrievals {
+                                             )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport with Retrievals {
 
   def onPageLoad(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>

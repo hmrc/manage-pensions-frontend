@@ -32,7 +32,7 @@ import utils.annotations.AcceptInvitation
 import utils.{Navigator, UserAnswers}
 import views.html.invitations.pension_adviser_address_list
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class PensionAdviserAddressListController @Inject()(
                                                      appConfig: FrontendAppConfig,
@@ -43,7 +43,7 @@ class PensionAdviserAddressListController @Inject()(
                                                      val messagesApi: MessagesApi,
                                                      val cacheConnector: UserAnswersCacheConnector,
                                                      @AcceptInvitation navigator: Navigator
-                                                   ) extends FrontendController with Retrievals with I18nSupport {
+                                                   )(implicit val ec: ExecutionContext) extends FrontendController with Retrievals with I18nSupport {
 
   def form(addresses: Seq[TolerantAddress]): Form[Int] = formProvider(addresses)
 

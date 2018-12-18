@@ -65,7 +65,7 @@ class PsaAlreadyAssociatedControllerSpec extends ControllerSpecBase {
 
 
 object PsaAlreadyAssociatedControllerSpec {
-
+  private implicit val global = scala.concurrent.ExecutionContext.Implicits.global
   val testSrn: String = "test-srn"
 
   private val testInviteeName = "test-invitee-name"

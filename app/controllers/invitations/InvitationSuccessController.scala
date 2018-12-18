@@ -32,7 +32,7 @@ import utils.{Navigator, UserAnswers}
 import utils.annotations.Invitation
 import views.html.invitations.invitation_success
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class InvitationSuccessController @Inject()(
                                              override val messagesApi: MessagesApi,
@@ -42,7 +42,7 @@ class InvitationSuccessController @Inject()(
                                              requireData: DataRequiredAction,
                                              userAnswersCacheConnector: UserAnswersCacheConnector,
                                              @Invitation navigator: Navigator
-                                           ) extends FrontendController with I18nSupport with Retrievals {
+                                           )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport with Retrievals {
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>

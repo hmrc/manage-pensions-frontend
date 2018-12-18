@@ -32,7 +32,7 @@ import utils.{Navigator, UserAnswers}
 import utils.annotations.AcceptInvitation
 import views.html.invitations.adviserEmailAddress
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class AdviserEmailAddressController @Inject()(
                                                appConfig: FrontendAppConfig,
@@ -43,7 +43,7 @@ class AdviserEmailAddressController @Inject()(
                                                requireData: DataRequiredAction,
                                                formProvider: AdviserEmailFormProvider,
                                                dataCacheConnector: UserAnswersCacheConnector
-                                             ) extends FrontendController with I18nSupport with Retrievals {
+                                             )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport with Retrievals {
 
 
   val form = formProvider()

@@ -27,12 +27,13 @@ import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import viewmodels.RemovalViewModel
 import views.html.remove.cannot_be_removed
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class CanNotBeRemovedController @Inject()(appConfig: FrontendAppConfig,
                                           override val messagesApi: MessagesApi,
                                           authenticate: AuthAction,
-                                          userAnswersCacheConnector: UserAnswersCacheConnector) extends FrontendController with I18nSupport{
+                                          userAnswersCacheConnector: UserAnswersCacheConnector)(
+  implicit val ec: ExecutionContext) extends FrontendController with I18nSupport{
 
   def onPageLoadWhereSuspended: Action[AnyContent] = authenticate.async {
     implicit request =>

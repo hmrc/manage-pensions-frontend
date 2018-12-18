@@ -29,13 +29,15 @@ import utils.annotations.AcceptInvitation
 import utils.{Navigator, UserAnswers}
 import views.html.invitations.yourInvitations
 
+import scala.concurrent.ExecutionContext
+
 class YourInvitationsController @Inject()(appConfig: FrontendAppConfig,
                                           override val messagesApi: MessagesApi,
                                           authenticate: AuthAction,
                                           invitationsCacheConnector: InvitationsCacheConnector,
                                           userAnswersCacheConnector: UserAnswersCacheConnector,
                                           @AcceptInvitation navigator: Navigator
-                                         ) extends FrontendController with I18nSupport {
+                                         )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport {
 
 
   def onPageLoad(): Action[AnyContent] = authenticate.async {

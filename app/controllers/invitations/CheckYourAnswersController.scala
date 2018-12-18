@@ -33,7 +33,7 @@ import utils.{CheckYourAnswersFactory, DateHelper, Navigator}
 import viewmodels.AnswerSection
 import views.html.check_your_answers
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
                                            override val messagesApi: MessagesApi,
@@ -43,7 +43,7 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
                                            requireData: DataRequiredAction,
                                            checkYourAnswersFactory: CheckYourAnswersFactory,
                                            schemeDetailsConnector: SchemeDetailsConnector,
-                                           invitationConnector: InvitationConnector) extends FrontendController with Retrievals with I18nSupport {
+                                           invitationConnector: InvitationConnector)(implicit val ec: ExecutionContext) extends FrontendController with Retrievals with I18nSupport {
 
   def onPageLoad(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
