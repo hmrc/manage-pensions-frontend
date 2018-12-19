@@ -17,10 +17,10 @@
 package controllers.invitations
 
 import config.FrontendAppConfig
-import connectors.{UserAnswersCacheConnector, FakeUserAnswersCacheConnector}
+import connectors.{FakeUserAnswersCacheConnector, UserAnswersCacheConnector}
 import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
 import forms.invitations.AdviserManualAddressFormProvider
-import identifiers.invitations.{AdviserAddressId, AdviserAddressListId, AdviserNameId}
+import identifiers.invitations.{AdviserAddressId, AdviserAddressListId, AdviserAddressPostCodeLookupId, AdviserNameId}
 import models.{Address, NormalMode, TolerantAddress}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
@@ -113,7 +113,7 @@ class AdviserManualAddressControllerSpec extends WordSpec with MustMatchers with
 
   "post" must {
 
-    "redirect to the postCall on valid data request will save address to answers" in {
+    "redirect to the postCall on valid data request will save address to answers and remove address lookup ID" in {
 
         running(_.overrides(
           bind[CountryOptions].to[FakeCountryOptions],
@@ -138,6 +138,7 @@ class AdviserManualAddressControllerSpec extends WordSpec with MustMatchers with
             val address = Address("value 1", "value 2", None, None, Some("AB1 1AB"), "GB")
 
             FakeUserAnswersCacheConnector.verify(AdviserAddressId, address)
+            FakeUserAnswersCacheConnector.verifyRemoved(AdviserAddressPostCodeLookupId)
         }
 
       }

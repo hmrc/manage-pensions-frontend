@@ -21,7 +21,7 @@ import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.invitations.AdviserManualAddressFormProvider
-import identifiers.invitations.{AdviserAddressId, AdviserAddressListId, AdviserNameId}
+import identifiers.invitations.{AdviserAddressId, AdviserAddressListId, AdviserAddressPostCodeLookupId, AdviserNameId}
 import javax.inject.Inject
 import models.{Address, Mode}
 import play.api.data.Form
@@ -85,13 +85,15 @@ class AdviserManualAddressController @Inject()(
           Future.successful(BadRequest(adviserAddress(appConfig, formWithError, mode, countryOptions.options, prepopulated, prefix, name)))
         },
         address =>
-          cacheConnector.save(
-            request.externalId,
-            AdviserAddressId,
-            address
-          ).map {
-            cacheMap =>
-              Redirect(navigator.nextPage(AdviserAddressId, mode, UserAnswers(cacheMap)))
+          cacheConnector.remove(request.externalId, AdviserAddressPostCodeLookupId).flatMap { _ =>
+            cacheConnector.save(
+              request.externalId,
+              AdviserAddressId,
+              address
+            ).map {
+              cacheMap =>
+                Redirect(navigator.nextPage(AdviserAddressId, mode, UserAnswers(cacheMap)))
+            }
           }
       )
 
