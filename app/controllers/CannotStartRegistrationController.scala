@@ -24,9 +24,11 @@ import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import views.html.cannotStartRegistration
 
+import scala.concurrent.ExecutionContext
+
 class CannotStartRegistrationController @Inject()(appConfig: FrontendAppConfig,
                                        override val messagesApi: MessagesApi,
-                                       authenticate: AuthAction) extends FrontendController with I18nSupport {
+                                       authenticate: AuthAction)(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = authenticate {
     implicit request =>

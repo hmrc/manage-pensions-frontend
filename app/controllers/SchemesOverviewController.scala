@@ -17,7 +17,7 @@
 package controllers
 
 import config.FrontendAppConfig
-import connectors.{UserAnswersCacheConnector, MinimalPsaConnector}
+import connectors.{MinimalPsaConnector, UserAnswersCacheConnector}
 import controllers.actions._
 import javax.inject.Inject
 import models.requests.OptionalDataRequest
@@ -31,14 +31,14 @@ import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.annotations.PensionsSchemeCache
 import views.html.schemesOverview
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
                                           override val messagesApi: MessagesApi,
                                           @PensionsSchemeCache dataCacheConnector: UserAnswersCacheConnector,
                                           minimalPsaConnector: MinimalPsaConnector,
                                           authenticate: AuthAction,
-                                          getData: DataRetrievalAction) extends FrontendController with I18nSupport {
+                                          getData: DataRetrievalAction)(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport {
 
   def redirect: Action[AnyContent] = Action.async(Future.successful(Redirect(controllers.routes.SchemesOverviewController.onPageLoad())))
 

@@ -30,7 +30,7 @@ import utils.{CheckYourAnswersFactory, Navigator}
 import viewmodels.{AnswerSection, Message}
 import views.html.check_your_answers
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class CheckPensionAdviserAnswersController @Inject()(appConfig: FrontendAppConfig,
                                                      override val messagesApi: MessagesApi,
@@ -39,7 +39,7 @@ class CheckPensionAdviserAnswersController @Inject()(appConfig: FrontendAppConfi
                                                      getData: DataRetrievalAction,
                                                      requireData: DataRequiredAction,
                                                      checkYourAnswersFactory: CheckYourAnswersFactory
-                                                    ) extends FrontendController with Retrievals with I18nSupport {
+                                                    )(implicit val ec: ExecutionContext) extends FrontendController with Retrievals with I18nSupport {
 
   def onPageLoad(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>

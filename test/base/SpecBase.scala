@@ -24,10 +24,11 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject._
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import utils.{FakeNavigator, Navigator}
+import uk.gov.hmrc.crypto.ApplicationCrypto
 
 trait SpecBase extends PlaySpec with GuiceOneAppPerSuite {
+  protected def crypto: ApplicationCrypto = injector.instanceOf[ApplicationCrypto]
+  implicit val global = scala.concurrent.ExecutionContext.Implicits.global
 
   def injector: Injector = app.injector
 

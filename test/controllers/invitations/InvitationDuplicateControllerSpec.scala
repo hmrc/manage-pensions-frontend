@@ -65,7 +65,7 @@ class InvitationDuplicateControllerSpec extends ControllerSpecBase {
 
 
 object InvitationDuplicateControllerSpec {
-
+  private implicit val global = scala.concurrent.ExecutionContext.Implicits.global
   val testSrn: String = "test-srn"
 
   private val testInviteeName = "test-invitee-name"

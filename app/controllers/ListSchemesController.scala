@@ -26,7 +26,7 @@ import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import views.html.list_schemes
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class ListSchemesController @Inject()(
                                        val appConfig: FrontendAppConfig,
@@ -34,7 +34,7 @@ class ListSchemesController @Inject()(
                                        authenticate: AuthAction,
                                        listSchemesConnector: ListOfSchemesConnector,
                                        invitationsCacheConnector: InvitationsCacheConnector
-                                     ) extends FrontendController with I18nSupport {
+                                     )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = authenticate.async {
     implicit request =>

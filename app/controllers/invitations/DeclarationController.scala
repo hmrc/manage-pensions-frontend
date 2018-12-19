@@ -34,7 +34,7 @@ import utils.Navigator
 import utils.annotations.AcceptInvitation
 import views.html.invitations.declaration
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class DeclarationController @Inject()(
                                        appConfig: FrontendAppConfig,
@@ -48,7 +48,7 @@ class DeclarationController @Inject()(
                                        invitationsCacheConnector: InvitationsCacheConnector,
                                        invitationConnector: InvitationConnector,
                                        @AcceptInvitation navigator: Navigator
-                                     ) extends FrontendController with I18nSupport with Retrievals {
+                                     )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport with Retrievals {
   val form: Form[Boolean] = formProvider()
 
   def onPageLoad(): Action[AnyContent] = (auth andThen getData andThen requireData).async {

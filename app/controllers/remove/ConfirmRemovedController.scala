@@ -27,6 +27,8 @@ import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import views.html.remove.confirmRemoved
 
+import scala.concurrent.ExecutionContext
+
 class ConfirmRemovedController @Inject()(
                                           config: FrontendAppConfig,
                                           override val messagesApi: MessagesApi,
@@ -34,7 +36,7 @@ class ConfirmRemovedController @Inject()(
                                           getData: DataRetrievalAction,
                                           requireData: DataRequiredAction,
                                           userAnswersCacheConnector: UserAnswersCacheConnector
-                                        ) extends FrontendController with I18nSupport with Retrievals {
+                                        )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport with Retrievals {
 
   def onPageLoad(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>

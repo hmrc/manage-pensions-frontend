@@ -37,7 +37,7 @@ class ConfirmRemovedControllerSpec extends ControllerWithNormalPageBehaviours {
 }
 
 object ConfirmRemovedControllerSpec {
-
+  private implicit val global = scala.concurrent.ExecutionContext.Implicits.global
   val testPsaName = "test-pas-name"
   val testSchemeName = "test-scheme-name"
 

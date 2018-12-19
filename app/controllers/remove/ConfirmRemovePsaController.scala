@@ -34,7 +34,7 @@ import utils.annotations.RemovePSA
 import utils.{Navigator, UserAnswers}
 import views.html.remove.confirmRemovePsa
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class ConfirmRemovePsaController @Inject()(
                                             val appConfig: FrontendAppConfig,
@@ -45,7 +45,7 @@ class ConfirmRemovePsaController @Inject()(
                                             val userAnswersCacheConnector: UserAnswersCacheConnector,
                                             val getData: DataRetrievalAction,
                                             val requireData: DataRequiredAction
-                                                     ) extends FrontendController with I18nSupport with Retrievals {
+                                                     )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport with Retrievals {
 
   val form: Form[Boolean] = formProvider()
 

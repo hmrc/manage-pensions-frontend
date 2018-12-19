@@ -33,7 +33,7 @@ import utils.countryOptions.CountryOptions
 import utils.{Navigator, UserAnswers}
 import views.html.invitations.adviserAddress
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class AdviserManualAddressController @Inject()(
                                                 authenticate: AuthAction,
@@ -45,7 +45,7 @@ class AdviserManualAddressController @Inject()(
                                                 countryOptions: CountryOptions,
                                                 cacheConnector: UserAnswersCacheConnector,
                                                 @AcceptInvitation navigator: Navigator
-                                              ) extends FrontendController with I18nSupport with Retrievals {
+                                              )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport with Retrievals {
 
   val form: Form[Address] = formProvider()
 

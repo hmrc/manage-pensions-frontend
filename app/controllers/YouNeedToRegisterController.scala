@@ -24,11 +24,13 @@ import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import views.html.youNeedToRegister
 
+import scala.concurrent.ExecutionContext
+
 class YouNeedToRegisterController @Inject()(appConfig: FrontendAppConfig,
                                             override val messagesApi: MessagesApi,
                                             authenticate: AuthAction,
                                             getData: DataRetrievalAction,
-                                            requireData: DataRequiredAction) extends FrontendController with I18nSupport {
+                                            requireData: DataRequiredAction)(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = Action {
     implicit request =>

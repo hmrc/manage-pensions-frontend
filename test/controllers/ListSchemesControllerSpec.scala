@@ -91,7 +91,7 @@ trait TestFixture {
 }
 
 object ListSchemesControllerSpec {
-
+  private implicit val global = scala.concurrent.ExecutionContext.Implicits.global
   val psaIdNoSchemes: String = "A0000001"
   val psaIdWithSchemes: String = "A0000002"
 

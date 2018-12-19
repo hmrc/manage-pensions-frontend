@@ -31,7 +31,7 @@ import utils.annotations.AcceptInvitation
 import utils.{Navigator, UserAnswers}
 import views.html.invitations.adviserDetails
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class AdviserDetailsController @Inject()(
                                           appConfig: FrontendAppConfig,
@@ -42,7 +42,7 @@ class AdviserDetailsController @Inject()(
                                           requiredData: DataRequiredAction,
                                           formProvider: AdviserDetailsFormProvider,
                                           dataCacheConnector: UserAnswersCacheConnector
-                                        ) extends FrontendController with I18nSupport {
+                                        )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport {
 
   val form = formProvider()
 

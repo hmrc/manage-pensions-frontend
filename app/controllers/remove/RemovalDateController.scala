@@ -36,7 +36,7 @@ import utils.{Navigator, UserAnswers}
 import utils.DateHelper._
 import views.html.remove.removalDate
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class RemovalDateController @Inject()(appConfig: FrontendAppConfig,
                                       override val messagesApi: MessagesApi,
@@ -47,7 +47,8 @@ class RemovalDateController @Inject()(appConfig: FrontendAppConfig,
                                       requireData: DataRequiredAction,
                                       formProvider: RemovalDateFormProvider,
                                       schemeDetailsConnector: SchemeDetailsConnector,
-                                      psaRemovalConnector: PsaRemovalConnector) extends FrontendController with I18nSupport with Retrievals {
+                                      psaRemovalConnector: PsaRemovalConnector)(
+  implicit val ec: ExecutionContext) extends FrontendController with I18nSupport with Retrievals {
 
   private def form(schemeOpenDate: LocalDate) = formProvider(schemeOpenDate, appConfig.earliestDatePsaRemoval)
 

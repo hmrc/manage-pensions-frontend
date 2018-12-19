@@ -31,7 +31,7 @@ import utils.annotations.AcceptInvitation
 import utils.{Navigator, UserAnswers}
 import views.html.invitations.doYouHaveWorkingKnowledge
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class DoYouHaveWorkingKnowledgeController @Inject()(
                                                      val appConfig: FrontendAppConfig,
@@ -42,7 +42,7 @@ class DoYouHaveWorkingKnowledgeController @Inject()(
                                                      val dataCacheConnector: UserAnswersCacheConnector,
                                                      val getData: DataRetrievalAction,
                                                      val requireData: DataRequiredAction
-                                                       ) extends FrontendController with I18nSupport {
+                                                       )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport {
 
   val form: Form[Boolean] = formProvider()
 

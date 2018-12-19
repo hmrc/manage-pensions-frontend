@@ -22,7 +22,10 @@ import controllers.actions.AuthAction
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-class MongoDiagnosticsController @Inject()(connector: MongoDiagnosticsConnector, authenticate: AuthAction) extends FrontendController {
+import scala.concurrent.ExecutionContext
+
+class MongoDiagnosticsController @Inject()(connector: MongoDiagnosticsConnector, authenticate: AuthAction)(
+  implicit val ec: ExecutionContext) extends FrontendController {
 
   // scalastyle:off magic.number
   private val banner = Seq.fill(50)("-").mkString

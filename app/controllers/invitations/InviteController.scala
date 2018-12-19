@@ -24,13 +24,13 @@ import models.{MinimalSchemeDetail, NormalMode, SchemeReferenceNumber}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class InviteController @Inject()(authenticate: AuthAction,
                                  schemeDetailsConnector: SchemeDetailsConnector,
                                  userAnswersCacheConnector: UserAnswersCacheConnector,
-                                 minimalPsaConnector: MinimalPsaConnector) extends FrontendController {
+                                 minimalPsaConnector: MinimalPsaConnector)(implicit val ec: ExecutionContext) extends FrontendController {
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate.async {
     implicit request =>
