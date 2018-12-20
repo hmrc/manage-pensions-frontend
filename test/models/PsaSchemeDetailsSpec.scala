@@ -16,6 +16,7 @@
 
 package models
 
+import org.joda.time.LocalDate
 import org.scalacheck.Gen
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.{MustMatchers, WordSpec}
@@ -27,63 +28,60 @@ class PsaSchemeDetailsSpec extends WordSpec with MustMatchers with GeneratorDriv
 
   "SchemeDetailsController.canRemovePsa" must {
 
-    "return false if there are no other PSAs for all values of status" in {
+    "return false " when {
+      "there are no other PSAs for all values of status" in {
+        val statuses = Gen.oneOf(SchemeStatus.statuses)
 
-      val statuses = Gen.oneOf(SchemeStatus.statuses)
-
-      forAll(statuses) {
-        status =>
-          val scheme = testScheme(status, testPsa1)
-          PsaSchemeDetails.canRemovePsa(testPsaId1, scheme) mustBe false
+        forAll(statuses) {
+          status =>
+            val scheme = testScheme(status, testPsa1())
+            PsaSchemeDetails.canRemovePsa(testPsaId1, scheme) mustBe false
+        }
       }
 
-    }
+      "there are other PSAs and the scheme has a status of Pending" in {
+        val statuses = Gen.oneOf(SchemeStatus.statuses.filter(_.pending))
 
-    "return true if there are other PSAs and the scheme has a status of Open" in {
-
-      val scheme = testScheme(SchemeStatus.Open, testPsa1, testPsa2)
-      PsaSchemeDetails.canRemovePsa(testPsaId1, scheme) mustBe true
-
-    }
-
-    "return false if there are other PSAs and the scheme has a status of Pending" in {
-
-      val statuses = Gen.oneOf(SchemeStatus.statuses.filter(_.pending))
-
-      forAll(statuses) {
-        status =>
-          val scheme = testScheme(status, testPsa1, testPsa2)
-          PsaSchemeDetails.canRemovePsa(testPsaId1, scheme) mustBe false
+        forAll(statuses) {
+          status =>
+            val scheme = testScheme(status, testPsa1(), testPsa2)
+            PsaSchemeDetails.canRemovePsa(testPsaId1, scheme) mustBe false
+        }
       }
 
-    }
+      "there are other PSAs and the scheme has a status of Rejected" in {
+        val statuses = Gen.oneOf(SchemeStatus.statuses.filter(_.rejected))
 
-    "return false if there are other PSAs and the scheme has a status of Rejected" in {
-
-      val statuses = Gen.oneOf(SchemeStatus.statuses.filter(_.rejected))
-
-      forAll(statuses) {
-        status =>
-          val scheme = testScheme(status, testPsa1, testPsa2)
-          PsaSchemeDetails.canRemovePsa(testPsaId1, scheme) mustBe false
+        forAll(statuses) {
+          status =>
+            val scheme = testScheme(status, testPsa1(), testPsa2)
+            PsaSchemeDetails.canRemovePsa(testPsaId1, scheme) mustBe false
+        }
       }
 
+      "there are other PSAs and the scheme has a status of De-Registered" in {
+        val scheme = testScheme(SchemeStatus.Deregistered, testPsa1(), testPsa2)
+        PsaSchemeDetails.canRemovePsa(testPsaId1, scheme) mustBe false
+      }
+
+      "there are other PSAs with correct scheme status of Open but the PSA is removing on the same day as association" in {
+        val currentDate = LocalDate.now().toString
+        val scheme = testScheme(SchemeStatus.Open, testPsa1(currentDate), testPsa2)
+        PsaSchemeDetails.canRemovePsa(testPsaId1, scheme) mustBe false
+      }
     }
 
-    "return true if there are other PSAs and the scheme has a status of Wound-Up" in {
+    "return true" when {
+      "there are other PSAs and the scheme has a status of Open and not removing on the same day as association" in {
+        val scheme = testScheme(SchemeStatus.Open, testPsa1(), testPsa2)
+        PsaSchemeDetails.canRemovePsa(testPsaId1, scheme) mustBe true
+      }
 
-      val scheme = testScheme(SchemeStatus.WoundUp, testPsa1, testPsa2)
-      PsaSchemeDetails.canRemovePsa(testPsaId1, scheme) mustBe true
-
+      "there are other PSAs and the scheme has a status of Wound-Up and not removing on the same day as association" in {
+        val scheme = testScheme(SchemeStatus.WoundUp, testPsa1(), testPsa2)
+        PsaSchemeDetails.canRemovePsa(testPsaId1, scheme) mustBe true
+      }
     }
-
-    "return false if there are other PSAs and the scheme has a status of De-Registered" in {
-
-      val scheme = testScheme(SchemeStatus.Deregistered, testPsa1, testPsa2)
-      PsaSchemeDetails.canRemovePsa(testPsaId1, scheme) mustBe false
-
-    }
-
   }
 
 }
@@ -99,9 +97,9 @@ object PsaSchemeDetailsSpec {
     )
 
   val testPsaId1 = "test-psa-id-1"
-  val testPsa1: PsaDetails = PsaDetails(testPsaId1, Some("test-org-1"), None, Some("2018-10-01"))
+
+  def testPsa1(date: String = "2018-10-01"): PsaDetails = PsaDetails(testPsaId1, Some("test-org-1"), None, Some(date))
 
   val testPsaId2 = "test-psa-id-2"
   val testPsa2: PsaDetails = PsaDetails(testPsaId2, Some("test-org-2"), None, None)
-
 }

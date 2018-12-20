@@ -16,6 +16,7 @@
 
 package models
 
+import org.joda.time.LocalDate
 import play.api.libs.json.{Json, OFormat}
 
 case class Name(firstName: Option[String], middleName: Option[String], lastName: Option[String])
@@ -76,15 +77,15 @@ object PersonalInfo {
 case class IndividualName(firstName: String, middleName: Option[String], lastName: String)
 
 object IndividualName {
-  implicit val formats : OFormat[IndividualName] = Json.format[IndividualName]
+  implicit val formats: OFormat[IndividualName] = Json.format[IndividualName]
 }
 
 case class IndividualInfo(personalDetails: PersonalInfo,
-                             nino: Option[String],
-                             utr: Option[String],
-                             address: CorrespondenceAddress,
-                             contact: IndividualContactDetails,
-                             previousAddress: PreviousAddressInfo)
+                          nino: Option[String],
+                          utr: Option[String],
+                          address: CorrespondenceAddress,
+                          contact: IndividualContactDetails,
+                          previousAddress: PreviousAddressInfo)
 
 object IndividualInfo {
   implicit val formats: OFormat[IndividualInfo] = Json.format[IndividualInfo]
@@ -174,10 +175,14 @@ object PsaSchemeDetails {
   def canRemovePsa(psaId: String, scheme: PsaSchemeDetails): Boolean = {
 
     SchemeStatus.forValue(scheme.schemeDetails.status).canRemovePsa &&
-      scheme.psaDetails.exists(
-        _.exists(_.id != psaId)
+      scheme.psaDetails.exists(psaDetails =>
+        isOtherPSAsExist(psaId, psaDetails) && psaNotRemovingOnSameDay(psaId, psaDetails)
       )
-
   }
 
+  private def isOtherPSAsExist(psaId: String, psaDetails: Seq[PsaDetails]): Boolean = psaDetails.exists(_.id != psaId)
+
+  private def psaNotRemovingOnSameDay(psaId: String, psaDetails: Seq[PsaDetails]): Boolean = {
+    !psaDetails.exists(details => details.id == psaId && details.relationshipDate.exists(new LocalDate(_).isEqual(LocalDate.now())))
+  }
 }
