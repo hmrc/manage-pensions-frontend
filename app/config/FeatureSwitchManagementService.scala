@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,9 +56,12 @@ class FeatureSwitchManagementServiceTestImpl @Inject()(override val runModeConfi
   override protected def mode:Mode = environment.mode
 
   override def change(name: String, newValue: Boolean): Boolean = {
-    reset(name)
-    featureSwitches += FeatureSwitch(name, newValue)
-    get(name)
+    val featureSwitchExists = runModeConfiguration.getBoolean(s"features.$name").getOrElse(false)
+    if(featureSwitchExists) {
+      reset(name)
+      featureSwitches += FeatureSwitch(name, newValue)
+    }
+    true
   }
 
   override def get(name: String): Boolean =
