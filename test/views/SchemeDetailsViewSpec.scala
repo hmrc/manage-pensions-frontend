@@ -33,16 +33,13 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
   val administratorsNoRemove = Seq(AssociatedPsa("First Psa", false), AssociatedPsa("Second User", false))
   val srn = "P12345678"
 
-  class fakeFrontendAppConfig(wp2Enabled: Boolean) extends FrontendAppConfig(app.configuration, injector.instanceOf[Environment]) {
-    override lazy val workPackageTwoEnabled: Boolean = wp2Enabled
-  }
+  class fakeFrontendAppConfig() extends FrontendAppConfig(app.configuration, injector.instanceOf[Environment])
 
     def createView(date: Option[String] = Some(openedDate),
                    psaList: Option[Seq[AssociatedPsa]] = Some(administrators),
-                   workPackageTwoEnabled: Boolean = false,
                    isSchemeOpen: Boolean = true): () => HtmlFormat.Appendable = () =>
       schemeDetails(
-        new fakeFrontendAppConfig(workPackageTwoEnabled),
+        new fakeFrontendAppConfig(),
         schemeName,
         date,
         psaList,
@@ -83,11 +80,11 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
 
       "render the 'Remove' link if a PSA can be removed from the scheme" in {
         appRunning()
-        createView(workPackageTwoEnabled = true) must haveLink(controllers.remove.routes.RemovePsaController.onPageLoad().url, "remove-link")
+        createView() must haveLink(controllers.remove.routes.RemovePsaController.onPageLoad().url, "remove-link")
       }
 
       "not render the 'Remove' link if no PSAs can be removed from the scheme" in {
-        createView(psaList = Some(administratorsNoRemove), workPackageTwoEnabled = true) must notHaveElementWithId("remove-link")
+        createView(psaList = Some(administratorsNoRemove)) must notHaveElementWithId("remove-link")
       }
 
       "not contain list of administrators if not data is returned from API" in {
