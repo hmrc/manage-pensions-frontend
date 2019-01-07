@@ -16,7 +16,7 @@
 
 package controllers
 
-import config.FrontendAppConfig
+import config._
 import connectors.{MicroserviceCacheConnector, MinimalPsaConnector, UserAnswersCacheConnector}
 import controllers.actions.{DataRetrievalAction, _}
 import models.{IndividualDetails, MinimalPSA}
@@ -26,7 +26,7 @@ import org.mockito.Matchers.{eq => eqTo, _}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
-import play.api.Application
+import play.api.{Application, Configuration, Environment}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.inject.{Injector, bind}
 import play.api.libs.json.Json
@@ -42,11 +42,13 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
   val fakeCacheConnector: UserAnswersCacheConnector = mock[MicroserviceCacheConnector]
   val fakePsaMinimalConnector: MinimalPsaConnector = mock[MinimalPsaConnector]
   val appConfig = app.injector.instanceOf[FrontendAppConfig]
+  private val config = app.injector.instanceOf[Configuration]
+  val fakeFeatureSwitchManagementService = new FeatureSwitchManagementServiceTestImpl(config, environment)
 
-
-  def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): SchemesOverviewController =
+  def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData,
+                 featureSwitchManagementService: FeatureSwitchManagementService = fakeFeatureSwitchManagementService): SchemesOverviewController =
     new SchemesOverviewController(appConfig, messagesApi, fakeCacheConnector, fakePsaMinimalConnector, FakeAuthAction(),
-      dataRetrievalAction)
+      dataRetrievalAction, featureSwitchManagementService)
 
   val deleteDate: String = DateTime.now(DateTimeZone.UTC).plusDays(appConfig.daysDataSaved).toString(formatter)
 
@@ -110,7 +112,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
             "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
         when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaDetailsIndividual))
         when(fakeCacheConnector.lastUpdated(any())(any(), any())).thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
-
+        fakeFeatureSwitchManagementService.change("before-you-start", false)
         val result = controller().onPageLoad(fakeRequest)
         status(result) mustBe OK
         contentAsString(result) mustBe viewWithPsaNameAndScheme(Some(expectedName))
