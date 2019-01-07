@@ -71,8 +71,8 @@ class FeatureSwitchManagementServiceTestImpl @Inject()(override val runModeConfi
     }
 
   override def reset(name: String): Unit = {
-    featureSwitches - FeatureSwitch(name, false)
-    featureSwitches - FeatureSwitch(name, true)
+    featureSwitches -= FeatureSwitch(name, false)
+    featureSwitches -= FeatureSwitch(name, true)
   }
 }
 
