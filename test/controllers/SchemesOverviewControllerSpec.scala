@@ -32,6 +32,7 @@ import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, _}
+import utils.Toggles.isHubV2Enabled
 import views.html.schemesOverview
 
 import scala.concurrent.Future
@@ -44,6 +45,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
   val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
   private val config = app.injector.instanceOf[Configuration]
   val fakeFeatureSwitchManagementService = new FeatureSwitchManagementServiceTestImpl(config, environment)
+  fakeFeatureSwitchManagementService.change(isHubV2Enabled, newValue = true)
 
   def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData,
                  featureSwitchManagementService: FeatureSwitchManagementService = fakeFeatureSwitchManagementService): SchemesOverviewController =
@@ -109,8 +111,6 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
 
       "return OK and the correct view if a scheme has been partially defined" in {
 
-        fakeFeatureSwitchManagementService.change("before-you-start", newValue = true)
-
         when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(schemeNameJsonOption))
         when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaDetailsIndividual))
         when(fakeCacheConnector.lastUpdated(any())(any(), any())).thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
@@ -167,7 +167,6 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
         contentAsString(result) mustBe viewWithPsaNameAndScheme(None)
       }
     }
-
     "on a POST with isWorkPackageOneEnabled flag is on" must {
 
       "redirect to the cannot start registration page if called without a psa name but psa is suspended" in {
@@ -187,7 +186,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
         val result = controller().onClickCheckIfSchemeCanBeRegistered(fakeRequest)
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).value mustBe frontendAppConfig.registerSchemeUrl
+        redirectLocation(result).value mustBe frontendAppConfig.registerSchemeNewUrl
       }
 
       "redirect to continue register a scheme page if called with a psa name and psa is not suspended" in {
@@ -211,7 +210,6 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
       }
     }
   }
-
   "valid authenticated request" must {
 
     "redirect to overview page" in {
@@ -244,8 +242,7 @@ object SchemesOverviewControllerSpec {
   val minimalPsaDetailsIndividual = MinimalPSA("test@test.com",isPsaSuspended = false, None, Some(IndividualDetails("John", Some("Doe"), "Doe")))
   val individualPsaDetailsWithNoMiddleName = MinimalPSA("test@test.com",isPsaSuspended = false,None,Some(IndividualDetails("John",None,"Doe")))
   val minimalPsaDetailsOrg = MinimalPSA("test@test.com", isPsaSuspended = false, Some("Org Name"), None)
-  val expectedName: String = s"${minimalPsaDetailsIndividual.individualDetails.get.firstName} " +
-    "${minimalPsaDetailsIndividual.individualDetails.get.middleName.get} ${minimalPsaDetailsIndividual.individualDetails.get.lastName}"
+  val expectedName: String = s"${minimalPsaDetailsIndividual.individualDetails.get.firstName} ${minimalPsaDetailsIndividual.individualDetails.get.middleName.get} ${minimalPsaDetailsIndividual.individualDetails.get.lastName}"
   val cannotStartRegistrationUrl: Call = routes.CannotStartRegistrationController.onPageLoad()
 
   val schemeNameJsonOption = Some(Json.obj("schemeName" -> schemeName))
