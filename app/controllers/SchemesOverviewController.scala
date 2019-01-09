@@ -16,7 +16,7 @@
 
 package controllers
 
-import config.FrontendAppConfig
+import config.{FeatureSwitchManagementService, FrontendAppConfig}
 import connectors.{MinimalPsaConnector, UserAnswersCacheConnector}
 import controllers.actions._
 import javax.inject.Inject
@@ -25,10 +25,11 @@ import models.{LastUpdatedDate, MinimalPSA}
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTime, DateTimeZone, LocalDate}
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.libs.json.{JsError, JsResultException, JsSuccess, JsValue}
+import play.api.libs.json._
 import play.api.mvc.{Action, AnyContent, Result}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.annotations.PensionsSchemeCache
+import utils.Toggles.isHubV2Enabled
 import views.html.schemesOverview
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -38,9 +39,15 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
                                           @PensionsSchemeCache dataCacheConnector: UserAnswersCacheConnector,
                                           minimalPsaConnector: MinimalPsaConnector,
                                           authenticate: AuthAction,
-                                          getData: DataRetrievalAction)(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport {
+                                          getData: DataRetrievalAction,
+                                          featureSwitchManagementService: FeatureSwitchManagementService)
+                                         (implicit val ec: ExecutionContext) extends FrontendController with I18nSupport {
 
   def redirect: Action[AnyContent] = Action.async(Future.successful(Redirect(controllers.routes.SchemesOverviewController.onPageLoad())))
+  private def schemeName(data: JsValue): JsLookupResult = if(featureSwitchManagementService.get(isHubV2Enabled)) {data \ "schemeName"}
+  else {data \ "schemeDetails" \ "schemeName"}
+
+  private val registerSchemeUrl = if(featureSwitchManagementService.get(isHubV2Enabled))  appConfig.registerSchemeNewUrl else appConfig.registerSchemeUrl
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
@@ -50,7 +57,7 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
           Ok(schemesOverview(appConfig, None, None, None, getPsaName(minimalDetails), request.psaId.id))
         }
         case Some(data) =>
-          (data \ "schemeDetails" \ "schemeName").validate[String] match {
+          schemeName(data).validate[String] match {
             case JsSuccess(name, _) =>
               dataCacheConnector.lastUpdated(request.externalId).flatMap { dateOpt =>
                 minimalPsaConnector.getMinimalPsaDetails(request.psaId.id).map { minimalDetails =>
@@ -103,8 +110,8 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
 
   private def retrieveResult(schemeDetails: Option[JsValue], psaMinimalDetails: Option[MinimalPSA]): Result = {
     schemeDetails match {
-      case None => psaMinimalDetails.fold(Redirect(appConfig.registerSchemeUrl))(details => redirect(appConfig.registerSchemeUrl, details))
-      case Some(details) => (details \ "schemeDetails" \ "schemeName").validate[String] match {
+      case None => psaMinimalDetails.fold(Redirect(registerSchemeUrl))(details => redirect(registerSchemeUrl, details))
+      case Some(details) => schemeName(details).validate[String] match {
         case JsSuccess(_, _) => psaMinimalDetails.fold(Redirect(appConfig.continueSchemeUrl))(details => redirect(appConfig.continueSchemeUrl, details))
         case JsError(_) => Redirect(controllers.routes.SessionExpiredController.onPageLoad())
       }
