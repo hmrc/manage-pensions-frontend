@@ -27,6 +27,7 @@ import models.{NormalMode, PsaDetails, SchemeReferenceNumber}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Request}
 import uk.gov.hmrc.domain.PsaId
+import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.annotations.Invitation
 import utils.{CheckYourAnswersFactory, DateHelper, Navigator}
@@ -84,6 +85,8 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
                 .map(_ => Redirect(navigator.nextPage(CheckYourAnswersId(schemeDetails.srn), NormalMode, request.userAnswers)))
           }.recoverWith {
             case _: NameMatchingFailedException =>
+              Future.successful(Redirect(controllers.invitations.routes.IncorrectPsaDetailsController.onPageLoad()))
+            case _: NotFoundException =>
               Future.successful(Redirect(controllers.invitations.routes.IncorrectPsaDetailsController.onPageLoad()))
             case _: PsaAlreadyInvitedException =>
               Future.successful(Redirect(controllers.invitations.routes.InvitationDuplicateController.onPageLoad()))

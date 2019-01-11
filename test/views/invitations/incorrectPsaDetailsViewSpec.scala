@@ -37,8 +37,12 @@ class incorrectPsaDetailsViewSpec extends ViewBehaviours {
       "_text2"
     )
 
-    "display PSA name dynamically" in {
+    "display PSA name dynamically in first bit of text" in {
       Jsoup.parse(createView()().toString()) must haveDynamicText(s"messages__${messageKeyPrefix}__text1", invitee)
+    }
+
+    "display PSA name dynamically in third bit of text" in {
+      Jsoup.parse(createView()().toString()) must haveDynamicText(s"messages__${messageKeyPrefix}__text3", invitee)
     }
 
     "include a link to the scheme details page" in {
