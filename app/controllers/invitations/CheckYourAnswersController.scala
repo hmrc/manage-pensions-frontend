@@ -83,10 +83,12 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
             case _ =>
               invitationConnector.invite(invitation)
                 .map(_ => Redirect(navigator.nextPage(CheckYourAnswersId(schemeDetails.srn), NormalMode, request.userAnswers)))
+                .recoverWith {
+                  case _: NotFoundException =>
+                    Future.successful(Redirect(controllers.invitations.routes.IncorrectPsaDetailsController.onPageLoad()))
+                }
           }.recoverWith {
             case _: NameMatchingFailedException =>
-              Future.successful(Redirect(controllers.invitations.routes.IncorrectPsaDetailsController.onPageLoad()))
-            case _: NotFoundException =>
               Future.successful(Redirect(controllers.invitations.routes.IncorrectPsaDetailsController.onPageLoad()))
             case _: PsaAlreadyInvitedException =>
               Future.successful(Redirect(controllers.invitations.routes.InvitationDuplicateController.onPageLoad()))
