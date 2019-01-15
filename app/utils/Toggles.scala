@@ -19,4 +19,5 @@ package utils
 object Toggles {
 
   val isHubV2Enabled: String = "enable-hub-v2"
+  val isDeregistrationEnabled: String = "enable-deregistration"
 }
