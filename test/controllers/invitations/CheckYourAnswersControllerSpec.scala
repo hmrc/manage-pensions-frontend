@@ -27,7 +27,7 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import testhelpers.CommonBuilders
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import utils.countryOptions.CountryOptions
 import utils.{CheckYourAnswersFactory, UserAnswers}
 import viewmodels.AnswerSection
@@ -96,6 +96,13 @@ class CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours 
 
     "redirect to incorrect psa details page if invitation failed with name matching error" in {
       val result = onSubmitAction(userAnswerUpdated, FakeAuthAction(), Future.failed(new NameMatchingFailedException))(FakeRequest())
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(controllers.invitations.routes.IncorrectPsaDetailsController.onPageLoad().url)
+    }
+
+    "redirect to incorrect psa details page if psa id not found" in {
+      val result = onSubmitAction(userAnswerUpdated, FakeAuthAction(), Future.failed(new NotFoundException("not found")))(FakeRequest())
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.invitations.routes.IncorrectPsaDetailsController.onPageLoad().url)
