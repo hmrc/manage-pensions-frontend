@@ -21,7 +21,7 @@ import play.api.data.FormError
 
 class ConfirmStopBeingPsaFormProviderSpec extends BooleanFieldBehaviours {
 
-  val requiredKey = "common.radio.error.required"
+  val requiredKey = "messages__confirmStopBeingPsa_required"
   val invalidKey = "error.boolean"
 
   val form = new  ConfirmStopBeingPsaFormProvider()()

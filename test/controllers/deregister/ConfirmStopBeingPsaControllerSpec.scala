@@ -16,11 +16,13 @@
 
 package controllers.deregister
 
-import connectors.{DeregistrationConnector, FakeUserAnswersCacheConnector, TaxEnrolmentsConnector, UserAnswersCacheConnector}
+import connectors._
 import controllers.ControllerSpecBase
 import controllers.actions._
+import controllers.deregister.ConfirmStopBeingPsaControllerSpec.{fakeMinimalPsaConnector, minimalPsaDetailsNone}
 import forms.deregister.ConfirmStopBeingPsaFormProvider
 import identifiers.invitations.PSANameId
+import models.{IndividualDetails, MinimalPSA}
 import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.mvc.AnyContentAsFormUrlEncoded
@@ -46,7 +48,7 @@ class ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase{
     }
 
     "return OK and the correct view for a GET" in {
-      val result = controller(testData).onPageLoad()(fakeRequest)
+      val result = controller(minimalPsaDetailsIndividual).onPageLoad()(fakeRequest)
 
       status(result) mustBe OK
       contentAsString(result) mustBe viewAsString()
@@ -61,14 +63,14 @@ class ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase{
 
     "should display the errors if no selection made" in {
 
-      val result = controller(testData).onSubmit()(fakeRequest)
+      val result = controller(minimalPsaDetailsIndividual).onSubmit()(fakeRequest)
 
       status(result) mustBe BAD_REQUEST
     }
 
     "redirect to the next page on a successful POST when selected true" in {
 
-      val result = controller(testData).onSubmit()(postRequest)
+      val result = controller(minimalPsaDetailsIndividual).onSubmit()(postRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.deregister.routes.SuccessfulDeregistrationController.onPageLoad().url)
@@ -76,7 +78,7 @@ class ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase{
 
     "redirect to the next page on a successful POST when selected false" in {
 
-      val result = controller(testData).onSubmit()(postRequestCancle)
+      val result = controller(minimalPsaDetailsIndividual).onSubmit()(postRequestCancle)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(psaDetailsUrl)
@@ -114,23 +116,27 @@ object ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase {
       implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = Future.successful(HttpResponse(NO_CONTENT))
   }
 
-  private def controller(
-                          dataRetrievalAction: DataRetrievalAction = getEmptyData,
-                          dataCacheConnector: UserAnswersCacheConnector = FakeUserAnswersCacheConnector
-                        ) =
+  private def fakeMinimalPsaConnector(minimalPsaDetailsIndividual: MinimalPSA): MinimalPsaConnector = new MinimalPsaConnector{
+    override def getMinimalPsaDetails(psaId: String)(
+      implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSA] = Future.successful(minimalPsaDetailsIndividual)
+  }
+
+  private val minimalPsaDetailsIndividual = MinimalPSA("test@test.com",isPsaSuspended = false, None, Some(IndividualDetails("John", Some("Doe"), "Doe")))
+  private val minimalPsaDetailsNone = MinimalPSA("test@test.com",isPsaSuspended = false, None, None)
+
+  private def controller(minimalPsaDetails :MinimalPSA = minimalPsaDetailsNone) =
     new ConfirmStopBeingPsaController(
       frontendAppConfig,
       FakeAuthAction(),
       messagesApi,
       formProvider,
-      dataRetrievalAction,
-      new DataRequiredActionImpl,
+      fakeMinimalPsaConnector(minimalPsaDetails),
       fakeDeregistrationConnector,
       fakeTaxEnrolmentsConnector
     )
 
   private def viewAsString(): String =
-    confirmStopBeingPsa(frontendAppConfig, form, "psaName")(fakeRequest, messages).toString
+    confirmStopBeingPsa(frontendAppConfig, form, "John Doe Doe")(fakeRequest, messages).toString
 
 }
 

@@ -23,6 +23,6 @@ import play.api.data.Form
 class ConfirmStopBeingPsaFormProvider @Inject()() extends Mappings {
 
   def apply(): Form[Boolean] = Form(
-    "value" -> boolean("common.radio.error.required")
+    "value" -> boolean("messages__confirmStopBeingPsa_required")
   )
 }

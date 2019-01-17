@@ -22,7 +22,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.domain.PsaId
 
 class FakeDataRequest(request: Request[AnyContentAsEmpty.type], externalId: String, answers: UserAnswers, psaId: PsaId)
-  extends DataRequest[AnyContent](request, externalId, answers, psaId, "userId")
+  extends DataRequest[AnyContent](request, externalId, answers, psaId)
 
 object FakeDataRequest {
   def apply(answers: UserAnswers): FakeDataRequest = {

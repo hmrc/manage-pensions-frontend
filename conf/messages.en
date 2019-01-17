@@ -305,6 +305,7 @@ messages__confirmStopBeingPsa__title = Are you sure you want to stop being a pen
 messages__confirmStopBeingPsa__heading = Are you sure you want to stop being a pension scheme administrator?
 messages__confirmStopBeingPsa_p1 = Your administrator ID will be deleted when you stop being a pension scheme administrator.
 messages__confirmStopBeingPsa_p2 = You will have to register as a pension scheme administrator again if you need an administrator ID in the future.
+messages__confirmStopBeingPsa_required = Select yes if you are sure you want to stop being a pension scheme administrator
 messages__returnToPsaDetails__link = Return to {0}
 
 messages__deregisterSuccess__title = You have stopped being a pension scheme administrator

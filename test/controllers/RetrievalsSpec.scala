@@ -35,7 +35,7 @@ class RetrievalsSpec extends ControllerSpecBase with FrontendController with Ret
 
   val controller = new TestController()
 
-  def dataRequest(data: JsValue): DataRequest[AnyContent] = DataRequest(FakeRequest("", ""), "cacheId", UserAnswers(data), PsaId("A0000000"), "userId")
+  def dataRequest(data: JsValue): DataRequest[AnyContent] = DataRequest(FakeRequest("", ""), "cacheId", UserAnswers(data), PsaId("A0000000"))
 
   val success: String => Future[Result] = { _: String =>
     Future.successful(Ok("Success"))
