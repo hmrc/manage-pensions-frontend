@@ -47,7 +47,7 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
   private def schemeName(data: JsValue): JsLookupResult = if(featureSwitchManagementService.get(isHubV2Enabled)) {data \ "schemeName"}
   else {data \ "schemeDetails" \ "schemeName"}
 
-  private val registerSchemeUrl = if(featureSwitchManagementService.get(isHubV2Enabled))  appConfig.registerSchemeNewUrl else appConfig.registerSchemeUrl
+  private def registerSchemeUrl = if(featureSwitchManagementService.get(isHubV2Enabled))  appConfig.registerSchemeNewUrl else appConfig.registerSchemeUrl
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
