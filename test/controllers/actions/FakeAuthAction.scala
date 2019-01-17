@@ -26,25 +26,26 @@ import scala.concurrent.Future
 object FakeAuthAction {
   private val externalId: String = "id"
   private val defaultPsaId: String = "A0000000"
+  private val defaultUserId: String = "user-id"
 
   def apply(): AuthAction = {
     new AuthAction {
       override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] =
-        block(AuthenticatedRequest(request, externalId, PsaId(defaultPsaId), Individual))
+        block(AuthenticatedRequest(request, externalId, PsaId(defaultPsaId), Individual, defaultUserId))
     }
   }
 
   def createWithPsaId(psaId:String): AuthAction = {
     new AuthAction {
       override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] =
-        block(AuthenticatedRequest(request, externalId, PsaId(psaId), Individual))
+        block(AuthenticatedRequest(request, externalId, PsaId(psaId), Individual, defaultUserId))
     }
   }
 
   def createUserType(userType:UserType): AuthAction = {
     new AuthAction {
       override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] =
-        block(AuthenticatedRequest(request, externalId, PsaId(defaultPsaId), userType))
+        block(AuthenticatedRequest(request, externalId, PsaId(defaultPsaId), userType, defaultUserId))
     }
   }
 }

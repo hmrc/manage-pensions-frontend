@@ -39,9 +39,9 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector, config
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
 
     authorised().retrieve(Retrievals.externalId and
-      Retrievals.allEnrolments and Retrievals.affinityGroup) {
-      case Some(id) ~ enrolments ~ Some(affinityGroup) =>
-        block(AuthenticatedRequest(request, id.toString, PsaId(getPsaId(enrolments)), userType(affinityGroup)))
+      Retrievals.allEnrolments and Retrievals.affinityGroup and Retrievals.credentials) {
+      case Some(id) ~ enrolments ~ Some(affinityGroup) ~ credentials =>
+        block(AuthenticatedRequest(request, id.toString, PsaId(getPsaId(enrolments)), userType(affinityGroup), credentials.providerId))
       case _ =>
         Future.successful(Redirect(routes.UnauthorisedController.onPageLoad))
     } recover {

@@ -14,18 +14,10 @@
  * limitations under the License.
  */
 
-package utils
+package identifiers.deregister
 
-import models.requests.DataRequest
-import play.api.mvc.{AnyContent, AnyContentAsEmpty, Request}
-import play.api.test.FakeRequest
-import uk.gov.hmrc.domain.PsaId
+import identifiers.TypedIdentifier
 
-class FakeDataRequest(request: Request[AnyContentAsEmpty.type], externalId: String, answers: UserAnswers, psaId: PsaId)
-  extends DataRequest[AnyContent](request, externalId, answers, psaId, "userId")
-
-object FakeDataRequest {
-  def apply(answers: UserAnswers): FakeDataRequest = {
-    new FakeDataRequest(FakeRequest("", ""), "test-external-id", answers, PsaId("A0000000"))
-  }
+object ConfirmStopBeingPsaId extends TypedIdentifier[Boolean] {
+  override def toString: String = "confirmStopBeingPsa"
 }
