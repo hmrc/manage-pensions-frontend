@@ -76,6 +76,7 @@ class FrontendAppConfig @Inject()(override val runModeConfiguration: Configurati
   lazy val subscriptionDetailsUrl: String = s"${baseUrl("pension-administrator")}${runModeConfiguration.underlying.getString("urls.subscriptionDetails")}"
   lazy val removePsaUrl : String = s"${baseUrl("pension-administrator")}${runModeConfiguration.underlying.getString("urls.removePsa")}"
   lazy val deregisterPsaUrl : String = s"${baseUrl("pension-administrator")}${runModeConfiguration.underlying.getString("urls.deregisterPsa")}"
+  lazy val taxDeEnrolmentUrl: String = baseUrl("tax-enrolments") +runModeConfiguration.underlying.getString("urls.tax-de-enrolment")
 
   def languageMap: Map[String, Lang] = Map(
     "english" -> Lang("en"),
@@ -90,4 +91,9 @@ class FrontendAppConfig @Inject()(override val runModeConfiguration: Configurati
   lazy val locationCanonicalList = loadConfig("location.canonical.list")
   lazy val locationCanonicalListEUAndEEA: String = loadConfig("location.canonical.list.EUAndEEA")
   lazy val addressLookUp = baseUrl("address-lookup")
+
+
+  lazy val retryAttempts: Int = runModeConfiguration.getInt("retry.max.attempts").getOrElse(1)
+  lazy val retryWaitMs: Int = runModeConfiguration.getInt("retry.initial.wait.ms").getOrElse(1)
+  lazy val retryWaitFactor: Double = runModeConfiguration.getDouble("retry.wait.factor").getOrElse(1)
 }

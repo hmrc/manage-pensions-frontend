@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-package identifiers.deregister
+package forms.deregister
 
-import identifiers.TypedIdentifier
+import forms.mappings.Mappings
+import javax.inject.Inject
+import play.api.data.Form
 
-object ConfirmStopBeingPsaId extends TypedIdentifier[Boolean] {
-  override def toString: String = "confirmStopBeingPsa"
+class ConfirmStopBeingPsaFormProvider @Inject()() extends Mappings {
+
+  def apply(): Form[Boolean] = Form(
+    "value" -> boolean("messages__confirmStopBeingPsa_required")
+  )
 }

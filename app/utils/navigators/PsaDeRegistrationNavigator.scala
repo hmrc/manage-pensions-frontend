@@ -33,7 +33,7 @@ class PsaDeRegistrationNavigator @Inject()(val dataCacheConnector: UserAnswersCa
   override protected def editRouteMap(from: NavigateFrom): Option[NavigateTo] = from.id match { case _ => None }
 
   private def deregisterRoutes(answers: UserAnswers): Option[NavigateTo] = answers.get(ConfirmStopBeingPsaId) match {
-    case Some(true) => NavigateTo.dontSave(controllers.routes.SessionExpiredController.onPageLoad())
+    case Some(true) => NavigateTo.dontSave(controllers.deregister.routes.SuccessfulDeregistrationController.onPageLoad())
     case Some(false) => NavigateTo.dontSave(new Call("GET",config.registeredPsaDetailsUrl))
     case _ => NavigateTo.dontSave(controllers.routes.SessionExpiredController.onPageLoad())
   }

@@ -22,7 +22,7 @@ import play.api.mvc.{Action, AnyContent, Controller}
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
-import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
+import uk.gov.hmrc.auth.core.retrieve.{Credentials, Retrieval, ~}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -125,7 +125,8 @@ object AuthActionSpec {
     }
   }
 
-  private def authRetrievals = Future.successful(new ~(new ~(Some("id"), Enrolments(Set())),Some(AffinityGroup.Individual)))
+  private def authRetrievals = Future.successful(new ~(new ~(new ~(Some("id"), Enrolments(Set())),
+    Some(AffinityGroup.Individual)), Credentials("providerId", "providerType")))
 
   class Harness(authAction: AuthAction) extends Controller {
     def onPageLoad(): Action[AnyContent] = authAction { _ => Ok }
