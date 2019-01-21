@@ -57,7 +57,7 @@ class ConfirmStopBeingPsaController  @Inject()(
     implicit request =>
       val psaId = request.psaId.id
       val userId = request.userId
-      minimalPsaConnector.getMinimalPsaDetails(request.psaId.id).flatMap{
+      minimalPsaConnector.getMinimalPsaDetails(psaId).flatMap{
         minimalDetails =>
         getPsaName(minimalDetails) match {
           case Some(psaName) =>
