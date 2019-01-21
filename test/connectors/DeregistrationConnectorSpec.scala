@@ -24,9 +24,9 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
 import utils.WireMockHelper
 
-class PsaDeregistrationConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper with Checkers {
+class DeregistrationConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper with Checkers {
 
-  import PsaDeregistrationConnectorSpec._
+  import DeregistrationConnectorSpec._
   override protected def portConfigKey: String = "microservice.services.pension-administrator.port"
 
   "Delete" should "return successful following a successful deletion" in {
@@ -38,9 +38,9 @@ class PsaDeregistrationConnectorSpec extends AsyncFlatSpec with Matchers with Wi
         )
     )
 
-    val connector = injector.instanceOf[PsaDeregistrationConnector]
+    val connector = injector.instanceOf[DeregistrationConnector]
 
-    connector.deregister(psaId).map {
+    connector.stopBeingPSA(psaId).map {
       _ => server.findAll(deleteRequestedFor(urlEqualTo(deregisterUrl))).size() shouldBe 1
     }
   }
@@ -56,15 +56,15 @@ class PsaDeregistrationConnectorSpec extends AsyncFlatSpec with Matchers with Wi
         )
     )
 
-    val connector = injector.instanceOf[PsaDeregistrationConnector]
+    val connector = injector.instanceOf[DeregistrationConnector]
     recoverToSucceededIf[BadRequestException] {
-      connector.deregister(psaId)
+      connector.stopBeingPSA(psaId)
     }
   }
 }
 
 
-object PsaDeregistrationConnectorSpec {
+object DeregistrationConnectorSpec {
   implicit val hc : HeaderCarrier = HeaderCarrier()
 
   private val psaId = "238DAJFASS"

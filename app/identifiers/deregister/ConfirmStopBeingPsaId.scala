@@ -14,15 +14,10 @@
  * limitations under the License.
  */
 
-package models.requests
+package identifiers.deregister
 
-import models.UserType
-import play.api.mvc.{Request, WrappedRequest}
-import uk.gov.hmrc.domain.PsaId
+import identifiers.TypedIdentifier
 
-trait IdentifiedRequest {
-  def externalId: String
+object ConfirmStopBeingPsaId extends TypedIdentifier[Boolean] {
+  override def toString: String = "confirmStopBeingPsa"
 }
-
-case class AuthenticatedRequest[A](request: Request[A], externalId: String, psaId: PsaId, userType : UserType, userId: String)
-  extends WrappedRequest[A](request) with IdentifiedRequest

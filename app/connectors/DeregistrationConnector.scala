@@ -28,17 +28,17 @@ import play.api.http.Status._
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Failure
 
-@ImplementedBy(classOf[PsaDeregistrationConnectorImpl])
-trait PsaDeregistrationConnector {
-  def deregister(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext) : Future[Unit]
+@ImplementedBy(classOf[DeregistrationConnectorImpl])
+trait DeregistrationConnector {
+  def stopBeingPSA(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext) : Future[HttpResponse]
 }
 
-class PsaDeregistrationConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) extends PsaDeregistrationConnector with HttpResponseHelper {
-  override def deregister(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
+class DeregistrationConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) extends DeregistrationConnector with HttpResponseHelper {
+  override def stopBeingPSA(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
     val deregisterUrl = config.deregisterPsaUrl.format(psaId)
     http.DELETE(deregisterUrl) map {
       response => response.status match {
-        case NO_CONTENT => ()
+        case NO_CONTENT => response
         case _ => handleErrorResponse("DELETE", deregisterUrl)(response)
       }
     } andThen {
