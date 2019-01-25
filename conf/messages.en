@@ -13,7 +13,7 @@ checkYourAnswers.heading = Check your answers
 
 error.summary.title = There was a problem with the page
 
-messages__manage_pension_schemes__title = Manage Pension Schemes - GOV.UK
+messages__manage_pension_schemes__title = Managing pension schemes - GOV.UK
 
 messages__unauthorised__title = You can’t access this service with this account
 
@@ -93,8 +93,8 @@ messages__listSchemes__PSTR__screen_reader = {0}’s Pension Scheme Tax Referenc
 messages__listSchemes__status__screen_reader = {0}’s status is {1}
 messages__listSchemes__return_to_overview = Return to manage and register your pension schemes
 
-messages__schemesOverview__title = Manage and register your pension schemes
-messages__schemesOverview__heading = Manage and register your pension schemes
+messages__schemesOverview__title = Managing pension schemes
+messages__schemesOverview__heading = Managing pension schemes
 messages__schemesOverview__manage__head = Manage your pension schemes
 messages__schemesOverview__manage__text = You can only view pension schemes that you have registered through this service.
 messages__schemesOverview__manage__link = View your pension schemes

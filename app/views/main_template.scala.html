@@ -35,7 +35,7 @@
 }
 
 @govuk_wrapper(appConfig = appConfig,
-                title = title + " - " + Messages("messages__manage_pension_schemes__title"),
+                title = if(title == Messages("messages__schemesOverview__title")){Messages("messages__manage_pension_schemes__title")} else {title + " - " + Messages("messages__manage_pension_schemes__title")},
                 mainClass = mainClass,
                 bodyClasses = bodyClasses,
                 sidebar = sidebar,
