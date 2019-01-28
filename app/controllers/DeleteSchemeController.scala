@@ -16,7 +16,7 @@
 
 package controllers
 
-import config.FrontendAppConfig
+import config.{FeatureSwitchManagementService, FrontendAppConfig}
 import connectors.UserAnswersCacheConnector
 import controllers.actions._
 import forms.DeleteSchemeFormProvider
@@ -24,9 +24,10 @@ import javax.inject.Inject
 import models.requests.OptionalDataRequest
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.libs.json.{JsError, JsSuccess}
+import play.api.libs.json.{JsError, JsLookupResult, JsSuccess, JsValue}
 import play.api.mvc.{Action, AnyContent, Result}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import utils.Toggles.isHubV2Enabled
 import utils.annotations.PensionsSchemeCache
 import views.html.deleteScheme
 
@@ -39,7 +40,8 @@ class DeleteSchemeController @Inject()(
                                         authenticate: AuthAction,
                                         getData: DataRetrievalAction,
                                         requireData: DataRequiredAction,
-                                        formProvider: DeleteSchemeFormProvider
+                                        formProvider: DeleteSchemeFormProvider,
+                                        fs : FeatureSwitchManagementService
                                       )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport with Retrievals {
 
   private val form: Form[Boolean] = formProvider()
@@ -70,12 +72,15 @@ class DeleteSchemeController @Inject()(
       }
   }
 
+  private def schemeName(data: JsValue): JsLookupResult = if(fs.get(isHubV2Enabled)) {data \ "schemeName"}
+  else {data \ "schemeDetails" \ "schemeName"}
+
   private def getSchemeName(f: String => Future[Result])
                            (implicit request: OptionalDataRequest[AnyContent]): Future[Result] = {
     dataCacheConnector.fetch(request.externalId).flatMap {
       case None => Future.successful(overviewPage)
       case Some(data) =>
-        (data \ "schemeDetails" \ "schemeName").validate[String] match {
+        schemeName(data).validate[String] match {
           case JsSuccess(name, _) => f(name)
           case JsError(_) => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
         }
