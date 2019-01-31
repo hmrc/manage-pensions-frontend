@@ -26,7 +26,6 @@ import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.mvc.Results.Ok
 import play.api.test.Helpers.{contentAsString, _}
-import utils.FakeFeatureSwitchManagementService
 import views.html.deleteScheme
 
 import scala.concurrent.Future
@@ -38,13 +37,13 @@ class DeleteSchemeControllerSpec extends ControllerSpecBase with MockitoSugar {
   val schemeName = "Test Scheme Name"
   val fakeCacheConnector: UserAnswersCacheConnector = mock[MicroserviceCacheConnector]
 
-  def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData, isHubV2Enabled: Boolean = true): DeleteSchemeController =
+  def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): DeleteSchemeController =
     new DeleteSchemeController(frontendAppConfig, messagesApi, fakeCacheConnector, FakeAuthAction(),
-      dataRetrievalAction, new DataRequiredActionImpl, formProvider, new FakeFeatureSwitchManagementService(isHubV2Enabled))
+      dataRetrievalAction, new DataRequiredActionImpl, formProvider)
 
   def viewAsString(form: Form[_] = form): String = deleteScheme(frontendAppConfig, form, schemeName)(fakeRequest, messages).toString
 
-  "DeleteScheme Controller when hub version 2 enabled " must {
+  "DeleteScheme Controller" must {
 
     "return OK and the correct view for a GET" in {
       when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(Some(Json.obj(
@@ -101,29 +100,6 @@ class DeleteSchemeControllerSpec extends ControllerSpecBase with MockitoSugar {
       when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
       val postRequest = fakeRequest.withFormUrlEncodedBody(("value", "true"))
       val result = controller(dontGetAnyData).onSubmit(postRequest)
-
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(routes.SchemesOverviewController.onPageLoad().url)
-    }
-  }
-
-  "DeleteScheme Controller when hub version 2 disabled " must {
-
-    "return OK and the correct view for a GET" in {
-      when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(Some(Json.obj(
-        "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
-      val result = controller(isHubV2Enabled = false).onPageLoad(fakeRequest)
-
-      status(result) mustBe OK
-      contentAsString(result) mustBe viewAsString()
-    }
-
-    "redirect to the overview page when user answers No" in {
-      when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(Some(Json.obj(
-        "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
-      val postRequest = fakeRequest.withFormUrlEncodedBody(("value", "false"))
-
-      val result = controller(isHubV2Enabled = false).onSubmit(postRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(routes.SchemesOverviewController.onPageLoad().url)

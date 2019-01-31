@@ -16,7 +16,7 @@
 
 package controllers
 
-import config.{FeatureSwitchManagementService, FrontendAppConfig}
+import config.FrontendAppConfig
 import connectors.{MinimalPsaConnector, UserAnswersCacheConnector}
 import controllers.actions._
 import javax.inject.Inject
@@ -29,7 +29,6 @@ import play.api.libs.json._
 import play.api.mvc.{Action, AnyContent, Result}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.annotations.PensionsSchemeCache
-import utils.Toggles.isHubV2Enabled
 import views.html.schemesOverview
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -39,15 +38,14 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
                                           @PensionsSchemeCache dataCacheConnector: UserAnswersCacheConnector,
                                           minimalPsaConnector: MinimalPsaConnector,
                                           authenticate: AuthAction,
-                                          getData: DataRetrievalAction,
-                                          featureSwitchManagementService: FeatureSwitchManagementService)
+                                          getData: DataRetrievalAction)
                                          (implicit val ec: ExecutionContext) extends FrontendController with I18nSupport {
 
   def redirect: Action[AnyContent] = Action.async(Future.successful(Redirect(controllers.routes.SchemesOverviewController.onPageLoad())))
-  private def schemeName(data: JsValue): JsLookupResult = if(featureSwitchManagementService.get(isHubV2Enabled)) {data \ "schemeName"}
-  else {data \ "schemeDetails" \ "schemeName"}
 
-  private def registerSchemeUrl = if(featureSwitchManagementService.get(isHubV2Enabled))  appConfig.registerSchemeNewUrl else appConfig.registerSchemeUrl
+  private def schemeName(data: JsValue): JsLookupResult = data \ "schemeName"
+
+  private def registerSchemeUrl = appConfig.registerSchemeUrl
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>

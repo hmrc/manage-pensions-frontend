@@ -32,7 +32,6 @@ import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, _}
-import utils.Toggles.isHubV2Enabled
 import views.html.schemesOverview
 
 import scala.concurrent.Future
@@ -44,13 +43,10 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
   val fakePsaMinimalConnector: MinimalPsaConnector = mock[MinimalPsaConnector]
   val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
   private val config = app.injector.instanceOf[Configuration]
-  val fakeFeatureSwitchManagementService = new FeatureSwitchManagementServiceTestImpl(config, environment)
-  fakeFeatureSwitchManagementService.change(isHubV2Enabled, newValue = true)
 
-  def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData,
-                 featureSwitchManagementService: FeatureSwitchManagementService = fakeFeatureSwitchManagementService): SchemesOverviewController =
+  def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): SchemesOverviewController =
     new SchemesOverviewController(appConfig, messagesApi, fakeCacheConnector, fakePsaMinimalConnector, FakeAuthAction(),
-      dataRetrievalAction, featureSwitchManagementService)
+      dataRetrievalAction)
 
   val deleteDate: String = DateTime.now(DateTimeZone.UTC).plusDays(appConfig.daysDataSaved).toString(formatter)
 
@@ -186,7 +182,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
         val result = controller().onClickCheckIfSchemeCanBeRegistered(fakeRequest)
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).value mustBe frontendAppConfig.registerSchemeNewUrl
+        redirectLocation(result).value mustBe frontendAppConfig.registerSchemeUrl
       }
 
       "redirect to continue register a scheme page if called with a psa name and psa is not suspended" in {
