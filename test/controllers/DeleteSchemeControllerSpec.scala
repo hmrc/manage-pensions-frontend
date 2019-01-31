@@ -43,7 +43,7 @@ class DeleteSchemeControllerSpec extends ControllerSpecBase with MockitoSugar {
 
   def viewAsString(form: Form[_] = form): String = deleteScheme(frontendAppConfig, form, schemeName)(fakeRequest, messages).toString
 
-  "DeleteScheme Controller when hub version 2 enabled " must {
+  "DeleteScheme Controller" must {
 
     "return OK and the correct view for a GET" in {
       when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(Some(Json.obj(
