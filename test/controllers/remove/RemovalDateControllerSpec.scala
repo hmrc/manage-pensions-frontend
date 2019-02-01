@@ -78,12 +78,12 @@ object RemovalDateControllerSpec {
   private val psaName = "test psa name"
   private val srn = "test srn"
   private val pstr = "test pstr"
-  private val date = LocalDate.now().minusDays(1)
+  private val date = LocalDate.now()
 
   private val userAnswer = UserAnswers().schemeName(schemeName).psaName(psaName).srn(srn).pstr(pstr)
   private val data = userAnswer.dataRetrievalAction
 
-  val day: Int = LocalDate.now().getDayOfMonth - 1
+  val day: Int = LocalDate.now().getDayOfMonth
   val month: Int = LocalDate.now().getMonthOfYear
   val year: Int = LocalDate.now().getYear
 

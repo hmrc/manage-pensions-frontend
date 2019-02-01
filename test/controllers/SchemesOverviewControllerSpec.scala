@@ -116,6 +116,17 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
         contentAsString(result) mustBe viewWithPsaNameAndScheme(Some(expectedName))
       }
 
+      "return OK and the correct view if a scheme has been partially defined with the old schemeDetails" in {
+
+        when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(schemeDetailsJsonOption))
+        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaDetailsIndividual))
+        when(fakeCacheConnector.lastUpdated(any())(any(), any())).thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
+
+        val result = controller().onPageLoad(fakeRequest)
+        status(result) mustBe OK
+        contentAsString(result) mustBe viewWithPsaNameAndScheme(Some(expectedName))
+      }
+
       "return OK and the correct view with an individual name with no middle name for an individual Psa and if a scheme has been partially defined" in {
         when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(schemeNameJsonOption))
         when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo(psaId))(any(), any())).thenReturn(Future.successful(individualPsaDetailsWithNoMiddleName))
@@ -242,6 +253,7 @@ object SchemesOverviewControllerSpec {
   val cannotStartRegistrationUrl: Call = routes.CannotStartRegistrationController.onPageLoad()
 
   val schemeNameJsonOption = Some(Json.obj("schemeName" -> schemeName))
+  val schemeDetailsJsonOption = Some(Json.obj("schemeDetails" -> Json.obj("schemeName" -> schemeName)))
 }
 
 
