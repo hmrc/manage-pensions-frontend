@@ -43,7 +43,14 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
 
   def redirect: Action[AnyContent] = Action.async(Future.successful(Redirect(controllers.routes.SchemesOverviewController.onPageLoad())))
 
-  private def schemeName(data: JsValue): JsLookupResult = data \ "schemeName"
+  private def schemeName(data: JsValue): JsLookupResult = {
+    val schemeName: JsLookupResult = data \ "schemeName"
+
+    schemeName.validate[String] match {
+      case JsSuccess(_, _) => schemeName
+      case _ => data \ "schemeDetails" \ "schemeName"
+    }
+  }
 
   private def registerSchemeUrl = appConfig.registerSchemeUrl
 
