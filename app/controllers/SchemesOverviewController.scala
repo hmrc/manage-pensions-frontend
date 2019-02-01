@@ -24,6 +24,7 @@ import models.requests.OptionalDataRequest
 import models.{LastUpdatedDate, MinimalPSA}
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTime, DateTimeZone, LocalDate}
+import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json._
 import play.api.mvc.{Action, AnyContent, Result}
@@ -70,7 +71,10 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
                   buildView(name, dateOpt, Some(minimalDetails), request.psaId.id)
                 }
               }
-            case JsError(_) => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+            case JsError(e) =>{
+              Logger.error(s"Unable to retrieve scheme name from user answers: $e")
+              Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+            }
           }
       }
   }
@@ -119,7 +123,10 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
       case None => psaMinimalDetails.fold(Redirect(registerSchemeUrl))(details => redirect(registerSchemeUrl, details))
       case Some(details) => schemeName(details).validate[String] match {
         case JsSuccess(_, _) => psaMinimalDetails.fold(Redirect(appConfig.continueSchemeUrl))(details => redirect(appConfig.continueSchemeUrl, details))
-        case JsError(_) => Redirect(controllers.routes.SessionExpiredController.onPageLoad())
+        case JsError(e) => {
+          Logger.error(s"Unable to retrieve scheme name from user answers: $e")
+          Redirect(controllers.routes.SessionExpiredController.onPageLoad())
+        }
       }
     }
   }
