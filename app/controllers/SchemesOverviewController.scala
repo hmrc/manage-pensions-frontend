@@ -43,6 +43,7 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
 
   def redirect: Action[AnyContent] = Action.async(Future.successful(Redirect(controllers.routes.SchemesOverviewController.onPageLoad())))
 
+  //TODO: Remove this code and just use scheme name after 28 days of enabling hub v2
   private def schemeName(data: JsValue): JsLookupResult = {
     val schemeName: JsLookupResult = data \ "schemeName"
 
