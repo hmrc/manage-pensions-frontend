@@ -70,8 +70,15 @@ class DeleteSchemeController @Inject()(
       }
   }
 
-  private def schemeName(data: JsValue): JsLookupResult = data \ "schemeName"
+  //TODO: Remove this code and just use scheme name after 28 days of enabling hub v2
+  private def schemeName(data: JsValue): JsLookupResult = {
+    val schemeName: JsLookupResult = data \ "schemeName"
 
+    schemeName.validate[String] match {
+      case JsSuccess(_, _) => schemeName
+      case _ => data \ "schemeDetails" \ "schemeName"
+    }
+  }
   private def getSchemeName(f: String => Future[Result])
                            (implicit request: OptionalDataRequest[AnyContent]): Future[Result] = {
     dataCacheConnector.fetch(request.externalId).flatMap {

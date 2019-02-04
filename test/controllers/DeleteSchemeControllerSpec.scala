@@ -20,7 +20,8 @@ import connectors.{MicroserviceCacheConnector, UserAnswersCacheConnector}
 import controllers.actions._
 import forms.DeleteSchemeFormProvider
 import org.mockito.Matchers.{any, eq => eqTo}
-import org.mockito.Mockito.{times, verify, when}
+import org.mockito.Mockito.{reset, times, verify, when}
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import play.api.data.Form
 import play.api.libs.json.Json
@@ -30,7 +31,7 @@ import views.html.deleteScheme
 
 import scala.concurrent.Future
 
-class DeleteSchemeControllerSpec extends ControllerSpecBase with MockitoSugar {
+class DeleteSchemeControllerSpec extends ControllerSpecBase with MockitoSugar with BeforeAndAfterEach{
 
   val formProvider = new DeleteSchemeFormProvider()
   val form: Form[Boolean] = formProvider()
@@ -42,6 +43,11 @@ class DeleteSchemeControllerSpec extends ControllerSpecBase with MockitoSugar {
       dataRetrievalAction, new DataRequiredActionImpl, formProvider)
 
   def viewAsString(form: Form[_] = form): String = deleteScheme(frontendAppConfig, form, schemeName)(fakeRequest, messages).toString
+
+  override def beforeEach(): Unit = {
+    reset(fakeCacheConnector)
+    super.beforeEach()
+  }
 
   "DeleteScheme Controller" must {
 
@@ -67,6 +73,19 @@ class DeleteSchemeControllerSpec extends ControllerSpecBase with MockitoSugar {
       verify(fakeCacheConnector, times(1)).removeAll(any())(any(), any())
     }
 
+    "remove all is called to delete user answers when user answers Yes on a user with old way of storing Scheme Name" in {
+      when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(Some(Json.obj(
+        "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
+      val postRequest = fakeRequest.withFormUrlEncodedBody(("value", "true"))
+      when(fakeCacheConnector.removeAll(any())(any(), any())).thenReturn(Future.successful(Ok))
+
+      val result = controller().onSubmit(postRequest)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(routes.SchemesOverviewController.onPageLoad().url)
+      verify(fakeCacheConnector, times(1)).removeAll(any())(any(), any())
+    }
+
     "redirect to the overview page when user answers No" in {
       when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(Some(Json.obj(
         "schemeName" -> schemeName))))
@@ -79,6 +98,8 @@ class DeleteSchemeControllerSpec extends ControllerSpecBase with MockitoSugar {
     }
 
     "return a Bad Request and errors when invalid data is submitted" in {
+      when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(Some(Json.obj(
+        "schemeName" -> schemeName))))
       val postRequest = fakeRequest.withFormUrlEncodedBody(("value", "invalid value"))
       val boundForm = form.bind(Map("value" -> "invalid value"))
 
