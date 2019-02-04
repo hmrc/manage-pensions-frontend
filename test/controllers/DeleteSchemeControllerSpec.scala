@@ -67,6 +67,19 @@ class DeleteSchemeControllerSpec extends ControllerSpecBase with MockitoSugar {
       verify(fakeCacheConnector, times(1)).removeAll(any())(any(), any())
     }
 
+    "remove all is called to delete user answers when user answers Yes on a user with old way of storing Scheme Name" in {
+      when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(Some(Json.obj(
+        "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
+      val postRequest = fakeRequest.withFormUrlEncodedBody(("value", "true"))
+      when(fakeCacheConnector.removeAll(any())(any(), any())).thenReturn(Future.successful(Ok))
+
+      val result = controller().onSubmit(postRequest)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(routes.SchemesOverviewController.onPageLoad().url)
+      verify(fakeCacheConnector, times(1)).removeAll(any())(any(), any())
+    }
+
     "redirect to the overview page when user answers No" in {
       when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(Some(Json.obj(
         "schemeName" -> schemeName))))
