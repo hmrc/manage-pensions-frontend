@@ -16,6 +16,7 @@
 
 package controllers.deregister
 
+import audit.StubSuccessfulAuditService
 import connectors._
 import controllers.ControllerSpecBase
 import controllers.actions._
@@ -89,6 +90,8 @@ class ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase{
 
 object ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase {
 
+  val fakeAuditService = new StubSuccessfulAuditService()
+
   private def psaDetailsUrl = frontendAppConfig.registeredPsaDetailsUrl
 
   private val formProvider = new ConfirmStopBeingPsaFormProvider
@@ -132,7 +135,8 @@ object ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase {
       formProvider,
       fakeMinimalPsaConnector(minimalPsaDetails),
       fakeDeregistrationConnector,
-      fakeTaxEnrolmentsConnector
+      fakeTaxEnrolmentsConnector,
+      fakeAuditService
     )
 
   private def viewAsString(): String =

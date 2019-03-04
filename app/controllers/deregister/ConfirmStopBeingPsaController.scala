@@ -16,6 +16,7 @@
 
 package controllers.deregister
 
+import audit.AuditService
 import config.FrontendAppConfig
 import connectors.{DeregistrationConnector, MinimalPsaConnector, TaxEnrolmentsConnector}
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
@@ -38,7 +39,8 @@ class ConfirmStopBeingPsaController  @Inject()(
                                          formProvider: ConfirmStopBeingPsaFormProvider,
                                          minimalPsaConnector: MinimalPsaConnector,
                                          deregistration: DeregistrationConnector,
-                                         enrolments: TaxEnrolmentsConnector
+                                         enrolments: TaxEnrolmentsConnector,
+                                         val auditService: AuditService
                                        )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport {
 
   val form: Form[Boolean] = formProvider()
