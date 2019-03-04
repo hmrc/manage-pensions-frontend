@@ -16,26 +16,28 @@
 
 package controllers.deregister
 
-import audit.StubSuccessfulAuditService
+import audit.{DeregisterEvent, StubSuccessfulAuditService}
 import connectors._
 import controllers.ControllerSpecBase
 import controllers.actions._
-import controllers.deregister.ConfirmStopBeingPsaControllerSpec.{fakeMinimalPsaConnector, minimalPsaDetailsNone}
+import controllers.remove.RemovalDateControllerSpec.{day, month, year}
 import forms.deregister.ConfirmStopBeingPsaFormProvider
 import identifiers.invitations.PSANameId
 import models.{IndividualDetails, MinimalPSA}
+import org.scalatest.concurrent.ScalaFutures
 import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import uk.gov.hmrc.domain.PsaId
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.countryOptions.CountryOptions
 import views.html.deregister.confirmStopBeingPsa
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase{
+class ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase with ScalaFutures {
 
   import ConfirmStopBeingPsaControllerSpec._
 
@@ -48,11 +50,27 @@ class ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase{
       redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)
     }
 
-    "return OK and the correct view for a GET" in {
-      val result = controller(minimalPsaDetailsIndividual).onPageLoad()(fakeRequest)
+    "return OK and the correct view for a GET and ensure audit service is successfully called" in {
+      fakeAuditService.reset()
+
+      val psa = PsaId("A1234567")
+      val user = "Fred"
+      val request = fakeRequest.withJsonBody(Json.obj(
+        "userId" -> user,
+        "psaId" -> psa)
+      )
+
+      val result = controller(minimalPsaDetailsIndividual).onPageLoad()(request)
 
       status(result) mustBe OK
       contentAsString(result) mustBe viewAsString()
+
+      val expectedAuditEvent = DeregisterEvent(user, psa.id)
+
+      whenReady(result) {
+        _ =>
+          fakeAuditService.verifySent(expectedAuditEvent)
+      }
     }
 
     "return to session expired if psaName is not present for Post" in {

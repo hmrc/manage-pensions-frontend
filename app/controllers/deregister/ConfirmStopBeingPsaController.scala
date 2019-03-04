@@ -16,12 +16,11 @@
 
 package controllers.deregister
 
-import audit.AuditService
+import audit.{AuditService, DeregisterEvent}
 import config.FrontendAppConfig
 import connectors.{DeregistrationConnector, MinimalPsaConnector, TaxEnrolmentsConnector}
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import controllers.actions.AuthAction
 import forms.deregister.ConfirmStopBeingPsaFormProvider
-import identifiers.invitations.PSANameId
 import javax.inject.Inject
 import models.MinimalPSA
 import play.api.data.Form
@@ -32,16 +31,16 @@ import views.html.deregister.confirmStopBeingPsa
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ConfirmStopBeingPsaController  @Inject()(
-                                         appConfig: FrontendAppConfig,
-                                         auth: AuthAction,
-                                         val messagesApi: MessagesApi,
-                                         formProvider: ConfirmStopBeingPsaFormProvider,
-                                         minimalPsaConnector: MinimalPsaConnector,
-                                         deregistration: DeregistrationConnector,
-                                         enrolments: TaxEnrolmentsConnector,
-                                         val auditService: AuditService
-                                       )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport {
+class ConfirmStopBeingPsaController @Inject()(
+                                               appConfig: FrontendAppConfig,
+                                               auth: AuthAction,
+                                               val messagesApi: MessagesApi,
+                                               formProvider: ConfirmStopBeingPsaFormProvider,
+                                               minimalPsaConnector: MinimalPsaConnector,
+                                               deregistration: DeregistrationConnector,
+                                               enrolments: TaxEnrolmentsConnector,
+                                               val auditService: AuditService
+                                             )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport {
 
   val form: Form[Boolean] = formProvider()
 
@@ -59,29 +58,30 @@ class ConfirmStopBeingPsaController  @Inject()(
     implicit request =>
       val psaId = request.psaId.id
       val userId = request.userId
-      minimalPsaConnector.getMinimalPsaDetails(psaId).flatMap{
+      minimalPsaConnector.getMinimalPsaDetails(psaId).flatMap {
         minimalDetails =>
-        getPsaName(minimalDetails) match {
-          case Some(psaName) =>
-            form.bindFromRequest().fold(
-              (formWithErrors: Form[Boolean]) =>
-                Future.successful(BadRequest(confirmStopBeingPsa(appConfig, formWithErrors, psaName))),
-              value => {
-                if (value) {
-                  for {
-                    _ <- deregistration.stopBeingPSA(psaId)
-                    _ <- enrolments.deEnrol(userId, psaId)
-                  } yield {
-                    Redirect(controllers.deregister.routes.SuccessfulDeregistrationController.onPageLoad())
+          getPsaName(minimalDetails) match {
+            case Some(psaName) =>
+              form.bindFromRequest().fold(
+                (formWithErrors: Form[Boolean]) =>
+                  Future.successful(BadRequest(confirmStopBeingPsa(appConfig, formWithErrors, psaName))),
+                value => {
+                  if (value) {
+                    for {
+                      _ <- deregistration.stopBeingPSA(psaId)
+                      _ <- enrolments.deEnrol(userId, psaId)
+                    } yield {
+                      auditService.sendEvent(DeregisterEvent(userId, psaId))
+                      Redirect(controllers.deregister.routes.SuccessfulDeregistrationController.onPageLoad())
+                    }
+                  } else {
+                    Future.successful(Redirect(appConfig.registeredPsaDetailsUrl))
                   }
-                } else {
-                  Future.successful(Redirect(appConfig.registeredPsaDetailsUrl))
                 }
-              }
-            )
-          case _ =>
-            Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
-        }
+              )
+            case _ =>
+              Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+          }
       }
   }
 
