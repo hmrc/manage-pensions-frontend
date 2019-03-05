@@ -16,11 +16,13 @@
 
 package connectors
 
+import audit.{AuditService, DeregisterEvent}
 import com.google.inject.{ImplementedBy, Singleton}
 import config.FrontendAppConfig
 import javax.inject.Inject
 import play.api.Logger
 import play.api.http.Status._
+import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import utils.RetryHelper
@@ -31,27 +33,28 @@ import scala.util.{Failure, Try}
 @ImplementedBy(classOf[TaxEnrolmentsConnectorImpl])
 trait TaxEnrolmentsConnector {
 
-  def deEnrol(groupId: String, enrolmentKey: String)
-           (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse]
+  def deEnrol(groupId: String, psaId:String, userId: String)
+           (implicit hc: HeaderCarrier, ec: ExecutionContext, rh:RequestHeader): Future[HttpResponse]
 }
 
 @Singleton
-class TaxEnrolmentsConnectorImpl @Inject()(val http: HttpClient, config: FrontendAppConfig) extends TaxEnrolmentsConnector with RetryHelper{
+class TaxEnrolmentsConnectorImpl @Inject()(val http: HttpClient, config: FrontendAppConfig,
+                                           val auditService: AuditService) extends TaxEnrolmentsConnector with RetryHelper{
 
-  def deEnrol(groupId: String, enrolmentKey: String)
-                        (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
-    retryOnFailure(() => deEnrolmentRequest(groupId, enrolmentKey), config)
+  def deEnrol(groupId: String, psaId:String, userId: String)
+                        (implicit hc: HeaderCarrier, ec: ExecutionContext, rh:RequestHeader): Future[HttpResponse] = {
+    retryOnFailure(() => deEnrolmentRequest(groupId, psaId, userId), config)
   } andThen {
     logDeEnrolmentExceptions
   }
 
-  def deEnrolmentRequest(groupId: String, enrolmentKey: String)
-             (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
+  private def deEnrolmentRequest(groupId: String, psaId: String, userId: String)
+             (implicit hc: HeaderCarrier, ec: ExecutionContext, rh:RequestHeader): Future[HttpResponse] = {
 
-    val deEnrolmentUrl = config.taxDeEnrolmentUrl.format(groupId, enrolmentKey)
-
+    val deEnrolmentUrl = config.taxDeEnrolmentUrl.format(groupId, psaId)
     http.DELETE(deEnrolmentUrl) flatMap {
       case response if response.status equals NO_CONTENT =>
+        auditService.sendEvent(DeregisterEvent(userId, psaId))
         Future.successful(response)
       case response =>
         Future.failed(new HttpException(response.body, response.status))

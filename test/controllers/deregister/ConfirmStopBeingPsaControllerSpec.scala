@@ -16,25 +16,27 @@
 
 package controllers.deregister
 
+import audit.StubSuccessfulAuditService
 import connectors._
 import controllers.ControllerSpecBase
 import controllers.actions._
-import controllers.deregister.ConfirmStopBeingPsaControllerSpec.{fakeMinimalPsaConnector, minimalPsaDetailsNone}
 import forms.deregister.ConfirmStopBeingPsaFormProvider
 import identifiers.invitations.PSANameId
 import models.{IndividualDetails, MinimalPSA}
+import org.scalatest.concurrent.ScalaFutures
 import play.api.data.Form
 import play.api.libs.json.Json
-import play.api.mvc.AnyContentAsFormUrlEncoded
+import play.api.mvc.{AnyContentAsFormUrlEncoded, RequestHeader}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import uk.gov.hmrc.domain.PsaId
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import utils.countryOptions.CountryOptions
 import views.html.deregister.confirmStopBeingPsa
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase{
+class ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase with ScalaFutures {
 
   import ConfirmStopBeingPsaControllerSpec._
 
@@ -47,8 +49,15 @@ class ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase{
       redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)
     }
 
-    "return OK and the correct view for a GET" in {
-      val result = controller(minimalPsaDetailsIndividual).onPageLoad()(fakeRequest)
+    "return OK and the correct view for a GET and ensure audit service is successfully called" in {
+      val psa = PsaId("A1234567")
+      val user = "Fred"
+      val request = fakeRequest.withJsonBody(Json.obj(
+        "userId" -> user,
+        "psaId" -> psa)
+      )
+
+      val result = controller(minimalPsaDetailsIndividual).onPageLoad()(request)
 
       status(result) mustBe OK
       contentAsString(result) mustBe viewAsString()
@@ -89,6 +98,8 @@ class ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase{
 
 object ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase {
 
+  val fakeAuditService = new StubSuccessfulAuditService()
+
   private def psaDetailsUrl = frontendAppConfig.registeredPsaDetailsUrl
 
   private val formProvider = new ConfirmStopBeingPsaFormProvider
@@ -107,8 +118,8 @@ object ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase {
 
 
   private def fakeTaxEnrolmentsConnector: TaxEnrolmentsConnector = new TaxEnrolmentsConnector{
-    override def deEnrol(groupId: String, enrolmentKey: String)(
-      implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = Future.successful(HttpResponse(NO_CONTENT))
+    override def deEnrol(groupId: String, psaId: String, userId:String)(
+      implicit hc: HeaderCarrier, ec: ExecutionContext, rh:RequestHeader): Future[HttpResponse] = Future.successful(HttpResponse(NO_CONTENT))
   }
 
   private def fakeDeregistrationConnector: DeregistrationConnector = new DeregistrationConnector{
