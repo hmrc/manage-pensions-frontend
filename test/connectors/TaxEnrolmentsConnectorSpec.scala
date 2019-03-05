@@ -16,8 +16,13 @@
 
 package connectors
 
+import audit.{AuditService, DeregisterEvent, StubSuccessfulAuditService}
 import com.github.tomakehurst.wiremock.client.WireMock._
 import org.scalatest.{AsyncWordSpec, MustMatchers, RecoverMethods}
+import play.api.inject.bind
+import play.api.inject.guice.GuiceableModule
+import play.api.mvc.RequestHeader
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, Upstream4xxResponse}
 import utils.WireMockHelper
@@ -29,17 +34,29 @@ class TaxEnrolmentsConnectorSpec extends AsyncWordSpec with MustMatchers with Wi
   override protected def portConfigKey: String = "microservice.services.tax-enrolments.port"
 
   private implicit val hc: HeaderCarrier = HeaderCarrier()
+  private implicit val rh: RequestHeader = FakeRequest("", "")
 
   private val testPsaId = "test-psa-id"
   private val testUserId = "test"
   private val testEnrolmentKey = s"HMRC-PODS-ORG~PSA-ID~$testPsaId"
 
-  private def deEnrolUrl: String = s"/tax-enrolments/users/$testUserId/enrolments/$testEnrolmentKey"
+  private def deEnrolUrl: String = s"/tax-enrolments/users/$testUserId/enrolments/$testPsaId"
+
+  val fakeAuditService = new StubSuccessfulAuditService()
+
+  override def beforeEach(): Unit = {
+    fakeAuditService.reset()
+    super.beforeEach()
+  }
+
+  override protected def bindings: Seq[GuiceableModule] =
+    Seq(
+      bind[AuditService].toInstance(fakeAuditService)
+    )
 
   private lazy val connector = injector.instanceOf[TaxEnrolmentsConnector]
 
-  ".deEnrol" must {
-
+  "deEnrol" must {
     "return a successful response" when {
       "enrolments returns code NO_CONTENT" which {
         "means the de-enrolment was successful" in {
@@ -51,27 +68,30 @@ class TaxEnrolmentsConnectorSpec extends AsyncWordSpec with MustMatchers with Wi
               )
           )
 
-          connector.deEnrol(testUserId, testEnrolmentKey) map {
+          val expectedAuditEvent = DeregisterEvent(testUserId, testPsaId)
+
+          connector.deEnrol(testUserId, testPsaId, testUserId) map {
             result =>
               result.status mustEqual NO_CONTENT
+              fakeAuditService.verifySent(expectedAuditEvent) mustBe true
           }
-
         }
       }
     }
+
     "return a failure" when {
       "de-enrolment returns BAD_REQUEST" in {
 
-          server.stubFor(
-            delete(urlEqualTo(deEnrolUrl))
-              .willReturn(
-                badRequest
-              )
-          )
+        server.stubFor(
+          delete(urlEqualTo(deEnrolUrl))
+            .willReturn(
+              badRequest
+            )
+        )
 
-          recoverToSucceededIf[BadRequestException] {
-            connector.deEnrol(testUserId, testEnrolmentKey)
-          }
+        recoverToSucceededIf[BadRequestException] {
+          connector.deEnrol(testUserId, testPsaId, testUserId)
+        }
 
       }
       "enrolments returns UNAUTHORISED" which {
@@ -85,7 +105,7 @@ class TaxEnrolmentsConnectorSpec extends AsyncWordSpec with MustMatchers with Wi
           )
 
           recoverToSucceededIf[Upstream4xxResponse] {
-            connector.deEnrol(testUserId, testEnrolmentKey)
+            connector.deEnrol(testUserId, testPsaId, testUserId)
           }
 
         }

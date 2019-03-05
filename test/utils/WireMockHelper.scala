@@ -21,7 +21,7 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Suite}
 import play.api.Application
 import play.api.inject.Injector
-import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.inject.guice.{GuiceApplicationBuilder, GuiceableModule}
 
 trait WireMockHelper extends BeforeAndAfterAll with BeforeAndAfterEach {
   this: Suite =>
@@ -37,9 +37,12 @@ trait WireMockHelper extends BeforeAndAfterAll with BeforeAndAfterEach {
         "auditing.enabled" -> false,
         "metrics.enabled" -> false
       )
+      .overrides(bindings: _*)
       .build()
 
   protected lazy val injector: Injector = app.injector
+
+  protected def bindings: Seq[GuiceableModule] = Seq.empty[GuiceableModule]
 
   override def beforeAll(): Unit = {
     server.start()

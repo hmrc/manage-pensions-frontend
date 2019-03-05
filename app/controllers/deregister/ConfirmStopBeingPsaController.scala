@@ -16,7 +16,6 @@
 
 package controllers.deregister
 
-import audit.{AuditService, DeregisterEvent}
 import config.FrontendAppConfig
 import connectors.{DeregistrationConnector, MinimalPsaConnector, TaxEnrolmentsConnector}
 import controllers.actions.AuthAction
@@ -38,8 +37,7 @@ class ConfirmStopBeingPsaController @Inject()(
                                                formProvider: ConfirmStopBeingPsaFormProvider,
                                                minimalPsaConnector: MinimalPsaConnector,
                                                deregistration: DeregistrationConnector,
-                                               enrolments: TaxEnrolmentsConnector,
-                                               val auditService: AuditService
+                                               enrolments: TaxEnrolmentsConnector
                                              )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport {
 
   val form: Form[Boolean] = formProvider()
@@ -69,9 +67,8 @@ class ConfirmStopBeingPsaController @Inject()(
                   if (value) {
                     for {
                       _ <- deregistration.stopBeingPSA(psaId)
-                      _ <- enrolments.deEnrol(userId, psaId)
+                      _ <- enrolments.deEnrol(userId, psaId, userId)
                     } yield {
-                      auditService.sendEvent(DeregisterEvent(userId, psaId))
                       Redirect(controllers.deregister.routes.SuccessfulDeregistrationController.onPageLoad())
                     }
                   } else {

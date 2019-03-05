@@ -16,18 +16,17 @@
 
 package controllers.deregister
 
-import audit.{DeregisterEvent, StubSuccessfulAuditService}
+import audit.StubSuccessfulAuditService
 import connectors._
 import controllers.ControllerSpecBase
 import controllers.actions._
-import controllers.remove.RemovalDateControllerSpec.{day, month, year}
 import forms.deregister.ConfirmStopBeingPsaFormProvider
 import identifiers.invitations.PSANameId
 import models.{IndividualDetails, MinimalPSA}
 import org.scalatest.concurrent.ScalaFutures
 import play.api.data.Form
 import play.api.libs.json.Json
-import play.api.mvc.AnyContentAsFormUrlEncoded
+import play.api.mvc.{AnyContentAsFormUrlEncoded, RequestHeader}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.PsaId
@@ -51,8 +50,6 @@ class ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase with ScalaFut
     }
 
     "return OK and the correct view for a GET and ensure audit service is successfully called" in {
-      fakeAuditService.reset()
-
       val psa = PsaId("A1234567")
       val user = "Fred"
       val request = fakeRequest.withJsonBody(Json.obj(
@@ -64,13 +61,6 @@ class ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase with ScalaFut
 
       status(result) mustBe OK
       contentAsString(result) mustBe viewAsString()
-
-      val expectedAuditEvent = DeregisterEvent(user, psa.id)
-
-      whenReady(result) {
-        _ =>
-          fakeAuditService.verifySent(expectedAuditEvent)
-      }
     }
 
     "return to session expired if psaName is not present for Post" in {
@@ -128,8 +118,8 @@ object ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase {
 
 
   private def fakeTaxEnrolmentsConnector: TaxEnrolmentsConnector = new TaxEnrolmentsConnector{
-    override def deEnrol(groupId: String, enrolmentKey: String)(
-      implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = Future.successful(HttpResponse(NO_CONTENT))
+    override def deEnrol(groupId: String, psaId: String, userId:String)(
+      implicit hc: HeaderCarrier, ec: ExecutionContext, rh:RequestHeader): Future[HttpResponse] = Future.successful(HttpResponse(NO_CONTENT))
   }
 
   private def fakeDeregistrationConnector: DeregistrationConnector = new DeregistrationConnector{
@@ -153,8 +143,7 @@ object ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase {
       formProvider,
       fakeMinimalPsaConnector(minimalPsaDetails),
       fakeDeregistrationConnector,
-      fakeTaxEnrolmentsConnector,
-      fakeAuditService
+      fakeTaxEnrolmentsConnector
     )
 
   private def viewAsString(): String =
