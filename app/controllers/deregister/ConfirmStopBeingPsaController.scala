@@ -67,7 +67,7 @@ class ConfirmStopBeingPsaController @Inject()(
                   if (value) {
                     for {
                       _ <- deregistration.stopBeingPSA(psaId)
-                      _ <- enrolments.deEnrol(userId, psaId, userId)
+                      _ <- enrolments.deEnrol(userId, psaId, request.externalId)
                     } yield {
                       Redirect(controllers.deregister.routes.SuccessfulDeregistrationController.onPageLoad())
                     }
