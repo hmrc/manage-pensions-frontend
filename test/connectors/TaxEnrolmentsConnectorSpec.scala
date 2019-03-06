@@ -39,7 +39,7 @@ class TaxEnrolmentsConnectorSpec extends AsyncWordSpec with MustMatchers with Wi
   private val testPsaId = "test-psa-id"
   private val testUserId = "test"
 
-  private def deEnrolUrl: String = s"/tax-enrolments/users/$testUserId/enrolments/$testPsaId"
+  private def deEnrolUrl: String = s"/tax-enrolments/users/$testUserId/enrolments/HMRC-PODS-ORG~PSA-ID~$testPsaId"
 
   private val fakeAuditService = new StubSuccessfulAuditService()
 
