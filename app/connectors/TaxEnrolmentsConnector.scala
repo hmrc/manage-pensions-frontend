@@ -51,7 +51,7 @@ class TaxEnrolmentsConnectorImpl @Inject()(val http: HttpClient, config: Fronten
   private def deEnrolmentRequest(groupId: String, psaId: String, userId: String)
              (implicit hc: HeaderCarrier, ec: ExecutionContext, rh:RequestHeader): Future[HttpResponse] = {
 
-    val enrolmentKey = s"HMRC-PODS-ORG~PSA-ID~$psaId"
+    val enrolmentKey = s"HMRC-PODS-ORG~PSAID~$psaId"
     val deEnrolmentUrl = config.taxDeEnrolmentUrl.format(groupId, enrolmentKey)
     http.DELETE(deEnrolmentUrl) flatMap {
       case response if response.status equals NO_CONTENT =>
