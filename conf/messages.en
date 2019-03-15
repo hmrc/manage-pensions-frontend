@@ -311,3 +311,8 @@ messages__returnToPsaDetails__link = Return to {0}
 messages__deregisterSuccess__title = You have stopped being a pension scheme administrator
 messages__deregisterSuccess__heading = You have stopped being a pension scheme administrator
 messages__deregisterSuccess_p1 = Your administrator ID has been deleted.
+
+messages__unableToStopBeingPsa__title = You cannot stop being a pension scheme administrator
+messages__unableToStopBeingPsa__heading = You cannot stop being a pension scheme administrator
+messages__unableToStopBeingPsa_p1 = You must remove yourself from all of the schemes you are a scheme administrator of.
+messages__unableToStopBeingPsa__continue__link = Continue to your pension schemes
