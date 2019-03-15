@@ -18,7 +18,7 @@ package controllers.deregister
 
 import config.FrontendAppConfig
 import connectors.{DeregistrationConnector, MinimalPsaConnector, TaxEnrolmentsConnector}
-import controllers.actions.{AllowAccessActionProvider, AuthAction}
+import controllers.actions.{AllowAccessForNonSuspendedUsersActionProvider, AuthAction}
 import forms.deregister.ConfirmStopBeingPsaFormProvider
 import javax.inject.Inject
 import models.MinimalPSA
@@ -38,7 +38,7 @@ class ConfirmStopBeingPsaController @Inject()(
                                                minimalPsaConnector: MinimalPsaConnector,
                                                deregistration: DeregistrationConnector,
                                                enrolments: TaxEnrolmentsConnector,
-                                               allowAccess: AllowAccessActionProvider
+                                               allowAccess: AllowAccessForNonSuspendedUsersActionProvider
                                              )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport {
 
   val form: Form[Boolean] = formProvider()
