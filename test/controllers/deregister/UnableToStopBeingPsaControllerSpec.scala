@@ -19,9 +19,7 @@ package controllers.deregister
 import controllers.ControllerSpecBase
 import controllers.actions.FakeAuthAction
 import org.scalatest.concurrent.ScalaFutures
-import play.api.libs.json.Json
 import play.api.test.Helpers._
-import uk.gov.hmrc.domain.PsaId
 import views.html.deregister.unableToStopBeingPsa
 
 class UnableToStopBeingPsaControllerSpec extends ControllerSpecBase with ScalaFutures {
@@ -30,14 +28,8 @@ class UnableToStopBeingPsaControllerSpec extends ControllerSpecBase with ScalaFu
 
   "UnableToStopBeingPsaController" must {
     "return OK and the correct view for a GET" in {
-      val psa = PsaId("A1234567")
-      val user = "Fred"
-      val request = fakeRequest.withJsonBody(Json.obj(
-        "userId" -> user,
-        "psaId" -> psa)
-      )
 
-      val result = controller.onPageLoad()(request)
+      val result = controller.onPageLoad()(fakeRequest)
 
       status(result) mustBe OK
       contentAsString(result) mustBe viewAsString()
