@@ -63,6 +63,13 @@ class ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase with ScalaFut
       contentAsString(result) mustBe viewAsString()
     }
 
+    "return to you cannot stop being a psa page if psa suspended flag is set in minimal details" in {
+      val result = controller(minimalPsaDetailsNoneSuspended).onPageLoad()(fakeRequest)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(controllers.deregister.routes.UnableToStopBeingPsaController.onPageLoad().url)
+    }
+
     "return to session expired if psaName is not present for Post" in {
       val result = controller().onSubmit()(postRequest)
 
@@ -117,34 +124,44 @@ object ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase {
   private def testData = new FakeDataRetrievalAction(Some(Json.obj(PSANameId.toString -> "psaName")))
 
 
-  private def fakeTaxEnrolmentsConnector: TaxEnrolmentsConnector = new TaxEnrolmentsConnector{
-    override def deEnrol(groupId: String, psaId: String, userId:String)(
-      implicit hc: HeaderCarrier, ec: ExecutionContext, rh:RequestHeader): Future[HttpResponse] = Future.successful(HttpResponse(NO_CONTENT))
+  private def fakeTaxEnrolmentsConnector: TaxEnrolmentsConnector = new TaxEnrolmentsConnector {
+    override def deEnrol(groupId: String, psaId: String, userId: String)(
+      implicit hc: HeaderCarrier, ec: ExecutionContext, rh: RequestHeader): Future[HttpResponse] = Future.successful(HttpResponse(NO_CONTENT))
   }
 
-  private def fakeDeregistrationConnector: DeregistrationConnector = new DeregistrationConnector{
+  private def fakeDeregistrationConnector: DeregistrationConnector = new DeregistrationConnector {
     override def stopBeingPSA(psaId: String)(
       implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = Future.successful(HttpResponse(NO_CONTENT))
   }
 
-  private def fakeMinimalPsaConnector(minimalPsaDetailsIndividual: MinimalPSA): MinimalPsaConnector = new MinimalPsaConnector{
+  private def fakeMinimalPsaConnector(minimalPsaDetailsIndividual: MinimalPSA): MinimalPsaConnector = new MinimalPsaConnector {
     override def getMinimalPsaDetails(psaId: String)(
       implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSA] = Future.successful(minimalPsaDetailsIndividual)
   }
 
-  private val minimalPsaDetailsIndividual = MinimalPSA("test@test.com",isPsaSuspended = false, None, Some(IndividualDetails("John", Some("Doe"), "Doe")))
-  private val minimalPsaDetailsNone = MinimalPSA("test@test.com",isPsaSuspended = false, None, None)
+  private val minimalPsaDetailsIndividual = MinimalPSA("test@test.com", isPsaSuspended = false, None, Some(IndividualDetails("John", Some("Doe"), "Doe")))
+  private val minimalPsaDetailsNone = MinimalPSA("test@test.com", isPsaSuspended = false, None, None)
+  private val minimalPsaDetailsNoneSuspended = MinimalPSA("test@test.com", isPsaSuspended = true, None, None)
 
-  private def controller(minimalPsaDetails :MinimalPSA = minimalPsaDetailsNone) =
+  private def fakeAllowAccess(minimalPsaConnector: MinimalPsaConnector): AllowAccessForNonSuspendedUsersActionProvider = {
+    new AllowAccessForNonSuspendedUsersActionProvider {
+      override def apply(): AllowAccessForNonSuspendedUsersAction = new AllowAccessForNonSuspendedUsersAction(minimalPsaConnector)
+    }
+  }
+
+  private def controller(minimalPsaDetails: MinimalPSA = minimalPsaDetailsNone) = {
+    val minimalDetailsConnector = fakeMinimalPsaConnector(minimalPsaDetails)
     new ConfirmStopBeingPsaController(
       frontendAppConfig,
       FakeAuthAction(),
       messagesApi,
       formProvider,
-      fakeMinimalPsaConnector(minimalPsaDetails),
+      minimalDetailsConnector,
       fakeDeregistrationConnector,
-      fakeTaxEnrolmentsConnector
+      fakeTaxEnrolmentsConnector,
+      fakeAllowAccess(minimalDetailsConnector)
     )
+  }
 
   private def viewAsString(): String =
     confirmStopBeingPsa(frontendAppConfig, form, "John Doe Doe")(fakeRequest, messages).toString
