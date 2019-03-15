@@ -1,0 +1,55 @@
+/*
+ * Copyright 2019 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package controllers.actions
+
+import com.google.inject.Inject
+import connectors.MinimalPsaConnector
+import models.requests.AuthenticatedRequest
+import play.api.mvc.Results._
+import play.api.mvc.{ActionFilter, Result}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.HeaderCarrierConverter
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+
+class AllowAccessAction(minimalPsaConnector: MinimalPsaConnector) extends ActionFilter[AuthenticatedRequest]{
+
+  override protected def filter[A](request: AuthenticatedRequest[A]): Future[Option[Result]] = {
+    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
+
+    minimalPsaConnector.getMinimalPsaDetails(request.psaId.id).map { minimalDetails =>
+      if (minimalDetails.isPsaSuspended) {
+        Some(Redirect(controllers.deregister.routes.UnableToStopBeingPsaController.onPageLoad()))
+      } else {
+        None
+      }
+    }
+
+  }
+
+}
+
+class AllowAccessActionProviderImpl@Inject()(minimalPsaConnector: MinimalPsaConnector) extends AllowAccessActionProvider{
+  def apply(): AllowAccessAction = {
+    new AllowAccessAction(minimalPsaConnector)
+  }
+}
+
+trait AllowAccessActionProvider{
+  def apply() : AllowAccessAction
+}
