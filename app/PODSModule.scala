@@ -31,6 +31,7 @@
  */
 
 import com.google.inject.AbstractModule
+import controllers.actions.{AllowAccessForNonSuspendedUsersActionProvider, AllowAccessForNonSuspendedUsersActionProviderImpl}
 import utils.Navigator
 import utils.annotations._
 import utils.countryOptions.{CountryOptions, CountryOptionsEUAndEEA}
@@ -58,5 +59,8 @@ class PODSModule extends AbstractModule {
     bind(classOf[Navigator])
       .annotatedWith(classOf[PsaDeRegistration])
       .to(classOf[PsaDeRegistrationNavigator])
+
+    bind(classOf[AllowAccessForNonSuspendedUsersActionProvider])
+      .to(classOf[AllowAccessForNonSuspendedUsersActionProviderImpl])
   }
 }
