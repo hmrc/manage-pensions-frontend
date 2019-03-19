@@ -255,7 +255,7 @@ messages__schemeDetails__view_details_link = View the registered scheme details
 messages__schemeDetails__opened_date_head = This scheme was opened on:
 messages__schemeDetails__psa_list_head = Pension scheme administrators
 messages__schemeDetails__invite_link = Add a scheme administrator
-messages__schemeDetails__invite_p1 = You will need the name and administrator ID of who you want to add. They will receive an invitation which they will have to accept.
+messages__schemeDetails__invite_p1 = To add a pension administrator they must be registered with the managing pension scheme service. You will need the name and administrator ID. They will get an invitation that they will have to accept.
 messages__schemeDetails__return_link = Return to your pension schemes
 messages__schemeDetails__remove = Remove
 
