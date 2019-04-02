@@ -16,6 +16,7 @@
 
 package models
 
+import models.SchemeStatus.WoundUp
 import org.joda.time.LocalDate
 import org.scalacheck.Gen
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
@@ -29,8 +30,8 @@ class PsaSchemeDetailsSpec extends WordSpec with MustMatchers with GeneratorDriv
   "SchemeDetailsController.canRemovePsa" must {
 
     "return false " when {
-      "there are no other PSAs for all values of status" in {
-        val statuses = Gen.oneOf(SchemeStatus.statuses)
+      "there are no other PSAs for all values of status except for WoundUp" in {
+        val statuses = Gen.oneOf(SchemeStatus.statuses.filterNot(_ == WoundUp))
 
         forAll(statuses) {
           status =>
@@ -77,8 +78,8 @@ class PsaSchemeDetailsSpec extends WordSpec with MustMatchers with GeneratorDriv
         PsaSchemeDetails.canRemovePsa(testPsaId1, scheme) mustBe true
       }
 
-      "there are other PSAs and the scheme has a status of Wound-Up and not removing on the same day as association" in {
-        val scheme = testScheme(SchemeStatus.WoundUp, testPsa1(), testPsa2)
+      "there are no other PSAs and the scheme has a status of Wound-Up and not removing on the same day as association" in {
+        val scheme = testScheme(SchemeStatus.WoundUp, testPsa1())
         PsaSchemeDetails.canRemovePsa(testPsaId1, scheme) mustBe true
       }
     }
