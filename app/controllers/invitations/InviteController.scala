@@ -41,7 +41,7 @@ class InviteController @Inject()(authenticate: AuthAction,
           schemeDetailsConnector.getSchemeDetails(request.psaId.id, "srn", srn).flatMap { scheme =>
             val minimalSchemeDetail = MinimalSchemeDetail(srn, scheme.schemeDetails.pstr, scheme.schemeDetails.name)
             userAnswersCacheConnector.save(request.externalId, MinimalSchemeDetailId, minimalSchemeDetail).map { _ =>
-              Redirect(controllers.invitations.routes.PsaNameController.onPageLoad(NormalMode))
+              Redirect(controllers.invitations.routes.WhatYouWillNeedController.onPageLoad())
             }
           }
         }

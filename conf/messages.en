@@ -7,6 +7,7 @@ site.change = Change
 site.confirm = Confirm
 site.yes = Yes
 site.no = No
+site.return_to = Return to {0}
 
 checkYourAnswers.title = Check your answers
 checkYourAnswers.heading = Check your answers
@@ -316,3 +317,10 @@ messages__unableToStopBeingPsa__title = You cannot stop being a pension scheme a
 messages__unableToStopBeingPsa__heading = You cannot stop being a pension scheme administrator
 messages__unableToStopBeingPsa_p1 = You must remove yourself from all of the schemes you are a scheme administrator of.
 messages__unableToStopBeingPsa__continue__link = Continue to your pension schemes
+
+messages__whatYouWillNeed__title = What you will need
+messages__whatYouWillNeed__heading = What you will need
+messages__whatYouWillNeed__lede = The scheme administrator you are adding must have registered for that role using this service.
+messages__whatYouWillNeed__list_heading = You will need to tell us their:
+messages__whatYouWillNeed__item1 = name they used to register
+messages__whatYouWillNeed__item2 = administrator ID

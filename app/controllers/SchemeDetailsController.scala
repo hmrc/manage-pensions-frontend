@@ -20,11 +20,11 @@ import config.FrontendAppConfig
 import connectors.{ListOfSchemesConnector, SchemeDetailsConnector, UserAnswersCacheConnector}
 import controllers.actions._
 import handlers.ErrorHandler
-import identifiers.SchemeSrnId
+import identifiers.{SchemeNameId, SchemeSrnId}
 import javax.inject.Inject
 import models._
 import org.joda.time.LocalDate
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.DateHelper
@@ -51,14 +51,16 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
             listSchemesConnector.getListOfSchemes(request.psaId.id).flatMap { list =>
               val schemeDetail = scheme.schemeDetails
               val isSchemeOpen = schemeDetail.status.equalsIgnoreCase("open")
-              userAnswersCacheConnector.save(request.externalId, SchemeSrnId, srn.id).map { _ =>
-                Ok(schemeDetails(appConfig,
-                  schemeDetail.name,
-                  openedDate(srn.id, list, isSchemeOpen),
-                  administrators(request.psaId.id, scheme),
-                  srn.id,
-                  isSchemeOpen
-                ))
+              userAnswersCacheConnector.save(request.externalId, SchemeSrnId, srn.id).flatMap { _ =>
+                userAnswersCacheConnector.save(request.externalId, SchemeNameId, schemeDetail.name).map { _ =>
+                  Ok(schemeDetails(appConfig,
+                    schemeDetail.name,
+                    openedDate(srn.id, list, isSchemeOpen),
+                    administrators(request.psaId.id, scheme),
+                    srn.id,
+                    isSchemeOpen
+                  ))
+                }
               }
             }
           } else {
