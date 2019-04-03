@@ -63,7 +63,7 @@ class InviteControllerSpec extends SpecBase with MockitoSugar {
       val result = controller(isSuspended = false).onPageLoad(srn)(fakeRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.invitations.routes.PsaNameController.onPageLoad(NormalMode).url)
+      redirectLocation(result) mustBe Some(controllers.invitations.routes.WhatYouWillNeedController.onPageLoad().url)
 
       FakeUserAnswersCacheConnector.verify(MinimalSchemeDetailId, MinimalSchemeDetail(srn, Some(pstr), schemeName))
     }
