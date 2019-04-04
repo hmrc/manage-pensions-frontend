@@ -16,6 +16,7 @@
 
 package models
 
+import models.SchemeStatus.WoundUp
 import org.joda.time.LocalDate
 import play.api.libs.json.{Json, OFormat}
 
@@ -173,14 +174,15 @@ object PsaSchemeDetails {
   implicit val formats: OFormat[PsaSchemeDetails] = Json.format[PsaSchemeDetails]
 
   def canRemovePsa(psaId: String, scheme: PsaSchemeDetails): Boolean = {
+    val status = SchemeStatus.forValue(scheme.schemeDetails.status)
 
-    SchemeStatus.forValue(scheme.schemeDetails.status).canRemovePsa &&
-      scheme.psaDetails.exists(psaDetails =>
-        isOtherPSAsExist(psaId, psaDetails) && psaNotRemovingOnSameDay(psaId, psaDetails)
+    status.canRemovePsa && scheme.psaDetails.exists(psaDetails =>
+        hasMinimumAttachedPSAs(psaId, psaDetails, status) && psaNotRemovingOnSameDay(psaId, psaDetails)
       )
   }
 
-  private def isOtherPSAsExist(psaId: String, psaDetails: Seq[PsaDetails]): Boolean = psaDetails.exists(_.id != psaId)
+  private def hasMinimumAttachedPSAs(psaId: String, psaDetails: Seq[PsaDetails], status: SchemeStatus): Boolean =
+    if(status == WoundUp) {true} else { psaDetails.exists(_.id != psaId) }
 
   private def psaNotRemovingOnSameDay(psaId: String, psaDetails: Seq[PsaDetails]): Boolean = {
     !psaDetails.exists(details => details.id == psaId && details.relationshipDate.exists(new LocalDate(_).isEqual(LocalDate.now())))
