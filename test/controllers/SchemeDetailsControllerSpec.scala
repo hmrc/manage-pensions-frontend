@@ -16,6 +16,7 @@
 
 package controllers
 
+import config.FeatureSwitchManagementService
 import connectors._
 import controllers.actions.{DataRetrievalAction, _}
 import handlers.ErrorHandler
@@ -41,6 +42,15 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
     "features.work-package-one-enabled" -> true
   ).build()
 
+  val featureSwitchManagementService:FeatureSwitchManagementService = new FeatureSwitchManagementService {
+    override def change(name: String, newValue: Boolean): Boolean = ???
+
+    override def get(name: String): Boolean = false
+
+    override def reset(name: String): Unit = ???
+
+  }
+
   def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): SchemeDetailsController = {
     val eh = new ErrorHandler(frontendAppConfig, messagesApi)
     new SchemeDetailsController(frontendAppConfig,
@@ -49,7 +59,10 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
       fakeListOfSchemesConnector,
       FakeAuthAction(),
       dataRetrievalAction,
-      FakeUserAnswersCacheConnector, eh)
+      FakeUserAnswersCacheConnector,
+      eh,
+      featureSwitchManagementService
+      )
   }
 
   def viewAsString(openDate: Option[String] = openDate, administrators: Option[Seq[AssociatedPsa]] = administrators, isSchemeOpen: Boolean = true): String =

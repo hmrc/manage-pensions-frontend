@@ -46,6 +46,12 @@ class RemovePsaControllerSpec extends SpecBase {
                                     schemeIdType: String,
                                     idNumber: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[PsaSchemeDetails] =
         Future.successful(psaSchemeDetails)
+      override def getSchemeDetailsVariations(psaId: String,
+                                              schemeIdType: String,
+                                              idNumber: String)(implicit hc: HeaderCarrier,
+                                                                ec: ExecutionContext): Future[UserAnswers] =
+        Future.successful(UserAnswers())
+      
     }
 
   def controller(dataRetrievalAction: DataRetrievalAction = data, psaSchemeDetails: PsaSchemeDetails = psaSchemeDetailsResponse,
