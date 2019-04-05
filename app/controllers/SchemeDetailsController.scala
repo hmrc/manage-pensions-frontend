@@ -16,18 +16,20 @@
 
 package controllers
 
-import config.FrontendAppConfig
+import config.{FeatureSwitchManagementService, FrontendAppConfig}
 import connectors.{ListOfSchemesConnector, SchemeDetailsConnector, UserAnswersCacheConnector}
 import controllers.actions._
 import handlers.ErrorHandler
 import identifiers.{SchemeNameId, SchemeSrnId}
 import javax.inject.Inject
 import models._
+import models.requests.AuthenticatedRequest
 import org.joda.time.LocalDate
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent}
+import play.api.libs.json.JsPath
+import play.api.mvc.{Action, AnyContent, Result}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import utils.DateHelper
+import utils.{DateHelper, Toggles}
 import viewmodels.AssociatedPsa
 import views.html.schemeDetails
 
@@ -40,46 +42,106 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                                         authenticate: AuthAction,
                                         getData: DataRetrievalAction,
                                         userAnswersCacheConnector: UserAnswersCacheConnector,
-                                        errorHandler: ErrorHandler
+                                        errorHandler: ErrorHandler,
+                                        featureSwitchManagementService: FeatureSwitchManagementService
                                        )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport {
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate.async {
     implicit request =>
-      userAnswersCacheConnector.removeAll(request.externalId).flatMap {_ =>
-        schemeDetailsConnector.getSchemeDetails(request.psaId.id, "srn", srn).flatMap { scheme =>
-          if (scheme.psaDetails.toSeq.flatten.exists(_.id == request.psaId.id)) {
-            listSchemesConnector.getListOfSchemes(request.psaId.id).flatMap { list =>
-              val schemeDetail = scheme.schemeDetails
-              val isSchemeOpen = schemeDetail.status.equalsIgnoreCase("open")
-              userAnswersCacheConnector.save(request.externalId, SchemeSrnId, srn.id).flatMap { _ =>
-                userAnswersCacheConnector.save(request.externalId, SchemeNameId, schemeDetail.name).map { _ =>
-                  Ok(schemeDetails(appConfig,
-                    schemeDetail.name,
-                    openedDate(srn.id, list, isSchemeOpen),
-                    administrators(request.psaId.id, scheme),
-                    srn.id,
-                    isSchemeOpen
-                  ))
-                }
-              }
-            }
-          } else {
-            Future.successful(NotFound(errorHandler.notFoundTemplate))
-          }
-        }
+      if (featureSwitchManagementService.get(Toggles.isVariationsEnabled)) {
+        onPageLoadVariations(srn)(request)
+      } else {
+        onPageLoadNonVariations(srn)(request)
       }
   }
+
+  def onPageLoadNonVariations(srn: SchemeReferenceNumber)(implicit request: AuthenticatedRequest[AnyContent]): Future[Result] =
+    userAnswersCacheConnector.removeAll(request.externalId).flatMap { _ =>
+      schemeDetailsConnector.getSchemeDetails(request.psaId.id, "srn", srn).flatMap { scheme =>
+        if (scheme.psaDetails.toSeq.flatten.exists(_.id == request.psaId.id)) {
+          listSchemesConnector.getListOfSchemes(request.psaId.id).flatMap { list =>
+            val schemeDetail = scheme.schemeDetails
+            val isSchemeOpen = schemeDetail.status.equalsIgnoreCase("open")
+            userAnswersCacheConnector.save(request.externalId, SchemeSrnId, srn.id).flatMap { _ =>
+              userAnswersCacheConnector.save(request.externalId, SchemeNameId, schemeDetail.name).map { _ =>
+                Ok(schemeDetails(appConfig,
+                  schemeDetail.name,
+                  openedDate(srn.id, list, isSchemeOpen),
+                  administrators(request.psaId.id, scheme),
+                  srn.id,
+                  isSchemeOpen
+                ))
+              }
+            }
+          }
+        } else {
+          Future.successful(NotFound(errorHandler.notFoundTemplate))
+        }
+      }
+    }
+
+  def onPageLoadVariations(srn: SchemeReferenceNumber)(implicit request: AuthenticatedRequest[AnyContent]): Future[Result] =
+    userAnswersCacheConnector.removeAll(request.externalId).flatMap { _ =>
+      schemeDetailsConnector.getSchemeDetailsVariations(request.psaId.id, "srn", srn).flatMap { schemeDetailsUA =>
+
+        val aa = JsPath \ "id"
+
+        val psaDetails = schemeDetailsUA.json.transform((JsPath \ "psaDetails").json.pick).asOpt.map { xx =>
+          xx.transform(aa.json.pick).asOpt
+        }
+
+
+
+
+
+        println( "\n>>>>>>>>>>>>>>>" + psaDetails)
+
+
+
+        //apply(schemeDetailsUA.json)
+
+
+
+        //psaDetails
+
+        Future.successful(Ok(""))
+
+
+        //if (schemeDetailsUA.get
+
+//        if (schemeDetailsUA.psaDetails.toSeq.flatten.exists(_.id == request.psaId.id)) {
+//          listSchemesConnector.getListOfSchemes(request.psaId.id).flatMap { list =>
+//            val schemeDetail = schemeDetailsUA.schemeDetails
+//            val isSchemeOpen = schemeDetail.status.equalsIgnoreCase("open")
+//            userAnswersCacheConnector.save(request.externalId, SchemeSrnId, srn.id).flatMap { _ =>
+//              userAnswersCacheConnector.save(request.externalId, SchemeNameId, schemeDetail.name).map { _ =>
+//                Ok(schemeDetails(appConfig,
+//                  schemeDetail.name,
+//                  openedDate(srn.id, list, isSchemeOpen),
+//                  administrators(request.psaId.id, scheme),
+//                  srn.id,
+//                  isSchemeOpen
+//                ))
+//              }
+//            }
+//          }
+//        } else {
+//          Future.successful(NotFound(errorHandler.notFoundTemplate))
+//        }
+      }
+    }
+
 
   private def administrators(psaId: String, psaSchemeDetails: PsaSchemeDetails): Option[Seq[AssociatedPsa]] =
     psaSchemeDetails.psaDetails.map(
       _.flatMap {
-          psa =>
-            PsaDetails.getPsaName(psa).map {
-              name =>
-                val canRemove = psa.id.equals(psaId) && PsaSchemeDetails.canRemovePsa(psaId, psaSchemeDetails)
-                AssociatedPsa(name, canRemove)
-            }
-        }
+        psa =>
+          PsaDetails.getPsaName(psa).map {
+            name =>
+              val canRemove = psa.id.equals(psaId) && PsaSchemeDetails.canRemovePsa(psaId, psaSchemeDetails)
+              AssociatedPsa(name, canRemove)
+          }
+      }
     )
 
   private def openedDate(srn: String, list: ListOfSchemes, isSchemeOpen: Boolean): Option[String] = {
