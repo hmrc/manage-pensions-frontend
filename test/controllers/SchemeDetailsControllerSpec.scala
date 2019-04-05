@@ -23,12 +23,14 @@ import handlers.ErrorHandler
 import identifiers.SchemeSrnId
 import models.{PsaDetails, PsaSchemeDetails, SchemeReferenceNumber}
 import org.mockito.Matchers
-import org.mockito.Mockito.{reset, when}
+import org.mockito.Matchers.any
+import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.mockito.MockitoSugar
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.Helpers.{contentAsString, _}
 import testhelpers.CommonBuilders._
+import utils.UserAnswers
 import viewmodels.AssociatedPsa
 import views.html.schemeDetails
 
@@ -42,16 +44,17 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
     "features.work-package-one-enabled" -> true
   ).build()
 
-  val featureSwitchManagementService:FeatureSwitchManagementService = new FeatureSwitchManagementService {
+  def featureSwitchManagementService(toggleValue:Boolean):FeatureSwitchManagementService = new FeatureSwitchManagementService {
     override def change(name: String, newValue: Boolean): Boolean = ???
 
-    override def get(name: String): Boolean = false
+    override def get(name: String): Boolean = toggleValue
 
     override def reset(name: String): Unit = ???
 
   }
 
-  def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): SchemeDetailsController = {
+  def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData,
+                 variationsToggle:Boolean = false): SchemeDetailsController = {
     val eh = new ErrorHandler(frontendAppConfig, messagesApi)
     new SchemeDetailsController(frontendAppConfig,
       messagesApi,
@@ -61,7 +64,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
       dataRetrievalAction,
       FakeUserAnswersCacheConnector,
       eh,
-      featureSwitchManagementService
+      featureSwitchManagementService(variationsToggle)
       )
   }
 
@@ -105,6 +108,18 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
       val result = controller().onPageLoad(srn)(fakeRequest)
       status(result) mustBe OK
       contentAsString(result) mustBe viewAsString(administrators = updatedAdministrators)
+    }
+
+    "return OK and call the correct connector method for a GET where administrators a mix of individual and org where variations toggle is switched on" in {
+      reset(fakeSchemeDetailsConnector)
+      when(fakeSchemeDetailsConnector.getSchemeDetailsVariations(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(UserAnswers()))
+      when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(listOfSchemesResponse))
+      val result = controller(variationsToggle = true).onPageLoad(srn)(fakeRequest)
+      status(result) mustBe OK
+      verify(fakeSchemeDetailsConnector, times(1))
+        .getSchemeDetailsVariations(Matchers.any(),Matchers.any(),Matchers.any())(Matchers.any(),Matchers.any())
     }
 
     "return OK and the correct view for a GET when opened date is not returned by API" in {

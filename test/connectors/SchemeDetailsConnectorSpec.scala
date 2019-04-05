@@ -18,11 +18,12 @@ package connectors
 
 import base.JsonFileReader
 import com.github.tomakehurst.wiremock.client.WireMock._
+import models.PsaSchemeDetails
 import org.scalatest.{AsyncFlatSpec, Matchers}
 import play.api.http.Status
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
-import utils.WireMockHelper
+import utils.{UserAnswers, WireMockHelper}
 import testhelpers.CommonBuilders._
 
 class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper {
@@ -50,6 +51,28 @@ class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
 
     connector.getSchemeDetails(psaId, schemeIdType, idNumber).map(schemeDetails =>
       schemeDetails shouldBe psaSchemeDetailsResponse
+    )
+
+  }
+
+  "getSchemeDetailsVariations" should "return the SchemeDetails for a valid request/response" in {
+    val jsonResponse = """{"abc":"def"}"""
+    server.stubFor(
+      get(urlEqualTo(schemeDetailsUrl))
+        .withHeader("schemeIdType", equalTo(schemeIdType))
+        .withHeader("idNumber", equalTo(idNumber))
+        .willReturn(
+          aResponse()
+            .withStatus(Status.OK)
+            .withHeader("Content-Type", "application/json")
+            .withBody(jsonResponse)
+        )
+    )
+
+    val connector = injector.instanceOf[SchemeDetailsConnector]
+
+    connector.getSchemeDetailsVariations(psaId, schemeIdType, idNumber).map(schemeDetails =>
+      schemeDetails shouldBe UserAnswers(Json.parse(jsonResponse))
     )
 
   }

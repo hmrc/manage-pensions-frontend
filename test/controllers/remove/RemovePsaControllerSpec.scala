@@ -51,7 +51,7 @@ class RemovePsaControllerSpec extends SpecBase {
                                               idNumber: String)(implicit hc: HeaderCarrier,
                                                                 ec: ExecutionContext): Future[UserAnswers] =
         Future.successful(UserAnswers())
-      
+
     }
 
   def controller(dataRetrievalAction: DataRetrievalAction = data, psaSchemeDetails: PsaSchemeDetails = psaSchemeDetailsResponse,
