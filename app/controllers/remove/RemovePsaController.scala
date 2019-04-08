@@ -61,6 +61,7 @@ class RemovePsaController @Inject()(authenticate: AuthAction,
   }
 
   def renderPage(request: DataRequest[AnyContent], srn: String, minimalPsaDetails: MinimalPSA)(implicit hd: HeaderCarrier): Future[Result] = {
+    import identifiers.invitations.{PSANameId, PSTRId, SchemeNameId}
     for {
       scheme <- schemeDetailsConnector.getSchemeDetails(request.psaId.id, "srn", srn)
       _ <- userAnswersCacheConnector.save(request.externalId, PSANameId, getPsaName(minimalPsaDetails))
