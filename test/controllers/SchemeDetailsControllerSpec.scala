@@ -93,26 +93,33 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
     //      FakeUserAnswersCacheConnector.verify(SchemeSrnId, srn.id)
     //    }
     //
-//    "return OK and the correct view for a GET where administrators a mix of individual and org" in {
-//      val updatedAdministrators =
-//        Some(
-//          Seq(
-//            AssociatedPsa("partnetship name 2", true),
-//            AssociatedPsa("Smith A Tony", false)
-//          )
-//        )
-//
-//      reset(fakeSchemeDetailsConnector)
-//      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
-//        .thenReturn(Future.successful(schemeDetailsWithPsaOnlyResponseMixOfIndividualAndOrg))
-//      when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
-//        .thenReturn(Future.successful(listOfSchemesResponse))
-//      val result = controller().onPageLoad(srn)(fakeRequest)
-//      status(result) mustBe OK
-//      contentAsString(result) mustBe viewAsString(administrators = updatedAdministrators)
-//    }
+    "return OK and the correct view for a GET where administrators a mix of individual and org" in {
+      val updatedAdministrators =
+        Some(
+          Seq(
+            AssociatedPsa("partnetship name 2", true),
+            AssociatedPsa("Smith A Tony", false)
+          )
+        )
+
+      reset(fakeSchemeDetailsConnector)
+      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(schemeDetailsWithPsaOnlyResponseMixOfIndividualAndOrg))
+      when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(listOfSchemesResponse))
+      val result = controller().onPageLoad(srn)(fakeRequest)
+      status(result) mustBe OK
+      contentAsString(result) mustBe viewAsString(administrators = updatedAdministrators)
+    }
 
     "return OK and call the correct connector method for a GET where administrators a mix of individual and org where variations toggle is switched on" in {
+      val updatedAdministrators =
+        Some(
+          Seq(
+            AssociatedPsa("partnetship name 2", true),
+            AssociatedPsa("Smith A Tony", false)
+          )
+        )
       reset(fakeSchemeDetailsConnector)
       when(fakeSchemeDetailsConnector.getSchemeDetailsVariations(Matchers.eq("A0000000"), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(
@@ -131,7 +138,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
       status(result) mustBe OK
       verify(fakeSchemeDetailsConnector, times(1))
         .getSchemeDetailsVariations(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())
-      contentAsString(result) mustBe viewAsString(administrators = None)
+      contentAsString(result) mustBe viewAsString(administrators = updatedAdministrators)
     }
 
     //    "return OK and the correct view for a GET when opened date is not returned by API" in {

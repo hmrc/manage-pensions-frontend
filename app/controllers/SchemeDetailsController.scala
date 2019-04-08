@@ -20,7 +20,7 @@ import config.{FeatureSwitchManagementService, FrontendAppConfig}
 import connectors.{ListOfSchemesConnector, SchemeDetailsConnector, UserAnswersCacheConnector}
 import controllers.actions._
 import handlers.ErrorHandler
-import identifiers.{SchemeNameId, SchemeSrnId}
+import identifiers.{ListOfPSADetailsId, SchemeNameId, SchemeSrnId}
 import javax.inject.Inject
 import models._
 import models.requests.AuthenticatedRequest
@@ -29,7 +29,7 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.{JsArray, JsPath}
 import play.api.mvc.{Action, AnyContent, Result}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import utils.{DateHelper, Toggles}
+import utils.{DateHelper, Toggles, UserAnswers}
 import viewmodels.AssociatedPsa
 import views.html.schemeDetails
 
@@ -86,7 +86,8 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
         val admins = scheme.json.transform((JsPath \ 'psaDetails).json.pick)
           .asOpt.map(_.as[JsArray].value).toSeq.flatten
           .flatMap(_.transform((JsPath \ "id").json.pick).asOpt.flatMap(_.validate[String].asOpt).toSeq)
-        val schemeStatus = scheme.json.transform((JsPath \ "schemeStatus").json.pick).asOpt.flatMap( _.validate[String].asOpt).getOrElse("")
+
+        val schemeStatus = scheme.json.transform((JsPath \ "schemeStatus").json.pick).asOpt.flatMap(_.validate[String].asOpt).getOrElse("")
         val schemeName = scheme.get(SchemeNameId).getOrElse("")
         if (admins.contains(request.psaId.id)) {
           listSchemesConnector.getListOfSchemes(request.psaId.id).flatMap { list =>
@@ -96,7 +97,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                 Ok(schemeDetails(appConfig,
                   schemeName,
                   openedDate(srn.id, list, isSchemeOpen),
-                  None,
+                  administratorsVariations(request.psaId.id, scheme),
                   srn.id,
                   isSchemeOpen
                 ))
@@ -108,6 +109,17 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
         }
       }
     }
+
+  private def administratorsVariations(psaId: String, psaSchemeDetails: UserAnswers): Option[Seq[AssociatedPsa]] = {
+    val psaInfo = psaSchemeDetails.get(ListOfPSADetailsId).toSeq.flatten.map { psaDetails =>
+      PsaDetails.getPsaName(psaDetails).map {
+        name =>
+          val canRemove = psaDetails.id.equals(psaId) //&& PsaSchemeDetails.canRemovePsa(psaId, psaSchemeDetails)
+          AssociatedPsa(name, canRemove)
+      }.toSeq
+    }
+    Option(psaInfo.flatten)
+  }
 
   private def administrators(psaId: String, psaSchemeDetails: PsaSchemeDetails): Option[Seq[AssociatedPsa]] =
     psaSchemeDetails.psaDetails.map(
