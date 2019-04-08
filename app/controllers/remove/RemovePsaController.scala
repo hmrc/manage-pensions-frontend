@@ -17,14 +17,18 @@
 package controllers.remove
 
 import com.google.inject.{Inject, Singleton}
+import config.FeatureSwitchManagementService
 import connectors.{MinimalPsaConnector, SchemeDetailsConnector, UserAnswersCacheConnector}
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
-import identifiers.SchemeSrnId
-import identifiers.invitations.{PSANameId, PSTRId, SchemeNameId}
-import models.{MinimalPSA, SchemeDetails}
-import play.api.mvc.{Action, AnyContent}
+import identifiers.{SchemeNameId, SchemeSrnId}
+import identifiers.invitations.{PSANameId, PSTRId}
+import models.requests.DataRequest
+import models.{MinimalPSA, SchemeDetails, SchemeReferenceNumber}
+import play.api.mvc.{Action, AnyContent, Result}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import utils.Toggles
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -34,8 +38,10 @@ class RemovePsaController @Inject()(authenticate: AuthAction,
                                     val requireData: DataRequiredAction,
                                     schemeDetailsConnector: SchemeDetailsConnector,
                                     userAnswersCacheConnector: UserAnswersCacheConnector,
-                                    minimalPsaConnector: MinimalPsaConnector)(
-  implicit val ec: ExecutionContext) extends FrontendController with Retrievals {
+                                    minimalPsaConnector: MinimalPsaConnector,
+                                    featureSwitchManagementService: FeatureSwitchManagementService
+                                   )(
+                                     implicit val ec: ExecutionContext) extends FrontendController with Retrievals {
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
@@ -44,17 +50,39 @@ class RemovePsaController @Inject()(authenticate: AuthAction,
           if (minimalPsaDetails.isPsaSuspended) {
             Future.successful(Redirect(controllers.remove.routes.CanNotBeRemovedController.onPageLoadWhereSuspended()))
           } else {
-            for {
-              scheme <- schemeDetailsConnector.getSchemeDetails(request.psaId.id, "srn", srn)
-              _ <- userAnswersCacheConnector.save(request.externalId, PSANameId, getPsaName(minimalPsaDetails))
-              _ <- userAnswersCacheConnector.save(request.externalId, SchemeNameId, scheme.schemeDetails.name)
-              _ <- userAnswersCacheConnector.save(request.externalId, PSTRId, getPstr(scheme.schemeDetails))
-            } yield {
-              Redirect(controllers.remove.routes.ConfirmRemovePsaController.onPageLoad())
+            if (featureSwitchManagementService.get(Toggles.isVariationsEnabled)) {
+              renderPageVariations(request, srn, minimalPsaDetails)
+            } else {
+              renderPage(request, srn, minimalPsaDetails)
             }
           }
         }
       }
+  }
+
+  def renderPage(request: DataRequest[AnyContent], srn: String, minimalPsaDetails: MinimalPSA)(implicit hd: HeaderCarrier): Future[Result] = {
+    for {
+      scheme <- schemeDetailsConnector.getSchemeDetails(request.psaId.id, "srn", srn)
+      _ <- userAnswersCacheConnector.save(request.externalId, PSANameId, getPsaName(minimalPsaDetails))
+      _ <- userAnswersCacheConnector.save(request.externalId, SchemeNameId, scheme.schemeDetails.name)
+      _ <- userAnswersCacheConnector.save(request.externalId, PSTRId, getPstr(scheme.schemeDetails))
+    } yield {
+      Redirect(controllers.remove.routes.ConfirmRemovePsaController.onPageLoad())
+    }
+  }
+
+  def renderPageVariations(request: DataRequest[AnyContent], srn: String, minimalPsaDetails: MinimalPSA)(implicit hd: HeaderCarrier): Future[Result] = {
+    schemeDetailsConnector.getSchemeDetailsVariations(request.psaId.id, "srn", srn).flatMap { ua =>
+      val schemeName = ua.get(SchemeNameId).getOrElse(throw new IllegalArgumentException("Organisation or Individual PSA Name missing in retrieved data"))
+      val pstr = ua.get(PSTRId).getOrElse(throw new IllegalArgumentException("PSTR missing in retrieved data while removing PSA"))
+      userAnswersCacheConnector.save(request.externalId, PSANameId, getPsaName(minimalPsaDetails)).map { _ =>
+        userAnswersCacheConnector.save(request.externalId, SchemeNameId, schemeName)
+      }.flatMap { _ =>
+        userAnswersCacheConnector.save(request.externalId, PSTRId, pstr)
+      }
+    }.map(_ =>
+      Redirect(controllers.remove.routes.ConfirmRemovePsaController.onPageLoad())
+    )
   }
 
   private def getPsaName(minimalPsaDetails: MinimalPSA): String = {

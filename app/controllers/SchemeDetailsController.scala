@@ -97,7 +97,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                 Ok(schemeDetails(appConfig,
                   schemeName,
                   openedDate(srn.id, list, isSchemeOpen),
-                  administratorsVariations(request.psaId.id, scheme),
+                  administratorsVariations(request.psaId.id, scheme, schemeStatus),
                   srn.id,
                   isSchemeOpen
                 ))
@@ -110,16 +110,14 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
       }
     }
 
-  private def administratorsVariations(psaId: String, psaSchemeDetails: UserAnswers): Option[Seq[AssociatedPsa]] = {
-    val psaInfo = psaSchemeDetails.get(ListOfPSADetailsId).toSeq.flatten.map { psaDetails =>
-      PsaDetails.getPsaName(psaDetails).map {
-        name =>
-          val canRemove = psaDetails.id.equals(psaId) //&& PsaSchemeDetails.canRemovePsa(psaId, psaSchemeDetails)
-          AssociatedPsa(name, canRemove)
-      }.toSeq
+  private def administratorsVariations(psaId: String, psaSchemeDetails: UserAnswers, schemeStatus:String): Option[Seq[AssociatedPsa]] =
+    psaSchemeDetails.get(ListOfPSADetailsId).map { psaDetailsSeq =>
+      psaDetailsSeq.map { psaDetails =>
+        val name = PsaDetails.getPsaName(psaDetails).getOrElse("")
+        val canRemove = psaDetails.id.equals(psaId) && PsaSchemeDetails.canRemovePsaVariations(psaId, psaDetailsSeq, schemeStatus)
+        AssociatedPsa(name, canRemove)
+      }
     }
-    Option(psaInfo.flatten)
-  }
 
   private def administrators(psaId: String, psaSchemeDetails: PsaSchemeDetails): Option[Seq[AssociatedPsa]] =
     psaSchemeDetails.psaDetails.map(

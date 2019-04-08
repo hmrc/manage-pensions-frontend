@@ -113,24 +113,40 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
     }
 
     "return OK and call the correct connector method for a GET where administrators a mix of individual and org where variations toggle is switched on" in {
+
+      val desUserAnswers = UserAnswers(Json.obj(
+        "schemeStatus" -> "Open",
+        SchemeNameId.toString -> mockSchemeDetails.name,
+        "psaDetails" -> JsArray(
+        Seq(
+          Json.obj(
+            "id"-> "A0000000",
+            "organisationOrPartnershipName" -> "partnetship name 2",
+            "relationshipDate" -> "2018-07-01"
+          ),
+          Json.obj(
+            "id"->"A0000001",
+            "individual" -> Json.obj(
+              "firstName" -> "Tony",
+              "middleName" -> "A",
+              "lastName" -> "Smith"
+            ),
+            "relationshipDate" -> "2018-07-01"
+          )
+        )
+      )
+      ))
+
       val updatedAdministrators =
         Some(
           Seq(
             AssociatedPsa("partnetship name 2", true),
-            AssociatedPsa("Smith A Tony", false)
+            AssociatedPsa("Tony A Smith", false)
           )
         )
       reset(fakeSchemeDetailsConnector)
       when(fakeSchemeDetailsConnector.getSchemeDetailsVariations(Matchers.eq("A0000000"), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(
-          UserAnswers(
-            Json.obj(
-              "psaDetails" -> JsArray(Seq(Json.obj("id" -> "A0000000"))),
-              "schemeStatus" -> "Open",
-              SchemeNameId.toString -> mockSchemeDetails.name
-            )
-          )
-        )
+        .thenReturn(Future.successful(desUserAnswers)
         )
       when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(listOfSchemesResponse))
