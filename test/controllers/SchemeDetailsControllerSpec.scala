@@ -113,7 +113,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
 
     "return OK and call the correct connector method for a GET where administrators a mix of individual and org where variations toggle is switched on" in {
       reset(fakeSchemeDetailsConnector)
-      when(fakeSchemeDetailsConnector.getSchemeDetailsVariations(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+      when(fakeSchemeDetailsConnector.getSchemeDetailsVariations(Matchers.eq("A0000000"), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(UserAnswers(Json.obj("psaDetails" -> JsArray(Seq(Json.obj("id" -> "A0000000")))))))
       when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(listOfSchemesResponse))
