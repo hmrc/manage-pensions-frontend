@@ -86,7 +86,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
         val admins = scheme.json.transform((JsPath \ 'psaDetails).json.pick)
           .asOpt.map(_.as[JsArray].value).toSeq.flatten
           .flatMap(_.transform((JsPath \ "id").json.pick).asOpt.flatMap(_.validate[String].asOpt).toSeq)
-        val schemeStatus = scheme.json.transform((JsPath \ "schemeStatus").json.pick).asOpt.map(_.toString).getOrElse("")
+        val schemeStatus = scheme.json.transform((JsPath \ "schemeStatus").json.pick).asOpt.flatMap( _.validate[String].asOpt).getOrElse("")
         val schemeName = scheme.get(SchemeNameId).getOrElse("")
         if (admins.contains(request.psaId.id)) {
           listSchemesConnector.getListOfSchemes(request.psaId.id).flatMap { list =>
