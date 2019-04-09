@@ -55,7 +55,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
       }
   }
 
-  def onPageLoadNonVariations(srn: SchemeReferenceNumber)(implicit request: AuthenticatedRequest[AnyContent]): Future[Result] =
+  private def onPageLoadNonVariations(srn: SchemeReferenceNumber)(implicit request: AuthenticatedRequest[AnyContent]): Future[Result] =
     userAnswersCacheConnector.removeAll(request.externalId).flatMap { _ =>
       schemeDetailsConnector.getSchemeDetails(request.psaId.id, "srn", srn).flatMap { scheme =>
         if (scheme.psaDetails.toSeq.flatten.exists(_.id == request.psaId.id)) {
@@ -80,7 +80,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
       }
     }
 
-  def onPageLoadVariations(srn: SchemeReferenceNumber)(implicit request: AuthenticatedRequest[AnyContent]): Future[Result] =
+  private def onPageLoadVariations(srn: SchemeReferenceNumber)(implicit request: AuthenticatedRequest[AnyContent]): Future[Result] =
     userAnswersCacheConnector.removeAll(request.externalId).flatMap { _ =>
       schemeDetailsConnector.getSchemeDetailsVariations(request.psaId.id, "srn", srn).flatMap { scheme =>
         val admins = scheme.json.transform((JsPath \ 'psaDetails).json.pick)

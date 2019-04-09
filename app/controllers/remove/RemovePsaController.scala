@@ -60,7 +60,7 @@ class RemovePsaController @Inject()(authenticate: AuthAction,
       }
   }
 
-  def renderPage(request: DataRequest[AnyContent], srn: String, minimalPsaDetails: MinimalPSA)(implicit hd: HeaderCarrier): Future[Result] = {
+  private def renderPage(request: DataRequest[AnyContent], srn: String, minimalPsaDetails: MinimalPSA)(implicit hd: HeaderCarrier): Future[Result] = {
     import identifiers.invitations.{PSANameId, PSTRId, SchemeNameId}
     for {
       scheme <- schemeDetailsConnector.getSchemeDetails(request.psaId.id, "srn", srn)
@@ -72,7 +72,7 @@ class RemovePsaController @Inject()(authenticate: AuthAction,
     }
   }
 
-  def renderPageVariations(request: DataRequest[AnyContent], srn: String, minimalPsaDetails: MinimalPSA)(implicit hd: HeaderCarrier): Future[Result] = {
+  private def renderPageVariations(request: DataRequest[AnyContent], srn: String, minimalPsaDetails: MinimalPSA)(implicit hd: HeaderCarrier): Future[Result] = {
     schemeDetailsConnector.getSchemeDetailsVariations(request.psaId.id, "srn", srn).flatMap { ua =>
       val schemeName = ua.get(SchemeNameId).getOrElse(throw new IllegalArgumentException("Organisation or Individual PSA Name missing in retrieved data"))
       val pstr = ua.get(PSTRId).getOrElse(throw new IllegalArgumentException("PSTR missing in retrieved data while removing PSA"))
