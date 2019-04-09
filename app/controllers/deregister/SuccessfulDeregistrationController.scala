@@ -17,23 +17,28 @@
 package controllers.deregister
 
 import config.FrontendAppConfig
+import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
 import controllers.actions._
 import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import utils.annotations.PensionAdminCache
 import views.html.deregister.successful_deregistration
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class SuccessfulDeregistrationController @Inject()(appConfig: FrontendAppConfig,
                                                    override val messagesApi: MessagesApi,
+                                                   @PensionAdminCache dataCacheConnector: UserAnswersCacheConnector,
                                                    authenticate: AuthAction
                                       )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport with Retrievals {
 
   def onPageLoad(): Action[AnyContent] = authenticate.async {
     implicit request =>
-        Future.successful(Ok(successful_deregistration(appConfig)))
+      dataCacheConnector.removeAll(request.externalId).map{ _ =>
+        Ok(successful_deregistration(appConfig))
+      }
   }
 }

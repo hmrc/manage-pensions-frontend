@@ -15,10 +15,10 @@
  */
 
 import connectors.cache.microservice.PensionsSchemeCacheConnector
-import connectors.{InvitationsCacheConnector, InvitationsCacheConnectorImpl, ManagePensionsCacheConnector, UserAnswersCacheConnector}
+import connectors._
 import play.api.inject.{Binding, Module}
 import play.api.{Configuration, Environment}
-import utils.annotations.PensionsSchemeCache
+import utils.annotations.{PensionAdminCache, PensionsSchemeCache}
 
 class DataCacheModule extends Module {
 
@@ -26,7 +26,8 @@ class DataCacheModule extends Module {
     Seq(
       bind[UserAnswersCacheConnector].to[ManagePensionsCacheConnector],
       bind[InvitationsCacheConnector].to[InvitationsCacheConnectorImpl],
-      bind[UserAnswersCacheConnector].qualifiedWith(classOf[PensionsSchemeCache]).to[PensionsSchemeCacheConnector]
+      bind[UserAnswersCacheConnector].qualifiedWith(classOf[PensionsSchemeCache]).to[PensionsSchemeCacheConnector],
+      bind[UserAnswersCacheConnector].qualifiedWith(classOf[PensionAdminCache]).to[PensionAdminCacheConnector]
     )
   }
 }
