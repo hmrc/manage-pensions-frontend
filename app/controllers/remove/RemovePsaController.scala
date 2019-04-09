@@ -21,10 +21,10 @@ import config.FeatureSwitchManagementService
 import connectors.{MinimalPsaConnector, SchemeDetailsConnector, UserAnswersCacheConnector}
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
-import identifiers.{SchemeNameId, SchemeSrnId}
 import identifiers.invitations.{PSANameId, PSTRId}
+import identifiers.{SchemeNameId, SchemeSrnId}
 import models.requests.DataRequest
-import models.{MinimalPSA, SchemeDetails, SchemeReferenceNumber}
+import models.{MinimalPSA, SchemeDetails}
 import play.api.mvc.{Action, AnyContent, Result}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
@@ -77,9 +77,12 @@ class RemovePsaController @Inject()(authenticate: AuthAction,
       val schemeName = ua.get(SchemeNameId).getOrElse(throw new IllegalArgumentException("Organisation or Individual PSA Name missing in retrieved data"))
       val pstr = ua.get(PSTRId).getOrElse(throw new IllegalArgumentException("PSTR missing in retrieved data while removing PSA"))
       userAnswersCacheConnector.save(request.externalId, PSANameId, getPsaName(minimalPsaDetails)).map { _ =>
+        import identifiers.invitations.SchemeNameId
         userAnswersCacheConnector.save(request.externalId, SchemeNameId, schemeName)
       }.flatMap { _ =>
-        userAnswersCacheConnector.save(request.externalId, PSTRId, pstr)
+        userAnswersCacheConnector.save(request.externalId, PSTRId, pstr).flatMap { _ =>
+          userAnswersCacheConnector.save(request.externalId, SchemeSrnId, srn)
+        }
       }
     }.map(_ =>
       Redirect(controllers.remove.routes.ConfirmRemovePsaController.onPageLoad())

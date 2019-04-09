@@ -51,6 +51,11 @@ class ConfirmRemovePsaController @Inject()(
 
   def onPageLoad: Action[AnyContent] = (auth andThen getData andThen requireData).async {
     implicit request =>
+
+      println( "\n1:" + request.userAnswers.get(SchemeSrnId))
+      println( "\n2:" + request.userAnswers.get(SchemeNameId))
+      println( "\n3:" + request.userAnswers.get(PSANameId))
+
       (SchemeSrnId and SchemeNameId and PSANameId).retrieve.right.map {
         case srn ~ schemeName ~ psaName =>
           val preparedForm = request.userAnswers.get(ConfirmRemovePsaId).fold(form)(form.fill(_))
