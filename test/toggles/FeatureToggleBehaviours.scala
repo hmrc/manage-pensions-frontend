@@ -16,49 +16,42 @@
 
 package toggles
 
-import config.FrontendAppConfig
 import org.scalatest.{Matchers, WordSpec}
-import play.api.{Configuration, Environment}
+import play.api.Configuration
+import play.api.inject.guice.GuiceApplicationBuilder
 
 class FeatureToggleBehaviours extends WordSpec with Matchers {
 
-  import FeatureToggleBehaviours._
+  private def configuration(name: String, on: Option[Boolean]): Boolean = {
 
-  def featureToggle(name: String, getter: FrontendAppConfig => Boolean): Unit = {
+    val injector = new GuiceApplicationBuilder()
+      .configure(on.fold ("features"->"")(b=> s"features.$name" -> b.toString)).build().injector
+
+    injector.instanceOf[Configuration].getBoolean(s"features.$name").getOrElse(false)
+
+  }
+
+  def featureToggle(name: String, actualValue: Boolean): Unit = {
 
     "behave like a feature toggle" should {
 
       s"return true when $name is configured as true" in {
-        getter(configuration(name, Some(true))) shouldBe true
+        configuration(name, Some(true)) shouldBe true
       }
 
       s"return false when $name is configured as false" in {
-        getter(configuration(name, Some(false))) shouldBe false
+        configuration(name, Some(false)) shouldBe false
       }
 
       s"return false when $name is not configured" in {
-        getter(configuration(name, None)) shouldBe false
+        configuration(name, None) shouldBe false
+      }
+
+      s"return actual conf value" in {
+        new GuiceApplicationBuilder().build().injector.instanceOf[Configuration].getBoolean(s"features.$name") shouldBe Some(actualValue)
       }
 
     }
-
-  }
-
-}
-
-object FeatureToggleBehaviours {
-
-  def configuration(name: String, on: Option[Boolean]): FrontendAppConfig = {
-
-    new FrontendAppConfig(
-      on.fold {
-        Configuration()
-      } {
-        b => Configuration(s"features.$name" -> b.toString)
-      },
-      Environment.simple()
-    )
-
   }
 
 }

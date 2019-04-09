@@ -24,7 +24,7 @@ import play.api.http.Status.{BAD_REQUEST, OK}
 import play.api.libs.json.{JsError, JsResultException, JsSuccess, Json}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
-import utils.HttpResponseHelper
+import utils.{HttpResponseHelper, UserAnswers}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Failure
@@ -33,6 +33,10 @@ import scala.util.Failure
 trait SchemeDetailsConnector {
 
   def getSchemeDetails(psaId: String, schemeIdType: String, idNumber: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[PsaSchemeDetails]
+  def getSchemeDetailsVariations(psaId: String,
+                                 schemeIdType: String,
+                                 idNumber: String)(implicit hc: HeaderCarrier,
+                                                   ec: ExecutionContext): Future[UserAnswers]
 
 }
 
@@ -52,6 +56,25 @@ class SchemeDetailsConnectorImpl @Inject()(http: HttpClient, config: FrontendApp
             case JsSuccess(value, _) => value
             case JsError(errors) => throw new JsResultException(errors)
           }
+        case _ => handleErrorResponse("GET", url)(response)
+      }
+    } andThen {
+      case Failure(t: Throwable) => Logger.warn("Unable to get scheme details", t)
+    }
+  }
+
+  def getSchemeDetailsVariations(psaId: String,
+                                 schemeIdType: String,
+                                 idNumber: String)(implicit hc: HeaderCarrier,
+                                                   ec: ExecutionContext): Future[UserAnswers] = {
+
+    val url = config.schemeDetailsUrl
+    val schemeHc = hc.withExtraHeaders("schemeIdType" -> schemeIdType, "idNumber" -> idNumber, "PSAId" -> psaId)
+    http.GET[HttpResponse](url)(implicitly, schemeHc, implicitly).map { response =>
+      response.status match {
+        case OK =>
+          val json = Json.parse(response.body)
+          UserAnswers(json)
         case _ => handleErrorResponse("GET", url)(response)
       }
     } andThen {

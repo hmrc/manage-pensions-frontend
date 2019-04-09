@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-package utils
+package identifiers
 
-object Toggles {
-  val isVariationsEnabled: String = "is-variations-enabled"
+import models.PsaDetails
+
+object ListOfPSADetailsId extends TypedIdentifier[List[PsaDetails]] {
+
+  override def toString: String = "psaDetails"
+
 }

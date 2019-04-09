@@ -16,18 +16,21 @@
 
 package controllers
 
+import config.FeatureSwitchManagementService
 import connectors._
 import controllers.actions.{DataRetrievalAction, _}
 import handlers.ErrorHandler
-import identifiers.SchemeSrnId
-import models.{PsaDetails, PsaSchemeDetails, SchemeReferenceNumber}
+import identifiers.{SchemeNameId, SchemeSrnId}
+import models._
 import org.mockito.Matchers
-import org.mockito.Mockito.{reset, when}
+import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.mockito.MockitoSugar
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.libs.json.{JsArray, Json}
 import play.api.test.Helpers.{contentAsString, _}
 import testhelpers.CommonBuilders._
+import utils.UserAnswers
 import viewmodels.AssociatedPsa
 import views.html.schemeDetails
 
@@ -41,7 +44,17 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
     "features.work-package-one-enabled" -> true
   ).build()
 
-  def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): SchemeDetailsController = {
+  def featureSwitchManagementService(toggleValue: Boolean): FeatureSwitchManagementService = new FeatureSwitchManagementService {
+    override def change(name: String, newValue: Boolean): Boolean = ???
+
+    override def get(name: String): Boolean = toggleValue
+
+    override def reset(name: String): Unit = ???
+
+  }
+
+  def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData,
+                 variationsToggle: Boolean = false): SchemeDetailsController = {
     val eh = new ErrorHandler(frontendAppConfig, messagesApi)
     new SchemeDetailsController(frontendAppConfig,
       messagesApi,
@@ -49,7 +62,10 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
       fakeListOfSchemesConnector,
       FakeAuthAction(),
       dataRetrievalAction,
-      FakeUserAnswersCacheConnector, eh)
+      FakeUserAnswersCacheConnector,
+      eh,
+      featureSwitchManagementService(variationsToggle)
+    )
   }
 
   def viewAsString(openDate: Option[String] = openDate, administrators: Option[Seq[AssociatedPsa]] = administrators, isSchemeOpen: Boolean = true): String =
@@ -63,17 +79,17 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
     )(fakeRequest, messages).toString()
 
   "SchemeDetailsController" must {
-    "save the srn and then return OK and the correct view for a GET" in {
-      reset(fakeSchemeDetailsConnector)
-      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(schemeDetailsWithPsaOnlyResponse))
-      when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(listOfSchemesResponse))
-      val result = controller().onPageLoad(srn)(fakeRequest)
-      status(result) mustBe OK
-      contentAsString(result) mustBe viewAsString()
-      FakeUserAnswersCacheConnector.verify(SchemeSrnId, srn.id)
-    }
+        "save the srn and then return OK and the correct view for a GET" in {
+          reset(fakeSchemeDetailsConnector)
+          when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+            .thenReturn(Future.successful(schemeDetailsWithPsaOnlyResponse))
+          when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
+            .thenReturn(Future.successful(listOfSchemesResponse))
+          val result = controller().onPageLoad(srn)(fakeRequest)
+          status(result) mustBe OK
+          contentAsString(result) mustBe viewAsString()
+          FakeUserAnswersCacheConnector.verify(SchemeSrnId, srn.id)
+        }
 
     "return OK and the correct view for a GET where administrators a mix of individual and org" in {
       val updatedAdministrators =
@@ -91,6 +107,51 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
         .thenReturn(Future.successful(listOfSchemesResponse))
       val result = controller().onPageLoad(srn)(fakeRequest)
       status(result) mustBe OK
+      contentAsString(result) mustBe viewAsString(administrators = updatedAdministrators)
+    }
+
+    "return OK and call the correct connector method for a GET where administrators a mix of individual and org where variations toggle is switched on" in {
+
+      val desUserAnswers = UserAnswers(Json.obj(
+        "schemeStatus" -> "Open",
+        SchemeNameId.toString -> mockSchemeDetails.name,
+        "psaDetails" -> JsArray(
+        Seq(
+          Json.obj(
+            "id"-> "A0000000",
+            "organisationOrPartnershipName" -> "partnetship name 2",
+            "relationshipDate" -> "2018-07-01"
+          ),
+          Json.obj(
+            "id"->"A0000001",
+            "individual" -> Json.obj(
+              "firstName" -> "Tony",
+              "middleName" -> "A",
+              "lastName" -> "Smith"
+            ),
+            "relationshipDate" -> "2018-07-01"
+          )
+        )
+      )
+      ))
+
+      val updatedAdministrators =
+        Some(
+          Seq(
+            AssociatedPsa("partnetship name 2", true),
+            AssociatedPsa("Tony A Smith", false)
+          )
+        )
+      reset(fakeSchemeDetailsConnector)
+      when(fakeSchemeDetailsConnector.getSchemeDetailsVariations(Matchers.eq("A0000000"), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(desUserAnswers)
+        )
+      when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(listOfSchemesResponse))
+      val result = controller(variationsToggle = true).onPageLoad(srn)(fakeRequest)
+      status(result) mustBe OK
+      verify(fakeSchemeDetailsConnector, times(1))
+        .getSchemeDetailsVariations(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())
       contentAsString(result) mustBe viewAsString(administrators = updatedAdministrators)
     }
 

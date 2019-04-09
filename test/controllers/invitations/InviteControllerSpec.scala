@@ -25,6 +25,7 @@ import org.scalatest.mockito.MockitoSugar
 import play.api.test.Helpers._
 import testhelpers.CommonBuilders
 import uk.gov.hmrc.http.HeaderCarrier
+import utils.UserAnswers
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -41,6 +42,11 @@ class InviteControllerSpec extends SpecBase with MockitoSugar {
     override def getSchemeDetails(psaId: String, schemeIdType: String,
                                   idNumber: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[PsaSchemeDetails] =
       Future.successful(CommonBuilders.psaSchemeDetailsResponse)
+
+    override def getSchemeDetailsVariations(psaId: String,
+                                   schemeIdType: String,
+                                   idNumber: String)(implicit hc: HeaderCarrier,
+                                                     ec: ExecutionContext): Future[UserAnswers] = ???
   }
 
   def controller(isSuspended: Boolean) = new InviteController(mockAuthAction, fakeSchemeDetailsConnector,

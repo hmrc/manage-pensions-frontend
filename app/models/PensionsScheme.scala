@@ -19,6 +19,7 @@ package models
 import models.SchemeStatus.WoundUp
 import org.joda.time.LocalDate
 import play.api.libs.json.{Json, OFormat}
+import utils.UserAnswers
 
 case class Name(firstName: Option[String], middleName: Option[String], lastName: Option[String])
 
@@ -179,6 +180,11 @@ object PsaSchemeDetails {
     status.canRemovePsa && scheme.psaDetails.exists(psaDetails =>
         hasMinimumAttachedPSAs(psaId, psaDetails, status) && psaNotRemovingOnSameDay(psaId, psaDetails)
       )
+  }
+
+  def canRemovePsaVariations(psaId: String, schemeAdmins:Seq[PsaDetails], schemeStatus:String): Boolean = {
+    val status = SchemeStatus.forValue(schemeStatus)
+    status.canRemovePsa && hasMinimumAttachedPSAs(psaId, schemeAdmins, status) && psaNotRemovingOnSameDay(psaId, schemeAdmins)
   }
 
   private def hasMinimumAttachedPSAs(psaId: String, psaDetails: Seq[PsaDetails], status: SchemeStatus): Boolean =
