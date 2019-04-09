@@ -17,7 +17,6 @@
 package testhelpers
 
 import models._
-import utils.UserAnswers
 
 object CommonBuilders {
 
@@ -42,10 +41,9 @@ object CommonBuilders {
 
   val schemeDetailsWithPsaOnlyResponse = PsaSchemeDetails(mockSchemeDetails, None, None, Some(Seq(psaDetails1, psaDetails2)))
   val schemeDetailsWithPsaOnlyResponseMixOfIndividualAndOrg = PsaSchemeDetails(mockSchemeDetails, None, None, Some(Seq(psaDetails3, psaDetails2)))
-  val schemeDetailsWithPsaOnlyResponseMixOfIndividualAndOrgVariations = UserAnswers(
 
-  ) //PsaSchemeDetails(mockSchemeDetails, None, None, Some(Seq(psaDetails3, psaDetails2)))
-  val schemeDetailsPendingResponse = PsaSchemeDetails(mockSchemeDetails.copy(status = SchemeStatus.Pending.value), None, None, Some(Seq(psaDetails1, psaDetails2)))
+  val schemeDetailsPendingResponse = PsaSchemeDetails(mockSchemeDetails
+    .copy(status = SchemeStatus.Pending.value), None, None, Some(Seq(psaDetails1, psaDetails2)))
   val schemeDetailsWithoutPsaResponse = PsaSchemeDetails(mockSchemeDetails, None, None, None)
 
   val schemeDetail = SchemeDetail("abcdefghi", "S1000000456", SchemeStatus.Pending.value, Some("2012-10-10"),
@@ -56,5 +54,4 @@ object CommonBuilders {
 
   val listOfSchemesResponse = ListOfSchemes("2001-12-17T09:30:47Z", "1", Some(List(schemeDetail)))
   val listOfSchemesPartialResponse = ListOfSchemes("2001-12-17T09:30:47Z", "1", Some(List(schemeDetailWithoutDate)))
-
 }

@@ -46,8 +46,7 @@ class InviteControllerSpec extends SpecBase with MockitoSugar {
     override def getSchemeDetailsVariations(psaId: String,
                                    schemeIdType: String,
                                    idNumber: String)(implicit hc: HeaderCarrier,
-                                                     ec: ExecutionContext): Future[UserAnswers] =
-      Future.successful(UserAnswers())
+                                                     ec: ExecutionContext): Future[UserAnswers] = ???
   }
 
   def controller(isSuspended: Boolean) = new InviteController(mockAuthAction, fakeSchemeDetailsConnector,

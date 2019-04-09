@@ -20,7 +20,7 @@ import config.FeatureSwitchManagementService
 import connectors._
 import controllers.actions.{DataRetrievalAction, _}
 import handlers.ErrorHandler
-import identifiers.SchemeNameId
+import identifiers.{SchemeNameId, SchemeSrnId}
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito.{reset, times, verify, when}
@@ -79,18 +79,18 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
     )(fakeRequest, messages).toString()
 
   "SchemeDetailsController" must {
-    //    "save the srn and then return OK and the correct view for a GET" in {
-    //      reset(fakeSchemeDetailsConnector)
-    //      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
-    //        .thenReturn(Future.successful(schemeDetailsWithPsaOnlyResponse))
-    //      when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
-    //        .thenReturn(Future.successful(listOfSchemesResponse))
-    //      val result = controller().onPageLoad(srn)(fakeRequest)
-    //      status(result) mustBe OK
-    //      contentAsString(result) mustBe viewAsString()
-    //      FakeUserAnswersCacheConnector.verify(SchemeSrnId, srn.id)
-    //    }
-    //
+        "save the srn and then return OK and the correct view for a GET" in {
+          reset(fakeSchemeDetailsConnector)
+          when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+            .thenReturn(Future.successful(schemeDetailsWithPsaOnlyResponse))
+          when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
+            .thenReturn(Future.successful(listOfSchemesResponse))
+          val result = controller().onPageLoad(srn)(fakeRequest)
+          status(result) mustBe OK
+          contentAsString(result) mustBe viewAsString()
+          FakeUserAnswersCacheConnector.verify(SchemeSrnId, srn.id)
+        }
+
     "return OK and the correct view for a GET where administrators a mix of individual and org" in {
       val updatedAdministrators =
         Some(
@@ -155,52 +155,52 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
       contentAsString(result) mustBe viewAsString(administrators = updatedAdministrators)
     }
 
-    //    "return OK and the correct view for a GET when opened date is not returned by API" in {
-    //      reset(fakeSchemeDetailsConnector)
-    //      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
-    //        .thenReturn(Future.successful(schemeDetailsWithPsaOnlyResponse))
-    //      when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
-    //        .thenReturn(Future.successful(listOfSchemesPartialResponse))
-    //      val result = controller().onPageLoad(srn)(fakeRequest)
-    //      status(result) mustBe OK
-    //      contentAsString(result) mustBe viewAsString(None)
-    //    }
-    //
-    //    "return OK and the correct view for a GET when scheme status is not open" in {
-    //      reset(fakeSchemeDetailsConnector)
-    //      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
-    //        .thenReturn(Future.successful(schemeDetailsPendingResponse))
-    //      when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
-    //        .thenReturn(Future.successful(listOfSchemesResponse))
-    //      val result = controller().onPageLoad(srn)(fakeRequest)
-    //      status(result) mustBe OK
-    //      contentAsString(result) mustBe viewAsString(openDate = None, administrators = administratorsCantRemove, isSchemeOpen = false)
-    //    }
-    //
-    //    "return NOT_FOUND when PSA data is not returned by API (as we don't know who administers the scheme)" in {
-    //      reset(fakeSchemeDetailsConnector)
-    //      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
-    //        .thenReturn(Future.successful(schemeDetailsWithoutPsaResponse))
-    //      when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
-    //        .thenReturn(Future.successful(listOfSchemesResponse))
-    //      val result = controller().onPageLoad(srn)(fakeRequest)
-    //      status(result) mustBe NOT_FOUND
-    //    }
-    //
-    //    "return NOT_FOUND and the correct not found view when PSA data is returned by API which does not include the currently logged-in PSA" in {
-    //      val psaDetails1 = PsaDetails("A0000001", Some("partnership name no 1"), None, Some("2018-10-01"))
-    //      val psaDetails2 = PsaDetails("A0000002", Some("partnership name no 2"), None, None)
-    //      val psaSchemeDetailsResponseTwoPSAs = PsaSchemeDetails(mockSchemeDetails, None, None, Some(Seq(psaDetails1, psaDetails2)))
-    //
-    //      reset(fakeSchemeDetailsConnector)
-    //      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
-    //        .thenReturn(Future.successful(psaSchemeDetailsResponseTwoPSAs))
-    //      when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
-    //        .thenReturn(Future.successful(listOfSchemesResponse))
-    //      val result = controller().onPageLoad(srn)(fakeRequest)
-    //      status(result) mustBe NOT_FOUND
-    //      contentAsString(result).contains(messages("messages__pageNotFound404__heading")) mustBe true
-    //    }
+    "return OK and the correct view for a GET when opened date is not returned by API" in {
+      reset(fakeSchemeDetailsConnector)
+      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(schemeDetailsWithPsaOnlyResponse))
+      when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(listOfSchemesPartialResponse))
+      val result = controller().onPageLoad(srn)(fakeRequest)
+      status(result) mustBe OK
+      contentAsString(result) mustBe viewAsString(None)
+    }
+
+    "return OK and the correct view for a GET when scheme status is not open" in {
+      reset(fakeSchemeDetailsConnector)
+      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(schemeDetailsPendingResponse))
+      when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(listOfSchemesResponse))
+      val result = controller().onPageLoad(srn)(fakeRequest)
+      status(result) mustBe OK
+      contentAsString(result) mustBe viewAsString(openDate = None, administrators = administratorsCantRemove, isSchemeOpen = false)
+    }
+
+    "return NOT_FOUND when PSA data is not returned by API (as we don't know who administers the scheme)" in {
+      reset(fakeSchemeDetailsConnector)
+      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(schemeDetailsWithoutPsaResponse))
+      when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(listOfSchemesResponse))
+      val result = controller().onPageLoad(srn)(fakeRequest)
+      status(result) mustBe NOT_FOUND
+    }
+
+    "return NOT_FOUND and the correct not found view when PSA data is returned by API which does not include the currently logged-in PSA" in {
+      val psaDetails1 = PsaDetails("A0000001", Some("partnership name no 1"), None, Some("2018-10-01"))
+      val psaDetails2 = PsaDetails("A0000002", Some("partnership name no 2"), None, None)
+      val psaSchemeDetailsResponseTwoPSAs = PsaSchemeDetails(mockSchemeDetails, None, None, Some(Seq(psaDetails1, psaDetails2)))
+
+      reset(fakeSchemeDetailsConnector)
+      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(psaSchemeDetailsResponseTwoPSAs))
+      when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(listOfSchemesResponse))
+      val result = controller().onPageLoad(srn)(fakeRequest)
+      status(result) mustBe NOT_FOUND
+      contentAsString(result).contains(messages("messages__pageNotFound404__heading")) mustBe true
+    }
   }
 }
 

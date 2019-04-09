@@ -109,8 +109,7 @@ object RemovalDateControllerSpec {
     override def getSchemeDetailsVariations(psaId: String,
                                             schemeIdType: String,
                                             idNumber: String)(implicit hc: HeaderCarrier,
-                                                              ec: ExecutionContext): Future[UserAnswers] =
-      Future.successful(UserAnswers())
+                                                              ec: ExecutionContext): Future[UserAnswers] = ???
   }
 
   val fakePsaRemovalConnector: PsaRemovalConnector = new PsaRemovalConnector {
