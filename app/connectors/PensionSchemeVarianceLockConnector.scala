@@ -34,8 +34,6 @@ trait PensionSchemeVarianceLockConnector {
 
   def isLockByPsaIdOrSchemeId(psaId: String, srn: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Lock]]
 
-  def releaseLock(psaId: String, srn: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit]
-
 }
 
 @Singleton
@@ -65,26 +63,6 @@ class PensionSchemeVarianceLockConnectorImpl @Inject()(http: HttpClient, config:
           throw new HttpException(response.body, response.status)
       }
     } andThen logExceptions("Unable to find the lock")
-  }
-
-  override def releaseLock(psaId: String, srn: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
-
-    implicit val rds: HttpReads[HttpResponse] = new HttpReads[HttpResponse] {
-      override def read(method: String, url: String, response: HttpResponse): HttpResponse = response
-    }
-
-    implicit val headerCarrier: HeaderCarrier = hc.withExtraHeaders("psaId" -> psaId, "srn" -> srn)
-
-    val url = s"${config.updateSchemeDetailsUrl}/releaseLock"
-
-    http.DELETE[HttpResponse](url)(implicitly, headerCarrier, implicitly).map { response =>
-
-      response.status match {
-        case OK =>{}
-        case _ =>
-          throw new HttpException(response.body, response.status)
-      }
-    } andThen logExceptions("Unable to release the lock")
   }
 
   private def logExceptions[I](msg : String): PartialFunction[Try[I], Unit] = {

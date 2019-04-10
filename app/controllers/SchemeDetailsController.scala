@@ -118,7 +118,6 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
         }
     }
 
-
   private def withSchemeAndLock(srn: SchemeReferenceNumber)(implicit request: AuthenticatedRequest[AnyContent]) = {
     for{
       _ <- userAnswersCacheConnector.removeAll(request.externalId)

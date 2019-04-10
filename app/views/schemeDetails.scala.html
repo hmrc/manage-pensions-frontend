@@ -30,7 +30,9 @@ admins: Option[Seq[AssociatedPsa]], srn: String, isSchemeOpen: Boolean, isScheme
 
     @components.heading(schemeName)
 
-    <p><a id="view-details" href="@appConfig.viewSchemeDetailsUrl.format(srn)">@messages("messages__schemeDetails__view_details_link")</a></p>
+    <p><a id="view-details" href="@appConfig.viewSchemeDetailsUrl.format(srn)">
+        @if(isSchemeLocked){ @messages("messages__schemeDetails__view_details_link")} else { @messages("messages__schemeDetails__view_change_details_link") }
+    </a></p>
 
     @openedDate.map { openedDate =>
         <h2>@Html(messages("messages__schemeDetails__opened_date_head"))</h2>
