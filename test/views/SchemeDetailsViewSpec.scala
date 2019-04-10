@@ -37,14 +37,16 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
 
     def createView(date: Option[String] = Some(openedDate),
                    psaList: Option[Seq[AssociatedPsa]] = Some(administrators),
-                   isSchemeOpen: Boolean = true): () => HtmlFormat.Appendable = () =>
+                   isSchemeOpen: Boolean = true,
+                   isSchemeLocked: Boolean = true): () => HtmlFormat.Appendable = () =>
       schemeDetails(
         new fakeFrontendAppConfig(),
         schemeName,
         date,
         psaList,
         srn,
-        isSchemeOpen
+        isSchemeOpen,
+        isSchemeLocked
       )(fakeRequest, messages)
 
     "SchemesDetails view" must {

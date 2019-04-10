@@ -76,6 +76,7 @@ class FrontendAppConfig @Inject()(override val runModeConfiguration: Configurati
   lazy val removePsaUrl : String = s"${baseUrl("pension-administrator")}${runModeConfiguration.underlying.getString("urls.removePsa")}"
   lazy val deregisterPsaUrl : String = s"${baseUrl("pension-administrator")}${runModeConfiguration.underlying.getString("urls.deregisterPsa")}"
   lazy val taxDeEnrolmentUrl: String = baseUrl("tax-enrolments") +runModeConfiguration.underlying.getString("urls.tax-de-enrolment")
+  lazy val updateSchemeDetailsUrl: String = s"${baseUrl("pensions-scheme")}${runModeConfiguration.underlying.getString("urls.updateSchemeDetails")}"
 
   def languageMap: Map[String, Lang] = Map(
     "english" -> Lang("en"),
