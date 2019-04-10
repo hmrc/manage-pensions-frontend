@@ -31,6 +31,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.PsaId
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import utils.FakeDataRequest
 import utils.countryOptions.CountryOptions
 import views.html.deregister.confirmStopBeingPsa
 
@@ -90,6 +91,14 @@ class ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase with ScalaFut
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.deregister.routes.SuccessfulDeregistrationController.onPageLoad().url)
+    }
+
+    "redirect to the next page and clear the user cache on a successful POST when selected true" in {
+
+      val result = controller(minimalPsaDetailsIndividual).onSubmit()(postRequest)
+
+      status(result) mustBe SEE_OTHER
+      FakeUserAnswersCacheConnector.verifyAllDataRemoved()
     }
 
     "redirect to the next page on a successful POST when selected false" in {
@@ -159,7 +168,8 @@ object ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase {
       minimalDetailsConnector,
       fakeDeregistrationConnector,
       fakeTaxEnrolmentsConnector,
-      fakeAllowAccess(minimalDetailsConnector)
+      fakeAllowAccess(minimalDetailsConnector),
+      FakeUserAnswersCacheConnector
     )
   }
 

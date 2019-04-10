@@ -16,9 +16,7 @@
 
 package controllers.deregister
 
-import connectors.FakeUserAnswersCacheConnector
 import controllers.ControllerSpecBase
-import controllers.actions._
 import org.scalatest.mockito.MockitoSugar
 import play.api.test.Helpers._
 import views.html.deregister.successful_deregistration
@@ -33,12 +31,6 @@ class SuccessfulDeregistrationControllerSpec extends ControllerSpecBase {
       status(result) mustBe OK
       contentAsString(result) mustBe viewAsString()
     }
-
-    "return OK and clear the cache for the user" in {
-      val result = controller.onPageLoad()(fakeRequest)
-      status(result) mustBe OK
-      FakeUserAnswersCacheConnector.verifyAllDataRemoved()
-    }
   }
 }
 
@@ -46,9 +38,7 @@ object SuccessfulDeregistrationControllerSpec extends ControllerSpecBase with Mo
   private def controller =
     new SuccessfulDeregistrationController(
       frontendAppConfig,
-      messagesApi,
-      FakeUserAnswersCacheConnector,
-      FakeAuthAction()
+      messagesApi
     )
 
   private def viewAsString() =
