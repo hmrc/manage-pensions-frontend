@@ -17,7 +17,7 @@
 package controllers.deregister
 
 import config.FrontendAppConfig
-import connectors.{DeregistrationConnector, MinimalPsaConnector, TaxEnrolmentsConnector}
+import connectors.{DeregistrationConnector, MinimalPsaConnector, TaxEnrolmentsConnector, UserAnswersCacheConnector}
 import controllers.actions.{AllowAccessForNonSuspendedUsersActionProvider, AuthAction}
 import forms.deregister.ConfirmStopBeingPsaFormProvider
 import javax.inject.Inject
@@ -26,6 +26,7 @@ import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import utils.annotations.PensionAdminCache
 import views.html.deregister.confirmStopBeingPsa
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -38,7 +39,8 @@ class ConfirmStopBeingPsaController @Inject()(
                                                minimalPsaConnector: MinimalPsaConnector,
                                                deregistration: DeregistrationConnector,
                                                enrolments: TaxEnrolmentsConnector,
-                                               allowAccess: AllowAccessForNonSuspendedUsersActionProvider
+                                               allowAccess: AllowAccessForNonSuspendedUsersActionProvider,
+                                               @PensionAdminCache dataCacheConnector: UserAnswersCacheConnector
                                              )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport {
 
   val form: Form[Boolean] = formProvider()
@@ -69,6 +71,7 @@ class ConfirmStopBeingPsaController @Inject()(
                     for {
                       _ <- deregistration.stopBeingPSA(psaId)
                       _ <- enrolments.deEnrol(userId, psaId, request.externalId)
+                      _ <- dataCacheConnector.removeAll(request.externalId)
                     } yield {
                       Redirect(controllers.deregister.routes.SuccessfulDeregistrationController.onPageLoad())
                     }
