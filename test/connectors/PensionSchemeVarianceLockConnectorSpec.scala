@@ -30,47 +30,6 @@ class PensionSchemeVarianceLockConnectorSpec extends AsyncFlatSpec with Matchers
 
   import PensionSchemeVarianceLockConnectorSpec._
 
-  "releaseLock" should "return the Lock for a valid request/response" in {
-
-    server.stubFor(
-      delete(urlEqualTo(releaseLockUrl))
-        .withHeader("psaId", equalTo(psaId))
-        .withHeader("srn", equalTo(srn))
-        .willReturn(
-          aResponse()
-            .withStatus(Status.OK)
-        )
-    )
-
-    val connector = injector.instanceOf[PensionSchemeVarianceLockConnectorImpl]
-
-    connector.releaseLock(psaId, srn).map(schemeVariance =>
-      schemeVariance shouldBe {}
-    )
-
-  }
-
-  it should "return a failed future on upstream error" in {
-
-    server.stubFor(
-      delete(urlEqualTo(releaseLockUrl))
-        .withHeader("psaId", equalTo(psaId))
-        .withHeader("srn", equalTo(srn))
-        .willReturn(
-          aResponse()
-            .withStatus(Status.INTERNAL_SERVER_ERROR)
-        )
-    )
-
-    val connector = injector.instanceOf[PensionSchemeVarianceLockConnectorImpl]
-
-    recoverToExceptionIf[HttpException] {
-      connector.releaseLock(psaId, srn)
-    } map {
-      _.responseCode shouldBe Status.INTERNAL_SERVER_ERROR
-    }
-  }
-
   "isLockByPsaIdOrSchemeId" should "return the VarianceLock for a valid request/response" in {
 
     server.stubFor(
