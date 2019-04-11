@@ -83,19 +83,19 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
     }
 
   private def onPageLoadVariations(srn: SchemeReferenceNumber)(implicit request: AuthenticatedRequest[AnyContent]): Future[Result] =
-    withSchemeAndLock(srn).flatMap { result =>
+    withSchemeAndLock(srn).flatMap{  case (userAnswers,lock) =>
 
-        val isLocked = result._2 match {
+        val isLocked = lock match {
           case Some(VarianceLock) | None => false
           case Some(_) => true
         }
 
-        val admins = result._1.json.transform((JsPath \ 'psaDetails).json.pick)
+        val admins = userAnswers.json.transform((JsPath \ 'psaDetails).json.pick)
           .asOpt.map(_.as[JsArray].value).toSeq.flatten
           .flatMap(_.transform((JsPath \ "id").json.pick).asOpt.flatMap(_.validate[String].asOpt).toSeq)
 
-        val schemeStatus = result._1.json.transform((JsPath \ "schemeStatus").json.pick).asOpt.flatMap(_.validate[String].asOpt).getOrElse("")
-        val schemeName = result._1.get(SchemeNameId).getOrElse("")
+        val schemeStatus = userAnswers.json.transform((JsPath \ "schemeStatus").json.pick).asOpt.flatMap(_.validate[String].asOpt).getOrElse("")
+        val schemeName = userAnswers.get(SchemeNameId).getOrElse("")
 
         if (admins.contains(request.psaId.id)) {
           listSchemesConnector.getListOfSchemes(request.psaId.id).flatMap { list =>
@@ -105,7 +105,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                 Ok(schemeDetails(appConfig,
                   schemeName,
                   openedDate(srn.id, list, isSchemeOpen),
-                  administratorsVariations(request.psaId.id, result._1, schemeStatus),
+                  administratorsVariations(request.psaId.id, userAnswers, schemeStatus),
                   srn.id,
                   isSchemeOpen,
                   isLocked
