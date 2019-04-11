@@ -20,7 +20,8 @@
 @import models.Mode
 @import viewmodels.{AssociatedPsa, Message}
 
-@(appConfig: FrontendAppConfig, schemeName: String, openedDate: Option[String], admins: Option[Seq[AssociatedPsa]], srn: String, isSchemeOpen: Boolean)(implicit request: Request[_], messages: Messages)
+@(appConfig: FrontendAppConfig, schemeName: String, openedDate: Option[String],
+admins: Option[Seq[AssociatedPsa]], srn: String, isSchemeOpen: Boolean, isSchemeLocked: Boolean)(implicit request: Request[_], messages: Messages)
 
 @main_template(
     title = messages("messages__schemeDetails__title"),

@@ -60,6 +60,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
       messagesApi,
       fakeSchemeDetailsConnector,
       fakeListOfSchemesConnector,
+      fakeSchemeLockConnector,
       FakeAuthAction(),
       dataRetrievalAction,
       FakeUserAnswersCacheConnector,
@@ -68,14 +69,16 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
     )
   }
 
-  def viewAsString(openDate: Option[String] = openDate, administrators: Option[Seq[AssociatedPsa]] = administrators, isSchemeOpen: Boolean = true): String =
+  def viewAsString(openDate: Option[String] = openDate, administrators: Option[Seq[AssociatedPsa]] = administrators,
+                   isSchemeOpen: Boolean = true, isSchemeLocked: Boolean = false): String =
     schemeDetails(
       frontendAppConfig,
       mockSchemeDetails.name,
       openDate,
       administrators,
       srn,
-      isSchemeOpen
+      isSchemeOpen,
+      isSchemeLocked
     )(fakeRequest, messages).toString()
 
   "SchemeDetailsController" must {
@@ -142,9 +145,13 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
             AssociatedPsa("Tony A Smith", false)
           )
         )
-      reset(fakeSchemeDetailsConnector)
+      reset(fakeSchemeDetailsConnector, fakeSchemeLockConnector)
       when(fakeSchemeDetailsConnector.getSchemeDetailsVariations(Matchers.eq("A0000000"), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(desUserAnswers)
+        )
+
+      when(fakeSchemeLockConnector.isLockByPsaIdOrSchemeId(Matchers.eq("A0000000"), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(VarianceLock))
         )
       when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(listOfSchemesResponse))
@@ -208,6 +215,7 @@ private object SchemeDetailsControllerSpec extends MockitoSugar {
 
   val fakeSchemeDetailsConnector: SchemeDetailsConnector = mock[SchemeDetailsConnector]
   val fakeListOfSchemesConnector: ListOfSchemesConnector = mock[ListOfSchemesConnector]
+  val fakeSchemeLockConnector: PensionSchemeVarianceLockConnector = mock[PensionSchemeVarianceLockConnector]
   val schemeName = "Test Scheme Name"
 
   val administrators =
