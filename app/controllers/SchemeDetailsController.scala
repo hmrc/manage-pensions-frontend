@@ -71,7 +71,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                   administrators(request.psaId.id, scheme),
                   srn.id,
                   isSchemeOpen,
-                  true
+                  displayChangeLink = false
                 ))
               }
             }
@@ -85,9 +85,9 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
   private def onPageLoadVariations(srn: SchemeReferenceNumber)(implicit request: AuthenticatedRequest[AnyContent]): Future[Result] =
     withSchemeAndLock(srn).flatMap{  case (userAnswers,lock) =>
 
-      val schemeNotLocked = lock match {
-        case Some(VarianceLock) | None => false
-        case Some(_) => true
+      val displayChangeLink = lock match {
+        case Some(VarianceLock) | None => true
+        case Some(_) => false
       }
 
       val admins = userAnswers.json.transform((JsPath \ 'psaDetails).json.pick)
@@ -108,7 +108,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                 administratorsVariations(request.psaId.id, userAnswers, schemeStatus),
                 srn.id,
                 isSchemeOpen,
-                schemeNotLocked
+                displayChangeLink
               ))
             }
           }
