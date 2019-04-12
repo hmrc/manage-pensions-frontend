@@ -70,7 +70,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
   }
 
   def viewAsString(openDate: Option[String] = openDate, administrators: Option[Seq[AssociatedPsa]] = administrators,
-                   isSchemeOpen: Boolean = true, isSchemeLocked: Boolean = true): String =
+                   isSchemeOpen: Boolean = true, SchemeNotLocked: Boolean = true): String =
     schemeDetails(
       frontendAppConfig,
       mockSchemeDetails.name,
@@ -78,7 +78,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
       administrators,
       srn,
       isSchemeOpen,
-      isSchemeLocked
+      SchemeNotLocked
     )(fakeRequest, messages).toString()
 
   "SchemeDetailsController" must {
@@ -159,7 +159,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
       status(result) mustBe OK
       verify(fakeSchemeDetailsConnector, times(1))
         .getSchemeDetailsVariations(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())
-      contentAsString(result) mustBe viewAsString(administrators = updatedAdministrators, isSchemeLocked=false)
+      contentAsString(result) mustBe viewAsString(administrators = updatedAdministrators, SchemeNotLocked=false)
     }
 
     "return OK and the correct view for a GET when opened date is not returned by API" in {
