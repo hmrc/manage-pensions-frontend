@@ -38,7 +38,7 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
     def createView(date: Option[String] = Some(openedDate),
                    psaList: Option[Seq[AssociatedPsa]] = Some(administrators),
                    isSchemeOpen: Boolean = true,
-                   isSchemeLocked: Boolean = true): () => HtmlFormat.Appendable = () =>
+                   displayChangeLink: Boolean = false): () => HtmlFormat.Appendable = () =>
       schemeDetails(
         new fakeFrontendAppConfig(),
         schemeName,
@@ -46,7 +46,7 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
         psaList,
         srn,
         isSchemeOpen,
-        isSchemeLocked
+        displayChangeLink
       )(fakeRequest, messages)
 
     "SchemesDetails view" must {
@@ -61,8 +61,15 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
       )
 
       "have link to view scheme details" in {
+        Jsoup.parse(createView(displayChangeLink = true)().toString()).select("a[id=view-details]") must
+          haveLink(s"http://localhost:8200/register-pension-scheme/scheme-details/$srn")
+          haveDynamicText(messages("messages__schemeDetails__view_details_link"))
+      }
+
+      "have link to view or change scheme details" in {
         Jsoup.parse(createView()().toString()).select("a[id=view-details]") must
           haveLink(s"http://localhost:8200/register-pension-scheme/scheme-details/$srn")
+          haveDynamicText(messages("messages__schemeDetails__view_change_details_link"))
       }
 
       "display the date on which scheme was opened" in {

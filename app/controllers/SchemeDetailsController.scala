@@ -20,7 +20,7 @@ import config.{FeatureSwitchManagementService, FrontendAppConfig}
 import connectors.{ListOfSchemesConnector, PensionSchemeVarianceLockConnector, SchemeDetailsConnector, UserAnswersCacheConnector}
 import controllers.actions._
 import handlers.ErrorHandler
-import identifiers.{ListOfPSADetailsId, SchemeNameId, SchemeSrnId}
+import identifiers.{ListOfPSADetailsId, SchemeNameId, SchemeSrnId, SchemeStatusId}
 import javax.inject.Inject
 import models._
 import models.requests.AuthenticatedRequest
@@ -71,7 +71,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                   administrators(request.psaId.id, scheme),
                   srn.id,
                   isSchemeOpen,
-                  false
+                  displayChangeLink = false
                 ))
               }
             }
@@ -85,39 +85,38 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
   private def onPageLoadVariations(srn: SchemeReferenceNumber)(implicit request: AuthenticatedRequest[AnyContent]): Future[Result] =
     withSchemeAndLock(srn).flatMap{  case (userAnswers,lock) =>
 
-        val isLocked = lock match {
-          case Some(VarianceLock) | None => false
-          case Some(_) => true
-        }
+      val displayChangeLink = lock match {
+        case Some(VarianceLock) | None => true
+        case Some(_) => false
+      }
 
-        val admins = userAnswers.json.transform((JsPath \ 'psaDetails).json.pick)
-          .asOpt.map(_.as[JsArray].value).toSeq.flatten
-          .flatMap(_.transform((JsPath \ "id").json.pick).asOpt.flatMap(_.validate[String].asOpt).toSeq)
+      val admins = userAnswers.json.transform((JsPath \ 'psaDetails).json.pick)
+        .asOpt.map(_.as[JsArray].value).toSeq.flatten
+        .flatMap(_.transform((JsPath \ "id").json.pick).asOpt.flatMap(_.validate[String].asOpt).toSeq)
 
-        val schemeStatus = userAnswers.json.transform((JsPath \ "schemeStatus").json.pick).asOpt.flatMap(_.validate[String].asOpt).getOrElse("")
-        val schemeName = userAnswers.get(SchemeNameId).getOrElse("")
+      val schemeStatus = userAnswers.get(SchemeStatusId).getOrElse("")
+      val schemeName = userAnswers.get(SchemeNameId).getOrElse("")
 
-        if (admins.contains(request.psaId.id)) {
-          listSchemesConnector.getListOfSchemes(request.psaId.id).flatMap { list =>
-            val isSchemeOpen = schemeStatus.equalsIgnoreCase("open")
-            userAnswersCacheConnector.save(request.externalId, SchemeSrnId, srn.id).flatMap { _ =>
-              userAnswersCacheConnector.save(request.externalId, SchemeNameId, schemeName).map { _ =>
-                Ok(schemeDetails(appConfig,
-                  schemeName,
-                  openedDate(srn.id, list, isSchemeOpen),
-                  administratorsVariations(request.psaId.id, userAnswers, schemeStatus),
-                  srn.id,
-                  isSchemeOpen,
-                  isLocked
-                ))
-              }
+      if (admins.contains(request.psaId.id)) {
+        listSchemesConnector.getListOfSchemes(request.psaId.id).flatMap { list =>
+          val isSchemeOpen = schemeStatus.equalsIgnoreCase("open")
+          userAnswersCacheConnector.save(request.externalId, SchemeSrnId, srn.id).flatMap { _ =>
+            userAnswersCacheConnector.save(request.externalId, SchemeNameId, schemeName).map { _ =>
+              Ok(schemeDetails(appConfig,
+                schemeName,
+                openedDate(srn.id, list, isSchemeOpen),
+                administratorsVariations(request.psaId.id, userAnswers, schemeStatus),
+                srn.id,
+                isSchemeOpen,
+                displayChangeLink
+              ))
             }
           }
-        } else {
-          Future.successful(NotFound(errorHandler.notFoundTemplate))
         }
+      } else {
+        Future.successful(NotFound(errorHandler.notFoundTemplate))
+      }
     }
-
 
   private def withSchemeAndLock(srn: SchemeReferenceNumber)(implicit request: AuthenticatedRequest[AnyContent]) = {
     for{
@@ -128,6 +127,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
       (scheme, lock)
     }
   }
+
   private def administratorsVariations(psaId: String, psaSchemeDetails: UserAnswers, schemeStatus:String): Option[Seq[AssociatedPsa]] =
     psaSchemeDetails.get(ListOfPSADetailsId).map { psaDetailsSeq =>
       psaDetailsSeq.map { psaDetails =>
