@@ -85,7 +85,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
   private def onPageLoadVariations(srn: SchemeReferenceNumber)(implicit request: AuthenticatedRequest[AnyContent]): Future[Result] =
     withSchemeAndLock(srn).flatMap{  case (userAnswers,lock) =>
 
-      val isLocked = lock match {
+      val schemeNotLocked = lock match {
         case Some(VarianceLock) | None => false
         case Some(_) => true
       }
@@ -108,7 +108,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                 administratorsVariations(request.psaId.id, userAnswers, schemeStatus),
                 srn.id,
                 isSchemeOpen,
-                isLocked
+                schemeNotLocked
               ))
             }
           }
