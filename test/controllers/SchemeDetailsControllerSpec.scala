@@ -159,7 +159,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
       status(result) mustBe OK
       verify(fakeSchemeDetailsConnector, times(1))
         .getSchemeDetailsVariations(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())
-      contentAsString(result) mustBe viewAsString(administrators = updatedAdministrators, displayChangeLink=false)
+      contentAsString(result) mustBe viewAsString(administrators = updatedAdministrators, displayChangeLink=true)
     }
 
     "return OK and the correct view for a GET when opened date is not returned by API" in {
