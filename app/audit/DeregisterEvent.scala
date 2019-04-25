@@ -18,7 +18,7 @@ package audit
 
 case class DeregisterEvent(userId:String, psaId:String) extends AuditEvent {
 
-  override def auditType: String = "PSADeEnrol"
+  override def auditType: String = "PSADeEnrolment"
 
   override def details: Map[String, String] =
     Map(
