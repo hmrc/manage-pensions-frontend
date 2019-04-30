@@ -8,6 +8,7 @@ site.confirm = Confirm
 site.yes = Yes
 site.no = No
 site.return_to = Return to {0}
+site.return_to_overview = Return to manage and register your pension schemes
 
 checkYourAnswers.title = Check your answers
 checkYourAnswers.heading = Check your answers
@@ -92,7 +93,6 @@ messages__listSchemes__status_rejected_appeal = Rejected under appeal
 messages__listSchemes__schemeName__screen_reader = The scheme name is: {0}
 messages__listSchemes__PSTR__screen_reader = {0}’s Pension Scheme Tax Reference number is {1}
 messages__listSchemes__status__screen_reader = {0}’s status is {1}
-messages__listSchemes__return_to_overview = Return to manage and register your pension schemes
 
 messages__schemesOverview__title = Managing pension schemes
 messages__schemesOverview__heading = Managing pension schemes
@@ -325,3 +325,9 @@ messages__whatYouWillNeed__lede = The scheme administrator you are adding must h
 messages__whatYouWillNeed__list_heading = You will need to tell us their:
 messages__whatYouWillNeed__item1 = name they used to register
 messages__whatYouWillNeed__item2 = administrator ID
+
+messages__deleteSchemeChanges__title = Are you sure you want to delete changes to the scheme’s details?
+messages__deleteSchemeChanges__heading = Are you sure you want to delete changes to {0}’s details?
+messages__deleteSchemeChanges__p1 = This will only delete the changes you have entered for this scheme.
+messages__deleteSchemeChanges__p2 = The pension scheme will not be deleted.
+messages__deleteSchemeChanges__error__required = Select yes if you want to delete changes to the scheme’s details
