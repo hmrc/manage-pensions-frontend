@@ -92,6 +92,224 @@ class PensionSchemeVarianceLockConnectorSpec extends AsyncFlatSpec with Matchers
     }
   }
 
+  "getLock" should "return the valid request/response" in {
+
+    server.stubFor(
+      get(urlEqualTo(getLockUrl))
+        .withHeader("psaId", equalTo(psaId))
+        .withHeader("srn", equalTo(srn))
+        .willReturn(
+          aResponse()
+            .withStatus(Status.OK)
+            .withHeader("Content-Type", "application/json")
+            .withBody(validSchemeVarianceLockResponse)
+        )
+    )
+
+    val connector = injector.instanceOf[PensionSchemeVarianceLockConnectorImpl]
+
+    connector.getLock(psaId, srn).map(schemeVariance =>
+      schemeVariance shouldBe Some(schemeVarianceLockResponse)
+    )
+
+  }
+
+  it should "return none if no lock found" in {
+
+    server.stubFor(
+      get(urlEqualTo(getLockUrl))
+        .withHeader("psaId", equalTo(psaId))
+        .withHeader("srn", equalTo(srn))
+        .willReturn(
+          aResponse()
+            .withStatus(Status.NOT_FOUND)
+        )
+    )
+
+    val connector = injector.instanceOf[PensionSchemeVarianceLockConnectorImpl]
+
+    connector.getLock(psaId, srn).map(schemeVariance =>
+      schemeVariance shouldBe None
+    )
+  }
+
+  it should "return a failed future on upstream error" in {
+
+    server.stubFor(
+      get(urlEqualTo(getLockUrl))
+        .withHeader("psaId", equalTo(psaId))
+        .withHeader("srn", equalTo(srn))
+        .willReturn(
+          serverError
+        )
+    )
+
+    val connector = injector.instanceOf[PensionSchemeVarianceLockConnectorImpl]
+
+    recoverToExceptionIf[HttpException] {
+      connector.getLock(psaId, srn)
+    } map {
+      _.responseCode shouldBe Status.INTERNAL_SERVER_ERROR
+    }
+  }
+
+  "getLockByPsa" should "return the valid request/response" in {
+
+    server.stubFor(
+      get(urlEqualTo(getLockByPsaUrl))
+        .withHeader("psaId", equalTo(psaId))
+        .willReturn(
+          aResponse()
+            .withStatus(Status.OK)
+            .withHeader("Content-Type", "application/json")
+            .withBody(validSchemeVarianceLockResponse)
+        )
+    )
+
+    val connector = injector.instanceOf[PensionSchemeVarianceLockConnectorImpl]
+
+    connector.getLockByPsa(psaId).map(schemeVariance =>
+      schemeVariance shouldBe Some(schemeVarianceLockResponse)
+    )
+
+  }
+
+  it should "return none if no lock found" in {
+
+    server.stubFor(
+      get(urlEqualTo(getLockByPsaUrl))
+        .withHeader("psaId", equalTo(psaId))
+        .willReturn(
+          aResponse()
+            .withStatus(Status.NOT_FOUND)
+        )
+    )
+
+    val connector = injector.instanceOf[PensionSchemeVarianceLockConnectorImpl]
+
+    connector.getLockByPsa(psaId).map(schemeVariance =>
+      schemeVariance shouldBe None
+    )
+  }
+
+  it should "return a failed future on upstream error" in {
+
+    server.stubFor(
+      get(urlEqualTo(getLockByPsaUrl))
+        .withHeader("psaId", equalTo(psaId))
+        .willReturn(
+          serverError
+        )
+    )
+
+    val connector = injector.instanceOf[PensionSchemeVarianceLockConnectorImpl]
+
+    recoverToExceptionIf[HttpException] {
+      connector.getLockByPsa(psaId)
+    } map {
+      _.responseCode shouldBe Status.INTERNAL_SERVER_ERROR
+    }
+  }
+
+  "getLockByScheme" should "return the valid request/response" in {
+
+    server.stubFor(
+      get(urlEqualTo(getLockBySchemeUrl))
+        .withHeader("srn", equalTo(srn))
+        .willReturn(
+          aResponse()
+            .withStatus(Status.OK)
+            .withHeader("Content-Type", "application/json")
+            .withBody(validSchemeVarianceLockResponse)
+        )
+    )
+
+    val connector = injector.instanceOf[PensionSchemeVarianceLockConnectorImpl]
+
+    connector.getLockByScheme(srn).map(schemeVariance =>
+      schemeVariance shouldBe Some(schemeVarianceLockResponse)
+    )
+
+  }
+
+  it should "return none if no lock found" in {
+
+    server.stubFor(
+      get(urlEqualTo(getLockBySchemeUrl))
+        .withHeader("srn", equalTo(srn))
+        .willReturn(
+          aResponse()
+            .withStatus(Status.NOT_FOUND)
+        )
+    )
+
+    val connector = injector.instanceOf[PensionSchemeVarianceLockConnectorImpl]
+
+    connector.getLockByScheme(srn).map(schemeVariance =>
+      schemeVariance shouldBe None
+    )
+  }
+
+  it should "return a failed future on upstream error" in {
+
+    server.stubFor(
+      get(urlEqualTo(getLockBySchemeUrl))
+        .withHeader("srn", equalTo(srn))
+        .willReturn(
+          serverError
+        )
+    )
+
+    val connector = injector.instanceOf[PensionSchemeVarianceLockConnectorImpl]
+
+    recoverToExceptionIf[HttpException] {
+      connector.getLockByScheme(srn)
+    } map {
+      _.responseCode shouldBe Status.INTERNAL_SERVER_ERROR
+    }
+  }
+
+  "releaseLock" should "return the Lock for a valid request/response" in {
+
+    server.stubFor(
+      delete(urlEqualTo(releaseLockUrl))
+        .withHeader("psaId", equalTo(psaId))
+        .withHeader("srn", equalTo(srn))
+        .willReturn(
+          aResponse()
+            .withStatus(Status.OK)
+        )
+    )
+
+    val connector = injector.instanceOf[PensionSchemeVarianceLockConnectorImpl]
+
+    connector.releaseLock(psaId, srn).map(schemeVariance =>
+      schemeVariance shouldBe {}
+    )
+
+  }
+
+  it should "return a failed future on upstream error" in {
+
+    server.stubFor(
+      delete(urlEqualTo(releaseLockUrl))
+        .withHeader("psaId", equalTo(psaId))
+        .withHeader("srn", equalTo(srn))
+        .willReturn(
+          aResponse()
+            .withStatus(Status.INTERNAL_SERVER_ERROR)
+        )
+    )
+
+    val connector = injector.instanceOf[PensionSchemeVarianceLockConnectorImpl]
+
+    recoverToExceptionIf[HttpException] {
+      connector.releaseLock(psaId, srn)
+    } map {
+      _.responseCode shouldBe Status.INTERNAL_SERVER_ERROR
+    }
+  }
+
 }
 
 object PensionSchemeVarianceLockConnectorSpec {
@@ -100,8 +318,10 @@ object PensionSchemeVarianceLockConnectorSpec {
   private val srn = "00000000AA"
 
   private val lockUrl = s"/pensions-scheme/update-scheme/lock"
-  private val getLockUrl = s"/pensions-scheme/update-scheme/getLock"
-  private val releaseLockUrl = s"/pensions-scheme/update-scheme/releaseLock"
+  private val getLockUrl = s"/pensions-scheme/update-scheme/get-lock"
+  private val getLockByPsaUrl = s"/pensions-scheme/update-scheme/get-lock-by-psa"
+  private val getLockBySchemeUrl = s"/pensions-scheme/update-scheme/get-lock-by-scheme"
+  private val releaseLockUrl = s"/pensions-scheme/update-scheme/release-lock"
   private val isLockByPsaOrSchemeUrl = s"/pensions-scheme/update-scheme/isLockByPsaOrScheme"
 
   private val schemeVarianceLockResponse = SchemeVariance("A2100005", "00000000AA")

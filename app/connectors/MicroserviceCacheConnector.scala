@@ -25,7 +25,7 @@ import play.api.libs.json._
 import play.api.libs.ws.WSClient
 import play.api.mvc.Result
 import play.api.mvc.Results._
-import uk.gov.hmrc.crypto.{ApplicationCrypto, Crypted, PlainText}
+import uk.gov.hmrc.crypto.PlainText
 import uk.gov.hmrc.http._
 import utils.UserAnswers
 
@@ -33,8 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class MicroserviceCacheConnector @Inject()(
                                             config: FrontendAppConfig,
-                                            http: WSClient,
-                                            crypto: ApplicationCrypto
+                                            http: WSClient
                                           ) extends UserAnswersCacheConnector {
 
   protected def url(id: String) = s"${config.pensionsSchemeUrl}/pensions-scheme/journey-cache/scheme/$id"
