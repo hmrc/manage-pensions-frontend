@@ -153,11 +153,11 @@ class TestFeatureSwitchManagerControllerSpec extends ControllerSpecBase with Map
     }
 
     "reset is called" must {
-      "return No Content when reset is done successfully" in {
+      "return OK when reset is done successfully" in {
         when(fakePensionsSchemeFeatureSwitchConnectorImpl.reset(any())(any(), any())).thenReturn(Future.successful(true))
         when(fakePensionAdminFeatureSwitchConnectorImpl.reset(any())(any(), any())).thenReturn(Future.successful(true))
         val result = controller.reset(toggleName)(fakeRequest)
-        status(result) mustBe NO_CONTENT
+        status(result) mustBe OK
       }
 
       "return Expectation Failed if resetting the frontend toggle value is failed" in {
