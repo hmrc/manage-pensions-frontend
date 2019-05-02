@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-package connectors.cache.microservice
+package connectors
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
-import connectors.MicroserviceCacheConnector
+import javax.inject.Singleton
 import play.api.libs.ws.WSClient
-import uk.gov.hmrc.crypto.ApplicationCrypto
 
-class PensionsSchemeCacheConnector @Inject()(
-                                              config: FrontendAppConfig,
-                                              http: WSClient
-                                            ) extends MicroserviceCacheConnector(config, http) {
+@Singleton
+class UpdateSchemeCacheConnector @Inject()(
+                                            config: FrontendAppConfig,
+                                            http: WSClient
+                                          ) extends MicroserviceCacheConnector(config, http) {
 
-  override protected def url(id: String) = s"${config.pensionsSchemeUrl}/pensions-scheme/journey-cache/scheme/$id"
+  override protected def url(id: String) = s"${config.pensionsSchemeUrl}/pensions-scheme/journey-cache/update-scheme/$id"
 
-  override protected def lastUpdatedUrl(id: String) = s"${config.pensionsSchemeUrl}/pensions-scheme/journey-cache/scheme/$id/lastUpdated"
+  override protected def lastUpdatedUrl(id: String) = s"${config.pensionsSchemeUrl}/pensions-scheme/journey-cache/update-scheme/$id"
 }
