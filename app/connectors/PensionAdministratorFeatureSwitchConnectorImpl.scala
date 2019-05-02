@@ -58,6 +58,18 @@ class PensionAdministratorFeatureSwitchConnectorImpl @Inject()(http: HttpClient,
         Future.successful(false)
     }
   }
+
+  override def get(name: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Boolean]] = {
+    val url = appConfig.pensionAdminUrl + s"/pension-administrator/test-only/get/$name"
+
+    http.GET(url).map { value =>
+      val currentValue = value.json.as[Boolean]
+      Option(currentValue)
+    }.recoverWith {
+      case _ =>
+        Future.successful(None)
+    }
+  }
 }
 
 

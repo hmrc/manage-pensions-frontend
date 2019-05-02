@@ -20,8 +20,9 @@ import com.google.inject.Inject
 import config.FeatureSwitchManagementService
 import connectors.{PensionAdministratorFeatureSwitchConnectorImpl, PensionsSchemeFeatureSwitchConnectorImpl}
 import play.api.Logger
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, Request}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import views.html.testOnly.testFeatureSwitchManagerSuccess
 
 import scala.concurrent.ExecutionContext
 
@@ -31,23 +32,71 @@ class TestFeatureSwitchManagerController @Inject()(
                                                     adminFeatureSwitchConnector: PensionAdministratorFeatureSwitchConnectorImpl
                                                   )(implicit val ec: ExecutionContext) extends FrontendController {
 
+  private def onOrOff(state:Option[Boolean]):String = state match {
+    case None => "unknown"
+    case Some(true) => "true"
+    case _ => "false"
+  }
+
+  private def switches(featureSwitch:String,
+                       frontendState: Option[Boolean],
+                       schemeState:Option[Boolean],
+                       adminState:Option[Boolean]):Map[String,String] = Map(
+    "pensions-scheme-frontend" -> onOrOff(frontendState),
+    "pensions-scheme" -> onOrOff(schemeState),
+    "pension-administrator" -> onOrOff(adminState)
+  )
+
+  private def successMessage(featureSwitch:String, newToggleState:Boolean) =
+    s"""Feature switch "$featureSwitch" successfully set to ${onOrOff(Option(newToggleState))} in all services listed below."""
+  private def failureMessage(featureSwitch:String, newToggleState:Boolean) =
+    s"""Unable to set feature switch "$featureSwitch" to ${onOrOff(Option(newToggleState))} in all services listed below."""
+
+  private def getView(featureSwitch:String,
+                      newToggleState:Boolean,
+                      frontEndState:Option[Boolean],
+                      schemeState:Option[Boolean],
+                      adminState:Option[Boolean])(implicit request:Request[_]) = {
+    if (frontEndState.contains(newToggleState) && schemeState.contains(newToggleState) && adminState.contains(newToggleState)) {
+      Ok(testFeatureSwitchManagerSuccess("""Request to set feature switch successful.""",
+        s"""Current values of feature switch "$featureSwitch":-""",
+        successMessage(featureSwitch, newToggleState),
+        switches(featureSwitch, frontEndState, schemeState, adminState)))
+    } else {
+      ExpectationFailed(testFeatureSwitchManagerSuccess("""Request to set feature switch unsuccessful.""",
+        s"""Current values of feature switch "$featureSwitch":-""",
+        failureMessage(featureSwitch, newToggleState),
+        switches(featureSwitch, frontEndState, schemeState, adminState)))
+    }
+  }
+
+  private def getResetView(featureSwitch:String,
+                           frontEndState:Option[Boolean],
+                           schemeState:Option[Boolean],
+                           adminState:Option[Boolean])(implicit request:Request[_]) = {
+
+    Ok(testFeatureSwitchManagerSuccess("""Request to reset feature switch successful.""",
+      s"""Current values of feature switch "$featureSwitch":-""",
+      s"""$featureSwitch has been reset""",
+      switches(featureSwitch, frontEndState, schemeState, adminState))
+    )
+  }
+
   def toggleOn(featureSwitch: String): Action[AnyContent] = Action.async {
     implicit request =>
       val frontEndToggledOn = fs.change(featureSwitch, newValue = true)
       if (frontEndToggledOn) {
-        Logger.debug(s"[Manage-Pensions-Frontend][ToggleOnSuccess] - ${featureSwitch}")
+        Logger.debug(s"[Manage-Pensions-frontend][ToggleOnSuccess] - $featureSwitch")
       } else {
-        Logger.debug(s"[Manage-Pensions-Frontend][ToggleOnFailed] - ${featureSwitch}")
+        Logger.debug(s"[Manage-Pensions-frontend][ToggleOnFailed] - $featureSwitch")
       }
       for {
-        schemeToggledOn <- schemeFeatureSwitchConnector.toggleOn(featureSwitch)
-        adminToggledOn <- adminFeatureSwitchConnector.toggleOn(featureSwitch)
+        _ <- schemeFeatureSwitchConnector.toggleOn(featureSwitch)
+        _ <- adminFeatureSwitchConnector.toggleOn(featureSwitch)
+        schemeCurrentValue <- schemeFeatureSwitchConnector.get(featureSwitch)
+        adminCurrentValue <- adminFeatureSwitchConnector.get(featureSwitch)
       } yield {
-        if (schemeToggledOn && adminToggledOn && frontEndToggledOn) {
-          NoContent
-        } else {
-          ExpectationFailed
-        }
+        getView(featureSwitch, newToggleState = true, Option(fs.get(featureSwitch)), schemeCurrentValue, adminCurrentValue)
       }
   }
 
@@ -55,35 +104,29 @@ class TestFeatureSwitchManagerController @Inject()(
     implicit request =>
       val frontEndToggledOff = fs.change(featureSwitch, newValue = false)
       if (frontEndToggledOff) {
-        Logger.debug(s"[Manage-Pensions-Frontend][ToggleOffSuccess] - ${featureSwitch}")
+        Logger.debug(s"[Manage-Pensions-frontend][ToggleOffSuccess] - $featureSwitch")
       } else {
-        Logger.debug(s"[Manage-Pensions-Frontend][ToggleOffFailed] - ${featureSwitch}")
+        Logger.debug(s"[Manage-Pensions-frontend][ToggleOffFailed] - $featureSwitch")
       }
       for {
-        schemeToggledOff <- schemeFeatureSwitchConnector.toggleOff(featureSwitch)
-        adminToggledOff <- adminFeatureSwitchConnector.toggleOff(featureSwitch)
+        _ <- schemeFeatureSwitchConnector.toggleOff(featureSwitch)
+        _ <- adminFeatureSwitchConnector.toggleOff(featureSwitch)
+        schemeCurrentValue <- schemeFeatureSwitchConnector.get(featureSwitch)
+        adminCurrentValue <- adminFeatureSwitchConnector.get(featureSwitch)
       } yield {
-        if (schemeToggledOff && adminToggledOff && frontEndToggledOff) {
-          NoContent
-        } else {
-          ExpectationFailed
-        }
+        getView(featureSwitch, newToggleState = false, Option(fs.get(featureSwitch)), schemeCurrentValue, adminCurrentValue)
       }
   }
 
-  def reset(featureSwitch: String): Action[AnyContent] = Action.async {
-    implicit request =>
-      fs.reset(featureSwitch)
-      Logger.debug(s"[Manage-Pensions-Frontend][ToggleResetSuccess] - ${featureSwitch}")
-      for {
-        schemeReset <- schemeFeatureSwitchConnector.reset(featureSwitch)
-        adminReset <- adminFeatureSwitchConnector.reset(featureSwitch)
-      } yield {
-        if (schemeReset && adminReset) {
-          NoContent
-        } else {
-          ExpectationFailed
-        }
-      }
+  def reset(featureSwitch: String): Action[AnyContent] = Action.async {implicit request =>
+    fs.reset(featureSwitch)
+    for {
+      _ <- schemeFeatureSwitchConnector.reset(featureSwitch)
+      _ <- adminFeatureSwitchConnector.reset(featureSwitch)
+      schemeCurrentValue <- schemeFeatureSwitchConnector.get(featureSwitch)
+      adminCurrentValue <- adminFeatureSwitchConnector.get(featureSwitch)
+    } yield {
+      getResetView(featureSwitch, Option(fs.get(featureSwitch)), schemeCurrentValue, adminCurrentValue)
+    }
   }
 }
