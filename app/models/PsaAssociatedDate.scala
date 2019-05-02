@@ -16,12 +16,11 @@
 
 package models
 
-import org.joda.time.LocalDate
 import play.api.libs.json.{Json, OFormat}
 
 
-case class Admin (psaId : String, relationshipDate:Option[String])
+case class PsaAssociatedDate(psaId : String, relationshipDate:Option[String])
 
-object Admin{
-  implicit val formats: OFormat[Admin] = Json.format[Admin]
+object PsaAssociatedDate{
+  implicit val formats: OFormat[PsaAssociatedDate] = Json.format[PsaAssociatedDate]
 }

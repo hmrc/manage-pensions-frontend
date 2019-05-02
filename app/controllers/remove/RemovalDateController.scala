@@ -26,7 +26,7 @@ import identifiers.invitations.{PSANameId, PSTRId, SchemeNameId}
 import identifiers.remove.RemovalDateId
 import javax.inject.Inject
 import models.requests.DataRequest
-import models.{Admin, NormalMode, PsaToBeRemovedFromScheme}
+import models.{PsaAssociatedDate, NormalMode, PsaToBeRemovedFromScheme}
 import org.joda.time.LocalDate
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -91,7 +91,7 @@ class RemovalDateController @Inject()(appConfig: FrontendAppConfig,
 
   private def psaAssociationDate(psaId: String, srn: String, request: DataRequest[AnyContent])(implicit hd: HeaderCarrier): Future[LocalDate] = {
 
-    val date = if (featureSwitchManagementService.get(Toggles.isVariationsEnabled)) {
+    if (featureSwitchManagementService.get(Toggles.isVariationsEnabled)) {
 
       schemeDetailsConnector.getSchemeDetailsVariations(psaId, "srn", srn).map{ userAnswers =>
 
@@ -100,7 +100,7 @@ class RemovalDateController @Inject()(appConfig: FrontendAppConfig,
           .flatMap(_.transform((
             (__ \ 'psaId).json.copyFrom((JsPath \ "id").json.pick) and
               (__ \ 'relationshipDate).json.copyFrom((JsPath \ 'relationshipDate).json.pick)
-            ).reduce).asOpt.flatMap(_.validate[Admin].asOpt))
+            ).reduce).asOpt.flatMap(_.validate[PsaAssociatedDate].asOpt))
 
         val psa = admins.filter(_.psaId.contains(psaId))
 
@@ -123,7 +123,6 @@ class RemovalDateController @Inject()(appConfig: FrontendAppConfig,
         }
       }
     }
-    date.map(_.getOrElse(appConfig.earliestDatePsaRemoval))
-  }
+  }.map(_.getOrElse(appConfig.earliestDatePsaRemoval))
 
 }
