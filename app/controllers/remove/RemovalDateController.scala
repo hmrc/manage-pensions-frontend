@@ -16,7 +16,7 @@
 
 package controllers.remove
 
-import config.FrontendAppConfig
+import config.{FeatureSwitchManagementService, FrontendAppConfig}
 import connectors.{PsaRemovalConnector, SchemeDetailsConnector, UserAnswersCacheConnector}
 import controllers.Retrievals
 import controllers.actions._
@@ -25,15 +25,20 @@ import identifiers.SchemeSrnId
 import identifiers.invitations.{PSANameId, PSTRId, SchemeNameId}
 import identifiers.remove.RemovalDateId
 import javax.inject.Inject
-import models.{NormalMode, PsaSchemeDetails, PsaToBeRemovedFromScheme}
+import models.requests.DataRequest
+import models.{Admin, NormalMode, PsaToBeRemovedFromScheme}
 import org.joda.time.LocalDate
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.libs.functional.syntax._
+import play.api.libs.json.Reads._
+import play.api.libs.json.{JsArray, JsPath, __}
 import play.api.mvc.{Action, AnyContent}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import utils.annotations.RemovePSA
-import utils.{Navigator, UserAnswers}
 import utils.DateHelper._
+import utils.annotations.RemovePSA
+import utils.{Navigator, Toggles, UserAnswers}
 import views.html.remove.removalDate
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -47,7 +52,8 @@ class RemovalDateController @Inject()(appConfig: FrontendAppConfig,
                                       requireData: DataRequiredAction,
                                       formProvider: RemovalDateFormProvider,
                                       schemeDetailsConnector: SchemeDetailsConnector,
-                                      psaRemovalConnector: PsaRemovalConnector)(
+                                      psaRemovalConnector: PsaRemovalConnector,
+                                      featureSwitchManagementService: FeatureSwitchManagementService)(
   implicit val ec: ExecutionContext) extends FrontendController with I18nSupport with Retrievals {
 
   private def form(schemeOpenDate: LocalDate) = formProvider(schemeOpenDate, appConfig.earliestDatePsaRemoval)
@@ -57,10 +63,8 @@ class RemovalDateController @Inject()(appConfig: FrontendAppConfig,
       (SchemeNameId and PSANameId and SchemeSrnId).retrieve.right.map {
         case schemeName ~ psaName ~ srn =>
 
-          schemeDetailsConnector.getSchemeDetails(request.psaId.id,"srn", srn).flatMap { schemeDetails =>
-            val associationDate: LocalDate = psaAssociationDate(request.psaId.id, schemeDetails)
-             Future.successful(Ok(removalDate(appConfig, form(associationDate), psaName, schemeName, srn, formatDate(associationDate))))
-
+          psaAssociationDate(request.psaId.id, srn, request).map { associationDate =>
+            Ok(removalDate(appConfig, form(associationDate), psaName, schemeName, srn, formatDate(associationDate)))
           }
         case _ => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
       }
@@ -70,8 +74,7 @@ class RemovalDateController @Inject()(appConfig: FrontendAppConfig,
     implicit request =>
       (SchemeNameId and PSANameId and SchemeSrnId and PSTRId).retrieve.right.map {
         case schemeName ~ psaName ~ srn ~ pstr =>
-          schemeDetailsConnector.getSchemeDetails(request.psaId.id, "srn", srn).flatMap { schemeDetails =>
-            val associationDate: LocalDate = psaAssociationDate(request.psaId.id, schemeDetails)
+          psaAssociationDate(request.psaId.id, srn, request).flatMap { associationDate =>
             form(associationDate).bindFromRequest().fold(
               (formWithErrors: Form[_]) =>
                   Future.successful(BadRequest(removalDate(appConfig, formWithErrors, psaName, schemeName, srn, formatDate(associationDate)))),
@@ -86,15 +89,41 @@ class RemovalDateController @Inject()(appConfig: FrontendAppConfig,
       }
   }
 
-  private def psaAssociationDate(psaId: String, schemeDetails: PsaSchemeDetails): LocalDate = {
-    schemeDetails.psaDetails.flatMap { psaDetails =>
-      val psa = psaDetails.filter(_.id.contains(psaId))
-      if (psa.nonEmpty) {
-        psa.head.relationshipDate.map(new LocalDate(_))
-      } else {
-        None
+  private def psaAssociationDate(psaId: String, srn: String, request: DataRequest[AnyContent])(implicit hd: HeaderCarrier): Future[LocalDate] = {
+
+    val date = if (featureSwitchManagementService.get(Toggles.isVariationsEnabled)) {
+
+      schemeDetailsConnector.getSchemeDetailsVariations(psaId, "srn", srn).map{ userAnswers =>
+
+        val admins = userAnswers.json.transform((JsPath \ 'psaDetails).json.pick)
+          .asOpt.map(_.as[JsArray].value).toSeq.flatten
+          .flatMap(_.transform((
+            (__ \ 'psaId).json.copyFrom((JsPath \ "id").json.pick) and
+              (__ \ 'relationshipDate).json.copyFrom((JsPath \ 'relationshipDate).json.pick)
+            ).reduce).asOpt.flatMap(_.validate[Admin].asOpt))
+
+        val psa = admins.filter(_.psaId.contains(psaId))
+
+        if (psa.nonEmpty) {
+          psa.head.relationshipDate.map(new LocalDate(_))
+        } else {
+          None
+        }
+      }
+
+    } else {
+      schemeDetailsConnector.getSchemeDetails(request.psaId.id, "srn", srn).map{ schemeDetails =>
+        schemeDetails.psaDetails.flatMap { psaDetails =>
+          val psa = psaDetails.filter(_.id.contains(psaId))
+          if (psa.nonEmpty) {
+            psa.head.relationshipDate.map(new LocalDate(_))
+          } else {
+            None
+          }
+        }
       }
     }
-  }.getOrElse(appConfig.earliestDatePsaRemoval)
+    date.map(_.getOrElse(appConfig.earliestDatePsaRemoval))
+  }
 
 }

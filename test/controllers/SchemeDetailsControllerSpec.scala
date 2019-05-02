@@ -30,7 +30,7 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsArray, Json}
 import play.api.test.Helpers.{contentAsString, _}
 import testhelpers.CommonBuilders._
-import utils.UserAnswers
+import utils.{FakeFeatureSwitchManagementService, UserAnswers}
 import viewmodels.AssociatedPsa
 import views.html.schemeDetails
 
@@ -44,15 +44,6 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
     "features.work-package-one-enabled" -> true
   ).build()
 
-  def featureSwitchManagementService(toggleValue: Boolean): FeatureSwitchManagementService = new FeatureSwitchManagementService {
-    override def change(name: String, newValue: Boolean): Boolean = ???
-
-    override def get(name: String): Boolean = toggleValue
-
-    override def reset(name: String): Unit = ???
-
-  }
-
   def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData,
                  variationsToggle: Boolean = false): SchemeDetailsController = {
     val eh = new ErrorHandler(frontendAppConfig, messagesApi)
@@ -65,7 +56,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
       dataRetrievalAction,
       FakeUserAnswersCacheConnector,
       eh,
-      featureSwitchManagementService(variationsToggle)
+      FakeFeatureSwitchManagementService(variationsToggle)
     )
   }
 

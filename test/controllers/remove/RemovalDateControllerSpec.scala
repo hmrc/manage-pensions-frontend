@@ -29,7 +29,7 @@ import play.api.mvc.AnyContentAsJson
 import play.api.test.FakeRequest
 import testhelpers.CommonBuilders
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.UserAnswers
+import utils.{FakeFeatureSwitchManagementService, UserAnswers}
 import views.html.remove.removalDate
 import utils.DateHelper._
 
@@ -43,12 +43,17 @@ class RemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours {
   private val form = formProvider
 
   def controller(dataRetrievalAction: DataRetrievalAction = data, fakeAuth: AuthAction = FakeAuthAction(),
-                 userAnswersCacheConnector: UserAnswersCacheConnector = FakeUserAnswersCacheConnector) = new RemovalDateController(
+                 userAnswersCacheConnector: UserAnswersCacheConnector = FakeUserAnswersCacheConnector,
+                 variationsToggle: Boolean = false) = new RemovalDateController(
     frontendAppConfig, messagesApi, userAnswersCacheConnector, navigator, fakeAuth, dataRetrievalAction,
-    requiredDataAction, formProvider, fakeSchemeDetailsConnector, fakePsaRemovalConnector)
+    requiredDataAction, formProvider, fakeSchemeDetailsConnector, fakePsaRemovalConnector,
+    FakeFeatureSwitchManagementService(variationsToggle))
 
   private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
     controller(dataRetrievalAction, fakeAuth).onPageLoad()
+  }
+  private def onPageLoadActionVariation(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
+    controller(dataRetrievalAction, fakeAuth, variationsToggle = true).onPageLoad()
   }
 
   private def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
@@ -70,6 +75,12 @@ class RemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours {
     viewAsString, postRequest, Some(emptyPostRequest))
 
   behave like controllerThatSavesUserAnswers(onSaveAction, postRequest, RemovalDateId, date)
+  
+  "when variation got enabled" must{
+    behave like controllerWithOnPageLoadMethodWithoutPrePopulation(onPageLoadActionVariation,
+      userAnswer.dataRetrievalAction, form(associationDate, frontendAppConfig.earliestDatePsaRemoval), viewAsString)
+    
+  }
 }
 
 object RemovalDateControllerSpec {
@@ -109,7 +120,35 @@ object RemovalDateControllerSpec {
     override def getSchemeDetailsVariations(psaId: String,
                                             schemeIdType: String,
                                             idNumber: String)(implicit hc: HeaderCarrier,
-                                                              ec: ExecutionContext): Future[UserAnswers] = ???
+                                                              ec: ExecutionContext): Future[UserAnswers] = {
+      
+      val json = """{
+                     "benefits": "opt1",
+                     "schemeType": {
+                       "schemeTypeDetails": "test scheme name",
+                       "name": "master"
+                     },
+                     "psaDetails" :[
+                       {
+                       "id":"A0000000",
+                       "individual":{
+                           "firstName": "Taylor",
+                           "middleName": "Middle",
+                           "lastName": "Rayon"
+                         },
+                         "organisationOrPartnershipName": "partnetship name",
+                         "relationshipDate": "2018-10-01"
+                       }
+                     ],
+                     "schemeStatus" : "Pending",
+                     "pstr" : "test pstr",
+                     "isAboutBenefitsAndInsuranceComplete": true,
+                     "isAboutMembersComplete": true,
+                     "isBeforeYouStartComplete": true
+                   }
+                   """.stripMargin
+      Future(UserAnswers(Json.parse(json)))
+    }
   }
 
   val fakePsaRemovalConnector: PsaRemovalConnector = new PsaRemovalConnector {

@@ -29,26 +29,17 @@ import org.scalatest.concurrent.ScalaFutures
 import play.api.test.Helpers._
 import testhelpers.CommonBuilders
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.UserAnswers
+import utils.{FakeFeatureSwitchManagementService, UserAnswers}
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
 import play.api.libs.json.Json
-
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
 
   import RemovePsaControllerSpec._
-
-  def featureSwitchManagementService(toggleValue: Boolean): FeatureSwitchManagementService = new FeatureSwitchManagementService {
-    override def change(name: String, newValue: Boolean): Boolean = ???
-
-    override def get(name: String): Boolean = toggleValue
-
-    override def reset(name: String): Unit = ???
-  }
 
   def fakeMinimalPsaConnector(psaMinimalSubscription: MinimalPSA = psaMinimalSubscription): MinimalPsaConnector = new MinimalPsaConnector {
     override def getMinimalPsaDetails(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSA] =
@@ -79,7 +70,7 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
       schemeDetailsConnector,
       FakeUserAnswersCacheConnector,
       fakeMinimalPsaConnector(psaMinimalDetails),
-      featureSwitchManagementService(variationsToggle)
+      FakeFeatureSwitchManagementService(variationsToggle)
     )
 
 
@@ -175,7 +166,7 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
       val controller = new RemovePsaController(FakeUnAuthorisedAction(), data, new DataRequiredActionImpl,
         fakeSchemeDetailsConnector(), FakeUserAnswersCacheConnector,
         fakeMinimalPsaConnector(psaMinimalSubscription.copy(isPsaSuspended = false)),
-        featureSwitchManagementService(false)
+        FakeFeatureSwitchManagementService(false)
       )
 
       val result = controller.onPageLoad(fakeRequest)
