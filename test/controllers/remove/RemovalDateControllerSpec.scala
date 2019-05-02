@@ -21,17 +21,16 @@ import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.remove.RemovalDateFormProvider
 import identifiers.remove.RemovalDateId
-import models.{PsaSchemeDetails, PsaToBeRemovedFromScheme}
+import models.PsaToBeRemovedFromScheme
 import org.joda.time.LocalDate
 import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.mvc.AnyContentAsJson
 import play.api.test.FakeRequest
-import testhelpers.CommonBuilders
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.{FakeFeatureSwitchManagementService, UserAnswers}
-import views.html.remove.removalDate
 import utils.DateHelper._
+import utils.UserAnswers
+import views.html.remove.removalDate
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -46,8 +45,7 @@ class RemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours {
                  userAnswersCacheConnector: UserAnswersCacheConnector = FakeUserAnswersCacheConnector,
                  variationsToggle: Boolean = false) = new RemovalDateController(
     frontendAppConfig, messagesApi, userAnswersCacheConnector, navigator, fakeAuth, dataRetrievalAction,
-    requiredDataAction, formProvider, fakeSchemeDetailsConnector, fakePsaRemovalConnector,
-    FakeFeatureSwitchManagementService(variationsToggle))
+    requiredDataAction, formProvider, fakePsaRemovalConnector)
 
   private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
     controller(dataRetrievalAction, fakeAuth).onPageLoad()
@@ -75,12 +73,6 @@ class RemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours {
     viewAsString, postRequest, Some(emptyPostRequest))
 
   behave like controllerThatSavesUserAnswers(onSaveAction, postRequest, RemovalDateId, date)
-  
-  "when variation got enabled" must{
-    behave like controllerWithOnPageLoadMethodWithoutPrePopulation(onPageLoadActionVariation,
-      userAnswer.dataRetrievalAction, form(associationDate, frontendAppConfig.earliestDatePsaRemoval), viewAsString)
-    
-  }
 }
 
 object RemovalDateControllerSpec {
@@ -112,44 +104,6 @@ object RemovalDateControllerSpec {
     "removalDate.month" -> "",
     "removalDate.year" -> "")
   )
-
-  val fakeSchemeDetailsConnector: SchemeDetailsConnector = new SchemeDetailsConnector {
-    override def getSchemeDetails(psaId: String, schemeIdType: String, idNumber: String)
-                                 (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[PsaSchemeDetails] =
-      Future(CommonBuilders.psaSchemeDetailsResponse)
-    override def getSchemeDetailsVariations(psaId: String,
-                                            schemeIdType: String,
-                                            idNumber: String)(implicit hc: HeaderCarrier,
-                                                              ec: ExecutionContext): Future[UserAnswers] = {
-      
-      val json = """{
-                     "benefits": "opt1",
-                     "schemeType": {
-                       "schemeTypeDetails": "test scheme name",
-                       "name": "master"
-                     },
-                     "psaDetails" :[
-                       {
-                       "id":"A0000000",
-                       "individual":{
-                           "firstName": "Taylor",
-                           "middleName": "Middle",
-                           "lastName": "Rayon"
-                         },
-                         "organisationOrPartnershipName": "partnetship name",
-                         "relationshipDate": "2018-10-01"
-                       }
-                     ],
-                     "schemeStatus" : "Pending",
-                     "pstr" : "test pstr",
-                     "isAboutBenefitsAndInsuranceComplete": true,
-                     "isAboutMembersComplete": true,
-                     "isBeforeYouStartComplete": true
-                   }
-                   """.stripMargin
-      Future(UserAnswers(Json.parse(json)))
-    }
-  }
 
   val fakePsaRemovalConnector: PsaRemovalConnector = new PsaRemovalConnector {
     override def remove(psaToBeRemoved: PsaToBeRemovedFromScheme)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = Future(())

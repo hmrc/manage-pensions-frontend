@@ -16,24 +16,22 @@
 
 package controllers.remove
 
-import java.lang
-
 import base.SpecBase
-import config.FeatureSwitchManagementService
 import connectors.{FakeUserAnswersCacheConnector, MinimalPsaConnector, SchemeDetailsConnector}
 import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction, FakeUnAuthorisedAction}
+import identifiers.AssociatedDateId
 import identifiers.invitations.{PSANameId, PSTRId, SchemeNameId}
 import models._
-import org.mockito.{Matchers, Mockito}
+import org.joda.time.LocalDate
+import org.mockito.Matchers
+import org.mockito.Mockito._
 import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.mockito.MockitoSugar
+import play.api.libs.json.Json
 import play.api.test.Helpers._
 import testhelpers.CommonBuilders
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.{FakeFeatureSwitchManagementService, UserAnswers}
-import org.mockito.Matchers.any
-import org.mockito.Mockito._
-import org.scalatest.mockito.MockitoSugar
-import play.api.libs.json.Json
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -55,9 +53,35 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
       override def getSchemeDetailsVariations(psaId: String,
                                               schemeIdType: String,
                                               idNumber: String)(implicit hc: HeaderCarrier,
-                                                                ec: ExecutionContext): Future[UserAnswers] =
-        Future.successful(UserAnswers())
-
+                                                                ec: ExecutionContext): Future[UserAnswers] = {
+        val json =
+          """{
+                       "benefits": "opt1",
+                       "schemeType": {
+                         "schemeTypeDetails": "test scheme name",
+                         "name": "master"
+                       },
+                       "psaDetails" :[
+                         {
+                         "id":"A0000000",
+                         "individual":{
+                             "firstName": "Taylor",
+                             "middleName": "Middle",
+                             "lastName": "Rayon"
+                           },
+                           "organisationOrPartnershipName": "partnetship name",
+                           "relationshipDate": "2018-10-01"
+                         }
+                       ],
+                       "schemeStatus" : "Pending",
+                       "pstr" : "test pstr",
+                       "isAboutBenefitsAndInsuranceComplete": true,
+                       "isAboutMembersComplete": true,
+                       "isBeforeYouStartComplete": true
+                     }
+                     """.stripMargin
+        Future(UserAnswers(Json.parse(json)))
+      }
     }
 
   def controller(dataRetrievalAction: DataRetrievalAction = data,
@@ -70,7 +94,8 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
       schemeDetailsConnector,
       FakeUserAnswersCacheConnector,
       fakeMinimalPsaConnector(psaMinimalDetails),
-      FakeFeatureSwitchManagementService(variationsToggle)
+      FakeFeatureSwitchManagementService(variationsToggle),
+      frontendAppConfig
     )
 
 
@@ -134,6 +159,7 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
       FakeUserAnswersCacheConnector.verify(SchemeNameId, schemeDetails.schemeDetails.name)
       FakeUserAnswersCacheConnector.verify(PSANameId, psaMinimalSubscription.individualDetails.map(_.fullName).getOrElse(""))
       FakeUserAnswersCacheConnector.verify(PSTRId, schemeDetails.schemeDetails.pstr.getOrElse(""))
+      FakeUserAnswersCacheConnector.verify(AssociatedDateId, new LocalDate("2018-10-01"))
     }
 
     "throw IllegalArgumentException if pstr is not found" in {
@@ -166,7 +192,7 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
       val controller = new RemovePsaController(FakeUnAuthorisedAction(), data, new DataRequiredActionImpl,
         fakeSchemeDetailsConnector(), FakeUserAnswersCacheConnector,
         fakeMinimalPsaConnector(psaMinimalSubscription.copy(isPsaSuspended = false)),
-        FakeFeatureSwitchManagementService(false)
+        FakeFeatureSwitchManagementService(false), frontendAppConfig
       )
 
       val result = controller.onPageLoad(fakeRequest)
