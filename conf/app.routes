@@ -33,3 +33,6 @@ GET        /discard                                     controllers.DeleteScheme
 
 POST       /discard                                     controllers.DeleteSchemeController.onSubmit
 
+GET        /delete-changes/:srn                         controllers.DeleteSchemeChangesController.onPageLoad(srn: String)
+
+POST       /delete-changes/:srn                         controllers.DeleteSchemeChangesController.onSubmit(srn: String)
