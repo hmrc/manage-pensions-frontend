@@ -53,13 +53,13 @@ class DeleteSchemeChangesController @Inject()(
       }
   }
 
-  private def getSchemeName(srn: String)(f: String => Future[Result])
+  private def getSchemeName(srn: String)(block: String => Future[Result])
                            (implicit hc: HeaderCarrier): Future[Result] = {
     updateConnector.fetch(srn).flatMap {
       case None => Future.successful(overviewPage)
       case Some(data) =>
         (data \ "schemeName").validate[String] match {
-          case JsSuccess(name, _) => f(name)
+          case JsSuccess(name, _) => block(name)
           case JsError(_) => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
         }
     }
