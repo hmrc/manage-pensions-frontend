@@ -34,7 +34,7 @@ class TestFeatureSwitchManagerController @Inject()(
 
   private def onOrOff(state:Option[Boolean]):String = state match {
     case None => "unknown"
-    case Some(v) if v => "true"
+    case Some(true) => "true"
     case _ => "false"
   }
 
