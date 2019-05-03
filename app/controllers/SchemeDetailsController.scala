@@ -92,9 +92,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
         case Some(_) => false
       }
 
-      val admins = userAnswers.json.transform((JsPath \ 'psaDetails).json.pick)
-        .asOpt.map(_.as[JsArray].value).toSeq.flatten
-        .flatMap(_.transform((JsPath \ "id").json.pick).asOpt.flatMap(_.validate[String].asOpt).toSeq)
+      val admins = (userAnswers.json \ "psaDetails").as[Seq[PsaDetails]].map(_.id)
 
       val schemeStatus = userAnswers.get(SchemeStatusId).getOrElse("")
       val schemeName = userAnswers.get(SchemeNameId).getOrElse("")

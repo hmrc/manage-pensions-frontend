@@ -16,12 +16,13 @@
 
 package controllers.invitations
 
-import base.SpecBase
+import base.{JsonFileReader, SpecBase}
+import config.{FeatureSwitchManagementService, FeatureSwitchManagementServiceTestImpl}
 import connectors.{FakeUserAnswersCacheConnector, MinimalPsaConnector, SchemeDetailsConnector}
 import controllers.actions.{FakeAuthAction, FakeUnAuthorisedAction}
 import identifiers.MinimalSchemeDetailId
 import models._
-import org.scalatest.mockito.MockitoSugar
+import play.api.Configuration
 import play.api.test.Helpers._
 import testhelpers.CommonBuilders
 import uk.gov.hmrc.http.HeaderCarrier
@@ -29,31 +30,10 @@ import utils.UserAnswers
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class InviteControllerSpec extends SpecBase with MockitoSugar {
+class InviteControllerSpec extends SpecBase {
 
   import InviteControllerSpec._
 
-  def fakeMinimalPsaConnector(isSuspended: Boolean): MinimalPsaConnector = new MinimalPsaConnector {
-    override def getMinimalPsaDetails(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSA] =
-      Future.successful(psaMinimalSubscription.copy(isPsaSuspended = isSuspended))
-
-    override def getPsaNameFromPsaID(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] =
-      Future.successful(None)
-  }
-
-  def fakeSchemeDetailsConnector: SchemeDetailsConnector = new SchemeDetailsConnector {
-    override def getSchemeDetails(psaId: String, schemeIdType: String,
-                                  idNumber: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[PsaSchemeDetails] =
-      Future.successful(CommonBuilders.psaSchemeDetailsResponse)
-
-    override def getSchemeDetailsVariations(psaId: String,
-                                   schemeIdType: String,
-                                   idNumber: String)(implicit hc: HeaderCarrier,
-                                                     ec: ExecutionContext): Future[UserAnswers] = ???
-  }
-
-  def controller(isSuspended: Boolean) = new InviteController(mockAuthAction, fakeSchemeDetailsConnector,
-    FakeUserAnswersCacheConnector, fakeMinimalPsaConnector(isSuspended))
 
 
   "InviteController calling onPageLoad(srn)" must {
@@ -69,6 +49,7 @@ class InviteControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "save minimal scheme details and then redirect to psa name page if PSASuspension is false" in {
+      featureSwitch.change("is-variations-enabled", false)
       val result = controller(isSuspended = false).onPageLoad(srn)(fakeRequest)
 
       status(result) mustBe SEE_OTHER
@@ -80,7 +61,7 @@ class InviteControllerSpec extends SpecBase with MockitoSugar {
     "redirect to unauthorised page if user is not authenticated" in {
 
       val controller = new InviteController(FakeUnAuthorisedAction(), fakeSchemeDetailsConnector,
-        FakeUserAnswersCacheConnector, fakeMinimalPsaConnector(isSuspended = false))
+        FakeUserAnswersCacheConnector, featureSwitch, fakeMinimalPsaConnector(isSuspended = false))
 
       val result = controller.onPageLoad(srn)(fakeRequest)
 
@@ -90,7 +71,7 @@ class InviteControllerSpec extends SpecBase with MockitoSugar {
   }
 }
 
-object InviteControllerSpec {
+object InviteControllerSpec extends SpecBase with JsonFileReader {
   private val email = "test@test.com"
   val srn = "S9000000000"
   val pstr = "00000000AA"
@@ -98,4 +79,32 @@ object InviteControllerSpec {
 
   private val psaMinimalSubscription = MinimalPSA(email, false, None, Some(IndividualDetails("First", Some("Middle"), "Last")))
   private val mockAuthAction = FakeAuthAction()
+
+
+  val config = injector.instanceOf[Configuration]
+  val featureSwitch: FeatureSwitchManagementService = new FeatureSwitchManagementServiceTestImpl(config, environment)
+
+  def fakeMinimalPsaConnector(isSuspended: Boolean): MinimalPsaConnector = new MinimalPsaConnector {
+    override def getMinimalPsaDetails(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSA] =
+      Future.successful(psaMinimalSubscription.copy(isPsaSuspended = isSuspended))
+
+    override def getPsaNameFromPsaID(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] =
+      Future.successful(None)
+
+  }
+
+  def fakeSchemeDetailsConnector: SchemeDetailsConnector = new SchemeDetailsConnector {
+    override def getSchemeDetails(psaId: String, schemeIdType: String,
+                                  idNumber: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[PsaSchemeDetails] =
+      Future.successful(CommonBuilders.psaSchemeDetailsResponse)
+
+    override def getSchemeDetailsVariations(psaId: String,
+                                            schemeIdType: String,
+                                            idNumber: String)(implicit hc: HeaderCarrier,
+                                                              ec: ExecutionContext): Future[UserAnswers] =
+      Future.successful(UserAnswers(readJsonFromFile("data/validSchemeDetailsResponse.json")))
+  }
+
+  def controller(isSuspended: Boolean) = new InviteController(mockAuthAction, fakeSchemeDetailsConnector,
+    FakeUserAnswersCacheConnector, featureSwitch, fakeMinimalPsaConnector(isSuspended))
 }

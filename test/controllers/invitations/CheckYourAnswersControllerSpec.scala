@@ -16,6 +16,8 @@
 
 package controllers.invitations
 
+import base.JsonFileReader
+import config.{FeatureSwitchManagementService, FeatureSwitchManagementServiceTestImpl}
 import connectors.{InvitationConnector, NameMatchingFailedException, PsaAlreadyInvitedException, SchemeDetailsConnector}
 import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction}
 import controllers.behaviours.ControllerWithNormalPageBehaviours
@@ -23,6 +25,7 @@ import models.{AcceptedInvitation, Invitation, MinimalSchemeDetail}
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
+import play.api.Configuration
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -38,48 +41,6 @@ import scala.concurrent.{ExecutionContext, Future}
 class CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours with MockitoSugar {
 
   import CheckYourAnswersControllerSpec._
-
-  private val countryOptions = new CountryOptions(environment, frontendAppConfig)
-  private val checkYourAnswersFactory = new CheckYourAnswersFactory(countryOptions)
-
-  private val fakeSchemeDetailsConnector: SchemeDetailsConnector = mock[SchemeDetailsConnector]
-
-  private def fakeInvitationConnector(response: Future[Unit] = Future.successful(())): InvitationConnector = new InvitationConnector {
-
-    override def invite(invitation: Invitation)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = response
-
-    override def acceptInvite(acceptedInvitation: AcceptedInvitation)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = ???
-  }
-
-  def call: Call = controllers.invitations.routes.CheckYourAnswersController.onSubmit()
-
-  def viewAsString() = check_your_answers(frontendAppConfig, Seq(AnswerSection(None, Seq())), None, call,
-    Some("messages__check__your__answer__main__containt__label"), Some(testSchemeName))(fakeRequest, messages).toString
-
-  def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
-
-    new CheckYourAnswersController(
-      frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction,
-      checkYourAnswersFactory, fakeSchemeDetailsConnector, fakeInvitationConnector()).onPageLoad()
-  }
-
-  def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
-
-    when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any()))
-      .thenReturn(Future.successful(CommonBuilders.schemeDetailsWithPsaOnlyResponse))
-
-    new CheckYourAnswersController(
-      frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction,
-      checkYourAnswersFactory, fakeSchemeDetailsConnector, fakeInvitationConnector()).onSubmit()
-  }
-
-  def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction, invitationResponse: Future[Unit]) = {
-
-    new CheckYourAnswersController(
-      frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction,
-      checkYourAnswersFactory, fakeSchemeDetailsConnector, fakeInvitationConnector(invitationResponse)).onSubmit()
-  }
-
 
   behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, Some(userAnswer), viewAsString)
 
@@ -109,8 +70,7 @@ class CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours 
     }
 
     "redirect to psa already invited page if scheme already has invitee psa id associated with it" in {
-      when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any()))
-        .thenReturn(Future.successful(CommonBuilders.schemeDetailsWithPsaOnlyResponse))
+
       val result = onSubmitAction(userAnswerUpdatedPsaAlreadyInvited, FakeAuthAction(), Future.successful(()))(FakeRequest())
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.invitations.routes.PsaAlreadyAssociatedController.onPageLoad().url)
@@ -118,7 +78,7 @@ class CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours 
   }
 }
 
-object CheckYourAnswersControllerSpec {
+object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours with MockitoSugar with JsonFileReader {
   private val testSrn: String = "test-srn"
   private val testPstr = "test-pstr"
   private val testSchemeName = "test-scheme-name"
@@ -133,7 +93,6 @@ object CheckYourAnswersControllerSpec {
     .minimalSchemeDetails(testSchemeDetail)
     .inviteeId("A7654321")
     .inviteeName("test-invite-name")
-      .srn(srn)
     .dataRetrievalAction
 
   private val userAnswerUpdatedPsaAlreadyInvited = UserAnswers()
@@ -142,4 +101,53 @@ object CheckYourAnswersControllerSpec {
     .inviteeName("test-invite-name")
     .srn(srn)
     .dataRetrievalAction
+
+  private val countryOptions = new CountryOptions(environment, frontendAppConfig)
+  private val checkYourAnswersFactory = new CheckYourAnswersFactory(countryOptions)
+
+  private val fakeSchemeDetailsConnector: SchemeDetailsConnector = mock[SchemeDetailsConnector]
+  val config = injector.instanceOf[Configuration]
+  val featureSwitch: FeatureSwitchManagementService = new FeatureSwitchManagementServiceTestImpl(config, environment)
+
+  private def fakeInvitationConnector(response: Future[Unit] = Future.successful(())): InvitationConnector = new InvitationConnector {
+
+    override def invite(invitation: Invitation)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = response
+
+    override def acceptInvite(acceptedInvitation: AcceptedInvitation)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = ???
+  }
+
+  def call: Call = controllers.invitations.routes.CheckYourAnswersController.onSubmit()
+
+  def viewAsString() = check_your_answers(frontendAppConfig, Seq(AnswerSection(None, Seq())), None, call,
+    Some("messages__check__your__answer__main__containt__label"), Some(testSchemeName))(fakeRequest, messages).toString
+
+  def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
+
+    new CheckYourAnswersController(
+      frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction,
+      checkYourAnswersFactory, fakeSchemeDetailsConnector, featureSwitch, fakeInvitationConnector()).onPageLoad()
+  }
+
+  def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
+
+    when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any()))
+      .thenReturn(Future.successful(CommonBuilders.schemeDetailsWithPsaOnlyResponse))
+
+    when(fakeSchemeDetailsConnector.getSchemeDetailsVariations(any(), any(), any())(any(), any()))
+      .thenReturn(Future.successful(UserAnswers(readJsonFromFile("/data/validSchemeDetailsResponse.json"))))
+
+    new CheckYourAnswersController(
+      frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction,
+      checkYourAnswersFactory, fakeSchemeDetailsConnector, featureSwitch, fakeInvitationConnector()).onSubmit()
+  }
+
+  def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction, invitationResponse: Future[Unit]) = {
+
+        when(fakeSchemeDetailsConnector.getSchemeDetailsVariations(any(), any(), any())(any(), any()))
+          .thenReturn(Future.successful(UserAnswers(readJsonFromFile("/data/validSchemeDetailsResponse.json"))))
+
+    new CheckYourAnswersController(
+      frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction,
+      checkYourAnswersFactory, fakeSchemeDetailsConnector, featureSwitch, fakeInvitationConnector(invitationResponse)).onSubmit()
+  }
 }

@@ -126,5 +126,10 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
         Jsoup.parse(createView()().toString()).select("a[id=return]") must
           haveLink(controllers.routes.ListSchemesController.onPageLoad().url)
       }
+
+      "render the name of PSA locking the same if applicable" in {
+        Jsoup.parse(createView(lockingPsa = Some("Gilderoy Lockhart"))().toString) must
+          haveDynamicText("messages__schemeDetails__psa_making_changes", "Gilderoy Lockhart")
+      }
     }
   }
