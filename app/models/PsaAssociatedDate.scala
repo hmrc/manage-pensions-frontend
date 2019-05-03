@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package utils
+package models
 
-import config.FeatureSwitchManagementService
+import play.api.libs.json.{Json, OFormat}
 
-case class FakeFeatureSwitchManagementService(isToggleOn: Boolean) extends FeatureSwitchManagementService {
-  override def get(name: String): Boolean = isToggleOn
-  override def change(name: String, newValue: Boolean): Boolean = ???
-  override def reset(name: String): Unit = ???
+
+case class PsaAssociatedDate(psaId : String, relationshipDate:Option[String])
+
+object PsaAssociatedDate{
+  implicit val formats: OFormat[PsaAssociatedDate] = Json.format[PsaAssociatedDate]
 }
-
-
