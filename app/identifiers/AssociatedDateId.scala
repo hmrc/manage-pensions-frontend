@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-package utils
+package identifiers
 
-import config.FeatureSwitchManagementService
+import org.joda.time.LocalDate
 
-case class FakeFeatureSwitchManagementService(isToggleOn: Boolean) extends FeatureSwitchManagementService {
-  override def get(name: String): Boolean = isToggleOn
-  override def change(name: String, newValue: Boolean): Boolean = ???
-  override def reset(name: String): Unit = ???
+case object AssociatedDateId extends TypedIdentifier[LocalDate] {
+
+  override def toString: String = "associatedDate"
+
 }
-
-
