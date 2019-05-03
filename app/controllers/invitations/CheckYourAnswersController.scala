@@ -68,7 +68,6 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
                                            (implicit request: Request[_]): Future[Boolean] =
     if (featureSwitchManagementService.get(Toggles.isVariationsEnabled)) {
       schemeDetailsConnector.getSchemeDetailsVariations(psaId, "srn", srn).map { scheme =>
-    //    (scheme.json \ "psaDetails").toOption.map(_.as[Seq[PsaDetails]].exists(_.id == inviteePsaId)).getOrElse(false)
         (scheme.json \ "psaDetails").toOption.exists(_.as[Seq[PsaDetails]].exists(_.id == inviteePsaId))
       }
     } else {
