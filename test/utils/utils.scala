@@ -17,7 +17,7 @@
 import controllers.actions.{DataRetrievalAction, FakeDataRetrievalAction}
 import identifiers.invitations._
 import identifiers.remove.{ConfirmRemovePsaId, RemovalDateId}
-import identifiers.{LastPageId, MinimalSchemeDetailId, SchemeSrnId}
+import identifiers.{AssociatedDateId, LastPageId, MinimalSchemeDetailId, SchemeSrnId}
 import models._
 import org.joda.time.LocalDate
 import org.scalatest.OptionValues
@@ -45,6 +45,10 @@ package object utils {
 
     def schemeName(name: String): UserAnswers = {
       answers.set(SchemeNameId)(name).asOpt.value
+    }
+
+    def associatedDate(date: LocalDate): UserAnswers = {
+      answers.set(AssociatedDateId)(date).asOpt.value
     }
 
     def haveWorkingKnowledge(workingKnowledge: Boolean): UserAnswers = {
