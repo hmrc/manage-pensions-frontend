@@ -60,15 +60,15 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
     implicit request =>
 
       dataCacheConnector.fetch(request.externalId).flatMap {
-        case None => minimalPsaConnector.getMinimalPsaDetails(request.psaId.id).map { minimalDetails =>
-          Ok(schemesOverview(appConfig, None, None, None, getPsaName(minimalDetails), request.psaId.id))
+        case None => minimalPsaConnector.getPsaNameFromPsaID(request.psaId.id).map { psaName =>
+          Ok(schemesOverview(appConfig, None, None, None, psaName, request.psaId.id))
         }
         case Some(data) =>
           schemeName(data).validate[String] match {
             case JsSuccess(name, _) =>
               dataCacheConnector.lastUpdated(request.externalId).flatMap { dateOpt =>
-                minimalPsaConnector.getMinimalPsaDetails(request.psaId.id).map { minimalDetails =>
-                  buildView(name, dateOpt, Some(minimalDetails), request.psaId.id)
+                minimalPsaConnector.getPsaNameFromPsaID(request.psaId.id).map { psaName =>
+                  buildView(name, dateOpt, psaName, request.psaId.id)
                 }
               }
             case JsError(e) =>{
@@ -80,7 +80,7 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
   }
 
   private def buildView(name: String, dateOpt: Option[JsValue],
-                        minimalDetails: Option[MinimalPSA] = None, psaId: String)(implicit request: OptionalDataRequest[AnyContent]) = {
+                        psaName: Option[String] = None, psaId: String)(implicit request: OptionalDataRequest[AnyContent]) = {
     val date = dateOpt.map(ts =>
       LastUpdatedDate(
         ts.validate[Long] match {
@@ -95,17 +95,9 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
       Some(name),
       Some(s"${createFormattedDate(date, daysToAdd = 0)}"),
       Some(s"${createFormattedDate(date, appConfig.daysDataSaved)}"),
-      minimalDetails.flatMap(getPsaName),
+      psaName,
       psaId
     ))
-  }
-
-  private def getPsaName(minimalDetails: MinimalPSA): Option[String] = {
-    (minimalDetails.individualDetails, minimalDetails.organisationName) match {
-      case (Some(individual), None) => Some(individual.fullName)
-      case (None, Some(org)) => Some(s"$org")
-      case _ => None
-    }
   }
 
   def onClickCheckIfSchemeCanBeRegistered: Action[AnyContent] = (authenticate andThen getData).async {

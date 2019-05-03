@@ -53,6 +53,9 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
   def fakeMinimalPsaConnector(psaMinimalSubscription: MinimalPSA = psaMinimalSubscription): MinimalPsaConnector = new MinimalPsaConnector {
     override def getMinimalPsaDetails(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSA] =
       Future.successful(psaMinimalSubscription)
+
+    override def getPsaNameFromPsaID(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] =
+      Future.successful(None)
   }
 
   def fakeSchemeDetailsConnector(psaSchemeDetails: PsaSchemeDetails = psaSchemeDetailsResponse): SchemeDetailsConnector =

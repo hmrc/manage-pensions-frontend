@@ -20,55 +20,65 @@
 @import models.Mode
 @import viewmodels.{AssociatedPsa, Message}
 
-@(appConfig: FrontendAppConfig, schemeName: String, openedDate: Option[String],
-admins: Option[Seq[AssociatedPsa]], srn: String, isSchemeOpen: Boolean, displayChangeLink: Boolean)(implicit request: Request[_], messages: Messages)
+@(appConfig: FrontendAppConfig,
+    schemeName: String,
+    openedDate: Option[String],
+    admins: Option[Seq[AssociatedPsa]],
+    srn: String,
+    isSchemeOpen: Boolean,
+    displayChangeLink: Boolean,
+    lockingPsa: Option[String])(implicit request: Request[_], messages: Messages)
 
-@main_template(
-    title = messages("messages__schemeDetails__title"),
-    appConfig = appConfig,
-    bodyClasses = None) {
+    @main_template(
+        title = messages("messages__schemeDetails__title"),
+        appConfig = appConfig,
+        bodyClasses = None) {
 
-    @components.heading(schemeName)
+        @components.heading(schemeName)
 
-    <p><a id="view-details" href="@appConfig.viewSchemeDetailsUrl.format(srn)">
-        @if(displayChangeLink){ @messages("messages__schemeDetails__view_change_details_link")} else { @messages("messages__schemeDetails__view_details_link") }
-    </a></p>
+        <p><a id="view-details" href="@appConfig.viewSchemeDetailsUrl.format(srn)">
+            @if(displayChangeLink){ @messages("messages__schemeDetails__view_change_details_link")} else { @messages("messages__schemeDetails__view_details_link") }
+        </a></p>
 
-    @openedDate.map { openedDate =>
-        <h2>@Html(messages("messages__schemeDetails__opened_date_head"))</h2>
-        <p>@openedDate</p>
-    }
+        @lockingPsa.map {psaName =>
+            <p>@messages("messages__schemeDetails__psa_making_changes", psaName)</p>
+        }
 
-    @admins.map { admins =>
-        <h2>@messages("messages__schemeDetails__psa_list_head")</h2>
+        @openedDate.map { openedDate =>
+            <h2>@Html(messages("messages__schemeDetails__opened_date_head"))</h2>
+            <p>@openedDate</p>
+        }
 
-        <div id="admins-list">
+        @admins.map { admins =>
+            <h2>@messages("messages__schemeDetails__psa_list_head")</h2>
 
-            @for(psa <- admins){
-                <div class="row-group grid-row">
-                    <div class="column-two-thirds table-column">
-                        @psa.name
+            <div id="admins-list">
+
+                @for(psa <- admins){
+                    <div class="row-group grid-row">
+                        <div class="column-two-thirds table-column">
+                            @psa.name
+                        </div>
+                        <div class="column-two-sixths table-column">
+                            @if(psa.canRemove){
+                                <a id="remove-link" href="@controllers.remove.routes.RemovePsaController.onPageLoad()">
+                                    @messages("messages__schemeDetails__remove")
+                                </a>
+                            }
+                        </div>
                     </div>
-                    <div class="column-two-sixths table-column">
-                        @if(psa.canRemove){
-                            <a id="remove-link" href="@controllers.remove.routes.RemovePsaController.onPageLoad()">
-                                @messages("messages__schemeDetails__remove")
-                            </a>
-                        }
-                    </div>
-                </div>
-            }
+                }
 
-        </div>
+            </div>
 
-        <br/>
+            <br/>
+        }
+
+        @if(isSchemeOpen){
+            <p><a id="invite" href="@controllers.invitations.routes.InviteController.onPageLoad(srn)">@messages("messages__schemeDetails__invite_link")</a></p>
+            <p>@messages("messages__schemeDetails__invite_p1")</p>
+        }
+
+        <p><a id="return" href="@routes.ListSchemesController.onPageLoad()">@messages("messages__schemeDetails__return_link")</a></p>
+
     }
-
-    @if(isSchemeOpen){
-        <p><a id="invite" href="@controllers.invitations.routes.InviteController.onPageLoad(srn)">@messages("messages__schemeDetails__invite_link")</a></p>
-        <p>@messages("messages__schemeDetails__invite_p1")</p>
-    }
-
-    <p><a id="return" href="@routes.ListSchemesController.onPageLoad()">@messages("messages__schemeDetails__return_link")</a></p>
-
-}

@@ -36,6 +36,9 @@ class InviteControllerSpec extends SpecBase with MockitoSugar {
   def fakeMinimalPsaConnector(isSuspended: Boolean): MinimalPsaConnector = new MinimalPsaConnector {
     override def getMinimalPsaDetails(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSA] =
       Future.successful(psaMinimalSubscription.copy(isPsaSuspended = isSuspended))
+
+    override def getPsaNameFromPsaID(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] =
+      Future.successful(None)
   }
 
   def fakeSchemeDetailsConnector: SchemeDetailsConnector = new SchemeDetailsConnector {

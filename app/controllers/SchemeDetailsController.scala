@@ -17,7 +17,7 @@
 package controllers
 
 import config.{FeatureSwitchManagementService, FrontendAppConfig}
-import connectors.{ListOfSchemesConnector, PensionSchemeVarianceLockConnector, SchemeDetailsConnector, UserAnswersCacheConnector}
+import connectors.{ListOfSchemesConnector, MinimalPsaConnector, PensionSchemeVarianceLockConnector, SchemeDetailsConnector, UserAnswersCacheConnector}
 import controllers.actions._
 import handlers.ErrorHandler
 import identifiers.{ListOfPSADetailsId, SchemeNameId, SchemeSrnId, SchemeStatusId}
@@ -44,7 +44,8 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                                         getData: DataRetrievalAction,
                                         userAnswersCacheConnector: UserAnswersCacheConnector,
                                         errorHandler: ErrorHandler,
-                                        featureSwitchManagementService: FeatureSwitchManagementService
+                                        featureSwitchManagementService: FeatureSwitchManagementService,
+                                        minimalPsaConnector: MinimalPsaConnector
                                        )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport {
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate.async {
@@ -71,7 +72,8 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                   administrators(request.psaId.id, scheme),
                   srn.id,
                   isSchemeOpen,
-                  displayChangeLink = false
+                  displayChangeLink = false,
+                  None
                 ))
               }
             }
@@ -101,15 +103,18 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
         listSchemesConnector.getListOfSchemes(request.psaId.id).flatMap { list =>
           val isSchemeOpen = schemeStatus.equalsIgnoreCase("open")
           userAnswersCacheConnector.save(request.externalId, SchemeSrnId, srn.id).flatMap { _ =>
-            userAnswersCacheConnector.save(request.externalId, SchemeNameId, schemeName).map { _ =>
-              Ok(schemeDetails(appConfig,
-                schemeName,
-                openedDate(srn.id, list, isSchemeOpen),
-                administratorsVariations(request.psaId.id, userAnswers, schemeStatus),
-                srn.id,
-                isSchemeOpen,
-                displayChangeLink
-              ))
+            userAnswersCacheConnector.save(request.externalId, SchemeNameId, schemeName).flatMap { _ =>
+              lockingPsa(lock, srn).map { lockingPsa =>
+                Ok(schemeDetails(appConfig,
+                  schemeName,
+                  openedDate(srn.id, list, isSchemeOpen),
+                  administratorsVariations(request.psaId.id, userAnswers, schemeStatus),
+                  srn.id,
+                  isSchemeOpen,
+                  displayChangeLink,
+                  lockingPsa
+                ))
+              }
             }
           }
         }
@@ -164,5 +169,16 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
       None
     }
   }
+
+  private def lockingPsa(lock: Option[Lock], srn: SchemeReferenceNumber)
+                        (implicit request: AuthenticatedRequest[AnyContent]): Future[Option[String]] =
+    lock match {
+      case Some(SchemeLock) => schemeVarianceLockConnector.getLockByScheme(srn) flatMap  {
+          case Some(schemeVariance) if !(schemeVariance.psaId == request.psaId.id) =>
+            minimalPsaConnector.getPsaNameFromPsaID(schemeVariance.psaId).map(identity)
+          case _ => Future.successful(None)
+        }
+      case _ => Future.successful(None)
+    }
 
 }
