@@ -33,6 +33,8 @@ import scala.util.Failure
 trait MinimalPsaConnector {
 
   def getMinimalPsaDetails(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSA]
+
+  def getPsaNameFromPsaID(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]]
 }
 
 class MinimalPsaConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) extends MinimalPsaConnector with HttpResponseHelper {
@@ -53,6 +55,16 @@ class MinimalPsaConnectorImpl @Inject()(http: HttpClient, config: FrontendAppCon
         }
     } andThen {
       case Failure(t: Throwable) => Logger.warn("Unable to invite PSA to administer scheme", t)
+    }
+  }
+
+  def getPsaNameFromPsaID(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = {
+    getMinimalPsaDetails(psaId).map { minimalDetails =>
+      (minimalDetails.individualDetails, minimalDetails.organisationName) match {
+        case (Some(individual), None) => Some(individual.fullName)
+        case (None, Some(org)) => Some(s"$org")
+        case _ => None
+      }
     }
   }
 

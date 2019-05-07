@@ -38,7 +38,8 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
     def createView(date: Option[String] = Some(openedDate),
                    psaList: Option[Seq[AssociatedPsa]] = Some(administrators),
                    isSchemeOpen: Boolean = true,
-                   displayChangeLink: Boolean = false): () => HtmlFormat.Appendable = () =>
+                   displayChangeLink: Boolean = false,
+                   lockingPsa: Option[String] = None): () => HtmlFormat.Appendable = () =>
       schemeDetails(
         new fakeFrontendAppConfig(),
         schemeName,
@@ -46,7 +47,8 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
         psaList,
         srn,
         isSchemeOpen,
-        displayChangeLink
+        displayChangeLink,
+        lockingPsa
       )(fakeRequest, messages)
 
     "SchemesDetails view" must {
@@ -123,6 +125,11 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
       "have link to return to list of schemes page" in {
         Jsoup.parse(createView()().toString()).select("a[id=return]") must
           haveLink(controllers.routes.ListSchemesController.onPageLoad().url)
+      }
+
+      "render the name of PSA locking the same if applicable" in {
+        Jsoup.parse(createView(lockingPsa = Some("Gilderoy Lockhart"))().toString) must
+          haveDynamicText("messages__schemeDetails__psa_making_changes", "Gilderoy Lockhart")
       }
     }
   }

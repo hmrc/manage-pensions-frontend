@@ -16,7 +16,7 @@
 
 package controllers
 
-import config.FeatureSwitchManagementService
+import config.{FeatureSwitchManagementService, FeatureSwitchManagementServiceTestImpl}
 import connectors._
 import controllers.actions.{DataRetrievalAction, _}
 import handlers.ErrorHandler
@@ -25,12 +25,12 @@ import models._
 import org.mockito.Matchers
 import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.mockito.MockitoSugar
-import play.api.Application
+import play.api.{Application, Configuration}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsArray, Json}
 import play.api.test.Helpers.{contentAsString, _}
 import testhelpers.CommonBuilders._
-import utils.{FakeFeatureSwitchManagementService, UserAnswers}
+import utils.{Toggles, UserAnswers}
 import viewmodels.AssociatedPsa
 import views.html.schemeDetails
 
@@ -44,8 +44,10 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
     "features.work-package-one-enabled" -> true
   ).build()
 
-  def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData,
-                 variationsToggle: Boolean = false): SchemeDetailsController = {
+  val config = injector.instanceOf[Configuration]
+  val fakeFeatureSwitch: FeatureSwitchManagementService = new FeatureSwitchManagementServiceTestImpl(config, environment)
+
+  def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): SchemeDetailsController = {
     val eh = new ErrorHandler(frontendAppConfig, messagesApi)
     new SchemeDetailsController(frontendAppConfig,
       messagesApi,
@@ -56,12 +58,14 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
       dataRetrievalAction,
       FakeUserAnswersCacheConnector,
       eh,
-      FakeFeatureSwitchManagementService(variationsToggle)
+      fakeFeatureSwitch,
+      fakeMinimalPsaConnector
+
     )
   }
 
   def viewAsString(openDate: Option[String] = openDate, administrators: Option[Seq[AssociatedPsa]] = administrators,
-                   isSchemeOpen: Boolean = true, displayChangeLink: Boolean = false): String =
+                   isSchemeOpen: Boolean = true, displayChangeLink: Boolean = false, lockingPsa: Option[String] = None): String =
     schemeDetails(
       frontendAppConfig,
       mockSchemeDetails.name,
@@ -69,7 +73,8 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
       administrators,
       srn,
       isSchemeOpen,
-      displayChangeLink
+      displayChangeLink,
+      lockingPsa
     )(fakeRequest, messages).toString()
 
   "SchemeDetailsController" must {
@@ -105,37 +110,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
     }
 
     "return OK and call the correct connector method for a GET where administrators a mix of individual and org where variations toggle is switched on" in {
-
-      val desUserAnswers = UserAnswers(Json.obj(
-        "schemeStatus" -> "Open",
-        SchemeNameId.toString -> mockSchemeDetails.name,
-        "psaDetails" -> JsArray(
-        Seq(
-          Json.obj(
-            "id"-> "A0000000",
-            "organisationOrPartnershipName" -> "partnetship name 2",
-            "relationshipDate" -> "2018-07-01"
-          ),
-          Json.obj(
-            "id"->"A0000001",
-            "individual" -> Json.obj(
-              "firstName" -> "Tony",
-              "middleName" -> "A",
-              "lastName" -> "Smith"
-            ),
-            "relationshipDate" -> "2018-07-01"
-          )
-        )
-      )
-      ))
-
-      val updatedAdministrators =
-        Some(
-          Seq(
-            AssociatedPsa("partnetship name 2", true),
-            AssociatedPsa("Tony A Smith", false)
-          )
-        )
+      fakeFeatureSwitch.change("is-variations-enabled", true)
       reset(fakeSchemeDetailsConnector, fakeSchemeLockConnector)
       when(fakeSchemeDetailsConnector.getSchemeDetailsVariations(Matchers.eq("A0000000"), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(desUserAnswers)
@@ -146,14 +121,45 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
         )
       when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(listOfSchemesResponse))
-      val result = controller(variationsToggle = true).onPageLoad(srn)(fakeRequest)
+      fakeFeatureSwitch.change("is-variations-enabled", true)
+      val result = controller().onPageLoad(srn)(fakeRequest)
       status(result) mustBe OK
       verify(fakeSchemeDetailsConnector, times(1))
         .getSchemeDetailsVariations(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())
       contentAsString(result) mustBe viewAsString(administrators = updatedAdministrators, displayChangeLink=true)
     }
 
+    "return OK and the correct view for a GET when scheme is locked by another PSA" in {
+      reset(fakeSchemeDetailsConnector)
+      when(fakeSchemeDetailsConnector.getSchemeDetailsVariations(Matchers.eq("A0000000"), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(desUserAnswers)
+        )
+
+      when(fakeSchemeLockConnector.isLockByPsaIdOrSchemeId(Matchers.eq("A0000000"), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(SchemeLock))
+        )
+
+      when(fakeSchemeLockConnector.getLockByScheme(Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(SchemeVariance("A0000001", "S1000000456")))
+        )
+
+      when(fakeMinimalPsaConnector.getPsaNameFromPsaID(Matchers.eq("A0000001"))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some("Locky Lockhart"))
+        )
+
+      when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(listOfSchemesResponse))
+
+      val result = controller().onPageLoad(srn)(fakeRequest)
+      status(result) mustBe OK
+      contentAsString(result) mustBe viewAsString(
+        administrators = updatedAdministrators,
+        displayChangeLink=false,
+        lockingPsa = Some("Locky Lockhart"))
+    }
+
     "return OK and the correct view for a GET when opened date is not returned by API" in {
+      fakeFeatureSwitch.change("is-variations-enabled", false)
       reset(fakeSchemeDetailsConnector)
       when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(schemeDetailsWithPsaOnlyResponse))
@@ -207,6 +213,7 @@ private object SchemeDetailsControllerSpec extends MockitoSugar {
   val fakeSchemeDetailsConnector: SchemeDetailsConnector = mock[SchemeDetailsConnector]
   val fakeListOfSchemesConnector: ListOfSchemesConnector = mock[ListOfSchemesConnector]
   val fakeSchemeLockConnector: PensionSchemeVarianceLockConnector = mock[PensionSchemeVarianceLockConnector]
+  val fakeMinimalPsaConnector: MinimalPsaConnector = mock[MinimalPsaConnector]
   val schemeName = "Test Scheme Name"
 
   val administrators =
@@ -227,4 +234,35 @@ private object SchemeDetailsControllerSpec extends MockitoSugar {
 
   val openDate = Some("10 October 2012")
   val srn = SchemeReferenceNumber("S1000000456")
+
+  val desUserAnswers = UserAnswers(Json.obj(
+    "schemeStatus" -> "Open",
+    SchemeNameId.toString -> mockSchemeDetails.name,
+    "psaDetails" -> JsArray(
+      Seq(
+        Json.obj(
+          "id"-> "A0000000",
+          "organisationOrPartnershipName" -> "partnetship name 2",
+          "relationshipDate" -> "2018-07-01"
+        ),
+        Json.obj(
+          "id"->"A0000001",
+          "individual" -> Json.obj(
+            "firstName" -> "Tony",
+            "middleName" -> "A",
+            "lastName" -> "Smith"
+          ),
+          "relationshipDate" -> "2018-07-01"
+        )
+      )
+    )
+  ))
+
+  val updatedAdministrators =
+    Some(
+      Seq(
+        AssociatedPsa("partnetship name 2", true),
+        AssociatedPsa("Tony A Smith", false)
+      )
+    )
 }

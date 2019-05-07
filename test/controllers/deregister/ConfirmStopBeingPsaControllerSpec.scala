@@ -146,6 +146,9 @@ object ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase {
   private def fakeMinimalPsaConnector(minimalPsaDetailsIndividual: MinimalPSA): MinimalPsaConnector = new MinimalPsaConnector {
     override def getMinimalPsaDetails(psaId: String)(
       implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSA] = Future.successful(minimalPsaDetailsIndividual)
+
+    override def getPsaNameFromPsaID(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] =
+      Future.successful(None)
   }
 
   private val minimalPsaDetailsIndividual = MinimalPSA("test@test.com", isPsaSuspended = false, None, Some(IndividualDetails("John", Some("Doe"), "Doe")))

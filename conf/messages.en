@@ -254,6 +254,7 @@ messages__error__declaration__required = You need to agree to all the declaratio
 messages__schemeDetails__title = Pension scheme details
 messages__schemeDetails__view_details_link = View the registered scheme details
 messages__schemeDetails__view_change_details_link = View or change the registered scheme details
+messages__schemeDetails__psa_making_changes = You cannot make changes to this scheme at the moment. {0} is making changes to this scheme.
 messages__schemeDetails__opened_date_head = This scheme was opened on:
 messages__schemeDetails__psa_list_head = Pension scheme administrators
 messages__schemeDetails__invite_link = Add a scheme administrator
