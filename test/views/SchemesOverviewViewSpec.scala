@@ -45,10 +45,7 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
       "_manage__head",
       "_manage__text",
       "_manage__link",
-      "_continue__link",
-      "_UR__head",
-      "_UR__text",
-      "_UR__link"
+      "_continue__link"
     )
 
     "have a name" in {
@@ -103,12 +100,6 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
       Jsoup.parse(createView().toString()).select("a[id=delete-registration]") must
         haveLink(controllers.routes.DeleteSchemeController.onPageLoad().url)
     }
-
-    "have link for user research participation" in {
-      Jsoup.parse(createView().toString()).select("a[id=user-research]") must
-        haveLink(frontendAppConfig.userResearchUrl)
-    }
-
   }
 
   "SchemesOverview view when a scheme has not been defined" must {

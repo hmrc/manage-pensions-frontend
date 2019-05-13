@@ -109,9 +109,6 @@ messages__schemesOverview__continue__lastDate = You last entered details about t
 messages__schemesOverview__continue__deleteDate = You have until {0} to finish this registration before the details are deleted.
 messages__schemesOverview__continue__link = Continue registering this scheme
 messages__schemesOverview__delete__link = Delete {0}
-messages__schemesOverview__UR__head = Help us improve this service
-messages__schemesOverview__UR__text = We want to hear from people who would like to help improve this service by sharing their feedback and testing new features.
-messages__schemesOverview__UR__link = Let us know if you would like to help improve this service.
 messages__schemeOverview__psa_id = Administrator ID:
 
 messages__doYouHaveWorkingKnowledge__title = Do you have working knowledge of pensions and pensions tax legislation?
