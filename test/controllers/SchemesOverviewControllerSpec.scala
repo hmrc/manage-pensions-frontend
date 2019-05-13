@@ -19,7 +19,7 @@ package controllers
 import config._
 import connectors.{MicroserviceCacheConnector, MinimalPsaConnector, UserAnswersCacheConnector}
 import controllers.actions.{DataRetrievalAction, _}
-import models.{IndividualDetails, MinimalPSA}
+import models.MinimalPSA
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTime, DateTimeZone}
 import org.mockito.Matchers.{eq => eqTo, _}
@@ -37,7 +37,8 @@ import views.html.schemesOverview
 import scala.concurrent.Future
 
 class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar with BeforeAndAfterEach {
- import SchemesOverviewControllerSpec._
+
+  import SchemesOverviewControllerSpec._
 
   val fakeCacheConnector: UserAnswersCacheConnector = mock[MicroserviceCacheConnector]
   val fakePsaMinimalConnector: MinimalPsaConnector = mock[MinimalPsaConnector]
@@ -56,14 +57,24 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
     Some(lastDate.toString(formatter)),
     Some(deleteDate),
     None,
-    psaId
+    psaId,
+    variationSchemeName = None,
+    variationDeleteDate = None
   )(fakeRequest, messages).toString
 
-  def viewAsStringNewScheme(): String = schemesOverview(frontendAppConfig, None, None, None, None, psaId)(fakeRequest, messages).toString
-  def viewWithPsaName(name: Option[String] = None): String = schemesOverview(frontendAppConfig, None, None, None, name, psaId)(fakeRequest, messages).toString
+  def viewAsStringNewScheme(): String = schemesOverview(frontendAppConfig, None, None, None, None, psaId,
+    variationSchemeName = None,
+    variationDeleteDate = None)(fakeRequest, messages).toString
+
+  def viewWithPsaName(name: Option[String] = None): String = schemesOverview(frontendAppConfig, None, None, None, name, psaId,
+    variationSchemeName = None,
+    variationDeleteDate = None)(fakeRequest, messages).toString
+
   def viewWithPsaNameAndScheme(name: Option[String]): String = schemesOverview(frontendAppConfig, Some(schemeName),
     Some(lastDate.toString(formatter)),
-    Some(deleteDate), name, psaId)(fakeRequest, messages).toString
+    Some(deleteDate), name, psaId,
+    variationSchemeName = None,
+    variationDeleteDate = None)(fakeRequest, messages).toString
 
   override def beforeEach(): Unit = {
     reset(fakeCacheConnector)
@@ -163,7 +174,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
           .thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
 
         when(fakePsaMinimalConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any())).thenReturn(Future.successful(
-         None))
+          None))
 
         val result = controller().onPageLoad(fakeRequest)
         status(result) mustBe OK
@@ -243,6 +254,7 @@ object SchemesOverviewControllerSpec {
   private val psaId = "A0000000"
 
   def minimalPsaDetails(psaSuspended: Boolean) = MinimalPSA("test@test.com", psaSuspended, Some("Org Name"), None)
+
   val minimalPsaName = Some("John Doe Doe")
   val minimalPsaOrgName = Some("Org Name")
   val expectedPsaOrgName = Some("Org Name")

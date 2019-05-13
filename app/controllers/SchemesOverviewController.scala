@@ -61,7 +61,9 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
 
       dataCacheConnector.fetch(request.externalId).flatMap {
         case None => minimalPsaConnector.getPsaNameFromPsaID(request.psaId.id).map { psaName =>
-          Ok(schemesOverview(appConfig, None, None, None, psaName, request.psaId.id))
+          Ok(schemesOverview(appConfig, None, None, None, psaName, request.psaId.id,
+            variationSchemeName = None,
+            variationDeleteDate = None))
         }
         case Some(data) =>
           schemeName(data).validate[String] match {
@@ -96,7 +98,9 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
       Some(s"${createFormattedDate(date, daysToAdd = 0)}"),
       Some(s"${createFormattedDate(date, appConfig.daysDataSaved)}"),
       psaName,
-      psaId
+      psaId,
+      variationSchemeName = None,
+      variationDeleteDate = None
     ))
   }
 
