@@ -1,0 +1,307 @@
+{
+  "benefits": "opt2",
+  "establishers": [
+    {
+      "establisherDetails": {
+        "date": "1955-03-29",
+        "firstName": "Robert",
+        "lastName": "Smith",
+        "middleName": "James"
+      },
+      "uniqueTaxReference": {
+        "utr": "1234567892",
+        "hasUtr": true
+      },
+      "address": {
+        "country": "GB",
+        "postcode": "NE3 5TR",
+        "addressLine1": "10 Westgate Road",
+        "addressLine2": "South Gosforth",
+        "addressLine3": "Newcastle",
+        "addressLine4": "Tyne and Wear"
+      },
+      "previousAddress": {
+        "country": "GB",
+        "postcode": "NE1 4AB",
+        "addressLine1": "Flat 5a",
+        "addressLine2": "Central Apartments",
+        "addressLine3": "Waterloo Road",
+        "addressLine4": "Newcastle"
+      },
+      "establisherKind": "individual",
+      "addressYears": "under_a_year",
+      "establisherNino": {
+        "hasNino": true,
+        "nino": "AA999999A"
+      },
+      "contactDetails": {
+        "emailAddress": "robert.smith@test.com",
+        "phoneNumber": "0044-09876542334"
+      },
+      "isEstablisherComplete": true
+    }
+  ],
+  "schemeType": {
+    "name": "master"
+  },
+  "occupationalPensionScheme": false,
+  "isBeforeYouStartComplete": true,
+  "schemeName": "Open Single Trust Scheme with Indiv Establisher and Trustees",
+  "membership": "opt3",
+  "schemeStatus": "Open",
+  "schemeEstablishedCountry": "GB",
+  "isAboutBenefitsAndInsuranceComplete": true,
+  "insuranceCompanyName": "Acme Insurance",
+  "membershipFuture": "opt4",
+  "pstr": "24000001IN",
+  "insurancePolicyNumber": "123456",
+  "securedBenefits": true,
+  "investmentRegulated": false,
+  "isAboutMembersComplete": true,
+  "insurerAddress": {
+    "country": "GB",
+    "postcode": "NE3 4ER",
+    "addressLine1": "Flat 4",
+    "addressLine2": "London Road",
+    "addressLine3": "Newcastle",
+    "addressLine4": "Tyne and Wear"
+  },
+  "psaDetails": [
+    {
+      "relationshipDate": "2018-07-01",
+      "id": "A2100007",
+      "organisationOrPartnershipName": "Acme Ltd"
+    },
+    {
+      "individual": {
+        "firstName": "Martha",
+        "lastName": "Stewart"
+      },
+      "relationshipDate": "2018-07-13",
+      "id": "A2100011"
+    },
+    {
+      "individual": {
+        "firstName": "Jennifer",
+        "lastName": "Carter",
+        "middleName": "Debra"
+      },
+      "relationshipDate": "2019-01-01",
+      "id": "A2100021"
+    },
+    {
+      "individual": {
+        "firstName": "Matthew",
+        "lastName": "Howe",
+        "middleName": "Bryan"
+      },
+      "relationshipDate": "2019-01-01",
+      "id": "A2100022"
+    },
+    {
+      "relationshipDate": "2019-01-01",
+      "id": "A2100031",
+      "organisationOrPartnershipName": "Oxford Phones Ltd"
+    },
+    {
+      "relationshipDate": "2019-01-01",
+      "id": "A2100032",
+      "organisationOrPartnershipName": "Hendon Electrics Ltd"
+    },
+    {
+      "relationshipDate": "2019-01-01",
+      "id": "A2100041",
+      "organisationOrPartnershipName": "Riverside Partnerships"
+    },
+    {
+      "relationshipDate": "2019-01-01",
+      "id": "A2100042",
+      "organisationOrPartnershipName": "Digital Solutions Partnership"
+    }
+  ],
+  "trustees": [
+    {
+      "uniqueTaxReference": {
+        "utr": "1234567892",
+        "hasUtr": true
+      },
+      "trusteeNino": {
+        "hasNino": true,
+        "nino": "AA999999A"
+      },
+      "trusteeAddressYears": "under_a_year",
+      "isTrusteeComplete": true,
+      "trusteeAddressId": {
+        "country": "GB",
+        "postcode": "WA8 6JT",
+        "addressLine1": "44 Albert Road",
+        "addressLine2": "Widnes",
+        "addressLine3": "Cheshite"
+      },
+      "trusteePreviousAddress": {
+        "country": "GB",
+        "postcode": "NE1 4AB",
+        "addressLine1": "Flat 5a",
+        "addressLine2": "Central Apartments",
+        "addressLine3": "Waterloo Road",
+        "addressLine4": "Newcastle"
+      },
+      "trusteeKind": "individual",
+      "trusteeDetails": {
+        "date": "1955-03-29",
+        "firstName": "Sandy",
+        "lastName": "Graham"
+      },
+      "trusteeContactDetails": {
+        "emailAddress": "robert.smith@test.com",
+        "phoneNumber": "0044-09876542334"
+      }
+    },
+    {
+      "companyDetails": {
+        "companyName": "Croudace Trustees Ltd"
+      },
+      "companyVat": {
+        "vat": "123456789",
+        "hasVat": true
+      },
+      "companyRegistrationNumber": {
+        "hasCrn": true,
+        "crn": "AB123456"
+      },
+      "companyUniqueTaxReference": {
+        "reason": "No utr availiable",
+        "hasUtr": false
+      },
+      "companyAddress": {
+        "country": "GB",
+        "postcode": "SG6 4ET",
+        "addressLine1": "Spirella Building",
+        "addressLine2": "Bridge Rd",
+        "addressLine3": "Letchworth Garden City"
+      },
+      "companyContactDetails": {
+        "emailAddress": "admin@croudace.com",
+        "phoneNumber": "0044-09876542312"
+      },
+      "trusteesCompanyAddressYears": "under_a_year",
+      "isTrusteeComplete": true,
+      "companyPaye": {
+        "paye": "123AB45678",
+        "hasPaye": true
+      },
+      "trusteeKind": "company",
+      "companyPreviousAddress": {
+        "country": "GB",
+        "postcode": "NE1 4AB",
+        "addressLine1": "Flat 5a",
+        "addressLine2": "Central Apartments",
+        "addressLine3": "Waterloo Road",
+        "addressLine4": "Newcastle"
+      }
+    },
+    {
+      "companyDetails": {
+        "companyName": "Jerram Trustees Ltd"
+      },
+      "companyVat": {
+        "vat": "123456789",
+        "hasVat": true
+      },
+      "companyRegistrationNumber": {
+        "hasCrn": true,
+        "crn": "AB123456"
+      },
+      "companyUniqueTaxReference": {
+        "utr": "0123456789",
+        "hasUtr": true
+      },
+      "companyAddress": {
+        "country": "GB",
+        "postcode": "DT9 3LN",
+        "addressLine1": "Half Moon St",
+        "addressLine2": "Sherborne",
+        "addressLine3": "Dorset"
+      },
+      "companyContactDetails": {
+        "emailAddress": "admin@abc-hotels.com",
+        "phoneNumber": "0044-09876542312"
+      },
+      "trusteesCompanyAddressYears": "over_a_year",
+      "isTrusteeComplete": true,
+      "companyPaye": {
+        "paye": "123AB45678",
+        "hasPaye": true
+      },
+      "trusteeKind": "company"
+    },
+    {
+      "partnershipPaye": {
+        "paye": "123987654",
+        "hasPaye": true
+      },
+      "partnershipAddress": {
+        "country": "GB",
+        "postcode": "NE15 9RT",
+        "addressLine1": "Unit 4",
+        "addressLine2": "Newburn Industrial Estate",
+        "addressLine3": "Shelley Rd",
+        "addressLine4": "Newcastle Upon Tyne"
+      },
+      "isPartnershipCompleteId": true,
+      "partnershipAddressYears": "over_a_year",
+      "partnershipVat": {
+        "hasVat": false
+      },
+      "partnershipContactDetails": {
+        "emailAddress": "admin@illingworth-partnerships.com",
+        "phoneNumber": "0044-09876542312"
+      },
+      "partnershipDetails": {
+        "name": "Illingworth Trustee Partnerships"
+      },
+      "partnershipUniqueTaxReference": {
+        "utr": "0123456789",
+        "hasUtr": true
+      },
+      "trusteeKind": "partnership"
+    },
+    {
+      "partnershipPaye": {
+        "paye": "123987654",
+        "hasPaye": true
+      },
+      "partnershipAddress": {
+        "country": "GB",
+        "postcode": "WC1X 8HR",
+        "addressLine1": "28 Gray Inn Road",
+        "addressLine2": "London"
+      },
+      "isPartnershipCompleteId": true,
+      "partnershipAddressYears": "under_a_year",
+      "partnershipVat": {
+        "hasVat": false
+      },
+      "partnershipContactDetails": {
+        "emailAddress": "admin@holborn-partners.com",
+        "phoneNumber": "0044-09876542312"
+      },
+      "partnershipDetails": {
+        "name": "Holborn Trustee Partnerships"
+      },
+      "partnershipUniqueTaxReference": {
+        "utr": "0123456789",
+        "hasUtr": true
+      },
+      "partnershipPreviousAddress": {
+        "country": "GB",
+        "postcode": "SR2 4AB",
+        "addressLine1": "Exchange Station",
+        "addressLine2": "Grangetown",
+        "addressLine3": "Sunderland",
+        "addressLine4": "Tyne and Wear"
+      },
+      "trusteeKind": "partnership"
+    }
+  ]
+}

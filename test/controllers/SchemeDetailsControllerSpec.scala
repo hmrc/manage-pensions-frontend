@@ -79,6 +79,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase {
 
   "SchemeDetailsController" must {
         "save the srn and then return OK and the correct view for a GET" in {
+          fakeFeatureSwitch.change("is-variations-enabled", false)
           reset(fakeSchemeDetailsConnector)
           when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
             .thenReturn(Future.successful(schemeDetailsWithPsaOnlyResponse))

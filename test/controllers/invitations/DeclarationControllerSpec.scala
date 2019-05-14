@@ -16,6 +16,8 @@
 
 package controllers.invitations
 
+import base.JsonFileReader
+import config.FeatureSwitchManagementServiceTestImpl
 import connectors.{FakeUserAnswersCacheConnector, InvitationConnector, InvitationsCacheConnector, SchemeDetailsConnector}
 import controllers.ControllerSpecBase
 import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
@@ -25,6 +27,7 @@ import org.mockito.Matchers.{eq => eqTo, _}
 import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
+import play.api.Configuration
 import play.api.data.Form
 import play.api.mvc.Call
 import play.api.test.Helpers._
@@ -34,13 +37,15 @@ import views.html.invitations.declaration
 
 import scala.concurrent.Future
 
-class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar with BeforeAndAfterEach {
+class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar with BeforeAndAfterEach with JsonFileReader {
 
   import DeclarationControllerSpec._
 
+  val config = injector.instanceOf[Configuration]
   private val fakeSchemeDetailsConnector: SchemeDetailsConnector = mock[SchemeDetailsConnector]
   private val fakeInvitationCacheConnector = mock[InvitationsCacheConnector]
   private val fakeInvitationConnector = mock[InvitationConnector]
+  private val featureSwitch = new FeatureSwitchManagementServiceTestImpl(config, environment)
 
   def controller(dataRetrievalAction: DataRetrievalAction = getEmptyData) = new DeclarationController(
     frontendAppConfig,
@@ -53,7 +58,8 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
     fakeSchemeDetailsConnector,
     fakeInvitationCacheConnector,
     fakeInvitationConnector,
-    new FakeNavigator(onwardRoute)
+    new FakeNavigator(onwardRoute),
+    featureSwitch
   )
 
   override def beforeEach(): Unit = {
@@ -63,6 +69,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
   }
 
   val schemeDetailsData = CommonBuilders.schemeDetailsWithPsaOnlyResponse
+  val schemeDetailsResponse = UserAnswers(readJsonFromFile("/data/validSchemeDetailsUserAnswers.json"))
 
   private def viewAsString(form: Form[_] = form) = declaration(frontendAppConfig, hasAdviser, isMasterTrust, form)(fakeRequest, messages).toString
 
@@ -70,7 +77,22 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
 
     "on a GET" must {
 
-      "return OK and the correct view" in {
+      "return OK and the correct view when variations is on" in {
+        featureSwitch.change("is-variations-enabled", true)
+        when(fakeSchemeDetailsConnector.getSchemeDetailsVariations(any(), any(), any())(any(), any()))
+          .thenReturn(Future.successful(schemeDetailsResponse))
+        val result = controller(data).onPageLoad()(fakeRequest)
+
+        status(result) mustBe OK
+        contentAsString(result) mustBe viewAsString()
+        FakeUserAnswersCacheConnector.verify(SchemeNameId, "Open Single Trust Scheme with Indiv Establisher and Trustees")
+        FakeUserAnswersCacheConnector.verify(IsMasterTrustId, true)
+        FakeUserAnswersCacheConnector.verify(PSTRId, "24000001IN")
+        verify(fakeSchemeDetailsConnector, times(1)).getSchemeDetailsVariations(any(), any(), any())(any(), any())
+      }
+
+      "return OK and the correct view when variations is off" in {
+        featureSwitch.change("is-variations-enabled", false)
         when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any()))
           .thenReturn(Future.successful(schemeDetailsData))
         val result = controller(data).onPageLoad()(fakeRequest)
