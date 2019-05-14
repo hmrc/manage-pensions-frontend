@@ -99,7 +99,15 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
         case None => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
         case Some(data) =>
           minimalPsaConnector.getPsaNameFromPsaID(request.psaId.id).map { psaName =>
-            buildView(data._1, data._2, data._3, psaName, request.psaId.id)
+            buildView(
+              schemeName = data._1,
+              lastDateOpt = data._2,
+              deleteDateOpt = data._3,
+              psaName = psaName,
+              psaId = request.psaId.id,
+              variationSchemeName = None,
+              variationDeleteDate = None
+            )
           }
       }
   }
@@ -109,7 +117,9 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
                         lastDateOpt: Option[String],
                         deleteDateOpt: Option[String],
                         psaName: Option[String] = None,
-                        psaId: String
+                        psaId: String,
+                        variationSchemeName: Option[String],
+                        variationDeleteDate: Option[String]
                        )(implicit request: OptionalDataRequest[AnyContent]) = {
 
 
@@ -120,8 +130,8 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
       deleteDate = deleteDateOpt,
       name = psaName,
       psaId = psaId,
-      variationSchemeName = None,
-      variationDeleteDate = None
+      variationSchemeName = variationSchemeName,
+      variationDeleteDate = variationDeleteDate
     ))
   }
 
