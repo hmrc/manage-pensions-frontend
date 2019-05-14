@@ -17,7 +17,7 @@
 package controllers
 
 import config.FrontendAppConfig
-import connectors.{MinimalPsaConnector, UserAnswersCacheConnector}
+import connectors.{MinimalPsaConnector, PensionSchemeVarianceLockConnector, UpdateSchemeCacheConnector, UserAnswersCacheConnector}
 import controllers.actions._
 import javax.inject.Inject
 import models.requests.OptionalDataRequest
@@ -40,7 +40,10 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
                                           @PensionsSchemeCache dataCacheConnector: UserAnswersCacheConnector,
                                           minimalPsaConnector: MinimalPsaConnector,
                                           authenticate: AuthAction,
-                                          getData: DataRetrievalAction)
+                                          getData: DataRetrievalAction,
+                                          pensionSchemeVarianceLockConnector: PensionSchemeVarianceLockConnector,
+                                          updateConnector: UpdateSchemeCacheConnector
+                                         )
                                          (implicit val ec: ExecutionContext) extends FrontendController with I18nSupport {
 
   def redirect: Action[AnyContent] = Action.async(Future.successful(Redirect(controllers.routes.SchemesOverviewController.onPageLoad())))
@@ -78,7 +81,32 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
     }
   }
 
+  private def lastUpdatedDate(srn: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
+    updateConnector.lastUpdated(srn).map { dateOpt =>
+      val date = dateOpt.map { ts =>
+        LastUpdatedDate(
+          ts.validate[Long] match {
+            case JsSuccess(value, _) => value
+            case JsError(errors) => throw JsResultException(errors)
+          }
+        )
+      }.getOrElse(currentTimestamp)
+      Option(s"${createFormattedDate(date, appConfig.daysDataSaved)}")
+    }
+  }
+
   private def registerSchemeUrl = appConfig.registerSchemeUrl
+
+  private def variationsInfo(psaId: String)(implicit hc: HeaderCarrier): Future[(Option[String], Option[String])] =
+    pensionSchemeVarianceLockConnector.getLockByPsa(psaId).flatMap {
+      _
+        .fold[Future[(Option[String], Option[String])]](Future.successful((None, None))) { schemeVariance =>
+        updateConnector.fetch(schemeVariance.srn).flatMap {
+          case None => Future.successful((None, None))
+          case Some(data) => lastUpdatedDate(schemeVariance.srn).map(((data \ "schemeName").validate[String].asOpt, _))
+        }
+      }
+    }
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
@@ -88,7 +116,7 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
             Future.successful(Some((None, None, None)))
           case Some(data) =>
             schemeName(data) match {
-              case schemeName @ Some(_) =>
+              case schemeName@Some(_) =>
                 lastUpdatedAndDeleteDate(request.externalId)
                   .map(dates => Option((schemeName, dates._1, dates._2)))
               case _ => Future.successful(None)
@@ -96,22 +124,24 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
         }
 
       currentRegistrationInfo.flatMap {
-        case None => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
-        case Some(data) =>
-          minimalPsaConnector.getPsaNameFromPsaID(request.psaId.id).map { psaName =>
-            buildView(
-              schemeName = data._1,
-              lastDateOpt = data._2,
-              deleteDateOpt = data._3,
-              psaName = psaName,
-              psaId = request.psaId.id,
-              variationSchemeName = None,
-              variationDeleteDate = None
-            )
+        case Some(registrationData) =>
+          val psaId = request.psaId.id
+          variationsInfo(psaId).flatMap { variationsData =>
+            minimalPsaConnector.getPsaNameFromPsaID(psaId).map { psaName =>
+              buildView(
+                schemeName = registrationData._1,
+                lastDateOpt = registrationData._2,
+                deleteDateOpt = registrationData._3,
+                psaName = psaName,
+                psaId = request.psaId.id,
+                variationSchemeName = variationsData._1,
+                variationDeleteDate = variationsData._2
+              )
+            }
           }
+        case None => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
       }
   }
-
 
   private def buildView(schemeName: Option[String],
                         lastDateOpt: Option[String],
