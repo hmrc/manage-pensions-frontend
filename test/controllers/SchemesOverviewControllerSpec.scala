@@ -19,16 +19,17 @@ package controllers
 import config._
 import connectors._
 import controllers.actions.{DataRetrievalAction, _}
-import models.MinimalPSA
+import models.{LastUpdatedDate, MinimalPSA, SchemeVariance}
 import org.joda.time.format.DateTimeFormat
-import org.joda.time.{DateTime, DateTimeZone}
+import org.joda.time.{DateTime, DateTimeZone, LocalDate}
+import org.mockito.Matchers
 import org.mockito.Matchers.{eq => eqTo, _}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
 import play.api.Configuration
 import play.api.inject.bind
-import play.api.libs.json.Json
+import play.api.libs.json.{JsNumber, Json}
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, _}
@@ -59,10 +60,11 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
 
   private val config = app.injector.instanceOf[Configuration]
 
-  def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): SchemesOverviewController =
+  def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData,
+                 isVariationsEnabled:Boolean = false): SchemesOverviewController =
     new SchemesOverviewController(appConfig, messagesApi, fakeCacheConnector, fakePsaMinimalConnector, FakeAuthAction(),
       dataRetrievalAction,
-      pensionSchemeVarianceLockConnector, updateConnector, featureSwitchManagementService(isVariationsEnabled = false))
+      pensionSchemeVarianceLockConnector, updateConnector, featureSwitchManagementService(isVariationsEnabled = isVariationsEnabled))
 
   val deleteDate: String = DateTime.now(DateTimeZone.UTC).plusDays(appConfig.daysDataSaved).toString(formatter)
 
@@ -96,6 +98,13 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
     reset(fakePsaMinimalConnector)
     super.beforeEach()
   }
+
+
+
+  private def createFormattedDate(dt: LastUpdatedDate, daysToAdd: Int): String = new LocalDate(dt.timestamp).plusDays(daysToAdd).toString(formatter)
+
+  private def currentTimestamp: LastUpdatedDate = LastUpdatedDate(DateTime.now(DateTimeZone.UTC).getMillis)
+
 
   "SchemesOverview Controller" when {
     "on a GET" must {
@@ -196,6 +205,89 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
         contentAsString(result) mustBe viewWithPsaNameAndScheme(None)
       }
     }
+
+    "SchemesOverview Controller when variations is switched on" when {
+      "on a GET" must {
+        "return no variations section when there is no lock for any scheme" in {
+          when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
+          when(fakePsaMinimalConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any()))
+            .thenReturn(Future.successful(minimalPsaName))
+
+          val result = controller(isVariationsEnabled = true).onPageLoad(fakeRequest)
+          when(pensionSchemeVarianceLockConnector.getLockByPsa(Matchers.any())(Matchers.any(), Matchers.any()))
+              .thenReturn(Future.successful(None))
+          status(result) mustBe OK
+          contentAsString(result).contains(messages("messages__schemesOverview__change_details__p2")) mustBe false
+        }
+
+        "return no variations section when there is a lock for a scheme but the scheme is not in the update collection" in {
+          when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
+          when(fakePsaMinimalConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any()))
+            .thenReturn(Future.successful(minimalPsaName))
+
+          when(pensionSchemeVarianceLockConnector.getLockByPsa(Matchers.any())(Matchers.any(), Matchers.any()))
+            .thenReturn(Future.successful(Some(SchemeVariance(psaId, srn))))
+
+          when(updateConnector.fetch(Matchers.any())(Matchers.any(), Matchers.any()))
+              .thenReturn(Future.successful(None))
+
+          val result = controller(isVariationsEnabled = true).onPageLoad(fakeRequest)
+          status(result) mustBe OK
+          contentAsString(result).contains(messages("messages__schemesOverview__change_details__p2")) mustBe false
+        }
+
+        "return a variations section when there is a lock for a scheme and the scheme is in the update collection but there is no last updated date" in {
+          val schemeName = "a scheme"
+          val json = Json.parse( s"""{"schemeName":"$schemeName"}""" )
+
+          when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
+          when(fakePsaMinimalConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any()))
+            .thenReturn(Future.successful(minimalPsaName))
+
+          when(pensionSchemeVarianceLockConnector.getLockByPsa(Matchers.any())(Matchers.any(), Matchers.any()))
+            .thenReturn(Future.successful(Some(SchemeVariance(psaId, srn))))
+
+          when(updateConnector.fetch(Matchers.any())(Matchers.any(), Matchers.any()))
+            .thenReturn(Future.successful(Some(json)))
+
+          when(updateConnector.lastUpdated(Matchers.any())(Matchers.any(), Matchers.any()))
+              .thenReturn(Future.successful(None))
+
+          val result = controller(isVariationsEnabled = true).onPageLoad(fakeRequest)
+
+          status(result) mustBe OK
+          contentAsString(result).contains(messages("messages__schemesOverview__change_details__p2", schemeName, deleteDate)) mustBe true
+        }
+
+        "return a variations section when there is a lock for a scheme and the scheme is in the update collection and there is a last updated date" in {
+          val schemeName = "a scheme"
+          val json = Json.parse( s"""{"schemeName":"$schemeName"}""" )
+          val deleteDate: String = "11 June 2019"
+
+          when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
+          when(fakePsaMinimalConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any()))
+            .thenReturn(Future.successful(minimalPsaName))
+
+
+          when(pensionSchemeVarianceLockConnector.getLockByPsa(Matchers.any())(Matchers.any(), Matchers.any()))
+            .thenReturn(Future.successful(Some(SchemeVariance(psaId, srn))))
+
+          when(updateConnector.fetch(Matchers.any())(Matchers.any(), Matchers.any()))
+            .thenReturn(Future.successful(Some(json)))
+
+          when(updateConnector.lastUpdated(Matchers.any())(Matchers.any(), Matchers.any()))
+            .thenReturn(Future.successful(Some(JsNumber(BigDecimal(new DateTime("2019-05-11").getMillis)))))
+
+          val expectedContent = messages("messages__schemesOverview__change_details__p1", schemeName, "08 June 2019")
+
+          val result = controller(isVariationsEnabled = true).onPageLoad(fakeRequest)
+
+          status(result) mustBe OK
+          contentAsString(result).contains(expectedContent) mustBe true
+        }
+      }
+    }
+
     "on a POST with isWorkPackageOneEnabled flag is on" must {
 
       "redirect to the cannot start registration page if called without a psa name but psa is suspended" in {
@@ -267,6 +359,7 @@ object SchemesOverviewControllerSpec {
   val lastDate: DateTime = DateTime.now(DateTimeZone.UTC)
   val timestamp: Long = lastDate.getMillis
   private val psaId = "A0000000"
+  private val srn = "srn"
 
   def minimalPsaDetails(psaSuspended: Boolean) = MinimalPSA("test@test.com", psaSuspended, Some("Org Name"), None)
 

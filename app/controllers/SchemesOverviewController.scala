@@ -83,7 +83,7 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
     }
   }
 
-  private def lastUpdatedDate(srn: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
+  private def deleteDate(srn: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
     updateConnector.lastUpdated(srn).map { dateOpt =>
       val date = dateOpt.map { ts =>
         LastUpdatedDate(
@@ -106,7 +106,7 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
           .fold[Future[(Option[String], Option[String])]](Future.successful((None, None))) { schemeVariance =>
           updateConnector.fetch(schemeVariance.srn).flatMap {
             case None => Future.successful((None, None))
-            case Some(data) => lastUpdatedDate(schemeVariance.srn).map(((data \ "schemeName").validate[String].asOpt, _))
+            case Some(data) => deleteDate(schemeVariance.srn).map(((data \ "schemeName").validate[String].asOpt, _))
           }
         }
       }
