@@ -61,9 +61,18 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
 
       dataCacheConnector.fetch(request.externalId).flatMap {
         case None => minimalPsaConnector.getPsaNameFromPsaID(request.psaId.id).map { psaName =>
-          Ok(schemesOverview(appConfig, None, None, None, psaName, request.psaId.id,
-            variationSchemeName = None,
-            variationDeleteDate = None))
+          Ok(
+            schemesOverview(
+              appConfig = appConfig,
+              schemeName = None,
+              lastDate = None,
+              deleteDate = None,
+              name = psaName,
+              psaId = request.psaId.id,
+              variationSchemeName = None,
+              variationDeleteDate = None
+            )
+          )
         }
         case Some(data) =>
           schemeName(data).validate[String] match {
@@ -73,7 +82,7 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
                   buildView(name, dateOpt, psaName, request.psaId.id)
                 }
               }
-            case JsError(e) =>{
+            case JsError(e) => {
               Logger.error(s"Unable to retrieve scheme name from user answers: $e")
               Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
             }
@@ -93,12 +102,12 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
     ).getOrElse(currentTimestamp)
 
     Ok(schemesOverview(
-      appConfig,
-      Some(name),
-      Some(s"${createFormattedDate(date, daysToAdd = 0)}"),
-      Some(s"${createFormattedDate(date, appConfig.daysDataSaved)}"),
-      psaName,
-      psaId,
+      appConfig = appConfig,
+      schemeName = Some(name),
+      lastDate = Some(s"${createFormattedDate(date, daysToAdd = 0)}"),
+      deleteDate = Some(s"${createFormattedDate(date, appConfig.daysDataSaved)}"),
+      name = psaName,
+      psaId = psaId,
       variationSchemeName = None,
       variationDeleteDate = None
     ))
