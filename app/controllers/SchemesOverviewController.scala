@@ -28,6 +28,7 @@ import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json._
 import play.api.mvc.{Action, AnyContent, Result}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.annotations.PensionsSchemeCache
 import views.html.schemesOverview
@@ -45,12 +46,35 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
   def redirect: Action[AnyContent] = Action.async(Future.successful(Redirect(controllers.routes.SchemesOverviewController.onPageLoad())))
 
   //TODO: Remove this code and just use scheme name after 28 days of enabling hub v2
-  private def schemeName(data: JsValue): JsLookupResult = {
+  private def schemeName(data: JsValue): Option[String] = {
     val schemeName: JsLookupResult = data \ "schemeName"
 
-    schemeName.validate[String] match {
+    val xx = schemeName.validate[String] match {
       case JsSuccess(_, _) => schemeName
       case _ => data \ "schemeDetails" \ "schemeName"
+    }
+    xx.validate[String] match {
+      case JsSuccess(name, _) => Option(name)
+      case JsError(e) =>
+        Logger.error(s"Unable to retrieve scheme name from user answers: $e")
+        None
+    }
+  }
+
+  private def lastUpdatedAndDeleteDate(externalId: String)(implicit hc: HeaderCarrier): Future[(Option[String], Option[String])] = {
+    dataCacheConnector.lastUpdated(externalId).map { dateOpt =>
+      val date = dateOpt.map(ts =>
+        LastUpdatedDate(
+          ts.validate[Long] match {
+            case JsSuccess(value, _) => value
+            case JsError(errors) => throw JsResultException(errors)
+          }
+        )
+      ).getOrElse(currentTimestamp)
+      (
+        Option(s"${createFormattedDate(date, daysToAdd = 0)}"),
+        Option(s"${createFormattedDate(date, appConfig.daysDataSaved)}")
+      )
     }
   }
 
@@ -58,54 +82,42 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
-
-      dataCacheConnector.fetch(request.externalId).flatMap {
-        case None => minimalPsaConnector.getPsaNameFromPsaID(request.psaId.id).map { psaName =>
-          Ok(
-            schemesOverview(
-              appConfig = appConfig,
-              schemeName = None,
-              lastDate = None,
-              deleteDate = None,
-              name = psaName,
-              psaId = request.psaId.id,
-              variationSchemeName = None,
-              variationDeleteDate = None
-            )
-          )
-        }
-        case Some(data) =>
-          schemeName(data).validate[String] match {
-            case JsSuccess(name, _) =>
-              dataCacheConnector.lastUpdated(request.externalId).flatMap { dateOpt =>
-                minimalPsaConnector.getPsaNameFromPsaID(request.psaId.id).map { psaName =>
-                  buildView(name, dateOpt, psaName, request.psaId.id)
-                }
-              }
-            case JsError(e) => {
-              Logger.error(s"Unable to retrieve scheme name from user answers: $e")
-              Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+      val currentRegistrationInfo: Future[Option[(Option[String], Option[String], Option[String])]] =
+        dataCacheConnector.fetch(request.externalId).flatMap {
+          case None =>
+            Future.successful(Some((None, None, None)))
+          case Some(data) =>
+            schemeName(data) match {
+              case schemeName @ Some(_) =>
+                lastUpdatedAndDeleteDate(request.externalId)
+                  .map(dates => Option((schemeName, dates._1, dates._2)))
+              case _ => Future.successful(None)
             }
+        }
+
+      currentRegistrationInfo.flatMap {
+        case None => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+        case Some(data) =>
+          minimalPsaConnector.getPsaNameFromPsaID(request.psaId.id).map { psaName =>
+            buildView(data._1, data._2, data._3, psaName, request.psaId.id)
           }
       }
   }
 
-  private def buildView(name: String, dateOpt: Option[JsValue],
-                        psaName: Option[String] = None, psaId: String)(implicit request: OptionalDataRequest[AnyContent]) = {
-    val date = dateOpt.map(ts =>
-      LastUpdatedDate(
-        ts.validate[Long] match {
-          case JsSuccess(value, _) => value
-          case JsError(errors) => throw JsResultException(errors)
-        }
-      )
-    ).getOrElse(currentTimestamp)
+
+  private def buildView(schemeName: Option[String],
+                        lastDateOpt: Option[String],
+                        deleteDateOpt: Option[String],
+                        psaName: Option[String] = None,
+                        psaId: String
+                       )(implicit request: OptionalDataRequest[AnyContent]) = {
+
 
     Ok(schemesOverview(
       appConfig = appConfig,
-      schemeName = Some(name),
-      lastDate = Some(s"${createFormattedDate(date, daysToAdd = 0)}"),
-      deleteDate = Some(s"${createFormattedDate(date, appConfig.daysDataSaved)}"),
+      schemeName = schemeName,
+      lastDate = lastDateOpt,
+      deleteDate = deleteDateOpt,
       name = psaName,
       psaId = psaId,
       variationSchemeName = None,
@@ -126,12 +138,10 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
   private def retrieveResult(schemeDetails: Option[JsValue], psaMinimalDetails: Option[MinimalPSA]): Result = {
     schemeDetails match {
       case None => psaMinimalDetails.fold(Redirect(registerSchemeUrl))(details => redirect(registerSchemeUrl, details))
-      case Some(details) => schemeName(details).validate[String] match {
-        case JsSuccess(_, _) => psaMinimalDetails.fold(Redirect(appConfig.continueSchemeUrl))(details => redirect(appConfig.continueSchemeUrl, details))
-        case JsError(e) => {
-          Logger.error(s"Unable to retrieve scheme name from user answers: $e")
+      case Some(details) => schemeName(details) match {
+        case Some(_) => psaMinimalDetails.fold(Redirect(appConfig.continueSchemeUrl))(details => redirect(appConfig.continueSchemeUrl, details))
+        case _ =>
           Redirect(controllers.routes.SessionExpiredController.onPageLoad())
-        }
       }
     }
   }
