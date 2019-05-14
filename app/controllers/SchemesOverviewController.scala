@@ -83,7 +83,7 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
     }
   }
 
-  private def deleteDate(srn: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
+  private def variationsDeleteDate(srn: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
     updateConnector.lastUpdated(srn).map { dateOpt =>
       val date = dateOpt.map { ts =>
         LastUpdatedDate(
@@ -101,12 +101,11 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
 
   private def variationsInfo(psaId: String)(implicit hc: HeaderCarrier): Future[(Option[String], Option[String])] = {
     if (featureSwitchManagementService.get(Toggles.isVariationsEnabled)) {
-      pensionSchemeVarianceLockConnector.getLockByPsa(psaId).flatMap {
-        _
+      pensionSchemeVarianceLockConnector.getLockByPsa(psaId).flatMap { _
           .fold[Future[(Option[String], Option[String])]](Future.successful((None, None))) { schemeVariance =>
           updateConnector.fetch(schemeVariance.srn).flatMap {
+            case Some(data) => variationsDeleteDate(schemeVariance.srn).map(((data \ "schemeName").validate[String].asOpt, _))
             case None => Future.successful((None, None))
-            case Some(data) => deleteDate(schemeVariance.srn).map(((data \ "schemeName").validate[String].asOpt, _))
           }
         }
       }
@@ -131,18 +130,18 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
         }
 
       currentRegistrationInfo.flatMap {
-        case Some(registrationData) =>
+        case Some(crd) =>
           val psaId = request.psaId.id
-          variationsInfo(psaId).flatMap { variationsData =>
+          variationsInfo(psaId).flatMap { vi =>
             minimalPsaConnector.getPsaNameFromPsaID(psaId).map { psaName =>
               buildView(
-                schemeName = registrationData._1,
-                lastDateOpt = registrationData._2,
-                deleteDateOpt = registrationData._3,
+                schemeName = crd._1,
+                lastDateOpt = crd._2,
+                deleteDateOpt = crd._3,
                 psaName = psaName,
                 psaId = request.psaId.id,
-                variationSchemeName = variationsData._1,
-                variationDeleteDate = variationsData._2
+                variationSchemeName = vi._1,
+                variationDeleteDate = vi._2
               )
             }
           }
