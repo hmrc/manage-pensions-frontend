@@ -16,7 +16,7 @@
 
 package controllers
 
-import config.FrontendAppConfig
+import config.{FeatureSwitchManagementService, FrontendAppConfig}
 import connectors.{MinimalPsaConnector, PensionSchemeVarianceLockConnector, UpdateSchemeCacheConnector, UserAnswersCacheConnector}
 import controllers.actions._
 import javax.inject.Inject
@@ -30,6 +30,7 @@ import play.api.libs.json._
 import play.api.mvc.{Action, AnyContent, Result}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import utils.Toggles
 import utils.annotations.PensionsSchemeCache
 import views.html.schemesOverview
 
@@ -42,7 +43,8 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
                                           authenticate: AuthAction,
                                           getData: DataRetrievalAction,
                                           pensionSchemeVarianceLockConnector: PensionSchemeVarianceLockConnector,
-                                          updateConnector: UpdateSchemeCacheConnector
+                                          updateConnector: UpdateSchemeCacheConnector,
+                                          featureSwitchManagementService: FeatureSwitchManagementService
                                          )
                                          (implicit val ec: ExecutionContext) extends FrontendController with I18nSupport {
 
@@ -97,16 +99,21 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
 
   private def registerSchemeUrl = appConfig.registerSchemeUrl
 
-  private def variationsInfo(psaId: String)(implicit hc: HeaderCarrier): Future[(Option[String], Option[String])] =
-    pensionSchemeVarianceLockConnector.getLockByPsa(psaId).flatMap {
-      _
-        .fold[Future[(Option[String], Option[String])]](Future.successful((None, None))) { schemeVariance =>
-        updateConnector.fetch(schemeVariance.srn).flatMap {
-          case None => Future.successful((None, None))
-          case Some(data) => lastUpdatedDate(schemeVariance.srn).map(((data \ "schemeName").validate[String].asOpt, _))
+  private def variationsInfo(psaId: String)(implicit hc: HeaderCarrier): Future[(Option[String], Option[String])] = {
+    if (featureSwitchManagementService.get(Toggles.isVariationsEnabled)) {
+      pensionSchemeVarianceLockConnector.getLockByPsa(psaId).flatMap {
+        _
+          .fold[Future[(Option[String], Option[String])]](Future.successful((None, None))) { schemeVariance =>
+          updateConnector.fetch(schemeVariance.srn).flatMap {
+            case None => Future.successful((None, None))
+            case Some(data) => lastUpdatedDate(schemeVariance.srn).map(((data \ "schemeName").validate[String].asOpt, _))
+          }
         }
       }
+    } else {
+      Future.successful((None,None))
     }
+  }
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
