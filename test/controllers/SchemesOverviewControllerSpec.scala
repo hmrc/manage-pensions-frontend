@@ -17,7 +17,7 @@
 package controllers
 
 import config._
-import connectors.{MicroserviceCacheConnector, MinimalPsaConnector, UserAnswersCacheConnector}
+import connectors._
 import controllers.actions.{DataRetrievalAction, _}
 import models.MinimalPSA
 import org.joda.time.format.DateTimeFormat
@@ -43,11 +43,26 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
   val fakeCacheConnector: UserAnswersCacheConnector = mock[MicroserviceCacheConnector]
   val fakePsaMinimalConnector: MinimalPsaConnector = mock[MinimalPsaConnector]
   val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
+
+  private def featureSwitchManagementService(isVariationsEnabled:Boolean):FeatureSwitchManagementService =
+    new FeatureSwitchManagementService {
+    override def change(name: String, newValue: Boolean): Boolean = ???
+
+    override def get(name: String): Boolean = isVariationsEnabled
+
+    override def reset(name: String): Unit = ???
+  }
+
+  private val pensionSchemeVarianceLockConnector = mock[PensionSchemeVarianceLockConnector]
+
+  private val updateConnector = mock[UpdateSchemeCacheConnector]
+
   private val config = app.injector.instanceOf[Configuration]
 
   def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): SchemesOverviewController =
     new SchemesOverviewController(appConfig, messagesApi, fakeCacheConnector, fakePsaMinimalConnector, FakeAuthAction(),
-      dataRetrievalAction)
+      dataRetrievalAction,
+      pensionSchemeVarianceLockConnector, updateConnector, featureSwitchManagementService(isVariationsEnabled = false))
 
   val deleteDate: String = DateTime.now(DateTimeZone.UTC).plusDays(appConfig.daysDataSaved).toString(formatter)
 

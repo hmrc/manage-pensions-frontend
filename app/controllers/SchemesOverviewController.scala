@@ -54,11 +54,11 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
   private def schemeName(data: JsValue): Option[String] = {
     val schemeName: JsLookupResult = data \ "schemeName"
 
-    val xx = schemeName.validate[String] match {
+    val jsLookupResult = schemeName.validate[String] match {
       case JsSuccess(_, _) => schemeName
       case _ => data \ "schemeDetails" \ "schemeName"
     }
-    xx.validate[String] match {
+    jsLookupResult.validate[String] match {
       case JsSuccess(name, _) => Option(name)
       case JsError(e) =>
         Logger.error(s"Unable to retrieve scheme name from user answers: $e")
