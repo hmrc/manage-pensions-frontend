@@ -33,6 +33,7 @@ import play.api.libs.json.{JsNumber, Json}
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, _}
+import utils.FakeFeatureSwitchManagementService
 import views.html.schemesOverview
 
 import scala.concurrent.Future
@@ -45,15 +46,6 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
   val fakePsaMinimalConnector: MinimalPsaConnector = mock[MinimalPsaConnector]
   val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
 
-  private def featureSwitchManagementService(isVariationsEnabled:Boolean):FeatureSwitchManagementService =
-    new FeatureSwitchManagementService {
-    override def change(name: String, newValue: Boolean): Boolean = ???
-
-    override def get(name: String): Boolean = isVariationsEnabled
-
-    override def reset(name: String): Unit = ???
-  }
-
   private val pensionSchemeVarianceLockConnector = mock[PensionSchemeVarianceLockConnector]
 
   private val updateConnector = mock[UpdateSchemeCacheConnector]
@@ -64,7 +56,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
                  isVariationsEnabled:Boolean = false): SchemesOverviewController =
     new SchemesOverviewController(appConfig, messagesApi, fakeCacheConnector, fakePsaMinimalConnector, FakeAuthAction(),
       dataRetrievalAction,
-      pensionSchemeVarianceLockConnector, updateConnector, featureSwitchManagementService(isVariationsEnabled = isVariationsEnabled))
+      pensionSchemeVarianceLockConnector, updateConnector, FakeFeatureSwitchManagementService(isToggleOn = isVariationsEnabled))
 
   val deleteDate: String = DateTime.now(DateTimeZone.UTC).plusDays(appConfig.daysDataSaved).toString(formatter)
 
