@@ -17,20 +17,23 @@
 package controllers.invitations
 
 import com.google.inject.Inject
-import config.FrontendAppConfig
+import config.{FeatureSwitchManagementService, FrontendAppConfig}
 import connectors.{InvitationConnector, InvitationsCacheConnector, SchemeDetailsConnector, UserAnswersCacheConnector}
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.invitations.DeclarationFormProvider
 import identifiers.SchemeSrnId
+import identifiers.SchemeTypeId
+import identifiers.{SchemeNameId => GetSchemeNameId}
 import identifiers.invitations._
+import models.SchemeType.MasterTrust
 import models._
 import models.requests.DataRequest
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Result}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import utils.Navigator
+import utils.{Navigator, Toggles}
 import utils.annotations.AcceptInvitation
 import views.html.invitations.declaration
 
@@ -47,7 +50,8 @@ class DeclarationController @Inject()(
                                        schemeDetailsConnector: SchemeDetailsConnector,
                                        invitationsCacheConnector: InvitationsCacheConnector,
                                        invitationConnector: InvitationConnector,
-                                       @AcceptInvitation navigator: Navigator
+                                       @AcceptInvitation navigator: Navigator,
+                                       featureSwitchManagementService: FeatureSwitchManagementService
                                      )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport with Retrievals {
   val form: Form[Boolean] = formProvider()
 
@@ -55,13 +59,34 @@ class DeclarationController @Inject()(
     implicit request =>
       (DoYouHaveWorkingKnowledgeId and SchemeSrnId).retrieve.right.map {
         case haveWorkingKnowledge ~ srn =>
-          for {
-            details <- schemeDetailsConnector.getSchemeDetails(request.psaId.id, "srn", srn)
-            _ <- userAnswersCacheConnector.save(SchemeNameId, details.schemeDetails.name)
-            _ <- userAnswersCacheConnector.save(IsMasterTrustId, details.schemeDetails.isMasterTrust)
-            _ <- userAnswersCacheConnector.save(PSTRId, details.schemeDetails.pstr.getOrElse(""))
-          } yield {
-            Ok(declaration(appConfig, haveWorkingKnowledge, details.schemeDetails.isMasterTrust, form))
+          if (featureSwitchManagementService.get(Toggles.isVariationsEnabled)) {
+            schemeDetailsConnector.getSchemeDetailsVariations(request.psaId.id, "srn", srn).flatMap { details =>
+              (details.get(GetSchemeNameId), details.get(SchemeTypeId)) match {
+                case (Some(name), Some(schemeType)) =>
+                  val isMasterTrust = schemeType.equals(MasterTrust)
+
+                  for {
+                    _ <- userAnswersCacheConnector.save(SchemeNameId, name)
+                    _ <- userAnswersCacheConnector.save(IsMasterTrustId, isMasterTrust)
+                    _ <- userAnswersCacheConnector.save(PSTRId, details.get(PSTRId).getOrElse(""))
+                  } yield {
+                    Ok(declaration(appConfig, haveWorkingKnowledge, isMasterTrust, form))
+                  }
+
+                case _ => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+
+              }
+            }
+          } else {
+
+            for {
+              details <- schemeDetailsConnector.getSchemeDetails(request.psaId.id, "srn", srn)
+              _ <- userAnswersCacheConnector.save(SchemeNameId, details.schemeDetails.name)
+              _ <- userAnswersCacheConnector.save(IsMasterTrustId, details.schemeDetails.isMasterTrust)
+              _ <- userAnswersCacheConnector.save(PSTRId, details.schemeDetails.pstr.getOrElse(""))
+            } yield {
+              Ok(declaration(appConfig, haveWorkingKnowledge, details.schemeDetails.isMasterTrust, form))
+            }
           }
       }
   }
