@@ -66,42 +66,37 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
     }
   }
 
-  private def lastUpdatedAndDeleteDate(externalId: String)(implicit hc: HeaderCarrier): Future[(Option[String], Option[String])] = {
+  private def parseDateElseCurrent(dateOpt: Option[JsValue]): LastUpdatedDate = {
+    dateOpt.map(ts =>
+      LastUpdatedDate(
+        ts.validate[Long] match {
+          case JsSuccess(value, _) => value
+          case JsError(errors) => throw JsResultException(errors)
+        }
+      )
+    ).getOrElse(currentTimestamp)
+  }
+
+  private def lastUpdatedAndDeleteDate(externalId: String)(implicit hc: HeaderCarrier): Future[(Option[String], Option[String])] =
     dataCacheConnector.lastUpdated(externalId).map { dateOpt =>
-      val date = dateOpt.map(ts =>
-        LastUpdatedDate(
-          ts.validate[Long] match {
-            case JsSuccess(value, _) => value
-            case JsError(errors) => throw JsResultException(errors)
-          }
-        )
-      ).getOrElse(currentTimestamp)
+      val date = parseDateElseCurrent(dateOpt)
       (
         Option(s"${createFormattedDate(date, daysToAdd = 0)}"),
         Option(s"${createFormattedDate(date, appConfig.daysDataSaved)}")
       )
     }
-  }
 
-  private def variationsDeleteDate(srn: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
+  private def variationsDeleteDate(srn: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
     updateConnector.lastUpdated(srn).map { dateOpt =>
-      val date = dateOpt.map { ts =>
-        LastUpdatedDate(
-          ts.validate[Long] match {
-            case JsSuccess(value, _) => value
-            case JsError(errors) => throw JsResultException(errors)
-          }
-        )
-      }.getOrElse(currentTimestamp)
-      Option(s"${createFormattedDate(date, appConfig.daysDataSaved)}")
+      Option(s"${createFormattedDate(parseDateElseCurrent(dateOpt), appConfig.daysDataSaved)}")
     }
-  }
 
   private def registerSchemeUrl = appConfig.registerSchemeUrl
 
   private def variationsInfo(psaId: String)(implicit hc: HeaderCarrier): Future[(Option[String], Option[String])] = {
     if (featureSwitchManagementService.get(Toggles.isVariationsEnabled)) {
-      pensionSchemeVarianceLockConnector.getLockByPsa(psaId).flatMap { _
+      pensionSchemeVarianceLockConnector.getLockByPsa(psaId).flatMap {
+        _
           .fold[Future[(Option[String], Option[String])]](Future.successful((None, None))) { schemeVariance =>
           updateConnector.fetch(schemeVariance.srn).flatMap {
             case Some(data) => variationsDeleteDate(schemeVariance.srn).map(((data \ "schemeName").validate[String].asOpt, _))
@@ -110,7 +105,7 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
         }
       }
     } else {
-      Future.successful((None,None))
+      Future.successful((None, None))
     }
   }
 
