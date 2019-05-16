@@ -16,8 +16,8 @@
 
 package controllers
 
-import config.FrontendAppConfig
-import connectors.{MinimalPsaConnector, UserAnswersCacheConnector}
+import config.{FeatureSwitchManagementService, FrontendAppConfig}
+import connectors.{MinimalPsaConnector, PensionSchemeVarianceLockConnector, UpdateSchemeCacheConnector, UserAnswersCacheConnector}
 import controllers.actions._
 import javax.inject.Inject
 import models.requests.OptionalDataRequest
@@ -28,7 +28,9 @@ import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json._
 import play.api.mvc.{Action, AnyContent, Result}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import utils.Toggles
 import utils.annotations.PensionsSchemeCache
 import views.html.schemesOverview
 
@@ -39,49 +41,33 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
                                           @PensionsSchemeCache dataCacheConnector: UserAnswersCacheConnector,
                                           minimalPsaConnector: MinimalPsaConnector,
                                           authenticate: AuthAction,
-                                          getData: DataRetrievalAction)
+                                          getData: DataRetrievalAction,
+                                          pensionSchemeVarianceLockConnector: PensionSchemeVarianceLockConnector,
+                                          updateConnector: UpdateSchemeCacheConnector,
+                                          featureSwitchManagementService: FeatureSwitchManagementService
+                                         )
                                          (implicit val ec: ExecutionContext) extends FrontendController with I18nSupport {
 
   def redirect: Action[AnyContent] = Action.async(Future.successful(Redirect(controllers.routes.SchemesOverviewController.onPageLoad())))
 
   //TODO: Remove this code and just use scheme name after 28 days of enabling hub v2
-  private def schemeName(data: JsValue): JsLookupResult = {
+  private def schemeName(data: JsValue): Option[String] = {
     val schemeName: JsLookupResult = data \ "schemeName"
 
-    schemeName.validate[String] match {
+    val jsLookupResult = schemeName.validate[String] match {
       case JsSuccess(_, _) => schemeName
       case _ => data \ "schemeDetails" \ "schemeName"
     }
+    jsLookupResult.validate[String] match {
+      case JsSuccess(name, _) => Option(name)
+      case JsError(e) =>
+        Logger.error(s"Unable to retrieve scheme name from user answers: $e")
+        None
+    }
   }
 
-  private def registerSchemeUrl = appConfig.registerSchemeUrl
-
-  def onPageLoad: Action[AnyContent] = (authenticate andThen getData).async {
-    implicit request =>
-
-      dataCacheConnector.fetch(request.externalId).flatMap {
-        case None => minimalPsaConnector.getPsaNameFromPsaID(request.psaId.id).map { psaName =>
-          Ok(schemesOverview(appConfig, None, None, None, psaName, request.psaId.id))
-        }
-        case Some(data) =>
-          schemeName(data).validate[String] match {
-            case JsSuccess(name, _) =>
-              dataCacheConnector.lastUpdated(request.externalId).flatMap { dateOpt =>
-                minimalPsaConnector.getPsaNameFromPsaID(request.psaId.id).map { psaName =>
-                  buildView(name, dateOpt, psaName, request.psaId.id)
-                }
-              }
-            case JsError(e) =>{
-              Logger.error(s"Unable to retrieve scheme name from user answers: $e")
-              Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
-            }
-          }
-      }
-  }
-
-  private def buildView(name: String, dateOpt: Option[JsValue],
-                        psaName: Option[String] = None, psaId: String)(implicit request: OptionalDataRequest[AnyContent]) = {
-    val date = dateOpt.map(ts =>
+  private def parseDateElseCurrent(dateOpt: Option[JsValue]): LastUpdatedDate = {
+    dateOpt.map(ts =>
       LastUpdatedDate(
         ts.validate[Long] match {
           case JsSuccess(value, _) => value
@@ -89,14 +75,94 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
         }
       )
     ).getOrElse(currentTimestamp)
+  }
+
+  private def lastUpdatedAndDeleteDate(externalId: String)(implicit hc: HeaderCarrier): Future[(Option[String], Option[String])] =
+    dataCacheConnector.lastUpdated(externalId).map { dateOpt =>
+      val date = parseDateElseCurrent(dateOpt)
+      (
+        Option(s"${createFormattedDate(date, daysToAdd = 0)}"),
+        Option(s"${createFormattedDate(date, appConfig.daysDataSaved)}")
+      )
+    }
+
+  private def variationsDeleteDate(srn: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
+    updateConnector.lastUpdated(srn).map { dateOpt =>
+      Option(s"${createFormattedDate(parseDateElseCurrent(dateOpt), appConfig.daysDataSaved)}")
+    }
+
+  private def registerSchemeUrl = appConfig.registerSchemeUrl
+
+  private def variationsInfo(psaId: String)(implicit hc: HeaderCarrier): Future[(Option[String], Option[String])] = {
+    if (featureSwitchManagementService.get(Toggles.isVariationsEnabled)) {
+      pensionSchemeVarianceLockConnector.getLockByPsa(psaId).flatMap {
+        _
+          .fold[Future[(Option[String], Option[String])]](Future.successful((None, None))) { schemeVariance =>
+          updateConnector.fetch(schemeVariance.srn).flatMap {
+            case Some(data) => variationsDeleteDate(schemeVariance.srn).map(((data \ "schemeName").validate[String].asOpt, _))
+            case None => Future.successful((None, None))
+          }
+        }
+      }
+    } else {
+      Future.successful((None, None))
+    }
+  }
+
+  def onPageLoad: Action[AnyContent] = (authenticate andThen getData).async {
+    implicit request =>
+      val currentRegistrationInfo: Future[Option[(Option[String], Option[String], Option[String])]] =
+        dataCacheConnector.fetch(request.externalId).flatMap {
+          case None =>
+            Future.successful(Some((None, None, None)))
+          case Some(data) =>
+            schemeName(data) match {
+              case schemeName@Some(_) =>
+                lastUpdatedAndDeleteDate(request.externalId)
+                  .map(dates => Option((schemeName, dates._1, dates._2)))
+              case _ => Future.successful(None)
+            }
+        }
+
+      currentRegistrationInfo.flatMap {
+        case Some(crd) =>
+          val psaId = request.psaId.id
+          variationsInfo(psaId).flatMap { vi =>
+            minimalPsaConnector.getPsaNameFromPsaID(psaId).map { psaName =>
+              buildView(
+                schemeName = crd._1,
+                lastDateOpt = crd._2,
+                deleteDateOpt = crd._3,
+                psaName = psaName,
+                psaId = request.psaId.id,
+                variationSchemeName = vi._1,
+                variationDeleteDate = vi._2
+              )
+            }
+          }
+        case None => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+      }
+  }
+
+  private def buildView(schemeName: Option[String],
+                        lastDateOpt: Option[String],
+                        deleteDateOpt: Option[String],
+                        psaName: Option[String] = None,
+                        psaId: String,
+                        variationSchemeName: Option[String],
+                        variationDeleteDate: Option[String]
+                       )(implicit request: OptionalDataRequest[AnyContent]) = {
+
 
     Ok(schemesOverview(
-      appConfig,
-      Some(name),
-      Some(s"${createFormattedDate(date, daysToAdd = 0)}"),
-      Some(s"${createFormattedDate(date, appConfig.daysDataSaved)}"),
-      psaName,
-      psaId
+      appConfig = appConfig,
+      schemeName = schemeName,
+      lastDate = lastDateOpt,
+      deleteDate = deleteDateOpt,
+      name = psaName,
+      psaId = psaId,
+      variationSchemeName = variationSchemeName,
+      variationDeleteDate = variationDeleteDate
     ))
   }
 
@@ -113,12 +179,10 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
   private def retrieveResult(schemeDetails: Option[JsValue], psaMinimalDetails: Option[MinimalPSA]): Result = {
     schemeDetails match {
       case None => psaMinimalDetails.fold(Redirect(registerSchemeUrl))(details => redirect(registerSchemeUrl, details))
-      case Some(details) => schemeName(details).validate[String] match {
-        case JsSuccess(_, _) => psaMinimalDetails.fold(Redirect(appConfig.continueSchemeUrl))(details => redirect(appConfig.continueSchemeUrl, details))
-        case JsError(e) => {
-          Logger.error(s"Unable to retrieve scheme name from user answers: $e")
+      case Some(details) => schemeName(details) match {
+        case Some(_) => psaMinimalDetails.fold(Redirect(appConfig.continueSchemeUrl))(details => redirect(appConfig.continueSchemeUrl, details))
+        case _ =>
           Redirect(controllers.routes.SessionExpiredController.onPageLoad())
-        }
       }
     }
   }

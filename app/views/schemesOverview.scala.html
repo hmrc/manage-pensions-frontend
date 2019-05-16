@@ -20,7 +20,15 @@
 @import models.Mode
 @import viewmodels.Message
 
-@(appConfig: FrontendAppConfig, schemeName: Option[String], lastDate: Option[String], deleteDate: Option[String], name: Option[String], psaId: String)(implicit request: Request[_], messages: Messages)
+@(appConfig: FrontendAppConfig,
+schemeName: Option[String],
+lastDate: Option[String],
+deleteDate: Option[String],
+name: Option[String],
+psaId: String,
+variationSchemeName: Option[String],
+variationDeleteDate: Option[String]
+)(implicit request: Request[_], messages: Messages)
 
 @manageRedirectLink = {<a id="manage-link" href="@appConfig.pensionSchemeOnlineServiceUrl">@messages("messages__schemesOverview__manage__redirect__link")</a>}
 
@@ -74,7 +82,14 @@
         }
     }
 
-    <h2>@messages("messages__schemesOverview__UR__head")</h2>
-    <p>@messages("messages__schemesOverview__UR__text")</p>
-    <p><a id="user-research" href="@appConfig.userResearchUrl">@messages("messages__schemesOverview__UR__link")</a></p>
+    @variationSchemeName.map{ sn =>
+        <h2>@Html(Message("messages__schemesOverview__change_details__title", sn))</h2>
+        @variationDeleteDate.map{ dd =>
+            <p>@Html(Message("messages__schemesOverview__change_details__p1", sn, dd))</p>
+        }
+        <p><a id="continue-variation" href="">@messages("messages__schemesOverview__change_details_continue__link", sn)</a></p>
+        <p>@Html(Message("messages__schemesOverview__change_details__p2"))
+        <p><a id="delete-variation" href="">@messages("messages__schemesOverview__change_details_delete__link", sn)</a></p>
+    }
+
 }

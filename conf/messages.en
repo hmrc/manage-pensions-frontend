@@ -109,9 +109,14 @@ messages__schemesOverview__continue__lastDate = You last entered details about t
 messages__schemesOverview__continue__deleteDate = You have until {0} to finish this registration before the details are deleted.
 messages__schemesOverview__continue__link = Continue registering this scheme
 messages__schemesOverview__delete__link = Delete {0}
-messages__schemesOverview__UR__head = Help us improve this service
-messages__schemesOverview__UR__text = We want to hear from people who would like to help improve this service by sharing their feedback and testing new features.
-messages__schemesOverview__UR__link = Let us know if you would like to help improve this service.
+
+messages__schemesOverview__change_details__title = Change {0}’s details
+messages__schemesOverview__change_details__p1 = You have made changes to {0} but the details have not been updated yet. You must complete the declaration by {1} to update this scheme.
+messages__schemesOverview__change_details_continue__link = Continue changing {0}’s details
+messages__schemesOverview__change_details__p2 = You can only change the details of 1 scheme at a time.
+messages__schemesOverview__change_details_delete__link = Delete the changes made to {0}’s details
+
+
 messages__schemeOverview__psa_id = Administrator ID:
 
 messages__doYouHaveWorkingKnowledge__title = Do you have working knowledge of pensions and pensions tax legislation?
