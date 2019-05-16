@@ -27,7 +27,8 @@ deleteDate: Option[String],
 name: Option[String],
 psaId: String,
 variationSchemeName: Option[String],
-variationDeleteDate: Option[String]
+variationDeleteDate: Option[String],
+srnEditedScheme: Option[String]
 )(implicit request: Request[_], messages: Messages)
 
 @manageRedirectLink = {<a id="manage-link" href="@appConfig.pensionSchemeOnlineServiceUrl">@messages("messages__schemesOverview__manage__redirect__link")</a>}
@@ -87,9 +88,12 @@ variationDeleteDate: Option[String]
         @variationDeleteDate.map{ dd =>
             <p>@Html(Message("messages__schemesOverview__change_details__p1", sn, dd))</p>
         }
-        <p><a id="continue-variation" href="">@messages("messages__schemesOverview__change_details_continue__link", sn)</a></p>
-        <p>@Html(Message("messages__schemesOverview__change_details__p2"))
-        <p><a id="delete-variation" href="">@messages("messages__schemesOverview__change_details_delete__link", sn)</a></p>
+
+        @srnEditedScheme.map{ srn =>
+                <p><a id="continue-variation" href="@appConfig.viewSchemeDetailsUrl.format(srn)">@messages("messages__schemesOverview__change_details_continue__link", sn)</a></p>
+                <p>@Html(Message("messages__schemesOverview__change_details__p2"))
+                <p><a id="delete-variation" href="@controllers.routes.DeleteSchemeChangesController.onPageLoad(srn)">@messages("messages__schemesOverview__change_details_delete__link", sn)</a></p>
+        }
     }
 
 }

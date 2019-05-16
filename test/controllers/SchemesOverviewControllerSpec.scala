@@ -68,22 +68,26 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
     None,
     psaId,
     variationSchemeName = None,
-    variationDeleteDate = None
+    variationDeleteDate = None,
+    srnEditedScheme = None
   )(fakeRequest, messages).toString
 
   def viewAsStringNewScheme(): String = schemesOverview(frontendAppConfig, None, None, None, None, psaId,
     variationSchemeName = None,
-    variationDeleteDate = None)(fakeRequest, messages).toString
+    variationDeleteDate = None,
+    srnEditedScheme = None)(fakeRequest, messages).toString
 
   def viewWithPsaName(name: Option[String] = None): String = schemesOverview(frontendAppConfig, None, None, None, name, psaId,
     variationSchemeName = None,
-    variationDeleteDate = None)(fakeRequest, messages).toString
+    variationDeleteDate = None,
+    srnEditedScheme = None)(fakeRequest, messages).toString
 
   def viewWithPsaNameAndScheme(name: Option[String]): String = schemesOverview(frontendAppConfig, Some(schemeName),
     Some(lastDate.toString(formatter)),
     Some(deleteDate), name, psaId,
     variationSchemeName = None,
-    variationDeleteDate = None)(fakeRequest, messages).toString
+    variationDeleteDate = None,
+    srnEditedScheme = None)(fakeRequest, messages).toString
 
   override def beforeEach(): Unit = {
     reset(fakeCacheConnector)

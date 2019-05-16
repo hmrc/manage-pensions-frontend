@@ -34,9 +34,12 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
   val lastDate: String = LocalDate.now.toString
   val deleteDate: String = LocalDate.now.plusDays(frontendAppConfig.daysDataSaved).toString
   private val psaId = "A0000000"
+  private val srn = "123"
+  private val srnOpt = Some(srn)
 
   def createView(variationSchemeName:Option[String] = None,
-                 variationDeleteDate:Option[String] = None): () => HtmlFormat.Appendable = () =>
+                 variationDeleteDate:Option[String] = None,
+                 srnEditedScheme:Option[String] = None): () => HtmlFormat.Appendable = () =>
     schemesOverview(frontendAppConfig,
       Some(schemeName),
       Some(lastDate),
@@ -44,11 +47,13 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
       Some("John Doe"),
       psaId,
       variationSchemeName = variationSchemeName,
-      variationDeleteDate = variationDeleteDate)(fakeRequest, messages)
+      variationDeleteDate = variationDeleteDate,
+      srnEditedScheme)(fakeRequest, messages)
 
   def createFreshView: () => HtmlFormat.Appendable = () => schemesOverview(frontendAppConfig, None, None, None, None, psaId,
     variationSchemeName = None,
-    variationDeleteDate = None)(fakeRequest, messages)
+    variationDeleteDate = None,
+    srnEditedScheme = None)(fakeRequest, messages)
 
   "SchemesOverview view when a scheme has been partially defined and which has no scheme variation" must {
     behave like normalPage(
@@ -123,7 +128,10 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
 
   "SchemesOverview view when a scheme variation is in progress" must {
 
-    def variationsView = createView(variationSchemeName = Some(variationSchemeName), variationDeleteDate = Some(variationDeleteDate))
+    def variationsView = createView(
+      variationSchemeName = Some(variationSchemeName),
+      variationDeleteDate = Some(variationDeleteDate),
+      srnEditedScheme = srnOpt)
 
     "have dynamic text with scheme name as section title" in {
       Jsoup.parse(variationsView().toString()) must
@@ -137,7 +145,7 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
 
     "have link for continue variation" in {
       Jsoup.parse(variationsView().toString()).select("a[id=continue-variation]") must
-        haveLink("")
+        haveLink(frontendAppConfig.viewSchemeDetailsUrl.format(srn))
     }
 
     "have static text as p2" in {
@@ -147,7 +155,7 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
 
     "have link for delete variation" in {
       Jsoup.parse(variationsView().toString()).select("a[id=delete-variation]") must
-        haveLink("")
+        haveLink(controllers.routes.DeleteSchemeChangesController.onPageLoad(srn).url)
     }
 
   }

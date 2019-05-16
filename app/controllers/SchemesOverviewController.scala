@@ -93,19 +93,19 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
 
   private def registerSchemeUrl = appConfig.registerSchemeUrl
 
-  private def variationsInfo(psaId: String)(implicit hc: HeaderCarrier): Future[(Option[String], Option[String])] = {
+  private def variationsInfo(psaId: String)(implicit hc: HeaderCarrier): Future[(Option[String], Option[String], Option[String])] = {
     if (featureSwitchManagementService.get(Toggles.isVariationsEnabled)) {
       pensionSchemeVarianceLockConnector.getLockByPsa(psaId).flatMap {
         _
-          .fold[Future[(Option[String], Option[String])]](Future.successful((None, None))) { schemeVariance =>
+          .fold[Future[(Option[String], Option[String], Option[String])]](Future.successful((None, None, None))) { schemeVariance =>
           updateConnector.fetch(schemeVariance.srn).flatMap {
-            case Some(data) => variationsDeleteDate(schemeVariance.srn).map(((data \ "schemeName").validate[String].asOpt, _))
-            case None => Future.successful((None, None))
+            case Some(data) => variationsDeleteDate(schemeVariance.srn).map(((data \ "schemeName").validate[String].asOpt, _, Option(schemeVariance.srn)))
+            case None => Future.successful((None, None, None))
           }
         }
       }
     } else {
-      Future.successful((None, None))
+      Future.successful((None, None, None))
     }
   }
 
@@ -136,7 +136,8 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
                 psaName = psaName,
                 psaId = request.psaId.id,
                 variationSchemeName = vi._1,
-                variationDeleteDate = vi._2
+                variationDeleteDate = vi._2,
+                srn = vi._3
               )
             }
           }
@@ -150,7 +151,8 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
                         psaName: Option[String] = None,
                         psaId: String,
                         variationSchemeName: Option[String],
-                        variationDeleteDate: Option[String]
+                        variationDeleteDate: Option[String],
+                        srn: Option[String]
                        )(implicit request: OptionalDataRequest[AnyContent]) = {
 
 
@@ -162,7 +164,8 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
       name = psaName,
       psaId = psaId,
       variationSchemeName = variationSchemeName,
-      variationDeleteDate = variationDeleteDate
+      variationDeleteDate = variationDeleteDate,
+      srnEditedScheme = srn
     ))
   }
 
