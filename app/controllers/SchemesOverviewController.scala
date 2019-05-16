@@ -20,11 +20,9 @@ import config.{FeatureSwitchManagementService, FrontendAppConfig}
 import connectors.{MinimalPsaConnector, PensionSchemeVarianceLockConnector, UpdateSchemeCacheConnector, UserAnswersCacheConnector}
 import controllers.actions._
 import javax.inject.Inject
-import models.requests.OptionalDataRequest
-import models.{LastUpdatedDate, MinimalPSA}
+import models.{LastUpdatedDate, MinimalPSA, RegistrationDetails, VariationDetails}
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTime, DateTimeZone, LocalDate}
-import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json._
 import play.api.mvc.{Action, AnyContent, Result}
@@ -50,21 +48,8 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
 
   def redirect: Action[AnyContent] = Action.async(Future.successful(Redirect(controllers.routes.SchemesOverviewController.onPageLoad())))
 
-  //TODO: Remove this code and just use scheme name after 28 days of enabling hub v2
-  private def schemeName(data: JsValue): Option[String] = {
-    val schemeName: JsLookupResult = data \ "schemeName"
-
-    val jsLookupResult = schemeName.validate[String] match {
-      case JsSuccess(_, _) => schemeName
-      case _ => data \ "schemeDetails" \ "schemeName"
-    }
-    jsLookupResult.validate[String] match {
-      case JsSuccess(name, _) => Option(name)
-      case JsError(e) =>
-        Logger.error(s"Unable to retrieve scheme name from user answers: $e")
-        None
-    }
-  }
+  private def schemeName(data: JsValue): Option[String] =
+    (data \ "schemeName").validate[String].fold(_ => None, Some(_))
 
   private def parseDateElseCurrent(dateOpt: Option[JsValue]): LastUpdatedDate = {
     dateOpt.map(ts =>
@@ -77,96 +62,70 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
     ).getOrElse(currentTimestamp)
   }
 
-  private def lastUpdatedAndDeleteDate(externalId: String)(implicit hc: HeaderCarrier): Future[(Option[String], Option[String])] =
+  private def lastUpdatedAndDeleteDate(externalId: String)(implicit hc: HeaderCarrier): Future[LastUpdatedDate] =
     dataCacheConnector.lastUpdated(externalId).map { dateOpt =>
-      val date = parseDateElseCurrent(dateOpt)
-      (
-        Option(s"${createFormattedDate(date, daysToAdd = 0)}"),
-        Option(s"${createFormattedDate(date, appConfig.daysDataSaved)}")
-      )
+      parseDateElseCurrent(dateOpt)
     }
 
-  private def variationsDeleteDate(srn: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
+  private def variationsDeleteDate(srn: String)(implicit hc: HeaderCarrier): Future[String] =
     updateConnector.lastUpdated(srn).map { dateOpt =>
-      Option(s"${createFormattedDate(parseDateElseCurrent(dateOpt), appConfig.daysDataSaved)}")
+      s"${createFormattedDate(parseDateElseCurrent(dateOpt), appConfig.daysDataSaved)}"
     }
 
   private def registerSchemeUrl = appConfig.registerSchemeUrl
 
-  private def variationsInfo(psaId: String)(implicit hc: HeaderCarrier): Future[(Option[String], Option[String], Option[String])] = {
+  private def variationsInfo(psaId: String)(implicit hc: HeaderCarrier): Future[Option[VariationDetails]] = {
     if (featureSwitchManagementService.get(Toggles.isVariationsEnabled)) {
       pensionSchemeVarianceLockConnector.getLockByPsa(psaId).flatMap {
-        _
-          .fold[Future[(Option[String], Option[String], Option[String])]](Future.successful((None, None, None))) { schemeVariance =>
-          updateConnector.fetch(schemeVariance.srn).flatMap {
-            case Some(data) => variationsDeleteDate(schemeVariance.srn).map(((data \ "schemeName").validate[String].asOpt, _, Option(schemeVariance.srn)))
-            case None => Future.successful((None, None, None))
-          }
+          case Some(schemeVariance) =>
+            updateConnector.fetch(schemeVariance.srn).flatMap {
+              case Some(data) => variationsDeleteDate(schemeVariance.srn).map(date =>
+                Some(VariationDetails((data \ "schemeName").as[String], date, schemeVariance.srn)))
+              case None => Future.successful(None)
+            }
+          case None =>
+            Future.successful(None)
         }
-      }
     } else {
-      Future.successful((None, None, None))
+      Future.successful(None)
     }
   }
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
-      val currentRegistrationInfo: Future[Option[(Option[String], Option[String], Option[String])]] =
+      val currentRegistrationInfo: Future[Option[RegistrationDetails]] =
         dataCacheConnector.fetch(request.externalId).flatMap {
-          case None =>
-            Future.successful(Some((None, None, None)))
+
+          case None => Future.successful(None)
           case Some(data) =>
             schemeName(data) match {
-              case schemeName@Some(_) =>
+              case Some(schemeName) =>
                 lastUpdatedAndDeleteDate(request.externalId)
-                  .map(dates => Option((schemeName, dates._1, dates._2)))
+                  .map(date => Some(
+                    RegistrationDetails(
+                      schemeName,
+                      createFormattedDate(date, appConfig.daysDataSaved),
+                      createFormattedDate(date, daysToAdd = 0))))
               case _ => Future.successful(None)
             }
         }
 
       currentRegistrationInfo.flatMap {
-        case Some(crd) =>
+        crd =>
           val psaId = request.psaId.id
-          variationsInfo(psaId).flatMap { vi =>
+          variationsInfo(psaId).flatMap { variationDetails =>
             minimalPsaConnector.getPsaNameFromPsaID(psaId).map { psaName =>
-              buildView(
-                schemeName = crd._1,
-                lastDateOpt = crd._2,
-                deleteDateOpt = crd._3,
-                psaName = psaName,
-                psaId = request.psaId.id,
-                variationSchemeName = vi._1,
-                variationDeleteDate = vi._2,
-                srn = vi._3
-              )
+
+              Ok(schemesOverview(
+                appConfig,
+                crd,
+                psaName,
+                request.psaId.id,
+                variationDetails))
             }
           }
-        case None => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+
       }
-  }
-
-  private def buildView(schemeName: Option[String],
-                        lastDateOpt: Option[String],
-                        deleteDateOpt: Option[String],
-                        psaName: Option[String] = None,
-                        psaId: String,
-                        variationSchemeName: Option[String],
-                        variationDeleteDate: Option[String],
-                        srn: Option[String]
-                       )(implicit request: OptionalDataRequest[AnyContent]) = {
-
-
-    Ok(schemesOverview(
-      appConfig = appConfig,
-      schemeName = schemeName,
-      lastDate = lastDateOpt,
-      deleteDate = deleteDateOpt,
-      name = psaName,
-      psaId = psaId,
-      variationSchemeName = variationSchemeName,
-      variationDeleteDate = variationDeleteDate,
-      srnEditedScheme = srn
-    ))
   }
 
   def onClickCheckIfSchemeCanBeRegistered: Action[AnyContent] = (authenticate andThen getData).async {

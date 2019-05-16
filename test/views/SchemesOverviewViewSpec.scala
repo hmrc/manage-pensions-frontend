@@ -18,6 +18,7 @@ package views
 
 import java.time.LocalDate
 
+import models.{RegistrationDetails, VariationDetails}
 import org.jsoup.Jsoup
 import play.twirl.api.HtmlFormat
 import viewmodels.Message
@@ -37,23 +38,15 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
   private val srn = "123"
   private val srnOpt = Some(srn)
 
-  def createView(variationSchemeName:Option[String] = None,
-                 variationDeleteDate:Option[String] = None,
-                 srnEditedScheme:Option[String] = None): () => HtmlFormat.Appendable = () =>
+  def createView(variationDetails:Option[VariationDetails] = None): () => HtmlFormat.Appendable = () =>
     schemesOverview(frontendAppConfig,
-      Some(schemeName),
-      Some(lastDate),
-      Some(deleteDate),
+      Some(RegistrationDetails(schemeName,
+        deleteDate, lastDate)),
       Some("John Doe"),
       psaId,
-      variationSchemeName = variationSchemeName,
-      variationDeleteDate = variationDeleteDate,
-      srnEditedScheme)(fakeRequest, messages)
+      variationDetails)(fakeRequest, messages)
 
-  def createFreshView: () => HtmlFormat.Appendable = () => schemesOverview(frontendAppConfig, None, None, None, None, psaId,
-    variationSchemeName = None,
-    variationDeleteDate = None,
-    srnEditedScheme = None)(fakeRequest, messages)
+  def createFreshView: () => HtmlFormat.Appendable = () => schemesOverview(frontendAppConfig, None, None, psaId, None)(fakeRequest, messages)
 
   "SchemesOverview view when a scheme has been partially defined and which has no scheme variation" must {
     behave like normalPage(
@@ -129,9 +122,7 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
   "SchemesOverview view when a scheme variation is in progress" must {
 
     def variationsView = createView(
-      variationSchemeName = Some(variationSchemeName),
-      variationDeleteDate = Some(variationDeleteDate),
-      srnEditedScheme = srnOpt)
+      variationDetails = Some(VariationDetails(variationSchemeName, variationDeleteDate, srn)))
 
     "have dynamic text with scheme name as section title" in {
       Jsoup.parse(variationsView().toString()) must
