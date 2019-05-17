@@ -85,44 +85,50 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
     }
 
   private def onPageLoadVariations(srn: SchemeReferenceNumber)(implicit request: AuthenticatedRequest[AnyContent]): Future[Result] =
-    withSchemeAndLock(srn).flatMap{  case (userAnswers,lock) =>
+    withSchemeAndLock(srn).flatMap {
+      case (userAnswers, lock) =>
+        val schemeStatus = userAnswers.get(SchemeStatusId).getOrElse("")
+        val isSchemeOpen = schemeStatus.equalsIgnoreCase("open")
 
-      val displayChangeLink = lock match {
-        case Some(VarianceLock) | None => true
-        case Some(_) => false
-      }
-
-      val admins = (userAnswers.json \ "psaDetails").as[Seq[PsaDetails]].map(_.id)
-
-      val schemeStatus = userAnswers.get(SchemeStatusId).getOrElse("")
-      val schemeName = userAnswers.get(SchemeNameId).getOrElse("")
-
-      if (admins.contains(request.psaId.id)) {
-        listSchemesConnector.getListOfSchemes(request.psaId.id).flatMap { list =>
-          val isSchemeOpen = schemeStatus.equalsIgnoreCase("open")
-          userAnswersCacheConnector.save(request.externalId, SchemeSrnId, srn.id).flatMap { _ =>
-            userAnswersCacheConnector.save(request.externalId, SchemeNameId, schemeName).flatMap { _ =>
-              lockingPsa(lock, srn).map { lockingPsa =>
-                Ok(schemeDetails(appConfig,
-                  schemeName,
-                  openedDate(srn.id, list, isSchemeOpen),
-                  administratorsVariations(request.psaId.id, userAnswers, schemeStatus),
-                  srn.id,
-                  isSchemeOpen,
-                  displayChangeLink,
-                  lockingPsa
-                ))
-              }
+        val displayChangeLink = {
+          if (!isSchemeOpen) {
+            false
+          } else {
+            lock match {
+              case Some(VarianceLock) | None => true
+              case Some(_) => false
             }
           }
         }
-      } else {
-        Future.successful(NotFound(errorHandler.notFoundTemplate))
-      }
+
+        val admins = (userAnswers.json \ "psaDetails").as[Seq[PsaDetails]].map(_.id)
+        val schemeName = userAnswers.get(SchemeNameId).getOrElse("")
+
+        if (admins.contains(request.psaId.id)) {
+          listSchemesConnector.getListOfSchemes(request.psaId.id).flatMap { list =>
+            userAnswersCacheConnector.save(request.externalId, SchemeSrnId, srn.id).flatMap { _ =>
+              userAnswersCacheConnector.save(request.externalId, SchemeNameId, schemeName).flatMap { _ =>
+                lockingPsa(lock, srn).map { lockingPsa =>
+                  Ok(schemeDetails(appConfig,
+                    schemeName,
+                    openedDate(srn.id, list, isSchemeOpen),
+                    administratorsVariations(request.psaId.id, userAnswers, schemeStatus),
+                    srn.id,
+                    isSchemeOpen,
+                    displayChangeLink,
+                    lockingPsa
+                  ))
+                }
+              }
+            }
+          }
+        } else {
+          Future.successful(NotFound(errorHandler.notFoundTemplate))
+        }
     }
 
   private def withSchemeAndLock(srn: SchemeReferenceNumber)(implicit request: AuthenticatedRequest[AnyContent]) = {
-    for{
+    for {
       _ <- userAnswersCacheConnector.removeAll(request.externalId)
       scheme <- schemeDetailsConnector.getSchemeDetailsVariations(request.psaId.id, "srn", srn)
       lock <- schemeVarianceLockConnector.isLockByPsaIdOrSchemeId(request.psaId.id, srn.id)
@@ -131,7 +137,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
     }
   }
 
-  private def administratorsVariations(psaId: String, psaSchemeDetails: UserAnswers, schemeStatus:String): Option[Seq[AssociatedPsa]] =
+  private def administratorsVariations(psaId: String, psaSchemeDetails: UserAnswers, schemeStatus: String): Option[Seq[AssociatedPsa]] =
     psaSchemeDetails.get(ListOfPSADetailsId).map { psaDetailsSeq =>
       psaDetailsSeq.map { psaDetails =>
         val name = PsaDetails.getPsaName(psaDetails).getOrElse("")
@@ -171,11 +177,11 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
   private def lockingPsa(lock: Option[Lock], srn: SchemeReferenceNumber)
                         (implicit request: AuthenticatedRequest[AnyContent]): Future[Option[String]] =
     lock match {
-      case Some(SchemeLock) => schemeVarianceLockConnector.getLockByScheme(srn) flatMap  {
-          case Some(schemeVariance) if !(schemeVariance.psaId == request.psaId.id) =>
-            minimalPsaConnector.getPsaNameFromPsaID(schemeVariance.psaId).map(identity)
-          case _ => Future.successful(None)
-        }
+      case Some(SchemeLock) => schemeVarianceLockConnector.getLockByScheme(srn) flatMap {
+        case Some(schemeVariance) if !(schemeVariance.psaId == request.psaId.id) =>
+          minimalPsaConnector.getPsaNameFromPsaID(schemeVariance.psaId).map(identity)
+        case _ => Future.successful(None)
+      }
       case _ => Future.successful(None)
     }
 
