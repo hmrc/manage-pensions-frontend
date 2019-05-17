@@ -18,16 +18,14 @@
 @import uk.gov.hmrc.play.views.html._
 @import controllers.routes._
 @import models.Mode
+@import models.{VariationDetails, RegistrationDetails}
 @import viewmodels.Message
 
 @(appConfig: FrontendAppConfig,
-schemeName: Option[String],
-lastDate: Option[String],
-deleteDate: Option[String],
+registrationDetails: Option[RegistrationDetails],
 name: Option[String],
 psaId: String,
-variationSchemeName: Option[String],
-variationDeleteDate: Option[String]
+variationDetails: Option[VariationDetails]
 )(implicit request: Request[_], messages: Messages)
 
 @manageRedirectLink = {<a id="manage-link" href="@appConfig.pensionSchemeOnlineServiceUrl">@messages("messages__schemesOverview__manage__redirect__link")</a>}
@@ -57,7 +55,7 @@ variationDeleteDate: Option[String]
     <p><a id="view-schemes" href="@routes.ListSchemesController.onPageLoad()">@messages("messages__schemesOverview__manage__link")</a></p>
     <p>@Html(Message("messages__schemesOverview__manage__redirect__text").withArgs(manageRedirectLink))</p>
 
-    @schemeName match {
+    @registrationDetails match {
         case None => {
             <h2>@messages("messages__schemesOverview__register__head")</h2>
 
@@ -65,31 +63,28 @@ variationDeleteDate: Option[String]
 
             <p><a id="register-new-scheme" href="@controllers.routes.SchemesOverviewController.onClickCheckIfSchemeCanBeRegistered">@messages("messages__schemesOverview__register__link")</a></p>
         }
-        case Some(name) => {
-            <h2>@Html(Message("messages__schemesOverview__scheme_name", name))</h2>
+        case Some(details) => {
+            <h2>@Html(Message("messages__schemesOverview__scheme_name", details.schemeName))</h2>
 
-            @lastDate.map { lastEnteredDate =>
-                <p>@Html(Message("messages__schemesOverview__continue__lastDate", lastEnteredDate))</p>
-            }
+            <p>@Html(Message("messages__schemesOverview__continue__lastDate", details.lastUpdatedDate))</p>
 
-            @deleteDate.map {deletionDate =>
-                <p>@Html(Message("messages__schemesOverview__continue__deleteDate", deletionDate))</p>
-            }
+            <p>@Html(Message("messages__schemesOverview__continue__deleteDate", details.deletionDate))</p>
+
 
             <p><a id="continue-registration" href="@controllers.routes.SchemesOverviewController.onClickCheckIfSchemeCanBeRegistered">@messages("messages__schemesOverview__continue__link")</a></p>
-            <p><a id="delete-registration" href="@controllers.routes.DeleteSchemeController.onPageLoad">@messages("messages__schemesOverview__delete__link", name)</a></p>
+            <p><a id="delete-registration" href="@controllers.routes.DeleteSchemeController.onPageLoad">@messages("messages__schemesOverview__delete__link", details.schemeName)</a></p>
 
         }
     }
 
-    @variationSchemeName.map{ sn =>
-        <h2>@Html(Message("messages__schemesOverview__change_details__title", sn))</h2>
-        @variationDeleteDate.map{ dd =>
-            <p>@Html(Message("messages__schemesOverview__change_details__p1", sn, dd))</p>
-        }
-        <p><a id="continue-variation" href="">@messages("messages__schemesOverview__change_details_continue__link", sn)</a></p>
+    @variationDetails.map{ details =>
+        <h2>@Html(Message("messages__schemesOverview__change_details__title", details.schemeName))</h2>
+        <p>@Html(Message("messages__schemesOverview__change_details__p1", details.schemeName, details.deletionDate))</p>
+
+        <p><a id="continue-variation" href="@appConfig.viewSchemeDetailsUrl.format(details.srn)">@messages("messages__schemesOverview__change_details_continue__link", details.schemeName)</a></p>
         <p>@Html(Message("messages__schemesOverview__change_details__p2"))
-        <p><a id="delete-variation" href="">@messages("messages__schemesOverview__change_details_delete__link", sn)</a></p>
+        <p><a id="delete-variation" href="@controllers.routes.DeleteSchemeChangesController.onPageLoad(details.srn)">@messages("messages__schemesOverview__change_details_delete__link", details.schemeName)</a></p>
+
     }
 
 }

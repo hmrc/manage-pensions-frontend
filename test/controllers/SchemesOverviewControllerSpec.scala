@@ -19,7 +19,7 @@ package controllers
 import config._
 import connectors._
 import controllers.actions.{DataRetrievalAction, _}
-import models.{LastUpdatedDate, MinimalPSA, SchemeVariance}
+import models.{LastUpdatedDate, MinimalPSA, RegistrationDetails, SchemeVariance}
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTime, DateTimeZone, LocalDate}
 import org.mockito.Matchers
@@ -62,28 +62,21 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
 
   def viewAsString(): String = schemesOverview(
     appConfig,
-    Some(schemeName),
-    Some(lastDate.toString(formatter)),
-    Some(deleteDate),
+    Some(RegistrationDetails(schemeName,
+      deleteDate,
+      lastDate.toString(formatter))),
     None,
     psaId,
-    variationSchemeName = None,
-    variationDeleteDate = None
+    None
   )(fakeRequest, messages).toString
 
-  def viewAsStringNewScheme(): String = schemesOverview(frontendAppConfig, None, None, None, None, psaId,
-    variationSchemeName = None,
-    variationDeleteDate = None)(fakeRequest, messages).toString
+  def viewAsStringNewScheme(): String = schemesOverview(frontendAppConfig, None, None, psaId, None)(fakeRequest, messages).toString
 
-  def viewWithPsaName(name: Option[String] = None): String = schemesOverview(frontendAppConfig, None, None, None, name, psaId,
-    variationSchemeName = None,
-    variationDeleteDate = None)(fakeRequest, messages).toString
+  def viewWithPsaName(name: Option[String] = None): String = schemesOverview(frontendAppConfig, None, name, psaId, None)(fakeRequest, messages).toString
 
-  def viewWithPsaNameAndScheme(name: Option[String]): String = schemesOverview(frontendAppConfig, Some(schemeName),
-    Some(lastDate.toString(formatter)),
-    Some(deleteDate), name, psaId,
-    variationSchemeName = None,
-    variationDeleteDate = None)(fakeRequest, messages).toString
+  def viewWithPsaNameAndScheme(name: Option[String]): String = schemesOverview(frontendAppConfig,  Some(RegistrationDetails(schemeName,
+    deleteDate,
+    lastDate.toString(formatter))), name, psaId, None)(fakeRequest, messages).toString
 
   override def beforeEach(): Unit = {
     reset(fakeCacheConnector)
@@ -134,17 +127,6 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
       "return OK and the correct view if a scheme has been partially defined" in {
 
         when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(schemeNameJsonOption))
-        when(fakePsaMinimalConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaName))
-        when(fakeCacheConnector.lastUpdated(any())(any(), any())).thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
-
-        val result = controller().onPageLoad(fakeRequest)
-        status(result) mustBe OK
-        contentAsString(result) mustBe viewWithPsaNameAndScheme(Some(expectedName))
-      }
-
-      "return OK and the correct view if a scheme has been partially defined with the old schemeDetails" in {
-
-        when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(schemeDetailsJsonOption))
         when(fakePsaMinimalConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaName))
         when(fakeCacheConnector.lastUpdated(any())(any(), any())).thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
 
