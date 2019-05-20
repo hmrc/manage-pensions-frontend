@@ -27,7 +27,7 @@ GET        /overview                                    controllers.SchemesOverv
 
 GET        /overview/can-scheme-be-registered           controllers.SchemesOverviewController.onClickCheckIfSchemeCanBeRegistered()
 
-GET        /scheme-details/:srn                         controllers.SchemeDetailsController.onPageLoad(srn: SchemeReferenceNumber)
+GET        /pension-scheme-summary/:srn                 controllers.SchemeDetailsController.onPageLoad(srn: SchemeReferenceNumber)
 
 GET        /discard                                     controllers.DeleteSchemeController.onPageLoad
 
