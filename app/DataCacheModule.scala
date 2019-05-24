@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import connectors.cache.microservice.PensionsSchemeCacheConnector
+import connectors.cache.microservice.OldPensionsSchemeCacheConnector
 import connectors._
 import play.api.inject.{Binding, Module}
 import play.api.{Configuration, Environment}
@@ -26,7 +26,7 @@ class DataCacheModule extends Module {
     Seq(
       bind[UserAnswersCacheConnector].to[ManagePensionsCacheConnector],
       bind[InvitationsCacheConnector].to[InvitationsCacheConnectorImpl],
-      bind[UserAnswersCacheConnector].qualifiedWith(classOf[PensionsSchemeCache]).to[PensionsSchemeCacheConnector],
+      bind[UserAnswersCacheConnector].qualifiedWith(classOf[PensionsSchemeCache]).to[SubscriptionDualCacheConnector],
       bind[UserAnswersCacheConnector].qualifiedWith(classOf[PensionAdminCache]).to[PensionAdminCacheConnector]
     )
   }
