@@ -22,7 +22,7 @@ import connectors.MicroserviceCacheConnector
 import play.api.libs.ws.WSClient
 import uk.gov.hmrc.crypto.ApplicationCrypto
 
-class PensionsSchemeCacheConnector @Inject()(
+class OldPensionsSchemeCacheConnector @Inject()(
                                               config: FrontendAppConfig,
                                               http: WSClient
                                             ) extends MicroserviceCacheConnector(config, http) {
