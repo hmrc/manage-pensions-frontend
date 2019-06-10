@@ -53,7 +53,6 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
       createView(),
       messageKeyPrefix,
       messages(s"messages__${messageKeyPrefix}__heading"),
-      "_manage__head",
       "_manage__text",
       "_manage__link",
       "_continue__link"
@@ -156,7 +155,6 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
       createFreshView,
       messageKeyPrefix,
       messages(s"messages__${messageKeyPrefix}__heading"),
-      "_manage__head",
       "_manage__text",
       "_manage__link",
       "_register__head",

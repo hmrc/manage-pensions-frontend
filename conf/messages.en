@@ -96,14 +96,13 @@ messages__listSchemes__status__screen_reader = {0}’s status is {1}
 
 messages__schemesOverview__title = Managing pension schemes
 messages__schemesOverview__heading = Managing pension schemes
-messages__schemesOverview__manage__head = Manage your pension schemes
 messages__schemesOverview__manage__text = You can only view pension schemes that you have registered through this service.
 messages__schemesOverview__manage__link = View your pension schemes
 messages__schemesOverview__manage__redirect__text = If you want to view a pension scheme that you did not register through this service, you must {0}
 messages__schemesOverview__manage__redirect__link = use the Pension Schemes Online service.
-messages__schemesOverview__register__head = Register a new pension scheme
+messages__schemesOverview__register__head = Enter details of a new pension scheme
 messages__schemesOverview__register__text = You have 28 days to finish a new pension scheme registration before it is deleted. You can save your progress and return to it later.
-messages__schemesOverview__register__link = Register a new scheme
+messages__schemesOverview__register__link = Enter details of a new scheme
 messages__schemesOverview__scheme_name = {0} scheme
 messages__schemesOverview__continue__lastDate = You last entered details about this scheme on {0}.
 messages__schemesOverview__continue__deleteDate = You have until {0} to finish this registration before the details are deleted.
