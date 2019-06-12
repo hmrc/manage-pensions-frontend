@@ -35,6 +35,8 @@ variationDetails: Option[VariationDetails]
     appConfig = appConfig,
     bodyClasses = None) {
 
+    @components.heading(messages("messages__schemesOverview__heading"))
+    <div class="scheme-overview-info">
     @name.map{ psaName =>
         <p>
             <a id="psaLink" href="@appConfig.registeredPsaDetailsUrl">
@@ -47,10 +49,7 @@ variationDetails: Option[VariationDetails]
         <span class="bold">@messages("messages__schemeOverview__psa_id")</span>
         <span id="psaId">@psaId</span>
     </p>
-
-    @components.heading(messages("messages__schemesOverview__heading"))
-
-    <h2>@messages("messages__schemesOverview__manage__head")</h2>
+    </div>
     <p>@messages("messages__schemesOverview__manage__text")</p>
     <p><a id="view-schemes" href="@routes.ListSchemesController.onPageLoad()">@messages("messages__schemesOverview__manage__link")</a></p>
     <p>@Html(Message("messages__schemesOverview__manage__redirect__text").withArgs(manageRedirectLink))</p>
