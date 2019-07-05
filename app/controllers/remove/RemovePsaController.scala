@@ -43,7 +43,6 @@ class RemovePsaController @Inject()(authenticate: AuthAction,
                                     schemeDetailsConnector: SchemeDetailsConnector,
                                     userAnswersCacheConnector: UserAnswersCacheConnector,
                                     minimalPsaConnector: MinimalPsaConnector,
-                                    featureSwitchManagementService: FeatureSwitchManagementService,
                                     appConfig: FrontendAppConfig
                                    )(
                                      implicit val ec: ExecutionContext) extends FrontendController with Retrievals {
@@ -86,8 +85,7 @@ class RemovePsaController @Inject()(authenticate: AuthAction,
     pstr.getOrElse(throw new IllegalArgumentException("PSTR missing while removing PSA"))
 
   private def getSchemeNameAndPstr(srn: String, request: DataRequest[AnyContent])(implicit hd: HeaderCarrier): Future[SchemeInfo] = {
-    if (featureSwitchManagementService.get(Toggles.isVariationsEnabled)) {
-      schemeDetailsConnector.getSchemeDetailsVariations(request.psaId.id, "srn", srn).map{ userAnswers =>
+      schemeDetailsConnector.getSchemeDetails(request.psaId.id, "srn", srn).map{ userAnswers =>
 
         val admins = userAnswers.json.transform((JsPath \ 'psaDetails).json.pick)
           .asOpt.map(_.as[JsArray].value).toSeq.flatten
@@ -109,19 +107,6 @@ class RemovePsaController @Inject()(authenticate: AuthAction,
           associatedDate.getOrElse(appConfig.earliestDatePsaRemoval)
         )
       }
-    } else {
-      schemeDetailsConnector.getSchemeDetails(request.psaId.id, "srn", srn).map{ scheme =>
-        val associatedDate = scheme.psaDetails.flatMap { psaDetails =>
-          val psa = psaDetails.filter(_.id.contains(request.psaId.id))
-          if (psa.nonEmpty) {
-            psa.head.relationshipDate.map(new LocalDate(_))
-          } else {
-            None
-          }
-        }
-        SchemeInfo(scheme.schemeDetails.name, getPstr(scheme.schemeDetails.pstr), associatedDate.getOrElse(appConfig.earliestDatePsaRemoval))
-      }
-    }
   }
 
 

@@ -31,7 +31,7 @@ import play.api.Configuration
 import play.api.data.Form
 import play.api.mvc.Call
 import play.api.test.Helpers._
-import testhelpers.{CommonBuilders, InvitationBuilder}
+import testhelpers.InvitationBuilder
 import utils._
 import views.html.invitations.declaration
 
@@ -68,7 +68,6 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
     reset(fakeInvitationConnector)
   }
 
-  val schemeDetailsData = CommonBuilders.schemeDetailsWithPsaOnlyResponse
   val schemeDetailsResponse = UserAnswers(readJsonFromFile("/data/validSchemeDetailsUserAnswers.json"))
 
   private def viewAsString(form: Form[_] = form) = declaration(frontendAppConfig, hasAdviser, isMasterTrust, form)(fakeRequest, messages).toString
@@ -78,8 +77,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
     "on a GET" must {
 
       "return OK and the correct view when variations is on" in {
-        featureSwitch.change("is-variations-enabled", true)
-        when(fakeSchemeDetailsConnector.getSchemeDetailsVariations(any(), any(), any())(any(), any()))
+        when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any()))
           .thenReturn(Future.successful(schemeDetailsResponse))
         val result = controller(data).onPageLoad()(fakeRequest)
 
@@ -88,20 +86,6 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
         FakeUserAnswersCacheConnector.verify(SchemeNameId, "Open Single Trust Scheme with Indiv Establisher and Trustees")
         FakeUserAnswersCacheConnector.verify(IsMasterTrustId, true)
         FakeUserAnswersCacheConnector.verify(PSTRId, "24000001IN")
-        verify(fakeSchemeDetailsConnector, times(1)).getSchemeDetailsVariations(any(), any(), any())(any(), any())
-      }
-
-      "return OK and the correct view when variations is off" in {
-        featureSwitch.change("is-variations-enabled", false)
-        when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any()))
-          .thenReturn(Future.successful(schemeDetailsData))
-        val result = controller(data).onPageLoad()(fakeRequest)
-
-        status(result) mustBe OK
-        contentAsString(result) mustBe viewAsString()
-        FakeUserAnswersCacheConnector.verify(SchemeNameId, schemeDetailsData.schemeDetails.name)
-        FakeUserAnswersCacheConnector.verify(IsMasterTrustId, schemeDetailsData.schemeDetails.isMasterTrust)
-        FakeUserAnswersCacheConnector.verify(PSTRId, schemeDetailsData.schemeDetails.pstr.getOrElse(""))
         verify(fakeSchemeDetailsConnector, times(1)).getSchemeDetails(any(), any(), any())(any(), any())
       }
 

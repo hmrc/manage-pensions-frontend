@@ -25,13 +25,12 @@ import identifiers.MinimalSchemeDetailId
 import identifiers.invitations.{CheckYourAnswersId, InviteeNameId, InviteePSAId}
 import models.{NormalMode, PsaDetails, SchemeReferenceNumber}
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.libs.json.{JsSuccess, JsValue}
 import play.api.mvc.{Action, AnyContent, Request}
 import uk.gov.hmrc.domain.PsaId
 import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.annotations.Invitation
-import utils.{CheckYourAnswersFactory, DateHelper, Navigator, Toggles}
+import utils.{CheckYourAnswersFactory, DateHelper, Navigator}
 import viewmodels.AnswerSection
 import views.html.check_your_answers
 
@@ -66,14 +65,10 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
   private def isSchemeAssociatedWithInvitee(psaId: String, srn: String,
                                             inviteePsaId: String)
                                            (implicit request: Request[_]): Future[Boolean] =
-    if (featureSwitchManagementService.get(Toggles.isVariationsEnabled)) {
-      schemeDetailsConnector.getSchemeDetailsVariations(psaId, "srn", srn).map { scheme =>
+      schemeDetailsConnector.getSchemeDetails(psaId, "srn", srn).map { scheme =>
         (scheme.json \ "psaDetails").toOption.exists(_.as[Seq[PsaDetails]].exists(_.id == inviteePsaId))
       }
-    } else {
-      schemeDetailsConnector.getSchemeDetails(psaId, "srn", srn)
-        .map(_.psaDetails.fold[Seq[PsaDetails]](Seq.empty)(identity).exists(_.id == inviteePsaId))
-    }
+
 
   def onSubmit(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>

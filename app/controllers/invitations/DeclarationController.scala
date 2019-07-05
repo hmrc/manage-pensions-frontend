@@ -59,8 +59,7 @@ class DeclarationController @Inject()(
     implicit request =>
       (DoYouHaveWorkingKnowledgeId and SchemeSrnId).retrieve.right.map {
         case haveWorkingKnowledge ~ srn =>
-          if (featureSwitchManagementService.get(Toggles.isVariationsEnabled)) {
-            schemeDetailsConnector.getSchemeDetailsVariations(request.psaId.id, "srn", srn).flatMap { details =>
+            schemeDetailsConnector.getSchemeDetails(request.psaId.id, "srn", srn).flatMap { details =>
               (details.get(GetSchemeNameId), details.get(SchemeTypeId)) match {
                 case (Some(name), Some(schemeType)) =>
                   val isMasterTrust = schemeType.equals(MasterTrust)
@@ -77,17 +76,7 @@ class DeclarationController @Inject()(
 
               }
             }
-          } else {
 
-            for {
-              details <- schemeDetailsConnector.getSchemeDetails(request.psaId.id, "srn", srn)
-              _ <- userAnswersCacheConnector.save(SchemeNameId, details.schemeDetails.name)
-              _ <- userAnswersCacheConnector.save(IsMasterTrustId, details.schemeDetails.isMasterTrust)
-              _ <- userAnswersCacheConnector.save(PSTRId, details.schemeDetails.pstr.getOrElse(""))
-            } yield {
-              Ok(declaration(appConfig, haveWorkingKnowledge, details.schemeDetails.isMasterTrust, form))
-            }
-          }
       }
   }
 

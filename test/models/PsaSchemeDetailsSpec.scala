@@ -21,13 +21,12 @@ import org.joda.time.LocalDate
 import org.scalacheck.Gen
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest.{MustMatchers, WordSpec}
-import testhelpers.CommonBuilders.mockSchemeDetails
 
 class PsaSchemeDetailsSpec extends WordSpec with MustMatchers with GeneratorDrivenPropertyChecks {
 
   import PsaSchemeDetailsSpec._
 
-  "SchemeDetailsController.canRemovePsa" must {
+  "SchemeDetailsController.canRemovePsaVariations" must {
 
     "return false " when {
       "there are no other PSAs for all values of status except for WoundUp" in {
@@ -35,8 +34,7 @@ class PsaSchemeDetailsSpec extends WordSpec with MustMatchers with GeneratorDriv
 
         forAll(statuses) {
           status =>
-            val scheme = testScheme(status, testPsa1())
-            PsaSchemeDetails.canRemovePsa(testPsaId1, scheme) mustBe false
+            PsaSchemeDetails.canRemovePsaVariations(testPsaId1, Seq(testPsa1()), status.value) mustBe false
         }
       }
 
@@ -45,8 +43,7 @@ class PsaSchemeDetailsSpec extends WordSpec with MustMatchers with GeneratorDriv
 
         forAll(statuses) {
           status =>
-            val scheme = testScheme(status, testPsa1(), testPsa2)
-            PsaSchemeDetails.canRemovePsa(testPsaId1, scheme) mustBe false
+            PsaSchemeDetails.canRemovePsaVariations(testPsaId1, Seq(testPsa1(), testPsa2), status.value) mustBe false
         }
       }
 
@@ -55,32 +52,27 @@ class PsaSchemeDetailsSpec extends WordSpec with MustMatchers with GeneratorDriv
 
         forAll(statuses) {
           status =>
-            val scheme = testScheme(status, testPsa1(), testPsa2)
-            PsaSchemeDetails.canRemovePsa(testPsaId1, scheme) mustBe false
+            PsaSchemeDetails.canRemovePsaVariations(testPsaId1, Seq(testPsa1(), testPsa2), status.value) mustBe false
         }
       }
 
       "there are other PSAs and the scheme has a status of De-Registered" in {
-        val scheme = testScheme(SchemeStatus.Deregistered, testPsa1(), testPsa2)
-        PsaSchemeDetails.canRemovePsa(testPsaId1, scheme) mustBe false
+        PsaSchemeDetails.canRemovePsaVariations(testPsaId1, Seq(testPsa1(), testPsa2), SchemeStatus.Deregistered.value) mustBe false
       }
 
       "there are other PSAs with correct scheme status of Open but the PSA is removing on the same day as association" in {
         val currentDate = LocalDate.now().toString
-        val scheme = testScheme(SchemeStatus.Open, testPsa1(currentDate), testPsa2)
-        PsaSchemeDetails.canRemovePsa(testPsaId1, scheme) mustBe false
+        PsaSchemeDetails.canRemovePsaVariations(testPsaId1, Seq(testPsa1(currentDate), testPsa2), SchemeStatus.Open.value) mustBe false
       }
     }
 
     "return true" when {
       "there are other PSAs and the scheme has a status of Open and not removing on the same day as association" in {
-        val scheme = testScheme(SchemeStatus.Open, testPsa1(), testPsa2)
-        PsaSchemeDetails.canRemovePsa(testPsaId1, scheme) mustBe true
+        PsaSchemeDetails.canRemovePsaVariations(testPsaId1, Seq(testPsa1(), testPsa2), SchemeStatus.Open.value) mustBe true
       }
 
       "there are no other PSAs and the scheme has a status of Wound-Up and not removing on the same day as association" in {
-        val scheme = testScheme(SchemeStatus.WoundUp, testPsa1())
-        PsaSchemeDetails.canRemovePsa(testPsaId1, scheme) mustBe true
+        PsaSchemeDetails.canRemovePsaVariations(testPsaId1, Seq(testPsa1()), SchemeStatus.WoundUp.value) mustBe true
       }
     }
   }
@@ -88,14 +80,6 @@ class PsaSchemeDetailsSpec extends WordSpec with MustMatchers with GeneratorDriv
 }
 
 object PsaSchemeDetailsSpec {
-
-  def testScheme(status: SchemeStatus, psas: PsaDetails*): PsaSchemeDetails =
-    PsaSchemeDetails(
-      mockSchemeDetails.copy(status = status.value),
-      None,
-      None,
-      Some(psas)
-    )
 
   val testPsaId1 = "test-psa-id-1"
 

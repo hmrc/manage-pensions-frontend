@@ -47,19 +47,10 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
       Future.successful(None)
   }
 
-  def fakeSchemeDetailsConnector(psaSchemeDetails: PsaSchemeDetails = psaSchemeDetailsResponse): SchemeDetailsConnector =
-    new SchemeDetailsConnector {
-      override def getSchemeDetails(psaId: String,
-                                    schemeIdType: String,
-                                    idNumber: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[PsaSchemeDetails] =
-        Future.successful(psaSchemeDetails)
-      override def getSchemeDetailsVariations(psaId: String,
-                                              schemeIdType: String,
-                                              idNumber: String)(implicit hc: HeaderCarrier,
-                                                                ec: ExecutionContext): Future[UserAnswers] = {
-        val json =
-          """{
+  val userAnswersJson =
+    s"""{
                        "benefits": "opt1",
+                       "schemeName": "Test Scheme name",
                        "schemeType": {
                          "schemeTypeDetails": "test scheme name",
                          "name": "master"
@@ -83,36 +74,61 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
                        "isBeforeYouStartComplete": true
                      }
                      """.stripMargin
+
+  val userAnswersJsonWithoutPstr =
+    s"""{
+                       "benefits": "opt1",
+                       "schemeName": "Test Scheme name",
+                       "schemeType": {
+                         "schemeTypeDetails": "test scheme name",
+                         "name": "master"
+                       },
+                       "psaDetails" :[
+                         {
+                         "id":"A0000000",
+                         "individual":{
+                             "firstName": "Taylor",
+                             "middleName": "Middle",
+                             "lastName": "Rayon"
+                           },
+                           "organisationOrPartnershipName": "partnetship name",
+                           "relationshipDate": "2018-10-01"
+                         }
+                       ],
+                       "schemeStatus" : "Pending",
+                       "isAboutBenefitsAndInsuranceComplete": true,
+                       "isAboutMembersComplete": true,
+                       "isBeforeYouStartComplete": true
+                     }
+                     """.stripMargin
+
+  def fakeSchemeDetailsConnector(json: String = userAnswersJson): SchemeDetailsConnector =
+    new SchemeDetailsConnector {
+
+      override def getSchemeDetails(psaId: String,
+                                    schemeIdType: String,
+                                    idNumber: String)(implicit hc: HeaderCarrier,
+                                                                ec: ExecutionContext): Future[UserAnswers] = {
+
         Future(UserAnswers(Json.parse(json)))
       }
     }
 
   def controller(dataRetrievalAction: DataRetrievalAction = data,
-                 psaSchemeDetails: PsaSchemeDetails = psaSchemeDetailsResponse,
                  psaMinimalDetails: MinimalPSA = psaMinimalSubscription,
-                 variationsToggle: Boolean = false,
                  schemeDetailsConnector:SchemeDetailsConnector) =
     new RemovePsaController(FakeAuthAction(), dataRetrievalAction,
       new DataRequiredActionImpl,
       schemeDetailsConnector,
       FakeUserAnswersCacheConnector,
       fakeMinimalPsaConnector(psaMinimalDetails),
-      FakeFeatureSwitchManagementService(variationsToggle),
       frontendAppConfig
     )
 
 
   "RemovePsaController calling onPageLoad" must {
 
-    "redirect correctly when variances is switched off" in {
-      val result = controller(psaMinimalDetails = psaMinimalSubscription.copy(isPsaSuspended = false),
-        schemeDetailsConnector = fakeSchemeDetailsConnector(psaSchemeDetailsResponse)).onPageLoad(fakeRequest)
-
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.remove.routes.ConfirmRemovePsaController.onPageLoad().url)
-    }
-
-    "redirect correctly when variances is switched on" in {
+    "redirect correctly" in {
       import identifiers.SchemeNameId
       val schemeName = "test scheme"
       val pstr = "pstr"
@@ -122,11 +138,10 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
       )
       val ua = UserAnswers(uaJson)
       val sdc = mock[SchemeDetailsConnector]
-      when(sdc.getSchemeDetailsVariations(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+      when(sdc.getSchemeDetails(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(ua))
 
-      val result = controller(psaMinimalDetails = psaMinimalSubscription.copy(isPsaSuspended = false), variationsToggle = true,
-        schemeDetailsConnector = sdc).onPageLoad(fakeRequest)
+      val result = controller(schemeDetailsConnector = sdc).onPageLoad(fakeRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.remove.routes.ConfirmRemovePsaController.onPageLoad().url)
@@ -136,7 +151,7 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
     "redirect to unable to remove psa page if PSA is suspended" in {
 
       val result = controller(psaMinimalDetails = psaMinimalSubscription.copy(isPsaSuspended = true),
-        schemeDetailsConnector = fakeSchemeDetailsConnector(psaSchemeDetailsResponse)).onPageLoad(fakeRequest)
+        schemeDetailsConnector = fakeSchemeDetailsConnector()).onPageLoad(fakeRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.remove.routes.CanNotBeRemovedController.onPageLoadWhereSuspended().url)
@@ -146,7 +161,7 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
 
       val result = controller(UserAnswers().dataRetrievalAction,
         psaMinimalDetails = psaMinimalSubscription.copy(isPsaSuspended = false),
-        schemeDetailsConnector = fakeSchemeDetailsConnector(psaSchemeDetailsResponse)).onPageLoad(fakeRequest)
+        schemeDetailsConnector = fakeSchemeDetailsConnector()).onPageLoad(fakeRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)
@@ -154,23 +169,19 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
 
     "save scheme name,psa name and pstr, then redirect to remove as scheme administrator page if PSA is not suspended" in {
       val result = controller(psaMinimalDetails = psaMinimalSubscription.copy(isPsaSuspended = false),
-        schemeDetailsConnector = fakeSchemeDetailsConnector(psaSchemeDetailsResponse)).onPageLoad(fakeRequest)
+        schemeDetailsConnector = fakeSchemeDetailsConnector()).onPageLoad(fakeRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.remove.routes.ConfirmRemovePsaController.onPageLoad().url)
 
-      FakeUserAnswersCacheConnector.verify(SchemeNameId, schemeDetails.schemeDetails.name)
+      FakeUserAnswersCacheConnector.verify(SchemeNameId, "Test Scheme name")
       FakeUserAnswersCacheConnector.verify(PSANameId, psaMinimalSubscription.individualDetails.map(_.fullName).getOrElse(""))
-      FakeUserAnswersCacheConnector.verify(PSTRId, schemeDetails.schemeDetails.pstr.getOrElse(""))
+      FakeUserAnswersCacheConnector.verify(PSTRId, "test pstr")
       FakeUserAnswersCacheConnector.verify(AssociatedDateId, new LocalDate("2018-10-01"))
     }
 
     "throw IllegalArgumentException if pstr is not found" in {
-      val schemeDetailsUpdated = psaSchemeDetailsResponse.schemeDetails.copy(pstr = None)
-      val psd = psaSchemeDetailsResponse.copy(schemeDetails = schemeDetailsUpdated)
-      val result = controller(psaMinimalDetails = psaMinimalSubscription.copy(isPsaSuspended = false),
-        psaSchemeDetails = psd,
-        schemeDetailsConnector = fakeSchemeDetailsConnector(psd)).
+      val result = controller(schemeDetailsConnector = fakeSchemeDetailsConnector(userAnswersJsonWithoutPstr)).
         onPageLoad(fakeRequest)
 
       ScalaFutures.whenReady(result.failed) { e =>
@@ -182,7 +193,7 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
     "throw IllegalArgumentException if psa name is not found" in {
       val result = controller(psaMinimalDetails = psaMinimalSubscription.copy(isPsaSuspended = false,
         organisationName = None, individualDetails = None),
-        schemeDetailsConnector = fakeSchemeDetailsConnector(psaSchemeDetailsResponse)).onPageLoad(fakeRequest)
+        schemeDetailsConnector = fakeSchemeDetailsConnector()).onPageLoad(fakeRequest)
 
       ScalaFutures.whenReady(result.failed) { e =>
         e mustBe a[IllegalArgumentException]
@@ -194,8 +205,7 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
 
       val controller = new RemovePsaController(FakeUnAuthorisedAction(), data, new DataRequiredActionImpl,
         fakeSchemeDetailsConnector(), FakeUserAnswersCacheConnector,
-        fakeMinimalPsaConnector(psaMinimalSubscription.copy(isPsaSuspended = false)),
-        FakeFeatureSwitchManagementService(false), frontendAppConfig
+        fakeMinimalPsaConnector(psaMinimalSubscription.copy(isPsaSuspended = false)), frontendAppConfig
       )
 
       val result = controller.onPageLoad(fakeRequest)
@@ -207,10 +217,9 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
 }
 
 object RemovePsaControllerSpec {
-  val schemeDetails = CommonBuilders.psaSchemeDetailsResponse
-  private val userAnswer = UserAnswers().srn(schemeDetails.schemeDetails.srn.getOrElse(""))
+
+  private val userAnswer = UserAnswers().srn("S9000000000")
   private val data = userAnswer.dataRetrievalAction
-  val psaSchemeDetailsResponse = CommonBuilders.psaSchemeDetailsResponse
 
   private val psaMinimalSubscription = MinimalPSA("test@test.com", false, None, Some(IndividualDetails("First", Some("Middle"), "Last")))
 }
