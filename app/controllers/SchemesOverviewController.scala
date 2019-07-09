@@ -41,8 +41,7 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
                                           authenticate: AuthAction,
                                           getData: DataRetrievalAction,
                                           pensionSchemeVarianceLockConnector: PensionSchemeVarianceLockConnector,
-                                          updateConnector: UpdateSchemeCacheConnector,
-                                          featureSwitchManagementService: FeatureSwitchManagementService
+                                          updateConnector: UpdateSchemeCacheConnector
                                          )
                                          (implicit val ec: ExecutionContext) extends FrontendController with I18nSupport {
 
@@ -74,8 +73,8 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
 
   private def registerSchemeUrl = appConfig.registerSchemeUrl
 
-  private def variationsInfo(psaId: String)(implicit hc: HeaderCarrier): Future[Option[VariationDetails]] = {
-    if (featureSwitchManagementService.get(Toggles.isVariationsEnabled)) {
+  private def variationsInfo(psaId: String)(implicit hc: HeaderCarrier): Future[Option[VariationDetails]] =
+
       pensionSchemeVarianceLockConnector.getLockByPsa(psaId).flatMap {
           case Some(schemeVariance) =>
             updateConnector.fetch(schemeVariance.srn).flatMap {
@@ -86,10 +85,6 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
           case None =>
             Future.successful(None)
         }
-    } else {
-      Future.successful(None)
-    }
-  }
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>

@@ -18,10 +18,9 @@ package connectors
 
 import com.google.inject.{ImplementedBy, Inject, Singleton}
 import config.FrontendAppConfig
-import models.PsaSchemeDetails
 import play.api.Logger
-import play.api.http.Status.{BAD_REQUEST, OK}
-import play.api.libs.json.{JsError, JsResultException, JsSuccess, Json}
+import play.api.http.Status.OK
+import play.api.libs.json.Json
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import utils.{HttpResponseHelper, UserAnswers}
@@ -32,10 +31,9 @@ import scala.util.Failure
 @ImplementedBy(classOf[SchemeDetailsConnectorImpl])
 trait SchemeDetailsConnector {
 
-  def getSchemeDetails(psaId: String, schemeIdType: String, idNumber: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[PsaSchemeDetails]
-  def getSchemeDetailsVariations(psaId: String,
-                                 schemeIdType: String,
-                                 idNumber: String)(implicit hc: HeaderCarrier,
+  def getSchemeDetails(psaId: String,
+                       schemeIdType: String,
+                       idNumber: String)(implicit hc: HeaderCarrier,
                                                    ec: ExecutionContext): Future[UserAnswers]
 
 }
@@ -44,28 +42,9 @@ trait SchemeDetailsConnector {
 class SchemeDetailsConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) extends
   SchemeDetailsConnector with HttpResponseHelper {
 
-  def getSchemeDetails(psaId: String, schemeIdType: String, idNumber: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[PsaSchemeDetails] = {
-
-    val url = config.schemeDetailsUrl
-    val schemeHc = hc.withExtraHeaders("schemeIdType" -> schemeIdType, "idNumber" -> idNumber, "PSAId" -> psaId)
-    http.GET[HttpResponse](url)(implicitly, schemeHc, implicitly).map { response =>
-      response.status match {
-        case OK =>
-          val json = Json.parse(response.body)
-          json.validate[PsaSchemeDetails] match {
-            case JsSuccess(value, _) => value
-            case JsError(errors) => throw new JsResultException(errors)
-          }
-        case _ => handleErrorResponse("GET", url)(response)
-      }
-    } andThen {
-      case Failure(t: Throwable) => Logger.warn("Unable to get scheme details", t)
-    }
-  }
-
-  def getSchemeDetailsVariations(psaId: String,
-                                 schemeIdType: String,
-                                 idNumber: String)(implicit hc: HeaderCarrier,
+  def getSchemeDetails(psaId: String,
+                       schemeIdType: String,
+                       idNumber: String)(implicit hc: HeaderCarrier,
                                                    ec: ExecutionContext): Future[UserAnswers] = {
 
     val url = config.schemeDetailsUrl

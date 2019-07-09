@@ -26,7 +26,6 @@ import models.requests.AuthenticatedRequest
 import models.{MinimalSchemeDetail, SchemeReferenceNumber}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import utils.Toggles
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -50,25 +49,18 @@ class InviteController @Inject()(authenticate: AuthAction,
                   Redirect(controllers.invitations.routes.WhatYouWillNeedController.onPageLoad())
                 }
               case None => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
-            }
+          }
         }
       }
   }
 
   private def getSchemeDetails(srn: SchemeReferenceNumber)(implicit request: AuthenticatedRequest[_]): Future[Option[SchemeDetails]] =
-    if (featureSwitchManagementService.get(Toggles.isVariationsEnabled)) {
-
-      schemeDetailsConnector.getSchemeDetailsVariations(request.psaId.id, "srn", srn).map { scheme =>
+      schemeDetailsConnector.getSchemeDetails(request.psaId.id, "srn", srn).map { scheme =>
         scheme.get(SchemeNameId).flatMap { name =>
           Some(SchemeDetails(name, scheme.get(PSTRId)))
         }
 
       }
-    } else {
-      schemeDetailsConnector.getSchemeDetails(request.psaId.id, "srn", srn).map { scheme =>
-        Some(SchemeDetails(scheme.schemeDetails.name, scheme.schemeDetails.pstr))
-      }
-    }
 
   case class SchemeDetails(name: String, pstr: Option[String])
 

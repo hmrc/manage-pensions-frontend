@@ -24,7 +24,6 @@ import identifiers.MinimalSchemeDetailId
 import models._
 import play.api.Configuration
 import play.api.test.Helpers._
-import testhelpers.CommonBuilders
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.UserAnswers
 
@@ -49,7 +48,6 @@ class InviteControllerSpec extends SpecBase {
     }
 
     "save minimal scheme details and then redirect to psa name page if PSASuspension is false" in {
-      featureSwitch.change("is-variations-enabled", false)
       val result = controller(isSuspended = false).onPageLoad(srn)(fakeRequest)
 
       status(result) mustBe SEE_OTHER
@@ -74,8 +72,8 @@ class InviteControllerSpec extends SpecBase {
 object InviteControllerSpec extends SpecBase with JsonFileReader {
   private val email = "test@test.com"
   val srn = "S9000000000"
-  val pstr = "00000000AA"
-  val schemeName = "Benefits Scheme"
+  val pstr = "24000001IN"
+  val schemeName = "Open Single Trust Scheme with Indiv Establisher and Trustees"
 
   private val psaMinimalSubscription = MinimalPSA(email, false, None, Some(IndividualDetails("First", Some("Middle"), "Last")))
   private val mockAuthAction = FakeAuthAction()
@@ -94,15 +92,12 @@ object InviteControllerSpec extends SpecBase with JsonFileReader {
   }
 
   def fakeSchemeDetailsConnector: SchemeDetailsConnector = new SchemeDetailsConnector {
-    override def getSchemeDetails(psaId: String, schemeIdType: String,
-                                  idNumber: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[PsaSchemeDetails] =
-      Future.successful(CommonBuilders.psaSchemeDetailsResponse)
 
-    override def getSchemeDetailsVariations(psaId: String,
-                                            schemeIdType: String,
-                                            idNumber: String)(implicit hc: HeaderCarrier,
+    override def getSchemeDetails(psaId: String,
+                                  schemeIdType: String,
+                                  idNumber: String)(implicit hc: HeaderCarrier,
                                                               ec: ExecutionContext): Future[UserAnswers] =
-      Future.successful(UserAnswers(readJsonFromFile("data/validSchemeDetailsResponse.json")))
+      Future.successful(UserAnswers(readJsonFromFile("/data/validSchemeDetailsUserAnswers.json")))
   }
 
   def controller(isSuspended: Boolean) = new InviteController(mockAuthAction, fakeSchemeDetailsConnector,

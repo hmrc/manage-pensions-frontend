@@ -52,11 +52,10 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
 
   private val config = app.injector.instanceOf[Configuration]
 
-  def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData,
-                 isVariationsEnabled:Boolean = false): SchemesOverviewController =
+  def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): SchemesOverviewController =
     new SchemesOverviewController(appConfig, messagesApi, fakeCacheConnector, fakePsaMinimalConnector, FakeAuthAction(),
       dataRetrievalAction,
-      pensionSchemeVarianceLockConnector, updateConnector, FakeFeatureSwitchManagementService(isToggleOn = isVariationsEnabled))
+      pensionSchemeVarianceLockConnector, updateConnector)
 
   val deleteDate: String = DateTime.now(DateTimeZone.UTC).plusDays(appConfig.daysDataSaved).toString(formatter)
 
@@ -81,6 +80,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
   override def beforeEach(): Unit = {
     reset(fakeCacheConnector)
     reset(fakePsaMinimalConnector)
+    reset(pensionSchemeVarianceLockConnector)
     super.beforeEach()
   }
 
@@ -97,62 +97,13 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
         when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
         when(fakePsaMinimalConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any()))
           .thenReturn(Future.successful(minimalPsaName))
+        when(pensionSchemeVarianceLockConnector.getLockByPsa(Matchers.any())(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(None))
 
         val result = controller().onPageLoad(fakeRequest)
 
         status(result) mustBe OK
         contentAsString(result) mustBe viewWithPsaName(Some(expectedName))
-      }
-
-      "return OK and the correct view with an individual name for an individual Psa and no scheme has been defined" in {
-        when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
-        when(fakePsaMinimalConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaName))
-        when(fakeCacheConnector.lastUpdated(any())(any(), any())).thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
-
-        val result = controller().onPageLoad(fakeRequest)
-        status(result) mustBe OK
-        contentAsString(result) mustBe viewWithPsaName(Some(expectedName))
-      }
-
-      "return OK and the correct view with an individual name with no middle name for an individual Psa and no scheme has been defined" in {
-        when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
-        when(fakePsaMinimalConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any())).thenReturn(Future.successful(individualPsaDetailsWithNoMiddleName))
-        when(fakeCacheConnector.lastUpdated(any())(any(), any())).thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
-
-        val result = controller().onPageLoad(fakeRequest)
-        status(result) mustBe OK
-        contentAsString(result) mustBe viewWithPsaName(Some(expectedNameWithoutMiddleName))
-      }
-
-      "return OK and the correct view if a scheme has been partially defined" in {
-
-        when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(schemeNameJsonOption))
-        when(fakePsaMinimalConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaName))
-        when(fakeCacheConnector.lastUpdated(any())(any(), any())).thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
-
-        val result = controller().onPageLoad(fakeRequest)
-        status(result) mustBe OK
-        contentAsString(result) mustBe viewWithPsaNameAndScheme(Some(expectedName))
-      }
-
-      "return OK and the correct view with an individual name with no middle name for an individual Psa and if a scheme has been partially defined" in {
-        when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(schemeNameJsonOption))
-        when(fakePsaMinimalConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any())).thenReturn(Future.successful(individualPsaDetailsWithNoMiddleName))
-        when(fakeCacheConnector.lastUpdated(any())(any(), any())).thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
-
-        val result = controller().onPageLoad(fakeRequest)
-        status(result) mustBe OK
-        contentAsString(result) mustBe viewWithPsaNameAndScheme(Some(expectedNameWithoutMiddleName))
-      }
-
-      "return OK and the correct view with an individual name for an individual Psa and scheme has been defined" in {
-        when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(schemeNameJsonOption))
-        when(fakePsaMinimalConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaName))
-        when(fakeCacheConnector.lastUpdated(any())(any(), any())).thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
-
-        val result = controller().onPageLoad(fakeRequest)
-        status(result) mustBe OK
-        contentAsString(result) mustBe viewWithPsaNameAndScheme(Some(expectedName))
       }
 
       "return OK and the correct view with an organisation name for an Organisation Psa" in {
@@ -160,34 +111,23 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
         when(fakeCacheConnector.lastUpdated(any())(any(), any()))
           .thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
         when(fakePsaMinimalConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaOrgName))
+        when(pensionSchemeVarianceLockConnector.getLockByPsa(Matchers.any())(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(None))
 
         val result = controller().onPageLoad(fakeRequest)
         status(result) mustBe OK
         contentAsString(result) mustBe viewWithPsaNameAndScheme(expectedPsaOrgName)
       }
-
-      "return OK and the correct view with no individual name and organisation name" in {
-        when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(schemeNameJsonOption))
-        when(fakeCacheConnector.lastUpdated(any())(any(), any()))
-          .thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
-
-        when(fakePsaMinimalConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any())).thenReturn(Future.successful(
-          None))
-
-        val result = controller().onPageLoad(fakeRequest)
-        status(result) mustBe OK
-        contentAsString(result) mustBe viewWithPsaNameAndScheme(None)
-      }
     }
 
-    "SchemesOverview Controller when variations is switched on" when {
+    "SchemesOverview Controller" when {
       "on a GET" must {
         "return no variations section when there is no lock for any scheme" in {
           when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
           when(fakePsaMinimalConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any()))
             .thenReturn(Future.successful(minimalPsaName))
 
-          val result = controller(isVariationsEnabled = true).onPageLoad(fakeRequest)
+          val result = controller().onPageLoad(fakeRequest)
           when(pensionSchemeVarianceLockConnector.getLockByPsa(Matchers.any())(Matchers.any(), Matchers.any()))
               .thenReturn(Future.successful(None))
           status(result) mustBe OK
@@ -205,7 +145,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
           when(updateConnector.fetch(Matchers.any())(Matchers.any(), Matchers.any()))
               .thenReturn(Future.successful(None))
 
-          val result = controller(isVariationsEnabled = true).onPageLoad(fakeRequest)
+          val result = controller().onPageLoad(fakeRequest)
           status(result) mustBe OK
           contentAsString(result).contains(messages("messages__schemesOverview__change_details__p2")) mustBe false
         }
@@ -227,7 +167,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
           when(updateConnector.lastUpdated(Matchers.any())(Matchers.any(), Matchers.any()))
               .thenReturn(Future.successful(None))
 
-          val result = controller(isVariationsEnabled = true).onPageLoad(fakeRequest)
+          val result = controller().onPageLoad(fakeRequest)
 
           status(result) mustBe OK
           contentAsString(result).contains(messages("messages__schemesOverview__change_details__p2", schemeName, deleteDate)) mustBe true
@@ -254,7 +194,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
 
           val expectedContent = messages("messages__schemesOverview__change_details__p1", schemeName, "08 June 2019")
 
-          val result = controller(isVariationsEnabled = true).onPageLoad(fakeRequest)
+          val result = controller().onPageLoad(fakeRequest)
 
           status(result) mustBe OK
           contentAsString(result).contains(expectedContent) mustBe true
