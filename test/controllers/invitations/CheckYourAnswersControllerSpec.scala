@@ -48,33 +48,33 @@ class CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours 
 
   "calling submit" must {
 
-//    "redirect to duplicate invitation page if invitation failed with Psa already invited error" in {
-//      val result = onSubmitAction(userAnswerUpdated, FakeAuthAction(), Future.failed(new PsaAlreadyInvitedException))(FakeRequest())
-//
-//      status(result) mustBe SEE_OTHER
-//      redirectLocation(result) mustBe Some(controllers.invitations.routes.InvitationDuplicateController.onPageLoad().url)
-//    }
-//
-//    "redirect to incorrect psa details page if invitation failed with name matching error" in {
-//      val result = onSubmitAction(userAnswerUpdated, FakeAuthAction(), Future.failed(new NameMatchingFailedException))(FakeRequest())
-//
-//      status(result) mustBe SEE_OTHER
-//      redirectLocation(result) mustBe Some(controllers.invitations.routes.IncorrectPsaDetailsController.onPageLoad().url)
-//    }
-//
-//    "redirect to incorrect psa details page if psa id not found" in {
-//      val result = onSubmitAction(userAnswerUpdated, FakeAuthAction(), Future.failed(new NotFoundException("not found")))(FakeRequest())
-//
-//      status(result) mustBe SEE_OTHER
-//      redirectLocation(result) mustBe Some(controllers.invitations.routes.IncorrectPsaDetailsController.onPageLoad().url)
-//    }
+    "redirect to duplicate invitation page if invitation failed with Psa already invited error" in {
+      val result = onSubmitAction(userAnswerUpdated, FakeAuthAction(), Future.failed(new PsaAlreadyInvitedException))(FakeRequest())
 
-/*    "redirect to psa already invited page if scheme already has invitee psa id associated with it and names match" in {
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(controllers.invitations.routes.InvitationDuplicateController.onPageLoad().url)
+    }
+
+    "redirect to incorrect psa details page if invitation failed with name matching error" in {
+      val result = onSubmitAction(userAnswerUpdated, FakeAuthAction(), Future.failed(new NameMatchingFailedException))(FakeRequest())
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(controllers.invitations.routes.IncorrectPsaDetailsController.onPageLoad().url)
+    }
+
+    "redirect to incorrect psa details page if psa id not found" in {
+      val result = onSubmitAction(userAnswerUpdated, FakeAuthAction(), Future.failed(new NotFoundException("not found")))(FakeRequest())
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(controllers.invitations.routes.IncorrectPsaDetailsController.onPageLoad().url)
+    }
+
+    "redirect to psa already invited page if scheme already has invitee psa id associated with it and names match" in {
 
       val result = onSubmitAction(userAnswerUpdatedPsaAlreadyInvited, FakeAuthAction(), Future.successful(()))(FakeRequest())
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.invitations.routes.PsaAlreadyAssociatedController.onPageLoad().url)
-    }*/
+    }
 
     "redirect to incorrect psa details page if scheme already has invitee psa id associated with it and names don't match" in {
 

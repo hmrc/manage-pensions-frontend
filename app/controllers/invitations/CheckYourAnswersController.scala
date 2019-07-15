@@ -24,7 +24,7 @@ import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import identifiers.MinimalSchemeDetailId
 import identifiers.invitations.{CheckYourAnswersId, InviteeNameId, InviteePSAId}
 import models.requests.DataRequest
-import models.{MinimalSchemeDetail, NormalMode, PsaDetails, SchemeReferenceNumber, Invitation => invi}
+import models.{MinimalSchemeDetail, NormalMode, PsaDetails, SchemeReferenceNumber, Invitation => Invite}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import uk.gov.hmrc.domain.PsaId
@@ -85,17 +85,13 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
             getExpireAt
           )
 
-          isSchemeAssociatedWithInvitee(request.psaId.id, schemeDetails.srn, inviteePsaId).flatMap {
-            case true =>
-              catchNameMatchingException(
-                makeInvitation(invitation, schemeDetails)
-                  .map(_ => Redirect(routes.PsaAlreadyAssociatedController.onPageLoad()))
-              )
-            case _ =>
-              catchNameMatchingException(
-                makeInvitation(invitation, schemeDetails)
-              )
+          isSchemeAssociatedWithInvitee(request.psaId.id, schemeDetails.srn, inviteePsaId).flatMap { isAssociated =>
+            invite(invitation, schemeDetails).map(result =>
+              if (isAssociated) Redirect(routes.PsaAlreadyAssociatedController.onPageLoad()) else result
+            )
           }.recoverWith {
+            case _: NameMatchingFailedException =>
+              Future.successful(Redirect(controllers.invitations.routes.IncorrectPsaDetailsController.onPageLoad()))
             case _ =>
               Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
           }
@@ -104,21 +100,13 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
       }
   }
 
-  private def catchNameMatchingException(fr: Future[Result]): Future[Result] = {
-    fr.recoverWith {
-      case _: NameMatchingFailedException =>
-        Future.successful(Redirect(controllers.invitations.routes.IncorrectPsaDetailsController.onPageLoad()))
-    }
-  }
-
-  private def makeInvitation(invite: invi, msd: MinimalSchemeDetail)(implicit hc: HeaderCarrier, request: DataRequest[AnyContent]): Future[Result] = {
+  private def invite(invite: Invite, msd: MinimalSchemeDetail)(implicit hc: HeaderCarrier, request: DataRequest[AnyContent]): Future[Result] = {
     invitationConnector.invite(invite)
       .map(_ => Redirect(navigator.nextPage(CheckYourAnswersId(msd.srn), NormalMode, request.userAnswers)))
       .recoverWith {
         case _: NotFoundException =>
           Future.successful(Redirect(controllers.invitations.routes.IncorrectPsaDetailsController.onPageLoad()))
-        case xx: PsaAlreadyInvitedException =>
-          println("\n><>>>>>" + xx.toString)
+        case _: PsaAlreadyInvitedException =>
           Future.successful(Redirect(controllers.invitations.routes.InvitationDuplicateController.onPageLoad()))
       }
   }
