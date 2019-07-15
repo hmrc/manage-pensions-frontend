@@ -23,11 +23,12 @@ import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import identifiers.MinimalSchemeDetailId
 import identifiers.invitations.{CheckYourAnswersId, InviteeNameId, InviteePSAId}
-import models.{NormalMode, PsaDetails, SchemeReferenceNumber}
+import models.requests.DataRequest
+import models.{MinimalSchemeDetail, NormalMode, PsaDetails, SchemeReferenceNumber, Invitation => invi}
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, Request}
+import play.api.mvc.{Action, AnyContent, Request, Result}
 import uk.gov.hmrc.domain.PsaId
-import uk.gov.hmrc.http.NotFoundException
+import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.annotations.Invitation
 import utils.{CheckYourAnswersFactory, DateHelper, Navigator}
@@ -65,9 +66,9 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
   private def isSchemeAssociatedWithInvitee(psaId: String, srn: String,
                                             inviteePsaId: String)
                                            (implicit request: Request[_]): Future[Boolean] =
-      schemeDetailsConnector.getSchemeDetails(psaId, "srn", srn).map { scheme =>
-        (scheme.json \ "psaDetails").toOption.exists(_.as[Seq[PsaDetails]].exists(_.id == inviteePsaId))
-      }
+    schemeDetailsConnector.getSchemeDetails(psaId, "srn", srn).map { scheme =>
+      (scheme.json \ "psaDetails").toOption.exists(_.as[Seq[PsaDetails]].exists(_.id == inviteePsaId))
+    }
 
 
   def onSubmit(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
@@ -83,26 +84,38 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
             inviteeName,
             getExpireAt
           )
+
           isSchemeAssociatedWithInvitee(request.psaId.id, schemeDetails.srn, inviteePsaId).flatMap {
             case true =>
-              Future.successful(Redirect(routes.PsaAlreadyAssociatedController.onPageLoad()))
+              catchNameMatchingException(makeInvitation(invitation, schemeDetails).map { _ =>
+                Redirect(routes.PsaAlreadyAssociatedController.onPageLoad())
+              })
             case _ =>
-              invitationConnector.invite(invitation)
-                .map(_ => Redirect(navigator.nextPage(CheckYourAnswersId(schemeDetails.srn), NormalMode, request.userAnswers)))
-                .recoverWith {
-                  case _: NotFoundException =>
-                    Future.successful(Redirect(controllers.invitations.routes.IncorrectPsaDetailsController.onPageLoad()))
-                }
+              catchNameMatchingException(makeInvitation(invitation, schemeDetails))
           }.recoverWith {
-            case _: NameMatchingFailedException =>
-              Future.successful(Redirect(controllers.invitations.routes.IncorrectPsaDetailsController.onPageLoad()))
-            case _: PsaAlreadyInvitedException =>
-              Future.successful(Redirect(controllers.invitations.routes.InvitationDuplicateController.onPageLoad()))
             case _ =>
               Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
           }
         case _ =>
           Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+      }
+  }
+
+  private def catchNameMatchingException(fr: Future[Result]): Future[Result] = {
+    fr.recoverWith {
+      case _: NameMatchingFailedException =>
+        Future.successful(Redirect(controllers.invitations.routes.IncorrectPsaDetailsController.onPageLoad()))
+    }
+  }
+
+  private def makeInvitation(invite: invi, msd: MinimalSchemeDetail)(implicit hc: HeaderCarrier, request: DataRequest[AnyContent]): Future[Result] = {
+    invitationConnector.invite(invite)
+      .map(_ => Redirect(navigator.nextPage(CheckYourAnswersId(msd.srn), NormalMode, request.userAnswers)))
+      .recoverWith {
+        case _: NotFoundException =>
+          Future.successful(Redirect(controllers.invitations.routes.IncorrectPsaDetailsController.onPageLoad()))
+        case _: PsaAlreadyInvitedException =>
+          Future.successful(Redirect(controllers.invitations.routes.InvitationDuplicateController.onPageLoad()))
       }
   }
 

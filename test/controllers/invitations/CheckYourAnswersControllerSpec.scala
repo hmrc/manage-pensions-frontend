@@ -69,11 +69,18 @@ class CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours 
       redirectLocation(result) mustBe Some(controllers.invitations.routes.IncorrectPsaDetailsController.onPageLoad().url)
     }
 
-    "redirect to psa already invited page if scheme already has invitee psa id associated with it" in {
+    "redirect to psa already invited page if scheme already has invitee psa id associated with it and names match" in {
 
       val result = onSubmitAction(userAnswerUpdatedPsaAlreadyInvited, FakeAuthAction(), Future.successful(()))(FakeRequest())
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.invitations.routes.PsaAlreadyAssociatedController.onPageLoad().url)
+    }
+
+    "redirect to incorrect psa details page if scheme already has invitee psa id associated with it and names don't match" in {
+
+      val result = onSubmitAction(userAnswerUpdatedPsaAlreadyInvited, FakeAuthAction(), Future.failed(new NameMatchingFailedException))(FakeRequest())
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(controllers.invitations.routes.IncorrectPsaDetailsController.onPageLoad().url)
     }
   }
 }
