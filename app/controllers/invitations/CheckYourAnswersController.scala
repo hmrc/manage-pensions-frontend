@@ -87,11 +87,14 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
 
           isSchemeAssociatedWithInvitee(request.psaId.id, schemeDetails.srn, inviteePsaId).flatMap {
             case true =>
-              catchNameMatchingException(makeInvitation(invitation, schemeDetails).map { _ =>
-                Redirect(routes.PsaAlreadyAssociatedController.onPageLoad())
-              })
+              catchNameMatchingException(
+                makeInvitation(invitation, schemeDetails)
+                  .map(_ => Redirect(routes.PsaAlreadyAssociatedController.onPageLoad()))
+              )
             case _ =>
-              catchNameMatchingException(makeInvitation(invitation, schemeDetails))
+              catchNameMatchingException(
+                makeInvitation(invitation, schemeDetails)
+              )
           }.recoverWith {
             case _ =>
               Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
@@ -114,7 +117,8 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
       .recoverWith {
         case _: NotFoundException =>
           Future.successful(Redirect(controllers.invitations.routes.IncorrectPsaDetailsController.onPageLoad()))
-        case _: PsaAlreadyInvitedException =>
+        case xx: PsaAlreadyInvitedException =>
+          println("\n><>>>>>" + xx.toString)
           Future.successful(Redirect(controllers.invitations.routes.InvitationDuplicateController.onPageLoad()))
       }
   }
