@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import connectors.cache.microservice.OldPensionsSchemeCacheConnector
 import connectors._
 import play.api.inject.{Binding, Module}
 import play.api.{Configuration, Environment}

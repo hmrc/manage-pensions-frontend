@@ -18,7 +18,6 @@ package connectors
 
 import base.SpecBase
 import config.FeatureSwitchManagementServiceTestImpl
-import connectors.cache.microservice.OldPensionsSchemeCacheConnector
 import identifiers.TypedIdentifier
 import org.scalatest._
 import play.api.Configuration
@@ -26,11 +25,9 @@ import play.api.libs.json.{Format, JsValue, Json}
 import play.api.libs.ws.{WSClient, WSRequest}
 import play.api.mvc.Result
 import play.api.mvc.Results.Ok
-import play.api.test.Helpers.{status, _}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpException}
 import utils.Toggles
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
 class SubscriptionDualCacheConnectorSpec extends AsyncWordSpec with MustMatchers with OptionValues with RecoverMethods {
@@ -253,7 +250,7 @@ object SubscriptionDualCacheConnectorSpec extends SpecBase {
     Future.successful(None)
   }
 
-  private def fakeOldSchemeCacheConnector(isDataExist: Boolean) = new OldPensionsSchemeCacheConnector(frontendAppConfig, fakeWsClient) {
+  private def fakeOldSchemeCacheConnector(isDataExist: Boolean) = new MicroserviceCacheConnector(frontendAppConfig, fakeWsClient) {
     override def fetch(id: String)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[Option[JsValue]] = fetchResponse(isDataExist, "old")
 
     override def save[A, I <: TypedIdentifier[A]](cacheId: String, id: I, value: A)(implicit fmt: Format[A],

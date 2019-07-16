@@ -23,16 +23,10 @@ import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
 import scala.concurrent.{ExecutionContext, Future}
 
-@ImplementedBy(classOf[MongoDiagnosticsConnectorImpl])
-trait MongoDiagnosticsConnector {
 
-  def fetchDiagnostics()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[String]
+class MongoDiagnosticsConnector @Inject()(http: HttpClient, config: FrontendAppConfig) {
 
-}
-
-class MongoDiagnosticsConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) extends MongoDiagnosticsConnector {
-
-  override def fetchDiagnostics()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[String] = {
+  def fetchDiagnostics()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[String] = {
 
     for {
       admin <- http.GET(s"${config.pensionAdminUrl}/test-only/mongo-diagnostics")

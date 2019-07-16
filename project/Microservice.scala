@@ -42,7 +42,8 @@ trait MicroService {
     .settings(
       ScoverageKeys.coverageExcludedFiles := "<empty>;Reverse.*;.*filters.*;.*handlers.*;.*components.*;.*models.*;.*repositories.*;" +
         ".*BuildInfo.*;.*javascript.*;.*FrontendAuditConnector.*;.*Routes.*;.*GuiceInjector;.*UserAnswersCacheConnector;" +
-        ".*ControllerConfiguration;.*LanguageSwitchController",
+        ".*ControllerConfiguration;.*LanguageSwitchController;.*MongoDiagnosticsConnector;.*PensionsSchemeFeatureSwitchConnector;" +
+        ".*PensionAdministratorFeatureSwitchConnectorImpl;.*controllers.testonly.*;.*target.*",
       ScoverageKeys.coverageMinimum := 75,
       ScoverageKeys.coverageFailOnMinimum := true,
       ScoverageKeys.coverageHighlighting := true,

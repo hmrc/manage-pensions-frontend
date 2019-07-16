@@ -27,7 +27,7 @@ import uk.gov.hmrc.play.HeaderCarrierConverter
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class AllowAccessForNonSuspendedUsersAction(minimalPsaConnector: MinimalPsaConnector) extends ActionFilter[AuthenticatedRequest]{
+class AllowAccessForNonSuspendedUsersAction @Inject()(minimalPsaConnector: MinimalPsaConnector) extends ActionFilter[AuthenticatedRequest]{
 
   override protected def filter[A](request: AuthenticatedRequest[A]): Future[Option[Result]] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
@@ -39,16 +39,7 @@ class AllowAccessForNonSuspendedUsersAction(minimalPsaConnector: MinimalPsaConne
         None
       }
     }
-
   }
-
 }
 
-class AllowAccessForNonSuspendedUsersActionProviderImpl @Inject()(minimalPsaConnector: MinimalPsaConnector)
-  extends AllowAccessForNonSuspendedUsersActionProvider{
-  def apply(): AllowAccessForNonSuspendedUsersAction = new AllowAccessForNonSuspendedUsersAction(minimalPsaConnector)
-}
 
-trait AllowAccessForNonSuspendedUsersActionProvider {
-  def apply() : AllowAccessForNonSuspendedUsersAction
-}

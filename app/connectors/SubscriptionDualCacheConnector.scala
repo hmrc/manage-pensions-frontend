@@ -18,7 +18,6 @@ package connectors
 
 import com.google.inject.Inject
 import config.{FeatureSwitchManagementService, FrontendAppConfig}
-import connectors.cache.microservice.OldPensionsSchemeCacheConnector
 import identifiers.TypedIdentifier
 import play.api.libs.json._
 import play.api.mvc.Result
@@ -31,7 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class SubscriptionDualCacheConnector @Inject()(
                                                 config: FrontendAppConfig,
-                                                oldSchemeCache: OldPensionsSchemeCacheConnector,
+                                                oldSchemeCache: MicroserviceCacheConnector,
                                                 newSchemeCache: SchemeSubscriptionCacheConnector,
                                                 fs: FeatureSwitchManagementService
                                           ) extends UserAnswersCacheConnector {
