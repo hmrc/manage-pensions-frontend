@@ -95,8 +95,6 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
             case _ =>
               Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
           }
-        case _ =>
-          Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
       }
   }
 
