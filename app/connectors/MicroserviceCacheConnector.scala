@@ -60,7 +60,7 @@ class MicroserviceCacheConnector @Inject()(
     modify(cacheId, _.remove(id))
   }
 
-  private[connectors] def modify(cacheId: String, modification: (UserAnswers) => JsResult[UserAnswers])
+  private[connectors] def modify(cacheId: String, modification: UserAnswers => JsResult[UserAnswers])
                                 (implicit
                                  ec: ExecutionContext,
                                  hc: HeaderCarrier
@@ -126,10 +126,9 @@ class MicroserviceCacheConnector @Inject()(
         response.status match {
           case NOT_FOUND =>
             Future.successful(None)
-          case OK => {
+          case OK =>
             Logger.debug(s"connectors.MicroserviceCacheConnector.fetch: Successful response: ${response.body}")
             Future.successful(Some(Json.parse(response.body)))
-          }
           case _ =>
             Future.failed(new HttpException(response.body, response.status))
         }

@@ -17,20 +17,19 @@
 package connectors.behaviour
 
 import com.github.tomakehurst.wiremock.client.WireMock._
-import connectors.{MicroserviceCacheConnector, UserAnswersCacheConnector}
+import connectors.UserAnswersCacheConnector
 import identifiers.TypedIdentifier
 import org.scalatest.{AsyncWordSpec, MustMatchers, OptionValues}
 import play.api.http.Status
+import play.api.http.Status._
 import play.api.libs.json.Json
+import play.api.mvc.Results._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpException}
 import utils.WireMockHelper
-import play.api.http.Status._
 
 import scala.reflect.ClassTag
 
 trait ConnectorBehaviour extends AsyncWordSpec with MustMatchers with WireMockHelper with OptionValues {
-
-  override protected def portConfigKey: String = "microservice.services.pensions-scheme.port"
 
   protected implicit val hc: HeaderCarrier = HeaderCarrier()
 
@@ -42,7 +41,7 @@ trait ConnectorBehaviour extends AsyncWordSpec with MustMatchers with WireMockHe
   def cacheConnector[T <: UserAnswersCacheConnector: ClassTag](url: String => String,
                                                       lastUpdatedUrl: String => String)= {
 
-    val connector: T = injector.instanceOf[T]
+    lazy val connector: T = injector.instanceOf[T]
 
     ".fetch" must {
 
@@ -325,7 +324,7 @@ trait ConnectorBehaviour extends AsyncWordSpec with MustMatchers with WireMockHe
         )
 
         connector.removeAll("foo").map {
-          _ mustEqual OK
+          _ mustEqual Ok
         }
       }
     }
