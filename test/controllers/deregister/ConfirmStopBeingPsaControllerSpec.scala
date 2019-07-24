@@ -31,7 +31,6 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.PsaId
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import utils.countryOptions.CountryOptions
 import views.html.deregister.confirmStopBeingPsa
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -39,8 +38,6 @@ import scala.concurrent.{ExecutionContext, Future}
 class ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase with ScalaFutures {
 
   import ConfirmStopBeingPsaControllerSpec._
-
-//  implicit val hc: HeaderCarrier = HeaderCarrier()
 
   "ConfirmStopBeingPsaController" must {
 
@@ -104,7 +101,7 @@ class ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase with ScalaFut
 
     "redirect to the next page on a successful POST when selected false" in {
 
-      val result = controller(minimalPsaDetailsIndividual)(hc).onSubmit()(postRequestCancle)
+      val result = controller(minimalPsaDetailsIndividual)(hc).onSubmit()(postRequestCancel)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(psaDetailsUrl)
@@ -127,11 +124,8 @@ object ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase {
   private val postRequest: FakeRequest[AnyContentAsFormUrlEncoded] =
     FakeRequest().withFormUrlEncodedBody(("value", "true"))
 
-  private val postRequestCancle: FakeRequest[AnyContentAsFormUrlEncoded] =
+  private val postRequestCancel: FakeRequest[AnyContentAsFormUrlEncoded] =
     FakeRequest().withFormUrlEncodedBody(("value", "false"))
-
-  private val countryOptions = new CountryOptions(environment, frontendAppConfig)
-
 
   private def testData = new FakeDataRetrievalAction(Some(Json.obj(PSANameId.toString -> "psaName")))
 
