@@ -75,6 +75,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                 lockingPsa(lock, srn).map { lockingPsa =>
                   Ok(schemeDetails(appConfig,
                     schemeName,
+                    pstr(srn.id, list),
                     openedDate(srn.id, list, isSchemeOpen),
                     administratorsVariations(request.psaId.id, userAnswers, schemeStatus),
                     srn.id,
@@ -91,6 +92,9 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
         }
     }
   }
+
+
+
 
   private def withSchemeAndLock(srn: SchemeReferenceNumber)(implicit request: AuthenticatedRequest[AnyContent]) = {
     for {
@@ -127,6 +131,16 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
       None
     }
   }
+
+  private def pstr(srn: String, list: ListOfSchemes): Option[String] =
+    list.schemeDetail.flatMap { listOfSchemes =>
+      val currentScheme = listOfSchemes.filter(_.referenceNumber.contains(srn))
+      if (currentScheme.nonEmpty) {
+        currentScheme.head.pstr
+      } else {
+        None
+      }
+    }
 
   private def lockingPsa(lock: Option[Lock], srn: SchemeReferenceNumber)
                         (implicit request: AuthenticatedRequest[AnyContent]): Future[Option[String]] =

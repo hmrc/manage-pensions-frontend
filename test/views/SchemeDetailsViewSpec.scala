@@ -32,6 +32,7 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
   val administrators = Seq(AssociatedPsa("First Psa", true), AssociatedPsa("Second User", false))
   val administratorsNoRemove = Seq(AssociatedPsa("First Psa", false), AssociatedPsa("Second User", false))
   val srn = "P12345678"
+  val pstr = Some("87654321XX")
 
   class fakeFrontendAppConfig() extends FrontendAppConfig(app.configuration, injector.instanceOf[Environment])
 
@@ -43,6 +44,7 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
       schemeDetails(
         new fakeFrontendAppConfig(),
         schemeName,
+        pstr,
         date,
         psaList,
         srn,
@@ -61,6 +63,11 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
         "_view_details_link",
         "_return_link"
       )
+
+      "display the pstr" in {
+        Jsoup.parse(createView()().toString()) must
+          haveDynamicText(messages("messages__schemeDetails__pstr", pstr.get))
+      }
 
       "have link to view scheme details" in {
         Jsoup.parse(createView(displayChangeLink = true)().toString()).select("a[id=view-details]") must

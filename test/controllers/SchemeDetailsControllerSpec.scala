@@ -68,6 +68,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
     schemeDetails(
       frontendAppConfig,
       schemeName1,
+      pstr,
       openDate,
       administrators,
       srn,
@@ -172,6 +173,7 @@ private object SchemeDetailsControllerSpec extends MockitoSugar {
   val fakeMinimalPsaConnector: MinimalPsaConnector = mock[MinimalPsaConnector]
   val schemeName = "Test Scheme Name"
   val schemeName1 = "Benefits Scheme"
+  val pstr = Some("10000678RE")
 
   val administrators =
     Some(
