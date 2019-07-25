@@ -256,6 +256,7 @@ messages__yourInvitations__accept_link = Accept invitation
 messages__error__declaration__required = You need to agree to all the declarations before you can continue
 
 messages__schemeDetails__title = Pension scheme summary
+messages__schemeDetails__pstr = Pension Scheme Tax Reference: {0}
 messages__schemeDetails__view_details_link = View the registered scheme details
 messages__schemeDetails__view_change_details_link = View or change the registered scheme details
 messages__schemeDetails__psa_making_changes = You cannot make changes to this scheme at the moment. {0} is making changes to this scheme.
