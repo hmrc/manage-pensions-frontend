@@ -18,8 +18,4 @@ package toggles
 
 class TogglesSpec extends FeatureToggleBehaviours {
 
-  "is-scheme-data-shift-enabled new feature toggle" should {
-    behave like featureToggle("is-scheme-data-shift-enabled", true)
-  }
-
 }
