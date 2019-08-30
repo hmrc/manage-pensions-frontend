@@ -38,8 +38,6 @@ class FrontendAppConfig @Inject()(override val runModeConfiguration: Configurati
   private val contactFormServiceIdentifier = "managepensionsfrontend"
 
   lazy val appName: String = runModeConfiguration.underlying.getString("appName")
-  lazy val analyticsToken: String = loadConfig(s"google-analytics.token")
-  lazy val analyticsHost: String = loadConfig(s"google-analytics.host")
   lazy val googleTagManagerIdAvailable: Boolean = runModeConfiguration.underlying.getBoolean(s"google-tag-manager.id-available")
   lazy val googleTagManagerId: String = loadConfig(s"google-tag-manager.id")
   lazy val reportAProblemPartialUrl = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"

@@ -64,8 +64,8 @@ scriptElem: Option[Html] = None)(implicit request: Request[_], messages: Message
 
 @bodyEnd = {
     @uiLayouts.footer(
-        analyticsToken = Some(appConfig.analyticsToken),
-        analyticsHost = appConfig.analyticsHost,
+        analyticsToken = None,
+        analyticsHost = "",
         ssoUrl = None,
         scriptElem = scriptElem,
         gaCalls = None,
