@@ -77,7 +77,7 @@ trait ViewSpecBase extends SpecBase {
     document =>
       val href = document.select(s"a[href='#$id']").text()
       MatchResult(
-        document.select("#error-summary-heading").size() != 0 && href == expectedErrorMessage,
+        document.select("#error-summary-heading").size() != 0 && href == s"Error: $expectedErrorMessage",
         s"Error $expectedErrorMessage for field with id $id is not displayed on error summary",
         s"Error $expectedErrorMessage for field with id $id is displayed on error summary"
       )
