@@ -26,10 +26,7 @@
             @for(error <- errors) {
 
                 <li>
-                    <a href="#@{error.key.replace('.', '_')}">
-                        <span class="govuk-visually-hidden">Error:</span>
-                        @messages(error.message, error.args:_*)
-                    </a>
+                    <a href="#@{error.key.replace('.', '_')}">@messages(error.message, error.args:_*)</a>
                 </li>
             }
         </ul>
