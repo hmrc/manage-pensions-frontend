@@ -23,7 +23,7 @@ hint: Option[String] = None
 )(implicit messages: Messages)
 
 <div class="form-field @if(Seq(field, field("day"), field("month"), field("year")).flatMap(_.errors).nonEmpty){form-field--error}">
-<fieldset id="@field.id">
+<fieldset id="@field.id" @if(field.hasErrors){aria-describedby="error-message-@{field.id}-input"}>
     <legend>
 
             <span class="bold form-label @if(legendClass.nonEmpty){@legendClass}">
@@ -36,7 +36,7 @@ hint: Option[String] = None
 
         @field.errors.map { error =>
         <span class="error-notification" id="error-notification-@{field.id}-input">
-            <span class="visually-hidden">Error:</span> @messages(error.message, error.args:_*)</span>
+            <span class="visually-hidden">@messages("site.error")</span> @messages(error.message, error.args:_*)</span>
         }
 
     </legend>

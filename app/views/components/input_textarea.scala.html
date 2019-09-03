@@ -31,7 +31,7 @@
         }
         @field.errors.map { error =>
             <span class="error-notification" id="error-message-@{field.id}-input">
-                <span class="visually-hidden">Error:</span> @messages(error.message, error.args: _*)</span>
+                <span class="visually-hidden">@messages("site.error")</span> @messages(error.message, error.args: _*)</span>
         }
     </label>
     <div class="form-control-wrapper char-counter" data-char-counter>

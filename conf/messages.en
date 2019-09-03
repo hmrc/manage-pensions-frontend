@@ -9,6 +9,7 @@ site.yes = Yes
 site.no = No
 site.return_to = Return to {0}
 site.return_to_overview = Return to manage and register your pension schemes
+site.error = Error:
 
 checkYourAnswers.title = Check your answers
 checkYourAnswers.heading = Check your answers

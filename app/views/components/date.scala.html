@@ -40,19 +40,19 @@ hint: Option[String] = None
         }
             @if(errorKey.nonEmpty){
                 <span class="error-notification" id="error-message-@{id}-date">
-                    <span class="visually-hidden">Error:</span> @messages(errorKey)</span>
+                    <span class="visually-hidden">@messages("site.error")</span> @messages(errorKey)</span>
             }
             @if(dayErrorKey.nonEmpty){
                 <span class="error-notification" id="error-message-@{id}-day">
-                    <span class="visually-hidden">Error:</span> @messages(dayErrorKey)</span>
+                    <span class="visually-hidden">@messages("site.error")</span> @messages(dayErrorKey)</span>
             }
             @if(monthErrorKey.nonEmpty){
                 <span class="error-notification" id="error-message-@{id}-month">
-                    <span class="visually-hidden">Error:</span> @messages(monthErrorKey)</span>
+                    <span class="visually-hidden">@messages("site.error")</span> @messages(monthErrorKey)</span>
             }
             @if(yearErrorKey.nonEmpty){
                 <span class="error-notification" id="error-message-@{id}-year">
-                    <span class="visually-hidden">Error:</span> @messages(yearErrorKey)</span>
+                    <span class="visually-hidden">@messages("site.error")</span> @messages(yearErrorKey)</span>
             }
         </legend>
         <div class="form-date">
