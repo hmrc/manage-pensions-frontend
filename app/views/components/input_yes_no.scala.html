@@ -27,7 +27,7 @@
 
 
 <div class="form-group @if(field.hasErrors){form-field--error}">
-    <fieldset class="@fieldsetClass" id="@{field.id}">
+    <fieldset class="@fieldsetClass" id="@{field.id}" @if(field.hasErrors){aria-describedby="error-message-@{field.id}-input"}>
 
         <legend>
             <span @if(labelClass.nonEmpty){class="@labelClass"}>@label</span>
@@ -35,7 +35,8 @@
                 <span class="form-hint">@hint</span>
             }
             @field.errors.map { error =>
-                <span class="error-notification" id="error-message-@{field.id}-input">@messages(error.message, error.args: _*)</span>
+                <span class="error-notification" id="error-message-@{field.id}-input">
+                    <span class="visually-hidden">@messages("site.error")</span> @messages(error.message, error.args: _*)</span>
             }
         </legend>
         <div class="multiple-choice" data-target="@if(yesAssoc.nonEmpty){@yesAssoc}">

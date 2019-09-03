@@ -32,7 +32,8 @@
         }
 
         @field.errors.headOption.map { error =>
-            <span class="error-message">@messages(error.message, error.args: _*)</span>
+            <span class="error-message">
+                <span class="visually-hidden">@messages("site.error")</span> @messages(error.message, error.args: _*)</span>
         }
     </label>
     <div class="form-control-wrapper">

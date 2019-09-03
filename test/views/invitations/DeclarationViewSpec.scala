@@ -52,7 +52,7 @@ class DeclarationViewSpec extends QuestionViewBehaviours[Boolean] {
     "show an error in the value field's label when rendered with an error" in {
       val doc = asDocument(declarationViewWithForm(form.withError(error)))
       val errorSpan = doc.getElementsByClass("error-message")
-      errorSpan.text mustBe messages(errorMessage)
+      errorSpan.text mustBe s"${messages("site.error")} ${messages(errorMessage)}"
     }
 
     "display the declaration" in {

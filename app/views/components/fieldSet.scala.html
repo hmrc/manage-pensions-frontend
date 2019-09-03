@@ -41,11 +41,12 @@
 }
 
 <div class="form-group @if(field.hasErrors){ form-group-error }" id="@field.id">
-  <fieldset @if(_fieldsetClasses.nonEmpty){ class="@_fieldsetClasses.mkString(" ")" }>
+  <fieldset @if(_fieldsetClasses.nonEmpty){ class="@_fieldsetClasses.mkString(" ")" } @if(field.hasErrors){aria-describedby="error-message-@{field.id}-input"}>
    <legend>
      <span class="@_legendClasses.mkString(" ")">@messages(legend)</span>
      @field.errors.headOption.map { error =>
-      <span class="error-message">@messages(error.message, error.args: _*)</span>
+      <span class="error-message"  id="error-message-@{field.id}-input">
+       <span class="visually-hidden">@messages("site.error")</span> @messages(error.message, error.args: _*)</span>
      }
      @hint.map { hint =>
       <span class="form-hint">@messages(hint)</span>
