@@ -67,7 +67,7 @@ bodyClasses = None) {
             hiddenLegend = true
         ) {
             <div class="multiple-choice">
-                <input id="consent" name="agree" type="checkbox" value="agreed">
+                <input id="consent" name="agree" type="checkbox" value="agreed"  @if(form("agree").hasErrors){aria-describedby="error-message-@{form("agree").id}-input"}>
                 <label for="consent">I agree</label>
             </div>
         }
