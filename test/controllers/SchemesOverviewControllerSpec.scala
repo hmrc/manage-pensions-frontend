@@ -33,8 +33,8 @@ import play.api.libs.json.{JsNumber, Json}
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, _}
-import utils.FakeFeatureSwitchManagementService
 import views.html.schemesOverview
+import play.api.mvc.Results.Ok
 
 import scala.concurrent.Future
 
@@ -243,6 +243,20 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
         status(result) mustBe SEE_OTHER
         redirectLocation(result).value mustBe cannotStartRegistrationUrl.url
       }
+
+
+      "redirect to cannot start registration page if  scheme details are found with scheme name missing and srn number present" in {
+        when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(schemeSrnNumberOnlyData))
+        when(fakeCacheConnector.removeAll(eqTo("id"))(any(), any())).thenReturn(Future(Ok))
+        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaDetails(false)))
+
+
+        val result = controller().onClickCheckIfSchemeCanBeRegistered(fakeRequest)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).value mustBe frontendAppConfig.registerSchemeUrl
+        verify(fakeCacheConnector, times(1)).removeAll(any())(any(), any())
+      }
     }
   }
 
@@ -288,6 +302,7 @@ object SchemesOverviewControllerSpec {
 
   val schemeNameJsonOption = Some(Json.obj("schemeName" -> schemeName))
   val schemeDetailsJsonOption = Some(Json.obj("schemeDetails" -> Json.obj("schemeName" -> schemeName)))
+  val schemeSrnNumberOnlyData = Some(Json.obj("submissionReferenceNumber" -> srn))
 }
 
 
