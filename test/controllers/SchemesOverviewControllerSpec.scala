@@ -92,115 +92,115 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
 
 
   "SchemesOverview Controller" when {
-//    "on a GET" must {
-//      "return OK and the correct view if no scheme has been defined" in {
-//        when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
-//        when(fakePsaMinimalConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any()))
-//          .thenReturn(Future.successful(minimalPsaName))
-//        when(pensionSchemeVarianceLockConnector.getLockByPsa(Matchers.any())(Matchers.any(), Matchers.any()))
-//          .thenReturn(Future.successful(None))
-//
-//        val result = controller().onPageLoad(fakeRequest)
-//
-//        status(result) mustBe OK
-//        contentAsString(result) mustBe viewWithPsaName(Some(expectedName))
-//      }
-//
-//      "return OK and the correct view with an organisation name for an Organisation Psa" in {
-//        when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(schemeNameJsonOption))
-//        when(fakeCacheConnector.lastUpdated(any())(any(), any()))
-//          .thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
-//        when(fakePsaMinimalConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaOrgName))
-//        when(pensionSchemeVarianceLockConnector.getLockByPsa(Matchers.any())(Matchers.any(), Matchers.any()))
-//          .thenReturn(Future.successful(None))
-//
-//        val result = controller().onPageLoad(fakeRequest)
-//        status(result) mustBe OK
-//        contentAsString(result) mustBe viewWithPsaNameAndScheme(expectedPsaOrgName)
-//      }
-//    }
-//
-//    "SchemesOverview Controller" when {
-//      "on a GET" must {
-//        "return no variations section when there is no lock for any scheme" in {
-//          when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
-//          when(fakePsaMinimalConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any()))
-//            .thenReturn(Future.successful(minimalPsaName))
-//
-//          val result = controller().onPageLoad(fakeRequest)
-//          when(pensionSchemeVarianceLockConnector.getLockByPsa(Matchers.any())(Matchers.any(), Matchers.any()))
-//              .thenReturn(Future.successful(None))
-//          status(result) mustBe OK
-//          contentAsString(result).contains(messages("messages__schemesOverview__change_details__p2")) mustBe false
-//        }
-//
-//        "return no variations section when there is a lock for a scheme but the scheme is not in the update collection" in {
-//          when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
-//          when(fakePsaMinimalConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any()))
-//            .thenReturn(Future.successful(minimalPsaName))
-//
-//          when(pensionSchemeVarianceLockConnector.getLockByPsa(Matchers.any())(Matchers.any(), Matchers.any()))
-//            .thenReturn(Future.successful(Some(SchemeVariance(psaId, srn))))
-//
-//          when(updateConnector.fetch(Matchers.any())(Matchers.any(), Matchers.any()))
-//              .thenReturn(Future.successful(None))
-//
-//          val result = controller().onPageLoad(fakeRequest)
-//          status(result) mustBe OK
-//          contentAsString(result).contains(messages("messages__schemesOverview__change_details__p2")) mustBe false
-//        }
-//
-//        "return a variations section when there is a lock for a scheme and the scheme is in the update collection but there is no last updated date" in {
-//          val schemeName = "a scheme"
-//          val json = Json.parse( s"""{"schemeName":"$schemeName"}""" )
-//
-//          when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
-//          when(fakePsaMinimalConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any()))
-//            .thenReturn(Future.successful(minimalPsaName))
-//
-//          when(pensionSchemeVarianceLockConnector.getLockByPsa(Matchers.any())(Matchers.any(), Matchers.any()))
-//            .thenReturn(Future.successful(Some(SchemeVariance(psaId, srn))))
-//
-//          when(updateConnector.fetch(Matchers.any())(Matchers.any(), Matchers.any()))
-//            .thenReturn(Future.successful(Some(json)))
-//
-//          when(updateConnector.lastUpdated(Matchers.any())(Matchers.any(), Matchers.any()))
-//              .thenReturn(Future.successful(None))
-//
-//          val result = controller().onPageLoad(fakeRequest)
-//
-//          status(result) mustBe OK
-//          contentAsString(result).contains(messages("messages__schemesOverview__change_details__p2", schemeName, deleteDate)) mustBe true
-//        }
-//
-//        "return a variations section when there is a lock for a scheme and the scheme is in the update collection and there is a last updated date" in {
-//          val schemeName = "a scheme"
-//          val json = Json.parse( s"""{"schemeName":"$schemeName"}""" )
-//          val deleteDate: String = "11 June 2019"
-//
-//          when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
-//          when(fakePsaMinimalConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any()))
-//            .thenReturn(Future.successful(minimalPsaName))
-//
-//
-//          when(pensionSchemeVarianceLockConnector.getLockByPsa(Matchers.any())(Matchers.any(), Matchers.any()))
-//            .thenReturn(Future.successful(Some(SchemeVariance(psaId, srn))))
-//
-//          when(updateConnector.fetch(Matchers.any())(Matchers.any(), Matchers.any()))
-//            .thenReturn(Future.successful(Some(json)))
-//
-//          when(updateConnector.lastUpdated(Matchers.any())(Matchers.any(), Matchers.any()))
-//            .thenReturn(Future.successful(Some(JsNumber(BigDecimal(new DateTime("2019-05-11").getMillis)))))
-//
-//          val expectedContent = messages("messages__schemesOverview__change_details__p1", schemeName, "08 June 2019")
-//
-//          val result = controller().onPageLoad(fakeRequest)
-//
-//          status(result) mustBe OK
-//          contentAsString(result).contains(expectedContent) mustBe true
-//        }
-//      }
-//    }
+    "on a GET" must {
+      "return OK and the correct view if no scheme has been defined" in {
+        when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
+        when(fakePsaMinimalConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any()))
+          .thenReturn(Future.successful(minimalPsaName))
+        when(pensionSchemeVarianceLockConnector.getLockByPsa(Matchers.any())(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(None))
+
+        val result = controller().onPageLoad(fakeRequest)
+
+        status(result) mustBe OK
+        contentAsString(result) mustBe viewWithPsaName(Some(expectedName))
+      }
+
+      "return OK and the correct view with an organisation name for an Organisation Psa" in {
+        when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(schemeNameJsonOption))
+        when(fakeCacheConnector.lastUpdated(any())(any(), any()))
+          .thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
+        when(fakePsaMinimalConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaOrgName))
+        when(pensionSchemeVarianceLockConnector.getLockByPsa(Matchers.any())(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(None))
+
+        val result = controller().onPageLoad(fakeRequest)
+        status(result) mustBe OK
+        contentAsString(result) mustBe viewWithPsaNameAndScheme(expectedPsaOrgName)
+      }
+    }
+
+    "SchemesOverview Controller" when {
+      "on a GET" must {
+        "return no variations section when there is no lock for any scheme" in {
+          when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
+          when(fakePsaMinimalConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any()))
+            .thenReturn(Future.successful(minimalPsaName))
+
+          val result = controller().onPageLoad(fakeRequest)
+          when(pensionSchemeVarianceLockConnector.getLockByPsa(Matchers.any())(Matchers.any(), Matchers.any()))
+              .thenReturn(Future.successful(None))
+          status(result) mustBe OK
+          contentAsString(result).contains(messages("messages__schemesOverview__change_details__p2")) mustBe false
+        }
+
+        "return no variations section when there is a lock for a scheme but the scheme is not in the update collection" in {
+          when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
+          when(fakePsaMinimalConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any()))
+            .thenReturn(Future.successful(minimalPsaName))
+
+          when(pensionSchemeVarianceLockConnector.getLockByPsa(Matchers.any())(Matchers.any(), Matchers.any()))
+            .thenReturn(Future.successful(Some(SchemeVariance(psaId, srn))))
+
+          when(updateConnector.fetch(Matchers.any())(Matchers.any(), Matchers.any()))
+              .thenReturn(Future.successful(None))
+
+          val result = controller().onPageLoad(fakeRequest)
+          status(result) mustBe OK
+          contentAsString(result).contains(messages("messages__schemesOverview__change_details__p2")) mustBe false
+        }
+
+        "return a variations section when there is a lock for a scheme and the scheme is in the update collection but there is no last updated date" in {
+          val schemeName = "a scheme"
+          val json = Json.parse( s"""{"schemeName":"$schemeName"}""" )
+
+          when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
+          when(fakePsaMinimalConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any()))
+            .thenReturn(Future.successful(minimalPsaName))
+
+          when(pensionSchemeVarianceLockConnector.getLockByPsa(Matchers.any())(Matchers.any(), Matchers.any()))
+            .thenReturn(Future.successful(Some(SchemeVariance(psaId, srn))))
+
+          when(updateConnector.fetch(Matchers.any())(Matchers.any(), Matchers.any()))
+            .thenReturn(Future.successful(Some(json)))
+
+          when(updateConnector.lastUpdated(Matchers.any())(Matchers.any(), Matchers.any()))
+              .thenReturn(Future.successful(None))
+
+          val result = controller().onPageLoad(fakeRequest)
+
+          status(result) mustBe OK
+          contentAsString(result).contains(messages("messages__schemesOverview__change_details__p2", schemeName, deleteDate)) mustBe true
+        }
+
+        "return a variations section when there is a lock for a scheme and the scheme is in the update collection and there is a last updated date" in {
+          val schemeName = "a scheme"
+          val json = Json.parse( s"""{"schemeName":"$schemeName"}""" )
+          val deleteDate: String = "11 June 2019"
+
+          when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
+          when(fakePsaMinimalConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any()))
+            .thenReturn(Future.successful(minimalPsaName))
+
+
+          when(pensionSchemeVarianceLockConnector.getLockByPsa(Matchers.any())(Matchers.any(), Matchers.any()))
+            .thenReturn(Future.successful(Some(SchemeVariance(psaId, srn))))
+
+          when(updateConnector.fetch(Matchers.any())(Matchers.any(), Matchers.any()))
+            .thenReturn(Future.successful(Some(json)))
+
+          when(updateConnector.lastUpdated(Matchers.any())(Matchers.any(), Matchers.any()))
+            .thenReturn(Future.successful(Some(JsNumber(BigDecimal(new DateTime("2019-05-11").getMillis)))))
+
+          val expectedContent = messages("messages__schemesOverview__change_details__p1", schemeName, "08 June 2019")
+
+          val result = controller().onPageLoad(fakeRequest)
+
+          status(result) mustBe OK
+          contentAsString(result).contains(expectedContent) mustBe true
+        }
+      }
+    }
 
     "on a POST with isWorkPackageOneEnabled flag is on" must {
 

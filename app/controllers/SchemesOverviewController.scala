@@ -24,6 +24,7 @@ import models.requests.{DataRequest, OptionalDataRequest}
 import models.{LastUpdatedDate, MinimalPSA, RegistrationDetails, VariationDetails}
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTime, DateTimeZone, LocalDate}
+import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json._
 import play.api.mvc.{Action, AnyContent, Result}
@@ -135,13 +136,13 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
       }
   }
 
-  private def retrieveResult(schemeDetails: Option[JsValue], psaMinimalDetails: Option[MinimalPSA]
+  private def retrieveResult(schemeDetailsCache: Option[JsValue], psaMinimalDetails: Option[MinimalPSA]
                             )(implicit request: OptionalDataRequest[AnyContent]): Future[Result] = {
-    schemeDetails match {
+    schemeDetailsCache match {
       case None => Future.successful(redirectBasedOnPsaSuspension(registerSchemeUrl, psaMinimalDetails))
-      case Some(details) => schemeName(details) match {
+      case Some(schemeDetails) => schemeName(schemeDetails) match {
         case Some(_) => Future.successful(redirectBasedOnPsaSuspension(appConfig.continueSchemeUrl, psaMinimalDetails))
-        case _ => deleteDataIfSrnNumberFoundAndRedirect(details, psaMinimalDetails)
+        case _ => deleteDataIfSrnNumberFoundAndRedirect(schemeDetails, psaMinimalDetails)
       }
     }
   }
@@ -149,8 +150,9 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
   private def deleteDataIfSrnNumberFoundAndRedirect(data: JsValue,
                                                     psaMinimalDetails: Option[MinimalPSA]
                                                    )(implicit request: OptionalDataRequest[AnyContent]): Future[Result] =
-    (data \ "submissionReferenceNumber").validate[String].fold(_ =>
-      Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad())),
+    (data \ "submissionReferenceNumber").validate[String].fold({_ =>
+      Logger.warn("Page load failed because both scheme name and srn number were not found in scheme registration mongo collection")
+      Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))},
       _ => dataCacheConnector.removeAll(request.externalId).map {_ =>
         redirectBasedOnPsaSuspension(registerSchemeUrl, psaMinimalDetails)
       })
