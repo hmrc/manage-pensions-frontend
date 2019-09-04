@@ -20,6 +20,7 @@ import config.{FeatureSwitchManagementService, FrontendAppConfig}
 import connectors.{MinimalPsaConnector, PensionSchemeVarianceLockConnector, UpdateSchemeCacheConnector, UserAnswersCacheConnector}
 import controllers.actions._
 import javax.inject.Inject
+import models.requests.{DataRequest, OptionalDataRequest}
 import models.{LastUpdatedDate, MinimalPSA, RegistrationDetails, VariationDetails}
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTime, DateTimeZone, LocalDate}
@@ -128,24 +129,35 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
       for {
         data <- dataCacheConnector.fetch(request.externalId)
         psaMinimalDetails <- minimalPsaConnector.getMinimalPsaDetails(request.psaId.id)
+        result <- retrieveResult(data, Some(psaMinimalDetails))
       } yield {
-        retrieveResult(data, Some(psaMinimalDetails))
+        result
       }
   }
 
-  private def retrieveResult(schemeDetails: Option[JsValue], psaMinimalDetails: Option[MinimalPSA]): Result = {
+  private def retrieveResult(schemeDetails: Option[JsValue], psaMinimalDetails: Option[MinimalPSA]
+                            )(implicit request: OptionalDataRequest[AnyContent]): Future[Result] = {
     schemeDetails match {
-      case None => psaMinimalDetails.fold(Redirect(registerSchemeUrl))(details => redirect(registerSchemeUrl, details))
+      case None => Future.successful(redirectBasedOnPsaSuspension(registerSchemeUrl, psaMinimalDetails))
       case Some(details) => schemeName(details) match {
-        case Some(_) => psaMinimalDetails.fold(Redirect(appConfig.continueSchemeUrl))(details => redirect(appConfig.continueSchemeUrl, details))
-        case _ =>
-          Redirect(controllers.routes.SessionExpiredController.onPageLoad())
+        case Some(_) => Future.successful(redirectBasedOnPsaSuspension(appConfig.continueSchemeUrl, psaMinimalDetails))
+        case _ => deleteDataIfSrnNumberFoundAndRedirect(details, psaMinimalDetails)
       }
     }
   }
 
-  private def redirect(redirectUrl: String, psaMinimalDetails: MinimalPSA): Result = {
-    if (psaMinimalDetails.isPsaSuspended) {
+  private def deleteDataIfSrnNumberFoundAndRedirect(data: JsValue,
+                                                    psaMinimalDetails: Option[MinimalPSA]
+                                                   )(implicit request: OptionalDataRequest[AnyContent]): Future[Result] =
+    (data \ "submissionReferenceNumber").validate[String].fold(_ =>
+      Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad())),
+      _ => dataCacheConnector.removeAll(request.externalId).map {_ =>
+        redirectBasedOnPsaSuspension(registerSchemeUrl, psaMinimalDetails)
+      })
+
+  private def redirectBasedOnPsaSuspension(redirectUrl: String, psaMinimalDetails:  Option[MinimalPSA]): Result =
+  psaMinimalDetails.fold(Redirect(redirectUrl)){ psaMinDetails =>
+    if (psaMinDetails.isPsaSuspended) {
       Redirect(routes.CannotStartRegistrationController.onPageLoad())
     } else {
       Redirect(redirectUrl)
