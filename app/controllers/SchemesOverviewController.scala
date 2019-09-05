@@ -150,10 +150,11 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
   private def deleteDataIfSrnNumberFoundAndRedirect(data: JsValue,
                                                     psaMinimalDetails: Option[MinimalPSA]
                                                    )(implicit request: OptionalDataRequest[AnyContent]): Future[Result] =
-    (data \ "submissionReferenceNumber").validate[String].fold({_ =>
-      Logger.warn("Page load failed because both scheme name and srn number were not found in scheme registration mongo collection")
+    (data \ "submissionReferenceNumber" \ "schemeReferenceNumber").validate[String].fold({_ =>
+      Logger.warn("Page load failed since both scheme name and srn number were not found in scheme registration mongo collection")
       Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))},
       _ => dataCacheConnector.removeAll(request.externalId).map {_ =>
+        Logger.warn("Data cleared as scheme name is missing and srn number was found in mongo collection")
         redirectBasedOnPsaSuspension(registerSchemeUrl, psaMinimalDetails)
       })
 
