@@ -302,7 +302,7 @@ object SchemesOverviewControllerSpec {
 
   val schemeNameJsonOption = Some(Json.obj("schemeName" -> schemeName))
   val schemeDetailsJsonOption = Some(Json.obj("schemeDetails" -> Json.obj("schemeName" -> schemeName)))
-  val schemeSrnNumberOnlyData = Some(Json.obj("submissionReferenceNumber" -> srn))
+  val schemeSrnNumberOnlyData = Some(Json.obj("submissionReferenceNumber" -> Json.obj("schemeReferenceNumber" -> srn)))
 }
 
 
