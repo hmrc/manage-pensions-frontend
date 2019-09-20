@@ -82,8 +82,7 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
     }
 
     "display scheme name" in {
-      Jsoup.parse(createView()().toString()) must
-        haveDynamicText(Message("messages__schemesOverview__scheme_name", schemeName))
+      Jsoup.parse(createView()().toString()) must haveDynamicText(schemeName)
     }
 
     "have dynamic text with date of last update" in {
