@@ -63,7 +63,7 @@ variationDetails: Option[VariationDetails]
             <p><a id="register-new-scheme" href="@controllers.routes.SchemesOverviewController.onClickCheckIfSchemeCanBeRegistered">@messages("messages__schemesOverview__register__link")</a></p>
         }
         case Some(details) => {
-            <h2>@Html(Message("messages__schemesOverview__scheme_name", details.schemeName))</h2>
+            <h2>@details.schemeName</h2>
 
             <p>@Html(Message("messages__schemesOverview__continue__lastDate", details.lastUpdatedDate))</p>
 
