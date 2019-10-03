@@ -16,7 +16,7 @@
 
 package views.invitations
 
-import forms.invitations.PsaIdFromProvider
+import forms.invitations.PsaIdFormProvider
 import models.NormalMode
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
@@ -27,7 +27,7 @@ class PsaIdViewSpec extends QuestionViewBehaviours[String] {
 
   val messageKeyPrefix = "psa__id"
 
-  val formProvider = new PsaIdFromProvider()
+  val formProvider = new PsaIdFormProvider()
   override val form = formProvider()
 
   def createView: () => HtmlFormat.Appendable = () => psaId(frontendAppConfig, form, "psaName", NormalMode)(fakeRequest, messages)
