@@ -59,5 +59,11 @@ class PsaIdFromProviderSpec extends StringFieldBehaviours with Constraints{
       "B1234567",
       FormError(fieldName, invalidKey, Seq(Constraints.psaIdRegx))
     )
+
+    "convert lower case input to upper case and remove spaces" in {
+      val result = form.bind(Map(fieldName -> " a21 000 51 "))
+      result.errors shouldBe empty
+      result.value shouldBe Some("A2100051")
+    }
   }
 }

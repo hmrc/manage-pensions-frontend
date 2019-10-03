@@ -41,4 +41,15 @@ trait Transforms {
     }
   }
 
+  def noSpaceWithUpperCaseTransform(value: String): String = {
+    strip(value).toUpperCase
+    toUpperCaseAlphaOnly(strip(value))
+  }
+
+  def toUpperCaseAlphaOnly(value: String): String =
+    value.map {
+      case c if ('a' to 'z').contains(c) => c.toUpper
+      case c                                    => c
+    }
+
 }
