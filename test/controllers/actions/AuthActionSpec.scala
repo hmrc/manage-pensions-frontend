@@ -118,15 +118,15 @@ class AuthActionSpec extends SpecBase {
 }
 
 object AuthActionSpec {
-  private def fakeAuthConnector(stubbedRetrievalResult: Future[_]) = new AuthConnector {
+  private def fakeAuthConnector(stubbedRetrievalResult: Future[_]): AuthConnector = new AuthConnector {
 
     def authorise[A](predicate: Predicate, retrieval: Retrieval[A])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[A] = {
       stubbedRetrievalResult.map(_.asInstanceOf[A])
     }
   }
 
-  private def authRetrievals = Future.successful(new ~(new ~(new ~(Some("id"), Enrolments(Set())),
-    Some(AffinityGroup.Individual)), Credentials("providerId", "providerType")))
+  private def authRetrievals: Future[Some[String] ~ Enrolments ~ Some[AffinityGroup.Individual.type] ~ Some[Credentials]] =
+    Future.successful(new ~(new ~(new ~(Some("id"), Enrolments(Set())), Some(AffinityGroup.Individual)), Some(Credentials("providerId", "providerType"))))
 
   class Harness(authAction: AuthAction) extends Controller {
     def onPageLoad(): Action[AnyContent] = authAction { _ => Ok }

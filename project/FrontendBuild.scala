@@ -11,16 +11,16 @@ private object AppDependencies {
   import play.core.PlayVersion
   import play.sbt.PlayImport._
 
-  val compile = Seq(
+  val compile: Seq[ModuleID] = Seq(
     ws,
     "uk.gov.hmrc" %% "play-reactivemongo"            % "6.7.0",
     "uk.gov.hmrc" %% "logback-json-logger"           % "4.0.0",
     "uk.gov.hmrc" %% "govuk-template"                % "5.26.0-play-25",
     "uk.gov.hmrc" %% "play-health"                   % "3.14.0-play-25",
-    "uk.gov.hmrc" %% "play-ui"                       % "7.40.0-play-25",
-    "uk.gov.hmrc" %% "http-caching-client"           % "8.4.0-play-25",
+    "uk.gov.hmrc" %% "play-ui"                       % "8.3.0-play-25",
+    "uk.gov.hmrc" %% "http-caching-client"           % "9.0.0-play-25",
     "uk.gov.hmrc" %% "play-conditional-form-mapping" % "0.2.0",
-    "uk.gov.hmrc" %% "bootstrap-play-25"             % "4.12.0",
+    "uk.gov.hmrc" %% "bootstrap-play-25"             % "5.1.0",
     "uk.gov.hmrc" %% "play-language"                 % "3.4.0",
     "uk.gov.hmrc" %% "domain"                        % "5.6.0-play-25",
     "uk.gov.hmrc" %% "play-whitelist-filter"         % "2.0.0"
@@ -32,9 +32,9 @@ private object AppDependencies {
   }
 
   object Test {
-    def apply() = new TestDependencies {
-      override lazy val test = Seq(
-        "uk.gov.hmrc"            %% "hmrctest"              % "3.8.0-play-25" % scope,
+    def apply(): Seq[ModuleID] = new TestDependencies {
+      override lazy val test: Seq[ModuleID] = Seq(
+        "uk.gov.hmrc"            %% "hmrctest"              % "3.9.0-play-25" % scope,
         "org.scalatest"          %% "scalatest"             % "3.0.4" % scope,
         "org.scalatestplus.play" %% "scalatestplus-play"    % "2.0.1" % scope,
         "org.scalacheck"         %% "scalacheck"            % "1.14.0" % scope,
@@ -49,5 +49,5 @@ private object AppDependencies {
     }.test
   }
 
-  def apply() = compile ++ Test()
+  def apply(): Seq[ModuleID] = compile ++ Test()
 }
