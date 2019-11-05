@@ -17,24 +17,25 @@
 package utils.navigators
 
 import config.FrontendAppConfig
-import connectors.UserAnswersCacheConnector
+import identifiers.Identifier
 import identifiers.deregister.ConfirmStopBeingPsaId
 import javax.inject.Inject
-import utils.{Navigator, UserAnswers}
 import play.api.mvc.Call
+import utils.{Navigator, UserAnswers}
 
-class PsaDeRegistrationNavigator @Inject()(val dataCacheConnector: UserAnswersCacheConnector, config: FrontendAppConfig) extends Navigator {
+class PsaDeRegistrationNavigator @Inject()(config: FrontendAppConfig) extends Navigator {
 
-  override def routeMap(from: NavigateFrom): Option[NavigateTo] = from.id match {
-    case ConfirmStopBeingPsaId => deregisterRoutes(from.userAnswers)
-    case _ => None
+  override def routeMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
+    case ConfirmStopBeingPsaId => deregisterRoutes(ua)
   }
 
-  override protected def editRouteMap(from: NavigateFrom): Option[NavigateTo] = from.id match { case _ => None }
+  override protected def editRouteMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
+    case _ => controllers.routes.IndexController.onPageLoad()
+  }
 
-  private def deregisterRoutes(answers: UserAnswers): Option[NavigateTo] = answers.get(ConfirmStopBeingPsaId) match {
-    case Some(true) => NavigateTo.dontSave(controllers.deregister.routes.SuccessfulDeregistrationController.onPageLoad())
-    case Some(false) => NavigateTo.dontSave(new Call("GET",config.registeredPsaDetailsUrl))
-    case _ => NavigateTo.dontSave(controllers.routes.SessionExpiredController.onPageLoad())
+  private def deregisterRoutes(answers: UserAnswers): Call = answers.get(ConfirmStopBeingPsaId) match {
+    case Some(true) => controllers.deregister.routes.SuccessfulDeregistrationController.onPageLoad()
+    case Some(false) => Call("GET", config.registeredPsaDetailsUrl)
+    case _ => controllers.routes.SessionExpiredController.onPageLoad()
   }
 }

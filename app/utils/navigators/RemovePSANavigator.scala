@@ -18,32 +18,32 @@ package utils.navigators
 
 import connectors.UserAnswersCacheConnector
 import controllers.routes._
-import identifiers.SchemeSrnId
 import identifiers.remove.{ConfirmRemovePsaId, RemovalDateId}
+import identifiers.{Identifier, SchemeSrnId}
 import javax.inject.{Inject, Singleton}
+import play.api.mvc.Call
 import utils.{Navigator, UserAnswers}
 
 @Singleton
 class RemovePSANavigator @Inject()(val dataCacheConnector: UserAnswersCacheConnector) extends Navigator {
 
-  override def routeMap(from: NavigateFrom): Option[NavigateTo] = from.id match {
-    case ConfirmRemovePsaId => confirmRemovePsaRoutes(from.userAnswers)
-    case RemovalDateId => NavigateTo.dontSave(controllers.remove.routes.ConfirmRemovedController.onPageLoad())
-    case _ => NavigateTo.dontSave(controllers.routes.SessionExpiredController.onPageLoad())
+  override def routeMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
+    case ConfirmRemovePsaId => confirmRemovePsaRoutes(ua)
+    case RemovalDateId => controllers.remove.routes.ConfirmRemovedController.onPageLoad()
   }
 
   private def confirmRemovePsaRoutes(userAnswers: UserAnswers) = {
     (userAnswers.get(ConfirmRemovePsaId), userAnswers.get(SchemeSrnId)) match {
       case (Some(false), Some(srn)) =>
-        NavigateTo.dontSave(controllers.routes.SchemeDetailsController.onPageLoad(srn))
+        controllers.routes.SchemeDetailsController.onPageLoad(srn)
       case (Some(true), _) =>
-        NavigateTo.dontSave(controllers.remove.routes.RemovalDateController.onPageLoad())
+        controllers.remove.routes.RemovalDateController.onPageLoad()
       case _ =>
-        NavigateTo.dontSave(controllers.routes.SessionExpiredController.onPageLoad())
+        controllers.routes.SessionExpiredController.onPageLoad()
     }
   }
 
-  override protected def editRouteMap(from: NavigateFrom): Option[NavigateTo] = from.id match {
-    case _ => NavigateTo.dontSave(SessionExpiredController.onPageLoad())
+  override protected def editRouteMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
+    case _ => SessionExpiredController.onPageLoad()
   }
 }
