@@ -21,7 +21,7 @@ import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
 import controllers.actions._
-import forms.invitations.PsaIdFromProvider
+import forms.invitations.PsaIdFormProvider
 import identifiers.invitations.{InviteeNameId, InviteePSAId}
 import models.Mode
 import play.api.data.Form
@@ -42,7 +42,7 @@ class PsaIdController @Inject()(appConfig: FrontendAppConfig,
                                 dataCacheConnector: UserAnswersCacheConnector,
                                 getData: DataRetrievalAction,
                                 requireData: DataRequiredAction,
-                                formProvider: PsaIdFromProvider)(implicit val ec: ExecutionContext) extends FrontendController with Retrievals with I18nSupport {
+                                formProvider: PsaIdFormProvider)(implicit val ec: ExecutionContext) extends FrontendController with Retrievals with I18nSupport {
 
   val form = formProvider()
 

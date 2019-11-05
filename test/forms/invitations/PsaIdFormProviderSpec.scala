@@ -21,9 +21,9 @@ import play.api.data.FormError
 import views.behaviours.StringFieldBehaviours
 import wolfendale.scalacheck.regexp.RegexpGen
 
-class PsaIdFromProviderSpec extends StringFieldBehaviours with Constraints{
+class PsaIdFormProviderSpec extends StringFieldBehaviours with Constraints{
 
-  val formProvider = new PsaIdFromProvider()
+  val formProvider = new PsaIdFormProvider()
   val form = formProvider()
 
   ".psaId" must {
@@ -32,7 +32,7 @@ class PsaIdFromProviderSpec extends StringFieldBehaviours with Constraints{
     val requiredKey = "messages__error__psa__id__required"
     val lengthKey = "messages__error__psa__id__invalid"
     val invalidKey = "messages__error__psa__id__invalid"
-    val maxLength = PsaIdFromProvider.psaIdLength
+    val maxLength = PsaIdFormProvider.psaIdLength
 
     behave like fieldThatBindsValidData(
       form,
@@ -59,5 +59,11 @@ class PsaIdFromProviderSpec extends StringFieldBehaviours with Constraints{
       "B1234567",
       FormError(fieldName, invalidKey, Seq(Constraints.psaIdRegx))
     )
+
+    "convert lower case input to upper case and remove spaces" in {
+      val result = form.bind(Map(fieldName -> " a21 000 51 "))
+      result.errors shouldBe empty
+      result.value shouldBe Some("A2100051")
+    }
   }
 }

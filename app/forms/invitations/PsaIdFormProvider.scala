@@ -22,16 +22,16 @@ import forms.mappings.{Mappings, Transforms}
 import play.api.data.Form
 
 
-class PsaIdFromProvider @Inject() extends Mappings with Transforms {
+class PsaIdFormProvider @Inject() extends Mappings with Transforms {
   def apply(): Form[String] = Form(
     "psaId" -> text("messages__error__psa__id__required").
-      transform(standardTextTransform, noTransform).
+      transform(noSpaceWithUpperCaseTransform, noTransform).
       verifying(firstError(
-        maxLength(PsaIdFromProvider.psaIdLength, "messages__error__psa__id__invalid"),
+        maxLength(PsaIdFormProvider.psaIdLength, "messages__error__psa__id__invalid"),
         psaId("messages__error__psa__id__invalid")))
   )
 }
 
-object PsaIdFromProvider {
+object PsaIdFormProvider {
   val psaIdLength = 8
 }

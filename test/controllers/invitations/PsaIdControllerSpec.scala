@@ -19,7 +19,7 @@ package controllers.invitations
 import connectors.FakeUserAnswersCacheConnector
 import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
-import forms.invitations.PsaIdFromProvider
+import forms.invitations.PsaIdFormProvider
 import models.NormalMode
 import play.api.data.Form
 import play.api.test.FakeRequest
@@ -28,7 +28,7 @@ import views.html.invitations.psaId
 
 class PsaIdControllerSpec extends ControllerWithQuestionPageBehaviours {
 
-  val formProvider = new PsaIdFromProvider()
+  val formProvider = new PsaIdFormProvider()
   val form = formProvider()
   val userAnswer = UserAnswers().inviteeName("xyz")
   val userAnswerWithPsaId = userAnswer.inviteeId("A0000000")

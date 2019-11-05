@@ -51,6 +51,7 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
       val actual = view(config, fullList)
 
       actual must haveElementWithText("schemeNameHeader", messages("messages__listSchemes__column_schemeName"))
+      actual must haveElementWithText("srnHeader", messages("messages__listSchemes__column_srn"))
       actual must haveElementWithText("pstrHeader", messages("messages__listSchemes__column_pstr"))
       actual must haveElementWithText("statusHeader", messages("messages__listSchemes__column_status"))
     }
@@ -76,6 +77,19 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
       assertEqualsValue(actual, "#schemeStatus-2 span:nth-child(1)", "Pending information received")
       assertEqualsValue(actual, "#schemeStatus-3 span:nth-child(1)", "Rejected")
       assertEqualsValue(actual, "#schemeStatus-7 span:nth-child(1)", "Rejected under appeal")
+    }
+
+    "show the SRN column with correct values" in {
+      val actual = asDocument(view(config, fullList).apply())
+
+      assertEqualsValue(actual, "#srn-0 span:nth-child(1)", messages("reference-number-0"))
+      assertEqualsValue(actual, "#srn-1 span:nth-child(1)", messages("reference-number-1"))
+      assertEqualsValue(actual, "#srn-2 span:nth-child(1)", messages("reference-number-2"))
+      assertEqualsValue(actual, "#srn-3 span:nth-child(1)", messages("reference-number-3"))
+      assertEqualsValue(actual, "#srn-4 span:nth-child(1)", messages("reference-number-4"))
+      assertEqualsValue(actual, "#srn-5 span:nth-child(1)", messages("reference-number-5"))
+      assertEqualsValue(actual, "#srn-6 span:nth-child(1)", messages("reference-number-6"))
+      assertEqualsValue(actual, "#srn-7 span:nth-child(1)", messages("reference-number-7"))
     }
 
     "show the PSTR column with correct values" in {
