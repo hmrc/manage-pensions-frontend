@@ -23,7 +23,7 @@ import play.api.data.Form
 class DoYouHaveWorkingKnowledgeFormProvider @Inject()() extends Mappings {
 
   def apply(): Form[Boolean] = Form(
-    "value" -> boolean()
+    "value" -> boolean(requiredKey = "messages__haveWorkingKnowledge__error__required")
   )
 
 }
