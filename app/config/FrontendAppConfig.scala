@@ -73,6 +73,8 @@ class FrontendAppConfig @Inject()(override val runModeConfiguration: Configurati
   lazy val subscriptionDetailsUrl: String = s"${baseUrl("pension-administrator")}${runModeConfiguration.underlying.getString("urls.subscriptionDetails")}"
   lazy val removePsaUrl : String = s"${baseUrl("pension-administrator")}${runModeConfiguration.underlying.getString("urls.removePsa")}"
   lazy val deregisterPsaUrl : String = s"${baseUrl("pension-administrator")}${runModeConfiguration.underlying.getString("urls.deregisterPsa")}"
+  def canDeRegisterPsaUrl(psaId: String): String = baseUrl("pension-administrator") +
+    runModeConfiguration.underlying.getString("urls.pension-administrator.canDeRegister").format(psaId)
   lazy val taxDeEnrolmentUrl: String = baseUrl("tax-enrolments") +runModeConfiguration.underlying.getString("urls.tax-de-enrolment")
   lazy val updateSchemeDetailsUrl: String = s"${baseUrl("pensions-scheme")}${runModeConfiguration.underlying.getString("urls.updateSchemeDetails")}"
 
