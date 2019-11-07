@@ -20,7 +20,7 @@ import base.SpecBase
 import connectors.FakeUserAnswersCacheConnector
 import identifiers.Identifier
 import identifiers.remove.{ConfirmRemovePsaId, RemovalDateId}
-import org.scalatest.prop.TableFor6
+import org.scalatest.prop.TableFor4
 import play.api.libs.json.Json
 import play.api.mvc.Call
 import utils.{NavigatorBehaviour, UserAnswerOps, UserAnswers}
@@ -31,26 +31,26 @@ class RemovePSANavigatorSpec extends SpecBase with NavigatorBehaviour {
 
   val navigator = new RemovePSANavigator(FakeUserAnswersCacheConnector)
 
-  def routes(): TableFor6[Identifier, UserAnswers, Call, Boolean, Option[Call], Boolean] = Table(
-    ("Id",                 "User Answers",   "Next Page (NormalMode)",   "Save(NormalMode)",   "Next Page (CheckMode)",      "Save(CheckMode"),
-    (ConfirmRemovePsaId,   removePsa,           removalDatePage,           false,                 None,                       false),
-    (ConfirmRemovePsaId,   dontRemovePsa,       schemeDetailsPage,         false,                 None,                       false),
-    (ConfirmRemovePsaId,   emptyAnswers,        sessionExpiredPage,        false,                 None,                       false),
-    (RemovalDateId,        emptyAnswers,        confirmRemovedPage,        false,                 None,                       false)
+  def routes(): TableFor4[Identifier, UserAnswers, Call, Option[Call]] = Table(
+    ("Id",                 "User Answers",   "Next Page (NormalMode)",   "Next Page (CheckMode)"),
+    (ConfirmRemovePsaId,   removePsa,           removalDatePage,           None),
+    (ConfirmRemovePsaId,   dontRemovePsa,       schemeDetailsPage,         None),
+    (ConfirmRemovePsaId,   emptyAnswers,        sessionExpiredPage,        None),
+    (RemovalDateId,        emptyAnswers,        confirmRemovedPage,        None)
   )
 
   navigator.getClass.getSimpleName must {
     appRunning()
     behave like nonMatchingNavigator(navigator)
-    behave like navigatorWithRoutes(navigator, FakeUserAnswersCacheConnector, routes(), dataDescriber)
+    behave like navigatorWithRoutes(navigator, routes(), dataDescriber)
   }
 }
 
 object RemovePSANavigatorSpec {
   private val srn = "test srn"
   private lazy val emptyAnswers = UserAnswers(Json.obj())
-  private lazy val removePsa = UserAnswers().srn(srn).confirmRemovePsa(true)
-  private lazy val dontRemovePsa = UserAnswers().srn(srn).confirmRemovePsa(false)
+  private lazy val removePsa = UserAnswers().srn(srn).confirmRemovePsa(isChecked = true)
+  private lazy val dontRemovePsa = UserAnswers().srn(srn).confirmRemovePsa(isChecked = false)
 
   private def dataDescriber(answers: UserAnswers): String = answers.toString
 

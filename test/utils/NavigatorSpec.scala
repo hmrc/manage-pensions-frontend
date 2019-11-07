@@ -16,10 +16,9 @@
 
 package utils
 
-import connectors.{UserAnswersCacheConnector, FakeUserAnswersCacheConnector}
-import identifiers.{LastPageId, TypedIdentifier}
+import identifiers.{Identifier, TypedIdentifier}
 import models.requests.IdentifiedRequest
-import models.{CheckMode, LastPage, NormalMode}
+import models.{CheckMode, NormalMode}
 import org.scalatest.{MustMatchers, WordSpec}
 import play.api.mvc.Call
 import uk.gov.hmrc.http.HeaderCarrier
@@ -59,25 +58,7 @@ class NavigatorSpec extends WordSpec with MustMatchers {
         result mustBe controllers.routes.IndexController.onPageLoad()
       }
     }
-
-    "in either mode" must {
-      "save the last page when configured to do so" in {
-        val fixture = testFixture()
-        val result = fixture.navigator.nextPage(testSaveId, NormalMode, UserAnswers())
-        result mustBe testSaveCall
-        fixture.dataCacheConnector.verify(LastPageId, LastPage(testSaveCall.method, testSaveCall.url))
-      }
-
-      "not save the last page when configured not to" in {
-        val fixture = testFixture()
-        val result = fixture.navigator.nextPage(testNotSaveId, NormalMode, UserAnswers())
-        result mustBe testNotSaveCall
-        fixture.dataCacheConnector.verifyNot(LastPageId)
-      }
-    }
-
   }
-
 }
 
 object NavigatorSpec {
@@ -85,41 +66,28 @@ object NavigatorSpec {
   val testNotExistCall: Call = Call("GET", "http://www.test.com/not-exist")
   val testExistNormalModeCall: Call = Call("GET", "http://www.test.com/exist/normal-mode")
   val testExistCheckModeCall: Call = Call("GET", "http://www.test.com/exist/check-mode")
-  val testSaveCall: Call = Call("GET", "http://www.test.com/save")
-  val testNotSaveCall: Call = Call("GET", "http://www.test.com/not-save")
 
   val testExistId: TypedIdentifier[Nothing] = new TypedIdentifier[Nothing] {}
   val testNotExistId: TypedIdentifier[Nothing] = new TypedIdentifier[Nothing] {}
-  val testSaveId: TypedIdentifier[Nothing] = new TypedIdentifier[Nothing] {}
-  val testNotSaveId: TypedIdentifier[Nothing] = new TypedIdentifier[Nothing] {}
 
-  class TestNavigator(val dataCacheConnector: UserAnswersCacheConnector) extends Navigator {
+  class TestNavigator extends Navigator {
 
-    override protected def routeMap(from: NavigateFrom): Option[NavigateTo] =
-      from.id match {
-        case `testExistId` => NavigateTo.dontSave(testExistNormalModeCall)
-        case `testSaveId` => NavigateTo.save(testSaveCall)
-        case `testNotSaveId` => NavigateTo.dontSave(testNotSaveCall)
-        case _ => None
-      }
+    override protected def routeMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
+      case `testExistId` => testExistNormalModeCall
+    }
 
-    override protected def editRouteMap(from: NavigateFrom): Option[NavigateTo] =
-      from.id match {
-        case `testExistId` => NavigateTo.dontSave(testExistCheckModeCall)
-        case _ => None
-      }
+    override protected def editRouteMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
+      case `testExistId` => testExistCheckModeCall
+    }
 
   }
 
   trait TestFixture {
-    def dataCacheConnector: FakeUserAnswersCacheConnector
-
     def navigator: TestNavigator
   }
 
   def testFixture(): TestFixture = new TestFixture {
-    override val dataCacheConnector: FakeUserAnswersCacheConnector = new FakeUserAnswersCacheConnector {}
-    override val navigator: TestNavigator = new TestNavigator(dataCacheConnector)
+    override val navigator: TestNavigator = new TestNavigator
   }
 
   implicit val ex: IdentifiedRequest = new IdentifiedRequest() {
