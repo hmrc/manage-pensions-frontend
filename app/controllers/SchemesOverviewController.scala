@@ -17,31 +17,18 @@
 package controllers
 
 import config.FrontendAppConfig
-import connectors.{MinimalPsaConnector, PensionSchemeVarianceLockConnector, UpdateSchemeCacheConnector, UserAnswersCacheConnector}
 import controllers.actions._
 import javax.inject.Inject
-import models._
-import models.requests.OptionalDataRequest
-import org.joda.time.format.DateTimeFormat
-import org.joda.time.{DateTime, DateTimeZone, LocalDate}
-import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.libs.json._
-import play.api.mvc.Results.Redirect
-import play.api.mvc.{Action, AnyContent, Result}
+import play.api.mvc.{Action, AnyContent}
 import services.SchemesOverviewService
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import utils.annotations.PensionsSchemeCache
-import viewmodels.{CardViewModel, Message}
 import views.html.schemesOverview
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
                                           override val messagesApi: MessagesApi,
-                                          @PensionsSchemeCache dataCacheConnector: UserAnswersCacheConnector,
-                                          minimalPsaConnector: MinimalPsaConnector,
                                           service: SchemesOverviewService,
                                           authenticate: AuthAction,
                                           getData: DataRetrievalAction
@@ -54,11 +41,9 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
     implicit request =>
 
           val psaId = request.psaId.id
-            minimalPsaConnector.getPsaNameFromPsaID(psaId).flatMap { psaName =>
-
+            service.getPsaName(psaId).flatMap {name =>
               service.getTiles(psaId).map { cards =>
-
-                  Ok(schemesOverview(appConfig, psaName.getOrElse("Psa name not found"), cards))
+                  Ok(schemesOverview(appConfig, name.getOrElse("Psa name not found"), cards))
                 }
               }
             }
@@ -67,13 +52,7 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
 
   def onClickCheckIfSchemeCanBeRegistered: Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
-      for {
-        data <- dataCacheConnector.fetch(request.externalId)
-        psaMinimalDetails <- minimalPsaConnector.getMinimalPsaDetails(request.psaId.id)
-        result <- service.retrieveResult(data, Some(psaMinimalDetails))
-      } yield {
-        result
-      }
+      service.checkIfSchemeCanBeRegistered(request.psaId.id)
   }
 
   def redirect: Action[AnyContent] = Action.async(Future.successful(Redirect(controllers.routes.SchemesOverviewController.onPageLoad())))

@@ -138,6 +138,8 @@ object ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase {
   private def fakeDeregistrationConnector: DeregistrationConnector = new DeregistrationConnector {
     override def stopBeingPSA(psaId: String)(
       implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = Future.successful(HttpResponse(NO_CONTENT))
+
+    override def canDeRegister(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = Future.successful(true)
   }
 
   private def fakeMinimalPsaConnector(minimalPsaDetailsIndividual: MinimalPSA): MinimalPsaConnector = new MinimalPsaConnector {

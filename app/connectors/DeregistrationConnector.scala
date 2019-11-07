@@ -54,11 +54,15 @@ class DeregistrationConnectorImpl @Inject()(http: HttpClient, config: FrontendAp
     val url = config.canDeRegisterPsaUrl(psaId)
 
     http.GET(url).map { response =>
-      require(response.status == Status.OK)
-      response.json.validate[Boolean] match {
-        case JsSuccess(value, _) => value
-        case JsError(errors) => throw JsResultException(errors)
+      response.status match {
+        case OK => response.json.validate[Boolean] match {
+          case JsSuccess(value, _) => value
+          case JsError(errors) => throw JsResultException(errors)
+        }
+        case _ => handleErrorResponse("GET", url)(response)
       }
+
+
     } andThen {
       case Failure(t: Throwable) => Logger.warn("Unable to get the response from can de register api", t)
     }

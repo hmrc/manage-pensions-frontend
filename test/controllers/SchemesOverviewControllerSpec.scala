@@ -17,24 +17,20 @@
 package controllers
 
 import config._
-import connectors._
 import controllers.actions.{DataRetrievalAction, _}
-import models.{LastUpdatedDate, MinimalPSA, RegistrationDetails, SchemeVariance}
+import controllers.routes.ListSchemesController
+import models.Link
 import org.joda.time.format.DateTimeFormat
-import org.joda.time.{DateTime, DateTimeZone, LocalDate}
-import org.mockito.Matchers
+import org.joda.time.{DateTime, DateTimeZone}
 import org.mockito.Matchers.{eq => eqTo, _}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
-import play.api.Configuration
-import play.api.inject.bind
-import play.api.libs.json.{JsNumber, Json}
-import play.api.mvc.Call
-import play.api.test.FakeRequest
+import play.api.mvc.Results.Redirect
 import play.api.test.Helpers.{contentAsString, _}
+import services.SchemesOverviewService
+import viewmodels.{CardViewModel, Message}
 import views.html.schemesOverview
-import play.api.mvc.Results.Ok
 
 import scala.concurrent.Future
 
@@ -42,267 +38,100 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
 
   import SchemesOverviewControllerSpec._
 
-  val fakeCacheConnector: UserAnswersCacheConnector = mock[MicroserviceCacheConnector]
-  val fakePsaMinimalConnector: MinimalPsaConnector = mock[MinimalPsaConnector]
+  val fakeSchemesOverviewService: SchemesOverviewService = mock[SchemesOverviewService]
   val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
 
-  private val pensionSchemeVarianceLockConnector = mock[PensionSchemeVarianceLockConnector]
 
-  private val updateConnector = mock[UpdateSchemeCacheConnector]
-
-  private val config = app.injector.instanceOf[Configuration]
 
   def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): SchemesOverviewController =
-    new SchemesOverviewController(appConfig, messagesApi, fakeCacheConnector, fakePsaMinimalConnector, FakeAuthAction(),
-      dataRetrievalAction,
-      pensionSchemeVarianceLockConnector, updateConnector)
-
-  val deleteDate: String = DateTime.now(DateTimeZone.UTC).plusDays(appConfig.daysDataSaved).toString(formatter)
+    new SchemesOverviewController(appConfig, messagesApi, fakeSchemesOverviewService, FakeAuthAction(), dataRetrievalAction)
 
   def viewAsString(): String = schemesOverview(
     appConfig,
-    Some(RegistrationDetails(schemeName,
-      deleteDate,
-      lastDate.toString(formatter))),
-    None,
-    psaId,
-    None
+    psaName,
+    tiles
   )(fakeRequest, messages).toString
-
-  def viewAsStringNewScheme(): String = schemesOverview(frontendAppConfig, None, None, psaId, None)(fakeRequest, messages).toString
-
-  def viewWithPsaName(name: Option[String] = None): String = schemesOverview(frontendAppConfig, None, name, psaId, None)(fakeRequest, messages).toString
-
-  def viewWithPsaNameAndScheme(name: Option[String]): String = schemesOverview(frontendAppConfig,  Some(RegistrationDetails(schemeName,
-    deleteDate,
-    lastDate.toString(formatter))), name, psaId, None)(fakeRequest, messages).toString
-
-  override def beforeEach(): Unit = {
-    reset(fakeCacheConnector)
-    reset(fakePsaMinimalConnector)
-    reset(pensionSchemeVarianceLockConnector)
-    super.beforeEach()
-  }
-
-
-
-  private def createFormattedDate(dt: LastUpdatedDate, daysToAdd: Int): String = new LocalDate(dt.timestamp).plusDays(daysToAdd).toString(formatter)
-
-  private def currentTimestamp: LastUpdatedDate = LastUpdatedDate(DateTime.now(DateTimeZone.UTC).getMillis)
 
 
   "SchemesOverview Controller" when {
-    "on a GET" must {
-      "return OK and the correct view if no scheme has been defined" in {
-        when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
-        when(fakePsaMinimalConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any()))
-          .thenReturn(Future.successful(minimalPsaName))
-        when(pensionSchemeVarianceLockConnector.getLockByPsa(Matchers.any())(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
+    "onPageLoad" must {
+      "return OK and the correct tiles" in {
+        when(fakeSchemesOverviewService.getTiles(eqTo(psaId))(any(), any())).thenReturn(Future.successful(Seq(adminCard, schemeCard)))
+        when(fakeSchemesOverviewService.getPsaName(eqTo(psaId))(any()))
+          .thenReturn(Future.successful(Some(psaName)))
 
         val result = controller().onPageLoad(fakeRequest)
 
         status(result) mustBe OK
-        contentAsString(result) mustBe viewWithPsaName(Some(expectedName))
+        contentAsString(result) mustBe viewAsString()
       }
 
-      "return OK and the correct view with an organisation name for an Organisation Psa" in {
-        when(fakeCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(schemeNameJsonOption))
-        when(fakeCacheConnector.lastUpdated(any())(any(), any()))
-          .thenReturn(Future.successful(Some(Json.parse(timestamp.toString))))
-        when(fakePsaMinimalConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaOrgName))
-        when(pensionSchemeVarianceLockConnector.getLockByPsa(Matchers.any())(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
 
-        val result = controller().onPageLoad(fakeRequest)
-        status(result) mustBe OK
-        contentAsString(result) mustBe viewWithPsaNameAndScheme(expectedPsaOrgName)
-      }
     }
 
-    "SchemesOverview Controller" when {
-      "on a GET" must {
-        "return no variations section when there is no lock for any scheme" in {
-          when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
-          when(fakePsaMinimalConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any()))
-            .thenReturn(Future.successful(minimalPsaName))
+    "onClickCheckIfSchemeCanBeRegistered" must {
+      "redirect to the url returned by the service" in {
+      when(fakeSchemesOverviewService.checkIfSchemeCanBeRegistered(eqTo(psaId))(any(), any()))
+        .thenReturn(Future.successful(Redirect(frontendAppConfig.registerSchemeUrl)))
 
-          val result = controller().onPageLoad(fakeRequest)
-          when(pensionSchemeVarianceLockConnector.getLockByPsa(Matchers.any())(Matchers.any(), Matchers.any()))
-              .thenReturn(Future.successful(None))
-          status(result) mustBe OK
-          contentAsString(result).contains(messages("messages__schemesOverview__change_details__p2")) mustBe false
-        }
+      val result = controller().onClickCheckIfSchemeCanBeRegistered(fakeRequest)
 
-        "return no variations section when there is a lock for a scheme but the scheme is not in the update collection" in {
-          when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
-          when(fakePsaMinimalConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any()))
-            .thenReturn(Future.successful(minimalPsaName))
-
-          when(pensionSchemeVarianceLockConnector.getLockByPsa(Matchers.any())(Matchers.any(), Matchers.any()))
-            .thenReturn(Future.successful(Some(SchemeVariance(psaId, srn))))
-
-          when(updateConnector.fetch(Matchers.any())(Matchers.any(), Matchers.any()))
-              .thenReturn(Future.successful(None))
-
-          val result = controller().onPageLoad(fakeRequest)
-          status(result) mustBe OK
-          contentAsString(result).contains(messages("messages__schemesOverview__change_details__p2")) mustBe false
-        }
-
-        "return a variations section when there is a lock for a scheme and the scheme is in the update collection but there is no last updated date" in {
-          val schemeName = "a scheme"
-          val json = Json.parse( s"""{"schemeName":"$schemeName"}""" )
-
-          when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
-          when(fakePsaMinimalConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any()))
-            .thenReturn(Future.successful(minimalPsaName))
-
-          when(pensionSchemeVarianceLockConnector.getLockByPsa(Matchers.any())(Matchers.any(), Matchers.any()))
-            .thenReturn(Future.successful(Some(SchemeVariance(psaId, srn))))
-
-          when(updateConnector.fetch(Matchers.any())(Matchers.any(), Matchers.any()))
-            .thenReturn(Future.successful(Some(json)))
-
-          when(updateConnector.lastUpdated(Matchers.any())(Matchers.any(), Matchers.any()))
-              .thenReturn(Future.successful(None))
-
-          val result = controller().onPageLoad(fakeRequest)
-
-          status(result) mustBe OK
-          contentAsString(result).contains(messages("messages__schemesOverview__change_details__p2", schemeName, deleteDate)) mustBe true
-        }
-
-        "return a variations section when there is a lock for a scheme and the scheme is in the update collection and there is a last updated date" in {
-          val schemeName = "a scheme"
-          val json = Json.parse( s"""{"schemeName":"$schemeName"}""" )
-          val deleteDate: String = "11 June 2019"
-
-          when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
-          when(fakePsaMinimalConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any()))
-            .thenReturn(Future.successful(minimalPsaName))
-
-
-          when(pensionSchemeVarianceLockConnector.getLockByPsa(Matchers.any())(Matchers.any(), Matchers.any()))
-            .thenReturn(Future.successful(Some(SchemeVariance(psaId, srn))))
-
-          when(updateConnector.fetch(Matchers.any())(Matchers.any(), Matchers.any()))
-            .thenReturn(Future.successful(Some(json)))
-
-          when(updateConnector.lastUpdated(Matchers.any())(Matchers.any(), Matchers.any()))
-            .thenReturn(Future.successful(Some(JsNumber(BigDecimal(new DateTime("2019-05-11").getMillis)))))
-
-          val expectedContent = messages("messages__schemesOverview__change_details__p1", schemeName, "08 June 2019")
-
-          val result = controller().onPageLoad(fakeRequest)
-
-          status(result) mustBe OK
-          contentAsString(result).contains(expectedContent) mustBe true
-        }
-      }
-    }
-
-    "on a POST with isWorkPackageOneEnabled flag is on" must {
-
-      "redirect to the cannot start registration page if called without a psa name but psa is suspended" in {
-        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaDetails(true)))
-        when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
-
-        val result = controller().onClickCheckIfSchemeCanBeRegistered(fakeRequest)
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).value mustBe cannotStartRegistrationUrl.url
-      }
-
-      "redirect to the register scheme page if called without psa name but psa is not suspended" in {
-        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaDetails(false)))
-        when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
-
-        val result = controller().onClickCheckIfSchemeCanBeRegistered(fakeRequest)
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).value mustBe frontendAppConfig.registerSchemeUrl
-      }
-
-      "redirect to continue register a scheme page if called with a psa name and psa is not suspended" in {
-        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaDetails(false)))
-        when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(schemeNameJsonOption))
-
-        val result = controller().onClickCheckIfSchemeCanBeRegistered(fakeRequest)
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).value mustBe frontendAppConfig.continueSchemeUrl
-      }
-
-      "redirect to cannot start registration page if called with a psa name and psa is suspended" in {
-        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaDetails(true)))
-        when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(schemeNameJsonOption))
-
-        val result = controller().onClickCheckIfSchemeCanBeRegistered(fakeRequest)
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).value mustBe cannotStartRegistrationUrl.url
-      }
-
-
-      "redirect to cannot start registration page if  scheme details are found with scheme name missing and srn number present" in {
-        when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(schemeSrnNumberOnlyData))
-        when(fakeCacheConnector.removeAll(eqTo("id"))(any(), any())).thenReturn(Future(Ok))
-        when(fakePsaMinimalConnector.getMinimalPsaDetails(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaDetails(false)))
-
-
-        val result = controller().onClickCheckIfSchemeCanBeRegistered(fakeRequest)
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).value mustBe frontendAppConfig.registerSchemeUrl
-        verify(fakeCacheConnector, times(1)).removeAll(any())(any(), any())
-      }
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).value mustBe frontendAppConfig.registerSchemeUrl
     }
   }
 
-  "valid authenticated request" must {
+  "onRedirect" must {
 
     "redirect to overview page" in {
 
-      running(_.overrides(
-        bind[AuthAction].toInstance(FakeAuthAction())
-      )) {
-        implicit app =>
-
-          val request = FakeRequest("GET", "/manage-pension-schemes")
-
-          route(app, request).foreach { result =>
+      val result = controller().redirect(fakeRequest)
 
             status(result) mustBe SEE_OTHER
             redirectLocation(result).value mustBe controllers.routes.SchemesOverviewController.onPageLoad().url
           }
       }
     }
-  }
 }
 
-object SchemesOverviewControllerSpec {
+object SchemesOverviewControllerSpec extends ControllerSpecBase {
   val schemeName = "Test Scheme Name"
+  val psaName = "Test Psa Name"
   private val formatter = DateTimeFormat.forPattern("dd MMMM YYYY")
-  val lastDate: DateTime = DateTime.now(DateTimeZone.UTC)
-  val timestamp: Long = lastDate.getMillis
   private val psaId = "A0000000"
   private val srn = "srn"
+  val deleteDate: String = DateTime.now(DateTimeZone.UTC).plusDays(frontendAppConfig.daysDataSaved).toString(formatter)
 
-  def minimalPsaDetails(psaSuspended: Boolean) = MinimalPSA("test@test.com", psaSuspended, Some("Org Name"), None)
+  private val adminCard = CardViewModel(
+    id = Some("administrator-card"),
+    heading = Message("messages__schemeOverview__psa_heading"),
+    subHeading = Some(Message("messages__schemeOverview__psa_id", psaId)),
+    links = Seq(
+      Link("psaLink", frontendAppConfig.registeredPsaDetailsUrl, Message("messages__schemeOverview__psa_change")),
+      Link("invitations-received", controllers.invitations.routes.YourInvitationsController.onPageLoad().url,
+        Message("messages__schemeOverview__psa_view_invitations")
+      ),
+      Link("deregister-link", controllers.deregister.routes.ConfirmStopBeingPsaController.onPageLoad().url,
+        Message("messages__schemeOverview__psa_deregister"))
+    ))
 
-  val minimalPsaName = Some("John Doe Doe")
-  val minimalPsaOrgName = Some("Org Name")
-  val expectedPsaOrgName = Some("Org Name")
-  val individualPsaDetailsWithNoMiddleName = Some("John Doe")
-  val minimalPsaDetailsOrg = MinimalPSA("test@test.com", isPsaSuspended = false, Some("Org Name"), None)
-  val expectedName: String = "John Doe Doe"
-  val expectedNameWithoutMiddleName: String = "John Doe"
-  val cannotStartRegistrationUrl: Call = routes.CannotStartRegistrationController.onPageLoad()
+  private val schemeCard = CardViewModel(
+    id = Some("scheme-card"),
+    heading = Message("messages__schemeOverview__scheme_heading"),
+    links = Seq(
+      Link("view-schemes", ListSchemesController.onPageLoad().url, Message("messages__schemeOverview__scheme_view")),
+      Link("continue-registration", controllers.routes.SchemesOverviewController.onClickCheckIfSchemeCanBeRegistered().url,
+        Message("messages__schemeOverview__scheme_subscription_continue", schemeName, deleteDate)),
+      Link("delete-registration", controllers.routes.DeleteSchemeController.onPageLoad().url,
+        Message("messages__schemeOverview__scheme_subscription_delete", schemeName)),
+      Link("continue-variation", frontendAppConfig.viewSchemeDetailsUrl.format(srn),
+        Message("messages__schemeOverview__scheme_variations_continue", schemeName, deleteDate)),
+      Link("delete-variation", controllers.routes.DeleteSchemeChangesController.onPageLoad(srn).url,
+        Message("messages__schemeOverview__scheme_variations_delete", schemeName))
+    )
+  )
 
-  val schemeNameJsonOption = Some(Json.obj("schemeName" -> schemeName))
-  val schemeDetailsJsonOption = Some(Json.obj("schemeDetails" -> Json.obj("schemeName" -> schemeName)))
-  val schemeSrnNumberOnlyData = Some(Json.obj("submissionReferenceNumber" -> Json.obj("schemeReferenceNumber" -> srn)))
+  private val tiles = Seq(adminCard, schemeCard)
 }
 
 

@@ -18,8 +18,11 @@
 @import models.SchemeDetail
 @import views.formatters.Date
 @import controllers.invitations.routes
+@import viewmodels.Message
 
-@(appConfig: FrontendAppConfig, schemes: List[SchemeDetail], invitationsReceived: Boolean)(implicit request: Request[_], messages: Messages)
+@(appConfig: FrontendAppConfig, schemes: List[SchemeDetail])(implicit request: Request[_], messages: Messages)
+
+@manageRedirectLink = {<a id="manage-link" href="@appConfig.pensionSchemeOnlineServiceUrl">@messages("messages__schemesOverview__manage__redirect__link")</a>}
 
 @main_template(
     title = messages("messages__listSchemes__title"),
@@ -28,11 +31,11 @@
 
     <div class="grid-row">
         <div class="column-two-thirds">
-    @components.heading(headingKey = messages("messages__listSchemes__title"))
 
-    @if(invitationsReceived) {
-        <p><a id="invitations-received" href="@routes.YourInvitationsController.onPageLoad()">@messages("messages__listSchemes__invitations_link")</a></p>
-    }
+            @components.heading(headingKey = messages("messages__listSchemes__title"))
+
+            <p class="panel panel-border-wide">@Html(Message("messages__schemesOverview__manage__redirect__text").withArgs(manageRedirectLink))</p>
+
         </div>
     </div>
     @if(schemes.isEmpty) {

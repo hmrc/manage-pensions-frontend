@@ -18,6 +18,7 @@ package views
 
 import config.FrontendAppConfig
 import models.{SchemeDetail, SchemeStatus}
+import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.Request
@@ -38,9 +39,9 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
 
     behave like normalPage(view(config), "listSchemes", messages("messages__listSchemes__title"))
 
-    "display a link to your invitations page if user has received invitations" in {
-      view(frontendAppConfig, invitationsReceived = true) must haveLink(
-        controllers.invitations.routes.YourInvitationsController.onPageLoad().url, "invitations-received")
+    "have link to redirect to Pension Schemes Online service" in {
+      view(frontendAppConfig) must
+        haveLink(frontendAppConfig.pensionSchemeOnlineServiceUrl, "manage-link")
     }
 
     "display a suitable message when there are no schemes to display" in {
@@ -189,9 +190,9 @@ object ListSchemesViewSpec {
     )
   )
 
-  def view(appConfig: FrontendAppConfig, schemes: List[SchemeDetail] = emptyList, invitationsReceived: Boolean = false)
+  def view(appConfig: FrontendAppConfig, schemes: List[SchemeDetail] = emptyList)
           (implicit request: Request[_], messages: Messages): () => HtmlFormat.Appendable =
-    () => list_schemes(appConfig, schemes, invitationsReceived)
+    () => list_schemes(appConfig, schemes)
 
   def viewAsString(appConfig: FrontendAppConfig, schemes: List[SchemeDetail] = emptyList)
                   (implicit request: Request[_], messages: Messages): String = {

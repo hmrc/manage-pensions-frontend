@@ -38,50 +38,21 @@ class ListSchemesControllerSpec extends ControllerSpecBase {
 
   "ListSchemesController" when {
 
-    "isWorkPackageOneEnabled is off" must {
       "return OK and the correct view when there are no schemes" in {
-        val fixture = testFixture(this, psaIdNoSchemes, isWorkPackageOneEnabled = false)
+        val fixture = testFixture(this, psaIdNoSchemes)
         val result = fixture.controller.onPageLoad(fakeRequest)
 
         status(result) mustBe OK
-        contentAsString(result) mustBe viewAsString(this, emptySchemes, isWorkPackageOneEnabled = false)
-      }
-
-      "return OK and the correct view when there are schemes" in {
-        val fixture = testFixture(this, psaIdWithSchemes, Nil, isWorkPackageOneEnabled = false)
-        val result = fixture.controller.onPageLoad(fakeRequest)
-
-        status(result) mustBe OK
-        contentAsString(result) mustBe viewAsString(this, fullSchemes, isWorkPackageOneEnabled = false)
-      }
-    }
-
-    "isWorkPackageOneEnabled is on" must {
-
-      "return OK and the correct view when there are no schemes" in {
-        val fixture = testFixture(this, psaIdNoSchemes, isWorkPackageOneEnabled = true)
-        val result = fixture.controller.onPageLoad(fakeRequest)
-
-        status(result) mustBe OK
-        contentAsString(result) mustBe viewAsString(this, emptySchemes, isWorkPackageOneEnabled = true)
+        contentAsString(result) mustBe viewAsString(this, emptySchemes)
       }
 
       "return OK and the correct view when there are schemes with invitations" in {
-        val fixture = testFixture(this, psaIdWithSchemes, invitationList, isWorkPackageOneEnabled = true)
+        val fixture = testFixture(this, psaIdWithSchemes)
         val result = fixture.controller.onPageLoad(fakeRequest)
 
         status(result) mustBe OK
-        contentAsString(result) mustBe viewAsString(this, fullSchemes, invitationReceived = true, isWorkPackageOneEnabled = true)
+        contentAsString(result) mustBe viewAsString(this, fullSchemes)
       }
-
-      "return OK and the correct view when there are schemes without invitations" in {
-        val fixture = testFixture(this, psaIdWithSchemes, Nil, isWorkPackageOneEnabled = true)
-        val result = fixture.controller.onPageLoad(fakeRequest)
-
-        status(result) mustBe OK
-        contentAsString(result) mustBe viewAsString(this, fullSchemes, isWorkPackageOneEnabled = true)
-      }
-    }
   }
 
 }
@@ -90,8 +61,7 @@ trait TestFixture {
   def controller: ListSchemesController
 }
 
-object ListSchemesControllerSpec {
-  private implicit val global = scala.concurrent.ExecutionContext.Implicits.global
+object ListSchemesControllerSpec extends ControllerSpecBase {
   val psaIdNoSchemes: String = "A0000001"
   val psaIdWithSchemes: String = "A0000002"
 
@@ -118,22 +88,9 @@ object ListSchemesControllerSpec {
       )
     )
 
-  private def config(isWorkPackageOneEnabled: Boolean = true): FrontendAppConfig = {
-    val injector = new GuiceApplicationBuilder().configure(
-      "features.work-package-one-enabled" -> isWorkPackageOneEnabled
-    ).build().injector
-    injector.instanceOf[FrontendAppConfig]
-  }
-
-  def testFixture(app: ControllerSpecBase, psaId: String, invitations: List[Invitation] = Nil,
-                  isWorkPackageOneEnabled: Boolean): TestFixture = new TestFixture with MockitoSugar {
+  def testFixture(app: ControllerSpecBase, psaId: String): TestFixture = new TestFixture with MockitoSugar {
 
     private def authAction(psaId: String): AuthAction = FakeAuthAction.createWithPsaId(psaId)
-
-    private val mockInvitationsCacheConnector: InvitationsCacheConnector = mock[InvitationsCacheConnector]
-
-    when(mockInvitationsCacheConnector.getForInvitee(any())(any(), any())).thenReturn(
-      Future.successful(invitations))
 
     private def listSchemesConnector(): ListOfSchemesConnector = new ListOfSchemesConnector {
 
@@ -163,16 +120,15 @@ object ListSchemesControllerSpec {
 
     override val controller: ListSchemesController =
       new ListSchemesController(
-        config(isWorkPackageOneEnabled),
+        frontendAppConfig,
         app.messagesApi,
         authAction(psaId),
-        listSchemesConnector(),
-        mockInvitationsCacheConnector
+        listSchemesConnector()
       )
 
   }
 
-  def viewAsString(app: ControllerSpecBase, schemes: List[SchemeDetail], invitationReceived: Boolean = false, isWorkPackageOneEnabled: Boolean): String =
-    list_schemes(config(isWorkPackageOneEnabled), schemes, invitationReceived)(app.fakeRequest, app.messages).toString()
+  def viewAsString(app: ControllerSpecBase, schemes: List[SchemeDetail]): String =
+    list_schemes(frontendAppConfig, schemes)(app.fakeRequest, app.messages).toString()
 
 }

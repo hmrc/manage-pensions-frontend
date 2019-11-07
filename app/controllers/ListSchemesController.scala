@@ -18,7 +18,7 @@ package controllers
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
-import connectors.{InvitationsCacheConnector, ListOfSchemesConnector}
+import connectors.ListOfSchemesConnector
 import controllers.actions.AuthAction
 import models.SchemeDetail
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -26,32 +26,22 @@ import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import views.html.list_schemes
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 class ListSchemesController @Inject()(
                                        val appConfig: FrontendAppConfig,
                                        val messagesApi: MessagesApi,
                                        authenticate: AuthAction,
-                                       listSchemesConnector: ListOfSchemesConnector,
-                                       invitationsCacheConnector: InvitationsCacheConnector
+                                       listSchemesConnector: ListOfSchemesConnector
                                      )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = authenticate.async {
     implicit request =>
-      listSchemesConnector.getListOfSchemes(request.psaId.id).flatMap {
+      listSchemesConnector.getListOfSchemes(request.psaId.id).map {
         listOfSchemes =>
           val schemes = listOfSchemes.schemeDetail.getOrElse(List.empty[SchemeDetail])
 
-          val invitationsReceived: Future[Boolean] = {
-            invitationsCacheConnector.getForInvitee(request.psaId).map {
-              case Nil => false
-              case _ => true
-            }
-          }
-
-          invitationsReceived.map { flag =>
-            Ok(list_schemes(appConfig, schemes, flag))
+            Ok(list_schemes(appConfig, schemes))
           }
       }
-  }
 }

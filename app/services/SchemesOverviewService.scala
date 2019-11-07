@@ -17,8 +17,7 @@
 package services
 
 import config.FrontendAppConfig
-import connectors.{DeregistrationConnector, MinimalPsaConnector, PensionSchemeVarianceLockConnector, UpdateSchemeCacheConnector, UserAnswersCacheConnector}
-import controllers.actions.{AuthAction, DataRetrievalAction}
+import connectors._
 import controllers.routes._
 import javax.inject.Inject
 import models.requests.OptionalDataRequest
@@ -27,9 +26,9 @@ import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTime, DateTimeZone, LocalDate}
 import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.Results.Redirect
 import play.api.libs.json.{JsError, JsResultException, JsSuccess, JsValue}
-import play.api.mvc.{Action, AnyContent, Result}
+import play.api.mvc.Results.Redirect
+import play.api.mvc.{AnyContent, Result}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.annotations.PensionsSchemeCache
 import viewmodels.{CardViewModel, Message}
@@ -40,62 +39,88 @@ class SchemesOverviewService@Inject()(appConfig: FrontendAppConfig,
                                       override val messagesApi: MessagesApi,
                                       @PensionsSchemeCache dataCacheConnector: UserAnswersCacheConnector,
                                       minimalPsaConnector: MinimalPsaConnector,
-                                      authenticate: AuthAction,
-                                      getData: DataRetrievalAction,
                                       pensionSchemeVarianceLockConnector: PensionSchemeVarianceLockConnector,
                                       updateConnector: UpdateSchemeCacheConnector,
-                                      deregistrationConnector: DeregistrationConnector
+                                      deregistrationConnector: DeregistrationConnector,
+                                      invitationsCacheConnector: InvitationsCacheConnector
                                      )(implicit ec: ExecutionContext) extends I18nSupport {
 
+  def getTiles(psaId: String)(implicit request: OptionalDataRequest[AnyContent], hc: HeaderCarrier): Future[Seq[CardViewModel]] = {
+    println(">>>>>>>>>>>>>>>>>>>>.0 ")
 
-  private def schemeName(data: JsValue): Option[String] =
-    (data \ "schemeName").validate[String].fold(_ => None, Some(_))
-
-  private def parseDateElseCurrent(dateOpt: Option[JsValue]): LastUpdatedDate = {
-    dateOpt.map(ts =>
-      LastUpdatedDate(
-        ts.validate[Long] match {
-          case JsSuccess(value, _) => value
-          case JsError(errors) => throw JsResultException(errors)
-        }
-      )
-    ).getOrElse(currentTimestamp)
-  }
-
-  private def lastUpdatedAndDeleteDate(externalId: String)(implicit hc: HeaderCarrier): Future[LastUpdatedDate] =
-    dataCacheConnector.lastUpdated(externalId).map { dateOpt =>
-      parseDateElseCurrent(dateOpt)
-    }
-
-  private def variationsDeleteDate(srn: String)(implicit hc: HeaderCarrier): Future[String] =
-    updateConnector.lastUpdated(srn).map { dateOpt =>
-      s"${createFormattedDate(parseDateElseCurrent(dateOpt), appConfig.daysDataSaved)}"
-    }
-
-  def getTiles(psaId: String)(implicit request: OptionalDataRequest[AnyContent], hc: HeaderCarrier): Future[Seq[CardViewModel]] =
-    subscriptionLinks.flatMap { subLinks =>
-      variationsLinks(psaId).map { varLinks =>
-        Seq(adminCard(psaId), schemeCard(subLinks, varLinks))
+    adminCard(psaId).flatMap { adminstratorCard =>
+      println(">>>>>>>>>>>>>>>>>>>>.1 " + adminstratorCard)
+      schemeCard(psaId).map { schemesCard =>
+        println(">>>>>>>>>>>>>>>>>>>>.2 " + schemesCard)
+        Seq(adminstratorCard, schemesCard)
       }
     }
+  }
 
-  private def adminCard(psaId: String) = CardViewModel(
-    id = Some("administrator-card"),
-    heading = Message("messages__schemeOverview__psa_heading"),
-    subHeading = Some(Message("messages__schemeOverview__psa_id", psaId)),
-    links = Seq(
-      Link("psaLink", appConfig.registeredPsaDetailsUrl, Message("messages__schemeOverview__psa_change"))
-    )
-  )
+  def getPsaName(psaId: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
+    minimalPsaConnector.getPsaNameFromPsaID(psaId).map(identity)
 
-  private def schemeCard(subscriptionLinks: Seq[Link],
-                 variationsLinks: Seq[Link] = Nil) = CardViewModel(
-    id = Some("scheme-card"),
-    heading = Message("messages__schemeOverview__scheme_heading"),
-    links = Seq(
-      Link("view-schemes", ListSchemesController.onPageLoad().url, Message("messages__schemeOverview__scheme_view"))
-    ) ++ subscriptionLinks ++ variationsLinks
-  )
+  def checkIfSchemeCanBeRegistered(psaId: String)(implicit request: OptionalDataRequest[AnyContent], hc: HeaderCarrier): Future[Result] =
+      for {
+        data <- dataCacheConnector.fetch(request.externalId)
+        psaMinimalDetails <- minimalPsaConnector.getMinimalPsaDetails(request.psaId.id)
+        result <- retrieveResult(data, Some(psaMinimalDetails))
+      } yield {
+        result
+      }
+
+  private def adminCard(psaId: String)(implicit request: OptionalDataRequest[AnyContent],  hc: HeaderCarrier): Future[CardViewModel] = {
+    println(">>>>>>>>>>>>>>>>>>>>.01 ")
+    invitationsLink.flatMap { invitationLink =>
+      println(">>>>>>>>>>>>>>>>>>>>.02 " + invitationLink)
+      deregisterLink(psaId).map { deregisterationLink =>
+        println(">>>>>>>>>>>>>>>>>>>>.03 " + deregisterationLink)
+        CardViewModel(
+          id = Some("administrator-card"),
+          heading = Message("messages__schemeOverview__psa_heading"),
+          subHeading = Some(Message("messages__schemeOverview__psa_id", psaId)),
+          links = Seq(
+            Link("psaLink", appConfig.registeredPsaDetailsUrl, Message("messages__schemeOverview__psa_change"))
+          ) ++ invitationLink ++ deregisterationLink
+        )
+      }
+    }
+  }
+
+
+  private def invitationsLink(implicit request: OptionalDataRequest[AnyContent],  hc: HeaderCarrier): Future[Seq[Link]] =
+    invitationsCacheConnector.getForInvitee(request.psaId).map {
+    case Nil => Seq.empty[Link]
+    case _ => Seq(Link("invitations-received", controllers.invitations.routes.YourInvitationsController.onPageLoad().url,
+      Message("messages__schemeOverview__psa_view_invitations")
+    ))
+  }
+
+  private def deregisterLink(psaId: String)(implicit hc: HeaderCarrier): Future[Seq[Link]] =
+    deregistrationConnector.canDeRegister(psaId).map {
+      case true => Seq(Link("deregister-link", controllers.deregister.routes.ConfirmStopBeingPsaController.onPageLoad().url,
+        Message("messages__schemeOverview__psa_deregister")))
+      case _ => Seq.empty[Link]
+    }
+
+  private def schemeCard(psaId: String)(implicit request: OptionalDataRequest[AnyContent], hc: HeaderCarrier): Future[CardViewModel] = {
+    println(">>>>>>>>>>>>>>>>>>>>.11 ")
+    subscriptionLinks.flatMap {
+      subLinks =>
+        println(">>>>>>>>>>>>>>>>>>>>.12 "+subLinks)
+        variationsLinks(psaId).map {
+          varLinks =>
+            println(">>>>>>>>>>>>>>>>>>>>.13 " + varLinks)
+            CardViewModel(
+              id = Some("scheme-card"),
+              heading = Message("messages__schemeOverview__scheme_heading"),
+              links = Seq(
+                Link("view-schemes", ListSchemesController.onPageLoad().url, Message("messages__schemeOverview__scheme_view"))
+              ) ++ subLinks ++ varLinks
+            )
+        }
+    }
+  }
 
   private def subscriptionLinks(implicit request: OptionalDataRequest[AnyContent], hc: HeaderCarrier): Future[Seq[Link]] =
     dataCacheConnector.fetch(request.externalId).flatMap {
@@ -136,7 +161,7 @@ class SchemesOverviewService@Inject()(appConfig: FrontendAppConfig,
         Future.successful(Seq.empty[Link])
     }
 
-  def retrieveResult(schemeDetailsCache: Option[JsValue], psaMinimalDetails: Option[MinimalPSA]
+  private def retrieveResult(schemeDetailsCache: Option[JsValue], psaMinimalDetails: Option[MinimalPSA]
                             )(implicit request: OptionalDataRequest[AnyContent], hc: HeaderCarrier): Future[Result] = {
     schemeDetailsCache match {
       case None => Future.successful(redirectBasedOnPsaSuspension(appConfig.registerSchemeUrl, psaMinimalDetails))
@@ -173,6 +198,29 @@ class SchemesOverviewService@Inject()(appConfig: FrontendAppConfig,
 
   private def currentTimestamp: LastUpdatedDate = LastUpdatedDate(DateTime.now(DateTimeZone.UTC).getMillis)
 
+  private def schemeName(data: JsValue): Option[String] =
+    (data \ "schemeName").validate[String].fold(_ => None, Some(_))
+
+  private def parseDateElseCurrent(dateOpt: Option[JsValue]): LastUpdatedDate = {
+    dateOpt.map(ts =>
+      LastUpdatedDate(
+        ts.validate[Long] match {
+          case JsSuccess(value, _) => value
+          case JsError(errors) => throw JsResultException(errors)
+        }
+      )
+    ).getOrElse(currentTimestamp)
+  }
+
+  private def lastUpdatedAndDeleteDate(externalId: String)(implicit hc: HeaderCarrier): Future[LastUpdatedDate] =
+    dataCacheConnector.lastUpdated(externalId).map { dateOpt =>
+      parseDateElseCurrent(dateOpt)
+    }
+
+  private def variationsDeleteDate(srn: String)(implicit hc: HeaderCarrier): Future[String] =
+    updateConnector.lastUpdated(srn).map { dateOpt =>
+      s"${createFormattedDate(parseDateElseCurrent(dateOpt), appConfig.daysDataSaved)}"
+    }
 
 
 }
