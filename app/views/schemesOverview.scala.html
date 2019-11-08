@@ -25,12 +25,15 @@ cards: Seq[CardViewModel]
 @main_template(
     title = messages("messages__schemesOverview__title"),
     appConfig = appConfig,
-    bodyClasses = None) {
+    articleClasses = Some("full-width")
+) {
 
     @components.heading(name)
 
+    <div class="flex-container grid-row">
     @for(card <- cards){
         @components.card(card)
     }
+    </div>
 
 }

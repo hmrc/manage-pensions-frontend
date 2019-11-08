@@ -19,30 +19,26 @@
 @(cardModel: CardViewModel)(implicit messages: Messages)
 
 <div class="card" @cardModel.id.map { i => id="@i" }>
-
     <div class="card-body">
-
-        <@cardModel.headingTag class="card-heading">
+        <h2 class="card-heading">
             @cardModel.heading
-        </@cardModel.headingTag>
+        </h2>
 
-        @cardModel.subHeading.map {subHead =>
-            <@cardModel.subHeadingTag class="heading-small card-sub-heading">
-                @subHead
-            </@cardModel.subHeadingTag>
+        @cardModel.subHeading.map { subHead =>
+            <h3 class="heading-small card-sub-heading">
+                @Html(subHead)
+            </h3>
         }
-
+    </div>
+    <div class="card-action">
     @if(cardModel.links.nonEmpty){
         <ul>
             @for(link <- cardModel.links) {
                 <li>
-                    <div class="card-link">
-                        <a id="@link.id" href="@link.url">@messages(link.linkText)</a>
-
-                    </div>
+                    <a id="@link.id" href="@link.url">@messages(link.linkText)</a>
                 </li>
             }
         </ul>
     }
-
+    </div>
 </div>

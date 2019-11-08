@@ -29,6 +29,7 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.{JsError, JsResultException, JsSuccess, JsValue}
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{AnyContent, Result}
+import play.twirl.api.Html
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.annotations.PensionsSchemeCache
 import viewmodels.{CardViewModel, Message}
@@ -79,7 +80,7 @@ class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
     CardViewModel(
       id = Some("administrator-card"),
       heading = Message("messages__schemeOverview__psa_heading"),
-      subHeading = Some(Message("messages__schemeOverview__psa_id", psaId)),
+      subHeading = Some(Message("messages__schemeOverview__psa_id", s"""<span class="font-small">$psaId</span>""")),
       links = Seq(
         Link("psaLink", appConfig.registeredPsaDetailsUrl, Message("messages__schemeOverview__psa_change"))
       ) ++ invitationLink ++ deregistrationLink

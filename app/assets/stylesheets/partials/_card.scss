@@ -51,6 +51,11 @@ html[data-useragent*='MSIE 10.0'] .flex-container {
   .card-body {
     border-bottom: 1px solid $panel-colour;
     padding: 12px;
+    height: 83px;
+
+    @media screen and (max-width: 640px) {
+      height: 50px;
+    }
 
     *:last-child {
       margin-bottom: 0;
@@ -87,7 +92,7 @@ html[data-useragent*='MSIE 10.0'] .flex-container {
     a {
       display: inline;
       border-bottom: 1px solid #C7DCEB;
-      color: $link-colour;
+      text-decoration: none;
       line-height: 1.5em;
 
       &:link,
