@@ -20,7 +20,7 @@
 @import controllers.invitations.routes
 @import viewmodels.Message
 
-@(appConfig: FrontendAppConfig, schemes: List[SchemeDetail])(implicit request: Request[_], messages: Messages)
+@(appConfig: FrontendAppConfig, schemes: List[SchemeDetail], psaName: String)(implicit request: Request[_], messages: Messages)
 
 @manageRedirectLink = {<a id="manage-link" href="@appConfig.pensionSchemeOnlineServiceUrl">@messages("messages__schemesOverview__manage__redirect__link")</a>}
 
@@ -52,7 +52,8 @@
     }
     <div class="grid-row">
         <div class="column-two-thirds">
-            <p class="govuk-margin-top-5"><a id="return-to-overview" href="@controllers.routes.SchemesOverviewController.onPageLoad().url">@messages("site.return_to_overview")</a></p>
+            <p class="govuk-margin-top-5">
+                @components.return_link(controllers.routes.SchemesOverviewController.onPageLoad(), Some(psaName))</p>
         </div>
     </div>
 }

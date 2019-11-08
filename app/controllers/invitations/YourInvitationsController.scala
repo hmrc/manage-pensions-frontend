@@ -20,6 +20,7 @@ import config.FrontendAppConfig
 import connectors.{InvitationsCacheConnector, UserAnswersCacheConnector}
 import controllers.actions._
 import identifiers.SchemeSrnId
+import identifiers.invitations.PSANameId
 import javax.inject.Inject
 import models.{NormalMode, SchemeReferenceNumber}
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -34,19 +35,23 @@ import scala.concurrent.ExecutionContext
 class YourInvitationsController @Inject()(appConfig: FrontendAppConfig,
                                           override val messagesApi: MessagesApi,
                                           authenticate: AuthAction,
+                                          getData: DataRetrievalAction,
+                                          requireData: DataRequiredAction,
                                           invitationsCacheConnector: InvitationsCacheConnector,
                                           userAnswersCacheConnector: UserAnswersCacheConnector,
                                           @AcceptInvitation navigator: Navigator
                                          )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport {
 
 
-  def onPageLoad(): Action[AnyContent] = authenticate.async {
+  def onPageLoad(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
       invitationsCacheConnector.getForInvitee(request.psaId).map {
         case Nil =>
           Redirect(controllers.routes.SessionExpiredController.onPageLoad())
         case invitationsList =>
-          Ok(yourInvitations(appConfig, invitationsList))
+          request.userAnswers.get(PSANameId).map { name =>
+            Ok(yourInvitations(appConfig, invitationsList, name))
+          }.getOrElse(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
       }
   }
 

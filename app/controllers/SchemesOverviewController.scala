@@ -17,7 +17,9 @@
 package controllers
 
 import config.FrontendAppConfig
+import connectors.UserAnswersCacheConnector
 import controllers.actions._
+import identifiers.invitations.PSANameId
 import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
@@ -31,7 +33,8 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
                                           override val messagesApi: MessagesApi,
                                           service: SchemesOverviewService,
                                           authenticate: AuthAction,
-                                          getData: DataRetrievalAction
+                                          getData: DataRetrievalAction,
+                                          userAnswersCacheConnector: UserAnswersCacheConnector
                                          )
                                          (implicit val ec: ExecutionContext) extends FrontendController with I18nSupport {
 
@@ -40,15 +43,21 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
 
-          val psaId = request.psaId.id
-            service.getPsaName(psaId).flatMap {name =>
-              service.getTiles(psaId).map { cards =>
-                  Ok(schemesOverview(appConfig, name.getOrElse("Psa name not found"), cards))
+      val psaId = request.psaId.id
+
+      service.getPsaName(psaId).flatMap {
+
+              case Some(name) =>
+
+                service.getTiles(psaId).flatMap { cards =>
+                  userAnswersCacheConnector.save(request.externalId, PSANameId, name).map { _ =>
+                    Ok(schemesOverview(appConfig, name, cards))
+                  }
                 }
-              }
+
+              case _ => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
             }
-
-
+  }
 
   def onClickCheckIfSchemeCanBeRegistered: Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>

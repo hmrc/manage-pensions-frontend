@@ -35,66 +35,72 @@ import viewmodels.{CardViewModel, Message}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class SchemesOverviewService@Inject()(appConfig: FrontendAppConfig,
-                                      override val messagesApi: MessagesApi,
-                                      @PensionsSchemeCache dataCacheConnector: UserAnswersCacheConnector,
-                                      minimalPsaConnector: MinimalPsaConnector,
-                                      pensionSchemeVarianceLockConnector: PensionSchemeVarianceLockConnector,
-                                      updateConnector: UpdateSchemeCacheConnector,
-                                      deregistrationConnector: DeregistrationConnector,
-                                      invitationsCacheConnector: InvitationsCacheConnector
-                                     )(implicit ec: ExecutionContext) extends I18nSupport {
+class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
+                                       override val messagesApi: MessagesApi,
+                                       @PensionsSchemeCache dataCacheConnector: UserAnswersCacheConnector,
+                                       minimalPsaConnector: MinimalPsaConnector,
+                                       pensionSchemeVarianceLockConnector: PensionSchemeVarianceLockConnector,
+                                       updateConnector: UpdateSchemeCacheConnector,
+                                       deregistrationConnector: DeregistrationConnector,
+                                       invitationsCacheConnector: InvitationsCacheConnector
+                                      )(implicit ec: ExecutionContext) extends I18nSupport {
 
-  def getTiles(psaId: String)(implicit request: OptionalDataRequest[AnyContent], hc: HeaderCarrier): Future[Seq[CardViewModel]] = {
-    println(">>>>>>>>>>>>>>>>>>>>.0 ")
+  private val formatter = DateTimeFormat.forPattern("dd MMMM YYYY")
 
-    adminCard(psaId).flatMap { adminstratorCard =>
-      println(">>>>>>>>>>>>>>>>>>>>.1 " + adminstratorCard)
-      schemeCard(psaId).map { schemesCard =>
-        println(">>>>>>>>>>>>>>>>>>>>.2 " + schemesCard)
-        Seq(adminstratorCard, schemesCard)
-      }
+  def getTiles(psaId: String)(implicit request: OptionalDataRequest[AnyContent], hc: HeaderCarrier): Future[Seq[CardViewModel]] =
+    for {
+      invitationLink <- invitationsLink
+      deregistrationLink <- deregisterLink(psaId)
+      subLinks <- subscriptionLinks
+      varLinks <- variationsLinks(psaId)
+    } yield {
+      Seq(
+        adminCard(invitationLink, deregistrationLink, psaId),
+        schemeCard(subLinks, varLinks)
+      )
     }
-  }
 
   def getPsaName(psaId: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
     minimalPsaConnector.getPsaNameFromPsaID(psaId).map(identity)
 
   def checkIfSchemeCanBeRegistered(psaId: String)(implicit request: OptionalDataRequest[AnyContent], hc: HeaderCarrier): Future[Result] =
-      for {
-        data <- dataCacheConnector.fetch(request.externalId)
-        psaMinimalDetails <- minimalPsaConnector.getMinimalPsaDetails(request.psaId.id)
-        result <- retrieveResult(data, Some(psaMinimalDetails))
-      } yield {
-        result
-      }
-
-  private def adminCard(psaId: String)(implicit request: OptionalDataRequest[AnyContent],  hc: HeaderCarrier): Future[CardViewModel] = {
-    println(">>>>>>>>>>>>>>>>>>>>.01 ")
-    invitationsLink.flatMap { invitationLink =>
-      println(">>>>>>>>>>>>>>>>>>>>.02 " + invitationLink)
-      deregisterLink(psaId).map { deregisterationLink =>
-        println(">>>>>>>>>>>>>>>>>>>>.03 " + deregisterationLink)
-        CardViewModel(
-          id = Some("administrator-card"),
-          heading = Message("messages__schemeOverview__psa_heading"),
-          subHeading = Some(Message("messages__schemeOverview__psa_id", psaId)),
-          links = Seq(
-            Link("psaLink", appConfig.registeredPsaDetailsUrl, Message("messages__schemeOverview__psa_change"))
-          ) ++ invitationLink ++ deregisterationLink
-        )
-      }
+    for {
+      data <- dataCacheConnector.fetch(request.externalId)
+      psaMinimalDetails <- minimalPsaConnector.getMinimalPsaDetails(request.psaId.id)
+      result <- retrieveResult(data, Some(psaMinimalDetails))
+    } yield {
+      result
     }
-  }
 
 
-  private def invitationsLink(implicit request: OptionalDataRequest[AnyContent],  hc: HeaderCarrier): Future[Seq[Link]] =
+  //TILES HELPER METHODS
+  private def adminCard(invitationLink: Seq[Link], deregistrationLink: Seq[Link], psaId: String): CardViewModel =
+
+    CardViewModel(
+      id = Some("administrator-card"),
+      heading = Message("messages__schemeOverview__psa_heading"),
+      subHeading = Some(Message("messages__schemeOverview__psa_id", psaId)),
+      links = Seq(
+        Link("psaLink", appConfig.registeredPsaDetailsUrl, Message("messages__schemeOverview__psa_change"))
+      ) ++ invitationLink ++ deregistrationLink
+    )
+
+  private def schemeCard(subscriptionLinks: Seq[Link], variationLinks: Seq[Link]): CardViewModel =
+    CardViewModel(
+      id = Some("scheme-card"),
+      heading = Message("messages__schemeOverview__scheme_heading"),
+      links = Seq(
+        Link("view-schemes", ListSchemesController.onPageLoad().url, Message("messages__schemeOverview__scheme_view"))
+      ) ++ subscriptionLinks ++ variationLinks
+    )
+
+  private def invitationsLink(implicit request: OptionalDataRequest[AnyContent], hc: HeaderCarrier): Future[Seq[Link]] =
     invitationsCacheConnector.getForInvitee(request.psaId).map {
-    case Nil => Seq.empty[Link]
-    case _ => Seq(Link("invitations-received", controllers.invitations.routes.YourInvitationsController.onPageLoad().url,
-      Message("messages__schemeOverview__psa_view_invitations")
-    ))
-  }
+      case Nil => Seq.empty[Link]
+      case _ => Seq(Link("invitations-received", controllers.invitations.routes.YourInvitationsController.onPageLoad().url,
+        Message("messages__schemeOverview__psa_view_invitations")
+      ))
+    }
 
   private def deregisterLink(psaId: String)(implicit hc: HeaderCarrier): Future[Seq[Link]] =
     deregistrationConnector.canDeRegister(psaId).map {
@@ -103,31 +109,11 @@ class SchemesOverviewService@Inject()(appConfig: FrontendAppConfig,
       case _ => Seq.empty[Link]
     }
 
-  private def schemeCard(psaId: String)(implicit request: OptionalDataRequest[AnyContent], hc: HeaderCarrier): Future[CardViewModel] = {
-    println(">>>>>>>>>>>>>>>>>>>>.11 ")
-    subscriptionLinks.flatMap {
-      subLinks =>
-        println(">>>>>>>>>>>>>>>>>>>>.12 "+subLinks)
-        variationsLinks(psaId).map {
-          varLinks =>
-            println(">>>>>>>>>>>>>>>>>>>>.13 " + varLinks)
-            CardViewModel(
-              id = Some("scheme-card"),
-              heading = Message("messages__schemeOverview__scheme_heading"),
-              links = Seq(
-                Link("view-schemes", ListSchemesController.onPageLoad().url, Message("messages__schemeOverview__scheme_view"))
-              ) ++ subLinks ++ varLinks
-            )
-        }
-    }
-  }
-
   private def subscriptionLinks(implicit request: OptionalDataRequest[AnyContent], hc: HeaderCarrier): Future[Seq[Link]] =
     dataCacheConnector.fetch(request.externalId).flatMap {
 
       case None => Future.successful(Seq(Link("register-new-scheme", controllers.routes.SchemesOverviewController.onClickCheckIfSchemeCanBeRegistered().url,
         Message("messages__schemeOverview__scheme_subscription"))))
-
 
       case Some(data) =>
         schemeName(data) match {
@@ -143,7 +129,6 @@ class SchemesOverviewService@Inject()(appConfig: FrontendAppConfig,
     }
 
   private def variationsLinks(psaId: String)(implicit hc: HeaderCarrier): Future[Seq[Link]] =
-
     pensionSchemeVarianceLockConnector.getLockByPsa(psaId).flatMap {
       case Some(schemeVariance) =>
         updateConnector.fetch(schemeVariance.srn).flatMap {
@@ -161,8 +146,9 @@ class SchemesOverviewService@Inject()(appConfig: FrontendAppConfig,
         Future.successful(Seq.empty[Link])
     }
 
+  //LINK WITH PSA SUSPENSION HELPER METHODS
   private def retrieveResult(schemeDetailsCache: Option[JsValue], psaMinimalDetails: Option[MinimalPSA]
-                            )(implicit request: OptionalDataRequest[AnyContent], hc: HeaderCarrier): Future[Result] = {
+                            )(implicit request: OptionalDataRequest[AnyContent], hc: HeaderCarrier): Future[Result] =
     schemeDetailsCache match {
       case None => Future.successful(redirectBasedOnPsaSuspension(appConfig.registerSchemeUrl, psaMinimalDetails))
       case Some(schemeDetails) => schemeName(schemeDetails) match {
@@ -170,21 +156,21 @@ class SchemesOverviewService@Inject()(appConfig: FrontendAppConfig,
         case _ => deleteDataIfSrnNumberFoundAndRedirect(schemeDetails, psaMinimalDetails)
       }
     }
-  }
 
   private def deleteDataIfSrnNumberFoundAndRedirect(data: JsValue,
                                                     psaMinimalDetails: Option[MinimalPSA]
                                                    )(implicit request: OptionalDataRequest[AnyContent], hc: HeaderCarrier): Future[Result] =
-    (data \ "submissionReferenceNumber" \ "schemeReferenceNumber").validate[String].fold({_ =>
+    (data \ "submissionReferenceNumber" \ "schemeReferenceNumber").validate[String].fold({ _ =>
       Logger.warn("Page load failed since both scheme name and srn number were not found in scheme registration mongo collection")
-      Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))},
-      _ => dataCacheConnector.removeAll(request.externalId).map {_ =>
+      Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+    },
+      _ => dataCacheConnector.removeAll(request.externalId).map { _ =>
         Logger.warn("Data cleared as scheme name is missing and srn number was found in mongo collection")
         redirectBasedOnPsaSuspension(appConfig.registerSchemeUrl, psaMinimalDetails)
       })
 
-  private def redirectBasedOnPsaSuspension(redirectUrl: String, psaMinimalDetails:  Option[MinimalPSA]): Result =
-    psaMinimalDetails.fold(Redirect(redirectUrl)){ psaMinDetails =>
+  private def redirectBasedOnPsaSuspension(redirectUrl: String, psaMinimalDetails: Option[MinimalPSA]): Result =
+    psaMinimalDetails.fold(Redirect(redirectUrl)) { psaMinDetails =>
       if (psaMinDetails.isPsaSuspended) {
         Redirect(CannotStartRegistrationController.onPageLoad())
       } else {
@@ -192,14 +178,12 @@ class SchemesOverviewService@Inject()(appConfig: FrontendAppConfig,
       }
     }
 
-  private val formatter = DateTimeFormat.forPattern("dd MMMM YYYY")
+
+  //DATE FORMATIING HELPER METHODS
 
   private def createFormattedDate(dt: LastUpdatedDate, daysToAdd: Int): String = new LocalDate(dt.timestamp).plusDays(daysToAdd).toString(formatter)
 
   private def currentTimestamp: LastUpdatedDate = LastUpdatedDate(DateTime.now(DateTimeZone.UTC).getMillis)
-
-  private def schemeName(data: JsValue): Option[String] =
-    (data \ "schemeName").validate[String].fold(_ => None, Some(_))
 
   private def parseDateElseCurrent(dateOpt: Option[JsValue]): LastUpdatedDate = {
     dateOpt.map(ts =>
@@ -222,5 +206,7 @@ class SchemesOverviewService@Inject()(appConfig: FrontendAppConfig,
       s"${createFormattedDate(parseDateElseCurrent(dateOpt), appConfig.daysDataSaved)}"
     }
 
+  private def schemeName(data: JsValue): Option[String] =
+    (data \ "schemeName").validate[String].fold(_ => None, Some(_))
 
 }

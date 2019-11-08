@@ -20,7 +20,7 @@
 @import models.Invitation
 @import utils.DateHelper
 
-@(appConfig: FrontendAppConfig, invitationsList: List[Invitation])(implicit request: Request[_], messages: Messages)
+@(appConfig: FrontendAppConfig, invitationsList: List[Invitation], psaName: String)(implicit request: Request[_], messages: Messages)
 
 @main_template(
     title = s"${messages("messages__yourInvitations__title")}",
@@ -41,4 +41,6 @@
             invitation.srn)
         }
     </ul>
+
+    @components.return_link(controllers.routes.SchemesOverviewController.onPageLoad(), Some(psaName))
 }

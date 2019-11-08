@@ -19,7 +19,8 @@ package controllers
 import com.google.inject.Inject
 import config.FrontendAppConfig
 import connectors.ListOfSchemesConnector
-import controllers.actions.AuthAction
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import identifiers.invitations.PSANameId
 import models.SchemeDetail
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
@@ -32,16 +33,19 @@ class ListSchemesController @Inject()(
                                        val appConfig: FrontendAppConfig,
                                        val messagesApi: MessagesApi,
                                        authenticate: AuthAction,
+                                       getData: DataRetrievalAction,
+                                       requireData: DataRequiredAction,
                                        listSchemesConnector: ListOfSchemesConnector
                                      )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = authenticate.async {
+  def onPageLoad: Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
       listSchemesConnector.getListOfSchemes(request.psaId.id).map {
         listOfSchemes =>
           val schemes = listOfSchemes.schemeDetail.getOrElse(List.empty[SchemeDetail])
-
-            Ok(list_schemes(appConfig, schemes))
+            request.userAnswers.get(PSANameId).map {name =>
+              Ok(list_schemes(appConfig, schemes, name))
+            }.getOrElse(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
           }
       }
 }

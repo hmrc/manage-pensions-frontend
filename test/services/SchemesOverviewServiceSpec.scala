@@ -30,16 +30,18 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
 import play.api.libs.json.{JsNumber, Json}
 import play.api.mvc.{AnyContent, Call}
+import play.api.mvc.Results.Ok
 import play.api.test.FakeRequest
 import uk.gov.hmrc.domain.PsaId
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.UserAnswers
 import viewmodels.{CardViewModel, Message}
+import play.api.test.Helpers._
 
 import scala.concurrent.Future
 import scala.language.postfixOps
 
-class SchemesOverviewServiceSpec extends SpecBase with MockitoSugar with BeforeAndAfterEach with ScalaFutures{
+class SchemesOverviewServiceSpec extends SpecBase with MockitoSugar with BeforeAndAfterEach with ScalaFutures {
 
   import SchemesOverviewServiceSpec._
 
@@ -101,6 +103,13 @@ class SchemesOverviewServiceSpec extends SpecBase with MockitoSugar with BeforeA
         }
       }
 
+      "when there is no ongoing subscription" in {
+        when(dataCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(None))
+
+        whenReady(service.getTiles(psaId)) {
+          _ mustBe tiles(scheme = schemeCard(registerLink))
+        }
+      }
 
       "when there is no lock for any scheme" in {
         when(lockConnector.getLockByPsa(eqTo(psaId))(any(), any())).thenReturn(Future.successful(None))
@@ -110,129 +119,81 @@ class SchemesOverviewServiceSpec extends SpecBase with MockitoSugar with BeforeA
         }
       }
 
-      //        "return no variations section when there is a lock for a scheme but the scheme is not in the update collection" in {
-      //          when(dataCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
-      //          when(minimalPsaConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any()))
-      //            .thenReturn(Future.successful(minimalPsaName))
-      //
-      //          when(lockConnector.getLockByPsa(any())(any(), any()))
-      //            .thenReturn(Future.successful(Some(SchemeVariance(psaId, srn))))
-      //
-      //          when(updateConnector.fetch(any())(any(), any()))
-      //            .thenReturn(Future.successful(None))
-      //
-      //          service.getTiles(psaId) mustBe tiles()
-      //        }
-      //
-      //        "return a variations section when there is a lock for a scheme and the scheme is in the update collection but there is no last updated date" in {
-      //          val schemeName = "a scheme"
-      //          val json = Json.parse( s"""{"schemeName":"$schemeName"}""" )
-      //
-      //          when(dataCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
-      //          when(minimalPsaConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any()))
-      //            .thenReturn(Future.successful(minimalPsaName))
-      //
-      //          when(lockConnector.getLockByPsa(any())(any(), any()))
-      //            .thenReturn(Future.successful(Some(SchemeVariance(psaId, srn))))
-      //
-      //          when(updateConnector.fetch(any())(any(), any()))
-      //            .thenReturn(Future.successful(Some(json)))
-      //
-      //          when(updateConnector.lastUpdated(any())(any(), any()))
-      //            .thenReturn(Future.successful(None))
-      //
-      //          service.getTiles(psaId) mustBe tiles()
-      //        }
-      //
-      //        "return a variations section when there is a lock for a scheme and the scheme is in the update collection and there is a last updated date" in {
-      //          val schemeName = "a scheme"
-      //          val json = Json.parse( s"""{"schemeName":"$schemeName"}""" )
-      //          val deleteDate: String = "11 June 2019"
-      //
-      //          when(dataCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
-      //          when(minimalPsaConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any()))
-      //            .thenReturn(Future.successful(minimalPsaName))
-      //
-      //
-      //          when(lockConnector.getLockByPsa(any())(any(), any()))
-      //            .thenReturn(Future.successful(Some(SchemeVariance(psaId, srn))))
-      //
-      //          when(updateConnector.fetch(any())(any(), any()))
-      //            .thenReturn(Future.successful(Some(json)))
-      //
-      //          when(updateConnector.lastUpdated(any())(any(), any()))
-      //            .thenReturn(Future.successful(Some(JsNumber(BigDecimal(new DateTime("2019-05-11").getMillis)))))
-      //
-      //          val expectedContent = messages("messages__schemesOverview__change_details__p1", schemeName, "08 June 2019")
-      //
-      //          service.getTiles(psaId) mustBe tiles()
-      //        }
-      //      }
-      //    }
+      "when there is a lock for a scheme but the scheme is not in the update collection" in {
+         when(updateConnector.fetch(any())(any(), any()))
+          .thenReturn(Future.successful(None))
+
+        whenReady(service.getTiles(psaId)) {
+          _ mustBe tiles(scheme = schemeCard(schemeVariationLinks = Nil))
+        }
+      }
+
     }
-//    "on a POST with isWorkPackageOneEnabled flag is on" must {
-//
-//      "redirect to the cannot start registration page if called without a psa name but psa is suspended" in {
-//        when(minimalPsaConnector.getMinimalPsaDetails(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaDetails(true)))
-//        when(dataCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
-//
-//        val result = controller().onClickCheckIfSchemeCanBeRegistered(fakeRequest)
-//
-//        status(result) mustBe SEE_OTHER
-//        redirectLocation(result).value mustBe cannotStartRegistrationUrl.url
-//      }
-//
-//      "redirect to the register scheme page if called without psa name but psa is not suspended" in {
-//        when(minimalPsaConnector.getMinimalPsaDetails(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaDetails(false)))
-//        when(dataCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
-//
-//        val result = controller().onClickCheckIfSchemeCanBeRegistered(fakeRequest)
-//
-//        status(result) mustBe SEE_OTHER
-//        redirectLocation(result).value mustBe frontendAppConfig.registerSchemeUrl
-//      }
-//
-//      "redirect to continue register a scheme page if called with a psa name and psa is not suspended" in {
-//        when(minimalPsaConnector.getMinimalPsaDetails(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaDetails(false)))
-//        when(dataCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(schemeNameJsonOption))
-//
-//        val result = controller().onClickCheckIfSchemeCanBeRegistered(fakeRequest)
-//
-//        status(result) mustBe SEE_OTHER
-//        redirectLocation(result).value mustBe frontendAppConfig.continueSchemeUrl
-//      }
-//
-//      "redirect to cannot start registration page if called with a psa name and psa is suspended" in {
-//        when(minimalPsaConnector.getMinimalPsaDetails(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaDetails(true)))
-//        when(dataCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(schemeNameJsonOption))
-//
-//        val result = controller().onClickCheckIfSchemeCanBeRegistered(fakeRequest)
-//
-//        status(result) mustBe SEE_OTHER
-//        redirectLocation(result).value mustBe cannotStartRegistrationUrl.url
-//      }
-//
-//
-//      "redirect to cannot start registration page if  scheme details are found with scheme name missing and srn number present" in {
-//        when(dataCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(schemeSrnNumberOnlyData))
-//        when(dataCacheConnector.removeAll(eqTo("id"))(any(), any())).thenReturn(Future(Ok))
-//        when(minimalPsaConnector.getMinimalPsaDetails(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaDetails(false)))
-//
-//
-//        val result = controller().onClickCheckIfSchemeCanBeRegistered(fakeRequest)
-//
-//        status(result) mustBe SEE_OTHER
-//        redirectLocation(result).value mustBe frontendAppConfig.registerSchemeUrl
-//        verify(dataCacheConnector, times(1)).removeAll(any())(any(), any())
-//      }
-//    }
   }
+
+    "checkIfSchemeCanBeRegistered" must {
+
+      "redirect to the cannot start registration page if called without a psa name but psa is suspended" in {
+        when(minimalPsaConnector.getMinimalPsaDetails(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaDetails(true)))
+        when(dataCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
+
+        val result = service.checkIfSchemeCanBeRegistered(psaId)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).value mustBe cannotStartRegistrationUrl.url
+      }
+
+      "redirect to the register scheme page if called without psa name but psa is not suspended" in {
+        when(minimalPsaConnector.getMinimalPsaDetails(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaDetails(false)))
+        when(dataCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
+
+        val result = service.checkIfSchemeCanBeRegistered(psaId)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).value mustBe frontendAppConfig.registerSchemeUrl
+      }
+
+      "redirect to continue register a scheme page if called with a psa name and psa is not suspended" in {
+        when(minimalPsaConnector.getMinimalPsaDetails(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaDetails(false)))
+        when(dataCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(Some(schemeNameJsonOption)))
+
+        val result = service.checkIfSchemeCanBeRegistered(psaId)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).value mustBe frontendAppConfig.continueSchemeUrl
+      }
+
+      "redirect to cannot start registration page if called with a psa name and psa is suspended" in {
+        when(minimalPsaConnector.getMinimalPsaDetails(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaDetails(true)))
+        when(dataCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(Some(schemeNameJsonOption)))
+
+        val result = service.checkIfSchemeCanBeRegistered(psaId)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).value mustBe cannotStartRegistrationUrl.url
+      }
+
+
+      "redirect to cannot start registration page if  scheme details are found with scheme name missing and srn number present" in {
+        when(dataCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(schemeSrnNumberOnlyData))
+        when(dataCacheConnector.removeAll(eqTo("id"))(any(), any())).thenReturn(Future(Ok))
+        when(minimalPsaConnector.getMinimalPsaDetails(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaDetails(false)))
+
+
+        val result = service.checkIfSchemeCanBeRegistered(psaId)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).value mustBe frontendAppConfig.registerSchemeUrl
+        verify(dataCacheConnector, times(1)).removeAll(any())(any(), any())
+      }
+    }
+
 }
 
 object SchemesOverviewServiceSpec extends SpecBase with MockitoSugar  {
 
   implicit val request: OptionalDataRequest[AnyContent] =
-    OptionalDataRequest(FakeRequest("", ""), "cacheId", Some(UserAnswers()), PsaId("A0000000"))
+    OptionalDataRequest(FakeRequest("", ""), "id", Some(UserAnswers()), PsaId("A0000000"))
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
 

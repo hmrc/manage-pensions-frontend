@@ -21,7 +21,7 @@
 @import viewmodels.Message
 @import play.api.mvc.Call
 
-@(appConfig: FrontendAppConfig, form: Form[_], schemeName: String, postCall: Call)(implicit request: Request[_], messages: Messages)
+@(appConfig: FrontendAppConfig, form: Form[_], schemeName: String, postCall: Call, psaName: String)(implicit request: Request[_], messages: Messages)
 
 @main_template(
     title = Message("messages__deleteSchemeChanges__title"),
@@ -48,6 +48,6 @@
 
         @components.submit_button("site.save_and_continue")
 
-        @components.return_link(controllers.routes.SchemesOverviewController.onPageLoad(), messageKey = "site.return_to_overview")
+        @components.return_link(controllers.routes.SchemesOverviewController.onPageLoad(), Some(psaName))
     }
 }

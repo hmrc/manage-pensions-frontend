@@ -24,7 +24,7 @@ import javax.inject.Inject
 import models.requests.OptionalDataRequest
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.libs.json.{JsError, JsLookupResult, JsSuccess, JsValue}
+import play.api.libs.json.{JsError, JsSuccess}
 import play.api.mvc.{Action, AnyContent, Result}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.annotations.PensionsSchemeCache
@@ -70,21 +70,12 @@ class DeleteSchemeController @Inject()(
       }
   }
 
-  //TODO: Remove this code and just use scheme name after 28 days of enabling hub v2
-  private def schemeName(data: JsValue): JsLookupResult = {
-    val schemeName: JsLookupResult = data \ "schemeName"
-
-    schemeName.validate[String] match {
-      case JsSuccess(_, _) => schemeName
-      case _ => data \ "schemeDetails" \ "schemeName"
-    }
-  }
   private def getSchemeName(f: String => Future[Result])
                            (implicit request: OptionalDataRequest[AnyContent]): Future[Result] = {
     dataCacheConnector.fetch(request.externalId).flatMap {
       case None => Future.successful(overviewPage)
       case Some(data) =>
-        schemeName(data).validate[String] match {
+        (data \ "schemeName").validate[String] match {
           case JsSuccess(name, _) => f(name)
           case JsError(_) => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
         }
