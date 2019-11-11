@@ -36,6 +36,6 @@ class YouNeedToRegisterController @Inject()(appConfig: FrontendAppConfig,
 
   def onPageLoad: Action[AnyContent] = Action {
     implicit request =>
-      Ok(view)
+      Ok(view())
   }
 }

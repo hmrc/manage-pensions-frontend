@@ -16,6 +16,7 @@
 
 @import config.FrontendAppConfig
 @import uk.gov.hmrc.play.views.html._
+@import views.html._
 @import controllers.invitations.routes._
 
 @this(
@@ -28,7 +29,7 @@ appConfig: FrontendAppConfig
 
 @main_template(
     title = s"${messages("messages__psa__id__title")}",
-    appConfig = appConfig,
+
     bodyClasses = None) {
 
     @formHelper(action = PsaIdController.onSubmit(mode), 'autoComplete -> "off") {

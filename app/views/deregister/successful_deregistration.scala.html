@@ -16,12 +16,15 @@
 
 @import config.FrontendAppConfig
 @import uk.gov.hmrc.play.views.html._
+@import views.html._
 @import viewmodels.Message
 @import models.requests._
+@import views.html._
+
 
 @this(
-main_template: main_template,
-appConfig: FrontendAppConfig
+  main_template: main_template,
+  appConfig: FrontendAppConfig
 )
 
 @()(implicit request: Request[_], messages: Messages)
@@ -30,9 +33,8 @@ appConfig: FrontendAppConfig
 @printThisPageLink = {<a id="print-this-page-link" onclick="window.print();return false;" href="#">@messages("site.printThisPage")</a>}
 
 @main_template(
-   title= messages("messages__deregisterSuccess__title"),
-    appConfig = appConfig,
-    bodyClasses = None) {
+   title = messages("messages__deregisterSuccess__title")
+) {
 
     <div class="govuk-box-highlight">
           @components.heading(messages("messages__deregisterSuccess__heading"))

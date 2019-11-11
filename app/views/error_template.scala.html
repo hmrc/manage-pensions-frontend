@@ -14,21 +14,20 @@
  * limitations under the License.
  *@
 
-@import config.FrontendAppConfig
+@import views.html._
 
 @this(
-appConfig: FrontendAppConfig,
-govuk_wrapper: GovUKWrapper
+  govuk_wrapper: govuk_wrapper
 )
 
 @(pageTitle: String, heading: String, message: String)(implicit request: Request[_], messages: Messages)
 
-@contentHeader = {
+@header = {
     <h1>@heading</h1>
 }
 
-@mainContent = {
+@main = {
     <p>@message</p>
 }
 
-@govuk_wrapper(appConfig = appConfig, title = pageTitle, contentHeader = Some(contentHeader), mainContent = mainContent)
+@govuk_wrapper(title = pageTitle, contentHeader = Some(header), mainContent = main)

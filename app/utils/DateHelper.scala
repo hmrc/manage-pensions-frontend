@@ -18,6 +18,8 @@ package utils
 
 import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
 import org.joda.time.{DateTime, DateTimeZone, LocalDate}
+import play.api.libs.json.JodaWrites._
+import play.api.libs.json.JodaReads._
 
 trait DateHelper {
   def currentDate: DateTime = DateTime.now(DateTimeZone.UTC)

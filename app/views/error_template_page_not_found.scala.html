@@ -14,11 +14,10 @@
  * limitations under the License.
  *@
 
-@import config.FrontendAppConfig
+@import views.html._
 
 @this(
-appConfig: FrontendAppConfig,
-govuk_wrapper: GovUKWrapper
+    govuk_wrapper: govuk_wrapper
 )
 
 @()(implicit request: Request[_], messages: Messages)
@@ -35,4 +34,4 @@ govuk_wrapper: GovUKWrapper
 
 }
 
-@govuk_wrapper(appConfig = appConfig, title = messages("messages__pageNotFound404__title"), contentHeader = Some(contentHeader), mainContent = mainContent)
+@govuk_wrapper(title = messages("messages__pageNotFound404__title"), contentHeader = Some(contentHeader), mainContent = mainContent)

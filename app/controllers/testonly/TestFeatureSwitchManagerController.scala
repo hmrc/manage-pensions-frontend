@@ -20,8 +20,8 @@ import com.google.inject.Inject
 import config.FeatureSwitchManagementService
 import connectors.{PensionAdministratorFeatureSwitchConnectorImpl, PensionsSchemeFeatureSwitchConnectorImpl}
 import play.api.Logger
-import play.api.mvc.{Action, AnyContent, Request}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import views.html.testOnly.testFeatureSwitchManagerSuccess
 
 import scala.concurrent.ExecutionContext
@@ -29,8 +29,9 @@ import scala.concurrent.ExecutionContext
 class TestFeatureSwitchManagerController @Inject()(
                                                     fs: FeatureSwitchManagementService,
                                                     schemeFeatureSwitchConnector: PensionsSchemeFeatureSwitchConnectorImpl,
-                                                    adminFeatureSwitchConnector: PensionAdministratorFeatureSwitchConnectorImpl
-                                                  )(implicit val ec: ExecutionContext) extends FrontendController {
+                                                    adminFeatureSwitchConnector: PensionAdministratorFeatureSwitchConnectorImpl,
+                                                    val controllerComponents: MessagesControllerComponents
+                                                  )(implicit val ec: ExecutionContext) extends FrontendBaseController {
 
   private def onOrOff(state:Option[Boolean]):String = state match {
     case None => "unknown"

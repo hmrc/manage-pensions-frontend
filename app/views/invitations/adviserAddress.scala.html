@@ -16,6 +16,7 @@
 
 @import config.FrontendAppConfig
 @import uk.gov.hmrc.play.views.html._
+@import views.html._
 @import controllers.invitations.routes._
 @import models._
 @import utils.InputOption
@@ -30,7 +31,7 @@ appConfig: FrontendAppConfig
 
 @main_template(
     title = messages(s"messages__${prefix}__title"),
-    appConfig = appConfig,
+
     bodyClasses = None
 ) {
 

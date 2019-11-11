@@ -22,6 +22,8 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.Request
 import play.twirl.api.Html
 import uk.gov.hmrc.play.bootstrap.http.FrontendErrorHandler
+import views.html.error_template
+import views.html.error_template_page_not_found
 
 import scala.language.implicitConversions
 
@@ -31,8 +33,8 @@ class ErrorHandler @Inject()(
                               val messagesApi: MessagesApi
                             ) extends FrontendErrorHandler with I18nSupport {
 
-  override def notFoundTemplate(implicit request: Request[_]): Html = views.html.error_template_page_not_found(appConfig)
+  override def notFoundTemplate(implicit request: Request[_]): Html = error_template_page_not_found()
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit rh: Request[_]): Html =
-    views.html.error_template(pageTitle, heading, message, appConfig)
+    error_template(pageTitle, heading, message)
 }

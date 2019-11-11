@@ -29,13 +29,13 @@ import scala.concurrent.{ExecutionContext, Future}
 class UnableToStopBeingPsaController @Inject()(
                                                appConfig: FrontendAppConfig,
                                                auth: AuthAction,
-                                               val messagesApi: MessagesApi,
+                                               override val messagesApi: MessagesApi,
                                                val controllerComponents: MessagesControllerComponents,
                                                view: unableToStopBeingPsa
                                              )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = auth.async {
     implicit request =>
-      Future.successful(Ok(view(appConfig)))
+      Future.successful(Ok(view()))
   }
 }

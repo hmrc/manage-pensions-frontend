@@ -25,10 +25,7 @@ lazy val root = (project in file("."))
       "play.twirl.api.HtmlFormat",
       "play.twirl.api.HtmlFormat._",
       "uk.gov.hmrc.play.views.html.helpers._",
-      "uk.gov.hmrc.play.views.html.layouts._",
-      "views.ViewUtils._",
-      "models.Mode",
-      "controllers.routes._"
+      "uk.gov.hmrc.play.views.html.layouts._"
     ),
     PlayKeys.playDefaultPort := 8204,
     ScoverageKeys.coverageExcludedFiles := "<empty>;Reverse.*;.*filters.*;.*handlers.*;.*components.*;.*models.*;.*repositories.*;" +

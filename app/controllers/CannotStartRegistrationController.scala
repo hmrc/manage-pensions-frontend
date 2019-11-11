@@ -34,6 +34,6 @@ class CannotStartRegistrationController @Inject()(appConfig: FrontendAppConfig,
 
   def onPageLoad: Action[AnyContent] = authenticate {
     implicit request =>
-      Ok(view)
+      Ok(view())
   }
 }

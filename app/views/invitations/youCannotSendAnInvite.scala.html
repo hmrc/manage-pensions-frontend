@@ -16,6 +16,7 @@
 
 @import config.FrontendAppConfig
 @import uk.gov.hmrc.play.views.html._
+@import views.html._
 @import controllers.routes._
 @import models.Mode
 @import viewmodels.Message
@@ -29,7 +30,7 @@ appConfig: FrontendAppConfig
 
 @main_template(
     title = messages("messages__youCannotSendAnInvite__title"),
-    appConfig = appConfig,
+
     bodyClasses = None) {
 
     @components.heading(messages("messages__youCannotSendAnInvite__heading"))

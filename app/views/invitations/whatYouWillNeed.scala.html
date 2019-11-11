@@ -16,6 +16,7 @@
 
 @import config.FrontendAppConfig
 @import uk.gov.hmrc.play.views.html._
+@import views.html._
 @import play.api.mvc.Call
 
 @this(
@@ -28,7 +29,7 @@ appConfig: FrontendAppConfig
 
 @main_template(
     title = s"${messages("messages__whatYouWillNeed__title")}",
-    appConfig = appConfig,
+
     bodyClasses = None) {
 
         @formHelper(action = controllers.invitations.routes.WhatYouWillNeedController.onSubmit, 'autoComplete -> "off") {

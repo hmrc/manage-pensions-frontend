@@ -36,6 +36,9 @@ import utils.DateHelper._
 import utils.annotations.RemovePSA
 import utils.{Navigator, UserAnswers}
 import views.html.remove.removalDate
+import play.api.libs.json.JodaWrites._
+import play.api.libs.json.JodaReads._
+
 
 import scala.concurrent.{ExecutionContext, Future}
 

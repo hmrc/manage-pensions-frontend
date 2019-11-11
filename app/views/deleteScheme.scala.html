@@ -16,6 +16,7 @@
 
 @import config.FrontendAppConfig
 @import uk.gov.hmrc.play.views.html._
+@import views.html._
 @import controllers.routes._
 @import models.Mode
 @import viewmodels.Message
@@ -30,7 +31,7 @@ appConfig: FrontendAppConfig
 
 @main_template(
     title = Message("messages__deleteScheme__title"),
-    appConfig = appConfig,
+
     bodyClasses = None) {
 
     @formHelper(action = DeleteSchemeController.onSubmit, 'autoComplete -> "off") {

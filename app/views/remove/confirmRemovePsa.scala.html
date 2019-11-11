@@ -17,6 +17,7 @@
 @import play.api.data.Form
 @import config.FrontendAppConfig
 @import uk.gov.hmrc.play.views.html._
+@import views.html._
 @import viewmodels.Message
 
 @this(
@@ -28,8 +29,7 @@ appConfig: FrontendAppConfig
 @(form: Form[_], schemeName: String, srn: String, psaName: String)(implicit request: Request[_], messages: Messages)
 
 @main_template(
-    title = Messages("messages__confirmRemovePsa__title"),
-    appConfig = appConfig
+    title = Messages("messages__confirmRemovePsa__title")
 ){
 
     @formHelper(action = controllers.remove.routes.ConfirmRemovePsaController.onSubmit(), 'autoComplete -> "off") {

@@ -16,10 +16,16 @@
 
 package identifiers
 
-import org.joda.time.LocalDate
+import org.joda.time.{DateTime, LocalDate}
+import play.api.libs.json.JodaWrites.JodaDateTimeNumberWrites
+import play.api.libs.json.{Format, JodaReads, JsResult, JsValue}
 
 case object AssociatedDateId extends TypedIdentifier[LocalDate] {
 
   override def toString: String = "associatedDate"
 
+  implicit val dateFormatDefault: Format[DateTime] = new Format[DateTime] {
+    override def reads(json: JsValue): JsResult[DateTime] = JodaReads.DefaultJodaDateTimeReads.reads(json)
+    override def writes(o: DateTime): JsValue = JodaDateTimeNumberWrites.writes(o)
+  }
 }

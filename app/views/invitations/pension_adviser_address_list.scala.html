@@ -18,6 +18,7 @@
 @import config.FrontendAppConfig
 @import models.TolerantAddress
 @import uk.gov.hmrc.play.views.html._
+@import views.html._
 @import models.Mode
 
 @this(
@@ -30,7 +31,7 @@ appConfig: FrontendAppConfig
 
 @main_template(
     title = messages("messages__adviser__address__list__title"),
-    appConfig = appConfig,
+
     bodyClasses = None
 ) {
 

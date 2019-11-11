@@ -17,6 +17,7 @@
 @import config.FrontendAppConfig
 @import models.Mode
 @import uk.gov.hmrc.play.views.html._
+@import views.html._
 @import controllers.invitations.routes._
 
 @this(
@@ -29,7 +30,7 @@ appConfig: FrontendAppConfig
 
 @main_template(
     title = s"${messages("messages__adviser__email__address__title")}",
-    appConfig = appConfig,
+
     bodyClasses = None) {
 
     @formHelper(action = AdviserEmailAddressController.onSubmit(mode), 'autoComplete -> "off") {

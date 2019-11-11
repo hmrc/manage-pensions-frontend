@@ -19,13 +19,14 @@ package controllers.testonly
 import com.google.inject.Inject
 import connectors.MongoDiagnosticsConnector
 import controllers.actions.AuthAction
-import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 
 import scala.concurrent.ExecutionContext
 
-class MongoDiagnosticsController @Inject()(connector: MongoDiagnosticsConnector, authenticate: AuthAction)(
-  implicit val ec: ExecutionContext) extends FrontendController {
+class MongoDiagnosticsController @Inject()(connector: MongoDiagnosticsConnector, authenticate: AuthAction,
+                                           val controllerComponents: MessagesControllerComponents)(
+  implicit val ec: ExecutionContext) extends FrontendBaseController {
 
   // scalastyle:off magic.number
   private val banner = Seq.fill(50)("-").mkString

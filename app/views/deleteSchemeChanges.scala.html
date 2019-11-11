@@ -16,23 +16,23 @@
 
 @import config.FrontendAppConfig
 @import uk.gov.hmrc.play.views.html._
+@import views.html._
 @import controllers.routes._
 @import models.Mode
 @import viewmodels.Message
 @import play.api.mvc.Call
+@import views.html._
 
 @this(
-main_template: main_template,
-formHelper: FormWithCSRF,
-appConfig: FrontendAppConfig
+    main_template: main_template,
+    formHelper: FormWithCSRF
 )
 
 @(form: Form[_], schemeName: String, postCall: Call)(implicit request: Request[_], messages: Messages)
 
 @main_template(
-    title = Message("messages__deleteSchemeChanges__title"),
-    appConfig = appConfig,
-    bodyClasses = None) {
+    title = Message("messages__deleteSchemeChanges__title")
+) {
 
     @formHelper(action = postCall, 'autoComplete -> "off") {
 

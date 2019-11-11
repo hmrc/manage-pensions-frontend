@@ -16,6 +16,7 @@
 
 @import config.FrontendAppConfig
 @import uk.gov.hmrc.play.views.html._
+@import views.html._
 @import controllers.routes._
 @import models.NormalMode
 @import controllers.invitations.routes._
@@ -31,7 +32,7 @@ appConfig: FrontendAppConfig
 
 @main_template(
     title = s"${messages("messages__adviser__postcode__title")}",
-    appConfig = appConfig,
+
     bodyClasses = None) {
 
     @formHelper(action = AdviserAddressPostcodeLookupController.onSubmit(), 'autoComplete -> "off") {

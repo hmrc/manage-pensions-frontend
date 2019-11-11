@@ -6,20 +6,21 @@ object AppDependencies {
 
   val compile: Seq[ModuleID] = Seq(
     play.sbt.PlayImport.ws,
-    "org.reactivemongo" %% "play2-reactivemongo" % "0.18.3-play26",
+    "uk.gov.hmrc" %% "simple-reactivemongo" % "7.20.0-play-26",
     "uk.gov.hmrc" %% "logback-json-logger" % "4.0.0",
     "uk.gov.hmrc" %% "govuk-template" % "5.36.0-play-26",
     "uk.gov.hmrc" %% "play-health" % "3.14.0-play-26",
     "uk.gov.hmrc" %% "play-ui" % "8.3.0-play-26",
     "uk.gov.hmrc" %% "http-caching-client" % "9.0.0-play-26",
     "uk.gov.hmrc" %% "play-conditional-form-mapping" % "0.2.0",
-    "uk.gov.hmrc" %% "bootstrap-play-26" % "1.0.0",
-    "uk.gov.hmrc" %% "play-language" % "4.1.0",
+    "uk.gov.hmrc" %% "bootstrap-play-26" % "1.1.0",
+    "uk.gov.hmrc" %% "play-language" % "4.2.0-play-26",
     "uk.gov.hmrc" %% "domain" % "5.6.0-play-26",
-    "uk.gov.hmrc" %% "play-whitelist-filter" % "2.0.0"
+    "uk.gov.hmrc" %% "play-whitelist-filter" % "2.0.0",
+    "com.typesafe.play" %% "play-json-joda" % "2.6.10"
   )
 
-  val test = Seq(
+  val test: Seq[ModuleID] = Seq(
     "uk.gov.hmrc" %% "hmrctest" % "3.9.0-play-26",
     "org.scalatest" %% "scalatest" % "3.0.8",
     "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2",

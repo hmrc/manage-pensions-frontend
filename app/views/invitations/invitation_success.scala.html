@@ -16,6 +16,7 @@
 
 @import config.FrontendAppConfig
 @import uk.gov.hmrc.play.views.html._
+@import views.html._
 @import org.joda.time.LocalDate
 @import utils.DateHelper
 @import controllers.routes._
@@ -31,7 +32,7 @@ appConfig: FrontendAppConfig
 
 @main_template(
     title = messages("messages__invitationSuccess__title"),
-    appConfig = appConfig,
+
     bodyClasses = None
 ) {
 

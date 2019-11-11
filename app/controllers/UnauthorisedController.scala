@@ -31,6 +31,6 @@ class UnauthorisedController @Inject()(val appConfig: FrontendAppConfig,
                                        view: unauthorised)(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = Action { implicit request =>
-    Ok(view)
+    Ok(view())
   }
 }
