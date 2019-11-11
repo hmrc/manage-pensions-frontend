@@ -123,7 +123,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
         listOfSchemes =>
           val currentScheme = listOfSchemes.filter(_.referenceNumber.contains(srn))
           if (currentScheme.nonEmpty) {
-            currentScheme.head.openDate.map(date => LocalDate.parse(date, DateHelper.formatter).toString)
+            currentScheme.head.openDate.map(date => LocalDate.parse(date).format(DateHelper.formatter))
           } else {
             None
           }

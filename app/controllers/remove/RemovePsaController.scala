@@ -99,7 +99,7 @@ class RemovePsaController @Inject()(authenticate: AuthAction,
         val psa = admins.filter(_.psaId.contains(request.psaId.id))
 
         val associatedDate = if (psa.nonEmpty) {
-          psa.head.relationshipDate.map(LocalDate.parse(_, DateHelper.formatter))
+          psa.head.relationshipDate.map(LocalDate.parse(_))
         } else {
           None
         }
