@@ -74,13 +74,13 @@ class SessionRepository(config: Configuration, component: ReactiveMongoComponent
     val selector = BSONDocument("id" -> id)
     val modifier = BSONDocument("$set" -> document)
 
-    collection.update(selector, modifier, upsert = true)
+    collection.update(ordered = false).one(selector, modifier, upsert = true)
       .map(_.ok)
   }
 
   def get(id: String): Future[Option[JsValue]] = {
     import play.api.libs.json._
-    collection.find(Json.obj("id" -> id)).one[JsObject].map {
+    collection.find(Json.obj("id" -> id), Option.empty[JsObject]).one[JsObject].map {
       json =>
         json.flatMap {
           json =>
@@ -91,12 +91,12 @@ class SessionRepository(config: Configuration, component: ReactiveMongoComponent
 
   def remove(id: String): Future[Boolean] = {
     val selector = BSONDocument("id" -> id)
-    collection.remove(selector).map(_.ok)
+    collection.delete.one(selector).map(_.ok)
   }
 
   def getValue(id: String, value: String): Future[Option[JsValue]] = {
     import play.api.libs.json._
-    collection.find(Json.obj("id" -> id)).one[JsObject].map {
+    collection.find(Json.obj("id" -> id), Option.empty[JsObject]).one[JsObject].map {
       json =>
         json.flatMap {
           json =>

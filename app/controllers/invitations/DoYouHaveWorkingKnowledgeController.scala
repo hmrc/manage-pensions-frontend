@@ -36,7 +36,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class DoYouHaveWorkingKnowledgeController @Inject()(
                                                      val appConfig: FrontendAppConfig,
                                                      val auth: AuthAction,
-                                                     val messagesApi: MessagesApi,
+                                                     override val messagesApi: MessagesApi,
                                                      @AcceptInvitation navigator: Navigator,
                                                      val formProvider: DoYouHaveWorkingKnowledgeFormProvider,
                                                      val dataCacheConnector: UserAnswersCacheConnector,

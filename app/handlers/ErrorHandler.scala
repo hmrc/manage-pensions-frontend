@@ -16,25 +16,24 @@
 
 package handlers
 
+import com.google.inject.Inject
 import config.FrontendAppConfig
-import javax.inject.{Inject, Singleton}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.Request
 import play.twirl.api.Html
 import uk.gov.hmrc.play.bootstrap.http.FrontendErrorHandler
-import views.html.error_template
-import views.html.error_template_page_not_found
+import views.html._
 
-import scala.language.implicitConversions
-
-@Singleton
 class ErrorHandler @Inject()(
                               appConfig: FrontendAppConfig,
-                              val messagesApi: MessagesApi
+                              val messagesApi: MessagesApi,
+                              view: error_template,
+                              notFoundView: error_template_page_not_found
                             ) extends FrontendErrorHandler with I18nSupport {
 
-  override def notFoundTemplate(implicit request: Request[_]): Html = error_template_page_not_found()
+  override def notFoundTemplate(implicit request: Request[_]): Html =
+    notFoundView()
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit rh: Request[_]): Html =
-    error_template(pageTitle, heading, message)
+    view(pageTitle, heading, message)
 }

@@ -16,9 +16,10 @@
 
 package config
 
+import java.time.LocalDate
+
 import com.google.inject.{Inject, Singleton}
 import controllers.routes
-import org.joda.time.LocalDate
 import play.api.Mode.Mode
 import play.api.i18n.Lang
 import play.api.mvc.Call
@@ -84,7 +85,7 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
 
   lazy val daysDataSaved: Int = loadConfig("daysDataSaved").toInt
   lazy val invitationExpiryDays: Int = loadConfig("invitationExpiryDays").toInt
-  lazy val earliestDatePsaRemoval: LocalDate = new LocalDate(loadConfig("earliestDatePsaRemoval"))
+  lazy val earliestDatePsaRemoval: LocalDate = LocalDate.parse(loadConfig("earliestDatePsaRemoval"))
 
   lazy val locationCanonicalList = loadConfig("location.canonical.list")
   lazy val locationCanonicalListEUAndEEA: String = loadConfig("location.canonical.list.EUAndEEA")

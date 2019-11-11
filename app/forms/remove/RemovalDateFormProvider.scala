@@ -16,12 +16,11 @@
 
 package forms.remove
 
+import java.time.LocalDate
+
 import forms.mappings._
 import javax.inject.Inject
-import org.joda.time.LocalDate
 import play.api.data.Form
-import play.api.libs.json.JodaWrites._
-import play.api.libs.json.JodaReads._
 
 
 class RemovalDateFormProvider @Inject() extends DateMapping with Constraints {

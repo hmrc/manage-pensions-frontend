@@ -17,15 +17,14 @@
 @import config.FrontendAppConfig
 @import uk.gov.hmrc.play.views.html._
 @import views.html._
-@import org.joda.time.LocalDate
+@import java.time.LocalDate
 @import utils.DateHelper
 @import controllers.routes._
 @import play.api.mvc.Call
 
 @this(
 main_template: main_template,
-formHelper: FormWithCSRF,
-appConfig: FrontendAppConfig
+formHelper: FormWithCSRF
 )
 
 @(inviteeName: String, schemeName: String, expiryDate: LocalDate, continue: Call)(implicit request: Request[_], messages: Messages)

@@ -16,6 +16,8 @@
 
 package controllers.invitations
 
+import java.time.LocalDate
+
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
@@ -24,12 +26,11 @@ import identifiers.MinimalSchemeDetailId
 import identifiers.invitations.{InvitationSuccessId, InviteeNameId}
 import javax.inject.Inject
 import models.{NormalMode, SchemeReferenceNumber}
-import org.joda.time.LocalDate
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
-import utils.{Navigator, UserAnswers}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.annotations.Invitation
+import utils.{Navigator, UserAnswers}
 import views.html.invitations.invitation_success
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -68,7 +69,7 @@ class InvitationSuccessController @Inject()(
       }
   }
 
-  def onSubmit(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate).async {
+  def onSubmit(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate.async {
     implicit request =>
       Future.successful(Redirect(navigator.nextPage(InvitationSuccessId(srn), NormalMode, UserAnswers())))
   }

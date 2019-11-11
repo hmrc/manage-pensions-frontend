@@ -17,10 +17,10 @@
 @import config.FrontendAppConfig
 
 @this(
-config: FrontendAppConfig,
-govuk_wrapper: govuk_wrapper,
-article: Article,
-sidebar: Sidebar
+    config: FrontendAppConfig,
+    govuk_wrapper: govuk_wrapper,
+    article: Article,
+    sidebar: Sidebar
 )
 
 @(
@@ -41,9 +41,9 @@ sidebar: Sidebar
 
 @serviceInfoContent = {}
 
-@sidebar = {
+@sidebarF = {
     @if(sidebarLinks.isDefined) {
-        @layouts.sidebar(sidebarLinks.get, Some("sidebar"))
+        @sidebar(sidebarLinks.get, Some("sidebar"))
     }
 }
 
@@ -51,9 +51,9 @@ sidebar: Sidebar
     title = if(title == Messages("messages__schemesOverview__title")){Messages("messages__manage_pension_schemes__title")} else {title + " - " + Messages("messages__manage_pension_schemes__title")},
     mainClass = mainClass,
     bodyClasses = bodyClasses,
-    sidebar = sidebar,
+    sidebar = sidebarF,
     contentHeader = contentHeader,
-    mainContent = layouts.article(mainContent),
+    mainContent = article(mainContent),
     serviceInfoContent = serviceInfoContent,
     scriptElem = scriptElem
 )

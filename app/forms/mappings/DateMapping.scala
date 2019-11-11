@@ -16,7 +16,8 @@
 
 package forms.mappings
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
+
 import play.api.data.Forms.{text, tuple}
 import play.api.data.Mapping
 import play.api.data.validation.{Constraint, Invalid, Valid}
@@ -57,10 +58,10 @@ trait DateMapping extends Constraints{
 
 
   def toLocalDate(date: (String, String, String)): LocalDate =
-    new LocalDate(date._3.toInt, date._2.toInt, date._1.toInt)
+    LocalDate.of(date._3.toInt, date._2.toInt, date._1.toInt)
 
   def fromLocalDate(date: LocalDate): (String, String, String) =
-    (date.dayOfMonth().get().toString, date.monthOfYear().get().toString, date.year().get().toString)
+    (date.getDayOfMonth.toString, date.getMonth.toString, date.getYear.toString)
 
 }
 

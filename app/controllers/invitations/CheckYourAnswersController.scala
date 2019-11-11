@@ -16,6 +16,8 @@
 
 package controllers.invitations
 
+import java.time.LocalDateTime
+
 import com.google.inject.Inject
 import config.{FeatureSwitchManagementService, FrontendAppConfig}
 import connectors.{InvitationConnector, NameMatchingFailedException, PsaAlreadyInvitedException, SchemeDetailsConnector}
@@ -111,6 +113,6 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
       }
   }
 
-  private def getExpireAt = DateHelper.dateTimeFromNowToMidnightAfterDays(appConfig.invitationExpiryDays)
+  private def getExpireAt: LocalDateTime = DateHelper.dateTimeFromNowToMidnightAfterDays(appConfig.invitationExpiryDays)
 
 }

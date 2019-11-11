@@ -16,6 +16,8 @@
 
 package controllers.remove
 
+import java.time.LocalDate
+
 import config.FrontendAppConfig
 import connectors.{PsaRemovalConnector, UserAnswersCacheConnector}
 import controllers.Retrievals
@@ -26,7 +28,6 @@ import identifiers.remove.RemovalDateId
 import identifiers.{AssociatedDateId, SchemeSrnId}
 import javax.inject.Inject
 import models.{NormalMode, PsaToBeRemovedFromScheme}
-import org.joda.time.LocalDate
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.Reads._
@@ -36,9 +37,6 @@ import utils.DateHelper._
 import utils.annotations.RemovePSA
 import utils.{Navigator, UserAnswers}
 import views.html.remove.removalDate
-import play.api.libs.json.JodaWrites._
-import play.api.libs.json.JodaReads._
-
 
 import scala.concurrent.{ExecutionContext, Future}
 

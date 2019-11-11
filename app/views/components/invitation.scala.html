@@ -14,12 +14,13 @@
  * limitations under the License.
  *@
 
-@import org.joda.time.DateTime
+@import java.time.LocalDate
 @import utils.DateHelper._
+@import java.time.LocalDateTime
 
 @(
 schemeName: String,
-expiryDate: DateTime,
+expiryDate: LocalDateTime,
 id: String,
 srn: String
 )(implicit messages: Messages)

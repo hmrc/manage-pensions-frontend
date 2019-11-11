@@ -16,6 +16,8 @@
 
 package controllers
 
+import java.time.LocalDate
+
 import config.{FeatureSwitchManagementService, FrontendAppConfig}
 import connectors._
 import controllers.actions._
@@ -24,7 +26,6 @@ import identifiers.{ListOfPSADetailsId, SchemeNameId, SchemeSrnId, SchemeStatusI
 import javax.inject.Inject
 import models._
 import models.requests.AuthenticatedRequest
-import org.joda.time.LocalDate
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
@@ -51,51 +52,49 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate.async {
     implicit request =>
-    withSchemeAndLock(srn).flatMap {
-      case (userAnswers, lock) =>
-        val schemeStatus = userAnswers.get(SchemeStatusId).getOrElse("")
-        val isSchemeOpen = schemeStatus.equalsIgnoreCase("open")
+      withSchemeAndLock(srn).flatMap {
+        case (userAnswers, lock) =>
+          val schemeStatus = userAnswers.get(SchemeStatusId).getOrElse("")
+          val isSchemeOpen = schemeStatus.equalsIgnoreCase("open")
 
-        val displayChangeLink = {
-          if (!isSchemeOpen) {
-            false
-          } else {
-            lock match {
-              case Some(VarianceLock) | None => true
-              case Some(_) => false
-            }
-          }
-        }
-
-        val admins = (userAnswers.json \ "psaDetails").as[Seq[PsaDetails]].map(_.id)
-        val schemeName = userAnswers.get(SchemeNameId).getOrElse("")
-
-        if (admins.contains(request.psaId.id)) {
-          listSchemesConnector.getListOfSchemes(request.psaId.id).flatMap { list =>
-            userAnswersCacheConnector.save(request.externalId, SchemeSrnId, srn.id).flatMap { _ =>
-              userAnswersCacheConnector.save(request.externalId, SchemeNameId, schemeName).flatMap { _ =>
-                lockingPsa(lock, srn).map { lockingPsa =>
-                  Ok(view(
-                    schemeName,
-                    pstr(srn.id, list),
-                    openedDate(srn.id, list, isSchemeOpen),
-                    administratorsVariations(request.psaId.id, userAnswers, schemeStatus),
-                    srn.id,
-                    isSchemeOpen,
-                    displayChangeLink,
-                    lockingPsa
-                  ))
-                }
+          val displayChangeLink = {
+            if (!isSchemeOpen) {
+              false
+            } else {
+              lock match {
+                case Some(VarianceLock) | None => true
+                case Some(_) => false
               }
             }
           }
-        } else {
-          Future.successful(NotFound(errorHandler.notFoundTemplate))
-        }
-    }
+
+          val admins = (userAnswers.json \ "psaDetails").as[Seq[PsaDetails]].map(_.id)
+          val schemeName = userAnswers.get(SchemeNameId).getOrElse("")
+
+          if (admins.contains(request.psaId.id)) {
+            listSchemesConnector.getListOfSchemes(request.psaId.id).flatMap { list =>
+              userAnswersCacheConnector.save(request.externalId, SchemeSrnId, srn.id).flatMap { _ =>
+                userAnswersCacheConnector.save(request.externalId, SchemeNameId, schemeName).flatMap { _ =>
+                  lockingPsa(lock, srn).map { lockingPsa =>
+                    Ok(view(
+                      schemeName,
+                      pstr(srn.id, list),
+                      openedDate(srn.id, list, isSchemeOpen),
+                      administratorsVariations(request.psaId.id, userAnswers, schemeStatus),
+                      srn.id,
+                      isSchemeOpen,
+                      displayChangeLink,
+                      lockingPsa
+                    ))
+                  }
+                }
+              }
+            }
+          } else {
+            Future.successful(NotFound(errorHandler.notFoundTemplate))
+          }
+      }
   }
-
-
 
 
   private def withSchemeAndLock(srn: SchemeReferenceNumber)(implicit request: AuthenticatedRequest[AnyContent]) = {
@@ -120,13 +119,14 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
 
   private def openedDate(srn: String, list: ListOfSchemes, isSchemeOpen: Boolean): Option[String] = {
     if (isSchemeOpen) {
-      list.schemeDetail.flatMap { listOfSchemes =>
-        val currentScheme = listOfSchemes.filter(_.referenceNumber.contains(srn))
-        if (currentScheme.nonEmpty) {
-          currentScheme.head.openDate.map(new LocalDate(_).toString(DateHelper.formatter))
-        } else {
-          None
-        }
+      list.schemeDetail.flatMap {
+        listOfSchemes =>
+          val currentScheme = listOfSchemes.filter(_.referenceNumber.contains(srn))
+          if (currentScheme.nonEmpty) {
+            currentScheme.head.openDate.map(date => LocalDate.parse(date, DateHelper.formatter).toString)
+          } else {
+            None
+          }
       }
     }
     else {

@@ -16,25 +16,24 @@
 
 package controllers.remove
 
+import java.time.LocalDate
+
 import com.google.inject.{Inject, Singleton}
-import config.{FeatureSwitchManagementService, FrontendAppConfig}
+import config.FrontendAppConfig
 import connectors.{MinimalPsaConnector, SchemeDetailsConnector, UserAnswersCacheConnector}
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import identifiers.invitations.PSTRId
 import identifiers.{AssociatedDateId, SchemeNameId, SchemeSrnId}
-import models.{MinimalPSA, PsaAssociatedDate}
 import models.requests.DataRequest
-import org.joda.time.LocalDate
+import models.{MinimalPSA, PsaAssociatedDate}
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json.{JsArray, JsPath, __}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
-import utils.Toggles
-import play.api.libs.json.JodaWrites._
-import play.api.libs.json.JodaReads._
+import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
+import utils.DateHelper
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -100,7 +99,7 @@ class RemovePsaController @Inject()(authenticate: AuthAction,
         val psa = admins.filter(_.psaId.contains(request.psaId.id))
 
         val associatedDate = if (psa.nonEmpty) {
-          psa.head.relationshipDate.map(new LocalDate(_))
+          psa.head.relationshipDate.map(LocalDate.parse(_, DateHelper.formatter))
         } else {
           None
         }
@@ -113,5 +112,5 @@ class RemovePsaController @Inject()(authenticate: AuthAction,
   }
 
 
-  case class SchemeInfo(schemeName:String, pstr:String, associatedDate:LocalDate)
+  case class SchemeInfo(schemeName: String, pstr:String, associatedDate: LocalDate)
 }

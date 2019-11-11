@@ -41,7 +41,7 @@ class ConfirmStopBeingPsaController @Inject()(
                                                enrolments: TaxEnrolmentsConnector,
                                                allowAccess: AllowAccessForNonSuspendedUsersAction,
                                                @PensionAdminCache dataCacheConnector: UserAnswersCacheConnector,
-                                               mcc: MessagesControllerComponents,
+                                               val controllerComponents: MessagesControllerComponents,
                                                view: confirmStopBeingPsa
                                              )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 

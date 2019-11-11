@@ -17,36 +17,34 @@
 package controllers
 
 import com.google.inject.Inject
+import config.FrontendAppConfig
 import play.api.Configuration
 import play.api.i18n.{I18nSupport, Lang, MessagesApi}
 import play.api.mvc._
-import config.FrontendAppConfig
-import uk.gov.hmrc.play.language.LanguageUtils
+import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 
-// TODO, upstream this into play-language
-class LanguageSwitchController @Inject() (
-                                           configuration: Configuration,
-                                           appConfig: FrontendAppConfig,
-                                           val controllerComponents: ControllerComponents
-                                         ) extends BaseController with I18nSupport {
-
-  private def langToCall(lang: String): String => Call = appConfig.routeToSwitchLanguage
+class LanguageSwitchController @Inject()(
+                                          configuration: Configuration,
+                                          appConfig: FrontendAppConfig,
+                                          override implicit val messagesApi: MessagesApi,
+                                          val controllerComponents: MessagesControllerComponents
+                                        ) extends FrontendBaseController with I18nSupport {
 
   private def fallbackURL: String = routes.IndexController.onPageLoad().url
 
   private def languageMap: Map[String, Lang] = appConfig.languageMap
 
-
   def switchToLanguage(language: String): Action[AnyContent] = Action {
     implicit request =>
+
       val enabled = isWelshEnabled
       val lang = if (enabled) {
-        languageMap.getOrElse(language, LanguageUtils.getCurrentLang)
+        languageMap.getOrElse(language, Lang.defaultLang)
       } else {
         Lang("en")
       }
       val redirectURL = request.headers.get(REFERER).getOrElse(fallbackURL)
-      Redirect(redirectURL).withLang(Lang.apply(lang.code)).flashing(LanguageUtils.FlashWithSwitchIndicator)
+      Redirect(redirectURL).withLang(Lang.apply(lang.code))
   }
 
   private def isWelshEnabled: Boolean =
