@@ -16,9 +16,10 @@
 
 package connectors
 
+import java.time.LocalDate
+
 import com.github.tomakehurst.wiremock.client.WireMock._
 import models.PsaToBeRemovedFromScheme
-import org.joda.time.LocalDate
 import org.scalatest.prop.Checkers
 import org.scalatest.{AsyncFlatSpec, Matchers}
 import play.api.http.Status
@@ -70,7 +71,7 @@ class PsaRemovalConnectorSpec extends AsyncFlatSpec with Matchers with WireMockH
 object PsaRemovalConnectorSpec {
   implicit val hc : HeaderCarrier = HeaderCarrier()
 
-  private val psaToBeRemoved = PsaToBeRemovedFromScheme("238DAJFASS", "XXAJ329AJJ", new LocalDate(2009,1,1))
+  private val psaToBeRemoved = PsaToBeRemovedFromScheme("238DAJFASS", "XXAJ329AJJ", LocalDate.of(2009,1,1))
   private val deleteUrl = "/pension-administrator/remove-psa"
   private val requestJson = Json.stringify(Json.toJson(psaToBeRemoved))
 

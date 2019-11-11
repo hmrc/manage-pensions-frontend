@@ -16,9 +16,10 @@
 
 package connectors
 
+import java.time.LocalDateTime
+
 import com.github.tomakehurst.wiremock.client.WireMock._
 import models.{AcceptedInvitation, Invitation, SchemeReferenceNumber}
-import org.joda.time.DateTime
 import org.scalatest.prop.Checkers
 import org.scalatest.{AsyncFlatSpec, Matchers}
 import play.api.http.Status
@@ -257,7 +258,7 @@ object InvitationConnectorSpec {
   private val inviterPsaId = PsaId("A7654321")
   private val inviteePsaId = PsaId("A1234567")
   private val inviteeName = "test-invitee-name"
-  private val expireAt = new DateTime("2018-05-05")
+  private val expireAt = new LocalDateTime("2018-05-05")
   private val declaration = true
   private val declarationDuties = true
 
