@@ -28,7 +28,7 @@ import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mockito.MockitoSugar
-import play.api.libs.json.{JsNumber, Json}
+import play.api.libs.json.{JsNumber, JsObject, Json}
 import play.api.mvc.{AnyContent, Call}
 import play.api.mvc.Results.Ok
 import play.api.test.FakeRequest
@@ -221,21 +221,22 @@ object SchemesOverviewServiceSpec extends SpecBase with MockitoSugar  {
 
   val cannotStartRegistrationUrl: Call = controllers.routes.CannotStartRegistrationController.onPageLoad()
 
-  val schemeNameJsonOption = Json.obj("schemeName" -> schemeName)
+  val schemeNameJsonOption: JsObject = Json.obj("schemeName" -> schemeName)
   val schemeSrnNumberOnlyData = Some(Json.obj("submissionReferenceNumber" -> Json.obj("schemeReferenceNumber" -> srn)))
 
   private def adminCard(deregistration: Seq[Link] = deregisterLink,
                         invitation: Seq[Link] = invitationsLink) = CardViewModel(
-    id = Some("administrator-card"),
+    id = "administrator-card",
     heading = Message("messages__schemeOverview__psa_heading"),
-    subHeading = Some(Message("messages__schemeOverview__psa_id", psaId)),
+    subHeading = Some(Message("messages__schemeOverview__psa_id")),
+    subHeadingParam = Some(psaId),
     links = Seq(
       Link("psaLink", frontendAppConfig.registeredPsaDetailsUrl, Message("messages__schemeOverview__psa_change"))
     ) ++ invitation ++ deregistration)
 
   private def schemeCard(schemeSubscriptionLinks: Seq[Link] = subscriptionLinks,
                          schemeVariationLinks: Seq[Link] = variationLinks) = CardViewModel(
-    id = Some("scheme-card"),
+    id = "scheme-card",
     heading = Message("messages__schemeOverview__scheme_heading"),
     links = Seq(
       Link("view-schemes", ListSchemesController.onPageLoad().url, Message("messages__schemeOverview__scheme_view"))

@@ -17,7 +17,7 @@
 package controllers
 
 import config.FrontendAppConfig
-import connectors.UserAnswersCacheConnector
+import connectors.{MinimalPsaConnector, UserAnswersCacheConnector}
 import controllers.actions._
 import forms.DeleteSchemeFormProvider
 import javax.inject.Inject
@@ -36,6 +36,7 @@ class DeleteSchemeController @Inject()(
                                         appConfig: FrontendAppConfig,
                                         override val messagesApi: MessagesApi,
                                         @PensionsSchemeCache dataCacheConnector: UserAnswersCacheConnector,
+                                        minimalPsaConnector: MinimalPsaConnector,
                                         authenticate: AuthAction,
                                         getData: DataRetrievalAction,
                                         requireData: DataRequiredAction,
@@ -48,17 +49,17 @@ class DeleteSchemeController @Inject()(
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
-      getSchemeName { schemeName =>
-              Future.successful(Ok(deleteScheme(appConfig, form, schemeName)))
+      getSchemeName { (schemeName, psaName) =>
+              Future.successful(Ok(deleteScheme(appConfig, form, schemeName, psaName)))
       }
   }
 
   def onSubmit: Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
-      getSchemeName { schemeName =>
+      getSchemeName { (schemeName, psaName) =>
         form.bindFromRequest().fold(
           (formWithErrors: Form[_]) =>
-            Future.successful(BadRequest(deleteScheme(appConfig, formWithErrors, schemeName))),
+            Future.successful(BadRequest(deleteScheme(appConfig, formWithErrors, schemeName, psaName))),
           {
             case true => dataCacheConnector.removeAll(request.externalId).map {
               _ =>
@@ -70,13 +71,17 @@ class DeleteSchemeController @Inject()(
       }
   }
 
-  private def getSchemeName(f: String => Future[Result])
+  private def getSchemeName(f: (String, String) => Future[Result])
                            (implicit request: OptionalDataRequest[AnyContent]): Future[Result] = {
+
     dataCacheConnector.fetch(request.externalId).flatMap {
       case None => Future.successful(overviewPage)
       case Some(data) =>
         (data \ "schemeName").validate[String] match {
-          case JsSuccess(name, _) => f(name)
+          case JsSuccess(schemeName, _) =>
+            minimalPsaConnector.getPsaNameFromPsaID(request.psaId.id).flatMap(_.map{ psaName =>
+              f(schemeName, psaName)
+            }.getOrElse(Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))))
           case JsError(_) => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
         }
     }

@@ -18,9 +18,8 @@ package viewmodels
 
 import models.Link
 
-case class CardViewModel(id: Option[String] = None,
+case class CardViewModel(id: String,
                 heading: String,
                 subHeading: Option[String] = None,
-                headingTag: String = "h2",
-                subHeadingTag: String = "h3",
+                subHeadingParam: Option[String] = None,
                 links: Seq[Link] = Nil)

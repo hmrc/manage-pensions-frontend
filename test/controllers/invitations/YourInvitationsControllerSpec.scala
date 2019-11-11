@@ -18,7 +18,7 @@ package controllers.invitations
 
 import connectors.{FakeUserAnswersCacheConnector, InvitationsCacheConnector}
 import controllers.ControllerSpecBase
-import controllers.actions.{AuthAction, FakeAuthAction, FakeUnAuthorisedAction}
+import controllers.actions._
 import identifiers.SchemeSrnId
 import models.NormalMode
 import org.mockito.Matchers.any
@@ -36,24 +36,27 @@ import scala.concurrent.Future
 class YourInvitationsControllerSpec extends ControllerSpecBase with MockitoSugar {
 
   val nextCall = Call("GET", "www.example.com")
-
+  val psaName = "Test Psa Name"
   val navigator = new FakeNavigator(nextCall, NormalMode)
 
-  val mockInvitationsCacheConnector = mock[InvitationsCacheConnector]
+  val mockInvitationsCacheConnector: InvitationsCacheConnector = mock[InvitationsCacheConnector]
 
-  private def controller(authAction: AuthAction = FakeAuthAction()): YourInvitationsController = {
+  private def controller(authAction: AuthAction = FakeAuthAction(),
+                         dataRetrievalAction: DataRetrievalAction = getDataWithPsaName()): YourInvitationsController = {
 
     new YourInvitationsController(
       frontendAppConfig,
       messagesApi,
       authAction,
+      dataRetrievalAction,
+      new DataRequiredActionImpl,
       mockInvitationsCacheConnector,
       FakeUserAnswersCacheConnector,
       navigator
     )
   }
 
-  private def viewAsString: () => HtmlFormat.Appendable = () => yourInvitations(frontendAppConfig, invitationList)(fakeRequest, messages)
+  private def viewAsString: () => HtmlFormat.Appendable = () => yourInvitations(frontendAppConfig, invitationList, psaName)(fakeRequest, messages)
 
   "YourInvitationsController" must {
 

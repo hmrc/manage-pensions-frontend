@@ -28,10 +28,10 @@ import views.html.schemesOverview
 
 class SchemesOverviewViewSpec extends ViewBehaviours {
 
-  val variationSchemeName = "a scheme"
-  val variationDeleteDate = "a date"
-
-  val messageKeyPrefix = "schemesOverview"
+  val variationSchemeName = "Scheme being changed"
+  val variationDeleteDate = "deletionDate"
+  val psaName = "John Doe"
+  val messageKeyPrefix = "schemeOverview"
   val schemeName = "Test Scheme Name"
   val lastDate: String = LocalDate.now.toString
   val deleteDate: String = LocalDate.now.plusDays(frontendAppConfig.daysDataSaved).toString
@@ -39,9 +39,10 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
   private val srn = "123"
 
   private val adminCard = CardViewModel(
-    id = Some("administrator-card"),
+    id = "administrator-card",
     heading = Message("messages__schemeOverview__psa_heading"),
-    subHeading = Some(Message("messages__schemeOverview__psa_id", psaId)),
+    subHeading = Some(Message("messages__schemeOverview__psa_id")),
+    subHeadingParam = Some(psaId),
     links = Seq(
       Link("psaLink", frontendAppConfig.registeredPsaDetailsUrl, Message("messages__schemeOverview__psa_change")),
     Link("invitations-received", controllers.invitations.routes.YourInvitationsController.onPageLoad().url,
@@ -53,7 +54,7 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
 
 
   private val schemeCardWithNoActiveChanges = CardViewModel(
-    id = Some("scheme-card"),
+    id = "scheme-card",
     heading = Message("messages__schemeOverview__scheme_heading"),
     links = Seq(
       Link("view-schemes", ListSchemesController.onPageLoad().url, Message("messages__schemeOverview__scheme_view")),
@@ -63,7 +64,7 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
   )
 
   private val schemeCardWithActiveChanges = CardViewModel(
-    id = Some("scheme-card"),
+    id = "scheme-card",
     heading = Message("messages__schemeOverview__scheme_heading"),
     links = Seq(
       Link("view-schemes", ListSchemesController.onPageLoad().url, Message("messages__schemeOverview__scheme_view")),
@@ -79,53 +80,44 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
   )
 
   def createView: () => HtmlFormat.Appendable = () =>
-    schemesOverview(frontendAppConfig, "John Doe", Seq(adminCard, schemeCardWithActiveChanges) )(fakeRequest, messages)
+    schemesOverview(frontendAppConfig, psaName, Seq(adminCard, schemeCardWithActiveChanges) )(fakeRequest, messages)
 
   def createFreshView: () => HtmlFormat.Appendable = () =>
-    schemesOverview(frontendAppConfig, "John Doe", Seq(adminCard, schemeCardWithNoActiveChanges))(fakeRequest, messages)
+    schemesOverview(frontendAppConfig, psaName, Seq(adminCard, schemeCardWithNoActiveChanges))(fakeRequest, messages)
 
   "SchemesOverview view when a scheme has been partially defined and which has no scheme variation" must {
-    behave like normalPage(
+    behave like normalPageWithoutBrowserTitle(
       createView,
       messageKeyPrefix,
-      messages(s"messages__${messageKeyPrefix}__heading"),
-      "_manage__text",
-      "_manage__link",
-      "_continue__link"
+      psaName,
+      "_psa_heading",
+      "_psa_id",
+      "_psa_change",
+      "_psa_view_invitations",
+      "_psa_deregister",
+      "_scheme_heading",
+      "_scheme_view"
     )
 
     "have a name" in {
       createView must haveLink(frontendAppConfig.registeredPsaDetailsUrl, "psaLink")
-      createView must haveElementWithText("psaName", "John Doe")
     }
-
-    "display psa id" in {
-      createView must haveElementWithText("psaId", psaId)
-    }
-
 
     "display a link to your invitations page if user has received invitations" in {
       createView must haveLink( controllers.invitations.routes.YourInvitationsController.onPageLoad().url, "invitations-received")
     }
 
+    "display a link to stop being a psa" in {
+      createView must haveLink(controllers.deregister.routes.ConfirmStopBeingPsaController.onPageLoad().url, "deregister-link")
+    }
 
     "have link to view all schemes" in {
       createView must haveLink(controllers.routes.ListSchemesController.onPageLoad().url, "view-schemes")
     }
 
-
-    "display scheme name" in {
-      Jsoup.parse(createView().toString()) must haveDynamicText(schemeName)
-    }
-
-    "have dynamic text with date of last update" in {
+    "have dynamic text with date of data deletion and scheme name for subscription" in {
       Jsoup.parse(createView().toString()) must
-        haveDynamicText(Message("messages__schemesOverview__continue__lastDate", lastDate))
-    }
-
-    "have dynamic text with date of data deletion" in {
-      Jsoup.parse(createView().toString()) must
-        haveDynamicText(Message("messages__schemesOverview__continue__deleteDate", deleteDate))
+        haveDynamicText(Message("messages__schemeOverview__scheme_subscription_continue", schemeName, deleteDate))
     }
 
     "have link for continue registration" in {
@@ -133,9 +125,9 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
         haveLink(controllers.routes.SchemesOverviewController.onClickCheckIfSchemeCanBeRegistered().url, "continue-registration")
     }
 
-    "have dyanamic text for delete registration" in {
+    "have dynamic text for delete registration" in {
       Jsoup.parse(createView().toString()) must
-        haveDynamicText(messages("messages__schemesOverview__delete__link", schemeName))
+        haveDynamicText(messages("messages__schemeOverview__scheme_subscription_delete", schemeName))
     }
 
     "have link for delete registration" in {
@@ -143,61 +135,29 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
         haveLink(controllers.routes.DeleteSchemeController.onPageLoad().url)
     }
 
-    "have no variations section" in {
-      Jsoup.parse(createView().toString()) mustNot haveDynamicText(messages("messages__schemesOverview__change_details__title"))
-
-    }
-
-  }
-
-  "SchemesOverview view when a scheme variation is in progress" must {
-
-    def variationsView = createView
-
-    "have dynamic text with scheme name as section title" in {
-      Jsoup.parse(variationsView().toString()) must
-        haveDynamicText(Message("messages__schemesOverview__change_details__title", variationSchemeName))
-    }
-
-    "have dynamic text with scheme name and date of data deletion as p1" in {
-      Jsoup.parse(variationsView().toString()) must
-        haveDynamicText(Message("messages__schemesOverview__change_details__p1", variationSchemeName, variationDeleteDate))
+    "have dynamic text with date of data deletion and scheme name for variations" in {
+      Jsoup.parse(createView().toString()) must
+        haveDynamicText(Message("messages__schemeOverview__scheme_variations_continue", schemeName, deleteDate))
     }
 
     "have link for continue variation" in {
-      Jsoup.parse(variationsView().toString()).select("a[id=continue-variation]") must
-        haveLink(frontendAppConfig.viewSchemeDetailsUrl.format(srn))
+      createView must
+        haveLink(frontendAppConfig.viewSchemeDetailsUrl.format(srn), "continue-variation")
     }
 
-    "have static text as p2" in {
-      Jsoup.parse(variationsView().toString()) must
-        haveDynamicText(Message("messages__schemesOverview__change_details__p2"))
+    "have dynamic text for delete variation" in {
+      Jsoup.parse(createView().toString()) must
+        haveDynamicText(messages("messages__schemeOverview__scheme_variations_delete", schemeName))
     }
 
     "have link for delete variation" in {
-      Jsoup.parse(variationsView().toString()).select("a[id=delete-variation]") must
+      Jsoup.parse(createView().toString()).select("a[id=delete-variation]") must
         haveLink(controllers.routes.DeleteSchemeChangesController.onPageLoad(srn).url)
     }
 
   }
 
   "SchemesOverview view when a scheme has not been defined" must {
-    behave like normalPage(
-      createFreshView,
-      messageKeyPrefix,
-      messages(s"messages__${messageKeyPrefix}__heading"),
-      "_manage__text",
-      "_manage__link",
-      "_register__head",
-      "_register__text",
-      "_register__link"
-    )
-
-    "have link to view all schemes" in {
-      Jsoup.parse(createFreshView().toString()).select("a[id=view-schemes]") must
-        haveLink(controllers.routes.ListSchemesController.onPageLoad().url)
-    }
-
 
     "have link for registration" in {
       Jsoup.parse(createFreshView().toString()).select("a[id=register-new-scheme]") must

@@ -69,7 +69,7 @@ class DeleteSchemeChangesController @Inject()(
             case JsError(_) => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
           }
       }
-    }.getOrElse(Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad())))
+    }.getOrElse(Future.successful(overviewPage))
 
   def onSubmit(srn: String): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>

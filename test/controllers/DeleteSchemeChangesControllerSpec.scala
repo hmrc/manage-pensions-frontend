@@ -38,15 +38,16 @@ class DeleteSchemeChangesControllerSpec extends ControllerSpecBase with MockitoS
   val form: Form[Boolean] = formProvider()
   val srn = "S123"
   val schemeName = "Test Scheme Name"
+  val psaName = "Test Psa Name"
   val fakeCacheConnector: UpdateSchemeCacheConnector = mock[UpdateSchemeCacheConnector]
   val fakeLockConnector: PensionSchemeVarianceLockConnector = mock[PensionSchemeVarianceLockConnector]
-  val postCall: Call = controllers.routes.DeleteSchemeChangesController.onSubmit(srn)
+  def postCall: Call = controllers.routes.DeleteSchemeChangesController.onSubmit(srn)
 
-  def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): DeleteSchemeChangesController =
+  def controller(dataRetrievalAction: DataRetrievalAction = getDataWithPsaName()): DeleteSchemeChangesController =
     new DeleteSchemeChangesController(frontendAppConfig, messagesApi, fakeCacheConnector, fakeLockConnector,
       FakeAuthAction(), dataRetrievalAction, new DataRequiredActionImpl, formProvider)
 
-  def viewAsString(form: Form[_] = form): String = deleteSchemeChanges(frontendAppConfig, form, schemeName, postCall)(fakeRequest, messages).toString
+  def viewAsString(form: Form[_] = form): String = deleteSchemeChanges(frontendAppConfig, form, schemeName, postCall, psaName)(fakeRequest, messages).toString
 
   override def beforeEach(): Unit = {
     reset(fakeCacheConnector)
@@ -107,7 +108,7 @@ class DeleteSchemeChangesControllerSpec extends ControllerSpecBase with MockitoS
       val result = controller(dontGetAnyData).onPageLoad(srn)(fakeRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(routes.SchemesOverviewController.onPageLoad().url)
+      redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)
     }
 
     "redirect to Session Expired for a POST if no existing data is found" in {
@@ -116,7 +117,7 @@ class DeleteSchemeChangesControllerSpec extends ControllerSpecBase with MockitoS
       val result = controller(dontGetAnyData).onSubmit(srn)(postRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(routes.SchemesOverviewController.onPageLoad().url)
+      redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)
     }
   }
 }

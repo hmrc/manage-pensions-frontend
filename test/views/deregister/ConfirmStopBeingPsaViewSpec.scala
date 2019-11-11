@@ -45,7 +45,7 @@ class ConfirmStopBeingPsaViewSpec extends YesNoViewBehaviours {
   "Confirm Stop Being Psa view" must {
     behave like normalPage(createView(), messageKeyPrefix, messages(s"messages__${messageKeyPrefix}__title"),"p1", "p2")
 
-    behave like pageWithReturnLink(createView(), frontendAppConfig.registeredPsaDetailsUrl, messages("messages__returnToPsaDetails__link", "psaName"))
+    behave like pageWithReturnLink(createView(), controllers.routes.SchemesOverviewController.onPageLoad().url, messages("site.return_to", "psaName"))
 
     behave like pageWithSubmitButton(createView())
 

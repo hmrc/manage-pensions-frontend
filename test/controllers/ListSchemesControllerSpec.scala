@@ -16,17 +16,11 @@
 
 package controllers
 
-import config.FrontendAppConfig
-import connectors.{InvitationsCacheConnector, ListOfSchemesConnector}
-import controllers.actions.{AuthAction, FakeAuthAction}
-import models.{Invitation, ListOfSchemes, SchemeDetail, SchemeStatus}
-import org.joda.time.DateTime
-import org.mockito.Matchers._
-import org.mockito.Mockito._
+import connectors.ListOfSchemesConnector
+import controllers.actions.{AuthAction, DataRequiredActionImpl, FakeAuthAction}
+import models.{ListOfSchemes, SchemeDetail, SchemeStatus}
 import org.scalatest.mockito.MockitoSugar
-import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.Helpers._
-import testhelpers.InvitationBuilder._
 import uk.gov.hmrc.http.HeaderCarrier
 import views.html.list_schemes
 
@@ -64,6 +58,7 @@ trait TestFixture {
 object ListSchemesControllerSpec extends ControllerSpecBase {
   val psaIdNoSchemes: String = "A0000001"
   val psaIdWithSchemes: String = "A0000002"
+  val psaName = "Test Psa Name"
 
   val emptySchemes: List[SchemeDetail] = List.empty[SchemeDetail]
   val fullSchemes: List[SchemeDetail] =
@@ -123,12 +118,14 @@ object ListSchemesControllerSpec extends ControllerSpecBase {
         frontendAppConfig,
         app.messagesApi,
         authAction(psaId),
+        getDataWithPsaName(psaId),
+        new DataRequiredActionImpl,
         listSchemesConnector()
       )
 
   }
 
   def viewAsString(app: ControllerSpecBase, schemes: List[SchemeDetail]): String =
-    list_schemes(frontendAppConfig, schemes)(app.fakeRequest, app.messages).toString()
+    list_schemes(frontendAppConfig, schemes, psaName)(app.fakeRequest, app.messages).toString()
 
 }

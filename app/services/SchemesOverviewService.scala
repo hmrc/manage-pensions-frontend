@@ -78,9 +78,10 @@ class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
   private def adminCard(invitationLink: Seq[Link], deregistrationLink: Seq[Link], psaId: String): CardViewModel =
 
     CardViewModel(
-      id = Some("administrator-card"),
+      id = "administrator-card",
       heading = Message("messages__schemeOverview__psa_heading"),
-      subHeading = Some(Message("messages__schemeOverview__psa_id", s"""<span class="font-small">$psaId</span>""")),
+      subHeading = Some(Message("messages__schemeOverview__psa_id")),
+      subHeadingParam = Some(psaId),
       links = Seq(
         Link("psaLink", appConfig.registeredPsaDetailsUrl, Message("messages__schemeOverview__psa_change"))
       ) ++ invitationLink ++ deregistrationLink
@@ -88,7 +89,7 @@ class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
 
   private def schemeCard(subscriptionLinks: Seq[Link], variationLinks: Seq[Link]): CardViewModel =
     CardViewModel(
-      id = Some("scheme-card"),
+      id = "scheme-card",
       heading = Message("messages__schemeOverview__scheme_heading"),
       links = Seq(
         Link("view-schemes", ListSchemesController.onPageLoad().url, Message("messages__schemeOverview__scheme_view"))

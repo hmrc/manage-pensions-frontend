@@ -20,7 +20,7 @@
 @import models.Mode
 @import viewmodels.Message
 
-@(appConfig: FrontendAppConfig, form: Form[_], schemeName: String)(implicit request: Request[_], messages: Messages)
+@(appConfig: FrontendAppConfig, form: Form[_], schemeName: String, psaName : String)(implicit request: Request[_], messages: Messages)
 
 @main_template(
     title = Message("messages__deleteScheme__title"),
@@ -42,5 +42,7 @@
         )
 
         @components.submit_button("site.continue")
+
+        @components.return_link(controllers.routes.SchemesOverviewController.onPageLoad(), Some(psaName))
     }
 }

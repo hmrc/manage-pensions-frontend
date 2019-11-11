@@ -23,7 +23,7 @@ cards: Seq[CardViewModel]
 )(implicit request: Request[_], messages: Messages)
 
 @main_template(
-    title = messages("messages__schemesOverview__title"),
+    title = messages(name),
     appConfig = appConfig,
     articleClasses = Some("full-width")
 ) {

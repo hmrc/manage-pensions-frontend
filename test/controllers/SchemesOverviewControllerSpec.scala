@@ -17,6 +17,7 @@
 package controllers
 
 import config._
+import connectors.UserAnswersCacheConnector
 import controllers.actions.{DataRetrievalAction, _}
 import controllers.routes.ListSchemesController
 import models.Link
@@ -26,6 +27,7 @@ import org.mockito.Matchers.{eq => eqTo, _}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mockito.MockitoSugar
+import play.api.libs.json.Json
 import play.api.mvc.Results.Redirect
 import play.api.test.Helpers.{contentAsString, _}
 import services.SchemesOverviewService
@@ -39,12 +41,13 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
   import SchemesOverviewControllerSpec._
 
   val fakeSchemesOverviewService: SchemesOverviewService = mock[SchemesOverviewService]
+  val fakeUserAnswersCacheConnector: UserAnswersCacheConnector = mock[UserAnswersCacheConnector]
   val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
 
 
 
   def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): SchemesOverviewController =
-    new SchemesOverviewController(appConfig, messagesApi, fakeSchemesOverviewService, FakeAuthAction(), dataRetrievalAction)
+    new SchemesOverviewController(appConfig, messagesApi, fakeSchemesOverviewService, FakeAuthAction(), dataRetrievalAction, fakeUserAnswersCacheConnector)
 
   def viewAsString(): String = schemesOverview(
     appConfig,
@@ -59,6 +62,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
         when(fakeSchemesOverviewService.getTiles(eqTo(psaId))(any(), any())).thenReturn(Future.successful(Seq(adminCard, schemeCard)))
         when(fakeSchemesOverviewService.getPsaName(eqTo(psaId))(any()))
           .thenReturn(Future.successful(Some(psaName)))
+        when(fakeUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(Json.obj()))
 
         val result = controller().onPageLoad(fakeRequest)
 
@@ -103,9 +107,10 @@ object SchemesOverviewControllerSpec extends ControllerSpecBase {
   val deleteDate: String = DateTime.now(DateTimeZone.UTC).plusDays(frontendAppConfig.daysDataSaved).toString(formatter)
 
   private val adminCard = CardViewModel(
-    id = Some("administrator-card"),
+    id = "administrator-card",
     heading = Message("messages__schemeOverview__psa_heading"),
-    subHeading = Some(Message("messages__schemeOverview__psa_id", psaId)),
+    subHeading = Some(Message("messages__schemeOverview__psa_id")),
+    subHeadingParam = Some(psaId),
     links = Seq(
       Link("psaLink", frontendAppConfig.registeredPsaDetailsUrl, Message("messages__schemeOverview__psa_change")),
       Link("invitations-received", controllers.invitations.routes.YourInvitationsController.onPageLoad().url,
@@ -116,7 +121,7 @@ object SchemesOverviewControllerSpec extends ControllerSpecBase {
     ))
 
   private val schemeCard = CardViewModel(
-    id = Some("scheme-card"),
+    id = "scheme-card",
     heading = Message("messages__schemeOverview__scheme_heading"),
     links = Seq(
       Link("view-schemes", ListSchemesController.onPageLoad().url, Message("messages__schemeOverview__scheme_view")),

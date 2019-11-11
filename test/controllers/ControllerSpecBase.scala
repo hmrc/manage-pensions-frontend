@@ -18,6 +18,7 @@ package controllers
 
 import base.SpecBase
 import controllers.actions.FakeDataRetrievalAction
+import identifiers.invitations.PSANameId
 import play.api.libs.json.Json
 
 trait ControllerSpecBase extends SpecBase {
@@ -27,5 +28,9 @@ trait ControllerSpecBase extends SpecBase {
   def getEmptyData: FakeDataRetrievalAction = new FakeDataRetrievalAction(Some(Json.obj()))
 
   def dontGetAnyData: FakeDataRetrievalAction = new FakeDataRetrievalAction(None)
+
+  def getDataWithPsaName(psaId: String = "A0000000"): FakeDataRetrievalAction = new FakeDataRetrievalAction(Some(Json.obj(
+    PSANameId.toString -> "Test Psa Name"
+  )), psaId)
 
 }

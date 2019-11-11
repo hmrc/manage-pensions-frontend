@@ -18,7 +18,7 @@
 
 @(cardModel: CardViewModel)(implicit messages: Messages)
 
-<div class="card" @cardModel.id.map { i => id="@i" }>
+<div class="card" id="@cardModel.id">
     <div class="card-body">
         <h2 class="card-heading">
             @cardModel.heading
@@ -26,7 +26,9 @@
 
         @cardModel.subHeading.map { subHead =>
             <h3 class="heading-small card-sub-heading">
-                @Html(subHead)
+                @subHead @cardModel.subHeadingParam.map{param =>
+                <span class ="font-small">@param</span>
+                }
             </h3>
         }
     </div>

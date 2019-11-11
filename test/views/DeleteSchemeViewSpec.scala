@@ -27,12 +27,14 @@ class DeleteSchemeViewSpec extends YesNoViewBehaviours {
 
   val messageKeyPrefix = "deleteScheme"
   val schemeName = "Test Scheme Name"
+  val psaName = "Test Psa Name"
 
   val form = new DeleteSchemeFormProvider()()
 
-  def createView: () => HtmlFormat.Appendable = () => deleteScheme(frontendAppConfig, form, schemeName)(fakeRequest, messages)
+  def createView: () => HtmlFormat.Appendable = () => deleteScheme(frontendAppConfig, form, schemeName, psaName)(fakeRequest, messages)
 
-  def createViewUsingForm: Form[_] => HtmlFormat.Appendable = (form: Form[_]) => deleteScheme(frontendAppConfig, form, schemeName)(fakeRequest, messages)
+  def createViewUsingForm: Form[_] => HtmlFormat.Appendable =
+    (form: Form[_]) => deleteScheme(frontendAppConfig, form, schemeName, psaName)(fakeRequest, messages)
 
   "DeleteScheme view" must {
 
@@ -42,5 +44,7 @@ class DeleteSchemeViewSpec extends YesNoViewBehaviours {
     behave like pageWithBackLink(createView)
 
     behave like yesNoPage(createViewUsingForm, messageKeyPrefix, controllers.routes.DeleteSchemeController.onSubmit().url)
+
+    behave like pageWithReturnLink(createView, controllers.routes.SchemesOverviewController.onPageLoad().url, messages("site.return_to", psaName))
   }
 }

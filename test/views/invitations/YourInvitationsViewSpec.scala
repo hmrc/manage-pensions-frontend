@@ -27,9 +27,9 @@ import views.html.invitations.yourInvitations
 class YourInvitationsViewSpec extends ViewBehaviours {
 
   val messageKeyPrefix = "yourInvitations"
+  val psaName = "Test psa name"
 
-
-  def createView: () => HtmlFormat.Appendable = () => yourInvitations(frontendAppConfig, invitationList)(fakeRequest, messages)
+  def createView: () => HtmlFormat.Appendable = () => yourInvitations(frontendAppConfig, invitationList, psaName)(fakeRequest, messages)
 
   "Your Invitations view" must {
 
