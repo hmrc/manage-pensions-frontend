@@ -19,7 +19,6 @@ package config
 import com.google.inject.{Inject, Singleton}
 import play.api.Mode.Mode
 import play.api.{Configuration, Environment}
-import uk.gov.hmrc.play.config.ServicesConfig
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -31,11 +30,11 @@ trait FeatureSwitchManagementService {
   def reset(name: String): Unit
 }
 
-class FeatureSwitchManagementServiceProductionImpl @Inject()(override val runModeConfiguration: Configuration,
+class FeatureSwitchManagementServiceProductionImpl @Inject()(val runModeConfiguration: Configuration,
                                                              environment: Environment) extends
-  FeatureSwitchManagementService with ServicesConfig {
+  FeatureSwitchManagementService {
 
-  override protected def mode:Mode = environment.mode
+  protected def mode: Mode = environment.mode
 
   override def change(name: String, newValue: Boolean): Boolean =
     runModeConfiguration.getBoolean(s"features.$name").getOrElse(false)
@@ -47,17 +46,17 @@ class FeatureSwitchManagementServiceProductionImpl @Inject()(override val runMod
 }
 
 @Singleton
-class FeatureSwitchManagementServiceTestImpl @Inject()(override val runModeConfiguration: Configuration,
-                                                             environment: Environment) extends
-  FeatureSwitchManagementService with ServicesConfig {
+class FeatureSwitchManagementServiceTestImpl @Inject()(val runModeConfiguration: Configuration,
+                                                       environment: Environment) extends
+  FeatureSwitchManagementService {
 
   private lazy val featureSwitches: ArrayBuffer[FeatureSwitch] = new ArrayBuffer[FeatureSwitch]()
 
-  override protected def mode:Mode = environment.mode
+  protected def mode: Mode = environment.mode
 
   override def change(name: String, newValue: Boolean): Boolean = {
     val featureSwitchExists = runModeConfiguration.getBoolean(s"features.$name")
-    if(featureSwitchExists.nonEmpty) {
+    if (featureSwitchExists.nonEmpty) {
       reset(name)
       featureSwitches += FeatureSwitch(name, newValue)
     }

@@ -19,14 +19,20 @@
 @import uk.gov.hmrc.play.views.html._
 @import viewmodels.Message
 
-@(appConfig: FrontendAppConfig, form: Form[Boolean], mode: Mode)(implicit request: Request[_], messages: Messages)
+@this(
+main_template: main_template,
+formHelper: FormWithCSRF,
+appConfig: FrontendAppConfig
+)
+
+@(form: Form[Boolean], mode: Mode)(implicit request: Request[_], messages: Messages)
 
 @main_template(
     title = Messages("messages__doYouHaveWorkingKnowledge__title"),
     appConfig = appConfig
 ){
 
-    @helpers.form(action = controllers.invitations.routes.DoYouHaveWorkingKnowledgeController.onSubmit(mode), 'autoComplete -> "off") {
+    @formHelper(action = controllers.invitations.routes.DoYouHaveWorkingKnowledgeController.onSubmit(mode), 'autoComplete -> "off") {
 
         @components.back_link()
 

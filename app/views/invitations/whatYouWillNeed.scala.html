@@ -18,14 +18,20 @@
 @import uk.gov.hmrc.play.views.html._
 @import play.api.mvc.Call
 
-@(appConfig: FrontendAppConfig, schemeName: String, returnCall: Call)(implicit request: Request[_], messages: Messages)
+@this(
+main_template: main_template,
+formHelper: FormWithCSRF,
+appConfig: FrontendAppConfig
+)
+
+@(schemeName: String, returnCall: Call)(implicit request: Request[_], messages: Messages)
 
 @main_template(
     title = s"${messages("messages__whatYouWillNeed__title")}",
     appConfig = appConfig,
     bodyClasses = None) {
 
-        @helpers.form(action = controllers.invitations.routes.WhatYouWillNeedController.onSubmit, 'autoComplete -> "off") {
+        @formHelper(action = controllers.invitations.routes.WhatYouWillNeedController.onSubmit, 'autoComplete -> "off") {
 
             @components.heading(messages("messages__whatYouWillNeed__heading"))
 

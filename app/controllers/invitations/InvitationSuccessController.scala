@@ -26,8 +26,8 @@ import javax.inject.Inject
 import models.{NormalMode, SchemeReferenceNumber}
 import org.joda.time.LocalDate
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
 import utils.{Navigator, UserAnswers}
 import utils.annotations.Invitation
 import views.html.invitations.invitation_success
@@ -41,8 +41,10 @@ class InvitationSuccessController @Inject()(
                                              getData: DataRetrievalAction,
                                              requireData: DataRequiredAction,
                                              userAnswersCacheConnector: UserAnswersCacheConnector,
-                                             @Invitation navigator: Navigator
-                                           )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport with Retrievals {
+                                             @Invitation navigator: Navigator,
+                                             val controllerComponents: MessagesControllerComponents,
+                                             view: invitation_success
+                                           )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
@@ -54,8 +56,7 @@ class InvitationSuccessController @Inject()(
         schemeDetail <- request.userAnswers.get(MinimalSchemeDetailId)
       } yield {
         userAnswersCacheConnector.removeAll(request.externalId).map { _ =>
-          Ok(invitation_success(
-            frontendAppConfig,
+          Ok(view(
             psaName,
             schemeDetail.schemeName,
             LocalDate.now().plusDays(frontendAppConfig.invitationExpiryDays),

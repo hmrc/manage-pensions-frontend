@@ -16,8 +16,14 @@
 
 @import config.FrontendAppConfig
 
+@this(
+appConfig: FrontendAppConfig,
+govuk_wrapper: GovUKWrapper,
+article: Article,
+sidebar: Sidebar
+)
+
 @(title: String,
-    appConfig: FrontendAppConfig,
     sidebarLinks: Option[Html] = None,
     contentHeader: Option[Html] = None,
     bodyClasses: Option[String] = None,

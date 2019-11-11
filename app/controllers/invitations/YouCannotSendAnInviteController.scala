@@ -20,8 +20,8 @@ import config.FrontendAppConfig
 import controllers.actions._
 import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
 import views.html.invitations.youCannotSendAnInvite
 
 import scala.concurrent.ExecutionContext
@@ -30,10 +30,12 @@ class YouCannotSendAnInviteController @Inject()(appConfig: FrontendAppConfig,
                                                 override val messagesApi: MessagesApi,
                                                 authenticate: AuthAction,
                                                 getData: DataRetrievalAction,
-                                                requireData: DataRequiredAction)(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport {
+                                                requireData: DataRequiredAction,
+                                                val controllerComponents: MessagesControllerComponents,
+                                                view: youCannotSendAnInvite)(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = authenticate {
     implicit request =>
-      Ok(youCannotSendAnInvite(appConfig))
+      Ok(view(appConfig))
   }
 }

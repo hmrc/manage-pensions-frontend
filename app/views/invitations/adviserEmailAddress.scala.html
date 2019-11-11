@@ -19,14 +19,20 @@
 @import uk.gov.hmrc.play.views.html._
 @import controllers.invitations.routes._
 
-@(appConfig: FrontendAppConfig, form: Form[_], mode: Mode, adviserName: String)(implicit request: Request[_], messages: Messages)
+@this(
+main_template: main_template,
+formHelper: FormWithCSRF,
+appConfig: FrontendAppConfig
+)
+
+@(form: Form[_], mode: Mode, adviserName: String)(implicit request: Request[_], messages: Messages)
 
 @main_template(
     title = s"${messages("messages__adviser__email__address__title")}",
     appConfig = appConfig,
     bodyClasses = None) {
 
-    @helpers.form(action = AdviserEmailAddressController.onSubmit(mode), 'autoComplete -> "off") {
+    @formHelper(action = AdviserEmailAddressController.onSubmit(mode), 'autoComplete -> "off") {
 
         @components.back_link()
 

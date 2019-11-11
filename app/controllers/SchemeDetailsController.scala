@@ -26,8 +26,8 @@ import models._
 import models.requests.AuthenticatedRequest
 import org.joda.time.LocalDate
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, Result}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
 import utils.{DateHelper, UserAnswers}
 import viewmodels.AssociatedPsa
 import views.html.schemeDetails
@@ -44,8 +44,10 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                                         userAnswersCacheConnector: UserAnswersCacheConnector,
                                         errorHandler: ErrorHandler,
                                         featureSwitchManagementService: FeatureSwitchManagementService,
-                                        minimalPsaConnector: MinimalPsaConnector
-                                       )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport {
+                                        minimalPsaConnector: MinimalPsaConnector,
+                                        val controllerComponents: MessagesControllerComponents,
+                                        view: schemeDetails
+                                       )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate.async {
     implicit request =>
@@ -73,7 +75,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
             userAnswersCacheConnector.save(request.externalId, SchemeSrnId, srn.id).flatMap { _ =>
               userAnswersCacheConnector.save(request.externalId, SchemeNameId, schemeName).flatMap { _ =>
                 lockingPsa(lock, srn).map { lockingPsa =>
-                  Ok(schemeDetails(appConfig,
+                  Ok(view(
                     schemeName,
                     pstr(srn.id, list),
                     openedDate(srn.id, list, isSchemeOpen),

@@ -21,7 +21,12 @@
 @import models.{VariationDetails, RegistrationDetails}
 @import viewmodels.Message
 
-@(appConfig: FrontendAppConfig,
+@this(
+main_template: main_template,
+appConfig: FrontendAppConfig
+)
+
+@(
 registrationDetails: Option[RegistrationDetails],
 name: Option[String],
 psaId: String,

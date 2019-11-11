@@ -29,9 +29,9 @@ import org.joda.time.LocalDate
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json.{JsArray, JsPath, __}
-import play.api.mvc.{Action, AnyContent, Result}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
 import utils.Toggles
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -43,9 +43,10 @@ class RemovePsaController @Inject()(authenticate: AuthAction,
                                     schemeDetailsConnector: SchemeDetailsConnector,
                                     userAnswersCacheConnector: UserAnswersCacheConnector,
                                     minimalPsaConnector: MinimalPsaConnector,
-                                    appConfig: FrontendAppConfig
+                                    appConfig: FrontendAppConfig,
+                                    val controllerComponents: MessagesControllerComponents
                                    )(
-                                     implicit val ec: ExecutionContext) extends FrontendController with Retrievals {
+                                     implicit val ec: ExecutionContext) extends FrontendBaseController with Retrievals {
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>

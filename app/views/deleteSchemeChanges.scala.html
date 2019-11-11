@@ -21,14 +21,20 @@
 @import viewmodels.Message
 @import play.api.mvc.Call
 
-@(appConfig: FrontendAppConfig, form: Form[_], schemeName: String, postCall: Call)(implicit request: Request[_], messages: Messages)
+@this(
+main_template: main_template,
+formHelper: FormWithCSRF,
+appConfig: FrontendAppConfig
+)
+
+@(form: Form[_], schemeName: String, postCall: Call)(implicit request: Request[_], messages: Messages)
 
 @main_template(
     title = Message("messages__deleteSchemeChanges__title"),
     appConfig = appConfig,
     bodyClasses = None) {
 
-    @helpers.form(action = postCall, 'autoComplete -> "off") {
+    @formHelper(action = postCall, 'autoComplete -> "off") {
 
         @components.back_link()
 

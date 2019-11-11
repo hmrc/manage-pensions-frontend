@@ -20,7 +20,11 @@
 @import models.Mode
 @import viewmodels.Message
 
-@(appConfig: FrontendAppConfig, inviteeName: String, schemeName: String)(implicit request: Request[_], messages: Messages)
+@this(
+main_template: main_template,
+appConfig: FrontendAppConfig
+)
+@(inviteeName: String, schemeName: String)(implicit request: Request[_], messages: Messages)
 
 @main_template(
     title = messages("messages__invitationDuplicate__title"),

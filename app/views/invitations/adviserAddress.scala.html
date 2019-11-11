@@ -20,7 +20,13 @@
 @import models._
 @import utils.InputOption
 
-@(appConfig: FrontendAppConfig, form: Form[_], mode: Mode, options: Seq[InputOption], prepopulated: Boolean, prefix: String, name: String)(implicit request: Request[_], messages: Messages)
+@this(
+main_template: main_template,
+formHelper: FormWithCSRF,
+appConfig: FrontendAppConfig
+)
+
+@(form: Form[_], mode: Mode, options: Seq[InputOption], prepopulated: Boolean, prefix: String, name: String)(implicit request: Request[_], messages: Messages)
 
 @main_template(
     title = messages(s"messages__${prefix}__title"),
@@ -28,7 +34,7 @@
     bodyClasses = None
 ) {
 
-@helpers.form(action = AdviserManualAddressController.onSubmit(mode, prepopulated), 'autoComplete -> "off") {
+@formHelper(action = AdviserManualAddressController.onSubmit(mode, prepopulated), 'autoComplete -> "off") {
 
         @components.back_link()
 

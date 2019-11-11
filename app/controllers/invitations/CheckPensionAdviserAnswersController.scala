@@ -23,8 +23,8 @@ import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import identifiers.invitations.{AdviserNameId, CheckPensionAdviserAnswersId}
 import models.NormalMode
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
 import utils.annotations.AcceptInvitation
 import utils.{CheckYourAnswersFactory, Navigator}
 import viewmodels.{AnswerSection, Message}
@@ -38,8 +38,10 @@ class CheckPensionAdviserAnswersController @Inject()(appConfig: FrontendAppConfi
                                                      @AcceptInvitation navigator: Navigator,
                                                      getData: DataRetrievalAction,
                                                      requireData: DataRequiredAction,
-                                                     checkYourAnswersFactory: CheckYourAnswersFactory
-                                                    )(implicit val ec: ExecutionContext) extends FrontendController with Retrievals with I18nSupport {
+                                                     checkYourAnswersFactory: CheckYourAnswersFactory,
+                                                     val controllerComponents: MessagesControllerComponents,
+                                                     view: check_your_answers
+                                                    )(implicit val ec: ExecutionContext) extends FrontendBaseController with Retrievals with I18nSupport {
 
   def onPageLoad(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
@@ -55,7 +57,7 @@ class CheckPensionAdviserAnswersController @Inject()(appConfig: FrontendAppConfi
           checkYourAnswersHelper.adviserAddress(dynamicAddressLabel
           )).flatten))
 
-        Future.successful(Ok(check_your_answers(appConfig, sections, None, controllers.invitations.routes.CheckPensionAdviserAnswersController.onSubmit())))
+        Future.successful(Ok(view(sections, None, controllers.invitations.routes.CheckPensionAdviserAnswersController.onSubmit())))
       }
   }
 

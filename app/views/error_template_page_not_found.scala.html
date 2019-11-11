@@ -16,7 +16,12 @@
 
 @import config.FrontendAppConfig
 
-@(appConfig: FrontendAppConfig)(implicit request: Request[_], messages: Messages)
+@this(
+appConfig: FrontendAppConfig,
+govuk_wrapper: GovUKWrapper
+)
+
+@()(implicit request: Request[_], messages: Messages)
 
 @contentHeader = {
     <h1>@messages("messages__pageNotFound404__heading")</h1>

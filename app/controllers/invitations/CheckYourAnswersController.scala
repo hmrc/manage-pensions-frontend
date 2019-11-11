@@ -26,10 +26,10 @@ import identifiers.invitations.{CheckYourAnswersId, InviteeNameId, InviteePSAId}
 import models.requests.DataRequest
 import models.{MinimalSchemeDetail, NormalMode, PsaDetails, SchemeReferenceNumber, Invitation => Invite}
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, Request, Result}
+import play.api.mvc._
 import uk.gov.hmrc.domain.PsaId
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
 import utils.annotations.Invitation
 import utils.{CheckYourAnswersFactory, DateHelper, Navigator}
 import viewmodels.AnswerSection
@@ -46,8 +46,10 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
                                            checkYourAnswersFactory: CheckYourAnswersFactory,
                                            schemeDetailsConnector: SchemeDetailsConnector,
                                            featureSwitchManagementService: FeatureSwitchManagementService,
-                                           invitationConnector: InvitationConnector
-                                          )(implicit val ec: ExecutionContext) extends FrontendController with Retrievals with I18nSupport {
+                                           invitationConnector: InvitationConnector,
+                                           val controllerComponents: MessagesControllerComponents,
+                                           view: check_your_answers
+                                          )(implicit val ec: ExecutionContext) extends FrontendBaseController with Retrievals with I18nSupport {
 
   def onPageLoad(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
@@ -57,7 +59,7 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
         val checkYourAnswersHelper = checkYourAnswersFactory.checkYourAnswersHelper(request.userAnswers)
         val sections = Seq(AnswerSection(None, Seq(checkYourAnswersHelper.psaName, checkYourAnswersHelper.psaId).flatten))
 
-        Future.successful(Ok(check_your_answers(appConfig, sections, None, controllers.invitations.routes.CheckYourAnswersController.onSubmit(),
+        Future.successful(Ok(view(sections, None, controllers.invitations.routes.CheckYourAnswersController.onSubmit(),
           Some("messages__check__your__answer__main__containt__label"), Some(schemeDetail.schemeName))))
 
       }

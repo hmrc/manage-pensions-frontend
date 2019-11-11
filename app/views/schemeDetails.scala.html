@@ -20,8 +20,12 @@
 @import models.Mode
 @import viewmodels.{AssociatedPsa, Message}
 
-@(appConfig: FrontendAppConfig,
-    schemeName: String,
+@this(
+main_template: main_template,
+appConfig: FrontendAppConfig
+)
+
+@schemeName: String,
     pstr: Option[String],
     openedDate: Option[String],
     admins: Option[Seq[AssociatedPsa]],

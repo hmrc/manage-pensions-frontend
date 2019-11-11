@@ -25,8 +25,8 @@ import javax.inject.Inject
 import models.Mode
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
 import utils.annotations.AcceptInvitation
 import utils.{Navigator, UserAnswers}
 import views.html.invitations.doYouHaveWorkingKnowledge
@@ -41,8 +41,10 @@ class DoYouHaveWorkingKnowledgeController @Inject()(
                                                      val formProvider: DoYouHaveWorkingKnowledgeFormProvider,
                                                      val dataCacheConnector: UserAnswersCacheConnector,
                                                      val getData: DataRetrievalAction,
-                                                     val requireData: DataRequiredAction
-                                                       )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport {
+                                                     val requireData: DataRequiredAction,
+                                                     val controllerComponents: MessagesControllerComponents,
+                                                     view: doYouHaveWorkingKnowledge
+                                                       )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   val form: Form[Boolean] = formProvider()
 
@@ -54,7 +56,7 @@ class DoYouHaveWorkingKnowledgeController @Inject()(
         case Some(value) => form.fill(value)
       }
 
-      Ok(doYouHaveWorkingKnowledge(appConfig, preparedForm, mode))
+      Ok(view(preparedForm, mode))
 
   }
 
@@ -62,7 +64,7 @@ class DoYouHaveWorkingKnowledgeController @Inject()(
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[Boolean]) =>
-          Future.successful(BadRequest(doYouHaveWorkingKnowledge(appConfig, formWithErrors, mode))),
+          Future.successful(BadRequest(view(formWithErrors, mode))),
         value => {
           dataCacheConnector.save(request.externalId, DoYouHaveWorkingKnowledgeId, value).map(
             cacheMap =>

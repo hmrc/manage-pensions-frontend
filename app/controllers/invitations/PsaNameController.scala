@@ -25,8 +25,8 @@ import identifiers.invitations.InviteeNameId
 import models.Mode
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
 import utils.annotations.Invitation
 import utils.{Navigator, UserAnswers}
 import views.html.invitations.psaName
@@ -40,8 +40,10 @@ class PsaNameController @Inject()(appConfig: FrontendAppConfig,
                                    authenticate: AuthAction,
                                    getData: DataRetrievalAction,
                                    requireData: DataRequiredAction,
-                                   formProvider: PsaNameFormProvider
-                                 )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport {
+                                   formProvider: PsaNameFormProvider,
+                                  val controllerComponents: MessagesControllerComponents,
+                                  view: psaName
+                                 )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   val form = formProvider()
 
@@ -51,7 +53,7 @@ class PsaNameController @Inject()(appConfig: FrontendAppConfig,
       val value = request.userAnswers.flatMap(_.get(InviteeNameId))
       val preparedForm = value.fold(form)(form.fill)
 
-      Future.successful(Ok(psaName(appConfig, preparedForm, mode)))
+      Future.successful(Ok(view(preparedForm, mode)))
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (authenticate andThen getData).async {
@@ -59,7 +61,7 @@ class PsaNameController @Inject()(appConfig: FrontendAppConfig,
 
       form.bindFromRequest().fold(
         (formWithErrors: Form[_]) =>
-          Future.successful(BadRequest(psaName(appConfig, formWithErrors, mode))),
+          Future.successful(BadRequest(view(formWithErrors, mode))),
 
         (value) => {
           dataCacheConnector.save(request.externalId, InviteeNameId, value).map(

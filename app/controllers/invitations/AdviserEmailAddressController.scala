@@ -26,10 +26,10 @@ import identifiers.invitations.{AdviserEmailId, AdviserNameId}
 import models.Mode
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import utils.{Navigator, UserAnswers}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.annotations.AcceptInvitation
+import utils.{Navigator, UserAnswers}
 import views.html.invitations.adviserEmailAddress
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -42,8 +42,10 @@ class AdviserEmailAddressController @Inject()(
                                                getData: DataRetrievalAction,
                                                requireData: DataRequiredAction,
                                                formProvider: AdviserEmailFormProvider,
-                                               dataCacheConnector: UserAnswersCacheConnector
-                                             )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport with Retrievals {
+                                               dataCacheConnector: UserAnswersCacheConnector,
+                                               val controllerComponents: MessagesControllerComponents,
+                                               view: adviserEmailAddress
+                                             )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
 
 
   val form = formProvider()
@@ -56,7 +58,7 @@ class AdviserEmailAddressController @Inject()(
           case None => form
           case Some(value) => form.fill(value)
         }
-        Future.successful(Ok(adviserEmailAddress(appConfig, preparedForm, mode, adviserName)))
+        Future.successful(Ok(view(preparedForm, mode, adviserName)))
       }
   }
 
@@ -65,7 +67,7 @@ class AdviserEmailAddressController @Inject()(
       AdviserNameId.retrieve.right.map { adviserName =>
         form.bindFromRequest().fold(
           (formWithErrors: Form[_]) => {
-            Future.successful(BadRequest(adviserEmailAddress(appConfig, formWithErrors, mode, adviserName)))
+            Future.successful(BadRequest(view(formWithErrors, mode, adviserName)))
           },
           value =>
             dataCacheConnector.save(request.externalId, AdviserEmailId, value).map {

@@ -18,14 +18,20 @@
 @import uk.gov.hmrc.play.views.html._
 @import controllers.invitations.routes.PsaNameController
 
-@(appConfig: FrontendAppConfig, form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+@this(
+main_template: main_template,
+formHelper: FormWithCSRF,
+appConfig: FrontendAppConfig
+)
+
+@(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
 
 @main_template(
     title = s"${messages("messages__psa__name__title")}",
     appConfig = appConfig,
     bodyClasses = None) {
 
-    @helpers.form(action = PsaNameController.onSubmit(mode), 'autoComplete -> "off") {
+    @formHelper(action = PsaNameController.onSubmit(mode), 'autoComplete -> "off") {
 
         @components.back_link()
 

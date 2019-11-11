@@ -26,8 +26,8 @@ import identifiers.invitations.{InviteeNameId, InviteePSAId}
 import models.Mode
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
 import utils.annotations.Invitation
 import utils.{Navigator, UserAnswers}
 import views.html.invitations.psaId
@@ -42,7 +42,9 @@ class PsaIdController @Inject()(appConfig: FrontendAppConfig,
                                 dataCacheConnector: UserAnswersCacheConnector,
                                 getData: DataRetrievalAction,
                                 requireData: DataRequiredAction,
-                                formProvider: PsaIdFormProvider)(implicit val ec: ExecutionContext) extends FrontendController with Retrievals with I18nSupport {
+                                formProvider: PsaIdFormProvider,
+                                val controllerComponents: MessagesControllerComponents,
+                                view: psaId)(implicit val ec: ExecutionContext) extends FrontendBaseController with Retrievals with I18nSupport {
 
   val form = formProvider()
 
@@ -54,7 +56,7 @@ class PsaIdController @Inject()(appConfig: FrontendAppConfig,
           val value = request.userAnswers.get(InviteePSAId)
           val preparedForm = value.fold(form)(form.fill)
 
-          Future.successful(Ok(psaId(appConfig, preparedForm, psaName, mode)))
+          Future.successful(Ok(view(preparedForm, psaName, mode)))
       }
   }
 
@@ -64,7 +66,7 @@ class PsaIdController @Inject()(appConfig: FrontendAppConfig,
             (formWithErrors: Form[_]) =>
               InviteeNameId.retrieve.right.map {
                 psaName =>
-                  Future.successful(BadRequest(psaId(appConfig, formWithErrors, psaName, mode)))
+                  Future.successful(BadRequest(view(formWithErrors, psaName, mode)))
               },
             value =>
               dataCacheConnector.save(request.externalId, InviteePSAId, value).map(

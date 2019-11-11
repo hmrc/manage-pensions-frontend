@@ -23,18 +23,20 @@ import identifiers.MinimalSchemeDetailId
 import identifiers.invitations.InviteeNameId
 import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
 import views.html.invitations.incorrectPsaDetails
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class IncorrectPsaDetailsController @Inject()(val appConfig: FrontendAppConfig,
-                                              val messagesApi: MessagesApi,
+                                              override val messagesApi: MessagesApi,
                                               authenticate: AuthAction,
                                               getData: DataRetrievalAction,
-                                              requireData: DataRequiredAction
-                                             )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport with Retrievals {
+                                              requireData: DataRequiredAction,
+                                              val controllerComponents: MessagesControllerComponents,
+                                              view: incorrectPsaDetails
+                                             )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
 
   def onPageLoad(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
@@ -43,8 +45,7 @@ class IncorrectPsaDetailsController @Inject()(val appConfig: FrontendAppConfig,
         case inviteeName ~ schemeDetails =>
           Future.successful(
             Ok(
-              incorrectPsaDetails(
-                appConfig,
+              view(
                 inviteeName,
                 schemeDetails.srn,
                 schemeDetails.schemeName

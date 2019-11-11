@@ -19,14 +19,20 @@
 @import uk.gov.hmrc.play.views.html._
 @import viewmodels.Message
 
-@(appConfig: FrontendAppConfig, form: Form[_], schemeName: String, srn: String, psaName: String)(implicit request: Request[_], messages: Messages)
+@this(
+main_template: main_template,
+formHelper: FormWithCSRF,
+appConfig: FrontendAppConfig
+)
+
+@(form: Form[_], schemeName: String, srn: String, psaName: String)(implicit request: Request[_], messages: Messages)
 
 @main_template(
     title = Messages("messages__confirmRemovePsa__title"),
     appConfig = appConfig
 ){
 
-    @helpers.form(action = controllers.remove.routes.ConfirmRemovePsaController.onSubmit(), 'autoComplete -> "off") {
+    @formHelper(action = controllers.remove.routes.ConfirmRemovePsaController.onSubmit(), 'autoComplete -> "off") {
 
         @components.error_summary(form.errors)
 
