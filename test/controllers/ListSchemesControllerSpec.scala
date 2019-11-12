@@ -16,22 +16,19 @@
 
 package controllers
 
-import config.FrontendAppConfig
 import connectors.{InvitationsCacheConnector, ListOfSchemesConnector}
 import controllers.actions.{AuthAction, FakeAuthAction}
 import models.{Invitation, ListOfSchemes, SchemeDetail, SchemeStatus}
-import org.joda.time.DateTime
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.Helpers._
 import testhelpers.InvitationBuilder._
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import views.html.list_schemes
 
 import scala.concurrent.{ExecutionContext, Future}
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 
 
 class ListSchemesControllerSpec extends ControllerSpecBase {
@@ -42,46 +39,46 @@ class ListSchemesControllerSpec extends ControllerSpecBase {
 
     "isWorkPackageOneEnabled is off" must {
       "return OK and the correct view when there are no schemes" in {
-        val fixture = testFixture(this, psaIdNoSchemes, isWorkPackageOneEnabled = false)
+        val fixture = testFixture(psaIdNoSchemes)
         val result = fixture.controller.onPageLoad(fakeRequest)
 
         status(result) mustBe OK
-        contentAsString(result) mustBe viewAsString(this, emptySchemes, isWorkPackageOneEnabled = false)
+        contentAsString(result) mustBe viewAsString(emptySchemes)
       }
 
       "return OK and the correct view when there are schemes" in {
-        val fixture = testFixture(this, psaIdWithSchemes, Nil, isWorkPackageOneEnabled = false)
+        val fixture = testFixture(psaIdWithSchemes, Nil)
         val result = fixture.controller.onPageLoad(fakeRequest)
 
         status(result) mustBe OK
-        contentAsString(result) mustBe viewAsString(this, fullSchemes, isWorkPackageOneEnabled = false)
+        contentAsString(result) mustBe viewAsString(fullSchemes)
       }
     }
 
     "isWorkPackageOneEnabled is on" must {
 
       "return OK and the correct view when there are no schemes" in {
-        val fixture = testFixture(this, psaIdNoSchemes, isWorkPackageOneEnabled = true)
+        val fixture = testFixture(psaIdNoSchemes)
         val result = fixture.controller.onPageLoad(fakeRequest)
 
         status(result) mustBe OK
-        contentAsString(result) mustBe viewAsString(this, emptySchemes, isWorkPackageOneEnabled = true)
+        contentAsString(result) mustBe viewAsString(emptySchemes)
       }
 
       "return OK and the correct view when there are schemes with invitations" in {
-        val fixture = testFixture(this, psaIdWithSchemes, invitationList, isWorkPackageOneEnabled = true)
+        val fixture = testFixture(psaIdWithSchemes, invitationList)
         val result = fixture.controller.onPageLoad(fakeRequest)
 
         status(result) mustBe OK
-        contentAsString(result) mustBe viewAsString(this, fullSchemes, invitationReceived = true, isWorkPackageOneEnabled = true)
+        contentAsString(result) mustBe viewAsString(fullSchemes, invitationReceived = true)
       }
 
       "return OK and the correct view when there are schemes without invitations" in {
-        val fixture = testFixture(this, psaIdWithSchemes, Nil, isWorkPackageOneEnabled = true)
+        val fixture = testFixture(psaIdWithSchemes, Nil)
         val result = fixture.controller.onPageLoad(fakeRequest)
 
         status(result) mustBe OK
-        contentAsString(result) mustBe viewAsString(this, fullSchemes, isWorkPackageOneEnabled = true)
+        contentAsString(result) mustBe viewAsString(fullSchemes)
       }
     }
   }
@@ -92,7 +89,7 @@ trait TestFixture {
   def controller: ListSchemesController
 }
 
-object ListSchemesControllerSpec {
+object ListSchemesControllerSpec extends ControllerSpecBase {
   private implicit val global = scala.concurrent.ExecutionContext.Implicits.global
   val psaIdNoSchemes: String = "A0000001"
   val psaIdWithSchemes: String = "A0000002"
@@ -120,15 +117,7 @@ object ListSchemesControllerSpec {
       )
     )
 
-  private def config(isWorkPackageOneEnabled: Boolean = true): FrontendAppConfig = {
-    val injector = new GuiceApplicationBuilder().configure(
-      "features.work-package-one-enabled" -> isWorkPackageOneEnabled
-    ).build().injector
-    injector.instanceOf[FrontendAppConfig]
-  }
-
-  def testFixture(app: ControllerSpecBase, psaId: String, invitations: List[Invitation] = Nil,
-                  isWorkPackageOneEnabled: Boolean): TestFixture = new TestFixture with MockitoSugar {
+  def testFixture(psaId: String, invitations: List[Invitation] = Nil): TestFixture = new TestFixture with MockitoSugar {
 
     private def authAction(psaId: String): AuthAction = FakeAuthAction.createWithPsaId(psaId)
 
@@ -137,7 +126,6 @@ object ListSchemesControllerSpec {
     when(mockInvitationsCacheConnector.getForInvitee(any())(any(), any())).thenReturn(
       Future.successful(invitations))
 
-    val view: list_schemes = app.injector.instanceOf[list_schemes]
 
     private def listSchemesConnector(): ListOfSchemesConnector = new ListOfSchemesConnector {
 
@@ -168,8 +156,8 @@ object ListSchemesControllerSpec {
 
     override val controller: ListSchemesController =
       new ListSchemesController(
-        config(isWorkPackageOneEnabled),
-        app.messagesApi,
+        frontendAppConfig,
+        messagesApi,
         authAction(psaId),
         listSchemesConnector(),
         mockInvitationsCacheConnector,
@@ -178,8 +166,11 @@ object ListSchemesControllerSpec {
       )
 
 
-    def viewAsString(app: ControllerSpecBase, schemes: List[SchemeDetail], invitationReceived: Boolean = false, isWorkPackageOneEnabled: Boolean): String =
-      view(config(isWorkPackageOneEnabled), schemes, invitationReceived)(app.fakeRequest, app.messages).toString()
   }
+
+  val view: list_schemes = app.injector.instanceOf[list_schemes]
+
+  def viewAsString(schemes: List[SchemeDetail], invitationReceived: Boolean = false): String =
+    view(schemes, invitationReceived)(fakeRequest, messages).toString()
 
 }

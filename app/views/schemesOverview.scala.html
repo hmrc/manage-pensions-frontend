@@ -28,10 +28,10 @@
 )
 
 @(
-registrationDetails: Option[RegistrationDetails],
-name: Option[String],
-psaId: String,
-variationDetails: Option[VariationDetails]
+    registrationDetails: Option[RegistrationDetails],
+    name: Option[String],
+    psaId: String,
+    variationDetails: Option[VariationDetails]
 )(implicit request: Request[_], messages: Messages)
 
 @manageRedirectLink = {<a id="manage-link" href="@appConfig.pensionSchemeOnlineServiceUrl">@messages("messages__schemesOverview__manage__redirect__link")</a>}

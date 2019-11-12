@@ -21,19 +21,18 @@ import models.requests.DataRequest
 import org.scalatest.EitherValues
 import org.scalatest.concurrent.ScalaFutures
 import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{AnyContent, Result}
+import play.api.mvc.{AnyContent, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.domain.PsaId
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.UserAnswers
 
 import scala.concurrent.Future
 
-class RetrievalsSpec extends ControllerSpecBase with FrontendController with Retrievals with EitherValues with ScalaFutures {
+class RetrievalsSpec extends ControllerSpecBase with FrontendBaseController with Retrievals with EitherValues with ScalaFutures {
 
-  class TestController extends FrontendController with Retrievals
-
-  val controller = new TestController()
+  val controllerComponents: MessagesControllerComponents = stubMessagesControllerComponents()
 
   def dataRequest(data: JsValue): DataRequest[AnyContent] = DataRequest(FakeRequest("", ""), "cacheId", UserAnswers(data), PsaId("A0000000"))
 
@@ -41,11 +40,11 @@ class RetrievalsSpec extends ControllerSpecBase with FrontendController with Ret
     Future.successful(Ok("Success"))
   }
 
-  val testIdentifier = new TypedIdentifier[String] {
+  val testIdentifier: TypedIdentifier[String] = new TypedIdentifier[String] {
     override def toString: String = "test"
   }
 
-  val secondIdentifier = new TypedIdentifier[String] {
+  val secondIdentifier: TypedIdentifier[String] = new TypedIdentifier[String] {
     override def toString: String = "second"
   }
 
