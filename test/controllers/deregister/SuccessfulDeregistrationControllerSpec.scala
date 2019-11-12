@@ -20,6 +20,8 @@ import controllers.ControllerSpecBase
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.test.Helpers._
 import views.html.deregister.successful_deregistration
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
+
 
 class SuccessfulDeregistrationControllerSpec extends ControllerSpecBase {
 
@@ -35,12 +37,17 @@ class SuccessfulDeregistrationControllerSpec extends ControllerSpecBase {
 }
 
 object SuccessfulDeregistrationControllerSpec extends ControllerSpecBase with MockitoSugar {
+
+  val view: successful_deregistration = app.injector.instanceOf[successful_deregistration]
+
   private def controller =
     new SuccessfulDeregistrationController(
       frontendAppConfig,
-      messagesApi
+      messagesApi,
+      stubMessagesControllerComponents(),
+      view
     )
 
   private def viewAsString() =
-    successful_deregistration(frontendAppConfig)(fakeRequest, messages).toString
+    view()(fakeRequest, messages).toString
 }

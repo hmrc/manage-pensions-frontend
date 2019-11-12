@@ -39,7 +39,6 @@ class ConfirmRemovedControllerSpec extends ControllerWithNormalPageBehaviours {
 }
 
 object ConfirmRemovedControllerSpec extends ControllerSpecBase {
-  private implicit val global = scala.concurrent.ExecutionContext.Implicits.global
   private val testPsaName = "test-pas-name"
   private val testSchemeName = "test-scheme-name"
   private val confirmRemovedView = injector.instanceOf[confirmRemoved]

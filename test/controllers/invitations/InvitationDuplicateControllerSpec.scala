@@ -66,7 +66,6 @@ class InvitationDuplicateControllerSpec extends ControllerSpecBase {
 
 
 object InvitationDuplicateControllerSpec extends ControllerSpecBase {
-  private implicit val global = scala.concurrent.ExecutionContext.Implicits.global
   private val view = injector.instanceOf[invitation_duplicate]
   val testSrn: String = "test-srn"
 

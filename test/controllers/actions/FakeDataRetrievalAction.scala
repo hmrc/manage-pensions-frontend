@@ -21,9 +21,11 @@ import play.api.libs.json.JsValue
 import uk.gov.hmrc.domain.PsaId
 import utils.UserAnswers
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContextExecutor, Future}
 
 class FakeDataRetrievalAction(json: Option[JsValue]) extends DataRetrievalAction {
+  implicit val executionContext: ExecutionContextExecutor = scala.concurrent.ExecutionContext.Implicits.global
+
   override protected def transform[A](request: AuthenticatedRequest[A]): Future[OptionalDataRequest[A]] = json match {
     case None =>
       Future.successful(OptionalDataRequest(request.request, request.externalId, None, PsaId("A0000000")))

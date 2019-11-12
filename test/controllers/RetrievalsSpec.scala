@@ -18,7 +18,8 @@ package controllers
 
 import identifiers.TypedIdentifier
 import models.requests.DataRequest
-import org.scalatest.EitherValues
+import org.scalatest.{EitherValues, WordSpec}
+import org.scalatest.MustMatchers._
 import org.scalatest.concurrent.ScalaFutures
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AnyContent, MessagesControllerComponents, Result}
@@ -30,7 +31,7 @@ import utils.UserAnswers
 
 import scala.concurrent.Future
 
-class RetrievalsSpec extends ControllerSpecBase with FrontendBaseController with Retrievals with EitherValues with ScalaFutures {
+class RetrievalsSpec extends WordSpec with FrontendBaseController with Retrievals with EitherValues with ScalaFutures {
 
   val controllerComponents: MessagesControllerComponents = stubMessagesControllerComponents()
 

@@ -178,7 +178,7 @@ object ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase {
   }
 
   private def viewAsString(): String =
-    confirmStopBeingPsa(form, "John Doe Doe")(fakeRequest, messages).toString
+    view(form, "John Doe Doe")(fakeRequest, messages).toString
 
 }
 
