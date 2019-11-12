@@ -16,7 +16,7 @@
 
 package forms.mappings
 
-import java.time.LocalDate
+import java.time.{DateTimeException, LocalDate}
 
 import play.api.data.Forms.{text, tuple}
 import play.api.data.Mapping
@@ -24,28 +24,30 @@ import play.api.data.validation.{Constraint, Invalid, Valid}
 
 import scala.util.{Failure, Success, Try}
 
-trait DateMapping extends Constraints{
+trait DateMapping extends Constraints {
 
   import DateMapping._
 
   def individualValidation(errors: DateErrors): Constraint[(String, String, String)] = Constraint {
-        case (day, month, year) if day.isEmpty && month.isEmpty && year.isEmpty => Invalid(errors.allBlank)
-        case (day, month, _) if day.isEmpty && month.isEmpty => Invalid(errors.dayMonthBlank)
-        case (_, month, year) if month.isEmpty && year.isEmpty => Invalid(errors.monthYearBlank)
-        case (day, _, _) if day.isEmpty => Invalid(errors.dayBlank)
-        case (_, month, _) if month.isEmpty => Invalid(errors.monthBlank)
-        case (_, _, year) if year.isEmpty => Invalid(errors.yearBlank)
-        case (_, month, _) if !month.matches(monthRegex) => Invalid(notRealDate)
-        case _ => Valid
+    case (day, month, year) if day.isEmpty && month.isEmpty && year.isEmpty => Invalid(errors.allBlank)
+    case (day, month, _) if day.isEmpty && month.isEmpty => Invalid(errors.dayMonthBlank)
+    case (_, month, year) if month.isEmpty && year.isEmpty => Invalid(errors.monthYearBlank)
+    case (day, _, _) if day.isEmpty => Invalid(errors.dayBlank)
+    case (_, month, _) if month.isEmpty => Invalid(errors.monthBlank)
+    case (_, _, year) if year.isEmpty => Invalid(errors.yearBlank)
+    case (_, month, _) if !month.matches(monthRegex) => Invalid(notRealDate)
+    case _ => Valid
   }
 
   def validDate(genericError: String): Constraint[(String, String, String)] = Constraint {
     input =>
       Try(toLocalDate(input)) match {
-        case Failure(exception) if exception.getMessage.contains("range [1,") =>
+        case Failure(ex) if ex.isInstanceOf[DateTimeException] =>
           Invalid(notRealDate)
-        case Failure(_) => Invalid(genericError)
-        case Success(_) => Valid
+        case Failure(_) =>
+          Invalid(genericError)
+        case Success(_) =>
+          Valid
       }
   }
 
@@ -54,14 +56,14 @@ trait DateMapping extends Constraints{
     "month" -> text,
     "year" -> text
   ).verifying(firstError(individualValidation(errors), validDate(errors.genericError)))
-   .transform[LocalDate](toLocalDate, fromLocalDate)
+    .transform[LocalDate](toLocalDate, fromLocalDate)
 
 
   def toLocalDate(date: (String, String, String)): LocalDate =
     LocalDate.of(date._3.toInt, date._2.toInt, date._1.toInt)
 
   def fromLocalDate(date: LocalDate): (String, String, String) =
-    (date.getDayOfMonth.toString, date.getMonth.toString, date.getYear.toString)
+    (date.getDayOfMonth.toString, date.getMonthValue.toString, date.getYear.toString)
 
 }
 
@@ -77,11 +79,11 @@ object DateMapping {
 }
 
 case class DateErrors(
-      allBlank: String,
-      dayBlank: String,
-      monthBlank: String,
-      yearBlank: String,
-      dayMonthBlank: String,
-      monthYearBlank: String,
-      genericError : String
-     )
+                       allBlank: String,
+                       dayBlank: String,
+                       monthBlank: String,
+                       yearBlank: String,
+                       dayMonthBlank: String,
+                       monthYearBlank: String,
+                       genericError: String
+                     )

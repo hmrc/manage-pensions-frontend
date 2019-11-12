@@ -17,11 +17,11 @@
 package utils
 
 import org.scalacheck.Gen
-import org.scalatest.prop.PropertyChecks
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import org.scalatest.{MustMatchers, OptionValues, WordSpec}
 import play.api.libs.json._
 
-class JsLensSpec extends WordSpec with MustMatchers with PropertyChecks with OptionValues {
+class JsLensSpec extends WordSpec with MustMatchers with ScalaCheckPropertyChecks with OptionValues {
 
   val jsLeafGen: Gen[JsValue] = {
     Gen.frequency(
@@ -172,7 +172,7 @@ class JsLensSpec extends WordSpec with MustMatchers with PropertyChecks with Opt
 
         val gen: Gen[(Int, JsArray)] = for {
           idx <- Gen.chooseNum(0, 50)
-          arr <- Gen.listOfN(idx + 1, jsLeafGen).map(Json.arr(_))
+          arr <- Gen.listOfN(idx + 1, jsLeafGen).map(JsArray(_))
         } yield (idx, arr)
 
         forAll(gen) {
@@ -209,7 +209,7 @@ class JsLensSpec extends WordSpec with MustMatchers with PropertyChecks with Opt
 
         val gen: Gen[(Int, JsArray)] = for {
           idx <- Gen.chooseNum(0, 50)
-          arr <- Gen.listOfN(idx + 1, jsLeafGen).map(Json.arr(_))
+          arr <- Gen.listOfN(idx + 1, jsLeafGen).map(JsArray(_))
         } yield (idx, arr)
 
         forAll(gen, jsLeafGen) {
@@ -233,7 +233,7 @@ class JsLensSpec extends WordSpec with MustMatchers with PropertyChecks with Opt
 
         val gen: Gen[(Int, JsArray)] = for {
           idx <- Gen.chooseNum(0, 50)
-          arr <- Gen.listOfN(idx + 1, jsLeafGen).map(Json.arr(_))
+          arr <- Gen.listOfN(idx + 1, jsLeafGen).map(JsArray(_))
         } yield (idx, arr)
 
         forAll(gen, jsLeafGen) {
@@ -265,7 +265,7 @@ class JsLensSpec extends WordSpec with MustMatchers with PropertyChecks with Opt
 
         val gen: Gen[(Int, JsArray)] = for {
           idx <- Gen.chooseNum(0, 50)
-          arr <- Gen.listOfN(idx + 1, jsLeafGen).map(Json.arr(_))
+          arr <- Gen.listOfN(idx + 1, jsLeafGen).map(JsArray(_))
         } yield (idx, arr)
 
         forAll(gen, jsLeafGen) {
@@ -303,7 +303,7 @@ class JsLensSpec extends WordSpec with MustMatchers with PropertyChecks with Opt
 
         val gen: Gen[(Int, JsArray)] = for {
           idx <- Gen.chooseNum(0, 50)
-          arr <- Gen.listOfN(idx + 1, jsLeafGen).map(Json.arr(_))
+          arr <- Gen.listOfN(idx + 1, jsLeafGen).map(JsArray(_))
         } yield (idx, arr)
 
         forAll(gen) {
@@ -318,7 +318,7 @@ class JsLensSpec extends WordSpec with MustMatchers with PropertyChecks with Opt
 
         val gen: Gen[(Int, JsArray)] = for {
           idx <- Gen.chooseNum(0, 50)
-          arr <- Gen.listOfN(idx - 1, jsLeafGen).map(Json.arr(_))
+          arr <- Gen.listOfN(idx - 1, jsLeafGen).map(JsArray(_))
         } yield (idx, arr)
 
         forAll(gen) {
