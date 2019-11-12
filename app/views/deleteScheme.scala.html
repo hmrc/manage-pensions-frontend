@@ -14,7 +14,6 @@
  * limitations under the License.
  *@
 
-@import config.FrontendAppConfig
 @import uk.gov.hmrc.play.views.html._
 @import views.html._
 @import controllers.routes._
@@ -22,9 +21,8 @@
 @import viewmodels.Message
 
 @this(
-main_template: main_template,
-formHelper: FormWithCSRF,
-appConfig: FrontendAppConfig
+    main_template: main_template,
+    formHelper: FormWithCSRF
 )
 
 @(form: Form[_], schemeName: String)(implicit request: Request[_], messages: Messages)
