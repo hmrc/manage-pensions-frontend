@@ -16,18 +16,20 @@
 
 package controllers.remove
 
+import java.time.LocalDate
+
 import connectors._
 import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.remove.RemovalDateFormProvider
 import identifiers.remove.RemovalDateId
 import models.PsaToBeRemovedFromScheme
-import java.time.LocalDate
 import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.mvc.AnyContentAsJson
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.DateHelper._
 import utils.UserAnswers
 import views.html.remove.removalDate
@@ -41,17 +43,16 @@ class RemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours {
   private val formProvider: RemovalDateFormProvider = new RemovalDateFormProvider()
   private val form = formProvider
 
+  private val view = app.injector.instanceOf[removalDate]
+
   def controller(dataRetrievalAction: DataRetrievalAction = data, fakeAuth: AuthAction = FakeAuthAction(),
                  userAnswersCacheConnector: UserAnswersCacheConnector = FakeUserAnswersCacheConnector,
                  variationsToggle: Boolean = false) = new RemovalDateController(
     frontendAppConfig, messagesApi, userAnswersCacheConnector, navigator, fakeAuth, dataRetrievalAction,
-    requiredDataAction, formProvider, fakePsaRemovalConnector)
+    requiredDataAction, formProvider, fakePsaRemovalConnector, stubMessagesControllerComponents(), view)
 
   private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
     controller(dataRetrievalAction, fakeAuth).onPageLoad()
-  }
-  private def onPageLoadActionVariation(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
-    controller(dataRetrievalAction, fakeAuth, variationsToggle = true).onPageLoad()
   }
 
   private def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
@@ -62,8 +63,8 @@ class RemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours {
     controller(userAnswersCacheConnector = userAnswersConnector).onSubmit()
   }
 
-  private def viewAsString(form: Form[LocalDate]) =
-    removalDate(frontendAppConfig, form, psaName, schemeName, srn, formatDate(associationDate))(fakeRequest, messages).toString
+  private def viewAsString(form: Form[LocalDate]): String =
+    view(form, psaName, schemeName, srn, formatDate(associationDate))(fakeRequest, messages).toString
 
 
   behave like controllerWithOnPageLoadMethodWithoutPrePopulation(onPageLoadAction,
@@ -87,7 +88,7 @@ object RemovalDateControllerSpec {
   private val data = userAnswer.dataRetrievalAction
 
   val day: Int = LocalDate.now().getDayOfMonth
-  val month: Int = LocalDate.now().getMonthOfYear
+  val month: Int = LocalDate.now().getMonthValue
   val year: Int = LocalDate.now().getYear
 
   val dateKeys = Map("removalDate.day" -> "", "removalDate.month" -> "", "removalDate.year" -> "")
