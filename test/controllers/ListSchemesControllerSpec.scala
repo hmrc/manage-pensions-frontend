@@ -16,7 +16,7 @@
 
 package controllers
 
-import connectors.ListOfSchemesConnector
+import connectors.{FakeUserAnswersCacheConnector, ListOfSchemesConnector, MinimalPsaConnector}
 import controllers.actions.{AuthAction, DataRequiredActionImpl, FakeAuthAction}
 import models.{ListOfSchemes, SchemeDetail, SchemeStatus}
 import org.scalatest.mockito.MockitoSugar
@@ -55,7 +55,7 @@ trait TestFixture {
   def controller: ListSchemesController
 }
 
-object ListSchemesControllerSpec extends ControllerSpecBase {
+object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
   val psaIdNoSchemes: String = "A0000001"
   val psaIdWithSchemes: String = "A0000002"
   val psaName = "Test Psa Name"
@@ -120,12 +120,17 @@ object ListSchemesControllerSpec extends ControllerSpecBase {
         authAction(psaId),
         getDataWithPsaName(psaId),
         new DataRequiredActionImpl,
-        listSchemesConnector()
+        listSchemesConnector(),
+        fakeMinimalPsaConnector,
+        FakeUserAnswersCacheConnector
       )
 
   }
 
   def viewAsString(app: ControllerSpecBase, schemes: List[SchemeDetail]): String =
     list_schemes(frontendAppConfig, schemes, psaName)(app.fakeRequest, app.messages).toString()
+
+
+  val fakeMinimalPsaConnector: MinimalPsaConnector = mock[MinimalPsaConnector]
 
 }

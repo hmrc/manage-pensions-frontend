@@ -20,10 +20,12 @@ import connectors.{FakeUserAnswersCacheConnector, InvitationsCacheConnector}
 import controllers.ControllerSpecBase
 import controllers.actions._
 import identifiers.SchemeSrnId
+import identifiers.invitations.PSANameId
 import models.NormalMode
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
+import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.api.test.Helpers._
 import play.twirl.api.HtmlFormat
@@ -41,8 +43,11 @@ class YourInvitationsControllerSpec extends ControllerSpecBase with MockitoSugar
 
   val mockInvitationsCacheConnector: InvitationsCacheConnector = mock[InvitationsCacheConnector]
 
-  private def controller(authAction: AuthAction = FakeAuthAction(),
-                         dataRetrievalAction: DataRetrievalAction = getDataWithPsaName()): YourInvitationsController = {
+  val dataRetrievalAction = new FakeDataRetrievalAction(Some(Json.obj(
+    PSANameId.toString -> "Test Psa Name"
+  )))
+
+  private def controller(authAction: AuthAction = FakeAuthAction()): YourInvitationsController = {
 
     new YourInvitationsController(
       frontendAppConfig,
