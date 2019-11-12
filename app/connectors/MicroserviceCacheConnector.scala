@@ -71,7 +71,7 @@ class MicroserviceCacheConnector @Inject()(
         modification(UserAnswers(json.getOrElse(Json.obj()))) match {
           case JsSuccess(UserAnswers(updatedJson), _) =>
             http.url(url(cacheId))
-              .withHeaders(hc.withExtraHeaders(("content-type", "application/json")).headers: _*)
+              .withHttpHeaders(hc.withExtraHeaders(("content-type", "application/json")).headers: _*)
               .post(PlainText(Json.stringify(updatedJson)).value).flatMap {
               response =>
                 response.status match {
@@ -93,7 +93,7 @@ class MicroserviceCacheConnector @Inject()(
   ): Future[Option[JsValue]] = {
 
     http.url(url(id))
-      .withHeaders(hc.headers: _*)
+      .withHttpHeaders(hc.headers: _*)
       .get()
       .flatMap {
         response =>
@@ -110,7 +110,7 @@ class MicroserviceCacheConnector @Inject()(
 
   override def removeAll(id: String)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[Result] = {
     http.url(url(id))
-      .withHeaders(hc.headers: _*)
+      .withHttpHeaders(hc.headers: _*)
       .delete().map(_ => Ok)
   }
 
@@ -120,7 +120,7 @@ class MicroserviceCacheConnector @Inject()(
   ): Future[Option[JsValue]] = {
 
     http.url(lastUpdatedUrl(id))
-      .withHeaders(hc.headers: _*)
+      .withHttpHeaders(hc.headers: _*)
       .get().flatMap {
       response =>
         response.status match {

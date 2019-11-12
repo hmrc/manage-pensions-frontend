@@ -20,7 +20,7 @@ import java.time.LocalDate
 
 import com.google.inject.{Inject, Singleton}
 import controllers.routes
-import play.api.Mode.Mode
+import play.api.Mode
 import play.api.i18n.Lang
 import play.api.mvc.Call
 import play.api.{Configuration, Environment}
@@ -31,11 +31,9 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
 
   protected def mode: Mode = environment.mode
 
-  private def loadConfig(key: String) = runModeConfiguration.getString(key).getOrElse(throw new Exception(s"Missing configuration key: $key"))
+  private def loadConfig(key: String): String = runModeConfiguration.get[String](key)
 
-  private def loadConfigOrDefault(key: String, default: String) = runModeConfiguration.getString(key).getOrElse(default)
-
-  private lazy val contactHost = runModeConfiguration.getString("contact-frontend.host").getOrElse("")
+  private lazy val contactHost = runModeConfiguration.get[String]("contact-frontend.host")
   private val contactFormServiceIdentifier = "managepensionsfrontend"
 
   lazy val appName: String = runModeConfiguration.underlying.getString("appName")
@@ -51,20 +49,20 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val pensionAdminUrl: String = servicesConfig.baseUrl("pension-administrator")
   lazy val schemeFrontendUrl: String = servicesConfig.baseUrl("pensions-scheme-frontend")
 
-  lazy val loginUrl = loadConfig("urls.login")
-  lazy val loginContinueUrl = loadConfig("urls.loginContinue")
-  lazy val serviceSignOut = loadConfig("urls.logout")
+  lazy val loginUrl: String = loadConfig("urls.login")
+  lazy val loginContinueUrl: String = loadConfig("urls.loginContinue")
+  lazy val serviceSignOut: String = loadConfig("urls.logout")
   lazy val registerSchemeAdministratorUrl: String = loadConfig("urls.registerSchemeAdministrator")
-  lazy val pensionAdministratorGovUkLink = runModeConfiguration.underlying.getString("urls.pensionAdministratorGovUkLink")
-  lazy val pensionPractitionerGovUkLink = runModeConfiguration.underlying.getString("urls.pensionPractitionerGovUkLink")
-  lazy val govUkLink = runModeConfiguration.underlying.getString("urls.govUkLink")
+  lazy val pensionAdministratorGovUkLink: String = runModeConfiguration.underlying.getString("urls.pensionAdministratorGovUkLink")
+  lazy val pensionPractitionerGovUkLink: String = runModeConfiguration.underlying.getString("urls.pensionPractitionerGovUkLink")
+  lazy val govUkLink: String = runModeConfiguration.underlying.getString("urls.govUkLink")
   lazy val continueSchemeUrl = s"${loadConfig("urls.continueSchemeRegistration")}"
-  lazy val userResearchUrl = runModeConfiguration.underlying.getString("urls.userResearch")
+  lazy val userResearchUrl: String = runModeConfiguration.underlying.getString("urls.userResearch")
   lazy val pensionSchemeOnlineServiceUrl: String = loadConfig("urls.pensionSchemeOnlineService")
   lazy val registeredPsaDetailsUrl: String = loadConfig("urls.psaDetails")
 
-  lazy val languageTranslationEnabled: Boolean = runModeConfiguration.getBoolean("features.welsh-translation").getOrElse(true)
-  lazy val registerSchemeUrl = runModeConfiguration.underlying.getString(("urls.registerScheme"))
+  lazy val languageTranslationEnabled: Boolean = runModeConfiguration.get[Boolean]("features.welsh-translation")
+  lazy val registerSchemeUrl: String = runModeConfiguration.underlying.getString("urls.registerScheme")
   lazy val listOfSchemesUrl: String = s"${servicesConfig.baseUrl("pensions-scheme")}${runModeConfiguration.underlying.getString("urls.listOfSchemes")}"
   lazy val inviteUrl: String = s"${servicesConfig.baseUrl("pension-administrator")}${runModeConfiguration.underlying.getString("urls.invite")}"
   lazy val minimalPsaDetailsUrl: String = s"${servicesConfig.baseUrl("pension-administrator")}${runModeConfiguration.underlying.getString("urls.minimalPsaDetails")}"
@@ -87,12 +85,12 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val invitationExpiryDays: Int = loadConfig("invitationExpiryDays").toInt
   lazy val earliestDatePsaRemoval: LocalDate = LocalDate.parse(loadConfig("earliestDatePsaRemoval"))
 
-  lazy val locationCanonicalList = loadConfig("location.canonical.list")
+  lazy val locationCanonicalList: String = loadConfig("location.canonical.list")
   lazy val locationCanonicalListEUAndEEA: String = loadConfig("location.canonical.list.EUAndEEA")
-  lazy val addressLookUp = servicesConfig.baseUrl("address-lookup")
+  lazy val addressLookUp: String = servicesConfig.baseUrl("address-lookup")
 
 
-  lazy val retryAttempts: Int = runModeConfiguration.getInt("retry.max.attempts").getOrElse(1)
-  lazy val retryWaitMs: Int = runModeConfiguration.getInt("retry.initial.wait.ms").getOrElse(1)
-  lazy val retryWaitFactor: Double = runModeConfiguration.getDouble("retry.wait.factor").getOrElse(1)
+  lazy val retryAttempts: Int = runModeConfiguration.get[Int]("retry.max.attempts")
+  lazy val retryWaitMs: Int = runModeConfiguration.get[Int]("retry.initial.wait.ms")
+  lazy val retryWaitFactor: Double = runModeConfiguration.get[Double]("retry.wait.factor")
 }
