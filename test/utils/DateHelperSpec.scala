@@ -16,14 +16,14 @@
 
 package utils
 
-import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
-import org.joda.time.{DateTime, LocalDate}
+import java.time.LocalDateTime
+
 import org.scalatest.{Matchers, WordSpec}
 
 class DateHelperSpec extends WordSpec with Matchers {
 
   val dateHelper = new DateHelper {
-    override val currentDate = DateTime.parse("2018-01-04T00:00:01Z")
+    override val currentDate = LocalDateTime.parse("2018-01-04T00:00:01Z").toLocalDate
   }
 
   val daysAhead = 30
@@ -46,7 +46,7 @@ class DateHelperSpec extends WordSpec with Matchers {
   "displayExpiryDate " should {
 
     "return one day less with the correct format" in {
-      val result = dateHelper.displayExpiryDate(dateHelper.currentDate.toLocalDate)
+      val result = dateHelper.displayExpiryDate(dateHelper.currentDate)
       result shouldBe "3 January 2018"
     }
   }

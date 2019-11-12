@@ -30,17 +30,17 @@ class CheckYourAnswersViewSpec extends CheckYourAnswersBehaviours with ViewBehav
 
   private def secondaryHeader: String = "test-secondaryHeader"
 
+  private val view = injector.instanceOf[check_your_answers]
+
   def createView: () => HtmlFormat.Appendable = () =>
-    check_your_answers(
-      frontendAppConfig,
+    view(
       emptyAnswerSections,
       Some(secondaryHeader),
       routes.IndexController.onPageLoad()
     )(fakeRequest, messages)
 
   def createViewWithData: (Seq[Section]) => HtmlFormat.Appendable = (sections) =>
-    check_your_answers(
-      frontendAppConfig,
+    view(
       sections,
       Some(secondaryHeader),
       routes.IndexController.onPageLoad()

@@ -18,9 +18,11 @@ package controllers.remove
 
 import base.SpecBase
 import connectors.FakeUserAnswersCacheConnector
+import controllers.ControllerSpecBase
 import controllers.actions.{AuthAction, DataRetrievalAction}
 import controllers.behaviours.ControllerWithNormalPageBehaviours
 import play.api.mvc.{Action, AnyContent}
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.UserAnswers
 import views.html.remove.confirmRemoved
 
@@ -36,10 +38,11 @@ class ConfirmRemovedControllerSpec extends ControllerWithNormalPageBehaviours {
 
 }
 
-object ConfirmRemovedControllerSpec {
+object ConfirmRemovedControllerSpec extends ControllerSpecBase {
   private implicit val global = scala.concurrent.ExecutionContext.Implicits.global
-  val testPsaName = "test-pas-name"
-  val testSchemeName = "test-scheme-name"
+  private val testPsaName = "test-pas-name"
+  private val testSchemeName = "test-scheme-name"
+  private val confirmRemovedView = injector.instanceOf[confirmRemoved]
 
   def onPageLoadAction(base: ControllerWithNormalPageBehaviours)(dataRetrievalAction: DataRetrievalAction, authAction: AuthAction): Action[AnyContent] =
     new ConfirmRemovedController(
@@ -48,7 +51,9 @@ object ConfirmRemovedControllerSpec {
       authAction,
       dataRetrievalAction,
       base.requiredDateAction,
-      FakeUserAnswersCacheConnector
+      FakeUserAnswersCacheConnector,
+      stubMessagesControllerComponents(),
+      confirmRemovedView
     ).onPageLoad()
 
   val validData: Option[DataRetrievalAction] = {
@@ -61,8 +66,7 @@ object ConfirmRemovedControllerSpec {
   }
 
   def viewAsString(base: SpecBase)(): String =
-    confirmRemoved(
-      base.frontendAppConfig,
+    confirmRemovedView(
       testPsaName,
       testSchemeName
     )(base.fakeRequest, base.messages).toString()

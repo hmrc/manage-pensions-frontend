@@ -28,7 +28,9 @@ class DoYouHaveWorkingKnowledgeViewSpec extends ViewBehaviours {
 
   val form = new DoYouHaveWorkingKnowledgeFormProvider()()
 
-  def createView: () => HtmlFormat.Appendable = () => doYouHaveWorkingKnowledge(frontendAppConfig, form, NormalMode)(fakeRequest, messages)
+  private val doYouHaveWorkingKnowledgeView = injector.instanceOf[doYouHaveWorkingKnowledge]
+
+  def createView: () => HtmlFormat.Appendable = () => doYouHaveWorkingKnowledgeView(form, NormalMode)(fakeRequest, messages)
 
   def doc: Document = Jsoup.parse(createView().toString)
 

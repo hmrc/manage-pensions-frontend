@@ -25,6 +25,7 @@ import views.html.remove.cannot_be_removed
 class CannotBeRemovedViewSpec extends ViewBehaviours {
 
   private val messageKeyPrefix = "you_cannot_be_removed"
+  private val view = injector.instanceOf[cannot_be_removed]
 
   private val viewModel : RemovalViewModel = RemovalViewModel(
     "messages__you_cannot_be_removed__title",
@@ -33,7 +34,7 @@ class CannotBeRemovedViewSpec extends ViewBehaviours {
     "messages__you_cannot_be_removed__p2",
     "messages__you_cannot_be_removed__returnToSchemes__link")
 
-  def createView: () => HtmlFormat.Appendable = () => cannot_be_removed(viewModel, frontendAppConfig)(fakeRequest, messages)
+  def createView: () => HtmlFormat.Appendable = () => view(viewModel)(fakeRequest, messages)
 
   "you cannot be removed page" must {
     behave like normalPage(

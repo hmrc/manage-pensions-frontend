@@ -30,9 +30,11 @@ class PsaIdViewSpec extends QuestionViewBehaviours[String] {
   val formProvider = new PsaIdFormProvider()
   override val form = formProvider()
 
-  def createView: () => HtmlFormat.Appendable = () => psaId(frontendAppConfig, form, "psaName", NormalMode)(fakeRequest, messages)
+  private val psaIdView = injector.instanceOf[psaId]
 
-  def createViewUsingForm: Form[_] => HtmlFormat.Appendable = (form: Form[_]) => psaId(frontendAppConfig, form, "psaName", NormalMode)(fakeRequest, messages)
+  def createView: () => HtmlFormat.Appendable = () => psaIdView(form, "psaName", NormalMode)(fakeRequest, messages)
+
+  def createViewUsingForm: Form[_] => HtmlFormat.Appendable = (form: Form[_]) => psaIdView(form, "psaName", NormalMode)(fakeRequest, messages)
 
   "PsaId view" must {
 

@@ -43,14 +43,14 @@ class DateMappingSpec extends WordSpec with DateMapping with MustMatchers with O
     )
 
     // scalastyle:off magic.number
-    val testDate = new LocalDate(1862, 6, 9)
+    val testDate = LocalDate.of(1862, 6, 9)
     // scalastyle:on magic.number
 
     "bind valid data" in {
       val result = testForm.bind(
         Map(
           "date.day" -> testDate.getDayOfMonth.toString,
-          "date.month" -> testDate.getMonthOfYear.toString,
+          "date.month" -> testDate.getMonthValue.toString,
           "date.year" -> testDate.getYear.toString
         )
       )
@@ -154,7 +154,7 @@ class DateMappingSpec extends WordSpec with DateMapping with MustMatchers with O
       val result = testForm.bind(
         Map(
           "date.day" -> "0",
-          "date.month" -> testDate.getMonthOfYear.toString,
+          "date.month" -> testDate.getMonthValue.toString,
           "date.year" -> testDate.getYear.toString
         )
       )

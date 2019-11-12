@@ -24,9 +24,10 @@ class UnableToStopBeingPsaViewSpec extends ViewBehaviours {
 
   private val messageKeyPrefix = "unableToStopBeingPsa"
 
+  private val unableToStopBeingPsaView = injector.instanceOf[unableToStopBeingPsa]
+
   private def createView() =
-    () => unableToStopBeingPsa(
-      frontendAppConfig
+    () => unableToStopBeingPsaView(
     )(fakeRequest, messages)
 
   "Unable to Stop Being Psa view" must {

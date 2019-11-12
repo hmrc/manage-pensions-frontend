@@ -24,17 +24,19 @@ import identifiers.remove.ConfirmRemovePsaId
 import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.{UserAnswerOps, UserAnswers}
 import views.html.remove.confirmRemovePsa
 
 class ConfirmRemovePsaControllerSpec extends ControllerWithQuestionPageBehaviours {
 
   import ConfirmRemovePsaControllerSpec._
+  val view = injector.instanceOf[confirmRemovePsa]
 
   def controller(dataRetrievalAction: DataRetrievalAction = data, fakeAuth: AuthAction = FakeAuthAction(),
                  userAnswersCacheConnector: UserAnswersCacheConnector = FakeUserAnswersCacheConnector) = new ConfirmRemovePsaController(
     frontendAppConfig, fakeAuth, messagesApi, navigator, formProvider,
-    userAnswersCacheConnector, dataRetrievalAction, requiredDataAction)
+    userAnswersCacheConnector, dataRetrievalAction, requiredDataAction, stubMessagesControllerComponents(), view)
 
   private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
     controller(dataRetrievalAction, fakeAuth).onPageLoad()
@@ -48,7 +50,7 @@ class ConfirmRemovePsaControllerSpec extends ControllerWithQuestionPageBehaviour
     controller(userAnswersCacheConnector = userAnswersConnector).onSubmit()
   }
 
-  private def viewAsString(form: Form[Boolean] = form) = confirmRemovePsa(frontendAppConfig, form, schemeName,
+  private def viewAsString(form: Form[Boolean] = form) = view(form, schemeName,
     srn, psaName)(fakeRequest, messages).toString
 
   behave like controllerWithOnPageLoadMethod(onPageLoadAction,

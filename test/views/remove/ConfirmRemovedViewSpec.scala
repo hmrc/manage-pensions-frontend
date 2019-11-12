@@ -16,43 +16,34 @@
 
 package views.remove
 
-import base.SpecBase
 import play.twirl.api.HtmlFormat
 import viewmodels.Message
 import views.behaviours.ViewBehaviours
 import views.html.remove.confirmRemoved
 
 class ConfirmRemovedViewSpec extends ViewBehaviours {
+  val messageKeyPrefix = "confirmRemoved"
+  val testPsaName = "test-pas-name"
+  val testSchemeName = "test-scheme-name"
+  private val confirmRemovedView = injector.instanceOf[confirmRemoved]
 
-  import ConfirmRemovedViewSpec._
+  lazy val returnLinkUrl: String = controllers.routes.ListSchemesController.onPageLoad().url
+
+  def createView(): () => HtmlFormat.Appendable = () =>
+    confirmRemovedView(
+      testPsaName,
+      testSchemeName
+    )(fakeRequest, messages)
 
   "Confirm Removed Page" must {
 
     behave like normalPage(
-      createView(this),
+      createView(),
       messageKeyPrefix,
       Message("messages__confirmRemoved__heading", testPsaName, testSchemeName)
     )
 
-    behave like pageWithReturnLink(createView(this), returnLinkUrl, messages("messages__confirmRemoved__return_link"))
+    behave like pageWithReturnLink(createView(), returnLinkUrl, messages("messages__confirmRemoved__return_link"))
 
   }
-
-}
-
-object ConfirmRemovedViewSpec {
-
-  val messageKeyPrefix = "confirmRemoved"
-  val testPsaName = "test-pas-name"
-  val testSchemeName = "test-scheme-name"
-
-  lazy val returnLinkUrl: String = controllers.routes.ListSchemesController.onPageLoad().url
-
-  def createView(base: SpecBase): () => HtmlFormat.Appendable = () =>
-    confirmRemoved(
-      base.frontendAppConfig,
-      testPsaName,
-      testSchemeName
-    )(base.fakeRequest, base.messages)
-
 }

@@ -25,6 +25,7 @@ import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 
 import scala.concurrent.Future
 
@@ -40,7 +41,8 @@ class TestFeatureSwitchManagerControllerSpec extends ControllerSpecBase with Map
     new TestFeatureSwitchManagerController(
       fakeFeatureSwitchManagerService,
       fakePensionsSchemeFeatureSwitchConnectorImpl,
-      fakePensionAdminFeatureSwitchConnectorImpl
+      fakePensionAdminFeatureSwitchConnectorImpl,
+      stubMessagesControllerComponents()
     )
 
   val toggleName = "test-toggle"

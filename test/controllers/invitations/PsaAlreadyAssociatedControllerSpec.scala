@@ -22,6 +22,7 @@ import controllers.actions.{DataRequiredActionImpl, FakeAuthAction, FakeUnAuthor
 import models.MinimalSchemeDetail
 import play.api.mvc.Call
 import play.api.test.Helpers._
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.{FakeNavigator, UserAnswers}
 import views.html.invitations.psa_already_associated
 
@@ -64,7 +65,7 @@ class PsaAlreadyAssociatedControllerSpec extends ControllerSpecBase {
 }
 
 
-object PsaAlreadyAssociatedControllerSpec {
+object PsaAlreadyAssociatedControllerSpec extends ControllerSpecBase {
   private implicit val global = scala.concurrent.ExecutionContext.Implicits.global
   val testSrn: String = "test-srn"
 
@@ -75,6 +76,7 @@ object PsaAlreadyAssociatedControllerSpec {
 
   private val onwardRoute: Call = controllers.routes.IndexController.onPageLoad()
   private val testNavigator: FakeNavigator = new FakeNavigator(onwardRoute)
+  private val view = injector.instanceOf[psa_already_associated]
 
   private def createController(base: ControllerSpecBase, authorised: Boolean, hasData: Boolean): PsaAlreadyAssociatedController = {
 
@@ -101,7 +103,9 @@ object PsaAlreadyAssociatedControllerSpec {
       authAction,
       dataRetrievalAction,
       new DataRequiredActionImpl,
-      testNavigator
+      testNavigator,
+      stubMessagesControllerComponents(),
+      view
     )
 
   }
@@ -124,8 +128,7 @@ object PsaAlreadyAssociatedControllerSpec {
   def noDataTestFixture(base: ControllerSpecBase): TestFixture = testFixture(base, authorised = true, hasData = false)
 
   def viewAsString(base: SpecBase): String =
-    psa_already_associated(
-      base.frontendAppConfig,
+    view(
       testInviteeName,
       testSchemeName
     )(

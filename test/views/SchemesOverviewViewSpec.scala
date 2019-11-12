@@ -37,16 +37,16 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
   private val psaId = "A0000000"
   private val srn = "123"
   private val srnOpt = Some(srn)
+  private val schemesOverviewView = injector.instanceOf[schemesOverview]
 
   def createView(variationDetails:Option[VariationDetails] = None): () => HtmlFormat.Appendable = () =>
-    schemesOverview(frontendAppConfig,
-      Some(RegistrationDetails(schemeName,
+    schemesOverviewView(Some(RegistrationDetails(schemeName,
         deleteDate, lastDate)),
       Some("John Doe"),
       psaId,
       variationDetails)(fakeRequest, messages)
 
-  def createFreshView: () => HtmlFormat.Appendable = () => schemesOverview(frontendAppConfig, None, None, psaId, None)(fakeRequest, messages)
+  def createFreshView: () => HtmlFormat.Appendable = () => schemesOverviewView(None, None, psaId, None)(fakeRequest, messages)
 
   "SchemesOverview view when a scheme has been partially defined and which has no scheme variation" must {
     behave like normalPage(

@@ -16,8 +16,9 @@
 
 package forms.remove
 
-import forms.mappings.Constraints
 import java.time.LocalDate
+
+import forms.mappings.Constraints
 import org.scalatest.Matchers
 import play.api.data.FormError
 import views.behaviours.StringFieldBehaviours
@@ -25,9 +26,9 @@ import views.behaviours.StringFieldBehaviours
 class RemovalDateFormProviderSpec extends StringFieldBehaviours with Constraints with Matchers {
 
   // scalastyle:off magic.number
-  private val associationDate =  new LocalDate(2018, 10, 1)
-  private val beforeEarliestDate = new LocalDate(2017, 1,1)
-  private val beforeAssociationDate = new LocalDate(2018, 7,1)
+  private val associationDate =  LocalDate.of(2018, 10, 1)
+  private val beforeEarliestDate = LocalDate.of(2017, 1,1)
+  private val beforeAssociationDate = LocalDate.of(2018, 7,1)
   def form() = new RemovalDateFormProvider()(associationDate, frontendAppConfig.earliestDatePsaRemoval)
   // scalastyle:on magic.number
 
@@ -52,7 +53,7 @@ class RemovalDateFormProviderSpec extends StringFieldBehaviours with Constraints
       form().bind(
         Map(
           "removalDate.day" -> futureDate.getDayOfMonth.toString,
-          "removalDate.month" -> futureDate.getMonthOfYear.toString,
+          "removalDate.month" -> futureDate.getMonthValue.toString,
           "removalDate.year" -> futureDate.getYear.toString
         )
       ).errors shouldBe Seq(FormError(fieldName, "messages__removal_date_error__future_date"))
@@ -62,7 +63,7 @@ class RemovalDateFormProviderSpec extends StringFieldBehaviours with Constraints
       form().bind(
         Map(
           "removalDate.day" -> beforeEarliestDate.getDayOfMonth.toString,
-          "removalDate.month" -> beforeEarliestDate.getMonthOfYear.toString,
+          "removalDate.month" -> beforeEarliestDate.getMonthValue.toString,
           "removalDate.year" -> beforeEarliestDate.getYear.toString
         )
       ).errors shouldBe Seq(FormError(fieldName, "messages__removal_date_error__before_earliest_date"))
@@ -72,7 +73,7 @@ class RemovalDateFormProviderSpec extends StringFieldBehaviours with Constraints
       form().bind(
         Map(
           "removalDate.day" -> beforeAssociationDate.getDayOfMonth.toString,
-          "removalDate.month" -> beforeAssociationDate.getMonthOfYear.toString,
+          "removalDate.month" -> beforeAssociationDate.getMonthValue.toString,
           "removalDate.year" -> beforeAssociationDate.getYear.toString
         )
       ).errors shouldBe Seq(FormError(fieldName, "messages__removal_date_error__before_association"))

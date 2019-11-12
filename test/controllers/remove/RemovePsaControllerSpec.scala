@@ -179,7 +179,7 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
       FakeUserAnswersCacheConnector.verify(SchemeNameId, "Test Scheme name")
       FakeUserAnswersCacheConnector.verify(PSANameId, psaMinimalSubscription.individualDetails.map(_.fullName).getOrElse(""))
       FakeUserAnswersCacheConnector.verify(PSTRId, "test pstr")
-      FakeUserAnswersCacheConnector.verify(AssociatedDateId, new LocalDate("2018-10-01"))
+      FakeUserAnswersCacheConnector.verify(AssociatedDateId, LocalDate.parse("2018-10-01"))
     }
 
     "throw IllegalArgumentException if pstr is not found" in {

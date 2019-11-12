@@ -26,9 +26,10 @@ class InvitationAcceptedViewSpec extends ViewBehaviours {
   val messageKeyPrefix: String = "invitationAccepted"
   val testSchemeName: String = "Test Scheme Name"
 
+  private val invitationAcceptedView = injector.instanceOf[invitationAccepted]
+
   def createView: () => HtmlFormat.Appendable = () =>
-    invitationAccepted(
-      frontendAppConfig,
+    invitationAcceptedView(
       testSchemeName
     )(fakeRequest, messages)
 

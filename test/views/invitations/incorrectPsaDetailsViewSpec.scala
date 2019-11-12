@@ -27,8 +27,9 @@ class incorrectPsaDetailsViewSpec extends ViewBehaviours {
   val invitee = "PSA"
   val srn = "test-srn"
   val schemeName = "test-scheme-name"
+  private val incorrectPsaDetailsView = injector.instanceOf[incorrectPsaDetails]
 
-  def createView(): () => HtmlFormat.Appendable = () => incorrectPsaDetails(frontendAppConfig, invitee, srn, schemeName)(fakeRequest, messages)
+  def createView(): () => HtmlFormat.Appendable = () => incorrectPsaDetailsView(invitee, srn, schemeName)(fakeRequest, messages)
 
   "IncorrectPsaDetails view" must {
 

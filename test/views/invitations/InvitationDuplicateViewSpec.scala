@@ -16,8 +16,6 @@
 
 package views.invitations
 
-import base.SpecBase
-import org.jsoup.Jsoup
 import play.twirl.api.HtmlFormat
 import viewmodels.Message
 import views.behaviours.ViewBehaviours
@@ -25,41 +23,37 @@ import views.html.invitations.invitation_duplicate
 
 class InvitationDuplicateViewSpec extends ViewBehaviours {
 
-  import InvitationDuplicateViewSpec._
+  private val testInviteeName: String = "Joe Bloggs"
+  private val testSchemeName: String = "Test Scheme Ltd"
+  private val messageKeyPrefix = "invitationDuplicate"
+
+  private val view = injector.instanceOf[invitation_duplicate]
+
+  def createView(): () => HtmlFormat.Appendable = () =>
+    view(
+      testInviteeName,
+      testSchemeName
+    )(fakeRequest, messages)
 
   "Invitation Success Page" must {
 
     behave like normalPage(
-      createView(this),
+      createView(),
       messageKeyPrefix,
       Message("messages__invitationDuplicate__heading", testInviteeName)
     )
 
     "state the scheme and invitee names" in {
-      createView(this) must haveElementWithText("schemeName", Message("messages__invitationDuplicate__schemeName", testInviteeName, testSchemeName))
+      createView() must haveElementWithText("schemeName", Message("messages__invitationDuplicate__schemeName", testInviteeName, testSchemeName))
     }
 
     "state invite information text" in {
-      createView(this) must haveElementWithText("inviteInformation", Message("messages__invitationDuplicate__inviteInformation"))
+      createView() must haveElementWithText("inviteInformation", Message("messages__invitationDuplicate__inviteInformation"))
     }
 
     "must have link to list schemes page" in {
-      createView(this) must haveElementWithText("return-to-schemes", Message("messages__invitationDuplicate__returnToSchemes__link"))
+      createView() must haveElementWithText("return-to-schemes", Message("messages__invitationDuplicate__returnToSchemes__link"))
     }
   }
 }
 
-object InvitationDuplicateViewSpec {
-
-  val testInviteeName: String = "Joe Bloggs"
-  val testSchemeName: String = "Test Scheme Ltd"
-  val messageKeyPrefix = "invitationDuplicate"
-
-
-  def createView(base: SpecBase): () => HtmlFormat.Appendable = () =>
-    invitation_duplicate(
-      base.frontendAppConfig,
-      testInviteeName,
-      testSchemeName
-    )(base.fakeRequest, base.messages)
-}

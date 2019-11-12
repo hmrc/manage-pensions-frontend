@@ -21,10 +21,12 @@ import views.html.deregister.successful_deregistration
 
 class SuccessfulDeregistrationViewSpec extends ViewBehaviours {
 
+  private val view = injector.instanceOf[successful_deregistration]
+
   "SuccessfulDeregistration view" must {
     val messageKeyPrefix = "deregisterSuccess"
 
-    def createView() = () => successful_deregistration(frontendAppConfig)(fakeRequest, messages)
+    def createView() = () => view()(fakeRequest, messages)
 
     behave like normalPage(createView(), messageKeyPrefix, messages(s"messages__${messageKeyPrefix}__title"),"p1")
 

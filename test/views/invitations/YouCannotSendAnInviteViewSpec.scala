@@ -25,7 +25,9 @@ class YouCannotSendAnInviteViewSpec extends ViewBehaviours {
 
   private val messageKeyPrefix = "youCannotSendAnInvite"
 
-  def createView: () => HtmlFormat.Appendable = () => youCannotSendAnInvite(frontendAppConfig)(fakeRequest, messages)
+  private val youCannotSendAnInviteView = injector.instanceOf[youCannotSendAnInvite]
+
+  def createView: () => HtmlFormat.Appendable = () => youCannotSendAnInviteView()(fakeRequest, messages)
 
   "You Cannot Send An Invite page" must {
     behave like normalPage(

@@ -33,12 +33,13 @@ class RemovalDateViewSpec extends QuestionViewBehaviours[LocalDate] {
   private val psaName = "test psa name"
   private val srn = "test srn"
   val prefix = "removalDate"
+  private val removalDateView = injector.instanceOf[removalDate]
 
   private def createView: () => HtmlFormat.Appendable = () =>
-    removalDate(frontendAppConfig, form, psaName, schemeName, srn, formatDate(associationDate))(fakeRequest, messages)
+    removalDateView(form, psaName, schemeName, srn, formatDate(associationDate))(fakeRequest, messages)
 
   private def createViewUsingForm: Form[_] => HtmlFormat.Appendable = (form: Form[_]) =>
-    removalDate(frontendAppConfig, form, psaName, schemeName, srn, formatDate(associationDate))(fakeRequest, messages)
+    removalDateView(form, psaName, schemeName, srn, formatDate(associationDate))(fakeRequest, messages)
 
   "RemoveAsSchemeAdministrator" must {
 
