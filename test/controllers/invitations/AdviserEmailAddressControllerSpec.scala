@@ -26,6 +26,7 @@ import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.api.test.Helpers._
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.FakeNavigator
 import views.html.invitations.adviserEmailAddress
 
@@ -40,12 +41,14 @@ class AdviserEmailAddressControllerSpec extends ControllerSpecBase {
     AdviserNameId.toString -> "test name"
   )))
 
+  private val view = injector.instanceOf[adviserEmailAddress]
+
   def controller(dataRetrievalAction: DataRetrievalAction = minimalAdviserData) = new AdviserEmailAddressController(
     frontendAppConfig, messagesApi, FakeAuthAction(), new FakeNavigator(onwardRoute), dataRetrievalAction, new DataRequiredActionImpl, formProvider,
-    FakeUserAnswersCacheConnector
+    FakeUserAnswersCacheConnector, stubMessagesControllerComponents(), view
   )
 
-  private def viewAsString(form: Form[_] = form) = adviserEmailAddress(frontendAppConfig, form, NormalMode, "test name")(fakeRequest, messages).toString
+  private def viewAsString(form: Form[_] = form) = view(form, NormalMode, "test name")(fakeRequest, messages).toString
 
   "AdviserDetailsController" when {
     "on a GET" must {
