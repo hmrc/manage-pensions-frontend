@@ -19,7 +19,7 @@ package controllers.invitations
 import controllers.actions.{AuthAction, DataRetrievalAction}
 import controllers.behaviours.ControllerWithNormalPageBehaviours
 import models.CheckMode
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.mvc.Call
 import utils.countryOptions.CountryOptions
 import utils.{CheckYourAnswersFactory, UserAnswers}

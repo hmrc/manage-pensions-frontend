@@ -17,7 +17,7 @@
 package views.invitations
 
 import base.SpecBase
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.mvc.Call
 import play.twirl.api.HtmlFormat
 import utils.DateHelper

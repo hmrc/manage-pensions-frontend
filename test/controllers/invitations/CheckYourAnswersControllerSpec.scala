@@ -24,7 +24,7 @@ import controllers.behaviours.ControllerWithNormalPageBehaviours
 import models.{AcceptedInvitation, Invitation, MinimalSchemeDetail}
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.Configuration
 import play.api.mvc.Call
 import play.api.test.FakeRequest

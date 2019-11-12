@@ -23,7 +23,7 @@ import identifiers.SchemeSrnId
 import models.NormalMode
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.mvc.Call
 import play.api.test.Helpers._
 import play.twirl.api.HtmlFormat

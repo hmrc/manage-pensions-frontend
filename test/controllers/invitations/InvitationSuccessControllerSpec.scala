@@ -21,7 +21,7 @@ import connectors.FakeUserAnswersCacheConnector
 import controllers.actions._
 import controllers.behaviours.ControllerWithNormalPageBehaviours
 import models.MinimalSchemeDetail
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.mvc.Call
 import play.api.test.Helpers._
 import utils.{DateHelper, UserAnswers}

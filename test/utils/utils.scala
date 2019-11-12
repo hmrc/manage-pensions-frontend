@@ -19,7 +19,7 @@ import identifiers.invitations._
 import identifiers.remove.{ConfirmRemovePsaId, RemovalDateId}
 import identifiers.{AssociatedDateId, LastPageId, MinimalSchemeDetailId, SchemeSrnId}
 import models._
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.scalatest.OptionValues
 
 package object utils {

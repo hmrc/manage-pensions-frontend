@@ -17,7 +17,7 @@
 package controllers.deregister
 
 import controllers.ControllerSpecBase
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.test.Helpers._
 import views.html.deregister.successful_deregistration
 

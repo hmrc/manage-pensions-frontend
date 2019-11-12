@@ -26,7 +26,7 @@ import identifiers.invitations.{IsMasterTrustId, PSTRId, SchemeNameId}
 import org.mockito.Matchers.{eq => eqTo, _}
 import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.Configuration
 import play.api.data.Form
 import play.api.mvc.Call

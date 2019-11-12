@@ -16,7 +16,7 @@
 
 package forms.mappings
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.scalatest.{Matchers, WordSpec}
 import play.api.data.validation.{Invalid, Valid}
 import utils.InputOption

@@ -22,7 +22,7 @@ import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.remove.RemovalDateFormProvider
 import identifiers.remove.RemovalDateId
 import models.PsaToBeRemovedFromScheme
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.mvc.AnyContentAsJson

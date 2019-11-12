@@ -23,7 +23,7 @@ import forms.invitations.AdviserManualAddressFormProvider
 import identifiers.invitations.{AdviserAddressId, AdviserAddressListId, AdviserAddressPostCodeLookupId, AdviserNameId}
 import models.{Address, NormalMode, TolerantAddress}
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{MustMatchers, OptionValues, WordSpec}
 import play.api.Application
 import play.api.data.Form
