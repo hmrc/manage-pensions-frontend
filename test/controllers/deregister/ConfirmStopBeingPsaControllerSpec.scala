@@ -21,7 +21,7 @@ import connectors._
 import controllers.ControllerSpecBase
 import controllers.actions._
 import forms.deregister.ConfirmStopBeingPsaFormProvider
-import identifiers.invitations.PSANameId
+import identifiers.PSANameId
 import models.{IndividualDetails, MinimalPSA}
 import org.scalatest.concurrent.ScalaFutures
 import play.api.data.Form

@@ -22,7 +22,7 @@ import connectors.{MinimalPsaConnector, SchemeDetailsConnector, UserAnswersCache
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import identifiers.invitations.PSTRId
-import identifiers.{AssociatedDateId, SchemeNameId, SchemeSrnId}
+import identifiers.{AssociatedDateId, PSANameId, SchemeNameId, SchemeSrnId}
 import models.{MinimalPSA, PsaAssociatedDate}
 import models.requests.DataRequest
 import org.joda.time.LocalDate
@@ -61,7 +61,7 @@ class RemovePsaController @Inject()(authenticate: AuthAction,
   }
 
   private def renderPage(request: DataRequest[AnyContent], srn: String, minimalPsaDetails: MinimalPSA)(implicit hd: HeaderCarrier): Future[Result] = {
-    import identifiers.invitations.{PSANameId, PSTRId, SchemeNameId}
+    import identifiers.invitations.{PSTRId, SchemeNameId}
     for {
       scheme <- getSchemeNameAndPstr(srn, request)
       _ <- userAnswersCacheConnector.save(request.externalId, PSANameId, getPsaName(minimalPsaDetails))

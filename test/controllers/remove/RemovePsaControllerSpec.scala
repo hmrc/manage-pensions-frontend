@@ -20,7 +20,7 @@ import base.SpecBase
 import connectors.{FakeUserAnswersCacheConnector, MinimalPsaConnector, SchemeDetailsConnector}
 import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction, FakeUnAuthorisedAction}
 import identifiers.AssociatedDateId
-import identifiers.invitations.{PSANameId, PSTRId, SchemeNameId}
+import identifiers.invitations.{PSTRId, SchemeNameId}
 import models._
 import org.joda.time.LocalDate
 import org.mockito.Matchers
@@ -167,7 +167,7 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
       redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)
     }
 
-    "save scheme name,psa name and pstr, then redirect to remove as scheme administrator page if PSA is not suspended" in {
+    "save scheme name pstr, then redirect to remove as scheme administrator page if PSA is not suspended" in {
       val result = controller(psaMinimalDetails = psaMinimalSubscription.copy(isPsaSuspended = false),
         schemeDetailsConnector = fakeSchemeDetailsConnector()).onPageLoad(fakeRequest)
 
@@ -175,7 +175,6 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
       redirectLocation(result) mustBe Some(controllers.remove.routes.ConfirmRemovePsaController.onPageLoad().url)
 
       FakeUserAnswersCacheConnector.verify(SchemeNameId, "Test Scheme name")
-      FakeUserAnswersCacheConnector.verify(PSANameId, psaMinimalSubscription.individualDetails.map(_.fullName).getOrElse(""))
       FakeUserAnswersCacheConnector.verify(PSTRId, "test pstr")
       FakeUserAnswersCacheConnector.verify(AssociatedDateId, new LocalDate("2018-10-01"))
     }

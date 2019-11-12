@@ -18,16 +18,16 @@ package controllers
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
-import connectors.ListOfSchemesConnector
+import connectors.{ListOfSchemesConnector, MinimalPsaConnector, UserAnswersCacheConnector}
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
-import identifiers.invitations.PSANameId
+import identifiers.PSANameId
 import models.SchemeDetail
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import views.html.list_schemes
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class ListSchemesController @Inject()(
                                        val appConfig: FrontendAppConfig,
@@ -35,17 +35,27 @@ class ListSchemesController @Inject()(
                                        authenticate: AuthAction,
                                        getData: DataRetrievalAction,
                                        requireData: DataRequiredAction,
-                                       listSchemesConnector: ListOfSchemesConnector
+                                       listSchemesConnector: ListOfSchemesConnector,
+                                       minimalPsaConnector: MinimalPsaConnector,
+                                       userAnswersCacheConnector: UserAnswersCacheConnector
                                      )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
-      listSchemesConnector.getListOfSchemes(request.psaId.id).map {
+      listSchemesConnector.getListOfSchemes(request.psaId.id).flatMap {
         listOfSchemes =>
           val schemes = listOfSchemes.schemeDetail.getOrElse(List.empty[SchemeDetail])
-            request.userAnswers.get(PSANameId).map {name =>
-              Ok(list_schemes(appConfig, schemes, name))
-            }.getOrElse(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+          request.userAnswers.get(PSANameId) match {
+            case None =>
+              minimalPsaConnector.getPsaNameFromPsaID(request.psaId.id).flatMap(_.map { name =>
+                 userAnswersCacheConnector.save(request.externalId, PSANameId, name).map { _ =>
+                  Ok(list_schemes(appConfig, schemes, name))
+                }}.getOrElse(
+                Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+                )
+              )
+            case Some(name) => Future.successful(Ok(list_schemes(appConfig, schemes, name)))
           }
       }
+  }
 }

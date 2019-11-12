@@ -20,7 +20,7 @@ import config.FrontendAppConfig
 import connectors.{PensionSchemeVarianceLockConnector, UpdateSchemeCacheConnector}
 import controllers.actions._
 import forms.DeleteSchemeChangesFormProvider
-import identifiers.invitations.PSANameId
+import identifiers.PSANameId
 import javax.inject.Inject
 import models.requests.DataRequest
 import play.api.data.Form
