@@ -27,8 +27,8 @@ import views.html.cannotStartRegistration
 import scala.concurrent.ExecutionContext
 
 class CannotStartRegistrationController @Inject()(appConfig: FrontendAppConfig,
-                                       override val messagesApi: MessagesApi,
-                                       authenticate: AuthAction,
+                                                  override val messagesApi: MessagesApi,
+                                                  authenticate: AuthAction,
                                                   val controllerComponents: MessagesControllerComponents,
                                                   view: cannotStartRegistration)(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 

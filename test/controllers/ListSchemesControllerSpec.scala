@@ -31,6 +31,8 @@ import uk.gov.hmrc.http.HeaderCarrier
 import views.html.list_schemes
 
 import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
+
 
 class ListSchemesControllerSpec extends ControllerSpecBase {
 
@@ -135,6 +137,8 @@ object ListSchemesControllerSpec {
     when(mockInvitationsCacheConnector.getForInvitee(any())(any(), any())).thenReturn(
       Future.successful(invitations))
 
+    val view: list_schemes = app.injector.instanceOf[list_schemes]
+
     private def listSchemesConnector(): ListOfSchemesConnector = new ListOfSchemesConnector {
 
       override def getListOfSchemes(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[ListOfSchemes] = {
@@ -161,18 +165,21 @@ object ListSchemesControllerSpec {
       }
     }
 
+
     override val controller: ListSchemesController =
       new ListSchemesController(
         config(isWorkPackageOneEnabled),
         app.messagesApi,
         authAction(psaId),
         listSchemesConnector(),
-        mockInvitationsCacheConnector
+        mockInvitationsCacheConnector,
+        stubMessagesControllerComponents(),
+        view
       )
 
-  }
 
-  def viewAsString(app: ControllerSpecBase, schemes: List[SchemeDetail], invitationReceived: Boolean = false, isWorkPackageOneEnabled: Boolean): String =
-    list_schemes(config(isWorkPackageOneEnabled), schemes, invitationReceived)(app.fakeRequest, app.messages).toString()
+    def viewAsString(app: ControllerSpecBase, schemes: List[SchemeDetail], invitationReceived: Boolean = false, isWorkPackageOneEnabled: Boolean): String =
+      view(config(isWorkPackageOneEnabled), schemes, invitationReceived)(app.fakeRequest, app.messages).toString()
+  }
 
 }
