@@ -16,14 +16,15 @@
 
 package utils
 
-import java.time.LocalDateTime
+import java.time.{LocalDate, LocalDateTime}
 
 import org.scalatest.{Matchers, WordSpec}
 
 class DateHelperSpec extends WordSpec with Matchers {
 
-  val dateHelper = new DateHelper {
-    override val currentDate = LocalDateTime.parse("2018-01-04T00:00:01Z").toLocalDate
+  val dateHelper: DateHelper = new DateHelper {
+
+    override val currentDate: LocalDate = LocalDateTime.parse("2018-01-04T00:00:01").toLocalDate
   }
 
   val daysAhead = 30
@@ -31,15 +32,15 @@ class DateHelperSpec extends WordSpec with Matchers {
   "thirtyDaysFromNowInSeconds" should {
     "respond correctly for a date at 1 second after midnight" in {
       val result = dateHelper.dateTimeFromNowToMidnightAfterDays(daysAhead).toString
-      result shouldBe "2018-02-04T00:00:00.000Z"
+      result shouldBe "2018-02-04T00:00"
     }
     "respond correctly for a date around the middle of the day" in {
       val result = dateHelper.dateTimeFromNowToMidnightAfterDays(daysAhead).toString
-      result shouldBe "2018-02-04T00:00:00.000Z"
+      result shouldBe "2018-02-04T00:00"
     }
     "respond correctly for a date at 1 second to midnight" in {
       val result = dateHelper.dateTimeFromNowToMidnightAfterDays(daysAhead).toString
-      result shouldBe "2018-02-04T00:00:00.000Z"
+      result shouldBe "2018-02-04T00:00"
     }
   }
 
