@@ -30,7 +30,7 @@ object AppDependencies {
     "org.jsoup" % "jsoup" % "1.12.1",
     "com.typesafe.play" %% "play-test" % PlayVersion.current,
     "org.mockito" % "mockito-all" % "1.10.19",
-    "com.github.tomakehurst" % "wiremock" % "2.18.0",
+    "com.github.tomakehurst" % "wiremock-jre8" % "2.21.0",
     "wolfendale" %% "scalacheck-gen-regexp" % "0.1.1"
   )
 
