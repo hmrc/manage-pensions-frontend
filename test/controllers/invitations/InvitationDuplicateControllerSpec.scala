@@ -22,6 +22,7 @@ import controllers.actions.{DataRequiredActionImpl, FakeAuthAction, FakeUnAuthor
 import models.MinimalSchemeDetail
 import play.api.mvc.Call
 import play.api.test.Helpers._
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.{FakeNavigator, UserAnswers}
 import views.html.invitations.invitation_duplicate
 
@@ -33,7 +34,7 @@ class InvitationDuplicateControllerSpec extends ControllerSpecBase {
 
     "return 200 Ok and correct content on successful GET" in {
 
-      val fixture = testFixture(this)
+      val fixture = testFixture()
       val result = fixture.controller.onPageLoad()(fakeRequest)
 
       status(result) mustBe OK
@@ -43,7 +44,7 @@ class InvitationDuplicateControllerSpec extends ControllerSpecBase {
 
     "redirect to Unauthorised when not authenticated on GET" in {
 
-      val fixture = unauthorisedTestFixture(this)
+      val fixture = unauthorisedTestFixture()
       val result = fixture.controller.onPageLoad()(fakeRequest)
 
       status(result) mustBe SEE_OTHER
@@ -53,7 +54,7 @@ class InvitationDuplicateControllerSpec extends ControllerSpecBase {
 
     "redirect to session expired when there is no user data on GET" in {
 
-      val fixture = noDataTestFixture(this)
+      val fixture = noDataTestFixture()
       val result = fixture.controller.onPageLoad()(fakeRequest)
 
       status(result) mustBe SEE_OTHER
@@ -64,8 +65,9 @@ class InvitationDuplicateControllerSpec extends ControllerSpecBase {
 }
 
 
-object InvitationDuplicateControllerSpec {
+object InvitationDuplicateControllerSpec extends ControllerSpecBase {
   private implicit val global = scala.concurrent.ExecutionContext.Implicits.global
+  private val view = injector.instanceOf[invitation_duplicate]
   val testSrn: String = "test-srn"
 
   private val testInviteeName = "test-invitee-name"
@@ -76,7 +78,7 @@ object InvitationDuplicateControllerSpec {
   private val onwardRoute: Call = controllers.routes.IndexController.onPageLoad()
   private val testNavigator: FakeNavigator = new FakeNavigator(onwardRoute)
 
-  private def createController(base: ControllerSpecBase, authorised: Boolean, hasData: Boolean): InvitationDuplicateController = {
+  private def createController(authorised: Boolean, hasData: Boolean): InvitationDuplicateController = {
 
     val authAction =
       if (authorised) {
@@ -92,16 +94,18 @@ object InvitationDuplicateControllerSpec {
           .minimalSchemeDetails(testSchemeDetail)
           .dataRetrievalAction
       } else {
-        base.dontGetAnyData
+        dontGetAnyData
       }
 
     new InvitationDuplicateController(
-      base.messagesApi,
-      base.frontendAppConfig,
+      messagesApi,
+      frontendAppConfig,
       authAction,
       dataRetrievalAction,
       new DataRequiredActionImpl,
-      testNavigator
+      testNavigator,
+      stubMessagesControllerComponents(),
+      view
     )
 
   }
@@ -111,21 +115,20 @@ object InvitationDuplicateControllerSpec {
     val navigator: FakeNavigator
   }
 
-  private def testFixture(base: ControllerSpecBase, authorised: Boolean, hasData: Boolean): TestFixture =
+  private def testFixture(authorised: Boolean, hasData: Boolean): TestFixture =
     new TestFixture {
-      override val controller: InvitationDuplicateController = createController(base, authorised, hasData)
+      override val controller: InvitationDuplicateController = createController(authorised, hasData)
       override val navigator: FakeNavigator = testNavigator
     }
 
-  def testFixture(base: ControllerSpecBase): TestFixture = testFixture(base, authorised = true, hasData = true)
+  def testFixture(): TestFixture = testFixture(authorised = true, hasData = true)
 
-  def unauthorisedTestFixture(base: ControllerSpecBase): TestFixture = testFixture(base, authorised = false, hasData = true)
+  def unauthorisedTestFixture(): TestFixture = testFixture(authorised = false, hasData = true)
 
-  def noDataTestFixture(base: ControllerSpecBase): TestFixture = testFixture(base, authorised = true, hasData = false)
+  def noDataTestFixture(): TestFixture = testFixture(authorised = true, hasData = false)
 
   def viewAsString(base: SpecBase): String =
-    invitation_duplicate(
-      base.frontendAppConfig,
+    view(
       testInviteeName,
       testSchemeName
     )(
