@@ -24,6 +24,7 @@ import models.{NormalMode, SchemeReferenceNumber}
 import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.api.test.Helpers._
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.FakeNavigator
 import views.html.invitations.whatYouWillNeed
 
@@ -38,6 +39,8 @@ class WhatYouWillNeedControllerSpec extends ControllerSpecBase {
     SchemeNameId.toString -> schemeName
   )))
 
+  private val whatYouWillNeedView = injector.instanceOf[whatYouWillNeed]
+
   def controller(dataRetrievalAction: DataRetrievalAction = validData): WhatYouWillNeedController =
     new WhatYouWillNeedController(
       frontendAppConfig,
@@ -46,11 +49,12 @@ class WhatYouWillNeedControllerSpec extends ControllerSpecBase {
       FakeAuthAction(),
       dataRetrievalAction,
       new DataRequiredActionImpl,
-      FakeUserAnswersCacheConnector
-
+      FakeUserAnswersCacheConnector,
+      stubMessagesControllerComponents(),
+      whatYouWillNeedView
     )
 
-  private def viewAsString() = whatYouWillNeed(frontendAppConfig, schemeName, returnCall)(fakeRequest, messages).toString
+  private def viewAsString() = whatYouWillNeedView(schemeName, returnCall)(fakeRequest, messages).toString
 
   "WhatYouWillNeedController" must {
     "return OK and the correct view for a GET" in {

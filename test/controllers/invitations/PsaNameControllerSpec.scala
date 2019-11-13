@@ -22,6 +22,8 @@ import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.invitations.PsaNameFormProvider
 import models.NormalMode
 import play.api.data.Form
+import play.api.mvc.{Action, AnyContent}
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.{UserAnswers, _}
 import views.html.invitations.psaName
 
@@ -29,24 +31,25 @@ class PsaNameControllerSpec extends ControllerWithQuestionPageBehaviours {
 
   val formProvider = new PsaNameFormProvider()
   val form = formProvider()
-  val userAnswer = UserAnswers().inviteeName("xyz")
-  val postRequest = fakeRequest.withJsonBody(userAnswer.json)
+  private val userAnswer = UserAnswers().inviteeName("xyz")
+  private val postRequest = fakeRequest.withJsonBody(userAnswer.json)
+  private val psaNameView = injector.instanceOf[psaName]
 
-  def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
-
-    new PsaNameController(
-      frontendAppConfig, messagesApi, FakeUserAnswersCacheConnector, navigator, fakeAuth,
-      dataRetrievalAction, requiredDataAction, formProvider).onPageLoad(NormalMode)
-  }
-
-  def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
+  def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
 
     new PsaNameController(
       frontendAppConfig, messagesApi, FakeUserAnswersCacheConnector, navigator, fakeAuth,
-      dataRetrievalAction, requiredDataAction, formProvider).onSubmit(NormalMode)
+      dataRetrievalAction, requiredDataAction, formProvider, stubMessagesControllerComponents(), psaNameView).onPageLoad(NormalMode)
   }
 
-  def viewAsString(form: Form[_]) = psaName(frontendAppConfig, form, NormalMode)(fakeRequest, messages).toString
+  def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
+
+    new PsaNameController(
+      frontendAppConfig, messagesApi, FakeUserAnswersCacheConnector, navigator, fakeAuth,
+      dataRetrievalAction, requiredDataAction, formProvider, stubMessagesControllerComponents(), psaNameView).onSubmit(NormalMode)
+  }
+
+  private def viewAsString(form: Form[_]): String = psaNameView(form, NormalMode)(fakeRequest, messages).toString
 
 
   behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, userAnswer.dataRetrievalAction, form, form.fill("xyz"), viewAsString)

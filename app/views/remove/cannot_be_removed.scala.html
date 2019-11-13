@@ -16,16 +16,22 @@
 
 @import config.FrontendAppConfig
 @import uk.gov.hmrc.play.views.html._
+@import views.html._
 @import controllers.routes._
 @import models.Mode
 @import viewmodels.Message
 @import viewmodels.RemovalViewModel
 
-@(viewModel: RemovalViewModel, appConfig: FrontendAppConfig)(implicit request: Request[_], messages: Messages)
+@this(
+main_template: main_template,
+appConfig: FrontendAppConfig
+)
+
+@(viewModel: RemovalViewModel)(implicit request: Request[_], messages: Messages)
 
 @main_template(
     title = messages(viewModel.titleMessageKey),
-    appConfig = appConfig,
+
     bodyClasses = None) {
 
     @components.heading(messages(viewModel.headingMessageKey))

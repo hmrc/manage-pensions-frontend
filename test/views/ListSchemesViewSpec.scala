@@ -19,7 +19,6 @@ package views
 import config.FrontendAppConfig
 import models.{SchemeDetail, SchemeStatus}
 import play.api.i18n.Messages
-import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.Request
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
@@ -111,8 +110,9 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
   }
 }
 
-object ListSchemesViewSpec {
+object ListSchemesViewSpec extends ViewSpecBase {
   val emptyList: List[SchemeDetail] = List.empty[SchemeDetail]
+  private val listSchemesview = injector.instanceOf[list_schemes]
 
   val fullList: List[SchemeDetail] = List(
     SchemeDetail(
@@ -191,7 +191,7 @@ object ListSchemesViewSpec {
 
   def view(appConfig: FrontendAppConfig, schemes: List[SchemeDetail] = emptyList, invitationsReceived: Boolean = false)
           (implicit request: Request[_], messages: Messages): () => HtmlFormat.Appendable =
-    () => list_schemes(appConfig, schemes, invitationsReceived)
+    () => listSchemesview(schemes, invitationsReceived)
 
   def viewAsString(appConfig: FrontendAppConfig, schemes: List[SchemeDetail] = emptyList)
                   (implicit request: Request[_], messages: Messages): String = {

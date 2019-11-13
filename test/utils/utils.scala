@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
+import java.time.LocalDate
+
 import controllers.actions.{DataRetrievalAction, FakeDataRetrievalAction}
 import identifiers.invitations._
 import identifiers.remove.{ConfirmRemovePsaId, RemovalDateId}
 import identifiers.{AssociatedDateId, LastPageId, MinimalSchemeDetailId, SchemeSrnId}
 import models._
-import org.joda.time.LocalDate
 import org.scalatest.OptionValues
 
 package object utils {

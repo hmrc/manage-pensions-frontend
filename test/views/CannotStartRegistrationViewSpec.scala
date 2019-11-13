@@ -25,8 +25,10 @@ class CannotStartRegistrationViewSpec extends ViewBehaviours {
 
   private val messageKeyPrefix = "cannotStartRegistration"
 
+  private val view = injector.instanceOf[cannotStartRegistration]
+
   def createView: (() => HtmlFormat.Appendable) = () =>
-    cannotStartRegistration(frontendAppConfig)(fakeRequest, messages)
+    view()(fakeRequest, messages)
 
   "Psa Suspended page" must {
     behave like normalPage(

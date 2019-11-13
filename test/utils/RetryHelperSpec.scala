@@ -21,7 +21,7 @@ import java.time.temporal.ChronoUnit
 
 import base.SpecBase
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.time.{Seconds, Span}
 import org.scalatestplus.play.OneAppPerSuite
 import play.api.test.Helpers._

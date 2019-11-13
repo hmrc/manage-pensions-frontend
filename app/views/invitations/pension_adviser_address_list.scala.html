@@ -18,17 +18,24 @@
 @import config.FrontendAppConfig
 @import models.TolerantAddress
 @import uk.gov.hmrc.play.views.html._
+@import views.html._
 @import models.Mode
 
-@(appConfig: FrontendAppConfig, form: Form[_], addresses: Seq[TolerantAddress], mode: Mode)(implicit request: Request[_], messages: Messages)
+@this(
+main_template: main_template,
+formHelper: FormWithCSRF,
+appConfig: FrontendAppConfig
+)
+
+@(form: Form[_], addresses: Seq[TolerantAddress], mode: Mode)(implicit request: Request[_], messages: Messages)
 
 @main_template(
     title = messages("messages__adviser__address__list__title"),
-    appConfig = appConfig,
+
     bodyClasses = None
 ) {
 
-    @helpers.form(action = PensionAdviserAddressListController.onSubmit(mode), 'autoComplete -> "off") {
+    @formHelper(action = PensionAdviserAddressListController.onSubmit(mode), 'autoComplete -> "off") {
 
         @components.back_link()
 

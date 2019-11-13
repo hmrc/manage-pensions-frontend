@@ -16,7 +16,7 @@
 
 package views
 
-import forms.{DeleteSchemeChangesFormProvider, DeleteSchemeFormProvider}
+import forms.DeleteSchemeChangesFormProvider
 import play.api.data.Form
 import play.api.mvc.Call
 import play.twirl.api.HtmlFormat
@@ -31,10 +31,11 @@ class DeleteSchemeChangesViewSpec extends YesNoViewBehaviours {
   val srn = "S123"
   val postCall: Call = controllers.routes.DeleteSchemeChangesController.onSubmit(srn)
   val form = new DeleteSchemeChangesFormProvider()()
+  val view = injector.instanceOf[deleteSchemeChanges]
 
-  def createView: () => HtmlFormat.Appendable = () => deleteSchemeChanges(frontendAppConfig, form, schemeName, postCall)(fakeRequest, messages)
+  def createView: () => HtmlFormat.Appendable = () => view(form, schemeName, postCall)(fakeRequest, messages)
 
-  def createViewUsingForm: Form[_] => HtmlFormat.Appendable = (form: Form[_]) => deleteSchemeChanges(frontendAppConfig, form, schemeName, postCall)(fakeRequest, messages)
+  def createViewUsingForm: Form[_] => HtmlFormat.Appendable = (form: Form[_]) => view(form, schemeName, postCall)(fakeRequest, messages)
 
   "DeleteScheme view" must {
 

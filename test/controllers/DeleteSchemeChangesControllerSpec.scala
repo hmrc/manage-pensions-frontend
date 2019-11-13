@@ -16,18 +16,19 @@
 
 package controllers
 
-import connectors.{MicroserviceCacheConnector, PensionSchemeVarianceLockConnector, UpdateSchemeCacheConnector, UserAnswersCacheConnector}
+import connectors.{PensionSchemeVarianceLockConnector, UpdateSchemeCacheConnector}
 import controllers.actions._
-import forms.{DeleteSchemeChangesFormProvider, DeleteSchemeFormProvider}
+import forms.DeleteSchemeChangesFormProvider
 import org.mockito.Matchers.{any, eq => eqTo}
 import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.api.mvc.Results.Ok
 import play.api.test.Helpers.{contentAsString, _}
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import views.html.deleteSchemeChanges
 
 import scala.concurrent.Future
@@ -42,11 +43,23 @@ class DeleteSchemeChangesControllerSpec extends ControllerSpecBase with MockitoS
   val fakeLockConnector: PensionSchemeVarianceLockConnector = mock[PensionSchemeVarianceLockConnector]
   val postCall: Call = controllers.routes.DeleteSchemeChangesController.onSubmit(srn)
 
-  def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): DeleteSchemeChangesController =
-    new DeleteSchemeChangesController(frontendAppConfig, messagesApi, fakeCacheConnector, fakeLockConnector,
-      FakeAuthAction(), dataRetrievalAction, new DataRequiredActionImpl, formProvider)
+  val view: deleteSchemeChanges = app.injector.instanceOf[deleteSchemeChanges]
 
-  def viewAsString(form: Form[_] = form): String = deleteSchemeChanges(frontendAppConfig, form, schemeName, postCall)(fakeRequest, messages).toString
+  def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): DeleteSchemeChangesController =
+    new DeleteSchemeChangesController(
+      frontendAppConfig,
+      messagesApi,
+      fakeCacheConnector,
+      fakeLockConnector,
+      FakeAuthAction(),
+      dataRetrievalAction,
+      new DataRequiredActionImpl,
+      formProvider,
+      stubMessagesControllerComponents(),
+      view
+    )
+
+  def viewAsString(form: Form[_] = form): String = view(form, schemeName, postCall)(fakeRequest, messages).toString
 
   override def beforeEach(): Unit = {
     reset(fakeCacheConnector)

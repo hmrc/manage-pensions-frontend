@@ -16,23 +16,29 @@
 
 @import config.FrontendAppConfig
 @import uk.gov.hmrc.play.views.html._
+@import views.html._
 @import controllers.routes._
 @import models.Mode
 @import models.{VariationDetails, RegistrationDetails}
 @import viewmodels.Message
 
-@(appConfig: FrontendAppConfig,
-registrationDetails: Option[RegistrationDetails],
-name: Option[String],
-psaId: String,
-variationDetails: Option[VariationDetails]
+@this(
+    main_template: main_template,
+    appConfig: FrontendAppConfig
+)
+
+@(
+    registrationDetails: Option[RegistrationDetails],
+    name: Option[String],
+    psaId: String,
+    variationDetails: Option[VariationDetails]
 )(implicit request: Request[_], messages: Messages)
 
 @manageRedirectLink = {<a id="manage-link" href="@appConfig.pensionSchemeOnlineServiceUrl">@messages("messages__schemesOverview__manage__redirect__link")</a>}
 
 @main_template(
     title = messages("messages__schemesOverview__title"),
-    appConfig = appConfig,
+
     bodyClasses = None) {
 
     @components.heading(messages("messages__schemesOverview__heading"))

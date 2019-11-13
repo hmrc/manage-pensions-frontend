@@ -19,13 +19,15 @@ package controllers
 import controllers.actions._
 import play.api.test.Helpers._
 import views.html.cannotStartRegistration
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 
 class CannotStartRegistrationControllerSpec extends ControllerSpecBase {
+  val view: cannotStartRegistration = app.injector.instanceOf[cannotStartRegistration]
 
   def controller(dataRetrievalAction: DataRetrievalAction = getEmptyData): CannotStartRegistrationController =
-    new CannotStartRegistrationController(frontendAppConfig, messagesApi, FakeAuthAction())
+    new CannotStartRegistrationController(frontendAppConfig, messagesApi, FakeAuthAction(), stubMessagesControllerComponents(), view)
 
-  private def viewAsString() = cannotStartRegistration(frontendAppConfig)(fakeRequest, messages).toString
+  private def viewAsString() = view()(fakeRequest, messages).toString
 
   "CannotStartRegistrationController" must {
     "return OK and the correct view for a GET" in {

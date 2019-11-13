@@ -16,8 +16,9 @@
 
 package identifiers.remove
 
+import java.time.LocalDate
+
 import identifiers.TypedIdentifier
-import org.joda.time.LocalDate
 
 case object RemovalDateId extends TypedIdentifier[LocalDate] {
   override def toString: String = "removalDate"

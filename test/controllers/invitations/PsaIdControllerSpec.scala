@@ -23,6 +23,7 @@ import forms.invitations.PsaIdFormProvider
 import models.NormalMode
 import play.api.data.Form
 import play.api.test.FakeRequest
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.UserAnswers
 import views.html.invitations.psaId
 
@@ -33,23 +34,23 @@ class PsaIdControllerSpec extends ControllerWithQuestionPageBehaviours {
   val userAnswer = UserAnswers().inviteeName("xyz")
   val userAnswerWithPsaId = userAnswer.inviteeId("A0000000")
   val postRequest = FakeRequest().withJsonBody(userAnswerWithPsaId.json)
-
+  private val view = injector.instanceOf[psaId]
 
   def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
     new PsaIdController(
       frontendAppConfig, messagesApi, fakeAuth, navigator, FakeUserAnswersCacheConnector,
-      dataRetrievalAction, requiredDataAction, formProvider).onPageLoad(NormalMode)
+      dataRetrievalAction, requiredDataAction, formProvider, stubMessagesControllerComponents(), view).onPageLoad(NormalMode)
   }
 
   def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
     new PsaIdController(
       frontendAppConfig, messagesApi, fakeAuth, navigator, FakeUserAnswersCacheConnector,
-      dataRetrievalAction, requiredDataAction, formProvider).onSubmit(NormalMode)
+      dataRetrievalAction, requiredDataAction, formProvider, stubMessagesControllerComponents(), view).onSubmit(NormalMode)
   }
 
-  def viewAsString(form: Form[_] = form) = psaId(frontendAppConfig, form, "xyz", NormalMode)(fakeRequest, messages).toString
+  def viewAsString(form: Form[_] = form) = view(form, "xyz", NormalMode)(fakeRequest, messages).toString
 
 
   behave like controllerWithOnPageLoadMethod(onPageLoadAction, userAnswer.dataRetrievalAction,

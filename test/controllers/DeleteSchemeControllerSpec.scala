@@ -22,12 +22,14 @@ import forms.DeleteSchemeFormProvider
 import org.mockito.Matchers.{any, eq => eqTo}
 import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.mvc.Results.Ok
 import play.api.test.Helpers.{contentAsString, _}
 import views.html.deleteScheme
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
+
 
 import scala.concurrent.Future
 
@@ -38,11 +40,13 @@ class DeleteSchemeControllerSpec extends ControllerSpecBase with MockitoSugar wi
   val schemeName = "Test Scheme Name"
   val fakeCacheConnector: UserAnswersCacheConnector = mock[MicroserviceCacheConnector]
 
+  val view: deleteScheme = app.injector.instanceOf[deleteScheme]
+
   def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): DeleteSchemeController =
     new DeleteSchemeController(frontendAppConfig, messagesApi, fakeCacheConnector, FakeAuthAction(),
-      dataRetrievalAction, new DataRequiredActionImpl, formProvider)
+      dataRetrievalAction, new DataRequiredActionImpl, formProvider, stubMessagesControllerComponents(), view)
 
-  def viewAsString(form: Form[_] = form): String = deleteScheme(frontendAppConfig, form, schemeName)(fakeRequest, messages).toString
+  def viewAsString(form: Form[_] = form): String = view(form, schemeName)(fakeRequest, messages).toString
 
   override def beforeEach(): Unit = {
     reset(fakeCacheConnector)

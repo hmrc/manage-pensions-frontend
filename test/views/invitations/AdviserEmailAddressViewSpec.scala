@@ -28,11 +28,12 @@ class AdviserEmailAddressViewSpec extends QuestionViewBehaviours[String] {
   val messageKeyPrefix = "adviser__email__address"
   val form = new AdviserEmailFormProvider().apply()
   val adviserName = "test adviser"
+  private val adviserEmailAddressView = injector.instanceOf[adviserEmailAddress]
 
-  private val createView: () => HtmlFormat.Appendable = () => adviserEmailAddress(frontendAppConfig, form, NormalMode, adviserName)(fakeRequest, messages)
+  private val createView: () => HtmlFormat.Appendable = () => adviserEmailAddressView(form, NormalMode, adviserName)(fakeRequest, messages)
 
   private val createViewWithForm: Form[String] => HtmlFormat.Appendable =
-    (form: Form[String]) => adviserEmailAddress(frontendAppConfig, form, NormalMode, adviserName)(fakeRequest, messages)
+    (form: Form[String]) => adviserEmailAddressView(form, NormalMode, adviserName)(fakeRequest, messages)
 
   behave like normalPage(createView, messageKeyPrefix,
     messages("messages__adviser__email__address__heading", adviserName),

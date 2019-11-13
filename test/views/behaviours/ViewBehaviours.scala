@@ -16,14 +16,16 @@
 
 package views.behaviours
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
+
 import org.jsoup.Jsoup
 import play.api.data.{Form, FormError}
+import play.api.i18n.Lang
 import play.twirl.api.HtmlFormat
 import views.ViewSpecBase
 
 trait ViewBehaviours extends ViewSpecBase {
-
+ implicit val lang = Lang("en")
   def normalPageWithTitle(view: () => HtmlFormat.Appendable,
                           messageKeyPrefix: String,
                           title: String,
@@ -148,7 +150,7 @@ trait ViewBehaviours extends ViewSpecBase {
 
     val day = LocalDate.now().getDayOfMonth
     val year = LocalDate.now().getYear
-    val month = LocalDate.now().getMonthOfYear
+    val month = LocalDate.now().getMonthValue
     val error = "error"
 
     val validData: Map[String, String] = Map(

@@ -16,12 +16,11 @@
 
 package repositories
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.Singleton
 import org.joda.time.{DateTime, DateTimeZone}
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{JsValue, Json, OFormat, OWrites}
 import play.api.{Configuration, Logger}
-import play.modules.reactivemongo.MongoDbConnection
-import reactivemongo.api.DefaultDB
+import play.modules.reactivemongo.ReactiveMongoComponent
 import reactivemongo.api.indexes.{Index, IndexType}
 import reactivemongo.bson.{BSONDocument, BSONObjectID}
 import reactivemongo.play.json.ImplicitBSONHandlers._
@@ -38,13 +37,15 @@ case class DatedCacheMap(id: String,
 
 object DatedCacheMap {
   implicit val dateFormat = ReactiveMongoFormats.dateTimeFormats
-  implicit val formats = Json.format[DatedCacheMap]
+  implicit val reads: OFormat[DatedCacheMap] = Json.format[DatedCacheMap]
+  implicit val writes: OWrites[DatedCacheMap] = Json.format[DatedCacheMap]
 
   def apply(cacheMap: CacheMap): DatedCacheMap = DatedCacheMap(cacheMap.id, cacheMap.data)
 }
 
-class ReactiveMongoRepository(config: Configuration, mongo: () => DefaultDB)
-  extends ReactiveRepository[DatedCacheMap, BSONObjectID](config.underlying.getString("mongoName"), mongo, DatedCacheMap.formats) {
+@Singleton
+class SessionRepository(config: Configuration, component: ReactiveMongoComponent)
+  extends ReactiveRepository[DatedCacheMap, BSONObjectID](config.underlying.getString("mongoName"), component.mongoConnector.db, implicitly) {
 
   val fieldName = "lastUpdated"
   val createdIndexName = "userAnswersExpiry"
@@ -68,22 +69,18 @@ class ReactiveMongoRepository(config: Configuration, mongo: () => DefaultDB)
 
   def upsert(id: String, json: JsValue): Future[Boolean] = {
 
-    val document = Json.obj(
-      "id" -> id,
-      "data" -> json,
-      "lastUpdated" -> DateTime.now(DateTimeZone.UTC)
-    )
+    val document = Json.toJson(DatedCacheMap(id, Map("data" -> json), DateTime.now(DateTimeZone.UTC)))
 
     val selector = BSONDocument("id" -> id)
     val modifier = BSONDocument("$set" -> document)
 
-    collection.update(selector, modifier, upsert = true)
+    collection.update(ordered = false).one(selector, modifier, upsert = true)
       .map(_.ok)
   }
 
   def get(id: String): Future[Option[JsValue]] = {
     import play.api.libs.json._
-    collection.find(Json.obj("id" -> id)).one[JsObject].map {
+    collection.find(Json.obj("id" -> id), Option.empty[JsObject]).one[JsObject].map {
       json =>
         json.flatMap {
           json =>
@@ -94,12 +91,12 @@ class ReactiveMongoRepository(config: Configuration, mongo: () => DefaultDB)
 
   def remove(id: String): Future[Boolean] = {
     val selector = BSONDocument("id" -> id)
-    collection.remove(selector).map(_.ok)
+    collection.delete.one(selector).map(_.ok)
   }
 
   def getValue(id: String, value: String): Future[Option[JsValue]] = {
     import play.api.libs.json._
-    collection.find(Json.obj("id" -> id)).one[JsObject].map {
+    collection.find(Json.obj("id" -> id), Option.empty[JsObject]).one[JsObject].map {
       json =>
         json.flatMap {
           json =>
@@ -107,15 +104,4 @@ class ReactiveMongoRepository(config: Configuration, mongo: () => DefaultDB)
         }
     }
   }
-
-}
-
-@Singleton
-class SessionRepository @Inject()(config: Configuration) {
-
-  class DbConnection extends MongoDbConnection
-
-  private lazy val sessionRepository = new ReactiveMongoRepository(config, new DbConnection().db)
-
-  def apply(): ReactiveMongoRepository = sessionRepository
 }

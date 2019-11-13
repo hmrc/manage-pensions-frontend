@@ -27,9 +27,9 @@ import org.joda.time.{DateTime, DateTimeZone, LocalDate}
 import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json._
-import play.api.mvc.{Action, AnyContent, Result}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
 import utils.Toggles
 import utils.annotations.PensionsSchemeCache
 import views.html.schemesOverview
@@ -43,9 +43,11 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
                                           authenticate: AuthAction,
                                           getData: DataRetrievalAction,
                                           pensionSchemeVarianceLockConnector: PensionSchemeVarianceLockConnector,
-                                          updateConnector: UpdateSchemeCacheConnector
+                                          updateConnector: UpdateSchemeCacheConnector,
+                                          val controllerComponents: MessagesControllerComponents,
+                                          view: schemesOverview
                                          )
-                                         (implicit val ec: ExecutionContext) extends FrontendController with I18nSupport {
+                                         (implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   def redirect: Action[AnyContent] = Action.async(Future.successful(Redirect(controllers.routes.SchemesOverviewController.onPageLoad())))
 
@@ -113,8 +115,7 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
           variationsInfo(psaId).flatMap { variationDetails =>
             minimalPsaConnector.getPsaNameFromPsaID(psaId).map { psaName =>
 
-              Ok(schemesOverview(
-                appConfig,
+              Ok(view(
                 crd,
                 psaName,
                 request.psaId.id,

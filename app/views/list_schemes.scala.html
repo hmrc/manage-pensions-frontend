@@ -19,11 +19,17 @@
 @import views.formatters.Date
 @import controllers.invitations.routes
 
-@(appConfig: FrontendAppConfig, schemes: List[SchemeDetail], invitationsReceived: Boolean)(implicit request: Request[_], messages: Messages)
+@this(
+    main_template: main_template,
+    formHelper: FormWithCSRF,
+    appConfig: FrontendAppConfig
+)
+
+@(schemes: List[SchemeDetail], invitationsReceived: Boolean)(implicit request: Request[_], messages: Messages)
 
 @main_template(
     title = messages("messages__listSchemes__title"),
-    appConfig = appConfig,
+
     bodyClasses = Some("full-width")) {
 
     <div class="grid-row">

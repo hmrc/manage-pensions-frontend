@@ -16,31 +16,44 @@
 
 @import config.FrontendAppConfig
 
-@(title: String,
-    appConfig: FrontendAppConfig,
+@this(
+    config: FrontendAppConfig,
+    govuk_wrapper: govuk_wrapper,
+    article: Article,
+    sidebar: Sidebar
+)
+
+@(
+    title: String,
     sidebarLinks: Option[Html] = None,
     contentHeader: Option[Html] = None,
     bodyClasses: Option[String] = None,
     mainClass: Option[String] = None,
-    scriptElem: Option[Html] = None)(mainContent: Html)(implicit request : Request[_], messages: Messages)
+    scriptElem: Option[Html] = None
+)(
+    mainContent: Html
+)(implicit
+    request : Request[_],
+    messages: Messages
+)
 
 @import uk.gov.hmrc.play.views.html.layouts
 
 @serviceInfoContent = {}
 
-@sidebar = {
+@sidebarF = {
     @if(sidebarLinks.isDefined) {
-        @layouts.sidebar(sidebarLinks.get, Some("sidebar"))
+        @sidebar(sidebarLinks.get, Some("sidebar"))
     }
 }
 
-@govuk_wrapper(appConfig = appConfig,
-                title = if(title == Messages("messages__schemesOverview__title")){Messages("messages__manage_pension_schemes__title")} else {title + " - " + Messages("messages__manage_pension_schemes__title")},
-                mainClass = mainClass,
-                bodyClasses = bodyClasses,
-                sidebar = sidebar,
-                contentHeader = contentHeader,
-                mainContent = layouts.article(mainContent),
-                serviceInfoContent = serviceInfoContent,
-                scriptElem = scriptElem
+@govuk_wrapper(
+    title = if(title == Messages("messages__schemesOverview__title")){Messages("messages__manage_pension_schemes__title")} else {title + " - " + Messages("messages__manage_pension_schemes__title")},
+    mainClass = mainClass,
+    bodyClasses = bodyClasses,
+    sidebar = sidebarF,
+    contentHeader = contentHeader,
+    mainContent = article(mainContent),
+    serviceInfoContent = serviceInfoContent,
+    scriptElem = scriptElem
 )

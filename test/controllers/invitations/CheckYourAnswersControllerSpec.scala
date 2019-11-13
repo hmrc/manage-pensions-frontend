@@ -24,13 +24,13 @@ import controllers.behaviours.ControllerWithNormalPageBehaviours
 import models.{AcceptedInvitation, Invitation, MinimalSchemeDetail}
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.Configuration
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import testhelpers.CommonBuilders
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.countryOptions.CountryOptions
 import utils.{CheckYourAnswersFactory, UserAnswers}
 import viewmodels.AnswerSection
@@ -115,6 +115,7 @@ object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours
   private val fakeSchemeDetailsConnector: SchemeDetailsConnector = mock[SchemeDetailsConnector]
   val config = injector.instanceOf[Configuration]
   val featureSwitch: FeatureSwitchManagementService = new FeatureSwitchManagementServiceTestImpl(config, environment)
+  private val view = injector.instanceOf[check_your_answers]
 
   private def fakeInvitationConnector(response: Future[Unit] = Future.successful(())): InvitationConnector = new InvitationConnector {
 
@@ -125,14 +126,14 @@ object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours
 
   def call: Call = controllers.invitations.routes.CheckYourAnswersController.onSubmit()
 
-  def viewAsString() = check_your_answers(frontendAppConfig, Seq(AnswerSection(None, Seq())), None, call,
+  def viewAsString() = view(Seq(AnswerSection(None, Seq())), None, call,
     Some("messages__check__your__answer__main__containt__label"), Some(testSchemeName))(fakeRequest, messages).toString
 
   def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
     new CheckYourAnswersController(
       frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction,
-      checkYourAnswersFactory, fakeSchemeDetailsConnector, featureSwitch, fakeInvitationConnector()).onPageLoad()
+      checkYourAnswersFactory, fakeSchemeDetailsConnector, featureSwitch, fakeInvitationConnector(), stubMessagesControllerComponents(), view).onPageLoad()
   }
 
   def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
@@ -142,7 +143,7 @@ object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours
 
     new CheckYourAnswersController(
       frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction,
-      checkYourAnswersFactory, fakeSchemeDetailsConnector, featureSwitch, fakeInvitationConnector()).onSubmit()
+      checkYourAnswersFactory, fakeSchemeDetailsConnector, featureSwitch, fakeInvitationConnector(), stubMessagesControllerComponents(), view).onSubmit()
   }
 
   def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction, invitationResponse: Future[Unit]) = {
@@ -152,6 +153,6 @@ object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours
 
     new CheckYourAnswersController(
       frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction,
-      checkYourAnswersFactory, fakeSchemeDetailsConnector, featureSwitch, fakeInvitationConnector(invitationResponse)).onSubmit()
+      checkYourAnswersFactory, fakeSchemeDetailsConnector, featureSwitch, fakeInvitationConnector(invitationResponse), stubMessagesControllerComponents(), view).onSubmit()
   }
 }

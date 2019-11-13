@@ -25,6 +25,7 @@ import models.NormalMode
 import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.{FakeNavigator, UserAnswers}
 import views.html.invitations.doYouHaveWorkingKnowledge
 import utils.UserAnswerOps
@@ -36,6 +37,7 @@ class DoYouHaveWorkingKnowledgeControllerSpec extends ControllerWithQuestionPage
   val userAnswer = UserAnswers().employedPensionAdviserId(true)
   val postRequest = FakeRequest().withJsonBody(Json.obj("value" -> true))
   val data = UserAnswers().employedPensionAdviserId(true).dataRetrievalAction
+  private val view = injector.instanceOf[doYouHaveWorkingKnowledge]
 
   private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
@@ -47,21 +49,25 @@ class DoYouHaveWorkingKnowledgeControllerSpec extends ControllerWithQuestionPage
     formProvider,
     FakeUserAnswersCacheConnector,
     new FakeDataRetrievalAction(Some(Json.obj())),
-    new DataRequiredActionImpl
+    new DataRequiredActionImpl,
+    stubMessagesControllerComponents(),
+    view
   )
     new DoYouHaveWorkingKnowledgeController(
       frontendAppConfig, fakeAuth, messagesApi, navigator,formProvider,
-      FakeUserAnswersCacheConnector, dataRetrievalAction, requiredDataAction).onPageLoad(NormalMode)
+      FakeUserAnswersCacheConnector, dataRetrievalAction, requiredDataAction, stubMessagesControllerComponents(),
+      view).onPageLoad(NormalMode)
   }
 
   private def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
     new DoYouHaveWorkingKnowledgeController(
       frontendAppConfig, fakeAuth, messagesApi, navigator, formProvider,
-      FakeUserAnswersCacheConnector, dataRetrievalAction, requiredDataAction).onSubmit(NormalMode)
+      FakeUserAnswersCacheConnector, dataRetrievalAction, requiredDataAction, stubMessagesControllerComponents(),
+      view).onSubmit(NormalMode)
   }
 
- def viewAsString(form: Form[Boolean] = form) = doYouHaveWorkingKnowledge(frontendAppConfig, form, NormalMode)(fakeRequest, messages).toString
+ def viewAsString(form: Form[Boolean] = form) = view(form, NormalMode)(fakeRequest, messages).toString
 
   behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, userAnswer.dataRetrievalAction, form, form.fill(true), viewAsString)
 

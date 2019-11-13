@@ -19,18 +19,22 @@ package controllers
 import controllers.actions.FakeAuthAction
 import play.api.test.Helpers._
 import views.html.index
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
+
 
 class IndexControllerSpec extends ControllerSpecBase {
 
+  val view: index = app.injector.instanceOf[index]
+
   "Index Controller" must {
     "return 200 for a GET" in {
-      val result = new IndexController(frontendAppConfig, messagesApi, FakeAuthAction()).onPageLoad()(fakeRequest)
+      val result = new IndexController(frontendAppConfig, messagesApi, FakeAuthAction(), stubMessagesControllerComponents(), view).onPageLoad()(fakeRequest)
       status(result) mustBe OK
     }
 
     "return the correct view for a GET" in {
-      val result = new IndexController(frontendAppConfig, messagesApi, FakeAuthAction()).onPageLoad()(fakeRequest)
-      contentAsString(result) mustBe index(frontendAppConfig)(fakeRequest, messages).toString
+      val result = new IndexController(frontendAppConfig, messagesApi, FakeAuthAction(), stubMessagesControllerComponents(), view).onPageLoad()(fakeRequest)
+      contentAsString(result) mustBe view()(fakeRequest, messages).toString
     }
   }
 }

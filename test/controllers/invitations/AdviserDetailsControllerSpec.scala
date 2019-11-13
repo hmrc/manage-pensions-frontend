@@ -17,39 +17,46 @@
 package controllers.invitations
 
 import connectors.FakeUserAnswersCacheConnector
-import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction, _}
+import controllers.actions.{DataRetrievalAction, _}
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.invitations.AdviserDetailsFormProvider
 import identifiers.invitations.AdviserNameId
 import models.NormalMode
 import play.api.data.Form
+import play.api.mvc.{Action, AnyContent, AnyContentAsJson}
 import play.api.test.FakeRequest
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.{FakeNavigator, UserAnswers}
 import views.html.invitations.adviserDetails
 
 class AdviserDetailsControllerSpec extends ControllerWithQuestionPageBehaviours {
 
   val formProvider = new AdviserDetailsFormProvider()
-  val form = formProvider()
-  val userAnswer = UserAnswers().adviserName("test")
-  val postRequest = FakeRequest().withJsonBody(userAnswer.json)
+  val form: Form[String] = formProvider()
+  val userAnswer: UserAnswers = UserAnswers().adviserName("test")
+  val postRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(userAnswer.json)
 
-  private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
+  val view: adviserDetails = app.injector.instanceOf[adviserDetails]
+
+
+  private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
 
     new AdviserDetailsController(
       frontendAppConfig, messagesApi,fakeAuth, new FakeNavigator(onwardRoute), dataRetrievalAction,
-      requiredDataAction, formProvider, FakeUserAnswersCacheConnector).onPageLoad(NormalMode)
+      requiredDataAction, formProvider, FakeUserAnswersCacheConnector, stubMessagesControllerComponents(),
+      view).onPageLoad(NormalMode)
   }
 
 
-  private def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
+  private def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
 
     new AdviserDetailsController(
       frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction,
-      requiredDataAction, formProvider, FakeUserAnswersCacheConnector).onSubmit(NormalMode)
+      requiredDataAction, formProvider, FakeUserAnswersCacheConnector, stubMessagesControllerComponents(),
+      view).onSubmit(NormalMode)
   }
 
-  private def viewAsString(form: Form[_] = form) = adviserDetails(frontendAppConfig, form, NormalMode)(fakeRequest, messages).toString
+  private def viewAsString(form: Form[_] = form) = view(form, NormalMode)(fakeRequest, messages).toString
 
 
   behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, userAnswer.dataRetrievalAction, form, form.fill("test"), viewAsString)

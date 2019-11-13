@@ -18,7 +18,7 @@ package connectors
 
 import base.JsonFileReader
 import com.github.tomakehurst.wiremock.client.WireMock._
-import org.scalatest.prop.Checkers
+import org.scalatestplus.scalacheck.Checkers
 import org.scalatest.{AsyncFlatSpec, Matchers}
 import play.api.http.Status._
 import play.api.libs.json.{JsResultException, Json}

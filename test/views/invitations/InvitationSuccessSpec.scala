@@ -16,8 +16,8 @@
 
 package views.invitations
 
-import base.SpecBase
-import org.joda.time.LocalDate
+import java.time.LocalDate
+
 import play.api.mvc.Call
 import play.twirl.api.HtmlFormat
 import utils.DateHelper
@@ -26,51 +26,45 @@ import views.behaviours.ViewBehaviours
 import views.html.invitations.invitation_success
 
 class InvitationSuccessSpec extends ViewBehaviours {
+  private val testSrn = "test-srn"
+  private val testInviteeName: String = "Joe Bloggs"
+  private val testSchemeName: String = "Test Scheme Ltd"
+  private val testExpiryDate: LocalDate = LocalDate.now()
 
-  import InvitationSuccessSpec._
+  private val messageKeyPrefix = "invitationSuccess"
+
+  private val continue: Call = controllers.invitations.routes.InvitationSuccessController.onSubmit(testSrn)
+
+  private val view = injector.instanceOf[invitation_success]
+
+  def createView(): () => HtmlFormat.Appendable = () =>
+    view(
+      testInviteeName,
+      testSchemeName,
+      testExpiryDate,
+      continue
+    )(fakeRequest, messages)
 
   "Invitation Success Page" must {
 
     behave like normalPage(
-      createView(this),
+      createView(),
       messageKeyPrefix,
       Message("messages__invitationSuccess__heading", testInviteeName)
     )
 
     "state the scheme name" in {
-      createView(this) must haveElementWithText("schemeName", Message("messages__invitationSuccess__schemeName", testSchemeName))
+      createView() must haveElementWithText("schemeName", Message("messages__invitationSuccess__schemeName", testSchemeName))
     }
 
     "state invitee will be send an email" in {
-      createView(this) must haveElementWithText("emailAdvice", Message("messages__invitationSuccess__emailAdvice", testInviteeName))
+      createView() must haveElementWithText("emailAdvice", Message("messages__invitationSuccess__emailAdvice", testInviteeName))
     }
 
     "state expiry date of invitation" in {
-      createView(this) must haveElementWithText("expiryDate", Message("messages__invitationSuccess__expiryDate", DateHelper.formatDate(testExpiryDate)))
+      createView() must haveElementWithText("expiryDate", Message("messages__invitationSuccess__expiryDate", DateHelper.formatDate(testExpiryDate)))
     }
 
-    behave like pageWithSubmitButton(createView(this))
+    behave like pageWithSubmitButton(createView())
   }
-}
-
-object InvitationSuccessSpec {
-
-  val testSrn = "test-srn"
-  val testInviteeName: String = "Joe Bloggs"
-  val testSchemeName: String = "Test Scheme Ltd"
-  val testExpiryDate: LocalDate = LocalDate.now()
-
-  val messageKeyPrefix = "invitationSuccess"
-
-  val continue: Call = controllers.invitations.routes.InvitationSuccessController.onSubmit(testSrn)
-
-  def createView(base: SpecBase): () => HtmlFormat.Appendable = () =>
-    invitation_success(
-      base.frontendAppConfig,
-      testInviteeName,
-      testSchemeName,
-      testExpiryDate,
-      continue
-    )(base.fakeRequest, base.messages)
-
 }

@@ -17,9 +17,8 @@
 package config
 
 import com.google.inject.{Inject, Singleton}
-import play.api.Mode.Mode
+import play.api.Mode
 import play.api.{Configuration, Environment}
-import uk.gov.hmrc.play.config.ServicesConfig
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -31,33 +30,33 @@ trait FeatureSwitchManagementService {
   def reset(name: String): Unit
 }
 
-class FeatureSwitchManagementServiceProductionImpl @Inject()(override val runModeConfiguration: Configuration,
+class FeatureSwitchManagementServiceProductionImpl @Inject()(val runModeConfiguration: Configuration,
                                                              environment: Environment) extends
-  FeatureSwitchManagementService with ServicesConfig {
+  FeatureSwitchManagementService {
 
-  override protected def mode:Mode = environment.mode
+  protected def mode: Mode = environment.mode
 
   override def change(name: String, newValue: Boolean): Boolean =
-    runModeConfiguration.getBoolean(s"features.$name").getOrElse(false)
+    runModeConfiguration.get[Boolean](s"features.$name")
 
   override def get(name: String): Boolean =
-    runModeConfiguration.getBoolean(s"features.$name").getOrElse(false)
+    runModeConfiguration.get[Boolean](s"features.$name")
 
   override def reset(name: String): Unit = ()
 }
 
 @Singleton
-class FeatureSwitchManagementServiceTestImpl @Inject()(override val runModeConfiguration: Configuration,
-                                                             environment: Environment) extends
-  FeatureSwitchManagementService with ServicesConfig {
+class FeatureSwitchManagementServiceTestImpl @Inject()(val runModeConfiguration: Configuration,
+                                                       environment: Environment) extends
+  FeatureSwitchManagementService {
 
   private lazy val featureSwitches: ArrayBuffer[FeatureSwitch] = new ArrayBuffer[FeatureSwitch]()
 
-  override protected def mode:Mode = environment.mode
+  protected def mode: Mode = environment.mode
 
   override def change(name: String, newValue: Boolean): Boolean = {
-    val featureSwitchExists = runModeConfiguration.getBoolean(s"features.$name")
-    if(featureSwitchExists.nonEmpty) {
+    val featureSwitchExists = runModeConfiguration.getOptional[Boolean](s"features.$name")
+    if (featureSwitchExists.nonEmpty) {
       reset(name)
       featureSwitches += FeatureSwitch(name, newValue)
     }
@@ -66,13 +65,13 @@ class FeatureSwitchManagementServiceTestImpl @Inject()(override val runModeConfi
 
   override def get(name: String): Boolean =
     featureSwitches.find(_.name == name) match {
-      case None => runModeConfiguration.getBoolean(s"features.$name").getOrElse(false)
+      case None => runModeConfiguration.get[Boolean](s"features.$name")
       case Some(featureSwitch) => featureSwitch.isEnabled
     }
 
   override def reset(name: String): Unit = {
-    featureSwitches -= FeatureSwitch(name, false)
-    featureSwitches -= FeatureSwitch(name, true)
+    featureSwitches -= FeatureSwitch(name, isEnabled = false)
+    featureSwitches -= FeatureSwitch(name, isEnabled = true)
   }
 }
 

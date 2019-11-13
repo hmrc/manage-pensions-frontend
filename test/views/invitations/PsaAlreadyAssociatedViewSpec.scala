@@ -16,50 +16,42 @@
 
 package views.invitations
 
-import base.SpecBase
-import org.jsoup.Jsoup
 import play.twirl.api.HtmlFormat
 import viewmodels.Message
 import views.behaviours.ViewBehaviours
-import views.html.invitations.{invitation_duplicate, psa_already_associated}
+import views.html.invitations.psa_already_associated
 
 class PsaAlreadyAssociatedViewSpec extends ViewBehaviours {
+  private val testInviteeName: String = "Joe Bloggs"
+  private val testSchemeName: String = "Test Scheme Ltd"
+  private val messageKeyPrefix = "psaAlreadyAssociated"
+  private val view = injector.instanceOf[psa_already_associated]
 
-  import PsaAlreadyAssociatedViewSpec._
+  def createView(): () => HtmlFormat.Appendable = () =>
+    view(
+      testInviteeName,
+      testSchemeName
+    )(fakeRequest, messages)
 
   "Psa already associated Page" must {
 
     behave like normalPage(
-      createView(this),
+      createView(),
       messageKeyPrefix,
       Message("messages__psaAlreadyAssociated__heading", testInviteeName)
     )
 
     "state the scheme and invitee names" in {
-      createView(this) must haveElementWithText("schemeName", Message("messages__psaAlreadyAssociated__schemeName", testInviteeName, testSchemeName))
+      createView() must haveElementWithText("schemeName", Message("messages__psaAlreadyAssociated__schemeName", testInviteeName, testSchemeName))
     }
 
     "state invite information text" in {
-      createView(this) must haveElementWithText("inviteInformation", Message("messages__psaAlreadyAssociated__inviteInformation"))
+      createView() must haveElementWithText("inviteInformation", Message("messages__psaAlreadyAssociated__inviteInformation"))
     }
 
     "must have link to list schemes page" in {
-      createView(this) must haveElementWithText("return-to-schemes", Message("messages__psaAlreadyAssociated__returnToSchemes__link"))
+      createView() must haveElementWithText("return-to-schemes", Message("messages__psaAlreadyAssociated__returnToSchemes__link"))
     }
   }
 }
 
-object PsaAlreadyAssociatedViewSpec {
-
-  val testInviteeName: String = "Joe Bloggs"
-  val testSchemeName: String = "Test Scheme Ltd"
-  val messageKeyPrefix = "psaAlreadyAssociated"
-
-
-  def createView(base: SpecBase): () => HtmlFormat.Appendable = () =>
-    psa_already_associated(
-      base.frontendAppConfig,
-      testInviteeName,
-      testSchemeName
-    )(base.fakeRequest, base.messages)
-}

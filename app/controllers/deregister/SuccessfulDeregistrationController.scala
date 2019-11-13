@@ -20,18 +20,20 @@ import config.FrontendAppConfig
 import controllers.Retrievals
 import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
 import views.html.deregister.successful_deregistration
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class SuccessfulDeregistrationController @Inject()(appConfig: FrontendAppConfig,
-                                                   override val messagesApi: MessagesApi
-                                      )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport with Retrievals {
+                                                   override val messagesApi: MessagesApi,
+                                                   val controllerComponents: MessagesControllerComponents,
+                                                   view: successful_deregistration
+                                      )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
 
   def onPageLoad(): Action[AnyContent] = Action.async {
     implicit request =>
-        Future.successful(Ok(successful_deregistration(appConfig)))
+        Future.successful(Ok(view()))
   }
 }

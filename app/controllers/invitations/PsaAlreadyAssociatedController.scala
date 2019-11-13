@@ -23,8 +23,8 @@ import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import identifiers.MinimalSchemeDetailId
 import identifiers.invitations.InviteeNameId
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
 import utils.Navigator
 import utils.annotations.Invitation
 import views.html.invitations.psa_already_associated
@@ -38,17 +38,17 @@ class PsaAlreadyAssociatedController @Inject()(
                                                authenticate: AuthAction,
                                                getData: DataRetrievalAction,
                                                requireData: DataRequiredAction,
-                                               @Invitation navigator: Navigator
-
-                                             )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport with Retrievals {
+                                               @Invitation navigator: Navigator,
+                                               val controllerComponents: MessagesControllerComponents,
+                                               view: psa_already_associated
+                                             )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
 
   def onPageLoad(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
       (InviteeNameId and MinimalSchemeDetailId).retrieve.right.map {
         case name ~ schemeDetails =>
           Future.successful(
-            Ok(psa_already_associated(
-              frontendAppConfig,
+            Ok(view(
               name,
               schemeDetails.schemeName
             )))

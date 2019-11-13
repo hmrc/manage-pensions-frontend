@@ -16,11 +16,17 @@
 
 @import config.FrontendAppConfig
 @import uk.gov.hmrc.play.views.html._
+@import views.html._
 @import controllers.routes._
 @import models.Mode
 @import viewmodels.{AssociatedPsa, Message}
 
-@(appConfig: FrontendAppConfig,
+@this(
+    main_template: main_template,
+    appConfig: FrontendAppConfig
+)
+
+@(
     schemeName: String,
     pstr: Option[String],
     openedDate: Option[String],
@@ -28,11 +34,12 @@
     srn: String,
     isSchemeOpen: Boolean,
     displayChangeLink: Boolean,
-    lockingPsa: Option[String])(implicit request: Request[_], messages: Messages)
+    lockingPsa: Option[String]
+)(implicit request: Request[_], messages: Messages)
 
     @main_template(
         title = messages("messages__schemeDetails__title"),
-        appConfig = appConfig,
+
         bodyClasses = None) {
 
         @components.heading(schemeName)

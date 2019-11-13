@@ -25,13 +25,15 @@ import views.html.invitations.adviserDetails
 
 class AdviserDetailsViewSpec extends QuestionViewBehaviours[String] {
 
-  val messageKeyPrefix = "adviser__name"
+  private val messageKeyPrefix = "adviser__name"
 
   override val form = new AdviserDetailsFormProvider().apply()
 
-  def createView: () => HtmlFormat.Appendable = () => adviserDetails(frontendAppConfig, form, NormalMode)(fakeRequest, messages)
+  private val adviserDetailsView = injector.instanceOf[adviserDetails]
 
-  def createViewUsingForm: Form[_] => HtmlFormat.Appendable = (form: Form[_]) => adviserDetails(frontendAppConfig, form, CheckMode)(fakeRequest, messages)
+  def createView: () => HtmlFormat.Appendable = () => adviserDetailsView(form, NormalMode)(fakeRequest, messages)
+
+  def createViewUsingForm: Form[_] => HtmlFormat.Appendable = (form: Form[_]) => adviserDetailsView(form, CheckMode)(fakeRequest, messages)
 
   "Adviser Details view" must {
 

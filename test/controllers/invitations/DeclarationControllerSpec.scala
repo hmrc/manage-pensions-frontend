@@ -26,12 +26,13 @@ import identifiers.invitations.{IsMasterTrustId, PSTRId, SchemeNameId}
 import org.mockito.Matchers.{eq => eqTo, _}
 import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.Configuration
 import play.api.data.Form
 import play.api.mvc.Call
 import play.api.test.Helpers._
 import testhelpers.InvitationBuilder
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils._
 import views.html.invitations.declaration
 
@@ -46,6 +47,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
   private val fakeInvitationCacheConnector = mock[InvitationsCacheConnector]
   private val fakeInvitationConnector = mock[InvitationConnector]
   private val featureSwitch = new FeatureSwitchManagementServiceTestImpl(config, environment)
+  private val view = injector.instanceOf[declaration]
 
   def controller(dataRetrievalAction: DataRetrievalAction = getEmptyData) = new DeclarationController(
     frontendAppConfig,
@@ -59,7 +61,9 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
     fakeInvitationCacheConnector,
     fakeInvitationConnector,
     new FakeNavigator(onwardRoute),
-    featureSwitch
+    featureSwitch,
+    stubMessagesControllerComponents(),
+    view
   )
 
   override def beforeEach(): Unit = {
@@ -70,7 +74,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
 
   val schemeDetailsResponse = UserAnswers(readJsonFromFile("/data/validSchemeDetailsUserAnswers.json"))
 
-  private def viewAsString(form: Form[_] = form) = declaration(frontendAppConfig, hasAdviser, isMasterTrust, form)(fakeRequest, messages).toString
+  private def viewAsString(form: Form[_] = form) = view(hasAdviser, isMasterTrust, form)(fakeRequest, messages).toString
 
   "Declaration Controller" when {
 

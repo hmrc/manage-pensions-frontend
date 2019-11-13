@@ -26,7 +26,7 @@ import org.mockito.Matchers
 import org.mockito.Matchers.{eq => eqTo, _}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.Configuration
 import play.api.inject.bind
 import play.api.libs.json.{JsNumber, Json}
@@ -35,6 +35,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.{contentAsString, _}
 import views.html.schemesOverview
 import play.api.mvc.Results.Ok
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 
 import scala.concurrent.Future
 
@@ -50,17 +51,17 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
 
   private val updateConnector = mock[UpdateSchemeCacheConnector]
 
-  private val config = app.injector.instanceOf[Configuration]
+  private val view: schemesOverview = app.injector.instanceOf[schemesOverview]
 
   def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): SchemesOverviewController =
     new SchemesOverviewController(appConfig, messagesApi, fakeCacheConnector, fakePsaMinimalConnector, FakeAuthAction(),
       dataRetrievalAction,
-      pensionSchemeVarianceLockConnector, updateConnector)
+      pensionSchemeVarianceLockConnector, updateConnector, stubMessagesControllerComponents(),
+      view)
 
   val deleteDate: String = DateTime.now(DateTimeZone.UTC).plusDays(appConfig.daysDataSaved).toString(formatter)
 
-  def viewAsString(): String = schemesOverview(
-    appConfig,
+  def viewAsString(): String = view(
     Some(RegistrationDetails(schemeName,
       deleteDate,
       lastDate.toString(formatter))),
@@ -69,11 +70,11 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
     None
   )(fakeRequest, messages).toString
 
-  def viewAsStringNewScheme(): String = schemesOverview(frontendAppConfig, None, None, psaId, None)(fakeRequest, messages).toString
+  def viewAsStringNewScheme(): String = view(None, None, psaId, None)(fakeRequest, messages).toString
 
-  def viewWithPsaName(name: Option[String] = None): String = schemesOverview(frontendAppConfig, None, name, psaId, None)(fakeRequest, messages).toString
+  def viewWithPsaName(name: Option[String] = None): String = view(None, name, psaId, None)(fakeRequest, messages).toString
 
-  def viewWithPsaNameAndScheme(name: Option[String]): String = schemesOverview(frontendAppConfig,  Some(RegistrationDetails(schemeName,
+  def viewWithPsaNameAndScheme(name: Option[String]): String = view(Some(RegistrationDetails(schemeName,
     deleteDate,
     lastDate.toString(formatter))), name, psaId, None)(fakeRequest, messages).toString
 

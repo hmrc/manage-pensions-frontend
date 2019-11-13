@@ -16,37 +16,39 @@
 
 package utils
 
-import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
-import org.joda.time.{DateTime, LocalDate}
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+
 import org.scalatest.{Matchers, WordSpec}
 
 class DateHelperSpec extends WordSpec with Matchers {
 
-  val dateHelper = new DateHelper {
-    override val currentDate = DateTime.parse("2018-01-04T00:00:01Z")
+  def dateHelper(date: String): DateHelper = new DateHelper {
+
+    override val currentDate: LocalDate = LocalDate.parse(date, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
   }
 
   val daysAhead = 30
 
   "thirtyDaysFromNowInSeconds" should {
     "respond correctly for a date at 1 second after midnight" in {
-      val result = dateHelper.dateTimeFromNowToMidnightAfterDays(daysAhead).toString
-      result shouldBe "2018-02-04T00:00:00.000Z"
+      val result = dateHelper("2018-01-04T00:00:01").dateTimeFromNowToMidnightAfterDays(daysAhead).toString
+      result shouldBe "2018-02-04T00:00"
     }
     "respond correctly for a date around the middle of the day" in {
-      val result = dateHelper.dateTimeFromNowToMidnightAfterDays(daysAhead).toString
-      result shouldBe "2018-02-04T00:00:00.000Z"
+      val result = dateHelper("2018-01-04T12:00:00").dateTimeFromNowToMidnightAfterDays(daysAhead).toString
+      result shouldBe "2018-02-04T00:00"
     }
     "respond correctly for a date at 1 second to midnight" in {
-      val result = dateHelper.dateTimeFromNowToMidnightAfterDays(daysAhead).toString
-      result shouldBe "2018-02-04T00:00:00.000Z"
+      val result = dateHelper("2018-01-04T23:59:59").dateTimeFromNowToMidnightAfterDays(daysAhead).toString
+      result shouldBe "2018-02-04T00:00"
     }
   }
 
   "displayExpiryDate " should {
 
     "return one day less with the correct format" in {
-      val result = dateHelper.displayExpiryDate(dateHelper.currentDate.toLocalDate)
+      val result = dateHelper("2018-01-04T00:00:01").displayExpiryDate(dateHelper("2018-01-04T00:00:01").currentDate)
       result shouldBe "3 January 2018"
     }
   }

@@ -16,14 +16,14 @@
 
 package views.invitations
 
+import controllers.invitations.routes._
 import forms.invitations.AdviserManualAddressFormProvider
 import models.{Address, NormalMode}
 import org.jsoup.Jsoup
 import play.api.data.Form
-import utils.{FakeCountryOptions, InputOption}
+import utils.FakeCountryOptions
 import views.behaviours.QuestionViewBehaviours
 import views.html.invitations.adviserAddress
-import controllers.invitations.routes._
 
 class AdviserManualAddressViewSpec extends QuestionViewBehaviours[Address] {
 
@@ -34,9 +34,10 @@ class AdviserManualAddressViewSpec extends QuestionViewBehaviours[Address] {
 
   override val form = new AdviserManualAddressFormProvider(countryOptions)()
 
+  private val adviserAddressView = injector.instanceOf[adviserAddress]
+
   def createView: () => _root_.play.twirl.api.HtmlFormat.Appendable = () =>
-    adviserAddress(
-      frontendAppConfig,
+    adviserAddressView(
       new AdviserManualAddressFormProvider(countryOptions)(),
       NormalMode,
       countryOptions.options,
@@ -46,7 +47,7 @@ class AdviserManualAddressViewSpec extends QuestionViewBehaviours[Address] {
     )(fakeRequest, messages)
 
   def createViewUsingForm: Form[_] => _root_.play.twirl.api.HtmlFormat.Appendable = (form: Form[_]) =>
-    adviserAddress(frontendAppConfig, form, NormalMode, countryOptions.options, false, messageKeyPrefix, name)(fakeRequest, messages)
+    adviserAddressView(form, NormalMode, countryOptions.options, false, messageKeyPrefix, name)(fakeRequest, messages)
 
   "ManualAddress view" must {
 

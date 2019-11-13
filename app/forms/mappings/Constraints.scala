@@ -16,7 +16,7 @@
 
 package forms.mappings
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import utils.countryOptions.CountryOptions

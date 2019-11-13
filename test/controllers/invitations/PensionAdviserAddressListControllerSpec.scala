@@ -187,7 +187,9 @@ object PensionAdviserAddressListControllerSpec {
       case None => new PensionAdviserAddressListFormProvider()(addresses)
     }
 
-    pension_adviser_address_list(appConfig, form, addresses, NormalMode)(request, messages).toString()
+    val view = app.injector.instanceOf[pension_adviser_address_list]
+
+    view(form, addresses, NormalMode)(request, messages).toString()
 
   }
 
