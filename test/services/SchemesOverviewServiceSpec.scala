@@ -16,14 +16,16 @@
 
 package services
 
-import java.time.LocalDateTime
+import java.sql.Timestamp
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoField
+import java.time.{LocalDate, LocalTime, ZoneOffset}
 
 import base.SpecBase
 import connectors.{UserAnswersCacheConnector, _}
 import controllers.routes.ListSchemesController
 import models._
 import models.requests.OptionalDataRequest
-import org.joda.time.{DateTime, DateTimeZone}
 import org.mockito.Matchers.{any, eq => eqTo}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
@@ -34,6 +36,7 @@ import play.api.mvc.Results.Ok
 import play.api.mvc.{AnyContent, Call}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import testhelpers.InvitationBuilder.invitationList
 import uk.gov.hmrc.domain.PsaId
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.UserAnswers
@@ -57,7 +60,7 @@ class SchemesOverviewServiceSpec extends SpecBase with MockitoSugar with BeforeA
     when(minimalPsaConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any()))
       .thenReturn(Future.successful(minimalPsaName))
     when(invitationsCacheConnector.getForInvitee(any())(any(), any()))
-      .thenReturn(Future.successful(List(invitation)))
+      .thenReturn(Future.successful(invitationList))
     when(deregistrationConnector.canDeRegister(eqTo(psaId))(any(), any())).thenReturn(Future.successful(true))
     when(dataCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(Some(schemeNameJsonOption)))
     when(dataCacheConnector.lastUpdated(any())(any(), any()))
@@ -202,13 +205,12 @@ object SchemesOverviewServiceSpec extends SpecBase with MockitoSugar  {
 
   val psaName: String = "John Doe"
   val schemeName = "Test Scheme Name"
-  val lastDate: DateTime = DateTime.now(DateTimeZone.UTC)
-  val timestamp: Long = lastDate.getMillis
+  val timestamp: Long = System.currentTimeMillis
   private val psaId = "A0000000"
   private val srn = "srn"
-  val deleteDate: LocalDateTime = LocalDateTime.now().plusDays(frontendAppConfig.daysDataSaved)
-  val invitation = Invitation(SchemeReferenceNumber(srn), "pstr", schemeName, PsaId("A0000001"), PsaId(psaId), psaName,
-    deleteDate)
+  private val formatter = DateTimeFormatter.ofPattern("dd MMMM YYYY")
+
+  val deleteDate = LocalDate.now(ZoneOffset.UTC).plusDays(frontendAppConfig.daysDataSaved).format(formatter)
 
   def minimalPsaDetails(psaSuspended: Boolean) = MinimalPSA("test@test.com", psaSuspended, Some("Org Name"), None)
 

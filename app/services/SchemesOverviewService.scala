@@ -16,16 +16,18 @@
 
 package services
 
+import java.sql.Timestamp
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoField
+import java.time.{LocalDate, ZoneOffset}
 import config.FrontendAppConfig
 import connectors._
 import controllers.routes._
 import javax.inject.Inject
 import models.requests.OptionalDataRequest
 import models.{LastUpdatedDate, Link, MinimalPSA}
-import org.joda.time.format.DateTimeFormat
-import org.joda.time.{DateTime, DateTimeZone, LocalDate}
 import play.api.Logger
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.Messages
 import play.api.libs.json.{JsError, JsResultException, JsSuccess, JsValue}
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{AnyContent, Result}
@@ -43,8 +45,6 @@ class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
                                        deregistrationConnector: DeregistrationConnector,
                                        invitationsCacheConnector: InvitationsCacheConnector
                                       )(implicit ec: ExecutionContext) {
-
-  private val formatter = DateTimeFormat.forPattern("dd MMMM YYYY")
 
   def getTiles(psaId: String)(implicit request: OptionalDataRequest[AnyContent], hc: HeaderCarrier, messages: Messages): Future[Seq[CardViewModel]] =
     for {
@@ -180,12 +180,14 @@ class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
 
 
   //DATE FORMATIING HELPER METHODS
+  private val formatter = DateTimeFormatter.ofPattern("dd MMMM YYYY")
 
-  private def createFormattedDate(dt: LastUpdatedDate, daysToAdd: Int): String = new LocalDate(dt.timestamp).plusDays(daysToAdd).toString(formatter)
+  private def createFormattedDate(dt: LastUpdatedDate, daysToAdd: Int): String =
+    new Timestamp(dt.timestamp).toLocalDateTime.plusDays(daysToAdd).format(formatter)
 
-  private def currentTimestamp: LastUpdatedDate = LastUpdatedDate(DateTime.now(DateTimeZone.UTC).getMillis)
+  private def currentTimestamp: LastUpdatedDate = LastUpdatedDate(System.currentTimeMillis)
 
-  private def parseDateElseCurrent(dateOpt: Option[JsValue]): LastUpdatedDate = {
+  private def parseDateElseCurrent(dateOpt: Option[JsValue] = None): LastUpdatedDate = {
     dateOpt.map(ts =>
       LastUpdatedDate(
         ts.validate[Long] match {
@@ -198,7 +200,7 @@ class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
 
   private def lastUpdatedAndDeleteDate(externalId: String)(implicit hc: HeaderCarrier): Future[LastUpdatedDate] =
     dataCacheConnector.lastUpdated(externalId).map { dateOpt =>
-      parseDateElseCurrent(dateOpt)
+      parseDateElseCurrent()
     }
 
   private def variationsDeleteDate(srn: String)(implicit hc: HeaderCarrier): Future[String] =
