@@ -20,6 +20,12 @@ import connectors.{FakeUserAnswersCacheConnector, ListOfSchemesConnector, Minima
 import controllers.actions.{AuthAction, DataRequiredActionImpl, FakeAuthAction}
 import models.{ListOfSchemes, SchemeDetail, SchemeStatus}
 import org.scalatest.mockito.MockitoSugar
+import org.mockito.Matchers.any
+import org.mockito.Mockito.when
+import org.scalatest.mockito.MockitoSugar
+import play.api.libs.json.Json
+import play.api.mvc.Call
+import play.api.test.Helpers._
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.HeaderCarrier
 import views.html.list_schemes
@@ -31,6 +37,8 @@ class ListSchemesControllerSpec extends ControllerSpecBase {
   import ListSchemesControllerSpec._
 
   "ListSchemesController" when {
+
+    when(fakeMinimalPsaConnector.getPsaNameFromPsaID(any())(any(), any())).thenReturn(Future.successful(Some(psaName)))
 
       "return OK and the correct view when there are no schemes" in {
         val fixture = testFixture(this, psaIdNoSchemes)
@@ -119,7 +127,6 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
         app.messagesApi,
         authAction(psaId),
         getDataWithPsaName(psaId),
-        new DataRequiredActionImpl,
         listSchemesConnector(),
         fakeMinimalPsaConnector,
         FakeUserAnswersCacheConnector

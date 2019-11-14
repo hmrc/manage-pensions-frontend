@@ -34,28 +34,25 @@ class ListSchemesController @Inject()(
                                        val messagesApi: MessagesApi,
                                        authenticate: AuthAction,
                                        getData: DataRetrievalAction,
-                                       requireData: DataRequiredAction,
                                        listSchemesConnector: ListOfSchemesConnector,
                                        minimalPsaConnector: MinimalPsaConnector,
                                        userAnswersCacheConnector: UserAnswersCacheConnector
                                      )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
+  def onPageLoad: Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
       listSchemesConnector.getListOfSchemes(request.psaId.id).flatMap {
         listOfSchemes =>
           val schemes = listOfSchemes.schemeDetail.getOrElse(List.empty[SchemeDetail])
-          request.userAnswers.get(PSANameId) match {
-            case None =>
+
               minimalPsaConnector.getPsaNameFromPsaID(request.psaId.id).flatMap(_.map { name =>
                  userAnswersCacheConnector.save(request.externalId, PSANameId, name).map { _ =>
                   Ok(list_schemes(appConfig, schemes, name))
-                }}.getOrElse(
+                }}.getOrElse {
                 Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
-                )
+              }
               )
-            case Some(name) => Future.successful(Ok(list_schemes(appConfig, schemes, name)))
-          }
+
       }
   }
 }
