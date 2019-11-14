@@ -18,13 +18,14 @@ package controllers.invitations
 
 import config.FrontendAppConfig
 import connectors.{FakeUserAnswersCacheConnector, UserAnswersCacheConnector}
+import controllers.ControllerSpecBase
 import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
 import forms.invitations.AdviserManualAddressFormProvider
 import identifiers.invitations.{AdviserAddressId, AdviserAddressListId, AdviserAddressPostCodeLookupId, AdviserNameId}
 import models.{Address, NormalMode, TolerantAddress}
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{MustMatchers, OptionValues, WordSpec}
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.Application
 import play.api.data.Form
 import play.api.i18n.MessagesApi
@@ -167,7 +168,7 @@ class AdviserManualAddressControllerSpec extends WordSpec with MustMatchers with
 
 }
 
-object AdviserManualAddressControllerSpec {
+object AdviserManualAddressControllerSpec extends ControllerSpecBase {
 
   val name = "Pension Adviser"
 
@@ -194,6 +195,7 @@ object AdviserManualAddressControllerSpec {
   val messageKeyPrefix = "adviser__address"
 
   private val countryOptions = FakeCountryOptions.fakeCountries
+  private val view = injector.instanceOf[adviserAddress]
 
   def viewAsString(value: Option[Address], form: Form[Address], prepopulated: Boolean = false, prefix: String = messageKeyPrefix)
                   (implicit app: Application): String = {
@@ -201,7 +203,7 @@ object AdviserManualAddressControllerSpec {
     val appConfig = app.injector.instanceOf[FrontendAppConfig]
     val messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
-    adviserAddress(appConfig, form, NormalMode, countryOptions, prepopulated, prefix, name)(FakeRequest(), messages).toString()
+    view(form, NormalMode, countryOptions, prepopulated, prefix, name)(FakeRequest(), messages).toString()
 
   }
 

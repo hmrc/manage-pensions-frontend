@@ -30,12 +30,13 @@ class ConfirmRemovePsaViewSpec extends YesNoViewBehaviours {
   private val srn = "test srn"
   private val psaName = "test psa name"
   val prefix = "confirmRemovePsa"
+  private val confirmRemovePsaView = injector.instanceOf[confirmRemovePsa]
 
   private def createView: () => HtmlFormat.Appendable = () =>
-    confirmRemovePsa(frontendAppConfig, form, schemeName, srn, psaName)(fakeRequest, messages)
+    confirmRemovePsaView(form, schemeName, srn, psaName)(fakeRequest, messages)
 
   private def createViewUsingForm: Form[_] => HtmlFormat.Appendable = (form: Form[_]) =>
-    confirmRemovePsa(frontendAppConfig, form, schemeName, srn, psaName)(fakeRequest, messages)
+    confirmRemovePsaView(form, schemeName, srn, psaName)(fakeRequest, messages)
 
   "ConfirmRemovePsa" must {
 

@@ -16,8 +16,8 @@
 
 package controllers.invitations
 
-import config.FrontendAppConfig
 import connectors.{AddressLookupConnector, FakeUserAnswersCacheConnector, UserAnswersCacheConnector}
+import controllers.ControllerSpecBase
 import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
 import forms.invitations.AdviserAddressPostcodeLookupFormProvider
 import identifiers.invitations.AdviserNameId
@@ -25,8 +25,8 @@ import models.TolerantAddress
 import org.mockito.Matchers.{eq => eqTo, _}
 import org.mockito.Mockito._
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{MustMatchers, OptionValues, WordSpec}
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.Application
 import play.api.data.Form
 import play.api.i18n.MessagesApi
@@ -174,19 +174,20 @@ class AdviserAddressPostcodeLookupControllerSpec extends WordSpec with MustMatch
   }
 }
 
-object AdviserAddressPostcodeLookupControllerSpec {
+object AdviserAddressPostcodeLookupControllerSpec extends ControllerSpecBase {
 
   val postcode = "ZZ1 1ZZ"
   val name = "Pension Adviser"
   val form = new AdviserAddressPostcodeLookupFormProvider()()
+  val view: adviserPostcode = app.injector.instanceOf[adviserPostcode]
+
 
   def viewAsString(value: Option[String] = Some(postcode), form: Form[String] = form)(implicit app: Application): String = {
 
-    val appConfig = app.injector.instanceOf[FrontendAppConfig]
     val request = FakeRequest()
     val messages = app.injector.instanceOf[MessagesApi].preferred(request)
 
-    adviserPostcode(appConfig, form, name)(request, messages).toString()
+    view(form, name)(request, messages).toString()
 
   }
 

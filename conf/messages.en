@@ -293,7 +293,7 @@ messages__confirmRemovePsa__heading = Are you sure you want to remove {0} as sch
 messages__confirmRemovePsa_required = Select yes if you are sure you want to remove the scheme administrator
 messages__returnToSchemeDetails__link = Return to {0}
 
-messages__confirmRemoved__title = You have been removed as scheme administrator from this scheme
+messages__confirmRemoved__title = The scheme administrator has been removed
 messages__confirmRemoved__heading = {0} has been removed as scheme administrator of {1}
 messages__confirmRemoved__return_link = Return to your pension schemes
 
@@ -311,6 +311,8 @@ messages__psa_cannot_be_removed__returnToSchemes__link = Return to your pension 
 messages__removalDate__title = When did you stop being scheme administrator?
 messages__removalDate__heading = When did {0} stop being scheme administrator for {1}?
 messages__removalDate__lede = {0} became scheme administrator on {1}. The date they stopped must be between {1} and today.
+
+messages__haveWorkingKnowledge__error__required = Select yes if you have working knowledge of pensions and pensions tax legislation
 
 messages__psa_cannot_be_removed_delay__p1 = The scheme administrator cannot be removed on the same day they were added to a scheme.
 messages__psa_cannot_be_removed_delay__p2 = Try again tomorrow.

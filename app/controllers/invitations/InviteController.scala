@@ -24,8 +24,8 @@ import identifiers.invitations.PSTRId
 import identifiers.{MinimalSchemeDetailId, SchemeNameId}
 import models.requests.AuthenticatedRequest
 import models.{MinimalSchemeDetail, SchemeReferenceNumber}
-import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -34,7 +34,8 @@ class InviteController @Inject()(authenticate: AuthAction,
                                  schemeDetailsConnector: SchemeDetailsConnector,
                                  userAnswersCacheConnector: UserAnswersCacheConnector,
                                  featureSwitchManagementService: FeatureSwitchManagementService,
-                                 minimalPsaConnector: MinimalPsaConnector)(implicit val ec: ExecutionContext) extends FrontendController {
+                                 minimalPsaConnector: MinimalPsaConnector,
+                                 val controllerComponents: MessagesControllerComponents)(implicit val ec: ExecutionContext) extends FrontendBaseController {
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate.async {
     implicit request =>

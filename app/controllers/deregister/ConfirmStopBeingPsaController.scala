@@ -24,8 +24,8 @@ import javax.inject.Inject
 import models.MinimalPSA
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
 import utils.annotations.PensionAdminCache
 import views.html.deregister.confirmStopBeingPsa
 
@@ -34,14 +34,16 @@ import scala.concurrent.{ExecutionContext, Future}
 class ConfirmStopBeingPsaController @Inject()(
                                                appConfig: FrontendAppConfig,
                                                auth: AuthAction,
-                                               val messagesApi: MessagesApi,
+                                               override val messagesApi: MessagesApi,
                                                formProvider: ConfirmStopBeingPsaFormProvider,
                                                minimalPsaConnector: MinimalPsaConnector,
                                                deregistration: DeregistrationConnector,
                                                enrolments: TaxEnrolmentsConnector,
                                                allowAccess: AllowAccessForNonSuspendedUsersAction,
-                                               @PensionAdminCache dataCacheConnector: UserAnswersCacheConnector
-                                             )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport {
+                                               @PensionAdminCache dataCacheConnector: UserAnswersCacheConnector,
+                                               val controllerComponents: MessagesControllerComponents,
+                                               view: confirmStopBeingPsa
+                                             )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   val form: Form[Boolean] = formProvider()
 
@@ -49,7 +51,7 @@ class ConfirmStopBeingPsaController @Inject()(
     implicit request =>
       minimalPsaConnector.getMinimalPsaDetails(request.psaId.id).map { minimalDetails =>
         getPsaName(minimalDetails) match {
-          case Some(psaName) => Ok(confirmStopBeingPsa(appConfig, form, psaName))
+          case Some(psaName) => Ok(view(form, psaName))
           case _ => Redirect(controllers.routes.SessionExpiredController.onPageLoad())
         }
       }
@@ -65,7 +67,7 @@ class ConfirmStopBeingPsaController @Inject()(
             case Some(psaName) =>
               form.bindFromRequest().fold(
                 (formWithErrors: Form[Boolean]) =>
-                  Future.successful(BadRequest(confirmStopBeingPsa(appConfig, formWithErrors, psaName))),
+                  Future.successful(BadRequest(view(formWithErrors, psaName))),
                 value => {
                   if (value) {
                     for {

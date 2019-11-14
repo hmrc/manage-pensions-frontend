@@ -25,6 +25,7 @@ import models._
 import play.api.Configuration
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.UserAnswers
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -59,7 +60,7 @@ class InviteControllerSpec extends SpecBase {
     "redirect to unauthorised page if user is not authenticated" in {
 
       val controller = new InviteController(FakeUnAuthorisedAction(), fakeSchemeDetailsConnector,
-        FakeUserAnswersCacheConnector, featureSwitch, fakeMinimalPsaConnector(isSuspended = false))
+        FakeUserAnswersCacheConnector, featureSwitch, fakeMinimalPsaConnector(isSuspended = false), stubMessagesControllerComponents())
 
       val result = controller.onPageLoad(srn)(fakeRequest)
 
@@ -101,5 +102,5 @@ object InviteControllerSpec extends SpecBase with JsonFileReader {
   }
 
   def controller(isSuspended: Boolean) = new InviteController(mockAuthAction, fakeSchemeDetailsConnector,
-    FakeUserAnswersCacheConnector, featureSwitch, fakeMinimalPsaConnector(isSuspended))
+    FakeUserAnswersCacheConnector, featureSwitch, fakeMinimalPsaConnector(isSuspended), stubMessagesControllerComponents())
 }

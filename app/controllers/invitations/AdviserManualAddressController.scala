@@ -26,8 +26,8 @@ import javax.inject.Inject
 import models.{Address, Mode}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
 import utils.annotations.AcceptInvitation
 import utils.countryOptions.CountryOptions
 import utils.{Navigator, UserAnswers}
@@ -41,11 +41,13 @@ class AdviserManualAddressController @Inject()(
                                                 requireData: DataRequiredAction,
                                                 appConfig: FrontendAppConfig,
                                                 formProvider: AdviserManualAddressFormProvider,
-                                                val messagesApi: MessagesApi,
+                                                override val messagesApi: MessagesApi,
                                                 countryOptions: CountryOptions,
                                                 cacheConnector: UserAnswersCacheConnector,
-                                                @AcceptInvitation navigator: Navigator
-                                              )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport with Retrievals {
+                                                @AcceptInvitation navigator: Navigator,
+                                                val controllerComponents: MessagesControllerComponents,
+                                                view: adviserAddress
+                                              )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
 
   val form: Form[Address] = formProvider()
 
@@ -66,7 +68,7 @@ class AdviserManualAddressController @Inject()(
           } getOrElse form
         }
 
-        Future.successful(Ok(adviserAddress(appConfig, preparedForm, mode, countryOptions.options, prepopulated, prefix, name)))
+        Future.successful(Ok(view(preparedForm, mode, countryOptions.options, prepopulated, prefix, name)))
       }
 
   }
@@ -82,7 +84,7 @@ class AdviserManualAddressController @Inject()(
 
       form.bindFromRequest().fold(
         (formWithError: Form[_]) => AdviserNameId.retrieve.right.map { name =>
-          Future.successful(BadRequest(adviserAddress(appConfig, formWithError, mode, countryOptions.options, prepopulated, prefix, name)))
+          Future.successful(BadRequest(view(formWithError, mode, countryOptions.options, prepopulated, prefix, name)))
         },
         address =>
           cacheConnector.remove(request.externalId, AdviserAddressPostCodeLookupId).flatMap { _ =>

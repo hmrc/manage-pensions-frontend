@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,34 +12,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@import config.FrontendAppConfig
-@import viewmodels.{Message, CardViewModel}
-@import uk.gov.hmrc.play.views.html._
-@import views.html._
+package models.requests
 
-@this(
-    main_template: main_template,
-    appConfig: FrontendAppConfig
-)
+import play.api.mvc.{Request, WrappedRequest}
 
-@(
-name: String,
-cards: Seq[CardViewModel]
-)(implicit request: Request[_], messages: Messages)
-
-@main_template(
-    title = messages(name),
-    articleClasses = Some("full-width")
-) {
-
-    @components.heading(name)
-
-    <div class="flex-container grid-row">
-    @for(card <- cards){
-        @components.card(card)
-    }
-    </div>
-
-}
+case class IdentifierRequest[A] (request: Request[A], identifier: String) extends WrappedRequest[A](request)

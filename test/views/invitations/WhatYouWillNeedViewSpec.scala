@@ -29,9 +29,10 @@ class WhatYouWillNeedViewSpec extends ViewBehaviours {
   val schemeName  = "Test Scheme name"
   val schemeSrn  = "12345"
   val returnCall: Call  = controllers.routes.SchemeDetailsController.onPageLoad(SchemeReferenceNumber(schemeSrn))
+  private val whatYouWillNeedView = injector.instanceOf[whatYouWillNeed]
 
   def createView: (() => HtmlFormat.Appendable) = () =>
-    whatYouWillNeed(frontendAppConfig, schemeName, returnCall)(fakeRequest, messages)
+    whatYouWillNeedView(schemeName, returnCall)(fakeRequest, messages)
 
   "WhatYouWillNeed page" must {
     behave like normalPage(

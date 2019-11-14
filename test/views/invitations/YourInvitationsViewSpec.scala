@@ -28,8 +28,9 @@ class YourInvitationsViewSpec extends ViewBehaviours {
 
   val messageKeyPrefix = "yourInvitations"
   val psaName = "Test psa name"
+  private val yourInvitationsView = injector.instanceOf[yourInvitations]
 
-  def createView: () => HtmlFormat.Appendable = () => yourInvitations(frontendAppConfig, invitationList, psaName)(fakeRequest, messages)
+  def createView: () => HtmlFormat.Appendable = () => yourInvitationsView(invitationList, psaName)(fakeRequest, messages)
 
   "Your Invitations view" must {
 

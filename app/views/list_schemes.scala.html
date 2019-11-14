@@ -20,13 +20,19 @@
 @import controllers.invitations.routes
 @import viewmodels.Message
 
-@(appConfig: FrontendAppConfig, schemes: List[SchemeDetail], psaName: String)(implicit request: Request[_], messages: Messages)
+@this(
+    main_template: main_template,
+    formHelper: FormWithCSRF,
+    appConfig: FrontendAppConfig
+)
+
+@(schemes: List[SchemeDetail], psaName: String)(implicit request: Request[_], messages: Messages)
 
 @manageRedirectLink = {<a id="manage-link" href="@appConfig.pensionSchemeOnlineServiceUrl">@messages("messages__schemesOverview__manage__redirect__link")</a>}
 
 @main_template(
     title = messages("messages__listSchemes__title"),
-    appConfig = appConfig,
+
     bodyClasses = Some("full-width")) {
 
     <div class="grid-row">

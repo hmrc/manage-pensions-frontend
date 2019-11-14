@@ -63,6 +63,8 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
     )
   )
 
+  private val schemesOverviewView = injector.instanceOf[schemesOverview]
+
   private val schemeCardWithActiveChanges = CardViewModel(
     id = "scheme-card",
     heading = Message("messages__schemeOverview__scheme_heading"),
@@ -78,12 +80,12 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
         Message("messages__schemeOverview__scheme_variations_delete", schemeName))
     )
   )
+  private val schemesOverviewView = injector.instanceOf[schemesOverview]
 
-  def createView: () => HtmlFormat.Appendable = () =>
-    schemesOverview(frontendAppConfig, psaName, Seq(adminCard, schemeCardWithActiveChanges) )(fakeRequest, messages)
+  def createView(variationDetails:Option[VariationDetails] = None): () => HtmlFormat.Appendable = () =>
+    schemesOverviewView(psaName, Seq(adminCard, schemeCardWithActiveChanges))(fakeRequest, messages)
 
-  def createFreshView: () => HtmlFormat.Appendable = () =>
-    schemesOverview(frontendAppConfig, psaName, Seq(adminCard, schemeCardWithNoActiveChanges))(fakeRequest, messages)
+  def createFreshView: () => HtmlFormat.Appendable = () => schemesOverviewView(psaName, Seq(adminCard, schemeCardWithNoActiveChanges))(fakeRequest, messages)
 
   "SchemesOverview view when a scheme has been partially defined and which has no scheme variation" must {
     behave like normalPageWithoutBrowserTitle(

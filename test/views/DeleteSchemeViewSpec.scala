@@ -31,10 +31,11 @@ class DeleteSchemeViewSpec extends YesNoViewBehaviours {
 
   val form = new DeleteSchemeFormProvider()()
 
-  def createView: () => HtmlFormat.Appendable = () => deleteScheme(frontendAppConfig, form, schemeName, psaName)(fakeRequest, messages)
+  private val deleteSchemeView = injector.instanceOf[deleteScheme]
 
-  def createViewUsingForm: Form[_] => HtmlFormat.Appendable =
-    (form: Form[_]) => deleteScheme(frontendAppConfig, form, schemeName, psaName)(fakeRequest, messages)
+  def createView: () => HtmlFormat.Appendable = () => deleteSchemeView(form, schemeName, psaName)(fakeRequest, messages)
+
+  def createViewUsingForm: Form[_] => HtmlFormat.Appendable = (form: Form[_]) => deleteSchemeView(form, schemeName, psaName)(fakeRequest, messages)
 
   "DeleteScheme view" must {
 

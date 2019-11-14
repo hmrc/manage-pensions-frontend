@@ -26,8 +26,8 @@ import javax.inject.Inject
 import models.{Mode, NormalMode, TolerantAddress}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
 import utils.annotations.AcceptInvitation
 import utils.{Navigator, UserAnswers}
 import views.html.invitations.pension_adviser_address_list
@@ -40,16 +40,18 @@ class PensionAdviserAddressListController @Inject()(
                                                      getData: DataRetrievalAction,
                                                      requireData: DataRequiredAction,
                                                      formProvider: PensionAdviserAddressListFormProvider,
-                                                     val messagesApi: MessagesApi,
+                                                     override val messagesApi: MessagesApi,
                                                      val cacheConnector: UserAnswersCacheConnector,
-                                                     @AcceptInvitation navigator: Navigator
-                                                   )(implicit val ec: ExecutionContext) extends FrontendController with Retrievals with I18nSupport {
+                                                     @AcceptInvitation navigator: Navigator,
+                                                     val controllerComponents: MessagesControllerComponents,
+                                                     view: pension_adviser_address_list
+                                                   )(implicit val ec: ExecutionContext) extends FrontendBaseController with Retrievals with I18nSupport {
 
   def form(addresses: Seq[TolerantAddress]): Form[Int] = formProvider(addresses)
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request => AdviserAddressPostCodeLookupId.retrieve.right.map { addresses =>
-        Future.successful(Ok(views.html.invitations.pension_adviser_address_list(appConfig, form(addresses), addresses, mode)))
+        Future.successful(Ok(view(form(addresses), addresses, mode)))
       }
   }
 
@@ -58,7 +60,7 @@ class PensionAdviserAddressListController @Inject()(
       AdviserAddressPostCodeLookupId.retrieve.right.map { addresses =>
         formProvider(addresses).bindFromRequest().fold(
           formWithErrors =>
-            Future.successful(BadRequest(pension_adviser_address_list(appConfig, formWithErrors, addresses, mode))),
+            Future.successful(BadRequest(view(formWithErrors, addresses, mode))),
           addressIndex => {
             val address = addresses(addressIndex).copy(country = Some("GB"))
 

@@ -19,8 +19,9 @@ package controllers.invitations
 import controllers.actions.{AuthAction, DataRetrievalAction}
 import controllers.behaviours.ControllerWithNormalPageBehaviours
 import models.CheckMode
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.mvc.Call
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.countryOptions.CountryOptions
 import utils.{CheckYourAnswersFactory, UserAnswers}
 import viewmodels.{AnswerRow, AnswerSection}
@@ -38,6 +39,7 @@ class CheckPensionAdviserAnswersControllerSpec extends ControllerWithNormalPageB
   private val checkYourAnswersFactory = new CheckYourAnswersFactory(countryOptions)
 
   def call: Call = controllers.invitations.routes.CheckPensionAdviserAnswersController.onSubmit()
+  private val view = injector.instanceOf[check_your_answers]
 
   val sections = Seq(AnswerSection(
     None,
@@ -49,20 +51,20 @@ class CheckPensionAdviserAnswersControllerSpec extends ControllerWithNormalPageB
     ))
   ))
 
-  def viewAsString() = check_your_answers(frontendAppConfig, sections, None, call)(fakeRequest, messages).toString
+  def viewAsString() = view(sections, None, call)(fakeRequest, messages).toString
 
   def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
     new CheckPensionAdviserAnswersController(
       frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction,
-      checkYourAnswersFactory).onPageLoad()
+      checkYourAnswersFactory, stubMessagesControllerComponents(), view).onPageLoad()
   }
 
   def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
     new CheckPensionAdviserAnswersController(
       frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction,
-      checkYourAnswersFactory).onSubmit()
+      checkYourAnswersFactory, stubMessagesControllerComponents(), view).onSubmit()
   }
 
   behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, Some(userAnswer), viewAsString)

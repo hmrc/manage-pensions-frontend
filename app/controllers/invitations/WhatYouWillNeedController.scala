@@ -24,8 +24,8 @@ import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import identifiers.{SchemeNameId, SchemeSrnId}
 import models.{NormalMode, SchemeReferenceNumber}
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
 import utils.Navigator
 import utils.annotations.Invitation
 import views.html.invitations.whatYouWillNeed
@@ -38,15 +38,17 @@ class WhatYouWillNeedController @Inject()(appConfig: FrontendAppConfig,
                                           authenticate: AuthAction,
                                           getData: DataRetrievalAction,
                                           requireData: DataRequiredAction,
-                                          userAnswersCacheConnector: UserAnswersCacheConnector
-                                         ) extends FrontendController with I18nSupport with Retrievals {
+                                          userAnswersCacheConnector: UserAnswersCacheConnector,
+                                          val controllerComponents: MessagesControllerComponents,
+                                          view: whatYouWillNeed
+                                         ) extends FrontendBaseController with I18nSupport with Retrievals {
 
   def onPageLoad(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
       (SchemeSrnId and SchemeNameId).retrieve.right.map {
         case srn ~ schemeName =>
         val returnCall = controllers.routes.SchemeDetailsController.onPageLoad(SchemeReferenceNumber(srn))
-        Future.successful(Ok(whatYouWillNeed(appConfig, schemeName, returnCall)))
+        Future.successful(Ok(view(schemeName, returnCall)))
       }
   }
 

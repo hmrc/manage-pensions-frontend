@@ -29,7 +29,7 @@ import models.{NormalMode, TolerantAddress}
 import play.api.data.Form
 import play.api.i18n._
 import play.api.mvc._
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.annotations.AcceptInvitation
 import utils.{Navigator, UserAnswers}
 import viewmodels.Message
@@ -38,15 +38,17 @@ import views.html.invitations.adviserPostcode
 import scala.concurrent.{ExecutionContext, Future}
 
 class AdviserAddressPostcodeLookupController @Inject()(val appConfig: FrontendAppConfig,
-                                                       val messagesApi: MessagesApi,
+                                                       override val messagesApi: MessagesApi,
                                                        authenticate: AuthAction,
                                                        getData: DataRetrievalAction,
                                                        requireData: DataRequiredAction,
                                                        formProvider: AdviserAddressPostcodeLookupFormProvider,
                                                        @AcceptInvitation navigator: Navigator,
                                                        val addressLookupConnector: AddressLookupConnector,
-                                                       val cacheConnector: UserAnswersCacheConnector
-                                                      )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport with Retrievals {
+                                                       val cacheConnector: UserAnswersCacheConnector,
+                                                       val controllerComponents: MessagesControllerComponents,
+                                                       view: adviserPostcode
+                                                      )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
 
 
   val form: Form[String] = formProvider()
@@ -54,7 +56,7 @@ class AdviserAddressPostcodeLookupController @Inject()(val appConfig: FrontendAp
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
       AdviserNameId.retrieve.right.map{ name =>
-        Future.successful(Ok(adviserPostcode(appConfig, formProvider(), name)))
+        Future.successful(Ok(view(formProvider(), name)))
       }
   }
 
@@ -62,7 +64,7 @@ class AdviserAddressPostcodeLookupController @Inject()(val appConfig: FrontendAp
     implicit request =>
       form.bindFromRequest().fold( formWithErrors =>
         AdviserNameId.retrieve.right.map { name =>
-          Future.successful(BadRequest(adviserPostcode(appConfig, formWithErrors, name)))
+          Future.successful(BadRequest(view(formWithErrors, name)))
         },
         lookup(AdviserAddressPostCodeLookupId)
       )
@@ -76,7 +78,7 @@ class AdviserAddressPostcodeLookupController @Inject()(val appConfig: FrontendAp
 
       case Nil =>
         AdviserNameId.retrieve.right.map { name =>
-          Future.successful(Ok(adviserPostcode(appConfig, formWithError("messages__error__postcode__lookup__no__results"), name)))
+          Future.successful(Ok(view(formWithError("messages__error__postcode__lookup__no__results"), name)))
         }
 
       case addresses =>
@@ -90,7 +92,7 @@ class AdviserAddressPostcodeLookupController @Inject()(val appConfig: FrontendAp
         }
     } recoverWith {
       case _ => AdviserNameId.retrieve.right.map { name =>
-        Future.successful(BadRequest(adviserPostcode(appConfig, formWithError("messages__error__postcode__lookup__invalid"), name)))
+        Future.successful(BadRequest(view(formWithError("messages__error__postcode__lookup__invalid"), name)))
       }
     }
   }

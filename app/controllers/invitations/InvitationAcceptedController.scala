@@ -23,8 +23,8 @@ import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import identifiers.invitations.SchemeNameId
 import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
 import views.html.invitations.invitationAccepted
 
 import scala.concurrent.ExecutionContext
@@ -34,16 +34,17 @@ class InvitationAcceptedController @Inject()(frontendAppConfig: FrontendAppConfi
                                              authenticate: AuthAction,
                                              getData: DataRetrievalAction,
                                              requireData: DataRequiredAction,
-                                             userAnswersCacheConnector: UserAnswersCacheConnector)(
-  implicit val ec: ExecutionContext) extends FrontendController with Retrievals with I18nSupport {
+                                             userAnswersCacheConnector: UserAnswersCacheConnector,
+                                             val controllerComponents: MessagesControllerComponents,
+                                             view: invitationAccepted)(
+  implicit val ec: ExecutionContext) extends FrontendBaseController with Retrievals with I18nSupport {
 
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
       SchemeNameId.retrieve.right.map { schemeName =>
         userAnswersCacheConnector.removeAll(request.externalId).map { _ =>
-          Ok(invitationAccepted(
-            frontendAppConfig,
+          Ok(view(
             schemeName
           ))
         }

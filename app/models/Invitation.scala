@@ -16,7 +16,8 @@
 
 package models
 
-import org.joda.time.DateTime
+import java.time.LocalDateTime
+
 import play.api.libs.json.{Format, Json}
 import uk.gov.hmrc.domain.PsaId
 
@@ -26,7 +27,7 @@ case class Invitation(srn: SchemeReferenceNumber,
                       inviterPsaId: PsaId,
                       inviteePsaId: PsaId,
                       inviteeName: String,
-                      expireAt: DateTime
+                      expireAt: LocalDateTime
                      )
 
 object Invitation {

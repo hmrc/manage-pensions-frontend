@@ -17,11 +17,10 @@
 package utils.navigators
 
 import base.SpecBase
-import connectors.FakeUserAnswersCacheConnector
 import identifiers.Identifier
 import identifiers.deregister.ConfirmStopBeingPsaId
 import org.scalatest.OptionValues
-import org.scalatest.prop.TableFor6
+import org.scalatest.prop.TableFor4
 import play.api.libs.json.Json
 import play.api.mvc.Call
 import utils.{NavigatorBehaviour, UserAnswers}
@@ -30,19 +29,19 @@ class PsaDeRegistrationNavigatorSpec extends SpecBase with NavigatorBehaviour {
 
   import PsaDeRegistrationNavigatorSpec._
 
-  val navigator = new PsaDeRegistrationNavigator(FakeUserAnswersCacheConnector, frontendAppConfig)
-  lazy val psaDetailsPage: Call = new Call("GET", frontendAppConfig.registeredPsaDetailsUrl)
+  private val navigator = new PsaDeRegistrationNavigator(frontendAppConfig)
+  private lazy val psaDetailsPage: Call = Call("GET", frontendAppConfig.registeredPsaDetailsUrl)
 
-  def routes(): TableFor6[Identifier, UserAnswers, Call, Boolean, Option[Call], Boolean] = Table(
-    ("Id", "User Answers", "Next Page (NormalMode)", "Save(NormalMode)", "Next Page (CheckMode)", "Save(CheckMode"),
-    (ConfirmStopBeingPsaId, confirmYes, successfulDeregistrationPage, false, None, false),
-    (ConfirmStopBeingPsaId, confirmNo, psaDetailsPage, false, None, false)
+  def routes(): TableFor4[Identifier, UserAnswers, Call, Option[Call]] = Table(
+    ("Id", "User Answers", "Next Page (NormalMode)", "Next Page (CheckMode)"),
+    (ConfirmStopBeingPsaId, confirmYes, successfulDeregistrationPage, None),
+    (ConfirmStopBeingPsaId, confirmNo, psaDetailsPage, None)
   )
 
   navigator.getClass.getSimpleName must {
     appRunning()
     behave like nonMatchingNavigator(navigator)
-    behave like navigatorWithRoutes(navigator, FakeUserAnswersCacheConnector, routes(), dataDescriber)
+    behave like navigatorWithRoutes(navigator, routes(), dataDescriber)
   }
 }
 

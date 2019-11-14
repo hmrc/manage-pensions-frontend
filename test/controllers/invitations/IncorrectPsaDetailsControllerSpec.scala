@@ -20,6 +20,7 @@ import controllers.actions._
 import controllers.behaviours.ControllerWithNormalPageBehaviours
 import models.MinimalSchemeDetail
 import play.api.mvc.{Action, AnyContent}
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.UserAnswers
 import views.html.invitations.incorrectPsaDetails
 
@@ -28,6 +29,7 @@ class IncorrectPsaDetailsControllerSpec extends ControllerWithNormalPageBehaviou
   val invitee = "PSA"
   val srn = "test-srn"
   val schemeName = "test-scheme-name"
+  private val view = injector.instanceOf[incorrectPsaDetails]
 
   val userAnswer: UserAnswers =
     UserAnswers()
@@ -37,10 +39,10 @@ class IncorrectPsaDetailsControllerSpec extends ControllerWithNormalPageBehaviou
   def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
 
     new IncorrectPsaDetailsController(
-      frontendAppConfig, messagesApi, fakeAuth, dataRetrievalAction, requiredDateAction).onPageLoad()
+      frontendAppConfig, messagesApi, fakeAuth, dataRetrievalAction, requiredDateAction, stubMessagesControllerComponents(), view).onPageLoad()
   }
 
-  def viewAsString(): String = incorrectPsaDetails(frontendAppConfig, invitee, srn, schemeName)(fakeRequest, messages).toString
+  def viewAsString(): String = view(invitee, srn, schemeName)(fakeRequest, messages).toString
 
   behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, Some(userAnswer.dataRetrievalAction), viewAsString)
 

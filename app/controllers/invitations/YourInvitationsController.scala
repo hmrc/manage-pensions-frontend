@@ -24,8 +24,8 @@ import identifiers.invitations.PSANameId
 import javax.inject.Inject
 import models.{NormalMode, SchemeReferenceNumber}
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
 import utils.annotations.AcceptInvitation
 import utils.{Navigator, UserAnswers}
 import views.html.invitations.yourInvitations
@@ -39,8 +39,10 @@ class YourInvitationsController @Inject()(appConfig: FrontendAppConfig,
                                           requireData: DataRequiredAction,
                                           invitationsCacheConnector: InvitationsCacheConnector,
                                           userAnswersCacheConnector: UserAnswersCacheConnector,
-                                          @AcceptInvitation navigator: Navigator
-                                         )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport {
+                                          @AcceptInvitation navigator: Navigator,
+                                          val controllerComponents: MessagesControllerComponents,
+                                          view: yourInvitations
+                                         )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
 
   def onPageLoad(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
@@ -50,7 +52,7 @@ class YourInvitationsController @Inject()(appConfig: FrontendAppConfig,
           Redirect(controllers.routes.SessionExpiredController.onPageLoad())
         case invitationsList =>
           request.userAnswers.get(PSANameId).map { name =>
-            Ok(yourInvitations(appConfig, invitationsList, name))
+            Ok(view(invitationsList, name))
           }.getOrElse(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
       }
   }

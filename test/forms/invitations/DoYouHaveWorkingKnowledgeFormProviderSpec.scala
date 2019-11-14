@@ -21,7 +21,7 @@ import play.api.data.FormError
 
 class DoYouHaveWorkingKnowledgeFormProviderSpec extends BooleanFieldBehaviours {
 
-  val requiredKey = "error.required"
+  val requiredKey = "messages__haveWorkingKnowledge__error__required"
   val invalidKey = "error.boolean"
 
   val formProvider = new DoYouHaveWorkingKnowledgeFormProvider()

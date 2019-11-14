@@ -17,7 +17,7 @@
 package views.remove
 
 import forms.remove.RemovalDateFormProvider
-import org.joda.time.LocalDate
+import java.time.LocalDate
 import org.jsoup.Jsoup
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
@@ -33,12 +33,13 @@ class RemovalDateViewSpec extends QuestionViewBehaviours[LocalDate] {
   private val psaName = "test psa name"
   private val srn = "test srn"
   val prefix = "removalDate"
+  private val removalDateView = injector.instanceOf[removalDate]
 
   private def createView: () => HtmlFormat.Appendable = () =>
-    removalDate(frontendAppConfig, form, psaName, schemeName, srn, formatDate(associationDate))(fakeRequest, messages)
+    removalDateView(form, psaName, schemeName, srn, formatDate(associationDate))(fakeRequest, messages)
 
   private def createViewUsingForm: Form[_] => HtmlFormat.Appendable = (form: Form[_]) =>
-    removalDate(frontendAppConfig, form, psaName, schemeName, srn, formatDate(associationDate))(fakeRequest, messages)
+    removalDateView(form, psaName, schemeName, srn, formatDate(associationDate))(fakeRequest, messages)
 
   "RemoveAsSchemeAdministrator" must {
 

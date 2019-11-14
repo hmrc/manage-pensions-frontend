@@ -17,13 +17,12 @@
 package utils.navigators
 
 import base.SpecBase
-import connectors.FakeUserAnswersCacheConnector
 import identifiers.Identifier
 import identifiers.invitations.{CheckYourAnswersId, InvitationSuccessId, InviteeNameId, InviteePSAId}
 import models.NormalMode
 import models.requests.IdentifiedRequest
 import org.scalatest.OptionValues
-import org.scalatest.prop.TableFor6
+import org.scalatest.prop.TableFor4
 import play.api.libs.json.Json
 import play.api.mvc.Call
 import uk.gov.hmrc.http.HeaderCarrier
@@ -33,20 +32,20 @@ class InvitationNavigatorSpec extends SpecBase with NavigatorBehaviour {
 
   import InvitationNavigatorSpec._
 
-  val navigator = new InvitationNavigator(FakeUserAnswersCacheConnector)
+  val navigator = new InvitationNavigator
 
-  def routes(): TableFor6[Identifier, UserAnswers, Call, Boolean, Option[Call], Boolean] = Table(
-    ("Id",                            "User Answers",     "Next Page (NormalMode)",     "Save(NormalMode)",     "Next Page (CheckMode)",  "Save(CheckMode"),
-    (InviteeNameId,                     emptyAnswers,       psaIdPage,                    false,                  Some(checkYourAnswer),      false),
-    (InviteePSAId,                      emptyAnswers,       checkYourAnswer,              false,                  Some(checkYourAnswer),      false),
-    (CheckYourAnswersId(testSrn),       emptyAnswers,       invitationSuccess,            false,                  None,                       false),
-    (InvitationSuccessId(testSrn),      emptyAnswers,       schemeDetails,                false,                  None,                       false)
+  def routes(): TableFor4[Identifier, UserAnswers, Call, Option[Call]] = Table(
+    ("Id",                            "User Answers",     "Next Page (NormalMode)",     "Next Page (CheckMode)"),
+    (InviteeNameId,                     emptyAnswers,       psaIdPage,                    Some(checkYourAnswer)),
+    (InviteePSAId,                      emptyAnswers,       checkYourAnswer,              Some(checkYourAnswer)),
+    (CheckYourAnswersId(testSrn),       emptyAnswers,       invitationSuccess,            None),
+    (InvitationSuccessId(testSrn),      emptyAnswers,       schemeDetails,                None)
   )
 
   navigator.getClass.getSimpleName must {
     appRunning()
     behave like nonMatchingNavigator(navigator)
-    behave like navigatorWithRoutes(navigator, FakeUserAnswersCacheConnector, routes(), dataDescriber)
+    behave like navigatorWithRoutes(navigator, routes(), dataDescriber)
   }
 }
 

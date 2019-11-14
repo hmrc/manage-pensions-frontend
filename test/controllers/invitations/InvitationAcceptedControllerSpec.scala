@@ -19,8 +19,8 @@ package controllers.invitations
 import connectors.FakeUserAnswersCacheConnector
 import controllers.ControllerSpecBase
 import controllers.actions._
-import models.MinimalSchemeDetail
 import play.api.test.Helpers._
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.UserAnswers
 import views.html.invitations.invitationAccepted
 
@@ -28,6 +28,7 @@ class InvitationAcceptedControllerSpec extends ControllerSpecBase {
 
   val testSchemeName: String = "Test Scheme Name"
   val getRelevantData: DataRetrievalAction = UserAnswers().schemeName(testSchemeName).dataRetrievalAction
+  private val view = injector.instanceOf[invitationAccepted]
 
   def controller(authAction: AuthAction = FakeAuthAction(), dataRetrievalAction: DataRetrievalAction = getRelevantData):
   InvitationAcceptedController =
@@ -37,10 +38,12 @@ class InvitationAcceptedControllerSpec extends ControllerSpecBase {
       authAction,
       dataRetrievalAction,
       new DataRequiredActionImpl,
-      FakeUserAnswersCacheConnector
+      FakeUserAnswersCacheConnector,
+      stubMessagesControllerComponents(),
+      view
     )
 
-  def viewAsString(): String = invitationAccepted(frontendAppConfig, testSchemeName)(fakeRequest, messages).toString
+  def viewAsString(): String = view(testSchemeName)(fakeRequest, messages).toString
 
   "InvitationAccepted Controller" must {
 

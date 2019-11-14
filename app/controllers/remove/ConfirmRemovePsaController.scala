@@ -28,8 +28,8 @@ import javax.inject.Inject
 import models.NormalMode
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
 import utils.annotations.RemovePSA
 import utils.{Navigator, UserAnswers}
 import views.html.remove.confirmRemovePsa
@@ -39,13 +39,15 @@ import scala.concurrent.{ExecutionContext, Future}
 class ConfirmRemovePsaController @Inject()(
                                             val appConfig: FrontendAppConfig,
                                             val auth: AuthAction,
-                                            val messagesApi: MessagesApi,
+                                            override val messagesApi: MessagesApi,
                                             @RemovePSA navigator: Navigator,
                                             val formProvider: ConfirmRemovePsaFormProvider,
                                             val userAnswersCacheConnector: UserAnswersCacheConnector,
                                             val getData: DataRetrievalAction,
-                                            val requireData: DataRequiredAction
-                                                     )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport with Retrievals {
+                                            val requireData: DataRequiredAction,
+                                            val controllerComponents: MessagesControllerComponents,
+                                            view: confirmRemovePsa
+                                                     )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
 
   val form: Form[Boolean] = formProvider()
 
@@ -54,7 +56,7 @@ class ConfirmRemovePsaController @Inject()(
       (SchemeSrnId and SchemeNameId and PSANameId).retrieve.right.map {
         case srn ~ schemeName ~ psaName =>
           val preparedForm = request.userAnswers.get(ConfirmRemovePsaId).fold(form)(form.fill(_))
-          Future.successful(Ok(confirmRemovePsa(appConfig, preparedForm, schemeName, srn, psaName)))
+          Future.successful(Ok(view(preparedForm, schemeName, srn, psaName)))
       }
   }
 
@@ -64,7 +66,7 @@ class ConfirmRemovePsaController @Inject()(
         (formWithErrors: Form[Boolean]) =>
           (SchemeNameId and SchemeSrnId and PSANameId).retrieve.right.map {
             case schemeName ~ srn ~ psaName =>
-              Future.successful(BadRequest(confirmRemovePsa(appConfig, formWithErrors, schemeName, srn, psaName)))
+              Future.successful(BadRequest(view(formWithErrors, schemeName, srn, psaName)))
           },
         value => {
           userAnswersCacheConnector.save(request.externalId, ConfirmRemovePsaId, value).map(

@@ -16,31 +16,32 @@
 
 package testhelpers
 
+import java.time.{LocalDate, LocalDateTime}
+
 import models._
-import org.joda.time.DateTime
 import uk.gov.hmrc.domain.PsaId
 
 object InvitationBuilder {
-  val unit:Unit = ()
+  val unit: Unit = ()
   val srn = SchemeReferenceNumber("S0987654321")
   val pstr1 = "S12345"
   val inviteePsaId1 = PsaId("P1234567")
   val inviterPsaId1 = PsaId("I1234567")
-  val invitation1:Invitation = {
+  val invitation1: Invitation = {
     val schemeName1 = "Test scheme1 name"
     val inviteeName1 = "Test Invitee1 Name"
-    val expiryDate1 = new DateTime("2018-11-10")
+    val expiryDate1 = LocalDate.parse("2018-11-10").atStartOfDay()
 
     Invitation(srn, pstr1, schemeName1, inviterPsaId1, inviteePsaId1, inviteeName1, expiryDate1)
 
   }
-  val invitation2:Invitation = {
+  val invitation2: Invitation = {
     val pstr2 = "D1234"
     val schemeName2 = "Test scheme2 name"
     val inviterPsaId2 = PsaId("Q1234567")
     val inviteePsaId2 = PsaId("T1234567")
     val inviteeName2 = "Test Invitee2 Name"
-    val expiryDate2 = new DateTime("2018-11-11")
+    val expiryDate2 = LocalDate.parse("2018-11-11").atStartOfDay()
 
     Invitation(srn, pstr2, schemeName2, inviterPsaId2, inviteePsaId2, inviteeName2, expiryDate2)
 

@@ -16,25 +16,24 @@
 
 package controllers.invitations
 
-import controllers.ControllerSpecBase
 import controllers.actions._
 import controllers.behaviours.ControllerWithNormalPageBehaviours
-import play.api.test.Helpers._
-import utils.UserAnswers
+import play.api.mvc.{Action, AnyContent}
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import views.html.invitations.youCannotSendAnInvite
 
 class YouCannotSendAnInviteControllerSpec extends ControllerWithNormalPageBehaviours {
 
-  val userAnswer = UserAnswers()
+  private val youCannotSendAnInviteView = injector.instanceOf[youCannotSendAnInvite]
 
-  def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
+  private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
 
     new YouCannotSendAnInviteController(
-      frontendAppConfig, messagesApi, fakeAuth, dataRetrievalAction, requiredDateAction).onPageLoad()
+      frontendAppConfig, messagesApi, fakeAuth, dataRetrievalAction, requiredDateAction,
+      stubMessagesControllerComponents(), youCannotSendAnInviteView).onPageLoad()
   }
 
-  def viewAsString() = youCannotSendAnInvite(frontendAppConfig)(fakeRequest, messages).toString
+  private def viewAsString(): String = youCannotSendAnInviteView()(fakeRequest, messages).toString
 
   behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, None, viewAsString)
-
 }

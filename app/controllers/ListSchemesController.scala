@@ -23,21 +23,23 @@ import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import identifiers.PSANameId
 import models.SchemeDetail
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
 import views.html.list_schemes
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class ListSchemesController @Inject()(
                                        val appConfig: FrontendAppConfig,
-                                       val messagesApi: MessagesApi,
+                                       override val messagesApi: MessagesApi,
                                        authenticate: AuthAction,
                                        getData: DataRetrievalAction,
                                        listSchemesConnector: ListOfSchemesConnector,
                                        minimalPsaConnector: MinimalPsaConnector,
-                                       userAnswersCacheConnector: UserAnswersCacheConnector
-                                     )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport {
+                                       userAnswersCacheConnector: UserAnswersCacheConnector,
+                                       val controllerComponents: MessagesControllerComponents,
+                                       view: list_schemes
+                                     )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
@@ -47,7 +49,7 @@ class ListSchemesController @Inject()(
 
               minimalPsaConnector.getPsaNameFromPsaID(request.psaId.id).flatMap(_.map { name =>
                  userAnswersCacheConnector.save(request.externalId, PSANameId, name).map { _ =>
-                  Ok(list_schemes(appConfig, schemes, name))
+                  Ok(view(schemes, name))
                 }}.getOrElse {
                 Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
               }

@@ -20,14 +20,14 @@ import identifiers.TypedIdentifier
 import models.requests.DataRequest
 import play.api.libs.json.Reads
 import play.api.mvc.{AnyContent, Result}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 
 import scala.concurrent.Future
 import scala.language.implicitConversions
 
 trait Retrievals {
 
-  this: FrontendController =>
+  this: FrontendBaseController =>
 
   case class ~[A, B](a: A, b: B)
 

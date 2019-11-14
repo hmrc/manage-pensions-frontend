@@ -59,7 +59,7 @@ class InvitationsCacheConnectorImpl @Inject()(
                                   hc: HeaderCarrier
   ): Future[Unit] = {
     http.url(addUrl)
-      .withHeaders(hc.withExtraHeaders(("content-type", "application/json")).headers: _*)
+      .withHttpHeaders(hc.withExtraHeaders(("content-type", "application/json")).headers: _*)
       .post(Json.toJson(invitation)).flatMap {
       response =>
         response.status match {
@@ -76,7 +76,7 @@ class InvitationsCacheConnectorImpl @Inject()(
                                                  hc: HeaderCarrier
   ): Future[Unit] = {
     http.url(removeUrl)
-      .withHeaders(hc.withExtraHeaders("content-type" -> "application/json", "pstr" -> pstr, "inviteePsaId" -> inviteePsaId.id).headers: _*)
+      .withHttpHeaders(hc.withExtraHeaders("content-type" -> "application/json", "pstr" -> pstr, "inviteePsaId" -> inviteePsaId.id).headers: _*)
       .delete().flatMap {
       response =>
         response.status match {
@@ -113,7 +113,7 @@ class InvitationsCacheConnectorImpl @Inject()(
   ): Future[List[Invitation]] =
     getCommon(
       http.url(getUrl)
-        .withHeaders(hc.withExtraHeaders("pstr" -> pstr, "inviteePsaId" -> inviteePsaId.id).headers: _*)
+        .withHttpHeaders(hc.withExtraHeaders("pstr" -> pstr, "inviteePsaId" -> inviteePsaId.id).headers: _*)
     )
 
   def getForScheme(pstr: String)(implicit
@@ -122,7 +122,7 @@ class InvitationsCacheConnectorImpl @Inject()(
   ): Future[List[Invitation]] =
     getCommon(
       http.url(getForSchemeUrl)
-        .withHeaders(hc.withExtraHeaders("pstr" -> pstr).headers: _*)
+        .withHttpHeaders(hc.withExtraHeaders("pstr" -> pstr).headers: _*)
     )
 
   def getForInvitee(inviteePsaId: PsaId)(implicit
@@ -131,6 +131,6 @@ class InvitationsCacheConnectorImpl @Inject()(
   ): Future[List[Invitation]] =
     getCommon(
       http.url(getForInviteeUrl)
-        .withHeaders(hc.withExtraHeaders("inviteePsaId" -> inviteePsaId.id).headers: _*)
+        .withHttpHeaders(hc.withExtraHeaders("inviteePsaId" -> inviteePsaId.id).headers: _*)
     )
 }

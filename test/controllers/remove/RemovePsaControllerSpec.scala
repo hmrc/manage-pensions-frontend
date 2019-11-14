@@ -16,22 +16,23 @@
 
 package controllers.remove
 
+import java.time.LocalDate
+
 import base.SpecBase
 import connectors.{FakeUserAnswersCacheConnector, MinimalPsaConnector, SchemeDetailsConnector}
 import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction, FakeUnAuthorisedAction}
 import identifiers.AssociatedDateId
 import identifiers.invitations.{PSTRId, SchemeNameId}
 import models._
-import org.joda.time.LocalDate
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
 import play.api.test.Helpers._
-import testhelpers.CommonBuilders
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.{FakeFeatureSwitchManagementService, UserAnswers}
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
+import utils.UserAnswers
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -122,7 +123,8 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
       schemeDetailsConnector,
       FakeUserAnswersCacheConnector,
       fakeMinimalPsaConnector(psaMinimalDetails),
-      frontendAppConfig
+      frontendAppConfig,
+      stubMessagesControllerComponents()
     )
 
 
@@ -176,7 +178,7 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
 
       FakeUserAnswersCacheConnector.verify(SchemeNameId, "Test Scheme name")
       FakeUserAnswersCacheConnector.verify(PSTRId, "test pstr")
-      FakeUserAnswersCacheConnector.verify(AssociatedDateId, new LocalDate("2018-10-01"))
+      FakeUserAnswersCacheConnector.verify(AssociatedDateId, LocalDate.parse("2018-10-01"))
     }
 
     "throw IllegalArgumentException if pstr is not found" in {
@@ -204,7 +206,8 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
 
       val controller = new RemovePsaController(FakeUnAuthorisedAction(), data, new DataRequiredActionImpl,
         fakeSchemeDetailsConnector(), FakeUserAnswersCacheConnector,
-        fakeMinimalPsaConnector(psaMinimalSubscription.copy(isPsaSuspended = false)), frontendAppConfig
+        fakeMinimalPsaConnector(psaMinimalSubscription.copy(isPsaSuspended = false)), frontendAppConfig,
+        stubMessagesControllerComponents()
       )
 
       val result = controller.onPageLoad(fakeRequest)

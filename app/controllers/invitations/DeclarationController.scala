@@ -31,8 +31,8 @@ import models._
 import models.requests.DataRequest
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, Result}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
 import utils.{Navigator, Toggles}
 import utils.annotations.AcceptInvitation
 import views.html.invitations.declaration
@@ -51,8 +51,10 @@ class DeclarationController @Inject()(
                                        invitationsCacheConnector: InvitationsCacheConnector,
                                        invitationConnector: InvitationConnector,
                                        @AcceptInvitation navigator: Navigator,
-                                       featureSwitchManagementService: FeatureSwitchManagementService
-                                     )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport with Retrievals {
+                                       featureSwitchManagementService: FeatureSwitchManagementService,
+                                       val controllerComponents: MessagesControllerComponents,
+                                       view: declaration
+                                     )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
   val form: Form[Boolean] = formProvider()
 
   def onPageLoad(): Action[AnyContent] = (auth andThen getData andThen requireData).async {
@@ -69,7 +71,7 @@ class DeclarationController @Inject()(
                     _ <- userAnswersCacheConnector.save(IsMasterTrustId, isMasterTrust)
                     _ <- userAnswersCacheConnector.save(PSTRId, details.get(PSTRId).getOrElse(""))
                   } yield {
-                    Ok(declaration(appConfig, haveWorkingKnowledge, isMasterTrust, form))
+                    Ok(view(haveWorkingKnowledge, isMasterTrust, form))
                   }
 
                 case _ => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
@@ -87,7 +89,7 @@ class DeclarationController @Inject()(
         (formWithErrors: Form[Boolean]) =>
           (DoYouHaveWorkingKnowledgeId and IsMasterTrustId).retrieve.right.map {
             case haveWorkingKnowledge ~ isMasterTrust =>
-              Future.successful(BadRequest(declaration(appConfig, haveWorkingKnowledge, isMasterTrust, formWithErrors)))
+              Future.successful(BadRequest(view(haveWorkingKnowledge, isMasterTrust, formWithErrors)))
           },
         declaration => {
           (PSTRId and DoYouHaveWorkingKnowledgeId).retrieve.right.map {

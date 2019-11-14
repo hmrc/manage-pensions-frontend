@@ -32,8 +32,10 @@ class AdviserPostCodeLookupViewSpec extends StringViewBehaviours {
 
   val adviserName = "test adviser"
 
-  def createView: () => HtmlFormat.Appendable = () => adviserPostcode(frontendAppConfig, form, adviserName)(fakeRequest, messages)
-  def createViewUsingForm: Form[String] => HtmlFormat.Appendable = (form: Form[String]) => adviserPostcode(frontendAppConfig, form,
+  private val adviserPostcodeView = injector.instanceOf[adviserPostcode]
+
+  def createView: () => HtmlFormat.Appendable = () => adviserPostcodeView(form, adviserName)(fakeRequest, messages)
+  def createViewUsingForm: Form[String] => HtmlFormat.Appendable = (form: Form[String]) => adviserPostcodeView(form,
     adviserName)(fakeRequest, messages)
 
   "Address view" must {

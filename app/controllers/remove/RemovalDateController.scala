@@ -16,6 +16,8 @@
 
 package controllers.remove
 
+import java.time.LocalDate
+
 import config.FrontendAppConfig
 import connectors.{PsaRemovalConnector, UserAnswersCacheConnector}
 import controllers.Retrievals
@@ -26,12 +28,11 @@ import identifiers.remove.RemovalDateId
 import identifiers.{AssociatedDateId, PSANameId, SchemeSrnId}
 import javax.inject.Inject
 import models.{NormalMode, PsaToBeRemovedFromScheme}
-import org.joda.time.LocalDate
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.Reads._
-import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
 import utils.DateHelper._
 import utils.annotations.RemovePSA
 import utils.{Navigator, UserAnswers}
@@ -47,8 +48,10 @@ class RemovalDateController @Inject()(appConfig: FrontendAppConfig,
                                       getData: DataRetrievalAction,
                                       requireData: DataRequiredAction,
                                       formProvider: RemovalDateFormProvider,
-                                      psaRemovalConnector: PsaRemovalConnector)(
-  implicit val ec: ExecutionContext) extends FrontendController with I18nSupport with Retrievals {
+                                      psaRemovalConnector: PsaRemovalConnector,
+                                      val controllerComponents: MessagesControllerComponents,
+                                      view: removalDate)(
+  implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
 
   private def form(schemeOpenDate: LocalDate) = formProvider(schemeOpenDate, appConfig.earliestDatePsaRemoval)
 
@@ -57,7 +60,7 @@ class RemovalDateController @Inject()(appConfig: FrontendAppConfig,
       (SchemeNameId and PSANameId and SchemeSrnId and AssociatedDateId).retrieve.right.map {
 
         case schemeName ~ psaName ~ srn ~ associationDate =>
-          Future.successful(Ok(removalDate(appConfig, form(associationDate), psaName, schemeName, srn, formatDate(associationDate))))
+          Future.successful(Ok(view(form(associationDate), psaName, schemeName, srn, formatDate(associationDate))))
 
         case _ =>
           Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
@@ -70,7 +73,7 @@ class RemovalDateController @Inject()(appConfig: FrontendAppConfig,
         case schemeName ~ psaName ~ srn ~ pstr ~ associationDate=>
           form(associationDate).bindFromRequest().fold(
             (formWithErrors: Form[_]) =>
-              Future.successful(BadRequest(removalDate(appConfig, formWithErrors, psaName, schemeName, srn, formatDate(associationDate)))),
+              Future.successful(BadRequest(view(formWithErrors, psaName, schemeName, srn, formatDate(associationDate)))),
             value =>
               dataCacheConnector.save(request.externalId, RemovalDateId, value).flatMap { cacheMap =>
                 psaRemovalConnector.remove(PsaToBeRemovedFromScheme(request.psaId.id, pstr, value)).map { _ =>

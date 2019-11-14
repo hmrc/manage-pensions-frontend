@@ -21,21 +21,23 @@ import controllers.actions.{AuthAction, FakeAuthAction, FakeUnAuthorisedAction}
 import controllers.behaviours.ControllerWithNormalPageBehaviours
 import models.{Individual, Organization, OtherUser}
 import play.api.test.Helpers.{status, _}
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import viewmodels.RemovalViewModel
 import views.html.remove.cannot_be_removed
 
 class CanNotBeRemovedControllerSpec extends ControllerWithNormalPageBehaviours {
 
   import CanNotBeRemovedControllerSpec._
+  private val view = injector.instanceOf[cannot_be_removed]
 
   def fakeControllerAction(authAction: AuthAction = FakeUnAuthorisedAction()) = new CanNotBeRemovedController(
-    frontendAppConfig, messagesApi, authAction, FakeUserAnswersCacheConnector)
+    frontendAppConfig, messagesApi, authAction, FakeUserAnswersCacheConnector, stubMessagesControllerComponents(), view)
 
-  def individualViewAsString(): String = cannot_be_removed(viewModelIndividual, frontendAppConfig)(fakeRequest, messages).toString
+  def individualViewAsString(): String = view(viewModelIndividual)(fakeRequest, messages).toString
 
-  def organisationViewAsString(): String = cannot_be_removed(viewModelOrganisation, frontendAppConfig)(fakeRequest, messages).toString
+  def organisationViewAsString(): String = view(viewModelOrganisation)(fakeRequest, messages).toString
 
-  def removalDelayViewAsString(): String = cannot_be_removed(viewModelRemovalDelay, frontendAppConfig)(fakeRequest, messages).toString
+  def removalDelayViewAsString(): String = view(viewModelRemovalDelay)(fakeRequest, messages).toString
 
   "if reason is suspended and affinity group Individual" must {
 

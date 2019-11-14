@@ -16,6 +16,12 @@
 
 package controllers
 
+import connectors.{InvitationsCacheConnector, ListOfSchemesConnector}
+import controllers.actions.{AuthAction, FakeAuthAction}
+import models.{Invitation, ListOfSchemes, SchemeDetail, SchemeStatus}
+import org.mockito.Matchers._
+import org.mockito.Mockito._
+import org.scalatestplus.mockito.MockitoSugar
 import connectors.{FakeUserAnswersCacheConnector, ListOfSchemesConnector, MinimalPsaConnector}
 import controllers.actions.{AuthAction, DataRequiredActionImpl, FakeAuthAction}
 import models.{ListOfSchemes, SchemeDetail, SchemeStatus}
@@ -28,9 +34,11 @@ import play.api.mvc.Call
 import play.api.test.Helpers._
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import views.html.list_schemes
 
 import scala.concurrent.{ExecutionContext, Future}
+
 
 class ListSchemesControllerSpec extends ControllerSpecBase {
 
@@ -41,19 +49,19 @@ class ListSchemesControllerSpec extends ControllerSpecBase {
     when(fakeMinimalPsaConnector.getPsaNameFromPsaID(any())(any(), any())).thenReturn(Future.successful(Some(psaName)))
 
       "return OK and the correct view when there are no schemes" in {
-        val fixture = testFixture(this, psaIdNoSchemes)
+        val fixture = testFixture(psaIdNoSchemes)
         val result = fixture.controller.onPageLoad(fakeRequest)
 
         status(result) mustBe OK
-        contentAsString(result) mustBe viewAsString(this, emptySchemes)
+        contentAsString(result) mustBe viewAsString(emptySchemes)
       }
 
-      "return OK and the correct view when there are schemes with invitations" in {
-        val fixture = testFixture(this, psaIdWithSchemes)
+      "return OK and the correct view when there are schemes" in {
+        val fixture = testFixture(psaIdWithSchemes)
         val result = fixture.controller.onPageLoad(fakeRequest)
 
         status(result) mustBe OK
-        contentAsString(result) mustBe viewAsString(this, fullSchemes)
+        contentAsString(result) mustBe viewAsString(fullSchemes)
       }
   }
 
@@ -91,7 +99,7 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
       )
     )
 
-  def testFixture(app: ControllerSpecBase, psaId: String): TestFixture = new TestFixture with MockitoSugar {
+  def testFixture(psaId: String): TestFixture = new TestFixture with MockitoSugar {
 
     private def authAction(psaId: String): AuthAction = FakeAuthAction.createWithPsaId(psaId)
 
@@ -121,22 +129,27 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
       }
     }
 
+
     override val controller: ListSchemesController =
       new ListSchemesController(
         frontendAppConfig,
-        app.messagesApi,
+        messagesApi,
         authAction(psaId),
         getDataWithPsaName(psaId),
         listSchemesConnector(),
         fakeMinimalPsaConnector,
-        FakeUserAnswersCacheConnector
+        FakeUserAnswersCacheConnector,
+        stubMessagesControllerComponents(),
+        view
       )
+
 
   }
 
-  def viewAsString(app: ControllerSpecBase, schemes: List[SchemeDetail]): String =
-    list_schemes(frontendAppConfig, schemes, psaName)(app.fakeRequest, app.messages).toString()
+  val view: list_schemes = app.injector.instanceOf[list_schemes]
 
+  def viewAsString(schemes: List[SchemeDetail]): String =
+    view(schemes, psaName)(fakeRequest, messages).toString()
 
   val fakeMinimalPsaConnector: MinimalPsaConnector = mock[MinimalPsaConnector]
 

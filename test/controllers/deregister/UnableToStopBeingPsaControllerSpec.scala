@@ -20,6 +20,7 @@ import controllers.ControllerSpecBase
 import controllers.actions.FakeAuthAction
 import org.scalatest.concurrent.ScalaFutures
 import play.api.test.Helpers._
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import views.html.deregister.unableToStopBeingPsa
 
 class UnableToStopBeingPsaControllerSpec extends ControllerSpecBase with ScalaFutures {
@@ -38,14 +39,19 @@ class UnableToStopBeingPsaControllerSpec extends ControllerSpecBase with ScalaFu
 }
 
 object UnableToStopBeingPsaControllerSpec extends ControllerSpecBase {
+
+  val view: unableToStopBeingPsa = app.injector.instanceOf[unableToStopBeingPsa]
+
   private def controller =
     new UnableToStopBeingPsaController(
       frontendAppConfig,
       FakeAuthAction(),
-      messagesApi
+      messagesApi,
+      stubMessagesControllerComponents(),
+      view
     )
 
   private def viewAsString(): String =
-    unableToStopBeingPsa(frontendAppConfig)(fakeRequest, messages).toString
+    view()(fakeRequest, messages).toString
 
 }

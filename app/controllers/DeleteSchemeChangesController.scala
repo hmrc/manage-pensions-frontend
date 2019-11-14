@@ -26,9 +26,9 @@ import models.requests.DataRequest
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.{JsError, JsSuccess}
-import play.api.mvc.{Action, AnyContent, Result}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
 import views.html.deleteSchemeChanges
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -41,8 +41,10 @@ class DeleteSchemeChangesController @Inject()(
                                                authenticate: AuthAction,
                                                getData: DataRetrievalAction,
                                                requireData: DataRequiredAction,
-                                               formProvider: DeleteSchemeChangesFormProvider
-                                             )(implicit val ec: ExecutionContext) extends FrontendController with I18nSupport with Retrievals {
+                                               formProvider: DeleteSchemeChangesFormProvider,
+                                               val controllerComponents: MessagesControllerComponents,
+                                               view: deleteSchemeChanges
+                                             )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
 
   private lazy val overviewPage = Redirect(routes.SchemesOverviewController.onPageLoad())
   private lazy val postCall = routes.DeleteSchemeChangesController.onSubmit _
@@ -52,7 +54,7 @@ class DeleteSchemeChangesController @Inject()(
     implicit request =>
 
         getSchemeName(srn) { (psaName, schemeName) =>
-          Future.successful(Ok(deleteSchemeChanges(appConfig, form, schemeName, postCall(srn), psaName)))
+          Future.successful(Ok(view(form, schemeName, postCall(srn), psaName)))
         }
 
   }
@@ -76,7 +78,7 @@ class DeleteSchemeChangesController @Inject()(
       getSchemeName(srn) { (psaName, schemeName) =>
         form.bindFromRequest().fold(
           (formWithErrors: Form[_]) =>
-            Future.successful(BadRequest(deleteSchemeChanges(appConfig, formWithErrors, schemeName, postCall(srn), psaName))),
+            Future.successful(BadRequest(view(formWithErrors, schemeName, postCall(srn), psaName))),
           {
             case true =>
               updateConnector.removeAll(srn).flatMap { _ =>

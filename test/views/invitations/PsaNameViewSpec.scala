@@ -30,9 +30,11 @@ class PsaNameViewSpec extends QuestionViewBehaviours[String] {
   val formProvider = new PsaNameFormProvider()
   override val form = formProvider()
 
-  def createView: () => HtmlFormat.Appendable = () => psaName(frontendAppConfig, form, NormalMode)(fakeRequest, messages)
+  private val psaNameView = injector.instanceOf[psaName]
 
-  def createViewUsingForm: Form[_] => HtmlFormat.Appendable = (form: Form[_]) => psaName(frontendAppConfig, form, CheckMode)(fakeRequest, messages)
+  def createView: () => HtmlFormat.Appendable = () => psaNameView(form, NormalMode)(fakeRequest, messages)
+
+  def createViewUsingForm: Form[_] => HtmlFormat.Appendable = (form: Form[_]) => psaNameView(form, CheckMode)(fakeRequest, messages)
 
   "PsaName view" must {
 

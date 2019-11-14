@@ -16,10 +16,9 @@
 
 package identifiers
 
-import org.joda.time.LocalDate
+import java.time.LocalDate
 
 case object AssociatedDateId extends TypedIdentifier[LocalDate] {
 
   override def toString: String = "associatedDate"
-
 }

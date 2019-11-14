@@ -22,6 +22,12 @@ import controllers.actions._
 import identifiers.PSANameId
 import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.libs.json._
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
+import utils.Toggles
+import utils.annotations.PensionsSchemeCache
 import play.api.mvc.{Action, AnyContent}
 import services.SchemesOverviewService
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
@@ -34,9 +40,11 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
                                           service: SchemesOverviewService,
                                           authenticate: AuthAction,
                                           getData: DataRetrievalAction,
-                                          userAnswersCacheConnector: UserAnswersCacheConnector
+                                          userAnswersCacheConnector: UserAnswersCacheConnector,
+                                          val controllerComponents: MessagesControllerComponents,
+                                          view: schemesOverview
                                          )
-                                         (implicit val ec: ExecutionContext) extends FrontendController with I18nSupport {
+                                         (implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
 
 
@@ -51,7 +59,7 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
 
                 service.getTiles(psaId).flatMap { cards =>
                   userAnswersCacheConnector.save(request.externalId, PSANameId, name).map { _ =>
-                    Ok(schemesOverview(appConfig, name, cards))
+                    Ok(view(name, cards))
                   }
                 }
 

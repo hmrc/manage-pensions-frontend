@@ -30,11 +30,13 @@ class DeclarationViewSpec extends QuestionViewBehaviours[Boolean] {
   override val errorMessage = messages("messages__error__declaration__required")
   override val error = FormError("agree", messages("messages__error__declaration__required"))
 
+  private val declarationView = injector.instanceOf[declaration]
+
   def declarationView(haveWorkingKnowledge: Boolean = false, isMasterTrust: Boolean = false): () => HtmlFormat.Appendable = () =>
-    declaration(frontendAppConfig, haveWorkingKnowledge, isMasterTrust, form)(fakeRequest, messages)
+    declarationView(haveWorkingKnowledge, isMasterTrust, form)(fakeRequest, messages)
 
   private def declarationViewWithForm(form: Form[_]) =
-    declaration(frontendAppConfig, haveWorkingKnowledge = true, isMasterTrust = false, form)(fakeRequest, messages)
+    declarationView(haveWorkingKnowledge = true, isMasterTrust = false, form)(fakeRequest, messages)
 
   "declaration view" must {
 

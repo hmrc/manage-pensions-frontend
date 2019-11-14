@@ -14,17 +14,20 @@
  * limitations under the License.
  *@
 
-@import config.FrontendAppConfig
 @import uk.gov.hmrc.play.views.html._
+@import views.html._
 @import controllers.routes._
 @import models.Mode
 @import viewmodels.Message
 
-@(appConfig: FrontendAppConfig, inviteeName: String, schemeName: String)(implicit request: Request[_], messages: Messages)
+@this(
+    main_template: main_template
+)
+@(inviteeName: String, schemeName: String)(implicit request: Request[_], messages: Messages)
 
 @main_template(
     title = messages("messages__invitationDuplicate__title"),
-    appConfig = appConfig,
+
     bodyClasses = None) {
 
     @components.heading(Messages("messages__invitationDuplicate__heading", inviteeName))

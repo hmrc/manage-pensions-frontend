@@ -16,14 +16,16 @@
 
 package controllers.invitations
 
+import java.time.LocalDate
+
 import config.FrontendAppConfig
 import connectors.FakeUserAnswersCacheConnector
 import controllers.actions._
 import controllers.behaviours.ControllerWithNormalPageBehaviours
 import models.MinimalSchemeDetail
-import org.joda.time.LocalDate
 import play.api.mvc.Call
 import play.api.test.Helpers._
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.{DateHelper, UserAnswers}
 import views.html.invitations.invitation_success
 
@@ -41,7 +43,9 @@ class InvitationSuccessControllerSpec extends ControllerWithNormalPageBehaviours
     .minimalSchemeDetails(testSchemeDetail)
     .dataRetrievalAction
 
-  def viewAsString() = invitation_success(frontendAppConfig,
+  private val invitationSuccessView = injector.instanceOf[invitation_success]
+
+  def viewAsString() = invitationSuccessView(
     testInviteeName,
     testSchemeName,
     testExpiryDate(frontendAppConfig),
@@ -50,13 +54,15 @@ class InvitationSuccessControllerSpec extends ControllerWithNormalPageBehaviours
   def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
     new InvitationSuccessController(
-      messagesApi, frontendAppConfig, fakeAuth, dataRetrievalAction, requiredDateAction, FakeUserAnswersCacheConnector, navigator).onPageLoad(testSrn)
+      messagesApi, frontendAppConfig, fakeAuth, dataRetrievalAction, requiredDateAction, FakeUserAnswersCacheConnector, navigator,
+      stubMessagesControllerComponents(), invitationSuccessView).onPageLoad(testSrn)
   }
 
   def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
     new InvitationSuccessController(
-      messagesApi, frontendAppConfig, fakeAuth, dataRetrievalAction, requiredDateAction, FakeUserAnswersCacheConnector, navigator).onSubmit(testSrn)
+      messagesApi, frontendAppConfig, fakeAuth, dataRetrievalAction, requiredDateAction, FakeUserAnswersCacheConnector, navigator,
+      stubMessagesControllerComponents(), invitationSuccessView).onSubmit(testSrn)
   }
 
   def testExpiryDate(config: FrontendAppConfig): LocalDate = {

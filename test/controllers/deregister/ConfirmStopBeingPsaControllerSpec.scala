@@ -26,7 +26,7 @@ import models.{IndividualDetails, MinimalPSA}
 import org.scalatest.concurrent.ScalaFutures
 import play.api.data.Form
 import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsFormUrlEncoded, RequestHeader}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, BodyParsers, RequestHeader}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.PsaId
@@ -34,6 +34,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import views.html.deregister.confirmStopBeingPsa
 
 import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 
 class ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase with ScalaFutures {
 
@@ -159,6 +160,7 @@ object ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase {
       def apply(): AllowAccessForNonSuspendedUsersAction = new AllowAccessForNonSuspendedUsersAction(minimalPsaConnector)
     }
   }
+  val view = app.injector.instanceOf[confirmStopBeingPsa]
 
   private def controller(minimalPsaDetails: MinimalPSA = minimalPsaDetailsNone)(implicit hc: HeaderCarrier) = {
     val minimalDetailsConnector = fakeMinimalPsaConnector(minimalPsaDetails)
@@ -171,12 +173,14 @@ object ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase {
       fakeDeregistrationConnector,
       fakeTaxEnrolmentsConnector,
       fakeAllowAccess(minimalDetailsConnector),
-      FakeUserAnswersCacheConnector
+      FakeUserAnswersCacheConnector,
+      stubMessagesControllerComponents(),
+      view
     )
   }
 
   private def viewAsString(): String =
-    confirmStopBeingPsa(frontendAppConfig, form, "John Doe Doe")(fakeRequest, messages).toString
+    view(form, "John Doe Doe")(fakeRequest, messages).toString
 
 }
 

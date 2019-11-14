@@ -108,6 +108,7 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
 
 object ListSchemesViewSpec extends ViewSpecBase {
   val emptyList: List[SchemeDetail] = List.empty[SchemeDetail]
+  private val listSchemesview = injector.instanceOf[list_schemes]
 
   val fullList: List[SchemeDetail] = List(
     SchemeDetail(
@@ -183,12 +184,12 @@ object ListSchemesViewSpec extends ViewSpecBase {
       None
     )
   )
-  
+
   val psaName = "Test psa name"
-  
+
   def view(schemes: List[SchemeDetail] = emptyList)
           (implicit request: Request[_], messages: Messages): () => HtmlFormat.Appendable =
-    () => list_schemes(frontendAppConfig, schemes, psaName)
+    () => listSchemesview(schemes, psaName)
 
   def viewAsString(schemes: List[SchemeDetail] = emptyList)
                   (implicit request: Request[_], messages: Messages): String = {

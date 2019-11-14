@@ -16,16 +16,22 @@
 
 @import config.FrontendAppConfig
 @import uk.gov.hmrc.play.views.html._
-@import org.joda.time.LocalDate
+@import views.html._
+@import java.time.LocalDate
 @import utils.DateHelper
 @import controllers.routes._
 @import play.api.mvc.Call
 
-@(appConfig: FrontendAppConfig, inviteeName: String, schemeName: String, expiryDate: LocalDate, continue: Call)(implicit request: Request[_], messages: Messages)
+@this(
+main_template: main_template,
+formHelper: FormWithCSRF
+)
+
+@(inviteeName: String, schemeName: String, expiryDate: LocalDate, continue: Call)(implicit request: Request[_], messages: Messages)
 
 @main_template(
     title = messages("messages__invitationSuccess__title"),
-    appConfig = appConfig,
+
     bodyClasses = None
 ) {
 
@@ -39,7 +45,7 @@
 
     <p id="expiryDate">@Messages("messages__invitationSuccess__expiryDate", DateHelper.formatDate(expiryDate))</p>
 
-    @helpers.form(action = continue, 'autoComplete -> "off") {
+    @formHelper(action = continue, 'autoComplete -> "off") {
         @components.submit_button("site.continue")
     }
 

@@ -24,12 +24,13 @@ import identifiers.invitations.PSANameId
 import models.NormalMode
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.api.test.Helpers._
 import play.twirl.api.HtmlFormat
 import testhelpers.InvitationBuilder._
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.FakeNavigator
 import views.html.invitations.yourInvitations
 
@@ -37,15 +38,17 @@ import scala.concurrent.Future
 
 class YourInvitationsControllerSpec extends ControllerSpecBase with MockitoSugar {
 
-  val nextCall = Call("GET", "www.example.com")
-  val psaName = "Test Psa Name"
-  val navigator = new FakeNavigator(nextCall, NormalMode)
+  private val nextCall = Call("GET", "www.example.com")
+  private val psaName = "Test Psa Name"
+  private val navigator = new FakeNavigator(nextCall, NormalMode)
 
-  val mockInvitationsCacheConnector: InvitationsCacheConnector = mock[InvitationsCacheConnector]
+  private val mockInvitationsCacheConnector = mock[InvitationsCacheConnector]
 
   val dataRetrievalAction = new FakeDataRetrievalAction(Some(Json.obj(
     PSANameId.toString -> "Test Psa Name"
   )))
+
+  private val yourInvitationsView = injector.instanceOf[yourInvitations]
 
   private def controller(authAction: AuthAction = FakeAuthAction()): YourInvitationsController = {
 
@@ -57,11 +60,13 @@ class YourInvitationsControllerSpec extends ControllerSpecBase with MockitoSugar
       new DataRequiredActionImpl,
       mockInvitationsCacheConnector,
       FakeUserAnswersCacheConnector,
-      navigator
+      navigator,
+      stubMessagesControllerComponents(),
+      yourInvitationsView
     )
   }
 
-  private def viewAsString: () => HtmlFormat.Appendable = () => yourInvitations(frontendAppConfig, invitationList, psaName)(fakeRequest, messages)
+  private def viewAsString: () => HtmlFormat.Appendable = () => yourInvitationsView(invitationList, psaName)(fakeRequest, messages)
 
   "YourInvitationsController" must {
 

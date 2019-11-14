@@ -16,28 +16,27 @@
 
 package utils.navigators
 
-import connectors.UserAnswersCacheConnector
 import controllers.invitations.routes._
 import controllers.routes._
+import identifiers.Identifier
 import identifiers.invitations._
 import javax.inject.{Inject, Singleton}
 import models.NormalMode
-import utils.Navigator
+import play.api.mvc.Call
+import utils.{Navigator, UserAnswers}
 
 @Singleton
-class InvitationNavigator @Inject()(val dataCacheConnector: UserAnswersCacheConnector) extends Navigator {
+class InvitationNavigator @Inject() extends Navigator {
 
-  override def routeMap(from: NavigateFrom): Option[NavigateTo] = from.id match {
-    case InviteeNameId => NavigateTo.dontSave(PsaIdController.onPageLoad(NormalMode))
-    case InviteePSAId => NavigateTo.dontSave(CheckYourAnswersController.onPageLoad())
-    case CheckYourAnswersId(srn) => NavigateTo.dontSave(InvitationSuccessController.onPageLoad(srn))
-    case InvitationSuccessId(srn) => NavigateTo.dontSave(SchemeDetailsController.onPageLoad(srn))
-    case _ => NavigateTo.dontSave(controllers.routes.SessionExpiredController.onPageLoad())
+  override def routeMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
+    case InviteeNameId => PsaIdController.onPageLoad(NormalMode)
+    case InviteePSAId => CheckYourAnswersController.onPageLoad()
+    case CheckYourAnswersId(srn) => InvitationSuccessController.onPageLoad(srn)
+    case InvitationSuccessId(srn) => SchemeDetailsController.onPageLoad(srn)
   }
 
-  override protected def editRouteMap(from: NavigateFrom): Option[NavigateTo] = from.id match {
-    case InviteeNameId => NavigateTo.dontSave(CheckYourAnswersController.onPageLoad())
-    case InviteePSAId => NavigateTo.dontSave(CheckYourAnswersController.onPageLoad())
-    case _ => NavigateTo.dontSave(SessionExpiredController.onPageLoad())
+  override protected def editRouteMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
+    case InviteeNameId => CheckYourAnswersController.onPageLoad()
+    case InviteePSAId => CheckYourAnswersController.onPageLoad()
   }
 }

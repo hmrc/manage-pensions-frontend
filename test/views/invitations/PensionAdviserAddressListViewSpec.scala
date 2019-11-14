@@ -33,6 +33,8 @@ class PensionAdviserAddressListViewSpec extends ViewBehaviours {
   private val addressIndexes = Seq.range(0, 2)
   private def call = controllers.invitations.routes.AdviserManualAddressController.onPageLoad(NormalMode, false)
 
+  private val view = injector.instanceOf[pension_adviser_address_list]
+
   def address(postCode: String): TolerantAddress = TolerantAddress(
     Some("address line 1"),
     Some("address line 2"),
@@ -44,8 +46,7 @@ class PensionAdviserAddressListViewSpec extends ViewBehaviours {
 
   private def createView: () => HtmlFormat.Appendable =
     () =>
-      pension_adviser_address_list(
-        frontendAppConfig,
+      view(
         form,
         addresses,
         NormalMode
@@ -53,8 +54,7 @@ class PensionAdviserAddressListViewSpec extends ViewBehaviours {
 
   private def createViewUsingForm: Form[_] => HtmlFormat.Appendable =
     (form: Form[_]) =>
-      pension_adviser_address_list(
-        frontendAppConfig,
+      view(
         form,
         addresses,
         NormalMode

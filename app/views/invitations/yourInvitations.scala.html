@@ -16,15 +16,21 @@
 
 @import config.FrontendAppConfig
 @import uk.gov.hmrc.play.views.html._
+@import views.html._
 @import controllers.invitations.routes._
 @import models.Invitation
 @import utils.DateHelper
 
-@(appConfig: FrontendAppConfig, invitationsList: List[Invitation], psaName: String)(implicit request: Request[_], messages: Messages)
+@this(
+main_template: main_template,
+appConfig: FrontendAppConfig
+)
+
+@(invitationsList: List[Invitation], psaName: String)(implicit request: Request[_], messages: Messages)
 
 @main_template(
     title = s"${messages("messages__yourInvitations__title")}",
-    appConfig = appConfig,
+
     bodyClasses = None) {
 
     @components.back_link()

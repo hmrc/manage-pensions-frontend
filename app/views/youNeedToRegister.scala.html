@@ -16,18 +16,24 @@
 
 @import config.FrontendAppConfig
 @import uk.gov.hmrc.play.views.html._
+@import views.html._
 @import controllers.routes._
 @import models.Mode
 @import viewmodels.Message
 
-@(appConfig: FrontendAppConfig)(implicit request: Request[_], messages: Messages)
+@this(
+main_template: main_template,
+appConfig: FrontendAppConfig
+)
+
+@()(implicit request: Request[_], messages: Messages)
 
 @psaGovUkLink = {<a id="psa-gov-uk-link" href="@appConfig.pensionAdministratorGovUkLink">@messages("messages__youNeedToRegister__p1__link")</a>}
 @pspGovUkLink = {<a id="psp-gov-uk-link" href="@appConfig.pensionPractitionerGovUkLink">@messages("messages__youNeedToRegister__p2__link")</a>}
 
 @main_template(
     title = messages("messages__youNeedToRegister__title"),
-    appConfig = appConfig,
+
     bodyClasses = None) {
 
     @components.heading(messages("messages__youNeedToRegister__heading"))

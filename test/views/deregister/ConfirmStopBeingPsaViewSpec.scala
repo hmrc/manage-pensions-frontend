@@ -28,16 +28,16 @@ class ConfirmStopBeingPsaViewSpec extends YesNoViewBehaviours {
   val formProvider = new ConfirmStopBeingPsaFormProvider
   val form: Form[Boolean] = formProvider()
 
+  private val confirmStopBeingPsaView = injector.instanceOf[confirmStopBeingPsa]
+
   private def createView() =
-    () => confirmStopBeingPsa(
-      frontendAppConfig,
+    () => confirmStopBeingPsaView(
       form,
       "psaName"
     )(fakeRequest, messages)
 
   private def createViewUsingForm =
-    (form: Form[_]) => confirmStopBeingPsa(
-      frontendAppConfig,
+    (form: Form[_]) => confirmStopBeingPsaView(
       form,
       "psaName"
     )(fakeRequest, messages)
