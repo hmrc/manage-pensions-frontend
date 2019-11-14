@@ -25,11 +25,10 @@ import models.{LastUpdatedDate, Link, MinimalPSA}
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTime, DateTimeZone, LocalDate}
 import play.api.Logger
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.libs.json.{JsError, JsResultException, JsSuccess, JsValue}
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{AnyContent, Result}
-import play.twirl.api.Html
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.annotations.PensionsSchemeCache
 import viewmodels.{CardViewModel, Message}
@@ -37,18 +36,17 @@ import viewmodels.{CardViewModel, Message}
 import scala.concurrent.{ExecutionContext, Future}
 
 class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
-                                       override val messagesApi: MessagesApi,
                                        @PensionsSchemeCache dataCacheConnector: UserAnswersCacheConnector,
                                        minimalPsaConnector: MinimalPsaConnector,
                                        pensionSchemeVarianceLockConnector: PensionSchemeVarianceLockConnector,
                                        updateConnector: UpdateSchemeCacheConnector,
                                        deregistrationConnector: DeregistrationConnector,
                                        invitationsCacheConnector: InvitationsCacheConnector
-                                      )(implicit ec: ExecutionContext) extends I18nSupport {
+                                      )(implicit ec: ExecutionContext) {
 
   private val formatter = DateTimeFormat.forPattern("dd MMMM YYYY")
 
-  def getTiles(psaId: String)(implicit request: OptionalDataRequest[AnyContent], hc: HeaderCarrier): Future[Seq[CardViewModel]] =
+  def getTiles(psaId: String)(implicit request: OptionalDataRequest[AnyContent], hc: HeaderCarrier, messages: Messages): Future[Seq[CardViewModel]] =
     for {
       invitationLink <- invitationsLink
       deregistrationLink <- deregisterLink(psaId)
@@ -75,7 +73,7 @@ class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
 
 
   //TILES HELPER METHODS
-  private def adminCard(invitationLink: Seq[Link], deregistrationLink: Seq[Link], psaId: String): CardViewModel =
+  private def adminCard(invitationLink: Seq[Link], deregistrationLink: Seq[Link], psaId: String)(implicit messages: Messages): CardViewModel =
 
     CardViewModel(
       id = "administrator-card",
@@ -87,7 +85,7 @@ class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
       ) ++ invitationLink ++ deregistrationLink
     )
 
-  private def schemeCard(subscriptionLinks: Seq[Link], variationLinks: Seq[Link]): CardViewModel =
+  private def schemeCard(subscriptionLinks: Seq[Link], variationLinks: Seq[Link])(implicit messages: Messages): CardViewModel =
     CardViewModel(
       id = "scheme-card",
       heading = Message("messages__schemeOverview__scheme_heading"),

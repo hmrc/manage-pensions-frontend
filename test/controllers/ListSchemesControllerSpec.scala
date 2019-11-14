@@ -16,22 +16,12 @@
 
 package controllers
 
-import connectors.{InvitationsCacheConnector, ListOfSchemesConnector}
-import controllers.actions.{AuthAction, FakeAuthAction}
-import models.{Invitation, ListOfSchemes, SchemeDetail, SchemeStatus}
-import org.mockito.Matchers._
-import org.mockito.Mockito._
-import org.scalatestplus.mockito.MockitoSugar
 import connectors.{FakeUserAnswersCacheConnector, ListOfSchemesConnector, MinimalPsaConnector}
-import controllers.actions.{AuthAction, DataRequiredActionImpl, FakeAuthAction}
+import controllers.actions.{AuthAction, FakeAuthAction}
 import models.{ListOfSchemes, SchemeDetail, SchemeStatus}
-import org.scalatest.mockito.MockitoSugar
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
-import org.scalatest.mockito.MockitoSugar
-import play.api.libs.json.Json
-import play.api.mvc.Call
-import play.api.test.Helpers._
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents

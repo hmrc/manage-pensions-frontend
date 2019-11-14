@@ -22,15 +22,9 @@ import controllers.actions._
 import identifiers.PSANameId
 import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.libs.json._
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
-import utils.Toggles
-import utils.annotations.PensionsSchemeCache
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SchemesOverviewService
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import views.html.schemesOverview
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -47,7 +41,6 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
                                          (implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
 
-
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
 
@@ -55,16 +48,16 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
 
       service.getPsaName(psaId).flatMap {
 
-              case Some(name) =>
+        case Some(name) =>
 
-                service.getTiles(psaId).flatMap { cards =>
-                  userAnswersCacheConnector.save(request.externalId, PSANameId, name).map { _ =>
-                    Ok(view(name, cards))
-                  }
-                }
-
-              case _ => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+          service.getTiles(psaId).flatMap { cards =>
+            userAnswersCacheConnector.save(request.externalId, PSANameId, name).map { _ =>
+              Ok(view(name, cards))
             }
+          }
+
+        case _ => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+      }
   }
 
   def onClickCheckIfSchemeCanBeRegistered: Action[AnyContent] = (authenticate andThen getData).async {

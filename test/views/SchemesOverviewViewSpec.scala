@@ -63,8 +63,6 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
     )
   )
 
-  private val schemesOverviewView = injector.instanceOf[schemesOverview]
-
   private val schemeCardWithActiveChanges = CardViewModel(
     id = "scheme-card",
     heading = Message("messages__schemeOverview__scheme_heading"),
@@ -82,7 +80,7 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
   )
   private val schemesOverviewView = injector.instanceOf[schemesOverview]
 
-  def createView(variationDetails:Option[VariationDetails] = None): () => HtmlFormat.Appendable = () =>
+  def createView: () => HtmlFormat.Appendable = () =>
     schemesOverviewView(psaName, Seq(adminCard, schemeCardWithActiveChanges))(fakeRequest, messages)
 
   def createFreshView: () => HtmlFormat.Appendable = () => schemesOverviewView(psaName, Seq(adminCard, schemeCardWithNoActiveChanges))(fakeRequest, messages)

@@ -27,19 +27,13 @@ import org.mockito.Matchers.{eq => eqTo, _}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.Configuration
-import play.api.inject.bind
-import play.api.libs.json.{JsNumber, Json}
-import play.api.mvc.Call
-import play.api.test.FakeRequest
 import play.api.libs.json.Json
 import play.api.mvc.Results.Redirect
 import play.api.test.Helpers.{contentAsString, _}
 import services.SchemesOverviewService
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import viewmodels.{CardViewModel, Message}
 import views.html.schemesOverview
-import play.api.mvc.Results.Ok
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 
 import scala.concurrent.Future
 
@@ -51,17 +45,12 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
   val fakeUserAnswersCacheConnector: UserAnswersCacheConnector = mock[UserAnswersCacheConnector]
   val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
 
-
-  private val updateConnector = mock[UpdateSchemeCacheConnector]
-
   private val view: schemesOverview = app.injector.instanceOf[schemesOverview]
 
   def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): SchemesOverviewController =
     new SchemesOverviewController(appConfig, messagesApi, fakeSchemesOverviewService, FakeAuthAction(),
       dataRetrievalAction, fakeUserAnswersCacheConnector, stubMessagesControllerComponents(),
       view)
-
-  val deleteDate: String = DateTime.now(DateTimeZone.UTC).plusDays(appConfig.daysDataSaved).toString(formatter)
 
   def viewAsString(): String = view(
     psaName,
@@ -72,7 +61,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
   "SchemesOverview Controller" when {
     "onPageLoad" must {
       "return OK and the correct tiles" in {
-        when(fakeSchemesOverviewService.getTiles(eqTo(psaId))(any(), any())).thenReturn(Future.successful(Seq(adminCard, schemeCard)))
+        when(fakeSchemesOverviewService.getTiles(eqTo(psaId))(any(), any(), any())).thenReturn(Future.successful(Seq(adminCard, schemeCard)))
         when(fakeSchemesOverviewService.getPsaName(eqTo(psaId))(any()))
           .thenReturn(Future.successful(Some(psaName)))
         when(fakeUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(Json.obj()))
