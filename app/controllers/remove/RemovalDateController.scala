@@ -19,7 +19,7 @@ package controllers.remove
 import java.time.LocalDate
 
 import config.FrontendAppConfig
-import connectors.{PsaRemovalConnector, UserAnswersCacheConnector}
+import connectors.{PensionSchemeVarianceLockConnector, PsaRemovalConnector, UpdateSchemeCacheConnector, UserAnswersCacheConnector}
 import controllers.Retrievals
 import controllers.actions._
 import forms.remove.RemovalDateFormProvider
@@ -49,9 +49,11 @@ class RemovalDateController @Inject()(appConfig: FrontendAppConfig,
                                       requireData: DataRequiredAction,
                                       formProvider: RemovalDateFormProvider,
                                       psaRemovalConnector: PsaRemovalConnector,
+                                      updateConnector: UpdateSchemeCacheConnector,
+                                      lockConnector: PensionSchemeVarianceLockConnector,
                                       val controllerComponents: MessagesControllerComponents,
                                       view: removalDate)(
-  implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
+                                       implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
 
   private def form(schemeOpenDate: LocalDate) = formProvider(schemeOpenDate, appConfig.earliestDatePsaRemoval)
 
@@ -70,15 +72,25 @@ class RemovalDateController @Inject()(appConfig: FrontendAppConfig,
   def onSubmit: Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
       (SchemeNameId and PSANameId and SchemeSrnId and PSTRId and AssociatedDateId).retrieve.right.map {
-        case schemeName ~ psaName ~ srn ~ pstr ~ associationDate=>
+        case schemeName ~ psaName ~ srn ~ pstr ~ associationDate =>
           form(associationDate).bindFromRequest().fold(
             (formWithErrors: Form[_]) =>
               Future.successful(BadRequest(view(formWithErrors, psaName, schemeName, srn, formatDate(associationDate)))),
             value =>
               dataCacheConnector.save(request.externalId, RemovalDateId, value).flatMap { cacheMap =>
-                psaRemovalConnector.remove(PsaToBeRemovedFromScheme(request.psaId.id, pstr, value)).map { _ =>
-                  Redirect(navigator.nextPage(RemovalDateId, NormalMode, UserAnswers(cacheMap)))
+                psaRemovalConnector.remove(PsaToBeRemovedFromScheme(request.psaId.id, pstr, value)).flatMap { _ =>
+                  // Iff this scheme (i.e. not another scheme) is locked by
+                  // THIS psa (i.e. not another PSA) then remove data from update cache and remove the lock
+                  val updateDataAndlockRemovalResult = lockConnector.getLockByPsa(request.psaId.id).map {
+                    case Some(lockedSchemeVariance) if lockedSchemeVariance.srn == srn =>
+                        updateConnector.removeAll(srn).map(_ => lockConnector.releaseLock(request.psaId.id, srn))
+                    case None => Future.successful(())
+                  }
+                  updateDataAndlockRemovalResult.map { _ =>
+                    Redirect(navigator.nextPage(RemovalDateId, NormalMode, UserAnswers(cacheMap)))
+                  }
                 }
+
               }
           )
       }
