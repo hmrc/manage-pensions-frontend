@@ -20,7 +20,7 @@ import config.FrontendAppConfig
 import connectors.{InvitationsCacheConnector, UserAnswersCacheConnector}
 import controllers.actions._
 import identifiers.SchemeSrnId
-import identifiers.invitations.PSANameId
+import identifiers.PSANameId
 import javax.inject.Inject
 import models.{NormalMode, SchemeReferenceNumber}
 import play.api.i18n.{I18nSupport, MessagesApi}

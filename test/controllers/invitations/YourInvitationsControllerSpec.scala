@@ -20,7 +20,7 @@ import connectors.{FakeUserAnswersCacheConnector, InvitationsCacheConnector}
 import controllers.ControllerSpecBase
 import controllers.actions._
 import identifiers.SchemeSrnId
-import identifiers.invitations.PSANameId
+import identifiers.PSANameId
 import models.NormalMode
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
