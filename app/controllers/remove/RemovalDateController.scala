@@ -79,12 +79,10 @@ class RemovalDateController @Inject()(appConfig: FrontendAppConfig,
             value =>
               dataCacheConnector.save(request.externalId, RemovalDateId, value).flatMap { cacheMap =>
                 psaRemovalConnector.remove(PsaToBeRemovedFromScheme(request.psaId.id, pstr, value)).flatMap { _ =>
-                  // Iff this scheme (i.e. not another scheme) is locked by
-                  // THIS psa (i.e. not another PSA) then remove data from update cache and remove the lock
                   val updateDataAndlockRemovalResult = lockConnector.getLockByPsa(request.psaId.id).map {
                     case Some(lockedSchemeVariance) if lockedSchemeVariance.srn == srn =>
                         updateConnector.removeAll(srn).map(_ => lockConnector.releaseLock(request.psaId.id, srn))
-                    case None => Future.successful(())
+                    case _ => Future.successful(())
                   }
                   updateDataAndlockRemovalResult.map { _ =>
                     Redirect(navigator.nextPage(RemovalDateId, NormalMode, UserAnswers(cacheMap)))

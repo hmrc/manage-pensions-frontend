@@ -24,9 +24,10 @@ import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.remove.RemovalDateFormProvider
 import identifiers.remove.RemovalDateId
 import models.{PsaToBeRemovedFromScheme, SchemeVariance}
+import org.mockito.Matchers
 import org.mockito.Matchers.any
-import org.mockito.Mockito
-import org.mockito.Mockito.{times, verify, when}
+import org.mockito.Mockito.{reset, times, verify, when}
+import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito._
 import play.api.data.Form
 import play.api.libs.json.Json
@@ -42,7 +43,7 @@ import views.html.remove.removalDate
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class RemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours with MockitoSugar {
+class RemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours with MockitoSugar with BeforeAndAfterEach{
 
   import RemovalDateControllerSpec._
 
@@ -73,6 +74,11 @@ class RemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours wit
   private def viewAsString(form: Form[LocalDate]): String =
     view(form, psaName, schemeName, srn, formatDate(associationDate))(fakeRequest, messages).toString
 
+  override def beforeEach(): Unit = {
+    reset(mockedPensionSchemeVarianceLockConnector)
+    reset(mockedUpdateSchemeCacheConnector)
+    when(mockedPensionSchemeVarianceLockConnector.getLockByPsa(any())(any(),any())).thenReturn(Future.successful(None))
+  }
 
   behave like controllerWithOnPageLoadMethodWithoutPrePopulation(onPageLoadAction,
     userAnswer.dataRetrievalAction, form(associationDate, frontendAppConfig.earliestDatePsaRemoval), viewAsString)
@@ -83,23 +89,37 @@ class RemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours wit
   behave like controllerThatSavesUserAnswers(onSaveAction, postRequest, RemovalDateId, date)
 
   "controller" must {
-    "remove lock and cached update data if present" in {
-      val sv = SchemeVariance(psaId = "", srn = srn)
+    "remove lock and cached update data if present and lock and updated scheme owned by PSA" in {
+      val sv = SchemeVariance(psaId = "A0000000", srn = srn)
 
-      when(mockedPensionSchemeVarianceLockConnector.getLockByPsa(any())(any(),any())).thenReturn(Future.successful(Some(sv)))
-      when(mockedPensionSchemeVarianceLockConnector.releaseLock(any(), any())(any(),any())).thenReturn(Future.successful(()))
-      when(mockedUpdateSchemeCacheConnector.removeAll(any())(any(),any())).thenReturn(Future.successful(Ok("")))
+      when(mockedPensionSchemeVarianceLockConnector.getLockByPsa(Matchers.eq("A0000000"))(any(),any())).thenReturn(Future.successful(Some(sv)))
+      when(mockedPensionSchemeVarianceLockConnector.releaseLock(Matchers.eq("A0000000"), Matchers.eq(srn))(any(),any())).thenReturn(Future.successful(()))
+      when(mockedUpdateSchemeCacheConnector.removeAll(Matchers.eq(srn))(any(),any())).thenReturn(Future.successful(Ok("")))
 
       val result = onSubmitAction(data, FakeAuthAction())(postRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(onwardRoute.url)
 
-      verify(mockedPensionSchemeVarianceLockConnector, times(1)).releaseLock(any(), any())(any(),any())
-      verify(mockedUpdateSchemeCacheConnector, times(1)).removeAll(any())(any(),any())
+      verify(mockedPensionSchemeVarianceLockConnector, times(1)).releaseLock(Matchers.eq("A0000000"), Matchers.eq(srn))(any(),any())
+      verify(mockedUpdateSchemeCacheConnector, times(1)).removeAll(Matchers.eq(srn))(any(),any())
+    }
+
+    "NOT remove lock and cached update data if present and lock but DIFFERENT updated scheme owned by PSA" in {
+      val anotherSrn = "test srn 2"
+      val sv = SchemeVariance(psaId = "A0000000", srn = anotherSrn)
+
+      when(mockedPensionSchemeVarianceLockConnector.getLockByPsa(Matchers.eq("A0000000"))(any(),any())).thenReturn(Future.successful(Some(sv)))
+
+      val result = onSubmitAction(data, FakeAuthAction())(postRequest)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(onwardRoute.url)
+
+      verify(mockedPensionSchemeVarianceLockConnector, times(0)).releaseLock(any(), any())(any(),any())
+      verify(mockedUpdateSchemeCacheConnector, times(0)).removeAll(any())(any(),any())
     }
   }
-
 }
 
 object RemovalDateControllerSpec extends MockitoSugar {
@@ -136,13 +156,7 @@ object RemovalDateControllerSpec extends MockitoSugar {
     override def remove(psaToBeRemoved: PsaToBeRemovedFromScheme)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = Future(())
   }
 
-  val mockedPensionSchemeVarianceLockConnector: PensionSchemeVarianceLockConnector = {
-    val mockedConnector = mock[PensionSchemeVarianceLockConnector]
-    when(mockedConnector.getLockByPsa(any())(any(),any())).thenReturn(Future.successful(None))
-    mockedConnector
-  }
+  val mockedPensionSchemeVarianceLockConnector: PensionSchemeVarianceLockConnector =
+    mock[PensionSchemeVarianceLockConnector]
   val mockedUpdateSchemeCacheConnector: UpdateSchemeCacheConnector = mock[UpdateSchemeCacheConnector]
 }
-
-
-
