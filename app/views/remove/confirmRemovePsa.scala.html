@@ -32,6 +32,8 @@
 
     @formHelper(action = controllers.remove.routes.ConfirmRemovePsaController.onSubmit(), 'autoComplete -> "off") {
 
+        @components.back_link()
+
         @components.error_summary(form.errors)
 
         @components.heading(messages("messages__confirmRemovePsa__heading", psaName, schemeName))

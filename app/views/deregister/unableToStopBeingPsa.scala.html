@@ -31,6 +31,7 @@ appConfig: FrontendAppConfig
 @main_template(
 title = messages("messages__unableToStopBeingPsa__title")
 ) {
+    @components.back_link()
 
     @components.heading(messages("messages__unableToStopBeingPsa__heading"))
 

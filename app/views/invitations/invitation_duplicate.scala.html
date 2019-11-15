@@ -29,7 +29,7 @@
     title = messages("messages__invitationDuplicate__title"),
 
     bodyClasses = None) {
-
+    @components.back_link()
     @components.heading(Messages("messages__invitationDuplicate__heading", inviteeName))
 
     <p id="schemeName">@Messages("messages__invitationDuplicate__schemeName", inviteeName, schemeName)</p>

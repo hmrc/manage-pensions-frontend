@@ -30,6 +30,7 @@
     title = messages("messages__invitationAccepted__title"),
 
     bodyClasses = None) {
+    @components.back_link()
 
     <div class="govuk-box-highlight">
         @components.heading(Messages("messages__invitationAccepted__heading", schemeName))
