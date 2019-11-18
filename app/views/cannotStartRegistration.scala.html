@@ -29,7 +29,7 @@
 
 @main_template(
     title = messages("messages__cannotStartRegistration__title")) {
-
+    @components.back_link()
     @components.heading(messages("messages__cannotStartRegistration__heading"))
 
     <p>@messages("messages__cannotStartRegistration__p1")</p>

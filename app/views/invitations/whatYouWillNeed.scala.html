@@ -34,6 +34,8 @@ appConfig: FrontendAppConfig
 
         @formHelper(action = controllers.invitations.routes.WhatYouWillNeedController.onSubmit, 'autoComplete -> "off") {
 
+        @components.back_link()
+
             @components.heading(messages("messages__whatYouWillNeed__heading"))
 
             <p>@messages("messages__whatYouWillNeed__lede")</p>

@@ -33,7 +33,7 @@ appConfig: FrontendAppConfig
     title = messages(viewModel.titleMessageKey),
 
     bodyClasses = None) {
-
+    @components.back_link()
     @components.heading(messages(viewModel.headingMessageKey))
 
     <p>@messages(viewModel.p1MessageKey)</p>

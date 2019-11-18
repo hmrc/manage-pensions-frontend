@@ -32,7 +32,7 @@ appConfig: FrontendAppConfig
     title = messages("messages__psaAlreadyAssociated__title"),
 
     bodyClasses = None) {
-
+    @components.back_link()
     @components.heading(Messages("messages__psaAlreadyAssociated__heading", inviteeName))
     <p id="schemeName">@Messages("messages__psaAlreadyAssociated__schemeName", inviteeName, schemeName)</p>
     <p id="inviteInformation">@Messages("messages__psaAlreadyAssociated__inviteInformation")</p>
