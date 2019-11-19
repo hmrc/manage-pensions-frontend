@@ -21,7 +21,8 @@ import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
-import identifiers.invitations.{PSANameId, SchemeNameId}
+import identifiers.PSANameId
+import identifiers.invitations.SchemeNameId
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}

@@ -20,7 +20,9 @@ import config.FrontendAppConfig
 import connectors.{PensionSchemeVarianceLockConnector, UpdateSchemeCacheConnector}
 import controllers.actions._
 import forms.DeleteSchemeChangesFormProvider
+import identifiers.PSANameId
 import javax.inject.Inject
+import models.requests.DataRequest
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.{JsError, JsSuccess}
@@ -48,31 +50,35 @@ class DeleteSchemeChangesController @Inject()(
   private lazy val postCall = routes.DeleteSchemeChangesController.onSubmit _
   private val form: Form[Boolean] = formProvider()
 
-  def onPageLoad(srn: String): Action[AnyContent] = (authenticate andThen getData).async {
+  def onPageLoad(srn: String): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
-      getSchemeName(srn) { schemeName =>
-        Future.successful(Ok(view(form, schemeName, postCall(srn))))
-      }
-  }
 
-  private def getSchemeName(srn: String)(block: String => Future[Result])
-                           (implicit hc: HeaderCarrier): Future[Result] = {
-    updateConnector.fetch(srn).flatMap {
-      case None => Future.successful(overviewPage)
-      case Some(data) =>
-        (data \ "schemeName").validate[String] match {
-          case JsSuccess(name, _) => block(name)
-          case JsError(_) => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+        getSchemeName(srn) { (psaName, schemeName) =>
+          Future.successful(Ok(view(form, schemeName, postCall(srn), psaName)))
         }
-    }
+
   }
 
-  def onSubmit(srn: String): Action[AnyContent] = (authenticate andThen getData).async {
+  private def getSchemeName(srn: String)(block: (String, String) => Future[Result])
+                           (implicit request: DataRequest[AnyContent], hc: HeaderCarrier): Future[Result] =
+    request.userAnswers.get(PSANameId).map { psaName =>
+      updateConnector.fetch(srn).flatMap {
+        case None => Future.successful(overviewPage)
+        case Some(data) =>
+          (data \ "schemeName").validate[String] match {
+            case JsSuccess(name, _) =>
+              block(psaName, name)
+            case JsError(_) => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+          }
+      }
+    }.getOrElse(Future.successful(overviewPage))
+
+  def onSubmit(srn: String): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
-      getSchemeName(srn) { schemeName =>
+      getSchemeName(srn) { (psaName, schemeName) =>
         form.bindFromRequest().fold(
           (formWithErrors: Form[_]) =>
-            Future.successful(BadRequest(view(formWithErrors, schemeName, postCall(srn)))),
+            Future.successful(BadRequest(view(formWithErrors, schemeName, postCall(srn), psaName))),
           {
             case true =>
               updateConnector.removeAll(srn).flatMap { _ =>

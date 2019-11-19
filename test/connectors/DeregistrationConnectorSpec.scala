@@ -20,8 +20,8 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import org.scalatestplus.scalacheck.Checkers
 import org.scalatest.{AsyncFlatSpec, Matchers}
 import play.api.http.Status
-import play.api.libs.json.Json
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
+import play.api.libs.json.{JsBoolean, JsResultException, JsString, Json}
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, Upstream5xxResponse}
 import utils.WireMockHelper
 
 class DeregistrationConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper with Checkers {
@@ -61,6 +61,52 @@ class DeregistrationConnectorSpec extends AsyncFlatSpec with Matchers with WireM
       connector.stopBeingPSA(psaId)
     }
   }
+
+  "canDeRegister" should "return the boolean true/false for a valid response" in {
+
+    server.stubFor(
+      get(urlEqualTo(canRegisterUrl))
+        .willReturn(
+          ok(Json.stringify(JsBoolean(true)))
+        )
+    )
+
+    val connector = injector.instanceOf[DeregistrationConnector]
+
+    connector.canDeRegister(psaId).map(response =>
+      response shouldBe true
+    )
+  }
+
+  it should "throw JsResultException is the data returned is not boolean" in {
+    server.stubFor(
+      get(urlEqualTo(canRegisterUrl))
+        .willReturn(
+          ok(Json.stringify(JsString("invalid data")))
+        )
+    )
+
+    val connector = injector.instanceOf[DeregistrationConnector]
+
+    recoverToSucceededIf[JsResultException] {
+      connector.canDeRegister(psaId)
+    }
+  }
+
+  it should "throw a Upstream5xxResponse if service unavailable is returned" in {
+    server.stubFor(
+      get(urlEqualTo(canRegisterUrl))
+        .willReturn(
+          aResponse()
+            .withStatus(Status.SERVICE_UNAVAILABLE)
+        )
+    )
+    val connector = injector.instanceOf[DeregistrationConnector]
+
+    recoverToSucceededIf[Upstream5xxResponse] {
+      connector.canDeRegister(psaId)
+    }
+  }
 }
 
 
@@ -69,6 +115,7 @@ object DeregistrationConnectorSpec {
 
   private val psaId = "238DAJFASS"
   private val deregisterUrl = s"/pension-administrator/deregister-psa/$psaId"
+  private val canRegisterUrl = s"/pension-administrator/can-deregister/$psaId"
 
   def errorResponse(code: String): String = {
     Json.stringify(

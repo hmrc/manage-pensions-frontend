@@ -26,7 +26,7 @@ main_template: main_template,
 appConfig: FrontendAppConfig
 )
 
-@(invitationsList: List[Invitation])(implicit request: Request[_], messages: Messages)
+@(invitationsList: List[Invitation], psaName: String)(implicit request: Request[_], messages: Messages)
 
 @main_template(
     title = s"${messages("messages__yourInvitations__title")}",
@@ -47,4 +47,6 @@ appConfig: FrontendAppConfig
             invitation.srn)
         }
     </ul>
+
+    @components.return_link(controllers.routes.SchemesOverviewController.onPageLoad(), Some(psaName))
 }

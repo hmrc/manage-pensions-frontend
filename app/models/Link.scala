@@ -14,23 +14,8 @@
  * limitations under the License.
  */
 
-package controllers
+package models
 
-import base.SpecBase
-import controllers.actions.FakeDataRetrievalAction
-import identifiers.PSANameId
-import play.api.libs.json.Json
+import viewmodels.Message
 
-trait ControllerSpecBase extends SpecBase {
-
-  val cacheMapId = "id"
-
-  def getEmptyData: FakeDataRetrievalAction = new FakeDataRetrievalAction(Some(Json.obj()))
-
-  def dontGetAnyData: FakeDataRetrievalAction = new FakeDataRetrievalAction(None)
-
-  def getDataWithPsaName(psaId: String = "A0000000"): FakeDataRetrievalAction = new FakeDataRetrievalAction(Some(Json.obj(
-    PSANameId.toString -> "Test Psa Name"
-  )), psaId)
-
-}
+case class Link(id: String, url: String, linkText: Message)

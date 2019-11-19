@@ -18,12 +18,14 @@ package controllers.invitations
 
 import connectors.{FakeUserAnswersCacheConnector, InvitationsCacheConnector}
 import controllers.ControllerSpecBase
-import controllers.actions.{AuthAction, FakeAuthAction, FakeUnAuthorisedAction}
+import controllers.actions._
 import identifiers.SchemeSrnId
+import identifiers.PSANameId
 import models.NormalMode
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.api.test.Helpers._
 import play.twirl.api.HtmlFormat
@@ -37,10 +39,14 @@ import scala.concurrent.Future
 class YourInvitationsControllerSpec extends ControllerSpecBase with MockitoSugar {
 
   private val nextCall = Call("GET", "www.example.com")
-
+  private val psaName = "Test Psa Name"
   private val navigator = new FakeNavigator(nextCall, NormalMode)
 
   private val mockInvitationsCacheConnector = mock[InvitationsCacheConnector]
+
+  val dataRetrievalAction = new FakeDataRetrievalAction(Some(Json.obj(
+    PSANameId.toString -> "Test Psa Name"
+  )))
 
   private val yourInvitationsView = injector.instanceOf[yourInvitations]
 
@@ -50,6 +56,8 @@ class YourInvitationsControllerSpec extends ControllerSpecBase with MockitoSugar
       frontendAppConfig,
       messagesApi,
       authAction,
+      dataRetrievalAction,
+      new DataRequiredActionImpl,
       mockInvitationsCacheConnector,
       FakeUserAnswersCacheConnector,
       navigator,
@@ -58,7 +66,7 @@ class YourInvitationsControllerSpec extends ControllerSpecBase with MockitoSugar
     )
   }
 
-  private def viewAsString: () => HtmlFormat.Appendable = () => yourInvitationsView(invitationList)(fakeRequest, messages)
+  private def viewAsString: () => HtmlFormat.Appendable = () => yourInvitationsView(invitationList, psaName)(fakeRequest, messages)
 
   "YourInvitationsController" must {
 

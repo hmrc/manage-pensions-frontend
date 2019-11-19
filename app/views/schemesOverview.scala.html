@@ -15,12 +15,9 @@
  *@
 
 @import config.FrontendAppConfig
+@import viewmodels.{Message, CardViewModel}
 @import uk.gov.hmrc.play.views.html._
 @import views.html._
-@import controllers.routes._
-@import models.Mode
-@import models.{VariationDetails, RegistrationDetails}
-@import viewmodels.Message
 
 @this(
     main_template: main_template,
@@ -28,68 +25,21 @@
 )
 
 @(
-    registrationDetails: Option[RegistrationDetails],
-    name: Option[String],
-    psaId: String,
-    variationDetails: Option[VariationDetails]
+name: String,
+cards: Seq[CardViewModel]
 )(implicit request: Request[_], messages: Messages)
 
-@manageRedirectLink = {<a id="manage-link" href="@appConfig.pensionSchemeOnlineServiceUrl">@messages("messages__schemesOverview__manage__redirect__link")</a>}
-
 @main_template(
-    title = messages("messages__schemesOverview__title"),
+    title = messages(name),
+    articleClasses = Some("full-width")
+) {
 
-    bodyClasses = None) {
+    @components.heading(name)
 
-    @components.heading(messages("messages__schemesOverview__heading"))
-    <div class="scheme-overview-info">
-    @name.map{ psaName =>
-        <p>
-            <a id="psaLink" href="@appConfig.registeredPsaDetailsUrl">
-                <span id="psaName">@psaName</span>
-            </a>
-        </p>
+    <div class="flex-container grid-row">
+    @for(card <- cards){
+        @components.card(card)
     }
-
-    <p>
-        <span class="bold">@messages("messages__schemeOverview__psa_id")</span>
-        <span id="psaId">@psaId</span>
-    </p>
     </div>
-    <p>@messages("messages__schemesOverview__manage__text")</p>
-    <p><a id="view-schemes" href="@routes.ListSchemesController.onPageLoad()">@messages("messages__schemesOverview__manage__link")</a></p>
-    <p>@Html(Message("messages__schemesOverview__manage__redirect__text").withArgs(manageRedirectLink))</p>
-
-    @registrationDetails match {
-        case None => {
-            <h2>@messages("messages__schemesOverview__register__head")</h2>
-
-            <p>@messages("messages__schemesOverview__register__text")</p>
-
-            <p><a id="register-new-scheme" href="@controllers.routes.SchemesOverviewController.onClickCheckIfSchemeCanBeRegistered">@messages("messages__schemesOverview__register__link")</a></p>
-        }
-        case Some(details) => {
-            <h2>@details.schemeName</h2>
-
-            <p>@Html(Message("messages__schemesOverview__continue__lastDate", details.lastUpdatedDate))</p>
-
-            <p>@Html(Message("messages__schemesOverview__continue__deleteDate", details.deletionDate))</p>
-
-
-            <p><a id="continue-registration" href="@controllers.routes.SchemesOverviewController.onClickCheckIfSchemeCanBeRegistered">@messages("messages__schemesOverview__continue__link")</a></p>
-            <p><a id="delete-registration" href="@controllers.routes.DeleteSchemeController.onPageLoad">@messages("messages__schemesOverview__delete__link", details.schemeName)</a></p>
-
-        }
-    }
-
-    @variationDetails.map{ details =>
-        <h2>@Html(Message("messages__schemesOverview__change_details__title", details.schemeName))</h2>
-        <p>@Html(Message("messages__schemesOverview__change_details__p1", details.schemeName, details.deletionDate))</p>
-
-        <p><a id="continue-variation" href="@appConfig.viewSchemeDetailsUrl.format(details.srn)">@messages("messages__schemesOverview__change_details_continue__link", details.schemeName)</a></p>
-        <p>@Html(Message("messages__schemesOverview__change_details__p2"))
-        <p><a id="delete-variation" href="@controllers.routes.DeleteSchemeChangesController.onPageLoad(details.srn)">@messages("messages__schemesOverview__change_details_delete__link", details.schemeName)</a></p>
-
-    }
 
 }

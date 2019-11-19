@@ -56,6 +56,6 @@
 
     }
 
-    <p><a id="return-link" href="@appConfig.registeredPsaDetailsUrl">@messages("messages__returnToPsaDetails__link", psaName)</a></p>
+    @components.return_link(controllers.routes.SchemesOverviewController.onPageLoad(), Some(psaName))
 
 }

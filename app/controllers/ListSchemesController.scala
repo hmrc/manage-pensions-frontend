@@ -18,8 +18,9 @@ package controllers
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
-import connectors.{InvitationsCacheConnector, ListOfSchemesConnector}
-import controllers.actions.AuthAction
+import connectors.{ListOfSchemesConnector, MinimalPsaConnector, UserAnswersCacheConnector}
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import identifiers.PSANameId
 import models.SchemeDetail
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -32,28 +33,28 @@ class ListSchemesController @Inject()(
                                        val appConfig: FrontendAppConfig,
                                        override val messagesApi: MessagesApi,
                                        authenticate: AuthAction,
+                                       getData: DataRetrievalAction,
                                        listSchemesConnector: ListOfSchemesConnector,
-                                       invitationsCacheConnector: InvitationsCacheConnector,
+                                       minimalPsaConnector: MinimalPsaConnector,
+                                       userAnswersCacheConnector: UserAnswersCacheConnector,
                                        val controllerComponents: MessagesControllerComponents,
                                        view: list_schemes
                                      )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = authenticate.async {
+  def onPageLoad: Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
       listSchemesConnector.getListOfSchemes(request.psaId.id).flatMap {
         listOfSchemes =>
           val schemes = listOfSchemes.schemeDetail.getOrElse(List.empty[SchemeDetail])
 
-          val invitationsReceived: Future[Boolean] = {
-            invitationsCacheConnector.getForInvitee(request.psaId).map {
-              case Nil => false
-              case _ => true
-            }
-          }
+              minimalPsaConnector.getPsaNameFromPsaID(request.psaId.id).flatMap(_.map { name =>
+                 userAnswersCacheConnector.save(request.externalId, PSANameId, name).map { _ =>
+                  Ok(view(schemes, name))
+                }}.getOrElse {
+                Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+              }
+              )
 
-          invitationsReceived.map { flag =>
-            Ok(view(schemes, flag))
-          }
       }
   }
 }

@@ -16,7 +16,6 @@
 
 package views
 
-import config.FrontendAppConfig
 import models.{SchemeDetail, SchemeStatus}
 import play.api.i18n.Messages
 import play.api.mvc.Request
@@ -30,24 +29,21 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
 
   implicit val request: Request[_] = fakeRequest
 
-  val config = app.injector.instanceOf[FrontendAppConfig]
-
-
   "list-schemes view" must {
 
-    behave like normalPage(view(config), "listSchemes", messages("messages__listSchemes__title"))
+    behave like normalPage(view(), "listSchemes", messages("messages__listSchemes__title"))
 
-    "display a link to your invitations page if user has received invitations" in {
-      view(frontendAppConfig, invitationsReceived = true) must haveLink(
-        controllers.invitations.routes.YourInvitationsController.onPageLoad().url, "invitations-received")
+    "have link to redirect to Pension Schemes Online service" in {
+      view() must
+        haveLink(frontendAppConfig.pensionSchemeOnlineServiceUrl, "manage-link")
     }
 
     "display a suitable message when there are no schemes to display" in {
-      view(config) must haveElementWithText("noSchemes", messages("messages__listSchemes__noSchemes"))
+      view() must haveElementWithText("noSchemes", messages("messages__listSchemes__noSchemes"))
     }
 
     "display the correct column headers when there are schemes to display" in {
-      val actual = view(config, fullList)
+      val actual = view(fullList)
 
       actual must haveElementWithText("schemeNameHeader", messages("messages__listSchemes__column_schemeName"))
       actual must haveElementWithText("srnHeader", messages("messages__listSchemes__column_srn"))
@@ -57,7 +53,7 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
 
     (0 to 7).foreach { index =>
       s"display the correct scheme name with links for row $index when there are schemes to display" in {
-        val actual = asDocument(view(config, fullList).apply())
+        val actual = asDocument(view(fullList).apply())
 
         actual must haveLinkWithUrlAndContent(s"schemeName-$index",
           controllers.routes.SchemeDetailsController.onPageLoad(s"reference-number-$index").url, s"scheme-name-$index The scheme name is: scheme-name-$index")
@@ -65,7 +61,7 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
     }
 
     "display the full status value" in {
-      val actual = asDocument(view(config, fullList).apply())
+      val actual = asDocument(view(fullList).apply())
 
       assertEqualsValue(actual, "#schemeStatus-4 span:nth-child(1)", "Open")
       assertEqualsValue(actual, "#schemeStatus-5 span:nth-child(1)", "De-registered")
@@ -79,7 +75,7 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
     }
 
     "show the SRN column with correct values" in {
-      val actual = asDocument(view(config, fullList).apply())
+      val actual = asDocument(view(fullList).apply())
 
       assertEqualsValue(actual, "#srn-0 span:nth-child(1)", messages("reference-number-0"))
       assertEqualsValue(actual, "#srn-1 span:nth-child(1)", messages("reference-number-1"))
@@ -92,7 +88,7 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
     }
 
     "show the PSTR column with correct values" in {
-      val actual = asDocument(view(config, fullList).apply())
+      val actual = asDocument(view(fullList).apply())
 
       assertEqualsValue(actual, "#pstr-0 span:nth-child(1)", messages("messages__listSchemes__pstr_not_assigned"))
       assertEqualsValue(actual, "#pstr-1 span:nth-child(1)", messages("messages__listSchemes__pstr_not_assigned"))
@@ -105,7 +101,7 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
     }
 
     "display a link to return to overview page" in {
-      view(frontendAppConfig) must haveLink(controllers.routes.SchemesOverviewController.onPageLoad().url, "return-to-overview")
+      view() must haveLink(controllers.routes.SchemesOverviewController.onPageLoad().url, "return-link")
     }
   }
 }
@@ -189,13 +185,15 @@ object ListSchemesViewSpec extends ViewSpecBase {
     )
   )
 
-  def view(appConfig: FrontendAppConfig, schemes: List[SchemeDetail] = emptyList, invitationsReceived: Boolean = false)
-          (implicit request: Request[_], messages: Messages): () => HtmlFormat.Appendable =
-    () => listSchemesview(schemes, invitationsReceived)
+  val psaName = "Test psa name"
 
-  def viewAsString(appConfig: FrontendAppConfig, schemes: List[SchemeDetail] = emptyList)
+  def view(schemes: List[SchemeDetail] = emptyList)
+          (implicit request: Request[_], messages: Messages): () => HtmlFormat.Appendable =
+    () => listSchemesview(schemes, psaName)
+
+  def viewAsString(schemes: List[SchemeDetail] = emptyList)
                   (implicit request: Request[_], messages: Messages): String = {
-    val v = view(appConfig, schemes)
+    val v = view(schemes)
     v().toString()
   }
 

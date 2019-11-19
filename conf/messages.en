@@ -118,6 +118,17 @@ messages__schemesOverview__change_details_delete__link = Delete the changes made
 
 
 messages__schemeOverview__psa_id = Administrator ID:
+messages__schemeOverview__psa_heading = Administrator details
+messages__schemeOverview__psa_change = Change your pension scheme administrator details
+messages__schemeOverview__psa_view_invitations = View your scheme administrator invitations
+messages__schemeOverview__psa_deregister = Stop being a pension scheme administrator
+messages__schemeOverview__scheme_heading = Pension schemes
+messages__schemeOverview__scheme_view = View your pension schemes
+messages__schemeOverview__scheme_subscription = Apply to register a new pension scheme
+messages__schemeOverview__scheme_subscription_continue = Finish adding scheme details for {0} by {1}
+messages__schemeOverview__scheme_subscription_delete = Delete details already entered for {0}
+messages__schemeOverview__scheme_variations_continue = Finish making changes to {0} by {1}
+messages__schemeOverview__scheme_variations_delete = Delete changes already entered for {0}
 
 messages__doYouHaveWorkingKnowledge__title = Do you have working knowledge of pensions and pensions tax legislation?
 messages__doYouHaveWorkingKnowledge__heading = Do you have working knowledge of pensions and pensions tax legislation?

@@ -16,7 +16,7 @@
 
 package controllers
 
-import connectors.{MicroserviceCacheConnector, UserAnswersCacheConnector}
+import connectors.{MicroserviceCacheConnector, MinimalPsaConnector, UserAnswersCacheConnector}
 import controllers.actions._
 import forms.DeleteSchemeFormProvider
 import org.mockito.Matchers.{any, eq => eqTo}
@@ -38,18 +38,21 @@ class DeleteSchemeControllerSpec extends ControllerSpecBase with MockitoSugar wi
   val formProvider = new DeleteSchemeFormProvider()
   val form: Form[Boolean] = formProvider()
   val schemeName = "Test Scheme Name"
+  val psaName = "Test Psa Name"
   val fakeCacheConnector: UserAnswersCacheConnector = mock[MicroserviceCacheConnector]
+  val minimalPsaConnector: MinimalPsaConnector = mock[MinimalPsaConnector]
 
   val view: deleteScheme = app.injector.instanceOf[deleteScheme]
 
   def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): DeleteSchemeController =
-    new DeleteSchemeController(frontendAppConfig, messagesApi, fakeCacheConnector, FakeAuthAction(),
+    new DeleteSchemeController(frontendAppConfig, messagesApi, fakeCacheConnector, minimalPsaConnector, FakeAuthAction(),
       dataRetrievalAction, new DataRequiredActionImpl, formProvider, stubMessagesControllerComponents(), view)
 
-  def viewAsString(form: Form[_] = form): String = view(form, schemeName)(fakeRequest, messages).toString
+  def viewAsString(form: Form[_] = form): String = view(form, schemeName, psaName)(fakeRequest, messages).toString
 
   override def beforeEach(): Unit = {
     reset(fakeCacheConnector)
+    when(minimalPsaConnector.getPsaNameFromPsaID(any())(any(), any())).thenReturn(Future.successful(Some(psaName)))
     super.beforeEach()
   }
 
@@ -67,19 +70,6 @@ class DeleteSchemeControllerSpec extends ControllerSpecBase with MockitoSugar wi
     "remove all is called to delete user answers when user answers Yes" in {
       when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(Some(Json.obj(
         "schemeName" -> schemeName))))
-      val postRequest = fakeRequest.withFormUrlEncodedBody(("value", "true"))
-      when(fakeCacheConnector.removeAll(any())(any(), any())).thenReturn(Future.successful(Ok))
-
-      val result = controller().onSubmit(postRequest)
-
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(routes.SchemesOverviewController.onPageLoad().url)
-      verify(fakeCacheConnector, times(1)).removeAll(any())(any(), any())
-    }
-
-    "remove all is called to delete user answers when user answers Yes on a user with old way of storing Scheme Name" in {
-      when(fakeCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(Some(Json.obj(
-        "schemeDetails" -> Json.obj("schemeName" -> schemeName)))))
       val postRequest = fakeRequest.withFormUrlEncodedBody(("value", "true"))
       when(fakeCacheConnector.removeAll(any())(any(), any())).thenReturn(Future.successful(Ok))
 

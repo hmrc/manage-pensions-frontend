@@ -14,23 +14,12 @@
  * limitations under the License.
  */
 
-package controllers
+package viewmodels
 
-import base.SpecBase
-import controllers.actions.FakeDataRetrievalAction
-import identifiers.PSANameId
-import play.api.libs.json.Json
+import models.Link
 
-trait ControllerSpecBase extends SpecBase {
-
-  val cacheMapId = "id"
-
-  def getEmptyData: FakeDataRetrievalAction = new FakeDataRetrievalAction(Some(Json.obj()))
-
-  def dontGetAnyData: FakeDataRetrievalAction = new FakeDataRetrievalAction(None)
-
-  def getDataWithPsaName(psaId: String = "A0000000"): FakeDataRetrievalAction = new FakeDataRetrievalAction(Some(Json.obj(
-    PSANameId.toString -> "Test Psa Name"
-  )), psaId)
-
-}
+case class CardViewModel(id: String,
+                heading: String,
+                subHeading: Option[String] = None,
+                subHeadingParam: Option[String] = None,
+                links: Seq[Link] = Nil)

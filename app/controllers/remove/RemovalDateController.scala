@@ -23,9 +23,9 @@ import connectors.{PensionSchemeVarianceLockConnector, PsaRemovalConnector, Upda
 import controllers.Retrievals
 import controllers.actions._
 import forms.remove.RemovalDateFormProvider
-import identifiers.invitations.{PSANameId, PSTRId, SchemeNameId}
+import identifiers.invitations.{PSTRId, SchemeNameId}
 import identifiers.remove.RemovalDateId
-import identifiers.{AssociatedDateId, SchemeSrnId}
+import identifiers.{AssociatedDateId, PSANameId, SchemeSrnId}
 import javax.inject.Inject
 import models.{NormalMode, PsaToBeRemovedFromScheme}
 import play.api.data.Form

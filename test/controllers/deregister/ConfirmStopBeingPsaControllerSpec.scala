@@ -21,7 +21,7 @@ import connectors._
 import controllers.ControllerSpecBase
 import controllers.actions._
 import forms.deregister.ConfirmStopBeingPsaFormProvider
-import identifiers.invitations.PSANameId
+import identifiers.PSANameId
 import models.{IndividualDetails, MinimalPSA}
 import org.scalatest.concurrent.ScalaFutures
 import play.api.data.Form
@@ -105,7 +105,7 @@ class ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase with ScalaFut
       val result = controller(minimalPsaDetailsIndividual)(hc).onSubmit()(postRequestCancel)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(psaDetailsUrl)
+      redirectLocation(result) mustBe Some(overviewPage)
     }
   }
 
@@ -117,7 +117,7 @@ object ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase {
 
   val fakeAuditService = new StubSuccessfulAuditService()
 
-  private def psaDetailsUrl = frontendAppConfig.registeredPsaDetailsUrl
+  private def overviewPage = controllers.routes.SchemesOverviewController.onPageLoad().url
 
   private val formProvider = new ConfirmStopBeingPsaFormProvider
   private val form: Form[Boolean] = formProvider()
@@ -139,6 +139,8 @@ object ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase {
   private def fakeDeregistrationConnector: DeregistrationConnector = new DeregistrationConnector {
     override def stopBeingPSA(psaId: String)(
       implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = Future.successful(HttpResponse(NO_CONTENT))
+
+    override def canDeRegister(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = Future.successful(true)
   }
 
   private def fakeMinimalPsaConnector(minimalPsaDetailsIndividual: MinimalPSA): MinimalPsaConnector = new MinimalPsaConnector {

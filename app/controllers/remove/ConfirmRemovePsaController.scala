@@ -21,8 +21,8 @@ import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.remove.ConfirmRemovePsaFormProvider
-import identifiers.SchemeSrnId
-import identifiers.invitations.{PSANameId, SchemeNameId}
+import identifiers.{PSANameId, SchemeSrnId}
+import identifiers.invitations.SchemeNameId
 import identifiers.remove.ConfirmRemovePsaId
 import javax.inject.Inject
 import models.NormalMode

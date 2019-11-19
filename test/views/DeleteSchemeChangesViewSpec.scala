@@ -28,14 +28,15 @@ class DeleteSchemeChangesViewSpec extends YesNoViewBehaviours {
 
   val messageKeyPrefix = "deleteSchemeChanges"
   val schemeName = "Test Scheme Name"
+  val psaName = "Test psa name"
   val srn = "S123"
   val postCall: Call = controllers.routes.DeleteSchemeChangesController.onSubmit(srn)
   val form = new DeleteSchemeChangesFormProvider()()
   val view = injector.instanceOf[deleteSchemeChanges]
 
-  def createView: () => HtmlFormat.Appendable = () => view(form, schemeName, postCall)(fakeRequest, messages)
+  def createView: () => HtmlFormat.Appendable = () => view(form, schemeName, postCall, psaName)(fakeRequest, messages)
 
-  def createViewUsingForm: Form[_] => HtmlFormat.Appendable = (form: Form[_]) => view(form, schemeName, postCall)(fakeRequest, messages)
+  def createViewUsingForm: Form[_] => HtmlFormat.Appendable = (form: Form[_]) => view(form, schemeName, postCall, psaName)(fakeRequest, messages)
 
   "DeleteScheme view" must {
 
