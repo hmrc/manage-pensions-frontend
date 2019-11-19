@@ -78,7 +78,7 @@ class ConfirmStopBeingPsaController @Inject()(
                       Redirect(controllers.deregister.routes.SuccessfulDeregistrationController.onPageLoad())
                     }
                   } else {
-                    Future.successful(Redirect(appConfig.registeredPsaDetailsUrl))
+                    Future.successful(Redirect(controllers.routes.SchemesOverviewController.onPageLoad()))
                   }
                 }
               )

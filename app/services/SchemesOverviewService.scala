@@ -187,7 +187,7 @@ class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
 
   private def currentTimestamp: LastUpdatedDate = LastUpdatedDate(System.currentTimeMillis)
 
-  private def parseDateElseCurrent(dateOpt: Option[JsValue] = None): LastUpdatedDate = {
+  private def parseDateElseCurrent(dateOpt: Option[JsValue]): LastUpdatedDate = {
     dateOpt.map(ts =>
       LastUpdatedDate(
         ts.validate[Long] match {
@@ -200,7 +200,7 @@ class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
 
   private def lastUpdatedAndDeleteDate(externalId: String)(implicit hc: HeaderCarrier): Future[LastUpdatedDate] =
     dataCacheConnector.lastUpdated(externalId).map { dateOpt =>
-      parseDateElseCurrent()
+      parseDateElseCurrent(dateOpt)
     }
 
   private def variationsDeleteDate(srn: String)(implicit hc: HeaderCarrier): Future[String] =

@@ -105,7 +105,7 @@ class ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase with ScalaFut
       val result = controller(minimalPsaDetailsIndividual)(hc).onSubmit()(postRequestCancel)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(psaDetailsUrl)
+      redirectLocation(result) mustBe Some(overviewPage)
     }
   }
 
@@ -117,7 +117,7 @@ object ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase {
 
   val fakeAuditService = new StubSuccessfulAuditService()
 
-  private def psaDetailsUrl = frontendAppConfig.registeredPsaDetailsUrl
+  private def overviewPage = controllers.routes.SchemesOverviewController.onPageLoad().url
 
   private val formProvider = new ConfirmStopBeingPsaFormProvider
   private val form: Form[Boolean] = formProvider()
