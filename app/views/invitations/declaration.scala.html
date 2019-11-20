@@ -41,28 +41,28 @@ bodyClasses = None) {
 
         @components.paragraph_text(messages("messages__declaration__continue") + ":")
 
-        <ol class="list-number">
+        <ol class="list list-number">
 
-            <li>@components.paragraph_text(messages("messages__declaration__statement1"))</li>
+            <li>@messages("messages__declaration__statement1")</li>
 
-            <li>@components.paragraph_text(messages("messages__declaration__statement2"))</li>
+            <li>@messages("messages__declaration__statement2")</li>
 
-            <li>@components.paragraph_text(messages("messages__declaration__statement3"))</li>
+            <li>@messages("messages__declaration__statement3")</li>
 
-            <li>@components.paragraph_text(messages("messages__declaration__statement4"))</li>
+            <li>@messages("messages__declaration__statement4")</li>
 
             <li>
                 @if(haveWorkingKnowledge) {
-                    @components.paragraph_text(messages("messages__declaration__statement5__no__adviser"))
+                    @messages("messages__declaration__statement5__no__adviser")
                 } else {
-                    @components.paragraph_text(messages("messages__declaration__statement5__with__adviser"))
+                    @messages("messages__declaration__statement5__with__adviser")
                 }
             </li>
 
-            <li>@components.paragraph_text(messages("messages__declaration__statement6"))</li>
+            <li>@messages("messages__declaration__statement6")</li>
 
             @if(isMasterTrust) {
-                <li>@components.paragraph_text(messages("messages__declaration__statement7"))</li>
+                <li>@messages("messages__declaration__statement7")</li>
             }
         </ol>
 
