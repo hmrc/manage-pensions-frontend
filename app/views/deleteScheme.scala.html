@@ -40,6 +40,8 @@
 
         @components.heading(Message("messages__deleteScheme__heading", schemeName))
 
+        @components.paragraph_text(Message("messages__deleteScheme__hint"))
+
         @components.input_yes_no(
             field = form("value"),
             label = messages("messages__deleteScheme__title"),

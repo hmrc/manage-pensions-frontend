@@ -286,6 +286,7 @@ messages__check__your__answer__adviser__address__label = {0}’s address
 
 messages__deleteScheme__title = Are you sure you want to delete the details already entered for this scheme?
 messages__deleteScheme__heading = Are you sure you want to delete the details already entered for {0}’s scheme?
+messages__deleteScheme__hint = This will remove all of the details entered so far for this scheme.
 messages__deleteScheme__error__required = Select yes if you want to cancel your registration
 
 messages__confirmRemovePsa__title = Are you sure you want to remove the scheme administrator?
@@ -349,5 +350,5 @@ messages__whatYouWillNeed__item2 = administrator ID
 messages__deleteSchemeChanges__title = Are you sure you want to delete the changes you have made to the scheme’s details?
 messages__deleteSchemeChanges__heading = Are you sure you want to delete the changes you have made to {0}’s details?
 messages__deleteSchemeChanges__p1 = This will only delete the changes you have entered for this scheme.
-messages__deleteSchemeChanges__p2 = The pension scheme will not be deleted.
+messages__deleteSchemeChanges__p2 = The pension scheme will not be removed.
 messages__deleteSchemeChanges__error__required = Select yes if you want to delete changes to the scheme’s details
