@@ -96,7 +96,7 @@ messages__listSchemes__SRN__screen_reader = {0}’s Scheme Reference Number is {
 messages__listSchemes__PSTR__screen_reader = {0}’s Pension Scheme Tax Reference number is {1}
 messages__listSchemes__status__screen_reader = {0}’s status is {1}
 
-messages__schemesOverview__title = Managing pension schemes
+messages__schemesOverview__title = Pension scheme administrator summary
 messages__schemesOverview__heading = Managing pension schemes
 messages__schemesOverview__manage__text = You can only view pension schemes that you have registered through this service.
 messages__schemesOverview__manage__link = View your pension schemes
