@@ -34,7 +34,7 @@ import play.api.mvc.Results.Ok
 import play.api.mvc.{AnyContent, Call}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import testhelpers.InvitationBuilder.invitationList
+import testhelpers.InvitationBuilder.{invitation1, invitationList}
 import uk.gov.hmrc.domain.PsaId
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.UserAnswers
@@ -92,6 +92,15 @@ class SchemesOverviewServiceSpec extends SpecBase with MockitoSugar with BeforeA
 
         whenReady(service.getTiles(psaId)) {
           _ mustBe tiles(adminCard(invitation = noInvitationsLink))
+        }
+      }
+
+      "psa is invited to administer only one scheme" in {
+        when(invitationsCacheConnector.getForInvitee(any())(any(), any()))
+          .thenReturn(Future.successful(List(invitation1)))
+
+        whenReady(service.getTiles(psaId)) {
+          _ mustBe tiles(adminCard(invitation = oneInvitationsLink))
         }
       }
 
@@ -237,10 +246,13 @@ object SchemesOverviewServiceSpec extends SpecBase with MockitoSugar  {
     Message("messages__schemeOverview__psa_deregister")))
 
   private val invitationsLink = Seq(Link("invitations-received", controllers.invitations.routes.YourInvitationsController.onPageLoad().url,
-    Message("messages__schemeOverview__psa_view_invitations", 2)))
+    Message("messages__schemeOverview__psa_view_more_invitations", 2)))
 
   private val noInvitationsLink = Seq(Link("invitations-received", controllers.invitations.routes.YourInvitationsController.onPageLoad().url,
-    Message("messages__schemeOverview__psa_view_invitation")))
+    Message("messages__schemeOverview__psa_view_no_invitation")))
+
+  private val oneInvitationsLink = Seq(Link("invitations-received", controllers.invitations.routes.YourInvitationsController.onPageLoad().url,
+    Message("messages__schemeOverview__psa_view_one_invitation")))
 
   private val registerLink = Seq(Link("register-new-scheme", controllers.routes.SchemesOverviewController.onClickCheckIfSchemeCanBeRegistered().url,
     Message("messages__schemeOverview__scheme_subscription")))

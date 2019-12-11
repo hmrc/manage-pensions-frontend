@@ -93,14 +93,14 @@ class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
     )
 
   private def invitationsLink(implicit request: OptionalDataRequest[AnyContent], hc: HeaderCarrier): Future[Seq[Link]] =
-    invitationsCacheConnector.getForInvitee(request.psaId).map {
-      case Nil => Seq(Link("invitations-received", controllers.invitations.routes.YourInvitationsController.onPageLoad().url,
-        Message("messages__schemeOverview__psa_view_invitation")))
-      case invitationsList => Seq(Link("invitations-received", controllers.invitations.routes.YourInvitationsController.onPageLoad().url,
-        Message("messages__schemeOverview__psa_view_invitations", invitationsList.size)
-      ))
+    invitationsCacheConnector.getForInvitee(request.psaId).map { invitationsList =>
+      val linkText = invitationsList match {
+        case Nil => Message("messages__schemeOverview__psa_view_no_invitation")
+        case invitations if invitations.size == 1 => Message("messages__schemeOverview__psa_view_one_invitation")
+        case invitations => Message("messages__schemeOverview__psa_view_more_invitations", invitations.size)
+      }
+      Seq(Link("invitations-received", controllers.invitations.routes.YourInvitationsController.onPageLoad().url, linkText))
     }
-
 
   private def deregisterLink(psaId: String)(implicit hc: HeaderCarrier): Seq[Link] =
     Seq(Link("deregister-link", controllers.deregister.routes.ConfirmStopBeingPsaController.onPageLoad().url,
