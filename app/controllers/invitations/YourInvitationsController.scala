@@ -47,13 +47,10 @@ class YourInvitationsController @Inject()(appConfig: FrontendAppConfig,
 
   def onPageLoad(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
-      invitationsCacheConnector.getForInvitee(request.psaId).map {
-        case Nil =>
-          Redirect(controllers.routes.SessionExpiredController.onPageLoad())
-        case invitationsList =>
-          request.userAnswers.get(PSANameId).map { name =>
-            Ok(view(invitationsList, name))
-          }.getOrElse(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+      invitationsCacheConnector.getForInvitee(request.psaId).map { invitationsList =>
+        request.userAnswers.get(PSANameId).map { name =>
+          Ok(view(invitationsList, name))
+        }.getOrElse(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
       }
   }
 

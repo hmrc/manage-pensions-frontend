@@ -37,16 +37,19 @@ appConfig: FrontendAppConfig
 
     @components.heading(messages("messages__yourInvitations__heading"))
 
-    <p>@messages("messages__yourInvitations__lede")</p>
-
-    <ul class="govuk-check-your-answers form-group">
-        @for((invitation, i) <- invitationsList.zipWithIndex) {
-            @components.invitation(invitation.schemeName,
-            invitation.expireAt,
-            i.toString,
-            invitation.srn)
-        }
-    </ul>
+    @if(invitationsList.isEmpty) {
+        <p>@messages("messages__yourInvitations__not_found")</p>
+    } else {
+        <p>@messages("messages__yourInvitations__lede")</p>
+        <ul class="govuk-check-your-answers form-group">
+            @for((invitation, i) <- invitationsList.zipWithIndex) {
+                @components.invitation(invitation.schemeName,
+                invitation.expireAt,
+                i.toString,
+                invitation.srn)
+            }
+        </ul>
+    }
 
     @components.return_link(controllers.routes.SchemesOverviewController.onPageLoad(), Some(psaName))
 }

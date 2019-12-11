@@ -37,7 +37,7 @@ class ConfirmStopBeingPsaController @Inject()(
                                                override val messagesApi: MessagesApi,
                                                formProvider: ConfirmStopBeingPsaFormProvider,
                                                minimalPsaConnector: MinimalPsaConnector,
-                                               deregistration: DeregistrationConnector,
+                                               deregistrationConnector: DeregistrationConnector,
                                                enrolments: TaxEnrolmentsConnector,
                                                allowAccess: AllowAccessForNonSuspendedUsersAction,
                                                @PensionAdminCache dataCacheConnector: UserAnswersCacheConnector,
@@ -49,11 +49,16 @@ class ConfirmStopBeingPsaController @Inject()(
 
   def onPageLoad: Action[AnyContent] = (auth andThen allowAccess).async {
     implicit request =>
-      minimalPsaConnector.getMinimalPsaDetails(request.psaId.id).map { minimalDetails =>
-        getPsaName(minimalDetails) match {
-          case Some(psaName) => Ok(view(form, psaName))
-          case _ => Redirect(controllers.routes.SessionExpiredController.onPageLoad())
-        }
+      deregistrationConnector.canDeRegister(request.psaId.id).flatMap {
+        case true =>
+          minimalPsaConnector.getMinimalPsaDetails(request.psaId.id).map { minimalDetails =>
+            getPsaName(minimalDetails) match {
+              case Some(psaName) => Ok(view(form, psaName))
+              case _ => Redirect(controllers.routes.SessionExpiredController.onPageLoad())
+            }
+          }
+        case false =>
+          Future.successful(Redirect(controllers.deregister.routes.CannotDeregisterController.onPageLoad()))
       }
   }
 
@@ -71,7 +76,7 @@ class ConfirmStopBeingPsaController @Inject()(
                 value => {
                   if (value) {
                     for {
-                      _ <- deregistration.stopBeingPSA(psaId)
+                      _ <- deregistrationConnector.stopBeingPSA(psaId)
                       _ <- enrolments.deEnrol(userId, psaId, request.externalId)
                       _ <- dataCacheConnector.removeAll(request.externalId)
                     } yield {

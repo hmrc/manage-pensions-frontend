@@ -42,19 +42,17 @@ class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
                                        minimalPsaConnector: MinimalPsaConnector,
                                        pensionSchemeVarianceLockConnector: PensionSchemeVarianceLockConnector,
                                        updateConnector: UpdateSchemeCacheConnector,
-                                       deregistrationConnector: DeregistrationConnector,
                                        invitationsCacheConnector: InvitationsCacheConnector
                                       )(implicit ec: ExecutionContext) {
 
   def getTiles(psaId: String)(implicit request: OptionalDataRequest[AnyContent], hc: HeaderCarrier, messages: Messages): Future[Seq[CardViewModel]] =
     for {
       invitationLink <- invitationsLink
-      deregistrationLink <- deregisterLink(psaId)
       subLinks <- subscriptionLinks
       varLinks <- variationsLinks(psaId)
     } yield {
       Seq(
-        adminCard(invitationLink, deregistrationLink, psaId),
+        adminCard(invitationLink, deregisterLink(psaId), psaId),
         schemeCard(subLinks, varLinks)
       )
     }
@@ -96,18 +94,17 @@ class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
 
   private def invitationsLink(implicit request: OptionalDataRequest[AnyContent], hc: HeaderCarrier): Future[Seq[Link]] =
     invitationsCacheConnector.getForInvitee(request.psaId).map {
-      case Nil => Seq.empty[Link]
-      case _ => Seq(Link("invitations-received", controllers.invitations.routes.YourInvitationsController.onPageLoad().url,
-        Message("messages__schemeOverview__psa_view_invitations")
+      case Nil => Seq(Link("invitations-received", controllers.invitations.routes.YourInvitationsController.onPageLoad().url,
+        Message("messages__schemeOverview__psa_view_invitation")))
+      case invitationsList => Seq(Link("invitations-received", controllers.invitations.routes.YourInvitationsController.onPageLoad().url,
+        Message("messages__schemeOverview__psa_view_invitations", invitationsList.size)
       ))
     }
 
-  private def deregisterLink(psaId: String)(implicit hc: HeaderCarrier): Future[Seq[Link]] =
-    deregistrationConnector.canDeRegister(psaId).map {
-      case true => Seq(Link("deregister-link", controllers.deregister.routes.ConfirmStopBeingPsaController.onPageLoad().url,
-        Message("messages__schemeOverview__psa_deregister")))
-      case _ => Seq.empty[Link]
-    }
+
+  private def deregisterLink(psaId: String)(implicit hc: HeaderCarrier): Seq[Link] =
+    Seq(Link("deregister-link", controllers.deregister.routes.ConfirmStopBeingPsaController.onPageLoad().url,
+      Message("messages__schemeOverview__psa_deregister")))
 
   private def subscriptionLinks(implicit request: OptionalDataRequest[AnyContent], hc: HeaderCarrier): Future[Seq[Link]] =
     dataCacheConnector.fetch(request.externalId).flatMap {

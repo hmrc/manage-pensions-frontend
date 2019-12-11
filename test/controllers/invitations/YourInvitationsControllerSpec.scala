@@ -82,18 +82,6 @@ class YourInvitationsControllerSpec extends ControllerSpecBase with MockitoSugar
 
     }
 
-    "return 300 when empty list is returned by connector" in {
-
-      when(mockInvitationsCacheConnector.getForInvitee(any())(any(), any()))
-        .thenReturn(Future.successful(Nil))
-
-      val result = controller().onPageLoad()(fakeRequest)
-
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)
-
-    }
-
     "redirect to Unauthorised when not authenticated on GET" in {
 
       val result = controller(FakeUnAuthorisedAction()).onPageLoad()(fakeRequest)

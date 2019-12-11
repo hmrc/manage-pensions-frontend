@@ -120,7 +120,8 @@ messages__schemesOverview__change_details_delete__link = Delete the changes made
 messages__schemeOverview__psa_id = Administrator ID:
 messages__schemeOverview__psa_heading = Administrator details
 messages__schemeOverview__psa_change = Change your pension scheme administrator details
-messages__schemeOverview__psa_view_invitations = View your scheme administrator invitations
+messages__schemeOverview__psa_view_invitation = View your scheme administrator invitation
+messages__schemeOverview__psa_view_invitations = View your {0} scheme administrator invitations
 messages__schemeOverview__psa_deregister = Stop being a pension scheme administrator
 messages__schemeOverview__scheme_heading = Pension schemes
 messages__schemeOverview__scheme_view = View your pension schemes
@@ -262,7 +263,8 @@ messages__adviser__email__address__p1 = This will be used if HMRC need to contac
 messages__yourInvitations__title = Your invitations
 messages__yourInvitations__heading = Your invitations
 messages__yourInvitations__lede = You have been invited to be a scheme administrator for:
-messages__yourInvitations__scheme_expiry_date = This invitation will be deleted on {0}.
+messages__yourInvitations__not_found = You do not have any invitation
+messages__yourInvitations__scheme_expiry_date = This invitation will expire on {0}.
 messages__yourInvitations__accept_link = Accept invitation
 
 messages__error__declaration__required = You need to agree to all the declarations before you can continue
@@ -352,3 +354,8 @@ messages__deleteSchemeChanges__heading = Are you sure you want to delete the cha
 messages__deleteSchemeChanges__p1 = This will only delete the changes you have entered for this scheme.
 messages__deleteSchemeChanges__p2 = The pension scheme will not be removed.
 messages__deleteSchemeChanges__error__required = Select yes if you want to delete changes to the scheme’s details
+
+messages__cannotDeregister__title = You must remove yourself from all schemes first
+messages__cannotDeregister__p1 = You cannot stop being a pension scheme administrator until you remove yourself from any scheme you are currently an administrator for.
+messages__cannotDeregister__p2 = This includes any schemes that have a status of wound up.
+
