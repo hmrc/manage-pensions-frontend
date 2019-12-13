@@ -16,10 +16,8 @@
 
 package services
 
-import java.sql.Timestamp
 import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoField
-import java.time.{LocalDate, LocalTime, ZoneOffset}
+import java.time.{LocalDate, ZoneOffset}
 
 import base.SpecBase
 import connectors.{UserAnswersCacheConnector, _}
@@ -36,7 +34,7 @@ import play.api.mvc.Results.Ok
 import play.api.mvc.{AnyContent, Call}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import testhelpers.InvitationBuilder.invitationList
+import testhelpers.InvitationBuilder.{invitation1, invitationList}
 import uk.gov.hmrc.domain.PsaId
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.UserAnswers
@@ -53,7 +51,6 @@ class SchemesOverviewServiceSpec extends SpecBase with MockitoSugar with BeforeA
   private val minimalPsaConnector: MinimalPsaConnector = mock[MinimalPsaConnector]
   private val lockConnector = mock[PensionSchemeVarianceLockConnector]
   private val updateConnector = mock[UpdateSchemeCacheConnector]
-  private val deregistrationConnector = mock[DeregistrationConnector]
   private val invitationsCacheConnector = mock[InvitationsCacheConnector]
 
   override def beforeEach(): Unit = {
@@ -61,7 +58,6 @@ class SchemesOverviewServiceSpec extends SpecBase with MockitoSugar with BeforeA
       .thenReturn(Future.successful(minimalPsaName))
     when(invitationsCacheConnector.getForInvitee(any())(any(), any()))
       .thenReturn(Future.successful(invitationList))
-    when(deregistrationConnector.canDeRegister(eqTo(psaId))(any(), any())).thenReturn(Future.successful(true))
     when(dataCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(Some(schemeNameJsonOption)))
     when(dataCacheConnector.lastUpdated(any())(any(), any()))
       .thenReturn(Future.successful(Some(JsNumber(BigDecimal(timestamp)))))
@@ -77,7 +73,7 @@ class SchemesOverviewServiceSpec extends SpecBase with MockitoSugar with BeforeA
 
   def service: SchemesOverviewService =
     new SchemesOverviewService(frontendAppConfig, dataCacheConnector, minimalPsaConnector,
-      lockConnector, updateConnector, deregistrationConnector, invitationsCacheConnector)
+      lockConnector, updateConnector, invitationsCacheConnector)
 
   "getTiles" must {
 
@@ -90,20 +86,21 @@ class SchemesOverviewServiceSpec extends SpecBase with MockitoSugar with BeforeA
 
       }
 
-      "psa cannot deregister" in {
-        when(deregistrationConnector.canDeRegister(eqTo(psaId))(any(), any())).thenReturn(Future.successful(false))
-
-        whenReady(service.getTiles(psaId)) {
-          _ mustBe tiles(adminCard(Nil))
-        }
-      }
-
       "psa is not invited to any schemes" in {
         when(invitationsCacheConnector.getForInvitee(any())(any(), any()))
           .thenReturn(Future.successful(Nil))
 
         whenReady(service.getTiles(psaId)) {
-          _ mustBe tiles(adminCard(invitation = Nil))
+          _ mustBe tiles(adminCard(invitation = noInvitationsLink))
+        }
+      }
+
+      "psa is invited to administer only one scheme" in {
+        when(invitationsCacheConnector.getForInvitee(any())(any(), any()))
+          .thenReturn(Future.successful(List(invitation1)))
+
+        whenReady(service.getTiles(psaId)) {
+          _ mustBe tiles(adminCard(invitation = oneInvitationsLink))
         }
       }
 
@@ -249,8 +246,13 @@ object SchemesOverviewServiceSpec extends SpecBase with MockitoSugar  {
     Message("messages__schemeOverview__psa_deregister")))
 
   private val invitationsLink = Seq(Link("invitations-received", controllers.invitations.routes.YourInvitationsController.onPageLoad().url,
-    Message("messages__schemeOverview__psa_view_invitations")
-  ))
+    Message("messages__schemeOverview__psa_view_more_invitations", 2)))
+
+  private val noInvitationsLink = Seq(Link("invitations-received", controllers.invitations.routes.YourInvitationsController.onPageLoad().url,
+    Message("messages__schemeOverview__psa_view_no_invitation")))
+
+  private val oneInvitationsLink = Seq(Link("invitations-received", controllers.invitations.routes.YourInvitationsController.onPageLoad().url,
+    Message("messages__schemeOverview__psa_view_one_invitation")))
 
   private val registerLink = Seq(Link("register-new-scheme", controllers.routes.SchemesOverviewController.onClickCheckIfSchemeCanBeRegistered().url,
     Message("messages__schemeOverview__scheme_subscription")))

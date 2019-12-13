@@ -17,3 +17,5 @@ GET        /stop-being-scheme-administrator             controllers.deregister.C
 POST       /stop-being-scheme-administrator             controllers.deregister.ConfirmStopBeingPsaController.onSubmit
 
 GET        /unable-to-stop-being-scheme-administrator   controllers.deregister.UnableToStopBeingPsaController.onPageLoad
+
+GET        /remove-yourself-from-schemes                controllers.deregister.CannotDeregisterController.onPageLoad

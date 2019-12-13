@@ -49,6 +49,13 @@ class ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase with ScalaFut
       redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)
     }
 
+    "redirect to CannotDeregister page if Psa can't be deregistered" in {
+      val result = controller(canDeregister = false)(hc).onPageLoad()(fakeRequest)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(controllers.deregister.routes.CannotDeregisterController.onPageLoad().url)
+    }
+
     "return OK and the correct view for a GET and ensure audit service is successfully called" in {
       val psa = PsaId("A1234567")
       val user = "Fred"
@@ -136,11 +143,11 @@ object ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase {
       implicit hc: HeaderCarrier, ec: ExecutionContext, rh: RequestHeader): Future[HttpResponse] = Future.successful(HttpResponse(NO_CONTENT))
   }
 
-  private def fakeDeregistrationConnector: DeregistrationConnector = new DeregistrationConnector {
+  private def fakeDeregistrationConnector(canDeregister: Boolean): DeregistrationConnector = new DeregistrationConnector {
     override def stopBeingPSA(psaId: String)(
       implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = Future.successful(HttpResponse(NO_CONTENT))
 
-    override def canDeRegister(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = Future.successful(true)
+    override def canDeRegister(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = Future.successful(canDeregister)
   }
 
   private def fakeMinimalPsaConnector(minimalPsaDetailsIndividual: MinimalPSA): MinimalPsaConnector = new MinimalPsaConnector {
@@ -162,7 +169,7 @@ object ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase {
   }
   val view = app.injector.instanceOf[confirmStopBeingPsa]
 
-  private def controller(minimalPsaDetails: MinimalPSA = minimalPsaDetailsNone)(implicit hc: HeaderCarrier) = {
+  private def controller(minimalPsaDetails: MinimalPSA = minimalPsaDetailsNone, canDeregister: Boolean = true)(implicit hc: HeaderCarrier) = {
     val minimalDetailsConnector = fakeMinimalPsaConnector(minimalPsaDetails)
     new ConfirmStopBeingPsaController(
       frontendAppConfig,
@@ -170,7 +177,7 @@ object ConfirmStopBeingPsaControllerSpec extends ControllerSpecBase {
       messagesApi,
       formProvider,
       minimalDetailsConnector,
-      fakeDeregistrationConnector,
+      fakeDeregistrationConnector(canDeregister),
       fakeTaxEnrolmentsConnector,
       fakeAllowAccess(minimalDetailsConnector),
       FakeUserAnswersCacheConnector,
