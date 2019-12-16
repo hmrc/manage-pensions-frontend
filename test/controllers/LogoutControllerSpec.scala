@@ -16,7 +16,6 @@
 
 package controllers
 
-import controllers.actions.FakeAuthAction
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 
