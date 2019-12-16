@@ -17,20 +17,17 @@
 package controllers
 
 import config.FrontendAppConfig
-import controllers.actions.AuthAction
 import javax.inject.Inject
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 
-import scala.concurrent.ExecutionContext
+class LogoutController @Inject()(
+                                  appConfig: FrontendAppConfig,
+                                  val controllerComponents: MessagesControllerComponents
+                                ) extends FrontendBaseController with I18nSupport {
 
-class LogoutController @Inject()(appConfig: FrontendAppConfig,
-                                 override val messagesApi: MessagesApi,
-                                 authenticate: AuthAction,
-                                 val controllerComponents: MessagesControllerComponents)(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
-
-  def onPageLoad: Action[AnyContent] = authenticate {
+  def onPageLoad: Action[AnyContent] = Action {
     implicit request =>
       Redirect(appConfig.serviceSignOut).withNewSession
   }
