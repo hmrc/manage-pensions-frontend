@@ -26,7 +26,7 @@ class PensionAdminCacheConnector @Inject()(
                                               http: WSClient
                                             ) extends MicroserviceCacheConnector(config, http) {
 
-  override protected def url(id: String) = s"${config.pensionAdminUrl}/pension-administrator/journey-cache/psa/$id"
+  override protected def url(id: String) = s"${config.pensionAdminUrl}/pension-administrator/journey-cache/psa-data/$id"
 
-  override protected def lastUpdatedUrl(id: String) = s"${config.pensionAdminUrl}/pension-administrator/journey-cache/psa/$id/lastUpdated"
+  override protected def lastUpdatedUrl(id: String) = s"${config.pensionAdminUrl}/pension-administrator/journey-cache/psa-data/$id/lastUpdated"
 }
