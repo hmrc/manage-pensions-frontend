@@ -21,6 +21,7 @@
 @import models.NormalMode
 @import controllers.invitations.routes._
 @import viewmodels.Message
+@import utils.ViewHelper.titleWithErrors
 
 @this(
 main_template: main_template,
@@ -31,7 +32,7 @@ appConfig: FrontendAppConfig
 @(form: Form[_], name: String)(implicit request: Request[_], messages: Messages)
 
 @main_template(
-    title = s"${messages("messages__adviser__postcode__title")}",
+    title = titleWithErrors(form, messages("messages__adviser__postcode__title")),
 
     bodyClasses = None) {
 

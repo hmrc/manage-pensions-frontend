@@ -19,6 +19,7 @@
 @import uk.gov.hmrc.play.views.html._
 @import views.html._
 @import controllers.invitations.routes._
+@import utils.ViewHelper.titleWithErrors
 
 @this(
 main_template: main_template,
@@ -29,7 +30,7 @@ appConfig: FrontendAppConfig
 @(form: Form[_], mode: Mode, adviserName: String)(implicit request: Request[_], messages: Messages)
 
 @main_template(
-    title = s"${messages("messages__adviser__email__address__title")}",
+    title = titleWithErrors(form, messages("messages__adviser__email__address__title")),
 
     bodyClasses = None) {
 

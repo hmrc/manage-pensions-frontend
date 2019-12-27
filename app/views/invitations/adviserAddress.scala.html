@@ -20,6 +20,7 @@
 @import controllers.invitations.routes._
 @import models._
 @import utils.InputOption
+@import utils.ViewHelper.titleWithErrors
 
 @this(
 main_template: main_template,
@@ -30,7 +31,7 @@ appConfig: FrontendAppConfig
 @(form: Form[_], mode: Mode, options: Seq[InputOption], prepopulated: Boolean, prefix: String, name: String)(implicit request: Request[_], messages: Messages)
 
 @main_template(
-    title = messages(s"messages__${prefix}__title"),
+title = titleWithErrors(form, messages(s"messages__${prefix}__title")),
 
     bodyClasses = None
 ) {

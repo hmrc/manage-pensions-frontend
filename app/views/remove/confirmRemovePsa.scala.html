@@ -18,6 +18,7 @@
 @import uk.gov.hmrc.play.views.html._
 @import views.html._
 @import viewmodels.Message
+@import utils.ViewHelper.titleWithErrors
 
 @this(
     main_template: main_template,
@@ -27,7 +28,7 @@
 @(form: Form[_], schemeName: String, srn: String, psaName: String)(implicit request: Request[_], messages: Messages)
 
 @main_template(
-    title = Messages("messages__confirmRemovePsa__title")
+title = titleWithErrors(form, messages("messages__confirmRemovePsa__title"))
 ){
 
     @formHelper(action = controllers.remove.routes.ConfirmRemovePsaController.onSubmit(), 'autoComplete -> "off") {
