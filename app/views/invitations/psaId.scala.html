@@ -1,5 +1,5 @@
 @*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,12 +38,11 @@ appConfig: FrontendAppConfig
 
         @components.error_summary(form.errors)
 
-        @components.heading(Messages("messages__psa__id__heading", psaName))
-
         @components.input_text(
           field = form("psaId"),
           label = messages("messages__psa__id__heading", psaName),
-          labelClass=Some("visually-hidden")
+          labelClass=Some("visually-hidden"),
+            headingIsLegend = true
         )
 
         @components.submit_button()

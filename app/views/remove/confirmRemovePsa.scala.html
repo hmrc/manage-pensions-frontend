@@ -1,5 +1,5 @@
 @*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@
         @components.back_link()
 
         @components.error_summary(form.errors)
-
+        <div class="form-group @if(form.hasErrors){form-group--error}">
         @components.heading(messages("messages__confirmRemovePsa__heading", psaName, schemeName))
 
         @components.input_yes_no(
@@ -43,7 +43,7 @@
             label = messages("messages__confirmRemovePsa__title"),
             labelClass = Some("visually-hidden")
         )
-
+        </div>
         @components.submit_button()
 
     }

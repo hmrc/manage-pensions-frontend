@@ -1,5 +1,5 @@
 @*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@
 
         @components.error_summary(form.errors)
 
+        <div class="form-group @if(form.hasErrors){form-group--error}">
         @components.heading(Message("messages__doYouHaveWorkingKnowledge__heading"))
 
         @components.paragraph_text(Message("messages__doYouHaveWorkingKnowledge_p1"))
@@ -52,7 +53,7 @@
             label = messages("messages__doYouHaveWorkingKnowledge__heading"),
             labelClass = Some("visually-hidden")
         )
-
+        </div>
         @components.submit_button()
 
         }

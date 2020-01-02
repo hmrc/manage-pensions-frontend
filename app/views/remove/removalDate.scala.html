@@ -1,5 +1,5 @@
 @*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@
 
         @components.error_summary(form.errors)
 
+        <div class="form-group @if(form.hasErrors){form-group--error}">
         @components.heading(messages("messages__removalDate__heading", psaName, schemeName))
 
         <p>@messages("messages__removalDate__lede", psaName, associationDate)</p>
@@ -47,7 +48,7 @@
             legendClass = "visuallyhidden",
             hint = Some(messages("messages__common__date_hint"))
         )
-
+        </div>
         @components.submit_button()
 
         <p><a id="return-link" href="@controllers.routes.SchemeDetailsController.onPageLoad(srn)">@messages("messages__returnToSchemeDetails__link", schemeName)</a></p>
