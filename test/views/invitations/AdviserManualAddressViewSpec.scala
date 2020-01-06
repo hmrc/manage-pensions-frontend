@@ -57,7 +57,7 @@ class AdviserManualAddressViewSpec extends QuestionViewBehaviours[Address] {
 
     behave like pageWithSecondaryHeader(createView, messages(""))
 
-    behave like pageWithTextFields(
+    behave like pageWithErrorOutsideLabel(
       createViewUsingForm,
       messageKeyPrefix,
       AdviserManualAddressController.onSubmit(NormalMode, false).url,

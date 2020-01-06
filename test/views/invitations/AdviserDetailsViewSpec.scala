@@ -46,7 +46,7 @@ class AdviserDetailsViewSpec extends QuestionViewBehaviours[String] {
 
     behave like pageWithBackLink(createView)
 
-    behave like pageWithTextFields(
+    behave like pageWithErrorOutsideLabel(
       createViewUsingForm,
       messageKeyPrefix,
       controllers.invitations.routes.AdviserDetailsController.onSubmit(NormalMode).url,

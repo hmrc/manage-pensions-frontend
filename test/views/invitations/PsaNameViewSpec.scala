@@ -47,7 +47,7 @@ class PsaNameViewSpec extends QuestionViewBehaviours[String] {
 
     behave like pageWithBackLink(createView)
 
-    behave like pageWithTextFields(
+    behave like pageWithErrorOutsideLabel(
       createViewUsingForm,
       messageKeyPrefix,
       controllers.invitations.routes.PsaNameController.onSubmit(NormalMode).url,

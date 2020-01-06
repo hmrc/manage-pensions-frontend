@@ -38,12 +38,11 @@ appConfig: FrontendAppConfig
 
         @components.error_summary(form.errors)
 
-        @components.heading(Messages("messages__psa__id__heading", psaName))
-
         @components.input_text(
           field = form("psaId"),
           label = messages("messages__psa__id__heading", psaName),
-          labelClass=Some("visually-hidden")
+          labelClass=Some("visually-hidden"),
+            headingIsLegend = true
         )
 
         @components.submit_button()

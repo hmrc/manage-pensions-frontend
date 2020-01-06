@@ -41,6 +41,7 @@
 
         @components.error_summary(form.errors)
 
+        <div class="form-group @if(form.hasErrors){form-group--error}">
         @components.heading(messages("messages__confirmStopBeingPsa__heading"))
 
         <p>@messages("messages__confirmStopBeingPsa_p1")</p>
@@ -51,7 +52,7 @@
             label = messages("messages__confirmStopBeingPsa__title"),
             labelClass = Some("visually-hidden")
         )
-
+        </div>
         @components.submit_button()
 
     }

@@ -41,6 +41,7 @@ appConfig: FrontendAppConfig
 
         @components.error_summary(form.errors)
 
+        <div class="form-group @if(form.hasErrors){form-group--error}">
         @components.heading(Message("messages__adviser__postcode__heading", name))
 
         @components.paragraph_text(Message("messages__adviser__postcode__lede"))
@@ -54,7 +55,7 @@ appConfig: FrontendAppConfig
             @messages("messages__adviser__postcode__enter_postcode_lhs")
             <a id="manual-address-link" href="@AdviserManualAddressController.onPageLoad(NormalMode, false)"> @messages("messages__adviser__postcode__enter_postcode_link")</a> @messages("messages__adviser__postcode__enter_postcode_rhs")
         </p>
-
+        </div>
         @components.submit_button()
     }
 }

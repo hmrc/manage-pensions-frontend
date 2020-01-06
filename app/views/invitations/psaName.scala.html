@@ -38,6 +38,7 @@ appConfig: FrontendAppConfig
 
         @components.error_summary(form.errors)
 
+        <div class="form-group @if(form.hasErrors){form-group--error}">
         @components.heading(messages("messages__psa__name__heading"))
 
         <p>@messages("messages__psa__name__p1")</p>
@@ -47,7 +48,7 @@ appConfig: FrontendAppConfig
           label = messages("messages__psa__name__heading"),
           labelClass=Some("visually-hidden")
         )
-
+        </div>
         @components.submit_button()
     }
 }

@@ -40,6 +40,7 @@
 
         @components.error_summary(form.errors)
 
+        <div class="form-group @if(form.hasErrors){form-group--error}">
         @components.heading(Message("messages__deleteSchemeChanges__heading", schemeName))
 
         <p>@messages("messages__deleteSchemeChanges__p1")</p>
@@ -51,7 +52,7 @@
             label = messages("messages__deleteSchemeChanges__title"),
             labelClass = Some("visually-hidden")
         )
-
+        </div>
         @components.submit_button("site.save_and_continue")
 
         @components.return_link(controllers.routes.SchemesOverviewController.onPageLoad(), Some(psaName))
