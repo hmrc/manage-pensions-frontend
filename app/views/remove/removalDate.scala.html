@@ -19,6 +19,7 @@
 @import views.html._
 @import controllers.remove.routes._
 @import models.Mode
+@import utils.ViewHelper.titleWithErrors
 
 @this(
     main_template: main_template,
@@ -28,7 +29,7 @@
 @(form: Form[_], psaName: String, schemeName: String, srn: String, associationDate: String)(implicit request: Request[_], messages: Messages)
 
 @main_template(
-    title = messages("messages__removalDate__title")
+    title = titleWithErrors(form, messages("messages__removalDate__title"))
 ) {
 
     @formHelper(action = RemovalDateController.onSubmit, 'autoComplete -> "off") {

@@ -22,6 +22,7 @@
 @import viewmodels.Message
 @import play.api.mvc.Call
 @import views.html._
+@import utils.ViewHelper.titleWithErrors
 
 @this(
     main_template: main_template,
@@ -31,7 +32,7 @@
 @(form: Form[_], schemeName: String, postCall: Call, psaName : String)(implicit request: Request[_], messages: Messages)
 
 @main_template(
-    title = Message("messages__deleteSchemeChanges__title")
+title = titleWithErrors(form, messages("messages__deleteSchemeChanges__title"))
 ) {
 
     @formHelper(action = postCall, 'autoComplete -> "off") {

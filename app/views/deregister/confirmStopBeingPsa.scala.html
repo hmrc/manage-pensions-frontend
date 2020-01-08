@@ -20,6 +20,7 @@
 @import views.html._
 @import viewmodels.Message
 @import views.html._
+@import utils.ViewHelper.titleWithErrors
 
 @this(
     main_template: main_template,
@@ -29,10 +30,8 @@
 
 @(form: Form[_], psaName: String)(implicit request: Request[_], messages: Messages)
 
-
-
 @main_template(
-    title = messages("messages__confirmStopBeingPsa__title")
+    title = titleWithErrors(form, messages("messages__confirmStopBeingPsa__title"))
 ) {
 
     @formHelper(action = controllers.deregister.routes.ConfirmStopBeingPsaController.onSubmit(), 'autoComplete -> "off") {
