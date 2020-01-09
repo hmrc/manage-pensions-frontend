@@ -23,8 +23,8 @@ class PensionAdminCacheConnectorSpec extends AsyncWordSpec with MustMatchers wit
 
   override protected def portConfigKey: String = "microservice.services.pension-administrator.port"
 
-  protected def pensionAdminCacheConnectorUrl(id: String) = s"/pension-administrator/journey-cache/psa/$id"
-  protected def pensionAdminCacheConnectorLastUpdatedUrl(id: String) = s"/pension-administrator/journey-cache/psa/$id/lastUpdated"
+  protected def pensionAdminCacheConnectorUrl(id: String) = s"/pension-administrator/journey-cache/psa-data/$id"
+  protected def pensionAdminCacheConnectorLastUpdatedUrl(id: String) = s"/pension-administrator/journey-cache/psa-data/$id/lastUpdated"
 
   protected def managePensionsCacheConnectorUrl(id: String) = s"/pension-administrator/journey-cache/manage-pensions/$id"
   protected def managePensionsCacheConnectorLastUpdatedUrl(id: String) = s"/pension-administrator/journey-cache/manage-pensions/$id/lastUpdated"
