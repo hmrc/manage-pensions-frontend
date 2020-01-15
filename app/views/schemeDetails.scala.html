@@ -20,6 +20,8 @@
 @import controllers.routes._
 @import models.Mode
 @import viewmodels.{AssociatedPsa, Message}
+@import models.Link
+@import viewmodels.AFTItem
 
 @this(
     main_template: main_template,
@@ -34,7 +36,8 @@
     srn: String,
     isSchemeOpen: Boolean,
     displayChangeLink: Boolean,
-    lockingPsa: Option[String]
+    lockingPsa: Option[String],
+    optionAFTItem: Option[AFTItem]
 )(implicit request: Request[_], messages: Messages)
 
     @main_template(
@@ -61,6 +64,34 @@
         @openedDate.map { openedDate =>
             <h2>@Html(messages("messages__schemeDetails__opened_date_head"))</h2>
             <p>@openedDate</p>
+        }
+
+        @optionAFTItem.map{ aftItem =>
+            <h2>@Html(messages("messages__schemeDetails__aft_h1"))</h2>
+            @if(aftItem.period.isEmpty){
+                <a id='@{aftItem.link.id}' href='@{aftItem.link.url}'>
+                    @{aftItem.link.linkText.resolve}
+                </a>
+            }else{
+                <div id="aft-list">
+                    @for(aftItem <- optionAFTItem){
+                    <div class="row-group grid-row">
+                        <div class="column-two-thirds table-column">
+                            @{aftItem.period.map(_.resolve)}
+                        </div>
+                        <div class="column-one-sixth table-column">
+                            @{aftItem.status.map(_.resolve)}
+                        </div>
+                        <div class="column-one-sixth table-column">
+                            <a id='@@link.id' href='@{aftItem.link.url}'>
+                                @{aftItem.link.linkText.resolve}
+                            </a>
+                        </div>
+                    </div>
+                    }
+
+                </div>
+            }
         }
 
         @admins.map { admins =>

@@ -30,7 +30,7 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
 import utils.{DateHelper, UserAnswers}
-import viewmodels.AssociatedPsa
+import viewmodels.{AFTItem, AssociatedPsa, Message}
 import views.html.schemeDetails
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -70,6 +70,32 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
 
           val admins = (userAnswers.json \ "psaDetails").as[Seq[PsaDetails]].map(_.id)
           val schemeName = userAnswers.get(SchemeNameId).getOrElse("")
+          val aftVersionsResult = Seq.empty //("1")
+          val optionAFTItem = if (appConfig.isAFTEnabled) {
+
+             aftVersionsResult match {
+              case s if s.isEmpty =>
+                  Some(AFTItem(
+                    None,
+                    None,
+                    Link(
+                      id = "aftNewLink",
+                      url = appConfig.aftNewUrl.format(srn.id),
+                      linkText = Message("messages__schemeDetails__aft_startLink"))
+                  )
+                  )
+              case s =>
+                  Some(AFTItem(
+                    Some(Message("messages__schemeDetails__aft_period")),
+                    Some(Message("messages__schemeDetails__aft_inProgress")),
+                    Link(
+                      id = "aftInProgressLink",
+                      url = appConfig.aftInProgressUrl.format(srn.id),
+                      linkText = Message("messages__schemeDetails__aft_view"))
+                  )
+                  )
+            }
+          } else None
 
           if (admins.contains(request.psaId.id)) {
             listSchemesConnector.getListOfSchemes(request.psaId.id).flatMap { list =>
@@ -84,7 +110,8 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                       srn.id,
                       isSchemeOpen,
                       displayChangeLink,
-                      lockingPsa
+                      lockingPsa,
+                      optionAFTItem
                     ))
                   }
                 }
