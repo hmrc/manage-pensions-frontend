@@ -79,6 +79,8 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val taxDeEnrolmentUrl: String = servicesConfig.baseUrl("tax-enrolments") +runModeConfiguration.underlying.getString("urls.tax-de-enrolment")
   lazy val updateSchemeDetailsUrl: String = s"${servicesConfig.baseUrl("pensions-scheme")}${runModeConfiguration.underlying.getString("urls.updateSchemeDetails")}"
   lazy val isAFTEnabled: Boolean = runModeConfiguration.underlying.getBoolean("features.aft-return-enabled")
+  lazy val aftListOfVersions: String = s"${servicesConfig.baseUrl("pension-scheme-accounting-for-tax")}${runModeConfiguration.underlying.getString("urls.aftListOfVersions")}"
+
 
   def languageMap: Map[String, Lang] = Map(
     "english" -> Lang("en"),

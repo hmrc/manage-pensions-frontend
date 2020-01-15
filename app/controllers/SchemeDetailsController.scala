@@ -22,6 +22,7 @@ import config.{FeatureSwitchManagementService, FrontendAppConfig}
 import connectors._
 import controllers.actions._
 import handlers.ErrorHandler
+import identifiers.invitations.PSTRId
 import identifiers.{ListOfPSADetailsId, SchemeNameId, SchemeSrnId, SchemeStatusId}
 import javax.inject.Inject
 import models._
@@ -47,7 +48,8 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                                         featureSwitchManagementService: FeatureSwitchManagementService,
                                         minimalPsaConnector: MinimalPsaConnector,
                                         val controllerComponents: MessagesControllerComponents,
-                                        view: schemeDetails
+                                        view: schemeDetails,
+                                        aftConnector: AFTConnector
                                        )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate.async {
@@ -70,12 +72,17 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
 
           val admins = (userAnswers.json \ "psaDetails").as[Seq[PsaDetails]].map(_.id)
           val schemeName = userAnswers.get(SchemeNameId).getOrElse("")
-          val aftVersionsResult = Seq.empty //("1")
-          val optionAFTItem = if (appConfig.isAFTEnabled) {
 
-             aftVersionsResult match {
-              case s if s.isEmpty =>
-                  Some(AFTItem(
+
+
+          val optionAFTItem = (if (appConfig.isAFTEnabled) {
+            userAnswers.get(PSTRId).map { pstrId =>
+              val aftVersionsResult = Seq("1")
+              aftConnector.getListOfVersions(pstrId)
+
+              aftVersionsResult match {
+                case s if s.isEmpty =>
+                  Option(AFTItem(
                     None,
                     None,
                     Link(
@@ -84,8 +91,8 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                       linkText = Message("messages__schemeDetails__aft_startLink"))
                   )
                   )
-              case s =>
-                  Some(AFTItem(
+                case s =>
+                  Option(AFTItem(
                     Some(Message("messages__schemeDetails__aft_period")),
                     Some(Message("messages__schemeDetails__aft_inProgress")),
                     Link(
@@ -94,8 +101,11 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                       linkText = Message("messages__schemeDetails__aft_view"))
                   )
                   )
+              }
             }
-          } else None
+          } else {
+            None
+          }).flatten
 
           if (admins.contains(request.psaId.id)) {
             listSchemesConnector.getListOfSchemes(request.psaId.id).flatMap { list =>
