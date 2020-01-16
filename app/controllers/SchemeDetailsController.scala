@@ -32,10 +32,11 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.{DateHelper, UserAnswers}
-import viewmodels.{AFTItem, AssociatedPsa, Message}
+import viewmodels.{AFTViewModel, AssociatedPsa, Message}
 import views.html.schemeDetails
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success, Try}
 
 class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                                         override val messagesApi: MessagesApi,
@@ -53,26 +54,33 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                                         aftConnector: AFTConnector
                                        )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
-  def getAFTItem(pstrId: String, srn: String)(implicit hc: HeaderCarrier): Future[Option[AFTItem]] = {
-    aftConnector.getListOfVersions(pstrId).map {
-      case s if s.isEmpty =>
-        Option(AFTItem(
-          None,
-          None,
-          Link(
-            id = "aftNewLink",
-            url = appConfig.aftNewUrl.format(srn),
-            linkText = Message("messages__schemeDetails__aft_startLink"))
-        ))
-      case s =>
-        Option(AFTItem(
-          Some(Message("messages__schemeDetails__aft_period")),
-          Some(Message("messages__schemeDetails__aft_inProgress")),
-          Link(
-            id = "aftInProgressLink",
-            url = appConfig.aftInProgressUrl.format(srn),
-            linkText = Message("messages__schemeDetails__aft_view"))
-        ))
+  private def retrieveAFTViewModel(userAnswers: UserAnswers, srn: String)(implicit hc: HeaderCarrier): Future[Option[AFTViewModel]] = {
+    if (appConfig.isAFTEnabled) {
+      val pstrId = userAnswers.get(PSTRId)
+        .getOrElse(throw new RuntimeException(s"No PSTR ID found for srn $srn"))
+      aftConnector.getListOfVersions(pstrId).map {
+        case None => None
+        case Some(s) if s.isEmpty =>
+          Option(AFTViewModel(
+            None,
+            None,
+            Link(
+              id = "aftNewLink",
+              url = appConfig.aftNewUrl.format(srn),
+              linkText = Message("messages__schemeDetails__aft_startLink"))
+          ))
+        case Some(s) =>
+          Option(AFTViewModel(
+            Some(Message("messages__schemeDetails__aft_period")),
+            Some(Message("messages__schemeDetails__aft_inProgress")),
+            Link(
+              id = "aftInProgressLink",
+              url = appConfig.aftInProgressUrl.format(srn),
+              linkText = Message("messages__schemeDetails__aft_view"))
+          ))
+      }
+    } else {
+      Future.successful(None)
     }
   }
 
@@ -97,18 +105,8 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
           val admins = (userAnswers.json \ "psaDetails").as[Seq[PsaDetails]].map(_.id)
           val schemeName = userAnswers.get(SchemeNameId).getOrElse("")
 
-
-          val futureOptionAFTItem = if (appConfig.isAFTEnabled) {
-            val pstrId = userAnswers.get(PSTRId).getOrElse(throw new RuntimeException(""))
-            getAFTItem(pstrId, srn.id)
-
-          } else {
-            Future.successful(None)
-          }
-
-
           if (admins.contains(request.psaId.id)) {
-            futureOptionAFTItem.flatMap { optionAFTItem =>
+            retrieveAFTViewModel(userAnswers, srn.id).flatMap { optionAFTViewModel =>
               listSchemesConnector.getListOfSchemes(request.psaId.id).flatMap { list =>
                 userAnswersCacheConnector.save(request.externalId, SchemeSrnId, srn.id).flatMap { _ =>
                   userAnswersCacheConnector.save(request.externalId, SchemeNameId, schemeName).flatMap { _ =>
@@ -122,7 +120,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                         isSchemeOpen,
                         displayChangeLink,
                         lockingPsa,
-                        optionAFTItem
+                        optionAFTViewModel
                       ))
                     }
                   }

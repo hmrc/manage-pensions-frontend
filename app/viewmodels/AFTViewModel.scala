@@ -18,4 +18,4 @@ package viewmodels
 
 import models.Link
 
-case class AFTItem(period:Option[Message], status:Option[Message], link:Link)
+case class AFTViewModel(period:Option[Message], status:Option[Message], link:Link)

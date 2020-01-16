@@ -21,7 +21,7 @@
 @import models.Mode
 @import viewmodels.{AssociatedPsa, Message}
 @import models.Link
-@import viewmodels.AFTItem
+@import viewmodels.AFTViewModel
 
 @this(
     main_template: main_template,
@@ -37,7 +37,7 @@
     isSchemeOpen: Boolean,
     displayChangeLink: Boolean,
     lockingPsa: Option[String],
-    optionAFTItem: Option[AFTItem]
+    optionAFTItem: Option[AFTViewModel]
 )(implicit request: Request[_], messages: Messages)
 
     @main_template(

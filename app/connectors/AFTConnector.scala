@@ -30,43 +30,31 @@ import scala.util.{Failure, Try}
 @ImplementedBy(classOf[AFTConnectorImpl])
 trait AFTConnector {
 
-  def getListOfVersions(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Seq[Int]]
+  def getListOfVersions(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Seq[Int]]]
 
 }
 
 @Singleton
 class AFTConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) extends AFTConnector {
 
-  def getListOfVersions(pstr: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Seq[Int]] = {
+  def getListOfVersions(pstr: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Seq[Int]]] = {
     val url = config.aftListOfVersions
     val schemeHc = hc.withExtraHeaders("pstr" -> pstr, "startDate" -> "2020-04-01")
     http.GET[HttpResponse](url)(implicitly, schemeHc, implicitly).map { response =>
       require(response.status == Status.OK)
-      response.json.as[Seq[Int]]
+      Option(response.json.as[Seq[Int]])
     } andThen {
       logExceptions
+    } recoverWith {
+      translateExceptions()
     }
-//    recoverWith {
-//      translateExceptions()
-//    }
   }
 
-  private def logExceptions: PartialFunction[Try[Seq[Int]], Unit] = {
+  private def logExceptions: PartialFunction[Try[Option[Seq[Int]]], Unit] = {
     case Failure(t: Throwable) => Logger.error("Unable to retrieve list of versions", t)
   }
 
-//  private def translateExceptions(): PartialFunction[Throwable, Future[ListOfSchemes]] = {
-//    case ex: BadRequestException
-//      if ex.message.contains("INVALID_PAYLOAD")
-//    => Future.failed(InvalidPayloadException())
-//    case ex: BadRequestException
-//      if ex.message.contains("INVALID_CORRELATION_ID")
-//    => Future.failed(InvalidCorrelationIdException())
-//    case Upstream5xxResponse(_, Status.INTERNAL_SERVER_ERROR, _)
-//    => Future.failed(InternalServerErrorException())
-//    case Upstream5xxResponse(_, Status.SERVICE_UNAVAILABLE, _)
-//    => Future.failed(ServiceUnavailableException())
-//  }
-
+  private def translateExceptions(): PartialFunction[Throwable, Future[Option[Seq[Int]]]] = {
+    case ex: Exception => Future.successful(None)
+  }
 }
-
