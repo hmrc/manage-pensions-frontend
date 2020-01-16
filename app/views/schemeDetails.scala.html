@@ -75,14 +75,14 @@
             }else{
                 <div id="aft-list">
                     <div class="row-group grid-row">
-                        <div class="column-two-thirds table-column">
+                        <div id="aftPeriod" class="column-two-thirds table-column">
                             @{aftViewModel.period.map(_.resolve)}
                         </div>
-                        <div class="column-one-sixth padding-zero table-column">
+                        <div id="aftStatus" class="column-one-sixth padding-zero table-column">
                             @{aftViewModel.status.map(_.resolve)}
                         </div>
                         <div class="column-one-sixth table-column">
-                            <a id='@@link.id' href='@{aftViewModel.link.url}'>
+                            <a id='@{aftViewModel.link.id}' href='@{aftViewModel.link.url}'>
                                 @{aftViewModel.link.linkText.resolve}
                             </a>
                         </div>

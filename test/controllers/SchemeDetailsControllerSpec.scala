@@ -20,6 +20,7 @@ import config.{FeatureSwitchManagementService, FeatureSwitchManagementServiceTes
 import connectors._
 import controllers.actions.{DataRetrievalAction, _}
 import handlers.ErrorHandler
+import identifiers.invitations.PSTRId
 import identifiers.{SchemeNameId, SchemeStatusId}
 import models._
 import org.mockito.Matchers
@@ -33,7 +34,7 @@ import play.api.{Application, Configuration}
 import testhelpers.CommonBuilders._
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.UserAnswers
-import viewmodels.AssociatedPsa
+import viewmodels.{AFTViewModel, AssociatedPsa, Message}
 import views.html.{error_template, error_template_page_not_found, schemeDetails}
 
 import scala.concurrent.Future
@@ -52,6 +53,8 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
   val errorHandlerNotFoundView: error_template_page_not_found = app.injector.instanceOf[error_template_page_not_found]
   val eh = new ErrorHandler(frontendAppConfig, messagesApi, errorHandlerView, errorHandlerNotFoundView)
 
+  private val aftConnector = mock[AFTConnector]
+
   def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): SchemeDetailsController = {
     new SchemeDetailsController(frontendAppConfig,
       messagesApi,
@@ -65,12 +68,15 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
       fakeFeatureSwitch,
       fakeMinimalPsaConnector,
       stubMessagesControllerComponents(),
+      aftConnector,
       view
     )
   }
 
   def viewAsString(openDate: Option[String] = openDate, administrators: Option[Seq[AssociatedPsa]] = administrators,
-                   isSchemeOpen: Boolean = true, displayChangeLink: Boolean = false, lockingPsa: Option[String] = None): String =
+                   isSchemeOpen: Boolean = true, displayChangeLink: Boolean = false, lockingPsa: Option[String] = None,
+                   optionAFTViewModel: Option[AFTViewModel] = None
+                  ): String =
     view(
       schemeName1,
       pstr,
@@ -79,11 +85,12 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
       srn,
       isSchemeOpen,
       displayChangeLink,
-      lockingPsa
+      lockingPsa,
+      optionAFTViewModel
     )(fakeRequest, messages).toString()
 
   override def beforeEach(): Unit = {
-    reset(fakeSchemeDetailsConnector, fakeListOfSchemesConnector, fakeSchemeLockConnector)
+    reset(fakeSchemeDetailsConnector, fakeListOfSchemesConnector, fakeSchemeLockConnector, aftConnector)
   }
 
   "SchemeDetailsController" must {
@@ -95,12 +102,40 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
         .thenReturn(Future.successful(Some(VarianceLock)))
       when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(listOfSchemesResponse))
+      when(aftConnector.getListOfVersions(Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
 
       val result = controller().onPageLoad(srn)(fakeRequest)
       status(result) mustBe OK
       verify(fakeSchemeDetailsConnector, times(1))
         .getSchemeDetails(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())
       contentAsString(result) mustBe viewAsString(administrators = updatedAdministrators, displayChangeLink = true)
+    }
+
+    "return OK and pass in the correct aft view model" in {
+      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.eq("A0000000"), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(desUserAnswers))
+      when(fakeSchemeLockConnector.isLockByPsaIdOrSchemeId(Matchers.eq("A0000000"), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(VarianceLock)))
+      when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(listOfSchemesResponse))
+      when(aftConnector.getListOfVersions(Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(Seq(1))))
+
+      val result = controller().onPageLoad(srn)(fakeRequest)
+      status(result) mustBe OK
+      contentAsString(result) mustBe viewAsString(administrators = updatedAdministrators, displayChangeLink = true,
+        optionAFTViewModel = Some(
+          AFTViewModel(
+            Some(Message("messages__schemeDetails__aft_period")),
+            Some(Message("messages__schemeDetails__aft_inProgress")),
+            Link(
+              id = "aftSummaryPageLink",
+              url = frontendAppConfig.aftInProgressUrl.format(srn.id),
+              linkText = Message("messages__schemeDetails__aft_view"))
+          )
+        )
+      )
     }
 
     "return OK and the correct view for a GET when scheme is locked by another PSA" in {
@@ -114,6 +149,8 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
         .thenReturn(Future.successful(Some("Locky Lockhart")))
       when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(listOfSchemesResponse))
+      when(aftConnector.getListOfVersions(Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
 
       val result = controller().onPageLoad(srn)(fakeRequest)
       status(result) mustBe OK
@@ -131,6 +168,8 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
         .thenReturn(Future.successful(Some(VarianceLock)))
       when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(listOfSchemesResponse))
+      when(aftConnector.getListOfVersions(Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
       val result = controller().onPageLoad(srn)(fakeRequest)
       status(result) mustBe OK
       contentAsString(result) mustBe viewAsString(openDate = None, administrators = updatedAdministrators, isSchemeOpen = false)
@@ -143,6 +182,8 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
         .thenReturn(Future.successful(Some(VarianceLock)))
       when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(listOfSchemesResponse))
+      when(aftConnector.getListOfVersions(Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
 
       val result = controller().onPageLoad(srn)(fakeRequest)
       status(result) mustBe NOT_FOUND
@@ -162,6 +203,8 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
         .thenReturn(Future.successful(listOfSchemesResponse))
       when(fakeSchemeLockConnector.isLockByPsaIdOrSchemeId(Matchers.eq("A0000000"), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(VarianceLock)))
+      when(aftConnector.getListOfVersions(Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
 
       val result = controller().onPageLoad(srn)(fakeRequest)
       status(result) mustBe NOT_FOUND
@@ -200,6 +243,7 @@ private object SchemeDetailsControllerSpec extends MockitoSugar {
   val srn = SchemeReferenceNumber("S1000000456")
 
   val desUserAnswers = UserAnswers(Json.obj(
+    PSTRId.toString -> pstr.get,
     "schemeStatus" -> "Open",
     SchemeNameId.toString -> schemeName1,
     "psaDetails" -> JsArray(

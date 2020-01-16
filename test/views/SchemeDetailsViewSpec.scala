@@ -16,9 +16,10 @@
 
 package views
 
+import models.Link
 import org.jsoup.Jsoup
 import play.twirl.api.HtmlFormat
-import viewmodels.AssociatedPsa
+import viewmodels.{AFTViewModel, AssociatedPsa, Message}
 import views.behaviours.ViewBehaviours
 import views.html.schemeDetails
 
@@ -37,7 +38,9 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
                  psaList: Option[Seq[AssociatedPsa]] = Some(administrators),
                  isSchemeOpen: Boolean = true,
                  displayChangeLink: Boolean = false,
-                 lockingPsa: Option[String] = None): () => HtmlFormat.Appendable = () =>
+                 lockingPsa: Option[String] = None,
+                 optionAFTViewModel: Option[AFTViewModel] = None
+                ): () => HtmlFormat.Appendable = () =>
     schemeDetailsView(
       schemeName,
       pstr,
@@ -46,7 +49,8 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
       srn,
       isSchemeOpen,
       displayChangeLink,
-      lockingPsa
+      lockingPsa,
+      optionAFTViewModel
     )(fakeRequest, messages)
 
   "SchemesDetails view" must {
@@ -133,6 +137,21 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
     "render the name of PSA locking the same if applicable" in {
       Jsoup.parse(createView(lockingPsa = Some("Gilderoy Lockhart"))().toString) must
         haveDynamicText("messages__schemeDetails__psa_making_changes", "Gilderoy Lockhart")
+    }
+
+    "have a link for AFT when suitable model passed in" in {
+      Jsoup.parse(createView(optionAFTViewModel = Some(AFTViewModel(None, None, Link("aftID", "url", "text"))))().toString()).select("a[id=aftID]") must
+        haveLink("url")
+    }
+
+    "have a link for AFT and period and status when suitable model passed in" in {
+      val result = Jsoup.parse(createView(optionAFTViewModel = Some(AFTViewModel(Some(Message("period")),
+        Some(Message("status")),
+        Link("aftID", "url", "text"))))().toString())
+
+      result.select("a[id=aftID]") must haveLink("url")
+      result.select("div[id=aftPeriod]") text() mustBe "period"
+      result.select("div[id=aftStatus]") text() mustBe "status"
     }
   }
 }

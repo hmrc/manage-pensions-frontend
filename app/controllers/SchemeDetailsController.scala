@@ -49,8 +49,8 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                                         featureSwitchManagementService: FeatureSwitchManagementService,
                                         minimalPsaConnector: MinimalPsaConnector,
                                         val controllerComponents: MessagesControllerComponents,
-                                        view: schemeDetails,
-                                        aftConnector: AFTConnector
+                                        aftConnector: AFTConnector,
+                                        view: schemeDetails
                                        )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   private def retrieveOptionAFTViewModel(userAnswers: UserAnswers, srn: String)(implicit hc: HeaderCarrier): Future[Option[AFTViewModel]] = {

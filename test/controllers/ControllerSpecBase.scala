@@ -19,6 +19,7 @@ package controllers
 import base.SpecBase
 import controllers.actions.FakeDataRetrievalAction
 import identifiers.PSANameId
+import identifiers.invitations.PSTRId
 import play.api.libs.json.Json
 
 trait ControllerSpecBase extends SpecBase {
@@ -32,5 +33,9 @@ trait ControllerSpecBase extends SpecBase {
   def getDataWithPsaName(psaId: String = "A0000000"): FakeDataRetrievalAction = new FakeDataRetrievalAction(Some(Json.obj(
     PSANameId.toString -> "Test Psa Name"
   )), psaId)
+
+  def getDataWithPSTRId(pstr: String): FakeDataRetrievalAction = new FakeDataRetrievalAction(Some(Json.obj(
+    PSTRId.toString -> pstr
+  )))
 
 }
