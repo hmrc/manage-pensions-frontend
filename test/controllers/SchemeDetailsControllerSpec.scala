@@ -131,7 +131,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
             Some(Message("messages__schemeDetails__aft_inProgress")),
             Link(
               id = "aftSummaryPageLink",
-              url = frontendAppConfig.aftInProgressUrl.format(srn.id),
+              url = frontendAppConfig.aftSummaryPageUrl.format(srn.id),
               linkText = Message("messages__schemeDetails__aft_view"))
           )
         )
