@@ -60,8 +60,8 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val userResearchUrl: String = runModeConfiguration.underlying.getString("urls.userResearch")
   lazy val pensionSchemeOnlineServiceUrl: String = loadConfig("urls.pensionSchemeOnlineService")
   lazy val registeredPsaDetailsUrl: String = loadConfig("urls.psaDetails")
-  lazy val aftNewUrl: String = loadConfig("urls.aftNewLink")
-  lazy val aftInProgressUrl: String = loadConfig("urls.aftInProgressLink")
+  lazy val aftNewUrl: String = loadConfig("urls.aftChargeTypePageLink")
+  lazy val aftInProgressUrl: String = loadConfig("urls.aftSummaryPageLink")
 
   lazy val languageTranslationEnabled: Boolean = runModeConfiguration.get[Boolean]("features.welsh-translation")
   lazy val registerSchemeUrl: String = runModeConfiguration.underlying.getString("urls.registerScheme")

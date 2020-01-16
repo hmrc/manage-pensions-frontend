@@ -65,7 +65,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
               None,
               None,
               Link(
-                id = "aftNewLink",
+                id = "aftChargeTypePageLink",
                 url = appConfig.aftNewUrl.format(srn),
                 linkText = Message("messages__schemeDetails__aft_startLink"))
             )
@@ -76,7 +76,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
               Some(Message("messages__schemeDetails__aft_period")),
               Some(Message("messages__schemeDetails__aft_inProgress")),
               Link(
-                id = "aftInProgressLink",
+                id = "aftSummaryPageLink",
                 url = appConfig.aftInProgressUrl.format(srn),
                 linkText = Message("messages__schemeDetails__aft_view"))
             )
