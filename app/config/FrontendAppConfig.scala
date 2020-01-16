@@ -60,7 +60,6 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val userResearchUrl: String = runModeConfiguration.underlying.getString("urls.userResearch")
   lazy val pensionSchemeOnlineServiceUrl: String = loadConfig("urls.pensionSchemeOnlineService")
   lazy val registeredPsaDetailsUrl: String = loadConfig("urls.psaDetails")
-
   lazy val languageTranslationEnabled: Boolean = runModeConfiguration.get[Boolean]("features.welsh-translation")
   lazy val registerSchemeUrl: String = runModeConfiguration.underlying.getString("urls.registerScheme")
   lazy val listOfSchemesUrl: String = s"${servicesConfig.baseUrl("pensions-scheme")}${runModeConfiguration.underlying.getString("urls.listOfSchemes")}"
@@ -76,6 +75,12 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
     runModeConfiguration.underlying.getString("urls.canDeRegister").format(psaId)}"
   lazy val taxDeEnrolmentUrl: String = servicesConfig.baseUrl("tax-enrolments") +runModeConfiguration.underlying.getString("urls.tax-de-enrolment")
   lazy val updateSchemeDetailsUrl: String = s"${servicesConfig.baseUrl("pensions-scheme")}${runModeConfiguration.underlying.getString("urls.updateSchemeDetails")}"
+
+  lazy val aftChargeTypePageUrl: String = loadConfig("urls.aftChargeTypePageLink")
+  lazy val aftSummaryPageUrl: String = loadConfig("urls.aftSummaryPageLink")
+  lazy val isAFTEnabled: Boolean = runModeConfiguration.underlying.getBoolean("features.aft-return-enabled")
+  lazy val aftListOfVersions: String = s"${servicesConfig.baseUrl("pension-scheme-accounting-for-tax")}${runModeConfiguration.underlying.getString("urls.aftListOfVersions")}"
+
 
   def languageMap: Map[String, Lang] = Map(
     "english" -> Lang("en"),

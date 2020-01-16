@@ -22,15 +22,17 @@ import config.{FeatureSwitchManagementService, FrontendAppConfig}
 import connectors._
 import controllers.actions._
 import handlers.ErrorHandler
+import identifiers.invitations.PSTRId
 import identifiers.{ListOfPSADetailsId, SchemeNameId, SchemeSrnId, SchemeStatusId}
 import javax.inject.Inject
 import models._
 import models.requests.AuthenticatedRequest
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.{DateHelper, UserAnswers}
-import viewmodels.AssociatedPsa
+import viewmodels.{AFTViewModel, AssociatedPsa, Message}
 import views.html.schemeDetails
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -47,8 +49,43 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                                         featureSwitchManagementService: FeatureSwitchManagementService,
                                         minimalPsaConnector: MinimalPsaConnector,
                                         val controllerComponents: MessagesControllerComponents,
+                                        aftConnector: AFTConnector,
                                         view: schemeDetails
                                        )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+
+  private def retrieveOptionAFTViewModel(userAnswers: UserAnswers, srn: String)(implicit hc: HeaderCarrier): Future[Option[AFTViewModel]] = {
+    if (appConfig.isAFTEnabled) {
+      val pstrId = userAnswers.get(PSTRId)
+        .getOrElse(throw new RuntimeException(s"No PSTR ID found for srn $srn"))
+      aftConnector.getListOfVersions(pstrId).map {
+        case None => None
+        case Some(versions) if versions.isEmpty =>
+          Option(
+            AFTViewModel(
+              None,
+              None,
+              Link(
+                id = "aftChargeTypePageLink",
+                url = appConfig.aftChargeTypePageUrl.format(srn),
+                linkText = Message("messages__schemeDetails__aft_startLink"))
+            )
+          )
+        case Some(_) =>
+          Option(
+            AFTViewModel(
+              Some(Message("messages__schemeDetails__aft_period")),
+              Some(Message("messages__schemeDetails__aft_inProgress")),
+              Link(
+                id = "aftSummaryPageLink",
+                url = appConfig.aftSummaryPageUrl.format(srn),
+                linkText = Message("messages__schemeDetails__aft_view"))
+            )
+          )
+      }
+    } else {
+      Future.successful(None)
+    }
+  }
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate.async {
     implicit request =>
@@ -72,20 +109,23 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
           val schemeName = userAnswers.get(SchemeNameId).getOrElse("")
 
           if (admins.contains(request.psaId.id)) {
-            listSchemesConnector.getListOfSchemes(request.psaId.id).flatMap { list =>
-              userAnswersCacheConnector.save(request.externalId, SchemeSrnId, srn.id).flatMap { _ =>
-                userAnswersCacheConnector.save(request.externalId, SchemeNameId, schemeName).flatMap { _ =>
-                  lockingPsa(lock, srn).map { lockingPsa =>
-                    Ok(view(
-                      schemeName,
-                      pstr(srn.id, list),
-                      openedDate(srn.id, list, isSchemeOpen),
-                      administratorsVariations(request.psaId.id, userAnswers, schemeStatus),
-                      srn.id,
-                      isSchemeOpen,
-                      displayChangeLink,
-                      lockingPsa
-                    ))
+            retrieveOptionAFTViewModel(userAnswers, srn.id).flatMap { optionAFTViewModel =>
+              listSchemesConnector.getListOfSchemes(request.psaId.id).flatMap { list =>
+                userAnswersCacheConnector.save(request.externalId, SchemeSrnId, srn.id).flatMap { _ =>
+                  userAnswersCacheConnector.save(request.externalId, SchemeNameId, schemeName).flatMap { _ =>
+                    lockingPsa(lock, srn).map { lockingPsa =>
+                      Ok(view(
+                        schemeName,
+                        pstr(srn.id, list),
+                        openedDate(srn.id, list, isSchemeOpen),
+                        administratorsVariations(request.psaId.id, userAnswers, schemeStatus),
+                        srn.id,
+                        isSchemeOpen,
+                        displayChangeLink,
+                        lockingPsa,
+                        optionAFTViewModel
+                      ))
+                    }
                   }
                 }
               }

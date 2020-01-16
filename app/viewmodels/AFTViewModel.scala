@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-package utils
+package viewmodels
 
-import play.api.data.Form
-import play.api.i18n.Messages
+import models.Link
 
-object ViewHelper {
-
-  def titleWithErrors(form: Form[_], title: String)(implicit messages: Messages): String =
-    s"${if(form.hasErrors) messages("site.error") else ""} $title"
-}
+case class AFTViewModel(period:Option[Message], status:Option[Message], link:Link)
