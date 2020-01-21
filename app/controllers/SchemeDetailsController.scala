@@ -70,14 +70,14 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                 linkText = Message("messages__schemeDetails__aft_startLink"))
             )
           )
-        case Some(_) =>
+        case Some(versions) =>
           Option(
             AFTViewModel(
               Some(Message("messages__schemeDetails__aft_period")),
               Some(Message("messages__schemeDetails__aft_inProgress")),
               Link(
                 id = "aftSummaryPageLink",
-                url = appConfig.aftSummaryPageUrl.format(srn),
+                url = appConfig.aftSummaryPageUrl.format(srn, versions.headOption.getOrElse("1")),
                 linkText = Message("messages__schemeDetails__aft_view"))
             )
           )

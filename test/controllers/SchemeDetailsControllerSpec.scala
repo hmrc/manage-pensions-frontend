@@ -131,7 +131,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
             Some(Message("messages__schemeDetails__aft_inProgress")),
             Link(
               id = "aftSummaryPageLink",
-              url = frontendAppConfig.aftSummaryPageUrl.format(srn.id),
+              url = frontendAppConfig.aftSummaryPageUrl.format(srn.id, version),
               linkText = Message("messages__schemeDetails__aft_view"))
           )
         )
@@ -241,6 +241,7 @@ private object SchemeDetailsControllerSpec extends MockitoSugar {
 
   val openDate = Some("10 October 2012")
   val srn = SchemeReferenceNumber("S1000000456")
+  val version = "1"
 
   val desUserAnswers = UserAnswers(Json.obj(
     PSTRId.toString -> pstr.get,
