@@ -19,6 +19,7 @@ package connectors
 import java.time.LocalDate
 
 import com.github.tomakehurst.wiremock.client.WireMock._
+import connectors.admin.PsaRemovalConnector
 import models.PsaToBeRemovedFromScheme
 import org.scalatestplus.scalacheck.Checkers
 import org.scalatest.{AsyncFlatSpec, Matchers}

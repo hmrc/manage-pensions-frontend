@@ -16,7 +16,7 @@
 
 package controllers
 
-import connectors.{PensionSchemeVarianceLockConnector, UpdateSchemeCacheConnector}
+import connectors.scheme.{PensionSchemeVarianceLockConnector, UpdateSchemeCacheConnector}
 import controllers.actions._
 import forms.DeleteSchemeChangesFormProvider
 import org.mockito.Matchers.{any, eq => eqTo}

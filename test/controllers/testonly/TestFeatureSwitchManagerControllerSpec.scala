@@ -17,7 +17,8 @@
 package controllers.testonly
 
 import config.FeatureSwitchManagementService
-import connectors.{PensionAdministratorFeatureSwitchConnectorImpl, PensionsSchemeFeatureSwitchConnectorImpl}
+import connectors.admin.PensionAdministratorFeatureSwitchConnectorImpl
+import connectors.scheme.PensionsSchemeFeatureSwitchConnectorImpl
 import controllers.ControllerSpecBase
 import forms.mappings.Mappings
 import org.mockito.Matchers._

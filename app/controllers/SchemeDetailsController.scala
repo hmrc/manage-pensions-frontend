@@ -20,6 +20,9 @@ import java.time.LocalDate
 
 import config.{FeatureSwitchManagementService, FrontendAppConfig}
 import connectors._
+import connectors.admin.MinimalPsaConnector
+import connectors.aft.AFTConnector
+import connectors.scheme.{ListOfSchemesConnector, PensionSchemeVarianceLockConnector, SchemeDetailsConnector}
 import controllers.actions._
 import handlers.ErrorHandler
 import identifiers.invitations.PSTRId

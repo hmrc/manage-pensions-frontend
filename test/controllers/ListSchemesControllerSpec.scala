@@ -16,7 +16,9 @@
 
 package controllers
 
-import connectors.{FakeUserAnswersCacheConnector, ListOfSchemesConnector, MinimalPsaConnector}
+import connectors.admin.MinimalPsaConnector
+import connectors.FakeUserAnswersCacheConnector
+import connectors.scheme.ListOfSchemesConnector
 import controllers.actions.{AuthAction, FakeAuthAction}
 import models.{ListOfSchemes, SchemeDetail, SchemeStatus}
 import org.mockito.Matchers.any

@@ -17,7 +17,8 @@
 package controllers.deregister
 
 import config.FrontendAppConfig
-import connectors.{DeregistrationConnector, MinimalPsaConnector, TaxEnrolmentsConnector, UserAnswersCacheConnector}
+import connectors.admin.{MinimalPsaConnector, TaxEnrolmentsConnector}
+import connectors.{DeregistrationConnector, UserAnswersCacheConnector}
 import controllers.actions.{AllowAccessForNonSuspendedUsersAction, AuthAction}
 import forms.deregister.ConfirmStopBeingPsaFormProvider
 import javax.inject.Inject
@@ -25,7 +26,7 @@ import models.MinimalPSA
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.annotations.PensionAdminCache
 import views.html.deregister.confirmStopBeingPsa
 

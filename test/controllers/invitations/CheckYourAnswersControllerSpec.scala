@@ -18,7 +18,8 @@ package controllers.invitations
 
 import base.JsonFileReader
 import config.{FeatureSwitchManagementService, FeatureSwitchManagementServiceTestImpl}
-import connectors.{InvitationConnector, NameMatchingFailedException, PsaAlreadyInvitedException, SchemeDetailsConnector}
+import connectors.scheme.SchemeDetailsConnector
+import connectors.{InvitationConnector, NameMatchingFailedException, PsaAlreadyInvitedException}
 import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction}
 import controllers.behaviours.ControllerWithNormalPageBehaviours
 import models.{AcceptedInvitation, Invitation, MinimalSchemeDetail}

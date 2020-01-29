@@ -18,8 +18,9 @@ package connectors
 
 import base.JsonFileReader
 import com.github.tomakehurst.wiremock.client.WireMock._
-import org.scalatestplus.scalacheck.Checkers
+import connectors.admin.{CorrelationIdInvalidSubscriptionException, PsaIdInvalidSubscriptionException, PsaIdNotFoundSubscriptionException, SubscriptionConnector}
 import org.scalatest.{AsyncFlatSpec, Matchers}
+import org.scalatestplus.scalacheck.Checkers
 import play.api.http.Status._
 import play.api.libs.json.{JsResultException, Json}
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}

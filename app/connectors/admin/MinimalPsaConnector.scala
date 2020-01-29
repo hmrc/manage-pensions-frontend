@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package connectors
+package connectors.admin
 
 import com.google.inject.{ImplementedBy, Inject}
 import config.FrontendAppConfig

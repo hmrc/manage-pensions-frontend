@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package connectors
+package connectors.admin
 
 import com.google.inject.{ImplementedBy, Inject}
 import config.FrontendAppConfig
 import models.PsaToBeRemovedFromScheme
 import play.api.Logger
+import play.api.http.Status._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import utils.HttpResponseHelper
-import play.api.http.Status._
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Failure

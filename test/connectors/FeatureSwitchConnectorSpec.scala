@@ -17,6 +17,7 @@
 package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
+import connectors.scheme.{FeatureSwitchConnector, PensionsSchemeFeatureSwitchConnectorImpl}
 import org.scalatest.{AsyncWordSpec, MustMatchers, OptionValues}
 import play.api.http.Status._
 import uk.gov.hmrc.http.HeaderCarrier

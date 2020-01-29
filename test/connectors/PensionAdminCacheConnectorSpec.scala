@@ -16,6 +16,7 @@
 
 package connectors
 
+import connectors.admin.PensionAdminCacheConnector
 import connectors.behaviour.ConnectorBehaviour
 import org.scalatest.{AsyncWordSpec, MustMatchers}
 

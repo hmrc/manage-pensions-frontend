@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package connectors
+package connectors.scheme
 
 import com.google.inject.{ImplementedBy, Inject, Singleton}
 import config.FrontendAppConfig
@@ -24,6 +24,7 @@ import play.api.http.Status
 import play.api.libs.json.{JsError, JsResultException, JsSuccess, Json}
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpResponse, Upstream5xxResponse}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
+
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Try}
 

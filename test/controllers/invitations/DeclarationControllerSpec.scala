@@ -18,7 +18,8 @@ package controllers.invitations
 
 import base.JsonFileReader
 import config.FeatureSwitchManagementServiceTestImpl
-import connectors.{FakeUserAnswersCacheConnector, InvitationConnector, InvitationsCacheConnector, SchemeDetailsConnector}
+import connectors.scheme.SchemeDetailsConnector
+import connectors.{FakeUserAnswersCacheConnector, InvitationConnector, InvitationsCacheConnector}
 import controllers.ControllerSpecBase
 import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
 import forms.invitations.DeclarationFormProvider

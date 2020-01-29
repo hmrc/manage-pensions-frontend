@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package connectors
+package connectors.admin
 
 import audit.{AuditService, DeregisterEvent}
 import com.google.inject.{ImplementedBy, Singleton}

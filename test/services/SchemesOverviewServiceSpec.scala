@@ -20,6 +20,8 @@ import java.time.format.DateTimeFormatter
 import java.time.{LocalDate, ZoneOffset}
 
 import base.SpecBase
+import connectors.admin.MinimalPsaConnector
+import connectors.scheme.{PensionSchemeVarianceLockConnector, UpdateSchemeCacheConnector}
 import connectors.{UserAnswersCacheConnector, _}
 import controllers.routes.ListSchemesController
 import models._

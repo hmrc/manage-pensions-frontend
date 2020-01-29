@@ -18,6 +18,9 @@ package controllers
 
 import config.{FeatureSwitchManagementService, FeatureSwitchManagementServiceTestImpl}
 import connectors._
+import connectors.admin.MinimalPsaConnector
+import connectors.aft.AFTConnector
+import connectors.scheme.{ListOfSchemesConnector, PensionSchemeVarianceLockConnector, SchemeDetailsConnector}
 import controllers.actions.{DataRetrievalAction, _}
 import handlers.ErrorHandler
 import identifiers.invitations.PSTRId

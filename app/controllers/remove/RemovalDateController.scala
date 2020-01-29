@@ -19,7 +19,9 @@ package controllers.remove
 import java.time.LocalDate
 
 import config.FrontendAppConfig
-import connectors.{PensionSchemeVarianceLockConnector, PsaRemovalConnector, UpdateSchemeCacheConnector, UserAnswersCacheConnector}
+import connectors.UserAnswersCacheConnector
+import connectors.admin.PsaRemovalConnector
+import connectors.scheme.{PensionSchemeVarianceLockConnector, UpdateSchemeCacheConnector}
 import controllers.Retrievals
 import controllers.actions._
 import forms.remove.RemovalDateFormProvider
@@ -32,7 +34,7 @@ import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.Reads._
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.DateHelper._
 import utils.annotations.RemovePSA
 import utils.{Navigator, UserAnswers}

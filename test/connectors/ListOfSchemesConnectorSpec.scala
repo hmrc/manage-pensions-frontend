@@ -17,6 +17,7 @@
 package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
+import connectors.scheme.{InternalServerErrorException, InvalidCorrelationIdException, InvalidPayloadException, ListOfSchemesConnector, ServiceUnavailableException}
 import models.{ListOfSchemes, SchemeDetail, SchemeStatus}
 import org.scalatest.{AsyncFlatSpec, Matchers, OptionValues}
 import play.api.http.Status

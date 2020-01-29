@@ -19,7 +19,9 @@ package controllers.remove
 import java.time.LocalDate
 
 import base.SpecBase
-import connectors.{FakeUserAnswersCacheConnector, MinimalPsaConnector, SchemeDetailsConnector}
+import connectors.admin.MinimalPsaConnector
+import connectors.FakeUserAnswersCacheConnector
+import connectors.scheme.SchemeDetailsConnector
 import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction, FakeUnAuthorisedAction}
 import identifiers.AssociatedDateId
 import identifiers.invitations.{PSTRId, SchemeNameId}
