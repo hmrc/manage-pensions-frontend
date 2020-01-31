@@ -29,7 +29,7 @@ class AftCacheConnector @Inject()(
                                    http: WSClient
                                  ) {
 
-  def url(id: String) = s"${config.aftUrl}/pension-scheme-accounting-for-tax/journey-cache/aft/isLocked/$id"
+  def url(id: String) = s"${config.aftUrl}/pension-scheme-accounting-for-tax/journey-cache/aft/lock/$id"
 
   def lockedBy(srn: String, startDate: String)(implicit
                              ec: ExecutionContext,
@@ -40,7 +40,6 @@ class AftCacheConnector @Inject()(
       .get()
       .flatMap {
         response =>
-          println("\n\n\n response : "+response.status)
           response.status match {
             case NOT_FOUND =>
               Future.successful(None)
