@@ -16,26 +16,19 @@
 
 package controllers
 
-import java.time.LocalDate
-
-import config.{FeatureSwitchManagementService, FrontendAppConfig}
+import config.FrontendAppConfig
 import connectors._
-import connectors.admin.MinimalPsaConnector
-import connectors.aft.AFTConnector
 import connectors.scheme.{ListOfSchemesConnector, PensionSchemeVarianceLockConnector, SchemeDetailsConnector}
 import controllers.actions._
 import handlers.ErrorHandler
-import identifiers.invitations.PSTRId
-import identifiers.{ListOfPSADetailsId, SchemeNameId, SchemeSrnId, SchemeStatusId}
+import identifiers.{SchemeNameId, SchemeSrnId, SchemeStatusId}
 import javax.inject.Inject
 import models._
 import models.requests.AuthenticatedRequest
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.http.HeaderCarrier
+import services.SchemeDetailsService
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
-import utils.{DateHelper, UserAnswers}
-import viewmodels.{AFTViewModel, AssociatedPsa, Message}
 import views.html.schemeDetails
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -46,49 +39,12 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                                         listSchemesConnector: ListOfSchemesConnector,
                                         schemeVarianceLockConnector: PensionSchemeVarianceLockConnector,
                                         authenticate: AuthAction,
-                                        getData: DataRetrievalAction,
                                         userAnswersCacheConnector: UserAnswersCacheConnector,
                                         errorHandler: ErrorHandler,
-                                        featureSwitchManagementService: FeatureSwitchManagementService,
-                                        minimalPsaConnector: MinimalPsaConnector,
                                         val controllerComponents: MessagesControllerComponents,
-                                        aftConnector: AFTConnector,
-                                        view: schemeDetails
+                                        view: schemeDetails,
+                                        schemeDetailsService: SchemeDetailsService
                                        )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
-
-  private def retrieveOptionAFTViewModel(userAnswers: UserAnswers, srn: String)(implicit hc: HeaderCarrier): Future[Option[AFTViewModel]] = {
-    if (appConfig.isAFTEnabled) {
-      val pstrId = userAnswers.get(PSTRId)
-        .getOrElse(throw new RuntimeException(s"No PSTR ID found for srn $srn"))
-      aftConnector.getListOfVersions(pstrId).map {
-        case None => None
-        case Some(versions) if versions.isEmpty =>
-          Option(
-            AFTViewModel(
-              None,
-              None,
-              Link(
-                id = "aftChargeTypePageLink",
-                url = appConfig.aftChargeTypePageUrl.format(srn),
-                linkText = Message("messages__schemeDetails__aft_startLink"))
-            )
-          )
-        case Some(versions) =>
-          Option(
-            AFTViewModel(
-              Some(Message("messages__schemeDetails__aft_period")),
-              Some(Message("messages__schemeDetails__aft_inProgress")),
-              Link(
-                id = "aftSummaryPageLink",
-                url = appConfig.aftSummaryPageUrl.format(srn, versions.headOption.getOrElse("1")),
-                linkText = Message("messages__schemeDetails__aft_view"))
-            )
-          )
-      }
-    } else {
-      Future.successful(None)
-    }
-  }
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate.async {
     implicit request =>
@@ -112,26 +68,24 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
           val schemeName = userAnswers.get(SchemeNameId).getOrElse("")
 
           if (admins.contains(request.psaId.id)) {
-            retrieveOptionAFTViewModel(userAnswers, srn.id).flatMap { optionAFTViewModel =>
-              listSchemesConnector.getListOfSchemes(request.psaId.id).flatMap { list =>
-                userAnswersCacheConnector.save(request.externalId, SchemeSrnId, srn.id).flatMap { _ =>
-                  userAnswersCacheConnector.save(request.externalId, SchemeNameId, schemeName).flatMap { _ =>
-                    lockingPsa(lock, srn).map { lockingPsa =>
-                      Ok(view(
-                        schemeName,
-                        pstr(srn.id, list),
-                        openedDate(srn.id, list, isSchemeOpen),
-                        administratorsVariations(request.psaId.id, userAnswers, schemeStatus),
-                        srn.id,
-                        isSchemeOpen,
-                        displayChangeLink,
-                        lockingPsa,
-                        optionAFTViewModel
-                      ))
-                    }
-                  }
-                }
-              }
+            val updatedUa = userAnswers.set(SchemeSrnId)(srn.id).flatMap(_.set(SchemeNameId)(schemeName)).asOpt.getOrElse(userAnswers)
+            for {
+              optionAFTViewModel <- schemeDetailsService.retrieveOptionAFTViewModel(userAnswers, srn.id)
+              list <- listSchemesConnector.getListOfSchemes(request.psaId.id)
+              _ <- userAnswersCacheConnector.upsert(request.externalId, updatedUa.json)
+              lockingPsa <- schemeDetailsService.lockingPsa(lock, srn)
+            } yield {
+              Ok(view(
+                schemeName,
+                schemeDetailsService.pstr(srn.id, list),
+                schemeDetailsService.openedDate(srn.id, list, isSchemeOpen),
+                schemeDetailsService.administratorsVariations(request.psaId.id, userAnswers, schemeStatus),
+                srn.id,
+                isSchemeOpen,
+                displayChangeLink,
+                lockingPsa,
+                optionAFTViewModel
+              ))
             }
           } else {
             Future.successful(NotFound(errorHandler.notFoundTemplate))
@@ -149,53 +103,4 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
       (scheme, lock)
     }
   }
-
-  private def administratorsVariations(psaId: String, psaSchemeDetails: UserAnswers, schemeStatus: String): Option[Seq[AssociatedPsa]] =
-    psaSchemeDetails.get(ListOfPSADetailsId).map { psaDetailsSeq =>
-      psaDetailsSeq.map { psaDetails =>
-        val name = PsaDetails.getPsaName(psaDetails).getOrElse("")
-        val canRemove = psaDetails.id.equals(psaId) && PsaSchemeDetails.canRemovePsaVariations(psaId, psaDetailsSeq, schemeStatus)
-        AssociatedPsa(name, canRemove)
-      }
-    }
-
-
-  private def openedDate(srn: String, list: ListOfSchemes, isSchemeOpen: Boolean): Option[String] = {
-    if (isSchemeOpen) {
-      list.schemeDetail.flatMap {
-        listOfSchemes =>
-          val currentScheme = listOfSchemes.filter(_.referenceNumber.contains(srn))
-          if (currentScheme.nonEmpty) {
-            currentScheme.head.openDate.map(date => LocalDate.parse(date).format(DateHelper.formatter))
-          } else {
-            None
-          }
-      }
-    }
-    else {
-      None
-    }
-  }
-
-  private def pstr(srn: String, list: ListOfSchemes): Option[String] =
-    list.schemeDetail.flatMap { listOfSchemes =>
-      val currentScheme = listOfSchemes.filter(_.referenceNumber.contains(srn))
-      if (currentScheme.nonEmpty) {
-        currentScheme.head.pstr
-      } else {
-        None
-      }
-    }
-
-  private def lockingPsa(lock: Option[Lock], srn: SchemeReferenceNumber)
-                        (implicit request: AuthenticatedRequest[AnyContent]): Future[Option[String]] =
-    lock match {
-      case Some(SchemeLock) => schemeVarianceLockConnector.getLockByScheme(srn) flatMap {
-        case Some(schemeVariance) if !(schemeVariance.psaId == request.psaId.id) =>
-          minimalPsaConnector.getPsaNameFromPsaID(schemeVariance.psaId).map(identity)
-        case _ => Future.successful(None)
-      }
-      case _ => Future.successful(None)
-    }
-
 }

@@ -1,12 +1,25 @@
+/*
+ * Copyright 2020 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package connectors.aft
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
-import connectors.MicroserviceCacheConnector
 import play.api.http.Status.{NOT_FOUND, OK}
-import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.WSClient
-import uk.gov.hmrc.auth.core.retrieve.Name
 import uk.gov.hmrc.http.{HeaderCarrier, HttpException}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -16,30 +29,23 @@ class AftCacheConnector @Inject()(
                                    http: WSClient
                                  ) {
 
-  val url = s"${config.pensionAdminUrl}/pension-scheme-accounting-for-tax/journey-cache/isLocked"
+  def url(id: String) = s"${config.aftUrl}/pension-scheme-accounting-for-tax/journey-cache/aft/isLocked/$id"
 
-  def lockedBy(pstr: String, startDate: String)(implicit
+  def lockedBy(srn: String, startDate: String)(implicit
                              ec: ExecutionContext,
                              hc: HeaderCarrier
   ): Future[Option[String]] = {
-    http.url(url)
-      .withHttpHeaders(hc.withExtraHeaders(("id", pstr + startDate)).headers: _*)
+    http.url(url(srn + startDate))
+      .withHttpHeaders(hc.withExtraHeaders(("id", srn + startDate)).headers: _*)
       .get()
       .flatMap {
         response =>
+          println("\n\n\n response : "+response.status)
           response.status match {
             case NOT_FOUND =>
               Future.successful(None)
             case OK =>
-              if(response.body.isEmpty) {
-
-              }
-              val responseJson = Json.parse(response.body)
-              val result = ((responseJson \ "name").asOpt[String], (responseJson \ "lastName").asOpt[String]) match {
-                case (Some(firstName), Some(lastName)) => Some(s"$firstName $lastName")
-                case _ => None
-              }
-              Future.successful(result)
+              Future.successful(Some(response.body))
             case _ =>
               Future.failed(new HttpException(response.body, response.status))
           }

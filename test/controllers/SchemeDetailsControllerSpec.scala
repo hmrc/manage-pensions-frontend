@@ -19,7 +19,7 @@ package controllers
 import config.{FeatureSwitchManagementService, FeatureSwitchManagementServiceTestImpl}
 import connectors._
 import connectors.admin.MinimalPsaConnector
-import connectors.aft.AFTConnector
+import connectors.aft.{AFTConnector, AftCacheConnector}
 import connectors.scheme.{ListOfSchemesConnector, PensionSchemeVarianceLockConnector, SchemeDetailsConnector}
 import controllers.actions.{DataRetrievalAction, _}
 import handlers.ErrorHandler
@@ -57,6 +57,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
   val eh = new ErrorHandler(frontendAppConfig, messagesApi, errorHandlerView, errorHandlerNotFoundView)
 
   private val aftConnector = mock[AFTConnector]
+  private val aftCacheConnector = mock[AftCacheConnector]
 
   def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): SchemeDetailsController = {
     new SchemeDetailsController(frontendAppConfig,
@@ -72,6 +73,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
       fakeMinimalPsaConnector,
       stubMessagesControllerComponents(),
       aftConnector,
+      aftCacheConnector,
       view
     )
   }
