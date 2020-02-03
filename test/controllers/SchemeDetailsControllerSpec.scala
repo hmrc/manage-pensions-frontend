@@ -90,128 +90,118 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
       optionAFTViewModel
     )(fakeRequest, messages).toString()
 
-//  override def beforeEach(): Unit = {
-//    reset(fakeSchemeDetailsConnector, fakeListOfSchemesConnector, fakeSchemeLockConnector, aftConnector)
-//  }
-//
-//  "SchemeDetailsController" must {
-//
-//    "return OK and call the correct connector method for a GET where administrators a mix of individual and org" in {
-//      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.eq("A0000000"), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
-//        .thenReturn(Future.successful(desUserAnswers))
-//      when(fakeSchemeLockConnector.isLockByPsaIdOrSchemeId(Matchers.eq("A0000000"), Matchers.any())(Matchers.any(), Matchers.any()))
-//        .thenReturn(Future.successful(Some(VarianceLock)))
-//      when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
-//        .thenReturn(Future.successful(listOfSchemesResponse))
-//      when(aftConnector.getListOfVersions(Matchers.any())(Matchers.any(), Matchers.any()))
-//        .thenReturn(Future.successful(None))
-//
-//      val result = controller().onPageLoad(srn)(fakeRequest)
-//      status(result) mustBe OK
-//      verify(fakeSchemeDetailsConnector, times(1))
-//        .getSchemeDetails(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())
-//      contentAsString(result) mustBe viewAsString(administrators = updatedAdministrators, displayChangeLink = true)
-//    }
-//
-//    "return OK and pass in the correct aft view model" in {
-//      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.eq("A0000000"), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
-//        .thenReturn(Future.successful(desUserAnswers))
-//      when(fakeSchemeLockConnector.isLockByPsaIdOrSchemeId(Matchers.eq("A0000000"), Matchers.any())(Matchers.any(), Matchers.any()))
-//        .thenReturn(Future.successful(Some(VarianceLock)))
-//      when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
-//        .thenReturn(Future.successful(listOfSchemesResponse))
-//      when(aftConnector.getListOfVersions(Matchers.any())(Matchers.any(), Matchers.any()))
-//        .thenReturn(Future.successful(Some(Seq(1))))
-//
-//      val result = controller().onPageLoad(srn)(fakeRequest)
-//      status(result) mustBe OK
-//      contentAsString(result) mustBe viewAsString(administrators = updatedAdministrators, displayChangeLink = true,
-//        optionAFTViewModel = Some(
-//          AFTViewModel(
-//            Some(Message("messages__schemeDetails__aft_period")),
-//            Some(Message("messages__schemeDetails__aft_inProgress")),
-//            Link(
-//              id = "aftSummaryPageLink",
-//              url = frontendAppConfig.aftSummaryPageUrl.format(srn.id, version),
-//              linkText = Message("messages__schemeDetails__aft_view"))
-//          )
-//        )
-//      )
-//    }
-//
-//    "return OK and the correct view for a GET when scheme is locked by another PSA" in {
-//      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.eq("A0000000"), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
-//        .thenReturn(Future.successful(desUserAnswers))
-//      when(fakeSchemeLockConnector.isLockByPsaIdOrSchemeId(Matchers.eq("A0000000"), Matchers.any())(Matchers.any(), Matchers.any()))
-//        .thenReturn(Future.successful(Some(SchemeLock)))
-//      when(fakeSchemeLockConnector.getLockByScheme(Matchers.any())(Matchers.any(), Matchers.any()))
-//        .thenReturn(Future.successful(Some(SchemeVariance("A0000001", "S1000000456"))))
-//      when(fakeMinimalPsaConnector.getPsaNameFromPsaID(Matchers.eq("A0000001"))(Matchers.any(), Matchers.any()))
-//        .thenReturn(Future.successful(Some("Locky Lockhart")))
-//      when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
-//        .thenReturn(Future.successful(listOfSchemesResponse))
-//      when(aftConnector.getListOfVersions(Matchers.any())(Matchers.any(), Matchers.any()))
-//        .thenReturn(Future.successful(None))
-//
-//      val result = controller().onPageLoad(srn)(fakeRequest)
-//      status(result) mustBe OK
-//      contentAsString(result) mustBe viewAsString(
-//        administrators = updatedAdministrators,
-//        displayChangeLink = false,
-//        lockingPsa = Some("Locky Lockhart"))
-//    }
-//
-//    "return OK and the correct view with View only link for a GET when scheme status is not open" in {
-//      val updatedAdministrators = Some(Seq(AssociatedPsa("partnetship name 2", false), AssociatedPsa("Tony A Smith", false)))
-//      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.eq("A0000000"), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
-//        .thenReturn(Future.successful(desUserAnswers.set(SchemeStatusId)("Pending").asOpt.value))
-//      when(fakeSchemeLockConnector.isLockByPsaIdOrSchemeId(Matchers.eq("A0000000"), Matchers.any())(Matchers.any(), Matchers.any()))
-//        .thenReturn(Future.successful(Some(VarianceLock)))
-//      when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
-//        .thenReturn(Future.successful(listOfSchemesResponse))
-//      when(aftConnector.getListOfVersions(Matchers.any())(Matchers.any(), Matchers.any()))
-//        .thenReturn(Future.successful(None))
-//      val result = controller().onPageLoad(srn)(fakeRequest)
-//      status(result) mustBe OK
-//      contentAsString(result) mustBe viewAsString(openDate = None, administrators = updatedAdministrators, isSchemeOpen = false)
-//    }
-//
-//    "return NOT_FOUND when PSA data is not returned by API (as we don't know who administers the scheme)" in {
-//      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.eq("A0000000"), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
-//        .thenReturn(Future.successful(UserAnswers(Json.obj("psaDetails" -> JsArray()))))
-//      when(fakeSchemeLockConnector.isLockByPsaIdOrSchemeId(Matchers.eq("A0000000"), Matchers.any())(Matchers.any(), Matchers.any()))
-//        .thenReturn(Future.successful(Some(VarianceLock)))
-//      when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
-//        .thenReturn(Future.successful(listOfSchemesResponse))
-//      when(aftConnector.getListOfVersions(Matchers.any())(Matchers.any(), Matchers.any()))
-//        .thenReturn(Future.successful(None))
-//
-//      val result = controller().onPageLoad(srn)(fakeRequest)
-//      status(result) mustBe NOT_FOUND
-//    }
-//
-//    "return NOT_FOUND and the correct not found view when PSA data is returned by API which does not include the currently logged-in PSA" in {
-//      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.eq("A0000000"), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
-//        .thenReturn(Future.successful(UserAnswers(Json.obj("schemeStatus" -> "Open",
-//          SchemeNameId.toString -> schemeName1,
-//          "psaDetails" -> JsArray(Seq(
-//            Json.obj(
-//              "id" -> "A0000007",
-//              "organisationOrPartnershipName" -> "partnetship name 2",
-//              "relationshipDate" -> "2018-07-01"
-//            )))))))
-//      when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
-//        .thenReturn(Future.successful(listOfSchemesResponse))
-//      when(fakeSchemeLockConnector.isLockByPsaIdOrSchemeId(Matchers.eq("A0000000"), Matchers.any())(Matchers.any(), Matchers.any()))
-//        .thenReturn(Future.successful(Some(VarianceLock)))
-//      when(aftConnector.getListOfVersions(Matchers.any())(Matchers.any(), Matchers.any()))
-//        .thenReturn(Future.successful(None))
-//
-//      val result = controller().onPageLoad(srn)(fakeRequest)
-//      status(result) mustBe NOT_FOUND
-//      contentAsString(result).contains(messages("messages__pageNotFound404__heading")) mustBe true
-//    }
-//  }
+  override def beforeEach(): Unit = {
+    reset(fakeSchemeDetailsConnector, fakeListOfSchemesConnector, fakeSchemeLockConnector)
+  }
+
+  "SchemeDetailsController" must {
+
+    "return OK and call the correct connector method for a GET where administrators a mix of individual and org" in {
+      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.eq("A0000000"), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(desUserAnswers))
+      when(fakeSchemeLockConnector.isLockByPsaIdOrSchemeId(Matchers.eq("A0000000"), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(VarianceLock)))
+      when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(listOfSchemesResponse))
+
+      val result = controller().onPageLoad(srn)(fakeRequest)
+      status(result) mustBe OK
+      verify(fakeSchemeDetailsConnector, times(1))
+        .getSchemeDetails(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())
+      contentAsString(result) mustBe viewAsString(administrators = updatedAdministrators, displayChangeLink = true)
+    }
+
+    "return OK and pass in the correct aft view model" in {
+      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.eq("A0000000"), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(desUserAnswers))
+      when(fakeSchemeLockConnector.isLockByPsaIdOrSchemeId(Matchers.eq("A0000000"), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(VarianceLock)))
+      when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(listOfSchemesResponse))
+
+      val result = controller().onPageLoad(srn)(fakeRequest)
+      status(result) mustBe OK
+      contentAsString(result) mustBe viewAsString(administrators = updatedAdministrators, displayChangeLink = true,
+        optionAFTViewModel = Some(
+          AFTViewModel(
+            Some(Message("messages__schemeDetails__aft_period")),
+            Some(Message("messages__schemeDetails__aft_inProgress")),
+            Link(
+              id = "aftSummaryPageLink",
+              url = frontendAppConfig.aftSummaryPageUrl.format(srn.id, version),
+              linkText = Message("messages__schemeDetails__aft_view"))
+          )
+        )
+      )
+    }
+
+    "return OK and the correct view for a GET when scheme is locked by another PSA" in {
+      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.eq("A0000000"), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(desUserAnswers))
+      when(fakeSchemeLockConnector.isLockByPsaIdOrSchemeId(Matchers.eq("A0000000"), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(SchemeLock)))
+      when(fakeSchemeLockConnector.getLockByScheme(Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(SchemeVariance("A0000001", "S1000000456"))))
+      when(fakeMinimalPsaConnector.getPsaNameFromPsaID(Matchers.eq("A0000001"))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some("Locky Lockhart")))
+      when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(listOfSchemesResponse))
+
+      val result = controller().onPageLoad(srn)(fakeRequest)
+      status(result) mustBe OK
+      contentAsString(result) mustBe viewAsString(
+        administrators = updatedAdministrators,
+        displayChangeLink = false,
+        lockingPsa = Some("Locky Lockhart"))
+    }
+
+    "return OK and the correct view with View only link for a GET when scheme status is not open" in {
+      val updatedAdministrators = Some(Seq(AssociatedPsa("partnetship name 2", false), AssociatedPsa("Tony A Smith", false)))
+      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.eq("A0000000"), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(desUserAnswers.set(SchemeStatusId)("Pending").asOpt.value))
+      when(fakeSchemeLockConnector.isLockByPsaIdOrSchemeId(Matchers.eq("A0000000"), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(VarianceLock)))
+      when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(listOfSchemesResponse))
+
+      val result = controller().onPageLoad(srn)(fakeRequest)
+      status(result) mustBe OK
+      contentAsString(result) mustBe viewAsString(openDate = None, administrators = updatedAdministrators, isSchemeOpen = false)
+    }
+
+    "return NOT_FOUND when PSA data is not returned by API (as we don't know who administers the scheme)" in {
+      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.eq("A0000000"), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(UserAnswers(Json.obj("psaDetails" -> JsArray()))))
+      when(fakeSchemeLockConnector.isLockByPsaIdOrSchemeId(Matchers.eq("A0000000"), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(VarianceLock)))
+      when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(listOfSchemesResponse))
+
+
+      val result = controller().onPageLoad(srn)(fakeRequest)
+      status(result) mustBe NOT_FOUND
+    }
+
+    "return NOT_FOUND and the correct not found view when PSA data is returned by API which does not include the currently logged-in PSA" in {
+      when(fakeSchemeDetailsConnector.getSchemeDetails(Matchers.eq("A0000000"), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(UserAnswers(Json.obj("schemeStatus" -> "Open",
+          SchemeNameId.toString -> schemeName1,
+          "psaDetails" -> JsArray(Seq(
+            Json.obj(
+              "id" -> "A0000007",
+              "organisationOrPartnershipName" -> "partnetship name 2",
+              "relationshipDate" -> "2018-07-01"
+            )))))))
+      when(fakeListOfSchemesConnector.getListOfSchemes(Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(listOfSchemesResponse))
+      when(fakeSchemeLockConnector.isLockByPsaIdOrSchemeId(Matchers.eq("A0000000"), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(VarianceLock)))
+
+      val result = controller().onPageLoad(srn)(fakeRequest)
+      status(result) mustBe NOT_FOUND
+      contentAsString(result).contains(messages("messages__pageNotFound404__heading")) mustBe true
+    }
+  }
 }
 
 private object SchemeDetailsControllerSpec extends MockitoSugar {
@@ -252,7 +242,7 @@ private object SchemeDetailsControllerSpec extends MockitoSugar {
       Seq(
         Json.obj(
           "id" -> "A0000000",
-          "organisationOrPartnershipName" -> "partnetship name 2",
+          "organisationOrPartnershipName" -> "partnership name 2",
           "relationshipDate" -> "2018-07-01"
         ),
         Json.obj(

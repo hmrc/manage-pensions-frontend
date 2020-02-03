@@ -20,16 +20,22 @@ import base.SpecBase
 import connectors.admin.MinimalPsaConnector
 import connectors.aft.{AFTConnector, AftCacheConnector}
 import connectors.scheme.PensionSchemeVarianceLockConnector
+import identifiers.SchemeNameId
 import identifiers.invitations.PSTRId
-import models.{Link, SchemeVariance}
-import org.mockito.Matchers.{any, eq => eqTo}
+import models.requests.AuthenticatedRequest
+import models._
+import org.mockito.Matchers
+import org.mockito.Matchers.any
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.libs.json.{JsArray, Json}
+import play.api.mvc.AnyContent
+import uk.gov.hmrc.domain.PsaId
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.UserAnswers
-import viewmodels.{AFTViewModel, Message}
+import viewmodels.{AFTViewModel, AssociatedPsa, Message}
 
 import scala.concurrent.Future
 
@@ -38,25 +44,12 @@ class SchemeDetailsServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
   import SchemeDetailsServiceSpec._
 
   private implicit val hc: HeaderCarrier = HeaderCarrier()
-
+  private val authReq: AuthenticatedRequest[AnyContent] = AuthenticatedRequest(fakeRequest, "id", PsaId(psaId), Individual, "test-id")
   private val minimalPsaConnector: MinimalPsaConnector = mock[MinimalPsaConnector]
   private val lockConnector = mock[PensionSchemeVarianceLockConnector]
   private val aftConnector = mock[AFTConnector]
 
   private val aftCacheConnector = mock[AftCacheConnector]
-//
-//
-//  override def beforeEach(): Unit = {
-//    when(minimalPsaConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any()))
-//      .thenReturn(Future.successful(minimalPsaName))
-//
-//    when(lockConnector.getLockByPsa(any())(any(), any()))
-//      .thenReturn(Future.successful(Some(SchemeVariance(psaId, srn))))
-//    super.beforeEach()
-//  }
-
-
-
 
   def service: SchemeDetailsService =
     new SchemeDetailsService(frontendAppConfig, aftConnector, aftCacheConnector,
@@ -100,26 +93,76 @@ class SchemeDetailsServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
     }
   }
 
-//  "administratorVariations" must {
-//    "return an associated psa when psa can remove themselves" in {
-//      val ua = UserAnswers.
-//    }
-//  }
+  "administratorVariations" must {
+    "return a list of associated psas with canRemove status" in {
+       val result  = service.administratorsVariations(psaId, userAnswersWithAssociatedPsa, "Open")
+        result mustBe administrators
+      }
+  }
+
+  "openedDate" must {
+    "return an opened date if scheme is open and srn number matches a reference number in the list of schemes" in {
+      val result = service.openedDate(srn, listOfSchemes, isSchemeOpen = true)
+      result mustBe Some("1 January 2020")
+    }
+
+    "return None if scheme is not open" in {
+      val result = service.openedDate(srn, listOfSchemes, isSchemeOpen = false)
+      result mustBe None
+    }
+
+    "return None is srn does not match any reference number in the list" in {
+      val result = service.openedDate("wrong-srn", listOfSchemes, isSchemeOpen = true)
+      result mustBe None
+    }
+  }
+
+  "pstr" must {
+    "return a value if srn number matches a reference number in the list of schemes" in {
+      val result = service.pstr(srn, listOfSchemes)
+      result mustBe Some(pstr)
+    }
+
+    "return None is srn does not match any reference number in the list" in {
+      val result = service.pstr("wrong-srn", listOfSchemes)
+      result mustBe None
+    }
+  }
+
+  "lockingPsa" must {
+    "return the name of the locking psa" in {
+      when(lockConnector.getLockByScheme(Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(SchemeVariance("A0000001", srn))))
+      when(minimalPsaConnector.getPsaNameFromPsaID(Matchers.eq("A0000001"))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some("Locky Lockhart")))
+      whenReady(service.lockingPsa(Some(SchemeLock), srn)(authReq, hc)) {
+        _ mustBe Some("Locky Lockhart")
+      }
+    }
+
+    "return None when " in {
+      when(lockConnector.getLockByScheme(Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Some(SchemeVariance(psaId, "S1000000456"))))
+      whenReady(service.lockingPsa(Some(SchemeLock), srn)(authReq, hc)){
+        _ mustBe None
+      }
+    }
+  }
 
 }
 
 object SchemeDetailsServiceSpec {
 
 
-
   private val srn = "srn"
   private val pstr = "pstr"
   private val psaId = "A0000000"
   private val name = "test-name"
-  val minimalPsaName = Some("John Doe Doe")
+  private val date = "2020-01-01"
+  val minimalPsaName: Option[String] = Some("John Doe Doe")
 
 
-  val lockedAftModel = Some(
+  val lockedAftModel: Option[AFTViewModel] = Some(
     AFTViewModel(
       Some(Message("messages__schemeDetails__aft_period")),
       Some(Message("messages__schemeDetails__aft_lockedBy", name)),
@@ -130,7 +173,7 @@ object SchemeDetailsServiceSpec {
     )
   )
 
-  val unlockedEmptyAftModel = Some(
+  val unlockedEmptyAftModel: Option[AFTViewModel] = Some(
     AFTViewModel(
       None,
       None,
@@ -141,7 +184,7 @@ object SchemeDetailsServiceSpec {
     )
   )
 
-  val inProgressUnlockedAftModel = Option(
+  val inProgressUnlockedAftModel: Option[AFTViewModel] = Option(
     AFTViewModel(
       Some(Message("messages__schemeDetails__aft_period")),
       Some(Message("messages__schemeDetails__aft_inProgress")),
@@ -151,4 +194,40 @@ object SchemeDetailsServiceSpec {
         linkText = Message("messages__schemeDetails__aft_view"))
     )
   )
+
+  val administrators: Option[Seq[AssociatedPsa]] =
+    Some(
+      Seq(
+        AssociatedPsa("partnership name 2", canRemove = true),
+        AssociatedPsa("Tony A Smith", canRemove = false)
+      )
+    )
+
+  val userAnswersWithAssociatedPsa: UserAnswers = UserAnswers(Json.obj(
+    PSTRId.toString -> pstr,
+    "schemeStatus" -> "Open",
+    SchemeNameId.toString -> "scheme name",
+    "psaDetails" -> JsArray(
+      Seq(
+        Json.obj(
+          "id" -> "A0000000",
+          "organisationOrPartnershipName" -> "partnership name 2",
+          "relationshipDate" -> "2018-07-01"
+        ),
+        Json.obj(
+          "id" -> "A0000001",
+          "individual" -> Json.obj(
+            "firstName" -> "Tony",
+            "middleName" -> "A",
+            "lastName" -> "Smith"
+          ),
+          "relationshipDate" -> "2018-07-01"
+        )
+      )
+    )
+  ))
+
+  val listOfSchemes: ListOfSchemes = ListOfSchemes("", "", Some(List(SchemeDetail(name, srn, "Open", Some(date), Some(pstr), None))))
+
+
 }
