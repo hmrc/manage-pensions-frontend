@@ -53,16 +53,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
           val schemeStatus = userAnswers.get(SchemeStatusId).getOrElse("")
           val isSchemeOpen = schemeStatus.equalsIgnoreCase("open")
 
-          val displayChangeLink = {
-            if (!isSchemeOpen) {
-              false
-            } else {
-              lock match {
-                case Some(VarianceLock) | None => true
-                case Some(_) => false
-              }
-            }
-          }
+          val displayChangeLink = schemeDetailsService.displayChangeLink(isSchemeOpen, lock)
 
           val admins = (userAnswers.json \ "psaDetails").as[Seq[PsaDetails]].map(_.id)
           val schemeName = userAnswers.get(SchemeNameId).getOrElse("")

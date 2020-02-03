@@ -25,7 +25,7 @@ import connectors.aft.{AFTConnector, AftCacheConnector}
 import connectors.scheme.PensionSchemeVarianceLockConnector
 import identifiers.ListOfPSADetailsId
 import identifiers.invitations.PSTRId
-import models.{Link, ListOfSchemes, Lock, PsaDetails, PsaSchemeDetails, SchemeLock, SchemeReferenceNumber}
+import models._
 import models.requests.AuthenticatedRequest
 import play.api.mvc.AnyContent
 import uk.gov.hmrc.http.HeaderCarrier
@@ -90,6 +90,17 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
       }
     } else {
       Future.successful(None)
+    }
+  }
+
+  def displayChangeLink(isSchemeOpen: Boolean, lock: Option[Lock]): Boolean = {
+    if (!isSchemeOpen) {
+      false
+    } else {
+      lock match {
+        case Some(VarianceLock) | None => true
+        case Some(_) => false
+      }
     }
   }
 
