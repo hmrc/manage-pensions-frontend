@@ -34,6 +34,7 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsArray, Json}
 import play.api.test.Helpers.{contentAsString, _}
 import play.api.{Application, Configuration}
+import services.SchemeDetailsService
 import testhelpers.CommonBuilders._
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.UserAnswers
@@ -56,25 +57,20 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
   val errorHandlerNotFoundView: error_template_page_not_found = app.injector.instanceOf[error_template_page_not_found]
   val eh = new ErrorHandler(frontendAppConfig, messagesApi, errorHandlerView, errorHandlerNotFoundView)
 
-  private val aftConnector = mock[AFTConnector]
-  private val aftCacheConnector = mock[AftCacheConnector]
+  private val schemeDetailsService = mock[SchemeDetailsService]
 
   def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): SchemeDetailsController = {
     new SchemeDetailsController(frontendAppConfig,
       messagesApi,
       fakeSchemeDetailsConnector,
-      fakeListOfSchemesConnector,
       fakeSchemeLockConnector,
       FakeAuthAction(),
-      dataRetrievalAction,
       FakeUserAnswersCacheConnector,
       eh,
       fakeFeatureSwitch,
-      fakeMinimalPsaConnector,
       stubMessagesControllerComponents(),
-      aftConnector,
-      aftCacheConnector,
-      view
+      view,
+      schemeDetailsService
     )
   }
 
