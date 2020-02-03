@@ -34,14 +34,14 @@ import viewmodels.{AFTViewModel, AssociatedPsa, Message}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class SchemeDetailsService @Inject() (appConfig: FrontendAppConfig,
+class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
                                       aftConnector: AFTConnector,
                                       aftCacheConnector: AftCacheConnector,
                                       schemeVarianceLockConnector: PensionSchemeVarianceLockConnector,
                                       minimalPsaConnector: MinimalPsaConnector
-                                     )(implicit hc: HeaderCarrier, ec: ExecutionContext){
+                                     )(implicit ec: ExecutionContext){
 
-  def retrieveOptionAFTViewModel(userAnswers: UserAnswers, srn: String): Future[Option[AFTViewModel]] = {
+  def retrieveOptionAFTViewModel(userAnswers: UserAnswers, srn: String)(implicit hc: HeaderCarrier): Future[Option[AFTViewModel]] = {
     if (appConfig.isAFTEnabled) {
       val pstrId = userAnswers.get(PSTRId)
         .getOrElse(throw new RuntimeException(s"No PSTR ID found for srn $srn"))
@@ -54,10 +54,10 @@ class SchemeDetailsService @Inject() (appConfig: FrontendAppConfig,
             Option(
               AFTViewModel(
                 Some(Message("messages__schemeDetails__aft_period")),
-                (if(name.nonEmpty)
+                if(name.nonEmpty)
                   Some(Message("messages__schemeDetails__aft_lockedBy", name))
                 else
-                  Some(Message("messages__schemeDetails__aft_locked"))),
+                  Some(Message("messages__schemeDetails__aft_locked")),
                 Link(
                   id = "aftSummaryPageLink",
                   url = appConfig.aftSummaryPageUrl.format(srn, versions.headOption.getOrElse("1")),
@@ -133,7 +133,7 @@ class SchemeDetailsService @Inject() (appConfig: FrontendAppConfig,
     }
 
   def lockingPsa(lock: Option[Lock], srn: SchemeReferenceNumber)
-                        (implicit request: AuthenticatedRequest[AnyContent]): Future[Option[String]] =
+                        (implicit request: AuthenticatedRequest[AnyContent], hc: HeaderCarrier): Future[Option[String]] =
     lock match {
       case Some(SchemeLock) => schemeVarianceLockConnector.getLockByScheme(srn) flatMap {
         case Some(schemeVariance) if !(schemeVariance.psaId == request.psaId.id) =>
