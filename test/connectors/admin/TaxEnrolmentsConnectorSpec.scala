@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package connectors
+package connectors.admin
 
 import audit.{AuditService, DeregisterEvent, StubSuccessfulAuditService}
 import com.github.tomakehurst.wiremock.client.WireMock._
-import connectors.admin.TaxEnrolmentsConnector
 import org.scalatest.{AsyncWordSpec, MustMatchers, RecoverMethods}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule

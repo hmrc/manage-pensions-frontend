@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package connectors
+package connectors.scheme
 
 import base.JsonFileReader
 import com.github.tomakehurst.wiremock.client.WireMock._
-import connectors.scheme.SchemeDetailsConnector
 import org.scalatest.{AsyncFlatSpec, Matchers}
 import play.api.http.Status
 import play.api.libs.json.Json

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package connectors
+package connectors.scheme
 
+import connectors.MicroserviceCacheConnector
 import connectors.behaviour.ConnectorBehaviour
-import connectors.scheme.{SchemeSubscriptionCacheConnector, UpdateSchemeCacheConnector}
 import org.scalatest.{AsyncWordSpec, MustMatchers}
 
 class PensionSchemeCacheConnectorSpec extends AsyncWordSpec with MustMatchers with ConnectorBehaviour {

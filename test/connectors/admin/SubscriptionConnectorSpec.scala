@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package connectors
+package connectors.admin
 
 import base.JsonFileReader
 import com.github.tomakehurst.wiremock.client.WireMock._
-import connectors.admin.{CorrelationIdInvalidSubscriptionException, PsaIdInvalidSubscriptionException, PsaIdNotFoundSubscriptionException, SubscriptionConnector}
 import org.scalatest.{AsyncFlatSpec, Matchers}
 import org.scalatestplus.scalacheck.Checkers
 import play.api.http.Status._
