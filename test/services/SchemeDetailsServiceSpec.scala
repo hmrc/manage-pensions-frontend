@@ -93,6 +93,24 @@ class SchemeDetailsServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
     }
   }
 
+  "displayChangeLink" must {
+    "return true if Lock is VarianceLock" in {
+      service.displayChangeLink(isSchemeOpen = true, Some(VarianceLock)) mustBe true
+    }
+
+    "return true if lock is None" in {
+      service.displayChangeLink(isSchemeOpen = true, None) mustBe true
+    }
+
+    "return false if lock is any lock other than VarianceLock" in {
+      service.displayChangeLink(isSchemeOpen = true, Some(BothLock)) mustBe false
+    }
+
+    "return false if lock is scheme is not open" in {
+      service.displayChangeLink(isSchemeOpen = false, Some(BothLock)) mustBe false
+    }
+  }
+
   "administratorVariations" must {
     "return a list of associated psas with canRemove status" in {
        val result  = service.administratorsVariations(psaId, userAnswersWithAssociatedPsa, "Open")
