@@ -29,6 +29,7 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SchemeDetailsService
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
+import utils.UserAnswers
 import views.html.schemeDetails
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -42,24 +43,23 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                                         userAnswersCacheConnector: UserAnswersCacheConnector,
                                         errorHandler: ErrorHandler,
                                         val controllerComponents: MessagesControllerComponents,
-                                        view: schemeDetails,
-                                        schemeDetailsService: SchemeDetailsService
+                                        schemeDetailsService: SchemeDetailsService,
+                                        view: schemeDetails
                                        )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate.async {
     implicit request =>
       withSchemeAndLock(srn).flatMap {
         case (userAnswers, lock) =>
-          val schemeStatus = userAnswers.get(SchemeStatusId).getOrElse("")
-          val isSchemeOpen = schemeStatus.equalsIgnoreCase("open")
-
-          val displayChangeLink = schemeDetailsService.displayChangeLink(isSchemeOpen, lock)
-
           val admins = (userAnswers.json \ "psaDetails").as[Seq[PsaDetails]].map(_.id)
-          val schemeName = userAnswers.get(SchemeNameId).getOrElse("")
 
           if (admins.contains(request.psaId.id)) {
+
+            val schemeName = userAnswers.get(SchemeNameId).getOrElse("")
+            val schemeStatus = userAnswers.get(SchemeStatusId).getOrElse("")
+            val isSchemeOpen = schemeStatus.equalsIgnoreCase("open")
             val updatedUa = userAnswers.set(SchemeSrnId)(srn.id).flatMap(_.set(SchemeNameId)(schemeName)).asOpt.getOrElse(userAnswers)
+            val displayChangeLink = schemeDetailsService.displayChangeLink(isSchemeOpen, lock)
             for {
               optionAFTViewModel <- schemeDetailsService.retrieveOptionAFTViewModel(userAnswers, srn.id)
               list <- listSchemesConnector.getListOfSchemes(request.psaId.id)
@@ -85,7 +85,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
   }
 
 
-  private def withSchemeAndLock(srn: SchemeReferenceNumber)(implicit request: AuthenticatedRequest[AnyContent]) = {
+  private def withSchemeAndLock(srn: SchemeReferenceNumber)(implicit request: AuthenticatedRequest[AnyContent]): Future[(UserAnswers, Option[Lock])] = {
     for {
       _ <- userAnswersCacheConnector.removeAll(request.externalId)
       scheme <- schemeDetailsConnector.getSchemeDetails(request.psaId.id, "srn", srn)
