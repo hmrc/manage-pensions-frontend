@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package connectors
+package connectors.scheme
 
 import com.github.tomakehurst.wiremock.client.WireMock._
-import connectors.scheme.PensionSchemeVarianceLockConnectorImpl
 import models.{PsaLock, SchemeVariance, VarianceLock}
 import org.scalatest.{AsyncFlatSpec, Matchers}
 import play.api.http.Status

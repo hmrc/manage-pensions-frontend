@@ -54,24 +54,22 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
             Option(
               AFTViewModel(
                 Some(Message("messages__schemeDetails__aft_period")),
-                if(name.nonEmpty)
+                if (name.nonEmpty) {
                   Some(Message("messages__schemeDetails__aft_lockedBy", name))
-                else
-                  Some(Message("messages__schemeDetails__aft_locked")),
-                Link(
-                  id = "aftSummaryPageLink",
-                  url = appConfig.aftSummaryPageUrl.format(srn, versions.headOption.getOrElse("1")),
+                }
+                else {
+                  Some(Message("messages__schemeDetails__aft_locked"))
+                },
+                Link(id = "aftSummaryPageLink", url = appConfig.aftSummaryPageUrl.format(srn, versions.headOption.getOrElse("1")),
                   linkText = Message("messages__schemeDetails__aft_view"))
               )
             )
           case (Some(versions), None) if versions.isEmpty =>
             Option(
               AFTViewModel(
-                None,
-                None,
+                None, None,
                 Link(
-                  id = "aftChargeTypePageLink",
-                  url = appConfig.aftChargeTypePageUrl.format(srn),
+                  id = "aftChargeTypePageLink", url = appConfig.aftChargeTypePageUrl.format(srn),
                   linkText = Message("messages__schemeDetails__aft_startLink"))
               )
             )
@@ -87,7 +85,6 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
                   linkText = Message("messages__schemeDetails__aft_view"))
               )
             )
-
           case _ => None
         }
       }
@@ -133,7 +130,7 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
     }
 
   def lockingPsa(lock: Option[Lock], srn: SchemeReferenceNumber)
-                        (implicit request: AuthenticatedRequest[AnyContent], hc: HeaderCarrier): Future[Option[String]] =
+                (implicit request: AuthenticatedRequest[AnyContent], hc: HeaderCarrier): Future[Option[String]] =
     lock match {
       case Some(SchemeLock) => schemeVarianceLockConnector.getLockByScheme(srn) flatMap {
         case Some(schemeVariance) if !(schemeVariance.psaId == request.psaId.id) =>

@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package connectors
+package connectors.admin
 
 import base.JsonFileReader
 import com.github.tomakehurst.wiremock.client.WireMock._
-import connectors.admin.MinimalPsaConnector
 import models._
 import org.scalatest.{AsyncFlatSpec, Matchers}
 import play.api.http.Status

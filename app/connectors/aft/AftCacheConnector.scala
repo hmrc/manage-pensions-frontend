@@ -29,13 +29,13 @@ class AftCacheConnector @Inject()(
                                    http: WSClient
                                  ) {
 
-  def url(id: String) = s"${config.aftUrl}/pension-scheme-accounting-for-tax/journey-cache/aft/lock/$id"
+  private def url = s"${config.aftUrl}/pension-scheme-accounting-for-tax/journey-cache/aft/lock"
 
   def lockedBy(srn: String, startDate: String)(implicit
                              ec: ExecutionContext,
                              hc: HeaderCarrier
   ): Future[Option[String]] = {
-    http.url(url(srn + startDate))
+    http.url(url)
       .withHttpHeaders(hc.withExtraHeaders(("id", srn + startDate)).headers: _*)
       .get()
       .flatMap {
