@@ -50,6 +50,26 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
         optLockedBy <- aftCacheConnector.lockedBy(srn, appConfig.quarterStartDate)
       } yield {
         (optVersions, optLockedBy) match {
+          case (Some(versions), None) if versions.isEmpty =>
+            Option(
+              AFTViewModel(None, None,
+                Link(id = "aftChargeTypePageLink", url = appConfig.aftChargeTypePageUrl.format(srn),
+                  linkText = Message("messages__schemeDetails__aft_startLink")))
+            )
+          case (Some(versions), Some(name)) if versions.isEmpty =>
+            Option(
+              AFTViewModel(
+                Some(Message("messages__schemeDetails__aft_period")),
+                if (name.nonEmpty) {
+                  Some(Message("messages__schemeDetails__aft_lockedBy", name))
+                }
+                else {
+                  Some(Message("messages__schemeDetails__aft_locked"))
+                },
+                Link(id = "aftSummaryPageLink", url = appConfig.aftSummaryPageNoVersionUrl.format(srn),
+                  linkText = Message("messages__schemeDetails__aft_view"))
+              )
+            )
           case (Some(versions), Some(name)) =>
             Option(
               AFTViewModel(
@@ -64,16 +84,6 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
                   linkText = Message("messages__schemeDetails__aft_view"))
               )
             )
-          case (Some(versions), None) if versions.isEmpty =>
-            Option(
-              AFTViewModel(
-                None, None,
-                Link(
-                  id = "aftChargeTypePageLink", url = appConfig.aftChargeTypePageUrl.format(srn),
-                  linkText = Message("messages__schemeDetails__aft_startLink"))
-              )
-            )
-
           case (Some(versions), None) =>
             Option(
               AFTViewModel(

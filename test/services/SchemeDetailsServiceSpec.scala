@@ -80,6 +80,18 @@ class SchemeDetailsServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
       }
     }
 
+    "return the correct model when return is locked but versions is empty" in {
+      when(aftConnector.getListOfVersions(any())(any(), any()))
+        .thenReturn(Future.successful(Some(Nil)))
+      when(aftCacheConnector.lockedBy(any(), any())(any(), any()))
+        .thenReturn(Future.successful(Some(name)))
+      val ua = UserAnswers().set(PSTRId)(pstr).asOpt.get
+
+      whenReady(service.retrieveOptionAFTViewModel(ua, srn)) {
+        _ mustBe lockedAftModelWithNoVersion
+      }
+    }
+
     "return the correct model when return is in progress but not locked" in {
       when(aftConnector.getListOfVersions(any())(any(), any()))
         .thenReturn(Future.successful(Some(Seq(1))))
@@ -199,6 +211,17 @@ object SchemeDetailsServiceSpec {
         id = "aftChargeTypePageLink",
         url = s"http://localhost:8206/manage-pension-scheme-accounting-for-tax/$srn/new-return/charge-type",
         linkText = Message("messages__schemeDetails__aft_startLink"))
+    )
+  )
+
+  val lockedAftModelWithNoVersion: Option[AFTViewModel] = Some(
+    AFTViewModel(
+      Some(Message("messages__schemeDetails__aft_period")),
+      Some(Message("messages__schemeDetails__aft_lockedBy", name)),
+      Link(
+        id = "aftSummaryPageLink",
+        url = s"http://localhost:8206/manage-pension-scheme-accounting-for-tax/$srn/new-return/summary",
+        linkText = Message("messages__schemeDetails__aft_view"))
     )
   )
 
