@@ -18,6 +18,10 @@
 
 @import 'partials/_spacing';
 
+// import these files last, in this order
+@import 'partials/_palette';
+@import 'partials/_focus';
+
 .scheme-overview-info {
   p{
     margin-bottom: 0px;
