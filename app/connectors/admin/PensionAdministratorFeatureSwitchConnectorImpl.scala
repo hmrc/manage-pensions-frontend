@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package connectors
+package connectors.admin
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
+import connectors.scheme.FeatureSwitchConnector
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 

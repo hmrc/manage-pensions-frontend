@@ -20,7 +20,8 @@ import java.time.LocalDateTime
 
 import com.google.inject.Inject
 import config.{FeatureSwitchManagementService, FrontendAppConfig}
-import connectors.{InvitationConnector, NameMatchingFailedException, PsaAlreadyInvitedException, SchemeDetailsConnector}
+import connectors.scheme.SchemeDetailsConnector
+import connectors.{InvitationConnector, NameMatchingFailedException, PsaAlreadyInvitedException}
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import identifiers.MinimalSchemeDetailId

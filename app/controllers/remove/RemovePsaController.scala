@@ -20,7 +20,9 @@ import java.time.LocalDate
 
 import com.google.inject.{Inject, Singleton}
 import config.FrontendAppConfig
-import connectors.{MinimalPsaConnector, SchemeDetailsConnector, UserAnswersCacheConnector}
+import connectors.admin.MinimalPsaConnector
+import connectors.UserAnswersCacheConnector
+import connectors.scheme.SchemeDetailsConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import identifiers.invitations.PSTRId

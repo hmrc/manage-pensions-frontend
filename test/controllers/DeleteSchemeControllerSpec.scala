@@ -16,7 +16,8 @@
 
 package controllers
 
-import connectors.{MicroserviceCacheConnector, MinimalPsaConnector, UserAnswersCacheConnector}
+import connectors.admin.MinimalPsaConnector
+import connectors.{MicroserviceCacheConnector, UserAnswersCacheConnector}
 import controllers.actions._
 import forms.DeleteSchemeFormProvider
 import org.mockito.Matchers.{any, eq => eqTo}
@@ -29,7 +30,6 @@ import play.api.mvc.Results.Ok
 import play.api.test.Helpers.{contentAsString, _}
 import views.html.deleteScheme
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
-
 
 import scala.concurrent.Future
 

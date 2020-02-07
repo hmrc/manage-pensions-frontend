@@ -18,7 +18,9 @@ package controllers.invitations
 
 import base.{JsonFileReader, SpecBase}
 import config.{FeatureSwitchManagementService, FeatureSwitchManagementServiceTestImpl}
-import connectors.{FakeUserAnswersCacheConnector, MinimalPsaConnector, SchemeDetailsConnector}
+import connectors.admin.MinimalPsaConnector
+import connectors.FakeUserAnswersCacheConnector
+import connectors.scheme.SchemeDetailsConnector
 import controllers.actions.{FakeAuthAction, FakeUnAuthorisedAction}
 import identifiers.MinimalSchemeDetailId
 import models._

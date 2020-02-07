@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package connectors
+package connectors.admin
 
 import base.JsonFileReader
 import com.github.tomakehurst.wiremock.client.WireMock._

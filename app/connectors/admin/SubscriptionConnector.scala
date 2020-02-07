@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package connectors
+package connectors.admin
 
-import com.google.inject.{Inject, ImplementedBy}
+import com.google.inject.{ImplementedBy, Inject}
 import config.FrontendAppConfig
 import models.SubscriptionDetails
 import play.api.Logger
@@ -26,7 +26,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import utils.HttpResponseHelper
 
-import scala.concurrent.{Future, ExecutionContext}
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Failure
 
 abstract class SubscriptionException extends Exception

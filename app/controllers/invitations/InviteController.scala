@@ -18,7 +18,9 @@ package controllers.invitations
 
 import com.google.inject.{Inject, Singleton}
 import config.FeatureSwitchManagementService
-import connectors.{MinimalPsaConnector, SchemeDetailsConnector, UserAnswersCacheConnector}
+import connectors.admin.MinimalPsaConnector
+import connectors.UserAnswersCacheConnector
+import connectors.scheme.SchemeDetailsConnector
 import controllers.actions.AuthAction
 import identifiers.invitations.PSTRId
 import identifiers.{MinimalSchemeDetailId, SchemeNameId}

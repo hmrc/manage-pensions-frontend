@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package connectors
+package connectors.admin
 
+import connectors.ManagePensionsCacheConnector
 import connectors.behaviour.ConnectorBehaviour
 import org.scalatest.{AsyncWordSpec, MustMatchers}
 

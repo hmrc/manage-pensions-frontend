@@ -17,7 +17,8 @@
 package controllers
 
 import config.FrontendAppConfig
-import connectors.{MinimalPsaConnector, UserAnswersCacheConnector}
+import connectors.UserAnswersCacheConnector
+import connectors.admin.MinimalPsaConnector
 import controllers.actions._
 import forms.DeleteSchemeFormProvider
 import javax.inject.Inject

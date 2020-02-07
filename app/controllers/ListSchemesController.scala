@@ -18,7 +18,9 @@ package controllers
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
-import connectors.{ListOfSchemesConnector, MinimalPsaConnector, UserAnswersCacheConnector}
+import connectors.admin.MinimalPsaConnector
+import connectors.UserAnswersCacheConnector
+import connectors.scheme.ListOfSchemesConnector
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import identifiers.PSANameId
 import models.SchemeDetail

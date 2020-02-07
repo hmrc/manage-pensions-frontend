@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package connectors
+package connectors.scheme
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import models.{ListOfSchemes, SchemeDetail, SchemeStatus}

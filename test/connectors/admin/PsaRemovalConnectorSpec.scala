@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package connectors
+package connectors.admin
 
 import java.time.LocalDate
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import models.PsaToBeRemovedFromScheme
-import org.scalatestplus.scalacheck.Checkers
 import org.scalatest.{AsyncFlatSpec, Matchers}
+import org.scalatestplus.scalacheck.Checkers
 import play.api.http.Status
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}

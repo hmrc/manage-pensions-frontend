@@ -18,7 +18,8 @@ package controllers.invitations
 
 import com.google.inject.Inject
 import config.{FeatureSwitchManagementService, FrontendAppConfig}
-import connectors.{InvitationConnector, InvitationsCacheConnector, SchemeDetailsConnector, UserAnswersCacheConnector}
+import connectors.scheme.SchemeDetailsConnector
+import connectors.{InvitationConnector, InvitationsCacheConnector, UserAnswersCacheConnector}
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.invitations.DeclarationFormProvider

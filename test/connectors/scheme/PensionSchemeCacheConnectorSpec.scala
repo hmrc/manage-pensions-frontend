@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package connectors
+package connectors.scheme
 
+import connectors.MicroserviceCacheConnector
 import connectors.behaviour.ConnectorBehaviour
 import org.scalatest.{AsyncWordSpec, MustMatchers}
 

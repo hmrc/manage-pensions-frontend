@@ -285,6 +285,8 @@ messages__schemeDetails__aft_h1 = Accounting for Tax (AFT) returns
 messages__schemeDetails__aft_startLink= Start the AFT return for 1 April to 30 June 2020
 messages__schemeDetails__aft_period = AFT return for 1 April to 30 June 2020
 messages__schemeDetails__aft_inProgress = In progress
+messages__schemeDetails__aft_lockedBy = Locked by {0}
+messages__schemeDetails__aft_locked = Locked
 messages__schemeDetails__aft_view = View
 
 messages__check__your__answer__main__containt__label = You are adding this scheme administrator to {0}.

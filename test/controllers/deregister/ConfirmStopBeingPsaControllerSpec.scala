@@ -18,6 +18,7 @@ package controllers.deregister
 
 import audit.StubSuccessfulAuditService
 import connectors._
+import connectors.admin.{MinimalPsaConnector, TaxEnrolmentsConnector}
 import controllers.ControllerSpecBase
 import controllers.actions._
 import forms.deregister.ConfirmStopBeingPsaFormProvider

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package connectors
+package connectors.admin
 
 import base.JsonFileReader
 import com.github.tomakehurst.wiremock.client.WireMock._
-import org.scalatestplus.scalacheck.Checkers
 import org.scalatest.{AsyncFlatSpec, Matchers}
+import org.scalatestplus.scalacheck.Checkers
 import play.api.http.Status._
 import play.api.libs.json.{JsResultException, Json}
 import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}

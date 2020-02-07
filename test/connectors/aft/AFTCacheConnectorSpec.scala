@@ -1,0 +1,88 @@
+/*
+ * Copyright 2020 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package connectors.aft
+
+import com.github.tomakehurst.wiremock.client.WireMock._
+import identifiers.TypedIdentifier
+import org.scalatest.{AsyncWordSpec, MustMatchers, OptionValues}
+import play.api.http.Status
+import play.api.libs.json.Json
+import testhelpers.InvitationBuilder._
+import uk.gov.hmrc.http.{HeaderCarrier, HttpException}
+import utils.WireMockHelper
+
+import scala.concurrent.ExecutionContext.Implicits.global
+
+class AFTCacheConnectorSpec extends AsyncWordSpec with MustMatchers with WireMockHelper with OptionValues {
+
+  override protected def portConfigKey: String = "microservice.services.pension-scheme-accounting-for-tax.port"
+
+  protected implicit val hc: HeaderCarrier = HeaderCarrier()
+  private val srn = "test-srn"
+  private val startDate = "2020-04-01"
+
+  protected val lockUrl: String = "/pension-scheme-accounting-for-tax/journey-cache/aft/lock"
+
+  protected lazy val connector: AftCacheConnector = injector.instanceOf[AftCacheConnector]
+
+  "lockedBy" must {
+
+    "return `None` when the server returns a 404" in {
+      server.stubFor(
+        get(urlEqualTo(lockUrl))
+          .willReturn(
+            notFound
+          )
+      )
+      connector.lockedBy(srn, startDate) map {
+        result =>
+          result mustBe None
+      }
+    }
+
+    "return data when the server returns 200" in {
+      val data = Json.obj("testId" -> "data")
+      server.stubFor(
+        get(urlEqualTo(lockUrl))
+          .willReturn(
+            ok(data.toString)
+          )
+      )
+
+      connector.lockedBy(srn, startDate) map {
+        result =>
+          result.value mustEqual data.toString()
+      }
+    }
+
+    "return a failed future on upstream error" in {
+
+      server.stubFor(
+        get(urlEqualTo(lockUrl))
+          .willReturn(
+            serverError
+          )
+      )
+
+      recoverToExceptionIf[HttpException] {
+        connector.lockedBy(srn, startDate)
+      } map {
+        _.responseCode mustEqual Status.INTERNAL_SERVER_ERROR
+      }
+    }
+  }
+}

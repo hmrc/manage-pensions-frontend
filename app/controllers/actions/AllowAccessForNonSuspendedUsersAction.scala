@@ -17,7 +17,7 @@
 package controllers.actions
 
 import com.google.inject.Inject
-import connectors.MinimalPsaConnector
+import connectors.admin.MinimalPsaConnector
 import models.requests.AuthenticatedRequest
 import play.api.mvc.Results._
 import play.api.mvc.{ActionFilter, Result}

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package connectors
+package connectors.admin
 
 import audit.{AuditService, DeregisterEvent, StubSuccessfulAuditService}
 import com.github.tomakehurst.wiremock.client.WireMock._

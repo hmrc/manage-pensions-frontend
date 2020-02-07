@@ -47,6 +47,7 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val authUrl: String = servicesConfig.baseUrl("auth")
   lazy val pensionsSchemeUrl: String = servicesConfig.baseUrl("pensions-scheme")
   lazy val pensionAdminUrl: String = servicesConfig.baseUrl("pension-administrator")
+  lazy val aftUrl: String = servicesConfig.baseUrl("pension-scheme-accounting-for-tax")
   lazy val schemeFrontendUrl: String = servicesConfig.baseUrl("pensions-scheme-frontend")
 
   lazy val timeout = loadConfig("session._timeoutSeconds")
@@ -81,9 +82,11 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
 
   lazy val aftChargeTypePageUrl: String = loadConfig("urls.aftChargeTypePageLink")
   lazy val aftSummaryPageUrl: String = loadConfig("urls.aftSummaryPageLink")
+  lazy val aftSummaryPageNoVersionUrl: String = loadConfig("urls.aftSummaryPageNoVersionLink")
   lazy val isAFTEnabled: Boolean = runModeConfiguration.underlying.getBoolean("features.aft-return-enabled")
   lazy val aftListOfVersions: String = s"${servicesConfig.baseUrl("pension-scheme-accounting-for-tax")}${runModeConfiguration.underlying.getString("urls.aftListOfVersions")}"
 
+  lazy val quarterStartDate: String = "2020-04-01"
 
   def languageMap: Map[String, Lang] = Map(
     "english" -> Lang("en"),

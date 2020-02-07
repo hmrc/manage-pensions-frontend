@@ -18,7 +18,8 @@ package controllers.testonly
 
 import com.google.inject.Inject
 import config.FeatureSwitchManagementService
-import connectors.{PensionAdministratorFeatureSwitchConnectorImpl, PensionsSchemeFeatureSwitchConnectorImpl}
+import connectors.admin.PensionAdministratorFeatureSwitchConnectorImpl
+import connectors.scheme.PensionsSchemeFeatureSwitchConnectorImpl
 import play.api.Logger
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController

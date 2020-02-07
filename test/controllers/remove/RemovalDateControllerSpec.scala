@@ -18,6 +18,8 @@ package controllers.remove
 
 import java.time.LocalDate
 
+import connectors.admin.PsaRemovalConnector
+import connectors.scheme.{PensionSchemeVarianceLockConnector, UpdateSchemeCacheConnector}
 import connectors.{FakeUserAnswersCacheConnector, UserAnswersCacheConnector, _}
 import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
