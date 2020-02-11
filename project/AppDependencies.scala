@@ -6,22 +6,22 @@ object AppDependencies {
 
   val compile: Seq[ModuleID] = Seq(
     play.sbt.PlayImport.ws,
-    "uk.gov.hmrc" %% "simple-reactivemongo" % "7.20.0-play-26",
-    "uk.gov.hmrc" %% "logback-json-logger" % "4.0.0",
+    "uk.gov.hmrc" %% "simple-reactivemongo" % "7.23.0-play-26",
+    "uk.gov.hmrc" %% "logback-json-logger" % "4.6.0",
     "uk.gov.hmrc" %% "govuk-template" % "5.36.0-play-26",
     "uk.gov.hmrc" %% "play-health" % "3.14.0-play-26",
-    "uk.gov.hmrc" %% "play-ui" % "8.3.0-play-26",
+    "uk.gov.hmrc" %% "play-ui" % "8.8.0-play-26",
     "uk.gov.hmrc" %% "http-caching-client" % "9.0.0-play-26",
-    "uk.gov.hmrc" %% "play-conditional-form-mapping" % "0.2.0",
-    "uk.gov.hmrc" %% "bootstrap-play-26" % "1.1.0",
+    "uk.gov.hmrc" %% "play-conditional-form-mapping" % "1.2.0-play-26",
+    "uk.gov.hmrc" %% "bootstrap-play-26" % "1.3.0",
     "uk.gov.hmrc" %% "play-language" % "4.2.0-play-26",
     "uk.gov.hmrc" %% "domain" % "5.6.0-play-26",
-    "uk.gov.hmrc" %% "play-whitelist-filter" % "2.0.0",
+    "uk.gov.hmrc" %% "play-whitelist-filter" % "3.1.0-play-26",
     "com.typesafe.play" %% "play-json-joda" % "2.6.10"
   )
 
   val test: Seq[ModuleID] = Seq(
-    "uk.gov.hmrc" %% "bootstrap-play-26" % "1.1.0" % Test classifier "tests",
+    "uk.gov.hmrc" %% "bootstrap-play-26" % "1.3.0" % Test classifier "tests",
     "uk.gov.hmrc" %% "hmrctest" % "3.9.0-play-26",
     "org.scalatest" %% "scalatest" % "3.0.8",
     "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2",

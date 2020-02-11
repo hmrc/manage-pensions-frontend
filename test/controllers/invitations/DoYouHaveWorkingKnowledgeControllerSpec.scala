@@ -20,15 +20,13 @@ import connectors.FakeUserAnswersCacheConnector
 import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.invitations.DoYouHaveWorkingKnowledgeFormProvider
-import identifiers.invitations.DoYouHaveWorkingKnowledgeId
 import models.NormalMode
 import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
+import utils.{FakeNavigator, UserAnswerOps, UserAnswers}
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
-import utils.{FakeNavigator, UserAnswers}
 import views.html.invitations.doYouHaveWorkingKnowledge
-import utils.UserAnswerOps
 
 class DoYouHaveWorkingKnowledgeControllerSpec extends ControllerWithQuestionPageBehaviours {
 
