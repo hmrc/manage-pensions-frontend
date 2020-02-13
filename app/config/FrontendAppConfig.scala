@@ -86,7 +86,7 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val isAFTEnabled: Boolean = runModeConfiguration.underlying.getBoolean("features.aft-return-enabled")
   lazy val aftListOfVersions: String = s"${servicesConfig.baseUrl("pension-scheme-accounting-for-tax")}${runModeConfiguration.underlying.getString("urls.aftListOfVersions")}"
 
-  lazy val quarterStartDate: String = "2020-04-01"
+  lazy val quarterStartDate: String = "2020-01-01"
 
   def languageMap: Map[String, Lang] = Map(
     "english" -> Lang("en"),

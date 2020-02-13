@@ -33,7 +33,7 @@ class AFTCacheConnectorSpec extends AsyncWordSpec with MustMatchers with WireMoc
 
   protected implicit val hc: HeaderCarrier = HeaderCarrier()
   private val srn = "test-srn"
-  private val startDate = "2020-04-01"
+  private val startDate = "2020-01-01"
 
   protected val lockUrl: String = "/pension-scheme-accounting-for-tax/journey-cache/aft/lock"
 
