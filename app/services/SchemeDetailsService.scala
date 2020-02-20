@@ -43,23 +43,27 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
                                     )(implicit ec: ExecutionContext) {
 
   def retrieveOptionAFTViewModel(userAnswers: UserAnswers, srn: String)(implicit hc: HeaderCarrier): Future[Option[AFTViewModel]] = {
-    if (appConfig.isAFTEnabled) {
+    if (appConfig.isAFTEnabled && isCorrectSchemeStatus(userAnswers)) {
       val pstrId = userAnswers.get(PSTRId)
         .getOrElse(throw new RuntimeException(s"No PSTR ID found for srn $srn"))
       for {
         optVersions <- aftConnector.getListOfVersions(pstrId)
         optLockedBy <- aftCacheConnector.lockedBy(srn, appConfig.quarterStartDate)
       } yield {
-        val validStatus = Seq(Open.value, WoundUp.value, Deregistered.value)
-        userAnswers.get(SchemeStatusId) match {
-          case Some(schemeStatus) if validStatus.contains(schemeStatus.capitalize) =>
-            createAFTViewModel(optVersions, optLockedBy, srn)
-          case _ =>
-            None
-        }
+        createAFTViewModel(optVersions, optLockedBy, srn)
       }
     } else {
       Future.successful(None)
+    }
+  }
+
+  private def isCorrectSchemeStatus(ua: UserAnswers): Boolean = {
+    val validStatus = Seq(Open.value, WoundUp.value, Deregistered.value)
+    ua.get(SchemeStatusId) match {
+      case Some(schemeStatus) if validStatus.contains(schemeStatus.capitalize) =>
+        true
+      case _ =>
+        false
     }
   }
 
