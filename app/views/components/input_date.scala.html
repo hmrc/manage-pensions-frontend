@@ -50,15 +50,15 @@ hint: Option[String] = None
     <div class="form-date">
         <div class="form-group form-group-day">
             <label class="form-label" for="@field("day").id">@messages("date_day")</label>
-            <input class="form-control" id="@field("day").id" name="@field("day").name" value="@field("day").value" />
+            <input class="form-control" id="@field("day").id" name="@field("day").name" type="text" pattern="[0-9]*" inputmode="numeric" value="@field("day").value" />
         </div>
         <div class="form-group form-group-month">
             <label class="form-label" for="@field("month").id">@messages("date_month")</label>
-            <input class="form-control" id="@field("month").id" name="@field("month").name" value="@field("month").value" />
+            <input class="form-control" id="@field("month").id" name="@field("month").name" type="text" pattern="[0-9]*" inputmode="numeric" value="@field("month").value" />
         </div>
         <div class="form-group form-group-year">
             <label class="form-label" for="@field("year").id">@messages("date_year")</label>
-            <input class="form-control" id="@field("year").id" name="@field("year").name" value="@field("year").value" />
+            <input class="form-control" id="@field("year").id" name="@field("year").name" type="text" pattern="[0-9]*" inputmode="numeric"  value="@field("year").value" />
         </div>
     </div>
 </fieldset>
