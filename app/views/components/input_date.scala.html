@@ -34,17 +34,18 @@ hint: Option[String] = None
         <span class="bold form-label @if(legendClass.nonEmpty){@legendClass}">
           @label
         </span>
-
-        @if(hint.nonEmpty){
-            <span class="form-hint" id="@{field.id}-date-hint">@hint</span>
-        }
-
-        @field.errors.map { error =>
-            <span class="error-notification" id="error-notification-@{field.id}-input">
-                <span class="visually-hidden">@messages("site.error")</span> @messages(error.message, error.args:_*)
-            </span>
-        }
     </legend>
+
+    @if(hint.nonEmpty){
+        <span class="form-hint" id="@{field.id}-date-hint">@hint</span>
+    }
+
+    @field.errors.map { error =>
+        <span class="error-notification" id="error-notification-@{field.id}-input">
+            <span class="visually-hidden">@messages("site.error")</span>
+            @messages(error.message, error.args:_*)
+        </span>
+    }
 
     <div class="form-date">
         <div class="form-group form-group-day">
