@@ -22,12 +22,10 @@ $(document).ready(function() {
 
 
     if(document.querySelectorAll('select').length > 0){
-        var graphUrl = '/manage-pension-schemes/assets/javascripts/autocomplete/location-autocomplete-graph.json'
-
         openregisterLocationPicker({
             defaultValue: '',
             selectElement: document.querySelector('select'),
-            url: graphUrl
+            url: '/manage-pension-schemes/assets/javascripts/autocomplete/location-autocomplete-graph.json'
         })
 
         // temporary fix for IE not registering clicks on the text of the results list for the country autocomplete
