@@ -29,7 +29,7 @@ hint: Option[String] = None
 }
 
 <div class="form-field @if(Seq(field, field("day"), field("month"), field("year")).flatMap(_.errors).nonEmpty){form-field--error}">
-<fieldset id="@field.id" aria-describedby="@ariaList">
+<fieldset id="@field.id" role="group" aria-describedby="@ariaList">
     <legend>
         <span class="bold form-label @if(legendClass.nonEmpty){@legendClass}">
           @label
