@@ -20,8 +20,9 @@ import base.SpecBase
 import connectors.admin.MinimalPsaConnector
 import connectors.aft.{AFTConnector, AftCacheConnector}
 import connectors.scheme.PensionSchemeVarianceLockConnector
-import identifiers.SchemeNameId
+import identifiers.{SchemeNameId, SchemeStatusId}
 import identifiers.invitations.PSTRId
+import models.SchemeStatus.{Open, Rejected}
 import models.requests.AuthenticatedRequest
 import models._
 import org.mockito.Matchers
@@ -61,7 +62,7 @@ class SchemeDetailsServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
         .thenReturn(Future.successful(Some(Seq(1))))
       when(aftCacheConnector.lockedBy(any(), any())(any(), any()))
         .thenReturn(Future.successful(Some(name)))
-      val ua = UserAnswers().set(PSTRId)(pstr).asOpt.get
+      val ua = UserAnswers().set(PSTRId)(pstr).flatMap(_.set(SchemeStatusId)(Open.value)).asOpt.get
 
       whenReady(service.retrieveOptionAFTViewModel(ua, srn)) {
         _ mustBe lockedAftModel
@@ -73,7 +74,7 @@ class SchemeDetailsServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
         .thenReturn(Future.successful(Some(Nil)))
       when(aftCacheConnector.lockedBy(any(), any())(any(), any()))
         .thenReturn(Future.successful(None))
-      val ua = UserAnswers().set(PSTRId)(pstr).asOpt.get
+      val ua = UserAnswers().set(PSTRId)(pstr).flatMap(_.set(SchemeStatusId)(Open.value)).asOpt.get
 
       whenReady(service.retrieveOptionAFTViewModel(ua, srn)) {
         _ mustBe unlockedEmptyAftModel
@@ -85,7 +86,7 @@ class SchemeDetailsServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
         .thenReturn(Future.successful(Some(Nil)))
       when(aftCacheConnector.lockedBy(any(), any())(any(), any()))
         .thenReturn(Future.successful(Some(name)))
-      val ua = UserAnswers().set(PSTRId)(pstr).asOpt.get
+      val ua = UserAnswers().set(PSTRId)(pstr).flatMap(_.set(SchemeStatusId)(Open.value)).asOpt.get
 
       whenReady(service.retrieveOptionAFTViewModel(ua, srn)) {
         _ mustBe lockedAftModelWithNoVersion
@@ -97,10 +98,22 @@ class SchemeDetailsServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
         .thenReturn(Future.successful(Some(Seq(1))))
       when(aftCacheConnector.lockedBy(any(), any())(any(), any()))
         .thenReturn(Future.successful(None))
-      val ua = UserAnswers().set(PSTRId)(pstr).asOpt.get
+      val ua = UserAnswers().set(PSTRId)(pstr).flatMap(_.set(SchemeStatusId)(Open.value)).asOpt.get
 
       whenReady(service.retrieveOptionAFTViewModel(ua, srn)) {
         _ mustBe inProgressUnlockedAftModel
+      }
+    }
+
+    "return None when the scheme status is other than Open/Wound-up/Deregistered" in {
+      when(aftConnector.getListOfVersions(any())(any(), any()))
+        .thenReturn(Future.successful(Some(Seq(1))))
+      when(aftCacheConnector.lockedBy(any(), any())(any(), any()))
+        .thenReturn(Future.successful(None))
+      val ua = UserAnswers().set(PSTRId)(pstr).flatMap(_.set(SchemeStatusId)(Rejected.value)).asOpt.get
+
+      whenReady(service.retrieveOptionAFTViewModel(ua, srn)) {
+        _ mustBe None
       }
     }
   }

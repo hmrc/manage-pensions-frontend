@@ -22,36 +22,43 @@ secondaryLabel: Option[String] = None,
 hint: Option[String] = None
 )(implicit messages: Messages)
 
+@ariaList = @{
+    val hintId = if(hint.nonEmpty){field.id+"-date-hint "}else{" "}
+    val errorId = if(field.errors.nonEmpty){"error-notification-"+field.id+"-input"}else{""}
+    hintId + errorId
+}
+
 <div class="form-field @if(Seq(field, field("day"), field("month"), field("year")).flatMap(_.errors).nonEmpty){form-field--error}">
-<fieldset id="@field.id" @if(field.hasErrors){aria-describedby="error-notification-@{field.id}-input"}>
+<fieldset id="@field.id" role="group" aria-describedby="@ariaList">
     <legend>
-
-            <span class="bold form-label @if(legendClass.nonEmpty){@legendClass}">
-              @label
-            </span>
-
-        @if(hint.nonEmpty){
-        <span class="form-hint" id="@{field.id}-date-hint">@hint</span>
-        }
-
-        @field.errors.map { error =>
-        <span class="error-notification" id="error-notification-@{field.id}-input">
-            <span class="visually-hidden">@messages("site.error")</span> @messages(error.message, error.args:_*)</span>
-        }
-
+        <span class="bold form-label @if(legendClass.nonEmpty){@legendClass}">
+          @label
+        </span>
     </legend>
+
+    @if(hint.nonEmpty){
+        <span class="form-hint" id="@{field.id}-date-hint">@hint</span>
+    }
+
+    @field.errors.map { error =>
+        <span class="error-notification" id="error-notification-@{field.id}-input">
+            <span class="visually-hidden">@messages("site.error")</span>
+            @messages(error.message, error.args:_*)
+        </span>
+    }
+
     <div class="form-date">
         <div class="form-group form-group-day">
             <label class="form-label" for="@field("day").id">@messages("date_day")</label>
-            <input class="form-control" id="@field("day").id" name="@field("day").name" aria-describedby="@if(field("day").errors.nonEmpty){error-message-@field("day").id} else {@field.id-date-hint}" value="@field("day").value" />
+            <input class="form-control" id="@field("day").id" name="@field("day").name" type="text" pattern="[0-9]*" inputmode="numeric" value="@field("day").value" />
         </div>
         <div class="form-group form-group-month">
             <label class="form-label" for="@field("month").id">@messages("date_month")</label>
-            <input class="form-control" id="@field("month").id" name="@field("month").name" aria-describedby="@if(field("month").errors.nonEmpty){error-message-@field("month").id} else {@field.id-date-hint}" value="@field("month").value" />
+            <input class="form-control" id="@field("month").id" name="@field("month").name" type="text" pattern="[0-9]*" inputmode="numeric" value="@field("month").value" />
         </div>
         <div class="form-group form-group-year">
             <label class="form-label" for="@field("year").id">@messages("date_year")</label>
-            <input class="form-control" id="@field("year").id" name="@field("year").name" aria-describedby="@if(field("year").errors.nonEmpty){error-message-@field("year").id} else {@field.id-date-hint}" value="@field("year").value" />
+            <input class="form-control" id="@field("year").id" name="@field("year").name" type="text" pattern="[0-9]*" inputmode="numeric"  value="@field("year").value" />
         </div>
     </div>
 </fieldset>
