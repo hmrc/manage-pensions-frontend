@@ -50,7 +50,7 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
         optVersions <- aftConnector.getListOfVersions(pstrId)
         optLockedBy <- aftCacheConnector.lockedBy(srn, appConfig.quarterStartDate)
       } yield {
-        createAFTViewModel(optVersions, optLockedBy, srn)
+        createAFTViewModel(optVersions, optLockedBy, srn, appConfig.quarterStartDate)
       }
     } else {
       Future.successful(None)
@@ -67,7 +67,7 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
     }
   }
 
-  private def createAFTViewModel(optVersions: Option[Seq[Int]], optLockedBy: Option[String], srn: String): Option[AFTViewModel] = {
+  private def createAFTViewModel(optVersions: Option[Seq[Int]], optLockedBy: Option[String], srn: String, startDate: String): Option[AFTViewModel] = {
     (optVersions, optLockedBy) match {
       case (Some(versions), None) if versions.isEmpty =>
         Option(
@@ -85,7 +85,7 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
             else {
               Some(Message("messages__schemeDetails__aft_locked"))
             },
-            Link(id = "aftSummaryPageLink", url = appConfig.aftSummaryPageNoVersionUrl.format(srn),
+            Link(id = "aftSummaryPageLink", url = appConfig.aftSummaryPageNoVersionUrl.format(srn, startDate),
               linkText = Message("messages__schemeDetails__aft_view"))
           )
         )
@@ -99,7 +99,7 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
             else {
               Some(Message("messages__schemeDetails__aft_locked"))
             },
-            Link(id = "aftSummaryPageLink", url = appConfig.aftSummaryPageUrl.format(srn, versions.headOption.getOrElse("1")),
+            Link(id = "aftSummaryPageLink", url = appConfig.aftSummaryPageUrl.format(srn, startDate, versions.headOption.getOrElse("1")),
               linkText = Message("messages__schemeDetails__aft_view"))
           )
         )
@@ -110,7 +110,7 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
             Some(Message("messages__schemeDetails__aft_inProgress")),
             Link(
               id = "aftSummaryPageLink",
-              url = appConfig.aftSummaryPageUrl.format(srn, versions.headOption.getOrElse("1")),
+              url = appConfig.aftSummaryPageUrl.format(srn, startDate, versions.headOption.getOrElse("1")),
               linkText = Message("messages__schemeDetails__aft_view"))
           )
         )
