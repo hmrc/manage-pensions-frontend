@@ -102,6 +102,12 @@ Error styling to bring in line with GDS
   border: 5px solid #d4351c;
 }
 
+.form-field--error .form-control:focus,
+.form-field--error .form-control-wrapper input:focus {
+    border-color: #0b0c0c;
+    -webkit-box-shadow: none;
+    box-shadow: none
+  }
 .error-summary {
   border: 5px solid #d4351c;
   margin-top: 15px;
