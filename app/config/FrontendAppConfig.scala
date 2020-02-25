@@ -80,7 +80,7 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val taxDeEnrolmentUrl: String = servicesConfig.baseUrl("tax-enrolments") +runModeConfiguration.underlying.getString("urls.tax-de-enrolment")
   lazy val updateSchemeDetailsUrl: String = s"${servicesConfig.baseUrl("pensions-scheme")}${runModeConfiguration.underlying.getString("urls.updateSchemeDetails")}"
 
-  lazy val aftChargeTypePageUrl: String = loadConfig("urls.aftChargeTypePageLink")
+  lazy val aftLoginUrl: String = loadConfig("urls.aftLoginLink")
   lazy val aftSummaryPageUrl: String = loadConfig("urls.aftSummaryPageLink")
   lazy val aftSummaryPageNoVersionUrl: String = loadConfig("urls.aftSummaryPageNoVersionLink")
   lazy val isAFTEnabled: Boolean = runModeConfiguration.underlying.getBoolean("features.aft-return-enabled")

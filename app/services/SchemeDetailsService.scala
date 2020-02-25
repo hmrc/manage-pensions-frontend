@@ -72,7 +72,7 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
       case (Some(versions), None) if versions.isEmpty =>
         Option(
           AFTViewModel(None, None,
-            Link(id = "aftChargeTypePageLink", url = appConfig.aftChargeTypePageUrl.format(srn),
+            Link(id = "aftChargeTypePageLink", url = appConfig.aftLoginUrl.format(srn),
               linkText = Message("messages__schemeDetails__aft_startLink")))
         )
       case (Some(versions), Some(name)) if versions.isEmpty =>

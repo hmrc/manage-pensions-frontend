@@ -73,7 +73,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
   "SchemeDetailsController" must {
 
     "return OK and the correct view for a GET" in {
-      val aftViewModel = AFTViewModel(None, None, Link(id = "aftChargeTypePageLink", url = frontendAppConfig.aftChargeTypePageUrl.format(srn),
+      val aftViewModel = AFTViewModel(None, None, Link(id = "aftChargeTypePageLink", url = frontendAppConfig.aftLoginUrl.format(srn),
         linkText = Message("messages__schemeDetails__aft_startLink")))
       when(fakeSchemeDetailsConnector.getSchemeDetails(eqTo("A0000000"), any(), any())(any(), any()))
         .thenReturn(Future.successful(desUserAnswers))
