@@ -222,7 +222,7 @@ object SchemeDetailsServiceSpec {
       None,
       Link(
         id = "aftChargeTypePageLink",
-        url = s"http://localhost:8206/manage-pension-scheme-accounting-for-tax/$srn/new-return/charge-type",
+        url = s"http://localhost:8206/manage-pension-scheme-accounting-for-tax/$srn/new-return/aft-login",
         linkText = Message("messages__schemeDetails__aft_startLink"))
     )
   )
