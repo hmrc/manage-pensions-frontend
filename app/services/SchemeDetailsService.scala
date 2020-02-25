@@ -15,9 +15,8 @@
  */
 
 package services
-
 import java.time.LocalDate
-
+import java.time.format.DateTimeFormatter
 import com.google.inject.Inject
 import config.FrontendAppConfig
 import connectors.admin.MinimalPsaConnector
@@ -32,16 +31,13 @@ import play.api.mvc.AnyContent
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.{DateHelper, UserAnswers}
 import viewmodels.{AFTViewModel, AssociatedPsa, Message}
-
 import scala.concurrent.{ExecutionContext, Future}
-
 class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
                                      aftConnector: AFTConnector,
                                      aftCacheConnector: AftCacheConnector,
                                      schemeVarianceLockConnector: PensionSchemeVarianceLockConnector,
                                      minimalPsaConnector: MinimalPsaConnector
                                     )(implicit ec: ExecutionContext) {
-
   def retrieveOptionAFTViewModel(userAnswers: UserAnswers, srn: String)(implicit hc: HeaderCarrier): Future[Option[AFTViewModel]] = {
     if (appConfig.isAFTEnabled && isCorrectSchemeStatus(userAnswers)) {
       val pstrId = userAnswers.get(PSTRId)
@@ -50,13 +46,12 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
         optVersions <- aftConnector.getListOfVersions(pstrId)
         optLockedBy <- aftCacheConnector.lockedBy(srn, appConfig.quarterStartDate)
       } yield {
-        createAFTViewModel(optVersions, optLockedBy, srn, appConfig.quarterStartDate)
+        createAFTViewModel(optVersions, optLockedBy, srn, appConfig.quarterStartDate, appConfig.quarterEndDate)
       }
     } else {
       Future.successful(None)
     }
   }
-
   private def isCorrectSchemeStatus(ua: UserAnswers): Boolean = {
     val validStatus = Seq(Open.value, WoundUp.value, Deregistered.value)
     ua.get(SchemeStatusId) match {
@@ -66,58 +61,56 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
         false
     }
   }
-
-  private def createAFTViewModel(optVersions: Option[Seq[Int]], optLockedBy: Option[String], srn: String, startDate: String): Option[AFTViewModel] = {
+  private def createAFTViewModel(optVersions: Option[Seq[Int]], optLockedBy: Option[String],
+                                 srn: String, startDate: String, endDate: String): Option[AFTViewModel] = {
+    val dateFormatterYMD: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    val formattedStartDate: String = LocalDate.parse(startDate, dateFormatterYMD).format(DateTimeFormatter.ofPattern("d MMMM"))
+    val formattedEndDate: String = LocalDate.parse(endDate, dateFormatterYMD).format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
     (optVersions, optLockedBy) match {
       case (Some(versions), None) if versions.isEmpty =>
-        Option(
-          AFTViewModel(None, None,
-            Link(id = "aftChargeTypePageLink", url = appConfig.aftLoginUrl.format(srn),
-              linkText = Message("messages__schemeDetails__aft_startLink")))
+        Option(AFTViewModel(None, None,
+          Link(id = "aftChargeTypePageLink", url = appConfig.aftLoginUrl.format(srn),
+            linkText = Message("messages__schemeDetails__aft_startLink", formattedStartDate, formattedEndDate)))
         )
       case (Some(versions), Some(name)) if versions.isEmpty =>
-        Option(
-          AFTViewModel(
-            Some(Message("messages__schemeDetails__aft_period")),
-            if (name.nonEmpty) {
-              Some(Message("messages__schemeDetails__aft_lockedBy", name))
-            }
-            else {
-              Some(Message("messages__schemeDetails__aft_locked"))
-            },
-            Link(id = "aftSummaryPageLink", url = appConfig.aftSummaryPageNoVersionUrl.format(srn, startDate),
-              linkText = Message("messages__schemeDetails__aft_view"))
-          )
+        Option(AFTViewModel(
+          Some(Message("messages__schemeDetails__aft_period", formattedStartDate, formattedEndDate)),
+          if (name.nonEmpty) {
+            Some(Message("messages__schemeDetails__aft_lockedBy", name))
+          }
+          else {
+            Some(Message("messages__schemeDetails__aft_locked"))
+          },
+          Link(id = "aftSummaryPageLink", url = appConfig.aftSummaryPageNoVersionUrl.format(srn, startDate),
+            linkText = Message("messages__schemeDetails__aft_view"))
+        )
         )
       case (Some(versions), Some(name)) =>
-        Option(
-          AFTViewModel(
-            Some(Message("messages__schemeDetails__aft_period")),
-            if (name.nonEmpty) {
-              Some(Message("messages__schemeDetails__aft_lockedBy", name))
-            }
-            else {
-              Some(Message("messages__schemeDetails__aft_locked"))
-            },
-            Link(id = "aftSummaryPageLink", url = appConfig.aftSummaryPageUrl.format(srn, startDate, versions.headOption.getOrElse("1")),
-              linkText = Message("messages__schemeDetails__aft_view"))
-          )
+        Option(AFTViewModel(
+          Some(Message("messages__schemeDetails__aft_period", formattedStartDate, formattedEndDate)),
+          if (name.nonEmpty) {
+            Some(Message("messages__schemeDetails__aft_lockedBy", name))
+          }
+          else {
+            Some(Message("messages__schemeDetails__aft_locked"))
+          },
+          Link(id = "aftSummaryPageLink", url = appConfig.aftSummaryPageUrl.format(srn, startDate, versions.headOption.getOrElse("1")),
+            linkText = Message("messages__schemeDetails__aft_view"))
+        )
         )
       case (Some(versions), None) =>
-        Option(
-          AFTViewModel(
-            Some(Message("messages__schemeDetails__aft_period")),
-            Some(Message("messages__schemeDetails__aft_inProgress")),
-            Link(
-              id = "aftSummaryPageLink",
-              url = appConfig.aftSummaryPageUrl.format(srn, startDate, versions.headOption.getOrElse("1")),
-              linkText = Message("messages__schemeDetails__aft_view"))
-          )
+        Option(AFTViewModel(
+          Some(Message("messages__schemeDetails__aft_period", formattedStartDate, formattedEndDate)),
+          Some(Message("messages__schemeDetails__aft_inProgress")),
+          Link(
+            id = "aftSummaryPageLink",
+            url = appConfig.aftSummaryPageUrl.format(srn, startDate, versions.headOption.getOrElse("1")),
+            linkText = Message("messages__schemeDetails__aft_view"))
+        )
         )
       case _ => None
     }
   }
-
   def displayChangeLink(isSchemeOpen: Boolean, lock: Option[Lock]): Boolean = {
     if (!isSchemeOpen) {
       false
@@ -128,7 +121,6 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
       }
     }
   }
-
   def administratorsVariations(psaId: String, psaSchemeDetails: UserAnswers, schemeStatus: String): Option[Seq[AssociatedPsa]] =
     psaSchemeDetails.get(ListOfPSADetailsId).map { psaDetailsSeq =>
       psaDetailsSeq.map { psaDetails =>
@@ -137,7 +129,6 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
         AssociatedPsa(name, canRemove)
       }
     }
-
   def openedDate(srn: String, list: ListOfSchemes, isSchemeOpen: Boolean): Option[String] = {
     if (isSchemeOpen) {
       list.schemeDetail.flatMap {
@@ -154,7 +145,6 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
       None
     }
   }
-
   def pstr(srn: String, list: ListOfSchemes): Option[String] =
     list.schemeDetail.flatMap { listOfSchemes =>
       val currentScheme = listOfSchemes.filter(_.referenceNumber.contains(srn))
@@ -164,7 +154,6 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
         None
       }
     }
-
   def lockingPsa(lock: Option[Lock], srn: SchemeReferenceNumber)
                 (implicit request: AuthenticatedRequest[AnyContent], hc: HeaderCarrier): Future[Option[String]] =
     lock match {
