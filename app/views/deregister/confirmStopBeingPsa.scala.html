@@ -54,8 +54,6 @@
         </div>
         @components.submit_button()
 
+        @components.return_link(controllers.routes.SchemesOverviewController.onPageLoad(), Some(psaName))
     }
-
-    @components.return_link(controllers.routes.SchemesOverviewController.onPageLoad(), Some(psaName))
-
 }
