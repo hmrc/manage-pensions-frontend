@@ -24,6 +24,12 @@
         headingIsLegend: Boolean = false
 )(implicit messages: Messages)
 
+@ariaDescribedBy = @{
+    val errorId = if (field.hasErrors) Seq(s"error-notification-${field.id}-input") else Seq.empty
+    val hintId = if (hint.nonEmpty) Seq(s"hint-${field.id}") else Seq.empty
+    (hintId ++ errorId).mkString(" ")
+}
+
 <div id="@{field.id}-form" class="form-group @groupClass @if(field.hasErrors){form-field--error}">
 
     @if(headingIsLegend){
@@ -38,9 +44,10 @@
     </label>
     }
 
-    @if(hint.nonEmpty){
-    <span class="form-hint">@hint</span>
+    @hint.map{hintText=>
+        <span id= "hint-@{field.id}" class="form-hint">@hintText</span>
     }
+
     @field.errors.map { error =>
     <span class="error-notification" id="error-notification-@{field.id}-input">
                 <span class="visually-hidden">@messages("site.error")</span> @messages(error.message, error.args:_*)
@@ -53,7 +60,7 @@
         id="@{field.id}"
         name="@{field.name}"
         value="@{field.value}"
-            @if(field.hasErrors){aria-describedby="error-notification-@{field.id}-input"}
+        @if(field.hasErrors || hint.nonEmpty){aria-describedby="@{ariaDescribedBy}"}
         />
     </div>
 </div>
