@@ -16,6 +16,9 @@
 
 package services
 
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+
 import base.SpecBase
 import connectors.admin.MinimalPsaConnector
 import connectors.aft.{AFTConnector, AftCacheConnector}
@@ -195,27 +198,27 @@ class SchemeDetailsServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
 }
 
 object SchemeDetailsServiceSpec {
-
-
+  private val startDate = "2020-04-01"
+  private val endDate = "2020-06-30"
+  private val dateFormatterYMD: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+  private val formattedStartDate: String = LocalDate.parse(startDate, dateFormatterYMD).format(DateTimeFormatter.ofPattern("d MMMM"))
+  private val formattedEndDate: String = LocalDate.parse(endDate, dateFormatterYMD).format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
   private val srn = "srn"
   private val pstr = "pstr"
   private val psaId = "A0000000"
   private val name = "test-name"
   private val date = "2020-01-01"
   val minimalPsaName: Option[String] = Some("John Doe Doe")
-
-
   val lockedAftModel: Option[AFTViewModel] = Some(
     AFTViewModel(
-      Some(Message("messages__schemeDetails__aft_period")),
+      Some(Message("messages__schemeDetails__aft_period", formattedStartDate, formattedEndDate)),
       Some(Message("messages__schemeDetails__aft_lockedBy", name)),
       Link(
         id = "aftSummaryPageLink",
-        url = s"http://localhost:8206/manage-pension-scheme-accounting-for-tax/$srn/new-return/1/summary",
+        url = s"http://localhost:8206/manage-pension-scheme-accounting-for-tax/$srn/new-return/$startDate/1/summary",
         linkText = Message("messages__schemeDetails__aft_view"))
     )
   )
-
   val unlockedEmptyAftModel: Option[AFTViewModel] = Some(
     AFTViewModel(
       None,
@@ -223,32 +226,29 @@ object SchemeDetailsServiceSpec {
       Link(
         id = "aftChargeTypePageLink",
         url = s"http://localhost:8206/manage-pension-scheme-accounting-for-tax/$srn/new-return/aft-login",
-        linkText = Message("messages__schemeDetails__aft_startLink"))
+        linkText = Message("messages__schemeDetails__aft_startLink", formattedStartDate, formattedEndDate))
     )
   )
-
   val lockedAftModelWithNoVersion: Option[AFTViewModel] = Some(
     AFTViewModel(
-      Some(Message("messages__schemeDetails__aft_period")),
+      Some(Message("messages__schemeDetails__aft_period", formattedStartDate, formattedEndDate)),
       Some(Message("messages__schemeDetails__aft_lockedBy", name)),
       Link(
         id = "aftSummaryPageLink",
-        url = s"http://localhost:8206/manage-pension-scheme-accounting-for-tax/$srn/new-return/summary",
+        url = s"http://localhost:8206/manage-pension-scheme-accounting-for-tax/$srn/new-return/$startDate/summary",
         linkText = Message("messages__schemeDetails__aft_view"))
     )
   )
-
   val inProgressUnlockedAftModel: Option[AFTViewModel] = Option(
     AFTViewModel(
-      Some(Message("messages__schemeDetails__aft_period")),
+      Some(Message("messages__schemeDetails__aft_period", formattedStartDate, formattedEndDate)),
       Some(Message("messages__schemeDetails__aft_inProgress")),
       Link(
         id = "aftSummaryPageLink",
-        url = s"http://localhost:8206/manage-pension-scheme-accounting-for-tax/$srn/new-return/1/summary",
+        url = s"http://localhost:8206/manage-pension-scheme-accounting-for-tax/$srn/new-return/$startDate/1/summary",
         linkText = Message("messages__schemeDetails__aft_view"))
     )
   )
-
   val administrators: Option[Seq[AssociatedPsa]] =
     Some(
       Seq(
@@ -256,7 +256,6 @@ object SchemeDetailsServiceSpec {
         AssociatedPsa("Tony A Smith", canRemove = false)
       )
     )
-
   val userAnswersWithAssociatedPsa: UserAnswers = UserAnswers(Json.obj(
     PSTRId.toString -> pstr,
     "schemeStatus" -> "Open",
@@ -280,8 +279,5 @@ object SchemeDetailsServiceSpec {
       )
     )
   ))
-
   val listOfSchemes: ListOfSchemes = ListOfSchemes("", "", Some(List(SchemeDetail(name, srn, "Open", Some(date), Some(pstr), None))))
-
-
 }
