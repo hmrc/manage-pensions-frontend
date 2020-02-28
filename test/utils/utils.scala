@@ -17,20 +17,15 @@
 import java.time.LocalDate
 
 import controllers.actions.{DataRetrievalAction, FakeDataRetrievalAction}
-import identifiers.PSANameId
 import identifiers.invitations._
 import identifiers.remove.{ConfirmRemovePsaId, RemovalDateId}
-import identifiers.{AssociatedDateId, LastPageId, MinimalSchemeDetailId, SchemeSrnId}
+import identifiers.{AssociatedDateId, MinimalSchemeDetailId, PSANameId, SchemeSrnId}
 import models._
 import org.scalatest.OptionValues
 
 package object utils {
 
   implicit class UserAnswerOps(answers: UserAnswers) extends OptionValues {
-
-    def lastPage(page: LastPage): UserAnswers = {
-      answers.set(LastPageId)(page).asOpt.value
-    }
 
     // Invitation
     def inviteeId(id: String): UserAnswers = {

@@ -16,12 +16,11 @@
 
 package utils
 
-import connectors.FakeUserAnswersCacheConnector
-import identifiers.{Identifier, LastPageId}
+import identifiers.Identifier
 import models.requests.IdentifiedRequest
-import models.{CheckMode, LastPage, NormalMode}
+import models.{CheckMode, NormalMode}
 import org.scalatest.exceptions.TableDrivenPropertyCheckFailedException
-import org.scalatest.prop.{PropertyChecks, TableFor4, TableFor6}
+import org.scalatest.prop.{PropertyChecks, TableFor4}
 import org.scalatest.{MustMatchers, OptionValues, WordSpec}
 import play.api.mvc.Call
 import uk.gov.hmrc.http.HeaderCarrier
