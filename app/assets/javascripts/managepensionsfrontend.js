@@ -19,7 +19,10 @@ $(document).ready(function() {
         e.preventDefault();
         window.history.back();
     })
-
+    // If there is an error summary, set focus to the summary
+    if ($('.error-summary--show').length) {
+      $('.error-summary--show').focus()
+    }
 
     if(document.querySelectorAll('select').length > 0){
         openregisterLocationPicker({
