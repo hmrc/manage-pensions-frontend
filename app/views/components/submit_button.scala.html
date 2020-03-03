@@ -16,6 +16,6 @@
 
 @(messageKey: String = "site.save_and_continue", disableSubmission: Boolean = false)(implicit messages: Messages)
 
-<div class="section">
+<div class="subsection">
     <button id="submit" class="button" @if(disableSubmission) {disabled}>@messages(messageKey)</button>
 </div>
