@@ -16,9 +16,6 @@
 
 @import config.FrontendAppConfig
 @import models.SchemeDetail
-@import views.formatters.Date
-@import controllers.invitations.routes
-@import viewmodels.Message
 
 @this(
     main_template: main_template,
@@ -26,41 +23,103 @@
     appConfig: FrontendAppConfig
 )
 
-@(schemes: List[SchemeDetail], psaName: String)(implicit request: Request[_], messages: Messages)
+@(
+    schemes: List[SchemeDetail],
+    psaName: String,
+    numberOfSchemes: Int,
+    pagination: Int,
+    currentPage: Int,
+    pageNumberLinks: Seq[Int] = Seq.empty
+)(implicit
+    request: Request[_],
+    messages: Messages
+)
 
-@manageRedirectLink = {<a id="manage-link" href="@appConfig.pensionSchemeOnlineServiceUrl">@messages("messages__schemesOverview__manage__redirect__link")</a>}
+@manageRedirectLink = {
+    <a id="manage-link" href="@appConfig.pensionSchemeOnlineServiceUrl">@messages("messages__schemesOverview__manage__redirect__link")</a>
+}
+
+@prevNextLink(condition: Boolean, linkText: String, pageNumber: Int) = {
+    @if(condition) {
+        <a id="@linkText.toLowerCase" href="@controllers.routes.ListSchemesController.onPageLoadWithPageNumber(pageNumber)">@linkText</a>
+    } else {
+        <span id="@linkText.toLowerCase">@linkText</span>
+    }
+}
+
+@pageNumberLink(linkNumber: Int, currentPage: Int) = {
+    @if(linkNumber != currentPage) {
+        <a id="pageNumber-@linkNumber" href="@controllers.routes.ListSchemesController.onPageLoadWithPageNumber(linkNumber)">@linkNumber.toString</a>
+    } else {
+        <span id="pageNumber-@linkNumber">@linkNumber</span>
+    }
+}
+
+@paginationText(currentPage: Int, pagination: Int, numberOfSchemes: Int) = @{
+    if (currentPage == 1) {
+        messages("messages__schemesOverview__pagination__text", currentPage, currentPage * pagination, numberOfSchemes)
+    } else {
+        messages("messages__schemesOverview__pagination__text", (currentPage * pagination) - (pagination -1), currentPage * pagination, numberOfSchemes)
+    }
+}
 
 @main_template(
     title = messages("messages__listSchemes__title"),
-
-    bodyClasses = Some("full-width")) {
+    bodyClasses = Some("full-width")
+) {
     @components.back_link()
 
     <div class="grid-row">
         <div class="column-two-thirds">
-
             @components.heading(headingKey = messages("messages__listSchemes__title"))
 
-            <p class="panel panel-border-wide">@Html(Message("messages__schemesOverview__manage__redirect__text").withArgs(manageRedirectLink))</p>
+            <p class="panel panel-border-wide">@Html(messages("messages__schemesOverview__manage__redirect__text", manageRedirectLink))</p>
+        </div>
+    </div>
 
-        </div>
-    </div>
     @if(schemes.isEmpty) {
-    <div class="grid-row">
-        <div class="column-two-thirds">
-            <p id="noSchemes">@messages("messages__listSchemes__noSchemes")</p>
+        <div class="grid-row">
+            <div class="column-two-thirds">
+                <p id="noSchemes">@messages("messages__listSchemes__noSchemes")</p>
+            </div>
         </div>
-    </div>
     } else {
-        @components.scheme_list(
-            schemes,
-            appConfig
-        )
+        @components.scheme_list(schemes, appConfig)
     }
-    <div class="grid-row">
-        <div class="column-two-thirds">
-            <p class="govuk-margin-top-5">
-                @components.return_link(controllers.routes.SchemesOverviewController.onPageLoad(), Some(psaName))</p>
+
+    @if(numberOfSchemes > pagination) {
+        <div class="grid-row">
+            <div class="column-two-thirds">
+                <p class="govuk-margin-top-5">
+                    @paginationText(
+                        currentPage = currentPage,
+                        pagination = pagination,
+                        numberOfSchemes = numberOfSchemes
+                    )
+                </p>
+                <p class="govuk-margin-top-5">
+                    @prevNextLink(
+                        condition = currentPage > 1,
+                        linkText = messages("messages__schemesOverview__pagination__prev"),
+                        pageNumber = currentPage - 1
+                    )
+
+                    @for((int, i) <- pageNumberLinks.zipWithIndex) {
+                        @pageNumberLink(
+                            linkNumber = i + 1,
+                            currentPage = currentPage
+                        )
+                    }
+
+                    @prevNextLink(
+                        condition = currentPage < numberOfSchemes / pagination,
+                        linkText = messages("messages__schemesOverview__pagination__next"),
+                        pageNumber = currentPage + 1
+                    )
+                </p>
+            </div>
         </div>
-    </div>
+    }
+
+    @components.return_link(controllers.routes.SchemesOverviewController.onPageLoad(), Some(psaName))
 }

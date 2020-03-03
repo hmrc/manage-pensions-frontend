@@ -38,25 +38,40 @@ class ListSchemesControllerSpec extends ControllerSpecBase {
 
   "ListSchemesController" when {
 
-    when(fakeMinimalPsaConnector.getPsaNameFromPsaID(any())(any(), any())).thenReturn(Future.successful(Some(psaName)))
+    when(mockMinimalPsaConnector.getPsaNameFromPsaID(any())(any(), any())).thenReturn(Future.successful(Some(psaName)))
 
-      "return OK and the correct view when there are no schemes" in {
-        val fixture = testFixture(psaIdNoSchemes)
-        val result = fixture.controller.onPageLoad(fakeRequest)
+    "return OK and the correct view when there are no schemes" in {
+      val fixture = testFixture(psaIdNoSchemes)
 
-        status(result) mustBe OK
-        contentAsString(result) mustBe viewAsString(emptySchemes)
-      }
+      val result = fixture.controller.onPageLoad(fakeRequest)
 
-      "return OK and the correct view when there are schemes" in {
-        val fixture = testFixture(psaIdWithSchemes)
-        val result = fixture.controller.onPageLoad(fakeRequest)
+      status(result) mustBe OK
 
-        status(result) mustBe OK
-        contentAsString(result) mustBe viewAsString(fullSchemes)
-      }
+      contentAsString(result) mustBe viewAsString(
+        schemes = emptySchemes,
+        numberOfSchemes = emptySchemes.length,
+        pagination = 1,
+        currentPage = 1,
+        pageNumberLinks = Seq.empty
+      )
+    }
+
+    "return OK and the correct view when there are schemes without pagination" in {
+      val fixture = testFixture(psaIdWithSchemes)
+
+      val result = fixture.controller.onPageLoad(fakeRequest)
+
+      status(result) mustBe OK
+
+      contentAsString(result) mustBe viewAsString(
+        schemes = fullSchemes,
+        numberOfSchemes = fullSchemes.length,
+        pagination = 5,
+        currentPage = 1,
+        pageNumberLinks = Seq(1, 2)
+      )
+    }
   }
-
 }
 
 trait TestFixture {
@@ -66,9 +81,9 @@ trait TestFixture {
 object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
   val psaIdNoSchemes: String = "A0000001"
   val psaIdWithSchemes: String = "A0000002"
-  val psaName = "Test Psa Name"
-
+  val psaName: String = "Test Psa Name"
   val emptySchemes: List[SchemeDetail] = List.empty[SchemeDetail]
+
   val fullSchemes: List[SchemeDetail] =
     List(
       SchemeDetail(
@@ -121,7 +136,6 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
       }
     }
 
-
     override val controller: ListSchemesController =
       new ListSchemesController(
         frontendAppConfig,
@@ -129,20 +143,28 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
         authAction(psaId),
         getDataWithPsaName(psaId),
         listSchemesConnector(),
-        fakeMinimalPsaConnector,
+        mockMinimalPsaConnector,
         FakeUserAnswersCacheConnector,
         stubMessagesControllerComponents(),
         view
       )
-
-
   }
 
   val view: list_schemes = app.injector.instanceOf[list_schemes]
 
-  def viewAsString(schemes: List[SchemeDetail]): String =
-    view(schemes, psaName)(fakeRequest, messages).toString()
+  def viewAsString(schemes: List[SchemeDetail],
+                   numberOfSchemes: Int,
+                   pagination: Int,
+                   currentPage: Int,
+                   pageNumberLinks: Seq[Int]): String =
+    view(
+      schemes = schemes,
+      psaName = psaName,
+      numberOfSchemes = numberOfSchemes,
+      pagination = pagination,
+      currentPage = currentPage,
+      pageNumberLinks = pageNumberLinks
+    )(fakeRequest, messages).toString()
 
-  val fakeMinimalPsaConnector: MinimalPsaConnector = mock[MinimalPsaConnector]
-
+  val mockMinimalPsaConnector: MinimalPsaConnector = mock[MinimalPsaConnector]
 }

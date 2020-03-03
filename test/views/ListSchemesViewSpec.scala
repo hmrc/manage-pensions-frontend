@@ -31,19 +31,45 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
 
   "list-schemes view" must {
 
-    behave like normalPage(view(), "listSchemes", messages("messages__listSchemes__title"))
+    behave like normalPage(
+      view = view(
+        schemes = emptyList,
+        numberOfSchemes = emptyList.length,
+        pagination = pagination,
+        currentPage = 1,
+        pageNumberLinks = Seq.empty
+      ),
+      messageKeyPrefix = "listSchemes",
+      pageHeader = messages("messages__listSchemes__title")
+    )
 
     "have link to redirect to Pension Schemes Online service" in {
-      view() must
-        haveLink(frontendAppConfig.pensionSchemeOnlineServiceUrl, "manage-link")
+      view(schemes = emptyList,
+        numberOfSchemes = emptyList.length,
+        pagination = pagination,
+        currentPage = 1,
+        pageNumberLinks = Seq.empty
+      ) must haveLink(frontendAppConfig.pensionSchemeOnlineServiceUrl, "manage-link")
     }
 
     "display a suitable message when there are no schemes to display" in {
-      view() must haveElementWithText("noSchemes", messages("messages__listSchemes__noSchemes"))
+      view(
+        schemes = emptyList,
+        numberOfSchemes = emptyList.length,
+        pagination = pagination,
+        currentPage = 1,
+        pageNumberLinks = Seq.empty
+      ) must haveElementWithText("noSchemes", messages("messages__listSchemes__noSchemes"))
     }
 
     "display the correct column headers when there are schemes to display" in {
-      val actual = view(fullList)
+      val actual = view(
+        schemes = fullList,
+        numberOfSchemes = fullList.length,
+        pagination = pagination,
+        currentPage = 1,
+        pageNumberLinks = Seq(1, 2, 3, 4, 5, 6, 7)
+      )
 
       actual must haveElementWithText("schemeNameHeader", messages("messages__listSchemes__column_schemeName"))
       actual must haveElementWithText("srnHeader", messages("messages__listSchemes__column_srn"))
@@ -53,7 +79,15 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
 
     (0 to 7).foreach { index =>
       s"display the correct scheme name with links for row $index when there are schemes to display" in {
-        val actual = asDocument(view(fullList).apply())
+        val actual = asDocument(
+          view(
+            schemes = fullList,
+            numberOfSchemes = fullList.length,
+            pagination = pagination,
+            currentPage = 1,
+            pageNumberLinks = Seq(1, 2, 3, 4, 5, 6, 7)
+          ).apply()
+        )
 
         actual must haveLinkWithUrlAndContent(s"schemeName-$index",
           controllers.routes.SchemeDetailsController.onPageLoad(s"reference-number-$index").url, s"scheme-name-$index The scheme name is: scheme-name-$index")
@@ -61,7 +95,15 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
     }
 
     "display the full status value" in {
-      val actual = asDocument(view(fullList).apply())
+      val actual = asDocument(
+        view(
+          schemes = fullList,
+          numberOfSchemes = fullList.length,
+          pagination = pagination,
+          currentPage = 1,
+          pageNumberLinks = Seq(1, 2, 3, 4, 5, 6, 7)
+        ).apply()
+      )
 
       assertEqualsValue(actual, "#schemeStatus-4 span:nth-child(1)", "Open")
       assertEqualsValue(actual, "#schemeStatus-5 span:nth-child(1)", "De-registered")
@@ -75,7 +117,15 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
     }
 
     "show the SRN column with correct values" in {
-      val actual = asDocument(view(fullList).apply())
+      val actual = asDocument(
+        view(
+          schemes = fullList,
+          numberOfSchemes = fullList.length,
+          pagination = pagination,
+          currentPage = 1,
+          pageNumberLinks = Seq(1, 2, 3, 4, 5, 6, 7)
+        ).apply()
+      )
 
       assertEqualsValue(actual, "#srn-0 span:nth-child(1)", messages("reference-number-0"))
       assertEqualsValue(actual, "#srn-1 span:nth-child(1)", messages("reference-number-1"))
@@ -88,7 +138,15 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
     }
 
     "show the PSTR column with correct values" in {
-      val actual = asDocument(view(fullList).apply())
+      val actual = asDocument(
+        view(
+          schemes = fullList,
+          numberOfSchemes = fullList.length,
+          pagination = pagination,
+          currentPage = 1,
+          pageNumberLinks = Seq(1, 2, 3, 4, 5, 6, 7)
+        ).apply()
+      )
 
       assertEqualsValue(actual, "#pstr-0 span:nth-child(1)", messages("messages__listSchemes__pstr_not_assigned"))
       assertEqualsValue(actual, "#pstr-1 span:nth-child(1)", messages("messages__listSchemes__pstr_not_assigned"))
@@ -101,13 +159,20 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
     }
 
     "display a link to return to overview page" in {
-      view() must haveLink(controllers.routes.SchemesOverviewController.onPageLoad().url, "return-link")
+      view(
+        schemes = fullList,
+        numberOfSchemes = fullList.length,
+        pagination = pagination,
+        currentPage = 1,
+        pageNumberLinks = Seq(1, 2, 3, 4, 5, 6, 7)
+      ) must haveLink(controllers.routes.SchemesOverviewController.onPageLoad().url, "return-link")
     }
   }
 }
 
 object ListSchemesViewSpec extends ViewSpecBase {
   val emptyList: List[SchemeDetail] = List.empty[SchemeDetail]
+  val pagination: Int = 2
   private val listSchemesview = injector.instanceOf[list_schemes]
 
   val fullList: List[SchemeDetail] = List(
@@ -187,13 +252,34 @@ object ListSchemesViewSpec extends ViewSpecBase {
 
   val psaName = "Test psa name"
 
-  def view(schemes: List[SchemeDetail] = emptyList)
-          (implicit request: Request[_], messages: Messages): () => HtmlFormat.Appendable =
-    () => listSchemesview(schemes, psaName)
+  def view(schemes: List[SchemeDetail],
+           numberOfSchemes: Int,
+           pagination: Int,
+           currentPage: Int,
+           pageNumberLinks: Seq[Int] = Seq.empty)
+          (implicit request: Request[_], messages: Messages): () => HtmlFormat.Appendable = () =>
+    listSchemesview(
+      schemes = schemes,
+      psaName = psaName,
+      numberOfSchemes = numberOfSchemes,
+      pagination = pagination,
+      currentPage = currentPage,
+      pageNumberLinks = pageNumberLinks
+    )
 
-  def viewAsString(schemes: List[SchemeDetail] = emptyList)
+  def viewAsString(schemes: List[SchemeDetail],
+                   numberOfSchemes: Int,
+                   pagination: Int,
+                   currentPage: Int,
+                   pageNumberLinks: Seq[Int] = Seq.empty)
                   (implicit request: Request[_], messages: Messages): String = {
-    val v = view(schemes)
+    val v = view(
+      schemes = schemes,
+      numberOfSchemes = numberOfSchemes,
+      pagination = pagination,
+      currentPage = currentPage,
+      pageNumberLinks = pageNumberLinks
+    )
     v().toString()
   }
 

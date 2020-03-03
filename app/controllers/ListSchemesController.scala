@@ -18,15 +18,17 @@ package controllers
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
-import connectors.admin.MinimalPsaConnector
 import connectors.UserAnswersCacheConnector
+import connectors.admin.MinimalPsaConnector
 import connectors.scheme.ListOfSchemesConnector
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import controllers.actions.{AuthAction, DataRetrievalAction}
 import identifiers.PSANameId
-import models.SchemeDetail
+import models.requests.OptionalDataRequest
+import models.{Index, ListOfSchemes, SchemeDetail}
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import views.html.list_schemes
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -43,20 +45,61 @@ class ListSchemesController @Inject()(
                                        view: list_schemes
                                      )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
+  val pagination: Int = 5
+
+  def listOfSchemes(implicit hc: HeaderCarrier, request: OptionalDataRequest[AnyContent]): Future[ListOfSchemes] = {
+    listSchemesConnector.getListOfSchemes(request.psaId.id)
+  }
+
+  def schemeDetails(listOfSchemes: ListOfSchemes): List[SchemeDetail] = {
+    listOfSchemes.schemeDetail.getOrElse(List.empty[SchemeDetail])
+  }
+
+  def renderView(schemeDetails: List[SchemeDetail], numberOfSchemes: Int, currentPage: Int)
+                (implicit hc: HeaderCarrier, request: OptionalDataRequest[AnyContent]): Future[Result] = {
+    minimalPsaConnector.getPsaNameFromPsaID(request.psaId.id).flatMap(_.map {
+      name =>
+        userAnswersCacheConnector.save(request.externalId, PSANameId, name).map {
+          _ =>
+            Ok(view(
+              schemes = schemeDetails,
+              psaName = name,
+              numberOfSchemes = numberOfSchemes,
+              pagination = pagination,
+              currentPage = currentPage,
+              pageNumberLinks = Seq.range(0, numberOfSchemes / pagination)
+            ))
+        }
+    }.getOrElse {
+      Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+    })
+  }
+
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
-      listSchemesConnector.getListOfSchemes(request.psaId.id).flatMap {
+      listOfSchemes.flatMap {
         listOfSchemes =>
-          val schemes = listOfSchemes.schemeDetail.getOrElse(List.empty[SchemeDetail])
+          renderView(
+            schemeDetails = schemeDetails(listOfSchemes).take(pagination),
+            numberOfSchemes = schemeDetails(listOfSchemes).length,
+            currentPage = 1
+          )
+      }
+  }
 
-              minimalPsaConnector.getPsaNameFromPsaID(request.psaId.id).flatMap(_.map { name =>
-                 userAnswersCacheConnector.save(request.externalId, PSANameId, name).map { _ =>
-                  Ok(view(schemes, name))
-                }}.getOrElse {
-                Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
-              }
-              )
-
+  def onPageLoadWithPageNumber(pageNumber: Index): Action[AnyContent] = (authenticate andThen getData).async {
+    implicit request =>
+      listOfSchemes.flatMap {
+        listOfSchemes =>
+          if (pageNumber <= schemeDetails(listOfSchemes).length / pagination) {
+            renderView(
+              schemeDetails = schemeDetails(listOfSchemes).slice((pageNumber * pagination) - pagination, pageNumber * pagination),
+              numberOfSchemes = schemeDetails(listOfSchemes).length,
+              currentPage = pageNumber
+            )
+          } else {
+            Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+          }
       }
   }
 }
