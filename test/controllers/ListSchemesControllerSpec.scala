@@ -16,6 +16,7 @@
 
 package controllers
 
+import config.FrontendAppConfig
 import connectors.admin.MinimalPsaConnector
 import connectors.FakeUserAnswersCacheConnector
 import connectors.scheme.ListOfSchemesConnector
@@ -41,6 +42,8 @@ class ListSchemesControllerSpec extends ControllerSpecBase {
     when(mockMinimalPsaConnector.getPsaNameFromPsaID(any())(any(), any())).thenReturn(Future.successful(Some(psaName)))
 
     "return OK and the correct view when there are no schemes" in {
+      when(mockAppConfig.listSchemePagination) thenReturn 5
+
       val fixture = testFixture(psaIdNoSchemes)
 
       val result = fixture.controller.onPageLoad(fakeRequest)
@@ -50,13 +53,15 @@ class ListSchemesControllerSpec extends ControllerSpecBase {
       contentAsString(result) mustBe viewAsString(
         schemes = emptySchemes,
         numberOfSchemes = emptySchemes.length,
-        pagination = 1,
+        pagination = 5,
         currentPage = 1,
         pageNumberLinks = Seq.empty
       )
     }
 
     "return OK and the correct view when there are schemes without pagination" in {
+      when(mockAppConfig.listSchemePagination) thenReturn 5
+
       val fixture = testFixture(psaIdWithSchemes)
 
       val result = fixture.controller.onPageLoad(fakeRequest)
@@ -68,6 +73,46 @@ class ListSchemesControllerSpec extends ControllerSpecBase {
         numberOfSchemes = fullSchemes.length,
         pagination = 5,
         currentPage = 1,
+        pageNumberLinks = Seq(1, 2)
+      )
+    }
+
+    "return OK and the correct view when there are schemes with pagination" in {
+      when(mockAppConfig.listSchemePagination) thenReturn 1
+
+      val fixture = testFixture(psaIdWithSchemes)
+
+      val result = fixture.controller.onPageLoad(fakeRequest)
+
+      status(result) mustBe OK
+
+      contentAsString(result) mustBe viewAsString(
+        schemes = fullSchemes.take(1),
+        numberOfSchemes = fullSchemes.length,
+        pagination = 1,
+        currentPage = 1,
+        pageNumberLinks = Seq(1, 2)
+      )
+    }
+
+    "return OK and the correct view when using page number" in {
+      when(mockAppConfig.listSchemePagination) thenReturn 1
+
+      val pageNumber: Int = 2
+
+      val pagination: Int = 1
+
+      val fixture: TestFixture = testFixture(psaIdWithSchemes)
+
+      val result = fixture.controller.onPageLoadWithPageNumber(pageNumber = pageNumber)(fakeRequest)
+
+      status(result) mustBe OK
+
+      contentAsString(result) mustBe viewAsString(
+        schemes = fullSchemes.slice((pageNumber * pagination) - pagination, pageNumber * pagination),
+        numberOfSchemes = fullSchemes.length,
+        pagination = pagination,
+        currentPage = pageNumber,
         pageNumberLinks = Seq(1, 2)
       )
     }
@@ -138,7 +183,7 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
 
     override val controller: ListSchemesController =
       new ListSchemesController(
-        frontendAppConfig,
+        mockAppConfig,
         messagesApi,
         authAction(psaId),
         getDataWithPsaName(psaId),
@@ -167,4 +212,5 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
     )(fakeRequest, messages).toString()
 
   val mockMinimalPsaConnector: MinimalPsaConnector = mock[MinimalPsaConnector]
+  val mockAppConfig: FrontendAppConfig = mock[FrontendAppConfig]
 }

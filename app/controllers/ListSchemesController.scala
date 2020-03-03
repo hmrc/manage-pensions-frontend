@@ -45,7 +45,7 @@ class ListSchemesController @Inject()(
                                        view: list_schemes
                                      )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
-  val pagination: Int = 5
+  val pagination: Int = appConfig.listSchemePagination
 
   def listOfSchemes(implicit hc: HeaderCarrier, request: OptionalDataRequest[AnyContent]): Future[ListOfSchemes] = {
     listSchemesConnector.getListOfSchemes(request.psaId.id)
