@@ -23,18 +23,16 @@ import connectors.{InvitationConnector, InvitationsCacheConnector, UserAnswersCa
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.invitations.DeclarationFormProvider
-import identifiers.SchemeSrnId
-import identifiers.SchemeTypeId
-import identifiers.{SchemeNameId => GetSchemeNameId}
 import identifiers.invitations._
+import identifiers.{SchemeSrnId, SchemeTypeId, SchemeNameId => GetSchemeNameId}
 import models.SchemeType.MasterTrust
 import models._
 import models.requests.DataRequest
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
-import utils.{Navigator, Toggles}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
+import utils.Navigator
 import utils.annotations.AcceptInvitation
 import views.html.invitations.declaration
 
