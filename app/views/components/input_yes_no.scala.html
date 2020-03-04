@@ -26,9 +26,14 @@
         headingIsLegend: Boolean = false
 )(implicit messages: Messages)
 
+@ariaDescribedBy = @{
+val errorId = if (field.hasErrors) Seq(s"error-message-${field.id}-input") else Seq.empty
+val hintId = if (hint.nonEmpty) Seq(s"${field.id}-yesno-hint") else Seq.empty
+(hintId ++ errorId).mkString(" ")
+}
 
 <div class="form-group @if(field.hasErrors){form-field--error}">
-    <fieldset class="@fieldsetClass" id="@{field.id}" @if(field.hasErrors){aria-describedby="error-message-@{field.id}-input"}>
+    <fieldset class="@fieldsetClass" id="@{field.id}" @if(field.hasErrors || hint.nonEmpty){aria-describedby="@ariaDescribedBy"}>
 
         <legend>
             @if(headingIsLegend){
@@ -42,7 +47,7 @@
             }
         </legend>
         @if(hint.nonEmpty){
-        <span class="form-hint">@hint</span>
+        <span id="@{field.id}-yesno-hint" class="form-hint">@hint</span>
         }
         @field.errors.map { error =>
         <span class="error-notification" id="error-message-@{field.id}-input">

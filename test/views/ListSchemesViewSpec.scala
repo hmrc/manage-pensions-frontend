@@ -247,14 +247,14 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
       ) must haveLink(controllers.routes.SchemesOverviewController.onPageLoad().url, "return-link")
     }
 
-    "show pagination links when number of schemes is greater than pagination" in {
+    "show correct pagination links when number of schemes is greater than pagination at start of range" in {
       val actual = asDocument(
         view(
           schemes = fullList,
           numberOfSchemes = fullList.length,
           pagination = 1,
           currentPage = 1,
-          pageNumberLinks = Seq.range(0, fullList.length)
+          pageNumberLinks = Seq.range(1, 6)
         ).apply()
       )
 
@@ -264,10 +264,58 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
       assertLink(actual, "pageNumber-3", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(3).url)
       assertLink(actual, "pageNumber-4", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(4).url)
       assertLink(actual, "pageNumber-5", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(5).url)
+      assertNotRenderedByCssSelector(actual, "#pageNumber-6")
+      assertLink(actual, "next", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(2).url)
+      assertEqualsValue(actual, "#next", messages("messages__schemesOverview__pagination__next"))
+
+    }
+
+    "show correct pagination links when number of schemes is greater than pagination at middle of range" in {
+      val pagination: Int = 1
+      val currentPage: Int = 4
+
+      val actual = asDocument(
+        view(
+          schemes = fullList,
+          numberOfSchemes = fullList.length,
+          pagination = pagination,
+          currentPage = currentPage,
+          pageNumberLinks = Seq.range(currentPage - 2, currentPage + 3)
+        ).apply()
+      )
+
+      assertEqualsValue(actual, "#prev", messages("messages__schemesOverview__pagination__prev"))
+      assertLink(actual, "prev", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(3).url)
+      assertLink(actual, "pageNumber-2", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(2).url)
+      assertLink(actual, "pageNumber-3", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(3).url)
+      assertEqualsValue(actual, "#pageNumber-4", "4")
+      assertLink(actual, "pageNumber-5", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(5).url)
+      assertLink(actual, "pageNumber-6", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(6).url)
+      assertLink(actual, "next", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(5).url)
+      assertEqualsValue(actual, "#next", messages("messages__schemesOverview__pagination__next"))
+    }
+
+    "show correct pagination links when number of schemes is greater than pagination at end of range" in {
+      val pagination: Int = 1
+
+      val actual = asDocument(
+        view(
+          schemes = fullList,
+          numberOfSchemes = fullList.length,
+          pagination = pagination,
+          currentPage = 8,
+          pageNumberLinks = Seq.range((fullList.length / pagination) - 4, (fullList.length / pagination) + 1)
+        ).apply()
+      )
+
+      assertEqualsValue(actual, "#prev", messages("messages__schemesOverview__pagination__prev"))
+      assertLink(actual, "prev", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(7).url)
+      assertLink(actual, "pageNumber-4", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(4).url)
+      assertLink(actual, "pageNumber-5", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(5).url)
       assertLink(actual, "pageNumber-6", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(6).url)
       assertLink(actual, "pageNumber-7", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(7).url)
-      assertLink(actual, "pageNumber-8", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(8).url)
-      assertLink(actual, "next", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(2).url)
+      assertEqualsValue(actual, "#pageNumber-8", "8")
+      assertEqualsValue(actual, "#next", messages("messages__schemesOverview__pagination__next"))
     }
 
     "not show pagination links when number of schemes is less than pagination" in {

@@ -29,7 +29,7 @@
     numberOfSchemes: Int,
     pagination: Int,
     currentPage: Int,
-    pageNumberLinks: Seq[Int] = Seq.empty
+    pageNumberLinks: Seq[Int]
 )(implicit
     request: Request[_],
     messages: Messages
@@ -73,7 +73,7 @@
         <div class="column-two-thirds">
             @components.heading(headingKey = messages("messages__listSchemes__title"))
 
-            <p class="panel panel-border-wide">@Html(messages("messages__schemesOverview__manage__redirect__text", manageRedirectLink))</p>
+            <p>@Html(messages("messages__schemesOverview__manage__redirect__text", manageRedirectLink))</p>
         </div>
     </div>
 
@@ -106,7 +106,7 @@
 
                     @for((int, i) <- pageNumberLinks.zipWithIndex) {
                         @pageNumberLink(
-                            linkNumber = i + 1,
+                            linkNumber = pageNumberLinks(i),
                             currentPage = currentPage
                         )
                     }

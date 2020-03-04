@@ -55,8 +55,18 @@ class ListSchemesController @Inject()(
     listOfSchemes.schemeDetail.getOrElse(List.empty[SchemeDetail])
   }
 
+  def pageNumberLinks(currentPage: Int, numberOfSchemes: Int): Seq[Int] = {
+    if (currentPage < 4)
+      Seq.range(1, 6)
+    else if (currentPage >= 4 && currentPage <= (numberOfSchemes / pagination) - 3)
+      Seq.range(currentPage - 2, currentPage + 3)
+    else
+      Seq.range((numberOfSchemes / pagination) - 4, (numberOfSchemes / pagination) + 1)
+  }
+
   def renderView(schemeDetails: List[SchemeDetail], numberOfSchemes: Int, currentPage: Int)
                 (implicit hc: HeaderCarrier, request: OptionalDataRequest[AnyContent]): Future[Result] = {
+
     minimalPsaConnector.getPsaNameFromPsaID(request.psaId.id).flatMap(_.map {
       name =>
         userAnswersCacheConnector.save(request.externalId, PSANameId, name).map {
@@ -67,7 +77,7 @@ class ListSchemesController @Inject()(
               numberOfSchemes = numberOfSchemes,
               pagination = pagination,
               currentPage = currentPage,
-              pageNumberLinks = Seq.range(0, numberOfSchemes / pagination)
+              pageNumberLinks = pageNumberLinks(currentPage, numberOfSchemes)
             ))
         }
     }.getOrElse {
