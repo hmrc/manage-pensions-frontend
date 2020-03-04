@@ -25,11 +25,11 @@ import views.html.list_schemes
 
 class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
 
-  val emptyList: List[SchemeDetail] = List.empty[SchemeDetail]
-  val pagination: Int = 10
-  private val listSchemesview = injector.instanceOf[list_schemes]
+  private val emptyList: List[SchemeDetail] = List.empty[SchemeDetail]
+  private val pagination: Int = 10
+  private val listSchemesView = injector.instanceOf[list_schemes]
 
-  val fullList: List[SchemeDetail] = List(
+  private val fullList: List[SchemeDetail] = List(
     SchemeDetail(
       "scheme-name-0",
       "reference-number-0",
@@ -104,9 +104,9 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
     )
   )
 
-  val psaName = "Test psa name"
+  private val psaName = "Test psa name"
 
-  implicit val request: Request[_] = fakeRequest
+  implicit private val request: Request[_] = fakeRequest
 
   "list-schemes view" must {
 
@@ -257,7 +257,7 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
           pageNumberLinks = Seq.range(0, fullList.length)
         ).apply()
       )
-      
+
       assertEqualsValue(actual, "#prev", messages("messages__schemesOverview__pagination__prev"))
       assertEqualsValue(actual, "#pageNumber-1", "1")
       assertLink(actual, "pageNumber-2", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(2).url)
@@ -286,13 +286,13 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
     }
   }
 
-  def view(schemes: List[SchemeDetail],
+  private def view(schemes: List[SchemeDetail],
            numberOfSchemes: Int,
            pagination: Int,
            currentPage: Int,
            pageNumberLinks: Seq[Int] = Seq.empty)
           (implicit request: Request[_], messages: Messages): () => HtmlFormat.Appendable = () =>
-    listSchemesview(
+    listSchemesView(
       schemes = schemes,
       psaName = psaName,
       numberOfSchemes = numberOfSchemes,
@@ -301,7 +301,7 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
       pageNumberLinks = pageNumberLinks
     )
 
-  def viewAsString(schemes: List[SchemeDetail],
+  private def viewAsString(schemes: List[SchemeDetail],
                    numberOfSchemes: Int,
                    pagination: Int,
                    currentPage: Int,
@@ -316,6 +316,4 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
     )
     v().toString()
   }
-
-
 }

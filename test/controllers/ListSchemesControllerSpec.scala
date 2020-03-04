@@ -32,10 +32,95 @@ import views.html.list_schemes
 
 import scala.concurrent.{ExecutionContext, Future}
 
+class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
+  private val psaIdNoSchemes: String = "A0000001"
+  private val psaIdWithSchemes: String = "A0000002"
+  private val psaName: String = "Test Psa Name"
+  private val emptySchemes: List[SchemeDetail] = List.empty[SchemeDetail]
+  private val mockMinimalPsaConnector: MinimalPsaConnector = mock[MinimalPsaConnector]
+  private val mockAppConfig: FrontendAppConfig = mock[FrontendAppConfig]
 
-class ListSchemesControllerSpec extends ControllerSpecBase {
+  private val fullSchemes: List[SchemeDetail] =
+    List(
+      SchemeDetail(
+        name = "scheme-0",
+        referenceNumber = "srn-0",
+        schemeStatus = SchemeStatus.Open.value,
+        openDate = None,
+        pstr = Some("pstr-0"),
+        relationShip = None,
+        underAppeal = None
+      ),
+      SchemeDetail(
+        name = "scheme-1",
+        referenceNumber = "srn-1",
+        schemeStatus = SchemeStatus.Deregistered.value,
+        openDate = None,
+        pstr = Some("pstr-1"),
+        relationShip = None,
+        underAppeal = None
+      )
+    )
 
-  import ListSchemesControllerSpec._
+  private def testFixture(psaId: String): TestFixture = new TestFixture with MockitoSugar {
+
+    private def authAction(psaId: String): AuthAction = FakeAuthAction.createWithPsaId(psaId)
+
+    private def listSchemesConnector(): ListOfSchemesConnector = new ListOfSchemesConnector {
+
+      override def getListOfSchemes(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[ListOfSchemes] = {
+        psaId match {
+          case `psaIdNoSchemes` =>
+            Future.successful(
+              ListOfSchemes(
+                "test-processing-date",
+                "test-total-schemes-registered",
+                None
+              )
+            )
+          case `psaIdWithSchemes` =>
+            Future.successful(
+              ListOfSchemes(
+                "test-processing-date",
+                "test-total-schemes-registered",
+                Some(fullSchemes)
+              )
+            )
+          case _ =>
+            Future.failed(new Exception(s"No stubbed response in ListOfSchemesConnector for PSA Id $psaId"))
+        }
+      }
+    }
+
+    override val controller: ListSchemesController =
+      new ListSchemesController(
+        mockAppConfig,
+        messagesApi,
+        authAction(psaId),
+        getDataWithPsaName(psaId),
+        listSchemesConnector(),
+        mockMinimalPsaConnector,
+        FakeUserAnswersCacheConnector,
+        stubMessagesControllerComponents(),
+        view
+      )
+  }
+
+  private val view: list_schemes = app.injector.instanceOf[list_schemes]
+
+  private def viewAsString(schemes: List[SchemeDetail],
+                   numberOfSchemes: Int,
+                   pagination: Int,
+                   currentPage: Int,
+                   pageNumberLinks: Seq[Int]): String =
+    view(
+      schemes = schemes,
+      psaName = psaName,
+      numberOfSchemes = numberOfSchemes,
+      pagination = pagination,
+      currentPage = currentPage,
+      pageNumberLinks = pageNumberLinks
+    )(fakeRequest, messages).toString()
 
   "ListSchemesController" when {
 
@@ -127,96 +212,4 @@ class ListSchemesControllerSpec extends ControllerSpecBase {
 
 trait TestFixture {
   def controller: ListSchemesController
-}
-
-object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
-  val psaIdNoSchemes: String = "A0000001"
-  val psaIdWithSchemes: String = "A0000002"
-  val psaName: String = "Test Psa Name"
-  val emptySchemes: List[SchemeDetail] = List.empty[SchemeDetail]
-
-  val fullSchemes: List[SchemeDetail] =
-    List(
-      SchemeDetail(
-        name = "scheme-0",
-        referenceNumber = "srn-0",
-        schemeStatus = SchemeStatus.Open.value,
-        openDate = None,
-        pstr = Some("pstr-0"),
-        relationShip = None,
-        underAppeal = None
-      ),
-      SchemeDetail(
-        name = "scheme-1",
-        referenceNumber = "srn-1",
-        schemeStatus = SchemeStatus.Deregistered.value,
-        openDate = None,
-        pstr = Some("pstr-1"),
-        relationShip = None,
-        underAppeal = None
-      )
-    )
-
-  def testFixture(psaId: String): TestFixture = new TestFixture with MockitoSugar {
-
-    private def authAction(psaId: String): AuthAction = FakeAuthAction.createWithPsaId(psaId)
-
-    private def listSchemesConnector(): ListOfSchemesConnector = new ListOfSchemesConnector {
-
-      override def getListOfSchemes(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[ListOfSchemes] = {
-        psaId match {
-          case `psaIdNoSchemes` =>
-            Future.successful(
-              ListOfSchemes(
-                "test-processing-date",
-                "test-total-schemes-registered",
-                None
-              )
-            )
-          case `psaIdWithSchemes` =>
-            Future.successful(
-              ListOfSchemes(
-                "test-processing-date",
-                "test-total-schemes-registered",
-                Some(fullSchemes)
-              )
-            )
-          case _ =>
-            Future.failed(new Exception(s"No stubbed response in ListOfSchemesConnector for PSA Id $psaId"))
-        }
-      }
-    }
-
-    override val controller: ListSchemesController =
-      new ListSchemesController(
-        mockAppConfig,
-        messagesApi,
-        authAction(psaId),
-        getDataWithPsaName(psaId),
-        listSchemesConnector(),
-        mockMinimalPsaConnector,
-        FakeUserAnswersCacheConnector,
-        stubMessagesControllerComponents(),
-        view
-      )
-  }
-
-  val view: list_schemes = app.injector.instanceOf[list_schemes]
-
-  def viewAsString(schemes: List[SchemeDetail],
-                   numberOfSchemes: Int,
-                   pagination: Int,
-                   currentPage: Int,
-                   pageNumberLinks: Seq[Int]): String =
-    view(
-      schemes = schemes,
-      psaName = psaName,
-      numberOfSchemes = numberOfSchemes,
-      pagination = pagination,
-      currentPage = currentPage,
-      pageNumberLinks = pageNumberLinks
-    )(fakeRequest, messages).toString()
-
-  val mockMinimalPsaConnector: MinimalPsaConnector = mock[MinimalPsaConnector]
-  val mockAppConfig: FrontendAppConfig = mock[FrontendAppConfig]
 }
