@@ -300,20 +300,4 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
       currentPage = currentPage,
       pageNumberLinks = pageNumberLinks
     )
-
-  private def viewAsString(schemes: List[SchemeDetail],
-                   numberOfSchemes: Int,
-                   pagination: Int,
-                   currentPage: Int,
-                   pageNumberLinks: Seq[Int] = Seq.empty)
-                  (implicit request: Request[_], messages: Messages): String = {
-    val v = view(
-      schemes = schemes,
-      numberOfSchemes = numberOfSchemes,
-      pagination = pagination,
-      currentPage = currentPage,
-      pageNumberLinks = pageNumberLinks
-    )
-    v().toString()
-  }
 }
