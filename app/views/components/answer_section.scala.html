@@ -23,8 +23,8 @@
     <h2 id="cya-@idPath-heading" class="bold">@messages(answerSection.headingKey.get)</h2>
 }
 
-<ul class="govuk-check-your-answers form-group cya-questions-long">
+<dl class="govuk-check-your-answers form-group cya-questions-long">
     @for((row, i) <- answerSection.rows.zipWithIndex){
         @components.answer_row(row, idPath + "-" + i.toString)
     }
-</ul>
+</dl>
