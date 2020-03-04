@@ -42,7 +42,9 @@ class ListSchemesControllerSpec extends ControllerSpecBase {
     when(mockMinimalPsaConnector.getPsaNameFromPsaID(any())(any(), any())).thenReturn(Future.successful(Some(psaName)))
 
     "return OK and the correct view when there are no schemes" in {
-      when(mockAppConfig.listSchemePagination) thenReturn 5
+      val pagination: Int = 5
+
+      when(mockAppConfig.listSchemePagination) thenReturn pagination
 
       val fixture = testFixture(psaIdNoSchemes)
 
@@ -53,14 +55,16 @@ class ListSchemesControllerSpec extends ControllerSpecBase {
       contentAsString(result) mustBe viewAsString(
         schemes = emptySchemes,
         numberOfSchemes = emptySchemes.length,
-        pagination = 5,
+        pagination = pagination,
         currentPage = 1,
         pageNumberLinks = Seq.empty
       )
     }
 
     "return OK and the correct view when there are schemes without pagination" in {
-      when(mockAppConfig.listSchemePagination) thenReturn 5
+      val pagination: Int = 5
+
+      when(mockAppConfig.listSchemePagination) thenReturn pagination
 
       val fixture = testFixture(psaIdWithSchemes)
 
@@ -71,14 +75,16 @@ class ListSchemesControllerSpec extends ControllerSpecBase {
       contentAsString(result) mustBe viewAsString(
         schemes = fullSchemes,
         numberOfSchemes = fullSchemes.length,
-        pagination = 5,
+        pagination = pagination,
         currentPage = 1,
         pageNumberLinks = Seq(1, 2)
       )
     }
 
     "return OK and the correct view when there are schemes with pagination" in {
-      when(mockAppConfig.listSchemePagination) thenReturn 1
+      val pagination: Int = 1
+
+      when(mockAppConfig.listSchemePagination) thenReturn pagination
 
       val fixture = testFixture(psaIdWithSchemes)
 
@@ -87,20 +93,20 @@ class ListSchemesControllerSpec extends ControllerSpecBase {
       status(result) mustBe OK
 
       contentAsString(result) mustBe viewAsString(
-        schemes = fullSchemes.take(1),
+        schemes = fullSchemes.take(pagination),
         numberOfSchemes = fullSchemes.length,
-        pagination = 1,
+        pagination = pagination,
         currentPage = 1,
         pageNumberLinks = Seq(1, 2)
       )
     }
 
     "return OK and the correct view when using page number" in {
-      when(mockAppConfig.listSchemePagination) thenReturn 1
-
       val pageNumber: Int = 2
 
       val pagination: Int = 1
+
+      when(mockAppConfig.listSchemePagination) thenReturn pagination
 
       val fixture: TestFixture = testFixture(psaIdWithSchemes)
 

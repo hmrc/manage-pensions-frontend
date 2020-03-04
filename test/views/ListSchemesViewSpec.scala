@@ -25,154 +25,8 @@ import views.html.list_schemes
 
 class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
 
-  import ListSchemesViewSpec._
-
-  implicit val request: Request[_] = fakeRequest
-
-  "list-schemes view" must {
-
-    behave like normalPage(
-      view = view(
-        schemes = emptyList,
-        numberOfSchemes = emptyList.length,
-        pagination = pagination,
-        currentPage = 1,
-        pageNumberLinks = Seq.empty
-      ),
-      messageKeyPrefix = "listSchemes",
-      pageHeader = messages("messages__listSchemes__title")
-    )
-
-    "have link to redirect to Pension Schemes Online service" in {
-      view(schemes = emptyList,
-        numberOfSchemes = emptyList.length,
-        pagination = pagination,
-        currentPage = 1,
-        pageNumberLinks = Seq.empty
-      ) must haveLink(frontendAppConfig.pensionSchemeOnlineServiceUrl, "manage-link")
-    }
-
-    "display a suitable message when there are no schemes to display" in {
-      view(
-        schemes = emptyList,
-        numberOfSchemes = emptyList.length,
-        pagination = pagination,
-        currentPage = 1,
-        pageNumberLinks = Seq.empty
-      ) must haveElementWithText("noSchemes", messages("messages__listSchemes__noSchemes"))
-    }
-
-    "display the correct column headers when there are schemes to display" in {
-      val actual = view(
-        schemes = fullList,
-        numberOfSchemes = fullList.length,
-        pagination = pagination,
-        currentPage = 1,
-        pageNumberLinks = Seq(1, 2, 3, 4, 5, 6, 7)
-      )
-
-      actual must haveElementWithText("schemeNameHeader", messages("messages__listSchemes__column_schemeName"))
-      actual must haveElementWithText("srnHeader", messages("messages__listSchemes__column_srn"))
-      actual must haveElementWithText("pstrHeader", messages("messages__listSchemes__column_pstr"))
-      actual must haveElementWithText("statusHeader", messages("messages__listSchemes__column_status"))
-    }
-
-    (0 to 7).foreach { index =>
-      s"display the correct scheme name with links for row $index when there are schemes to display" in {
-        val actual = asDocument(
-          view(
-            schemes = fullList,
-            numberOfSchemes = fullList.length,
-            pagination = pagination,
-            currentPage = 1,
-            pageNumberLinks = Seq(1, 2, 3, 4, 5, 6, 7)
-          ).apply()
-        )
-
-        actual must haveLinkWithUrlAndContent(s"schemeName-$index",
-          controllers.routes.SchemeDetailsController.onPageLoad(s"reference-number-$index").url, s"scheme-name-$index The scheme name is: scheme-name-$index")
-      }
-    }
-
-    "display the full status value" in {
-      val actual = asDocument(
-        view(
-          schemes = fullList,
-          numberOfSchemes = fullList.length,
-          pagination = pagination,
-          currentPage = 1,
-          pageNumberLinks = Seq(1, 2, 3, 4, 5, 6, 7)
-        ).apply()
-      )
-
-      assertEqualsValue(actual, "#schemeStatus-4 span:nth-child(1)", "Open")
-      assertEqualsValue(actual, "#schemeStatus-5 span:nth-child(1)", "De-registered")
-      assertEqualsValue(actual, "#schemeStatus-6 span:nth-child(1)", "Wound-up")
-
-      assertEqualsValue(actual, "#schemeStatus-0 span:nth-child(1)", "Pending")
-      assertEqualsValue(actual, "#schemeStatus-1 span:nth-child(1)", "Pending information required")
-      assertEqualsValue(actual, "#schemeStatus-2 span:nth-child(1)", "Pending information received")
-      assertEqualsValue(actual, "#schemeStatus-3 span:nth-child(1)", "Rejected")
-      assertEqualsValue(actual, "#schemeStatus-7 span:nth-child(1)", "Rejected under appeal")
-    }
-
-    "show the SRN column with correct values" in {
-      val actual = asDocument(
-        view(
-          schemes = fullList,
-          numberOfSchemes = fullList.length,
-          pagination = pagination,
-          currentPage = 1,
-          pageNumberLinks = Seq(1, 2, 3, 4, 5, 6, 7)
-        ).apply()
-      )
-
-      assertEqualsValue(actual, "#srn-0 span:nth-child(1)", messages("reference-number-0"))
-      assertEqualsValue(actual, "#srn-1 span:nth-child(1)", messages("reference-number-1"))
-      assertEqualsValue(actual, "#srn-2 span:nth-child(1)", messages("reference-number-2"))
-      assertEqualsValue(actual, "#srn-3 span:nth-child(1)", messages("reference-number-3"))
-      assertEqualsValue(actual, "#srn-4 span:nth-child(1)", messages("reference-number-4"))
-      assertEqualsValue(actual, "#srn-5 span:nth-child(1)", messages("reference-number-5"))
-      assertEqualsValue(actual, "#srn-6 span:nth-child(1)", messages("reference-number-6"))
-      assertEqualsValue(actual, "#srn-7 span:nth-child(1)", messages("reference-number-7"))
-    }
-
-    "show the PSTR column with correct values" in {
-      val actual = asDocument(
-        view(
-          schemes = fullList,
-          numberOfSchemes = fullList.length,
-          pagination = pagination,
-          currentPage = 1,
-          pageNumberLinks = Seq(1, 2, 3, 4, 5, 6, 7)
-        ).apply()
-      )
-
-      assertEqualsValue(actual, "#pstr-0 span:nth-child(1)", messages("messages__listSchemes__pstr_not_assigned"))
-      assertEqualsValue(actual, "#pstr-1 span:nth-child(1)", messages("messages__listSchemes__pstr_not_assigned"))
-      assertEqualsValue(actual, "#pstr-2 span:nth-child(1)", messages("messages__listSchemes__pstr_not_assigned"))
-      assertEqualsValue(actual, "#pstr-3 span:nth-child(1)", messages("messages__listSchemes__pstr_not_assigned"))
-      assertEqualsValue(actual, "#pstr-4 span:nth-child(1)", messages("PSTR-4"))
-      assertEqualsValue(actual, "#pstr-5 span:nth-child(1)", messages("PSTR-5"))
-      assertEqualsValue(actual, "#pstr-6 span:nth-child(1)", messages("PSTR-6"))
-      assertEqualsValue(actual, "#pstr-7 span:nth-child(1)", messages("messages__listSchemes__pstr_not_assigned"))
-    }
-
-    "display a link to return to overview page" in {
-      view(
-        schemes = fullList,
-        numberOfSchemes = fullList.length,
-        pagination = pagination,
-        currentPage = 1,
-        pageNumberLinks = Seq(1, 2, 3, 4, 5, 6, 7)
-      ) must haveLink(controllers.routes.SchemesOverviewController.onPageLoad().url, "return-link")
-    }
-  }
-}
-
-object ListSchemesViewSpec extends ViewSpecBase {
   val emptyList: List[SchemeDetail] = List.empty[SchemeDetail]
-  val pagination: Int = 2
+  val pagination: Int = 10
   private val listSchemesview = injector.instanceOf[list_schemes]
 
   val fullList: List[SchemeDetail] = List(
@@ -251,6 +105,186 @@ object ListSchemesViewSpec extends ViewSpecBase {
   )
 
   val psaName = "Test psa name"
+
+  implicit val request: Request[_] = fakeRequest
+
+  "list-schemes view" must {
+
+    behave like normalPage(
+      view = view(
+        schemes = emptyList,
+        numberOfSchemes = emptyList.length,
+        pagination = pagination,
+        currentPage = 1,
+        pageNumberLinks = Seq.empty
+      ),
+      messageKeyPrefix = "listSchemes",
+      pageHeader = messages("messages__listSchemes__title")
+    )
+
+    "have link to redirect to Pension Schemes Online service" in {
+      view(schemes = emptyList,
+        numberOfSchemes = emptyList.length,
+        pagination = pagination,
+        currentPage = 1,
+        pageNumberLinks = Seq.empty
+      ) must haveLink(frontendAppConfig.pensionSchemeOnlineServiceUrl, "manage-link")
+    }
+
+    "display a suitable message when there are no schemes to display" in {
+      view(
+        schemes = emptyList,
+        numberOfSchemes = emptyList.length,
+        pagination = pagination,
+        currentPage = 1,
+        pageNumberLinks = Seq.empty
+      ) must haveElementWithText("noSchemes", messages("messages__listSchemes__noSchemes"))
+    }
+
+    "display the correct column headers when there are schemes to display" in {
+      val actual = view(
+        schemes = fullList,
+        numberOfSchemes = fullList.length,
+        pagination = pagination,
+        currentPage = 1,
+        pageNumberLinks = Seq.range(0, fullList.length)
+      )
+
+      actual must haveElementWithText("schemeNameHeader", messages("messages__listSchemes__column_schemeName"))
+      actual must haveElementWithText("srnHeader", messages("messages__listSchemes__column_srn"))
+      actual must haveElementWithText("pstrHeader", messages("messages__listSchemes__column_pstr"))
+      actual must haveElementWithText("statusHeader", messages("messages__listSchemes__column_status"))
+    }
+
+    (0 to 7).foreach { index =>
+      s"display the correct scheme name with links for row $index when there are schemes to display" in {
+        val actual = asDocument(
+          view(
+            schemes = fullList,
+            numberOfSchemes = fullList.length,
+            pagination = pagination,
+            currentPage = 1,
+            pageNumberLinks = Seq.range(0, fullList.length)
+          ).apply()
+        )
+
+        actual must haveLinkWithUrlAndContent(s"schemeName-$index",
+          controllers.routes.SchemeDetailsController.onPageLoad(s"reference-number-$index").url, s"scheme-name-$index The scheme name is: scheme-name-$index")
+      }
+    }
+
+    "display the full status value" in {
+      val actual = asDocument(
+        view(
+          schemes = fullList,
+          numberOfSchemes = fullList.length,
+          pagination = pagination,
+          currentPage = 1,
+          pageNumberLinks = Seq.range(0, fullList.length)
+        ).apply()
+      )
+
+      assertEqualsValue(actual, "#schemeStatus-4 span:nth-child(1)", "Open")
+      assertEqualsValue(actual, "#schemeStatus-5 span:nth-child(1)", "De-registered")
+      assertEqualsValue(actual, "#schemeStatus-6 span:nth-child(1)", "Wound-up")
+
+      assertEqualsValue(actual, "#schemeStatus-0 span:nth-child(1)", "Pending")
+      assertEqualsValue(actual, "#schemeStatus-1 span:nth-child(1)", "Pending information required")
+      assertEqualsValue(actual, "#schemeStatus-2 span:nth-child(1)", "Pending information received")
+      assertEqualsValue(actual, "#schemeStatus-3 span:nth-child(1)", "Rejected")
+      assertEqualsValue(actual, "#schemeStatus-7 span:nth-child(1)", "Rejected under appeal")
+    }
+
+    "show the SRN column with correct values" in {
+      val actual = asDocument(
+        view(
+          schemes = fullList,
+          numberOfSchemes = fullList.length,
+          pagination = pagination,
+          currentPage = 1,
+          pageNumberLinks = Seq.range(0, fullList.length)
+        ).apply()
+      )
+
+      assertEqualsValue(actual, "#srn-0 span:nth-child(1)", messages("reference-number-0"))
+      assertEqualsValue(actual, "#srn-1 span:nth-child(1)", messages("reference-number-1"))
+      assertEqualsValue(actual, "#srn-2 span:nth-child(1)", messages("reference-number-2"))
+      assertEqualsValue(actual, "#srn-3 span:nth-child(1)", messages("reference-number-3"))
+      assertEqualsValue(actual, "#srn-4 span:nth-child(1)", messages("reference-number-4"))
+      assertEqualsValue(actual, "#srn-5 span:nth-child(1)", messages("reference-number-5"))
+      assertEqualsValue(actual, "#srn-6 span:nth-child(1)", messages("reference-number-6"))
+      assertEqualsValue(actual, "#srn-7 span:nth-child(1)", messages("reference-number-7"))
+    }
+
+    "show the PSTR column with correct values" in {
+      val actual = asDocument(
+        view(
+          schemes = fullList,
+          numberOfSchemes = fullList.length,
+          pagination = pagination,
+          currentPage = 1,
+          pageNumberLinks = Seq.range(0, fullList.length)
+        ).apply()
+      )
+
+      assertEqualsValue(actual, "#pstr-0 span:nth-child(1)", messages("messages__listSchemes__pstr_not_assigned"))
+      assertEqualsValue(actual, "#pstr-1 span:nth-child(1)", messages("messages__listSchemes__pstr_not_assigned"))
+      assertEqualsValue(actual, "#pstr-2 span:nth-child(1)", messages("messages__listSchemes__pstr_not_assigned"))
+      assertEqualsValue(actual, "#pstr-3 span:nth-child(1)", messages("messages__listSchemes__pstr_not_assigned"))
+      assertEqualsValue(actual, "#pstr-4 span:nth-child(1)", messages("PSTR-4"))
+      assertEqualsValue(actual, "#pstr-5 span:nth-child(1)", messages("PSTR-5"))
+      assertEqualsValue(actual, "#pstr-6 span:nth-child(1)", messages("PSTR-6"))
+      assertEqualsValue(actual, "#pstr-7 span:nth-child(1)", messages("messages__listSchemes__pstr_not_assigned"))
+    }
+
+    "display a link to return to overview page" in {
+      view(
+        schemes = fullList,
+        numberOfSchemes = fullList.length,
+        pagination = pagination,
+        currentPage = 1,
+        pageNumberLinks = Seq.range(0, fullList.length)
+      ) must haveLink(controllers.routes.SchemesOverviewController.onPageLoad().url, "return-link")
+    }
+
+    "show pagination links when number of schemes is greater than pagination" in {
+      val actual = asDocument(
+        view(
+          schemes = fullList,
+          numberOfSchemes = fullList.length,
+          pagination = 1,
+          currentPage = 1,
+          pageNumberLinks = Seq.range(0, fullList.length)
+        ).apply()
+      )
+      
+      assertEqualsValue(actual, "#prev", messages("messages__schemesOverview__pagination__prev"))
+      assertEqualsValue(actual, "#pageNumber-1", "1")
+      assertLink(actual, "pageNumber-2", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(2).url)
+      assertLink(actual, "pageNumber-3", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(3).url)
+      assertLink(actual, "pageNumber-4", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(4).url)
+      assertLink(actual, "pageNumber-5", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(5).url)
+      assertLink(actual, "pageNumber-6", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(6).url)
+      assertLink(actual, "pageNumber-7", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(7).url)
+      assertLink(actual, "pageNumber-8", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(8).url)
+      assertLink(actual, "next", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(2).url)
+    }
+
+    "not show pagination links when number of schemes is less than pagination" in {
+      val actual = asDocument(
+        view(
+          schemes = fullList,
+          numberOfSchemes = fullList.length,
+          pagination = 10,
+          currentPage = 1,
+          pageNumberLinks = Seq.range(0, fullList.length)
+        ).apply()
+      )
+
+      assertNotRenderedByCssSelector(actual, "#prev")
+      assertNotRenderedByCssSelector(actual, "#next")
+    }
+  }
 
   def view(schemes: List[SchemeDetail],
            numberOfSchemes: Int,
