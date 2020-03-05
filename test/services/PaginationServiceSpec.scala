@@ -92,6 +92,12 @@ class PaginationServiceSpec extends SpecBase {
         numberOfPages = 10
       ) mustBe Seq(4, 5, 6, 7, 8)
 
+      paginationService.pageNumberLinks(
+        currentPage = 7,
+        numberOfSchemes = 20,
+        pagination = 2,
+        numberOfPages = 10
+      ) mustBe Seq(5, 6, 7, 8, 9)
     }
 
     "return a Seq from numberOfPages - 4, numberOfPages when when currentPage >= 4 && currentPage within 3 of numberOfPages" in {
