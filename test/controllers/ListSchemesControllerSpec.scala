@@ -26,6 +26,7 @@ import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.test.Helpers._
+import services.PaginationService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import views.html.list_schemes
@@ -39,6 +40,7 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
   private val emptySchemes: List[SchemeDetail] = List.empty[SchemeDetail]
   private val mockMinimalPsaConnector: MinimalPsaConnector = mock[MinimalPsaConnector]
   private val mockAppConfig: FrontendAppConfig = mock[FrontendAppConfig]
+  private val paginationService = new PaginationService
 
   private val fullSchemes: List[SchemeDetail] =
     List(
@@ -57,6 +59,60 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
         schemeStatus = SchemeStatus.Deregistered.value,
         openDate = None,
         pstr = Some("pstr-1"),
+        relationShip = None,
+        underAppeal = None
+      ),
+      SchemeDetail(
+        name = "scheme-2",
+        referenceNumber = "srn-2",
+        schemeStatus = SchemeStatus.Deregistered.value,
+        openDate = None,
+        pstr = Some("pstr-2"),
+        relationShip = None,
+        underAppeal = None
+      ),
+      SchemeDetail(
+        name = "scheme-3",
+        referenceNumber = "srn-3",
+        schemeStatus = SchemeStatus.Deregistered.value,
+        openDate = None,
+        pstr = Some("pstr-3"),
+        relationShip = None,
+        underAppeal = None
+      ),
+      SchemeDetail(
+        name = "scheme-4",
+        referenceNumber = "srn-4",
+        schemeStatus = SchemeStatus.Deregistered.value,
+        openDate = None,
+        pstr = Some("pstr-4"),
+        relationShip = None,
+        underAppeal = None
+      ),
+      SchemeDetail(
+        name = "scheme-5",
+        referenceNumber = "srn-5",
+        schemeStatus = SchemeStatus.Deregistered.value,
+        openDate = None,
+        pstr = Some("pstr-5"),
+        relationShip = None,
+        underAppeal = None
+      ),
+      SchemeDetail(
+        name = "scheme-6",
+        referenceNumber = "srn-6",
+        schemeStatus = SchemeStatus.Deregistered.value,
+        openDate = None,
+        pstr = Some("pstr-6"),
+        relationShip = None,
+        underAppeal = None
+      ),
+      SchemeDetail(
+        name = "scheme-7",
+        referenceNumber = "srn-7",
+        schemeStatus = SchemeStatus.Deregistered.value,
+        openDate = None,
+        pstr = Some("pstr-7"),
         relationShip = None,
         underAppeal = None
       )
@@ -102,24 +158,28 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
         mockMinimalPsaConnector,
         FakeUserAnswersCacheConnector,
         stubMessagesControllerComponents(),
-        view
+        view,
+        paginationService
       )
   }
 
   private val view: list_schemes = app.injector.instanceOf[list_schemes]
 
   private def viewAsString(schemes: List[SchemeDetail],
-                   numberOfSchemes: Int,
-                   pagination: Int,
-                   currentPage: Int,
-                   pageNumberLinks: Seq[Int]): String =
+                           numberOfSchemes: Int,
+                           pagination: Int,
+                           pageNumber: Int,
+                           pageNumberLinks: Seq[Int],
+                           numberOfPages: Int
+                          ): String =
     view(
       schemes = schemes,
       psaName = psaName,
       numberOfSchemes = numberOfSchemes,
       pagination = pagination,
-      currentPage = currentPage,
-      pageNumberLinks = pageNumberLinks
+      pageNumber = pageNumber,
+      pageNumberLinks = pageNumberLinks,
+      numberOfPages = numberOfPages
     )(fakeRequest, messages).toString()
 
   "ListSchemesController" when {
@@ -127,7 +187,9 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
     when(mockMinimalPsaConnector.getPsaNameFromPsaID(any())(any(), any())).thenReturn(Future.successful(Some(psaName)))
 
     "return OK and the correct view when there are no schemes" in {
-      val pagination: Int = 5
+      val pagination: Int = 10
+
+      val numberOfPages = paginationService.divide(emptySchemes.length, pagination)
 
       when(mockAppConfig.listSchemePagination) thenReturn pagination
 
@@ -141,13 +203,16 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
         schemes = emptySchemes,
         numberOfSchemes = emptySchemes.length,
         pagination = pagination,
-        currentPage = 1,
-        pageNumberLinks = Seq.empty
+        pageNumber = 1,
+        pageNumberLinks = Seq.empty,
+        numberOfPages = numberOfPages
       )
     }
 
     "return OK and the correct view when there are schemes without pagination" in {
-      val pagination: Int = 5
+      val pagination: Int = 10
+
+      val numberOfPages = paginationService.divide(fullSchemes.length, pagination)
 
       when(mockAppConfig.listSchemePagination) thenReturn pagination
 
@@ -161,13 +226,20 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
         schemes = fullSchemes,
         numberOfSchemes = fullSchemes.length,
         pagination = pagination,
-        currentPage = 1,
-        pageNumberLinks = Seq(1, 2)
+        pageNumber = 1,
+        pageNumberLinks = Seq.empty,
+        numberOfPages = numberOfPages
       )
     }
 
     "return OK and the correct view when there are schemes with pagination" in {
+      val pageNumber: Int = 1
+
       val pagination: Int = 1
+
+      val numberOfSchemes: Int = fullSchemes.length
+
+      val numberOfPages = paginationService.divide(numberOfSchemes, pagination)
 
       when(mockAppConfig.listSchemePagination) thenReturn pagination
 
@@ -179,10 +251,11 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
 
       contentAsString(result) mustBe viewAsString(
         schemes = fullSchemes.take(pagination),
-        numberOfSchemes = fullSchemes.length,
+        numberOfSchemes = numberOfSchemes,
         pagination = pagination,
-        currentPage = 1,
-        pageNumberLinks = Seq(1, 2)
+        pageNumber = 1,
+        pageNumberLinks = paginationService.pageNumberLinks(pageNumber, numberOfSchemes, pagination, numberOfPages),
+        numberOfPages = numberOfPages
       )
     }
 
@@ -190,6 +263,10 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
       val pageNumber: Int = 2
 
       val pagination: Int = 1
+
+      val numberOfSchemes: Int = fullSchemes.length
+
+      val numberOfPages = paginationService.divide(numberOfSchemes, pagination)
 
       when(mockAppConfig.listSchemePagination) thenReturn pagination
 
@@ -201,10 +278,11 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
 
       contentAsString(result) mustBe viewAsString(
         schemes = fullSchemes.slice((pageNumber * pagination) - pagination, pageNumber * pagination),
-        numberOfSchemes = fullSchemes.length,
+        numberOfSchemes = numberOfSchemes,
         pagination = pagination,
-        currentPage = pageNumber,
-        pageNumberLinks = Seq(1, 2)
+        pageNumber = pageNumber,
+        pageNumberLinks = paginationService.pageNumberLinks(pageNumber, numberOfSchemes, pagination, numberOfPages),
+        numberOfPages = numberOfPages
       )
     }
   }

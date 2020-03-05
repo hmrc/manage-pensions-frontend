@@ -28,8 +28,9 @@
     psaName: String,
     numberOfSchemes: Int,
     pagination: Int,
-    currentPage: Int,
-    pageNumberLinks: Seq[Int]
+    pageNumber: Int,
+    pageNumberLinks: Seq[Int],
+    numberOfPages: Int
 )(implicit
     request: Request[_],
     messages: Messages
@@ -47,20 +48,25 @@
     }
 }
 
-@pageNumberLink(linkNumber: Int, currentPage: Int) = {
-    @if(linkNumber != currentPage) {
-        <a id="pageNumber-@linkNumber" href="@controllers.routes.ListSchemesController.onPageLoadWithPageNumber(linkNumber)">@linkNumber.toString</a>
-    } else {
+@pageNumberLink(linkNumber: Int, pageNumber: Int) = {
+    @if(linkNumber == pageNumber) {
         <span id="pageNumber-@linkNumber">@linkNumber</span>
+    } else {
+        <a id="pageNumber-@linkNumber" href="@controllers.routes.ListSchemesController.onPageLoadWithPageNumber(linkNumber)">@linkNumber.toString</a>
     }
 }
 
-@paginationText(currentPage: Int, pagination: Int, numberOfSchemes: Int) = @{
-    if (currentPage == 1) {
-        messages("messages__schemesOverview__pagination__text", currentPage, currentPage * pagination, numberOfSchemes)
-    } else {
-        messages("messages__schemesOverview__pagination__text", (currentPage * pagination) - (pagination -1), currentPage * pagination, numberOfSchemes)
-    }
+@paginationText(pageNumber: Int, pagination: Int, numberOfSchemes: Int) = @{
+    messages(
+        "messages__schemesOverview__pagination__text",
+        if (pageNumber == 1) {
+            pageNumber
+        } else {
+            (pageNumber * pagination) - (pagination -1)
+        },
+        if (pageNumber == numberOfPages) numberOfSchemes else pageNumber * pagination,
+        numberOfSchemes
+    )
 }
 
 @main_template(
@@ -92,29 +98,29 @@
             <div class="column-two-thirds">
                 <p class="govuk-margin-top-5">
                     @paginationText(
-                        currentPage = currentPage,
+                        pageNumber = pageNumber,
                         pagination = pagination,
                         numberOfSchemes = numberOfSchemes
                     )
                 </p>
                 <p class="govuk-margin-top-5">
                     @prevNextLink(
-                        condition = currentPage > 1,
+                        condition = pageNumber > 1,
                         linkText = messages("messages__schemesOverview__pagination__prev"),
-                        pageNumber = currentPage - 1
+                        pageNumber = pageNumber - 1
                     )
 
                     @for((int, i) <- pageNumberLinks.zipWithIndex) {
                         @pageNumberLink(
                             linkNumber = pageNumberLinks(i),
-                            currentPage = currentPage
+                            pageNumber = pageNumber
                         )
                     }
 
                     @prevNextLink(
-                        condition = currentPage < numberOfSchemes / pagination,
+                        condition = pageNumber < numberOfPages,
                         linkText = messages("messages__schemesOverview__pagination__next"),
-                        pageNumber = currentPage + 1
+                        pageNumber = pageNumber + 1
                     )
                 </p>
             </div>

@@ -20,6 +20,7 @@ import models.{SchemeDetail, SchemeStatus}
 import play.api.i18n.Messages
 import play.api.mvc.Request
 import play.twirl.api.HtmlFormat
+import services.PaginationService
 import views.behaviours.ViewBehaviours
 import views.html.list_schemes
 
@@ -28,6 +29,7 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
   private val emptyList: List[SchemeDetail] = List.empty[SchemeDetail]
   private val pagination: Int = 10
   private val listSchemesView = injector.instanceOf[list_schemes]
+  private val paginationService = new PaginationService
 
   private val fullList: List[SchemeDetail] = List(
     SchemeDetail(
@@ -115,8 +117,10 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
         schemes = emptyList,
         numberOfSchemes = emptyList.length,
         pagination = pagination,
-        currentPage = 1,
-        pageNumberLinks = Seq.empty
+        pageNumber = 1,
+        pageNumberLinks = Seq.empty,
+        numberOfPages =
+          paginationService.divide(numberOfSchemes = emptyList.length, pagination = pagination)
       ),
       messageKeyPrefix = "listSchemes",
       pageHeader = messages("messages__listSchemes__title")
@@ -126,8 +130,10 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
       view(schemes = emptyList,
         numberOfSchemes = emptyList.length,
         pagination = pagination,
-        currentPage = 1,
-        pageNumberLinks = Seq.empty
+        pageNumber = 1,
+        pageNumberLinks = Seq.empty,
+        numberOfPages =
+          paginationService.divide(numberOfSchemes = emptyList.length, pagination = pagination)
       ) must haveLink(frontendAppConfig.pensionSchemeOnlineServiceUrl, "manage-link")
     }
 
@@ -136,8 +142,10 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
         schemes = emptyList,
         numberOfSchemes = emptyList.length,
         pagination = pagination,
-        currentPage = 1,
-        pageNumberLinks = Seq.empty
+        pageNumber = 1,
+        pageNumberLinks = Seq.empty,
+        numberOfPages =
+          paginationService.divide(numberOfSchemes = emptyList.length, pagination = pagination)
       ) must haveElementWithText("noSchemes", messages("messages__listSchemes__noSchemes"))
     }
 
@@ -146,8 +154,10 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
         schemes = fullList,
         numberOfSchemes = fullList.length,
         pagination = pagination,
-        currentPage = 1,
-        pageNumberLinks = Seq.range(0, fullList.length)
+        pageNumber = 1,
+        pageNumberLinks = Seq.range(0, fullList.length),
+        numberOfPages =
+          paginationService.divide(numberOfSchemes = fullList.length, pagination = pagination)
       )
 
       actual must haveElementWithText("schemeNameHeader", messages("messages__listSchemes__column_schemeName"))
@@ -163,8 +173,10 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
             schemes = fullList,
             numberOfSchemes = fullList.length,
             pagination = pagination,
-            currentPage = 1,
-            pageNumberLinks = Seq.range(0, fullList.length)
+            pageNumber = 1,
+            pageNumberLinks = Seq.range(0, fullList.length),
+            numberOfPages =
+              paginationService.divide(numberOfSchemes = fullList.length, pagination = pagination)
           ).apply()
         )
 
@@ -179,8 +191,10 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
           schemes = fullList,
           numberOfSchemes = fullList.length,
           pagination = pagination,
-          currentPage = 1,
-          pageNumberLinks = Seq.range(0, fullList.length)
+          pageNumber = 1,
+          pageNumberLinks = Seq.range(0, fullList.length),
+          numberOfPages =
+            paginationService.divide(numberOfSchemes = fullList.length, pagination = pagination)
         ).apply()
       )
 
@@ -201,8 +215,10 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
           schemes = fullList,
           numberOfSchemes = fullList.length,
           pagination = pagination,
-          currentPage = 1,
-          pageNumberLinks = Seq.range(0, fullList.length)
+          pageNumber = 1,
+          pageNumberLinks = Seq.range(0, fullList.length),
+          numberOfPages =
+            paginationService.divide(numberOfSchemes = fullList.length, pagination = pagination)
         ).apply()
       )
 
@@ -222,8 +238,10 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
           schemes = fullList,
           numberOfSchemes = fullList.length,
           pagination = pagination,
-          currentPage = 1,
-          pageNumberLinks = Seq.range(0, fullList.length)
+          pageNumber = 1,
+          pageNumberLinks = Seq.range(0, fullList.length),
+          numberOfPages =
+            paginationService.divide(numberOfSchemes = fullList.length, pagination = pagination)
         ).apply()
       )
 
@@ -242,19 +260,25 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
         schemes = fullList,
         numberOfSchemes = fullList.length,
         pagination = pagination,
-        currentPage = 1,
-        pageNumberLinks = Seq.range(0, fullList.length)
+        pageNumber = 1,
+        pageNumberLinks = Seq.range(0, fullList.length),
+        numberOfPages =
+          paginationService.divide(numberOfSchemes = fullList.length, pagination = pagination)
       ) must haveLink(controllers.routes.SchemesOverviewController.onPageLoad().url, "return-link")
     }
 
     "show correct pagination links when number of schemes is greater than pagination at start of range" in {
+      val pagination = 1
+
       val actual = asDocument(
         view(
           schemes = fullList,
           numberOfSchemes = fullList.length,
-          pagination = 1,
-          currentPage = 1,
-          pageNumberLinks = Seq.range(1, 6)
+          pagination = pagination,
+          pageNumber = 1,
+          pageNumberLinks = Seq.range(1, 6),
+          numberOfPages =
+            paginationService.divide(numberOfSchemes = fullList.length, pagination = pagination)
         ).apply()
       )
 
@@ -272,15 +296,17 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
 
     "show correct pagination links when number of schemes is greater than pagination at middle of range" in {
       val pagination: Int = 1
-      val currentPage: Int = 4
+      val pageNumber: Int = 4
 
       val actual = asDocument(
         view(
           schemes = fullList,
           numberOfSchemes = fullList.length,
           pagination = pagination,
-          currentPage = currentPage,
-          pageNumberLinks = Seq.range(currentPage - 2, currentPage + 3)
+          pageNumber = pageNumber,
+          pageNumberLinks = Seq.range(pageNumber - 2, pageNumber + 3),
+          numberOfPages =
+            paginationService.divide(numberOfSchemes = fullList.length, pagination = pagination)
         ).apply()
       )
 
@@ -303,8 +329,13 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
           schemes = fullList,
           numberOfSchemes = fullList.length,
           pagination = pagination,
-          currentPage = 8,
-          pageNumberLinks = Seq.range((fullList.length / pagination) - 4, (fullList.length / pagination) + 1)
+          pageNumber = 8,
+          pageNumberLinks = Seq.range(
+            paginationService.divide(numberOfSchemes = fullList.length, pagination = pagination) - 4,
+            paginationService.divide(numberOfSchemes = fullList.length, pagination = pagination) + 1
+          ),
+          numberOfPages =
+            paginationService.divide(numberOfSchemes = fullList.length, pagination = pagination)
         ).apply()
       )
 
@@ -324,8 +355,10 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
           schemes = fullList,
           numberOfSchemes = fullList.length,
           pagination = 10,
-          currentPage = 1,
-          pageNumberLinks = Seq.range(0, fullList.length)
+          pageNumber = 1,
+          pageNumberLinks = Seq.range(0, fullList.length),
+          numberOfPages =
+            paginationService.divide(numberOfSchemes = fullList.length, pagination = pagination)
         ).apply()
       )
 
@@ -335,17 +368,19 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
   }
 
   private def view(schemes: List[SchemeDetail],
-           numberOfSchemes: Int,
-           pagination: Int,
-           currentPage: Int,
-           pageNumberLinks: Seq[Int] = Seq.empty)
-          (implicit request: Request[_], messages: Messages): () => HtmlFormat.Appendable = () =>
+                   numberOfSchemes: Int,
+                   pagination: Int,
+                   pageNumber: Int,
+                   pageNumberLinks: Seq[Int],
+                   numberOfPages: Int
+                  )(implicit request: Request[_], messages: Messages): () => HtmlFormat.Appendable = () =>
     listSchemesView(
       schemes = schemes,
       psaName = psaName,
       numberOfSchemes = numberOfSchemes,
       pagination = pagination,
-      currentPage = currentPage,
-      pageNumberLinks = pageNumberLinks
+      pageNumber = pageNumber,
+      pageNumberLinks = pageNumberLinks,
+      numberOfPages = numberOfPages
     )
 }

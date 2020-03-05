@@ -27,6 +27,7 @@ import models.requests.OptionalDataRequest
 import models.{Index, ListOfSchemes, SchemeDetail}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import services.PaginationService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import views.html.list_schemes
@@ -42,29 +43,19 @@ class ListSchemesController @Inject()(
                                        minimalPsaConnector: MinimalPsaConnector,
                                        userAnswersCacheConnector: UserAnswersCacheConnector,
                                        val controllerComponents: MessagesControllerComponents,
-                                       view: list_schemes
+                                       view: list_schemes,
+                                       paginationService: PaginationService
                                      )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   val pagination: Int = appConfig.listSchemePagination
 
-  def listOfSchemes(implicit hc: HeaderCarrier, request: OptionalDataRequest[AnyContent]): Future[ListOfSchemes] = {
+  def listOfSchemes(implicit hc: HeaderCarrier,request: OptionalDataRequest[AnyContent]): Future[ListOfSchemes] =
     listSchemesConnector.getListOfSchemes(request.psaId.id)
-  }
 
-  def schemeDetails(listOfSchemes: ListOfSchemes): List[SchemeDetail] = {
+  def schemeDetails(listOfSchemes: ListOfSchemes): List[SchemeDetail] =
     listOfSchemes.schemeDetail.getOrElse(List.empty[SchemeDetail])
-  }
 
-  def pageNumberLinks(currentPage: Int, numberOfSchemes: Int): Seq[Int] = {
-    if (currentPage < 4)
-      Seq.range(1, 6)
-    else if (currentPage >= 4 && currentPage <= (numberOfSchemes / pagination) - 3)
-      Seq.range(currentPage - 2, currentPage + 3)
-    else
-      Seq.range((numberOfSchemes / pagination) - 4, (numberOfSchemes / pagination) + 1)
-  }
-
-  def renderView(schemeDetails: List[SchemeDetail], numberOfSchemes: Int, currentPage: Int)
+  def renderView(schemeDetails: List[SchemeDetail], numberOfSchemes: Int, pageNumber: Int, numberOfPages: Int)
                 (implicit hc: HeaderCarrier, request: OptionalDataRequest[AnyContent]): Future[Result] = {
 
     minimalPsaConnector.getPsaNameFromPsaID(request.psaId.id).flatMap(_.map {
@@ -76,8 +67,9 @@ class ListSchemesController @Inject()(
               psaName = name,
               numberOfSchemes = numberOfSchemes,
               pagination = pagination,
-              currentPage = currentPage,
-              pageNumberLinks = pageNumberLinks(currentPage, numberOfSchemes)
+              pageNumber = pageNumber,
+              pageNumberLinks = paginationService.pageNumberLinks(pageNumber, numberOfSchemes, pagination, numberOfPages),
+              numberOfPages = numberOfPages
             ))
         }
     }.getOrElse {
@@ -89,10 +81,15 @@ class ListSchemesController @Inject()(
     implicit request =>
       listOfSchemes.flatMap {
         listOfSchemes =>
+          val numberOfSchemes: Int = schemeDetails(listOfSchemes).length
+
+          val numberOfPages: Int = paginationService.divide(numberOfSchemes, pagination)
+
           renderView(
             schemeDetails = schemeDetails(listOfSchemes).take(pagination),
-            numberOfSchemes = schemeDetails(listOfSchemes).length,
-            currentPage = 1
+            numberOfSchemes = numberOfSchemes,
+            pageNumber = 1,
+            numberOfPages = numberOfPages
           )
       }
   }
@@ -101,15 +98,19 @@ class ListSchemesController @Inject()(
     implicit request =>
       listOfSchemes.flatMap {
         listOfSchemes =>
-          if (pageNumber <= schemeDetails(listOfSchemes).length / pagination) {
+          val numberOfSchemes: Int = schemeDetails(listOfSchemes).length
+
+          val numberOfPages: Int = paginationService.divide(numberOfSchemes, pagination)
+
+          if (pageNumber <= numberOfPages)
             renderView(
               schemeDetails = schemeDetails(listOfSchemes).slice((pageNumber * pagination) - pagination, pageNumber * pagination),
-              numberOfSchemes = schemeDetails(listOfSchemes).length,
-              currentPage = pageNumber
+              numberOfSchemes = numberOfSchemes,
+              pageNumber = pageNumber,
+              numberOfPages = numberOfPages
             )
-          } else {
+          else
             Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
-          }
       }
   }
 }
