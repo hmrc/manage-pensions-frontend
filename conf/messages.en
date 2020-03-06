@@ -125,7 +125,7 @@ messages__schemesOverview__pagination__last = Last
 messages__schemesOverview__pagination__first__hiddenText = First page
 messages__schemesOverview__pagination__last__hiddenText = Last page
 messages__schemesOverview__pagination__pageNumberLinkLabel = page {0} of {1}
-messages__schemesOverview__pagination__pageNumberSpanLabel = current page, page {0} of {1}
+messages__schemesOverview__pagination__pageNumberLinkLabelCurrent = current page, page {0} of {1}
 
 
 messages__schemeOverview__psa_id = Administrator ID:

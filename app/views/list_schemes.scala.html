@@ -65,8 +65,10 @@
 
     val ariaLabelLink: String = messages(s"${msgPrefix}pageNumberLinkLabel", linkNumber, numberOfPages)
 
+    val ariaLabelLinkCurrent: String = messages(s"${msgPrefix}pageNumberLinkLabelCurrent", linkNumber, numberOfPages)
+
     if(linkNumber == pageNumber)
-        Html(s"""<span class="nav-item"><a id="$id" href="$href" aria-current="page" aria-label="$ariaLabelLink">$linkNumber</a></span>""")
+        Html(s"""<span class="nav-item"><a id="$id" href="$href" aria-current="page" aria-label="$ariaLabelLinkCurrent">$linkNumber</a></span>""")
     else
         Html(s"""<span class="nav-item"><a id="$id" href="$href" aria-label="$ariaLabelLink">$linkNumber</a></span>""")
 }
