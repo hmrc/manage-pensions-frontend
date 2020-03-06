@@ -59,11 +59,7 @@
 @paginationText(pageNumber: Int, pagination: Int, numberOfSchemes: Int) = @{
     messages(
         "messages__schemesOverview__pagination__text",
-        if (pageNumber == 1) {
-            pageNumber
-        } else {
-            (pageNumber * pagination) - (pagination -1)
-        },
+        if (pageNumber == 1) pageNumber else (pageNumber * pagination) - (pagination -1),
         if (pageNumber == numberOfPages) numberOfSchemes else pageNumber * pagination,
         numberOfSchemes
     )
@@ -96,7 +92,7 @@
     @if(numberOfSchemes > pagination) {
         <div class="grid-row">
             <div class="column-two-thirds">
-                <p class="govuk-margin-top-5">
+                <p class="govuk-margin-top-5" id="pagination-text">
                     @paginationText(
                         pageNumber = pageNumber,
                         pagination = pagination,

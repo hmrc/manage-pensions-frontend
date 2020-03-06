@@ -268,26 +268,37 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
     }
 
     "show correct pagination links when number of schemes is greater than pagination at start of range" in {
-      val pagination = 1
+      val schemes: List[SchemeDetail] = List.fill(103)(fullList.head)
+
+      val pageNumber: Int = 1
+
+      val pagination: Int = 10
+
+      val numberOfSchemes: Int = schemes.length
+
+      val numberOfPages: Int = paginationService.divide(numberOfSchemes = numberOfSchemes, pagination = pagination)
+
+      val pageNumberLinks: Seq[Int] = paginationService.pageNumberLinks(pageNumber, numberOfSchemes, pagination, numberOfPages)
 
       val actual = asDocument(
         view(
-          schemes = fullList,
-          numberOfSchemes = fullList.length,
+          schemes = schemes,
+          numberOfSchemes = numberOfSchemes,
           pagination = pagination,
-          pageNumber = 1,
-          pageNumberLinks = Seq.range(1, 6),
-          numberOfPages =
-            paginationService.divide(numberOfSchemes = fullList.length, pagination = pagination)
+          pageNumber = pageNumber,
+          pageNumberLinks = pageNumberLinks,
+          numberOfPages = numberOfPages
         ).apply()
       )
 
+      assertEqualsValue(actual, "#pagination-text", "Showing 1 - 10 of 103 schemes")
       assertEqualsValue(actual, "#prev", messages("messages__schemesOverview__pagination__prev"))
       assertEqualsValue(actual, "#pageNumber-1", "1")
-      assertLink(actual, "pageNumber-2", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(2).url)
-      assertLink(actual, "pageNumber-3", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(3).url)
-      assertLink(actual, "pageNumber-4", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(4).url)
-      assertLink(actual, "pageNumber-5", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(5).url)
+
+      pageNumberLinks.filterNot(_ == pageNumber).foreach { index =>
+        assertLink(actual, s"pageNumber-$index", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(index).url)
+      }
+
       assertNotRenderedByCssSelector(actual, "#pageNumber-6")
       assertLink(actual, "next", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(2).url)
       assertEqualsValue(actual, "#next", messages("messages__schemesOverview__pagination__next"))
@@ -295,70 +306,98 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
     }
 
     "show correct pagination links when number of schemes is greater than pagination at middle of range" in {
-      val pagination: Int = 1
+      val schemes: List[SchemeDetail] = List.fill(103)(fullList.head)
+
       val pageNumber: Int = 4
+
+      val pagination: Int = 10
+
+      val numberOfSchemes: Int = schemes.length
+
+      val numberOfPages: Int = paginationService.divide(numberOfSchemes = numberOfSchemes, pagination = pagination)
+
+      val pageNumberLinks: Seq[Int] = paginationService.pageNumberLinks(pageNumber, numberOfSchemes, pagination, numberOfPages)
 
       val actual = asDocument(
         view(
-          schemes = fullList,
-          numberOfSchemes = fullList.length,
+          schemes = schemes,
+          numberOfSchemes = numberOfSchemes,
           pagination = pagination,
           pageNumber = pageNumber,
-          pageNumberLinks = Seq.range(pageNumber - 2, pageNumber + 3),
-          numberOfPages =
-            paginationService.divide(numberOfSchemes = fullList.length, pagination = pagination)
+          pageNumberLinks = pageNumberLinks,
+          numberOfPages = numberOfPages
         ).apply()
       )
 
+      assertEqualsValue(actual, "#pagination-text", "Showing 31 - 40 of 103 schemes")
       assertEqualsValue(actual, "#prev", messages("messages__schemesOverview__pagination__prev"))
       assertLink(actual, "prev", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(3).url)
-      assertLink(actual, "pageNumber-2", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(2).url)
-      assertLink(actual, "pageNumber-3", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(3).url)
+
       assertEqualsValue(actual, "#pageNumber-4", "4")
-      assertLink(actual, "pageNumber-5", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(5).url)
-      assertLink(actual, "pageNumber-6", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(6).url)
+
+      pageNumberLinks.filterNot(_ == pageNumber).foreach { index =>
+        assertLink(actual, s"pageNumber-$index", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(index).url)
+      }
+
       assertLink(actual, "next", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(5).url)
       assertEqualsValue(actual, "#next", messages("messages__schemesOverview__pagination__next"))
     }
 
     "show correct pagination links when number of schemes is greater than pagination at end of range" in {
-      val pagination: Int = 1
+      val schemes: List[SchemeDetail] = List.fill(103)(fullList.head)
+
+      val pageNumber: Int = 11
+
+      val pagination: Int = 10
+
+      val numberOfSchemes: Int = schemes.length
+
+      val numberOfPages: Int = paginationService.divide(numberOfSchemes = numberOfSchemes, pagination = pagination)
+
+      val pageNumberLinks: Seq[Int] = paginationService.pageNumberLinks(pageNumber, numberOfSchemes, pagination, numberOfPages)
 
       val actual = asDocument(
         view(
-          schemes = fullList,
-          numberOfSchemes = fullList.length,
+          schemes = schemes,
+          numberOfSchemes = numberOfSchemes,
           pagination = pagination,
-          pageNumber = 8,
-          pageNumberLinks = Seq.range(
-            paginationService.divide(numberOfSchemes = fullList.length, pagination = pagination) - 4,
-            paginationService.divide(numberOfSchemes = fullList.length, pagination = pagination) + 1
-          ),
-          numberOfPages =
-            paginationService.divide(numberOfSchemes = fullList.length, pagination = pagination)
+          pageNumber = pageNumber,
+          pageNumberLinks = pageNumberLinks,
+          numberOfPages = numberOfPages
         ).apply()
       )
 
+      assertEqualsValue(actual, "#pagination-text", "Showing 101 - 103 of 103 schemes")
       assertEqualsValue(actual, "#prev", messages("messages__schemesOverview__pagination__prev"))
-      assertLink(actual, "prev", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(7).url)
-      assertLink(actual, "pageNumber-4", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(4).url)
-      assertLink(actual, "pageNumber-5", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(5).url)
-      assertLink(actual, "pageNumber-6", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(6).url)
-      assertLink(actual, "pageNumber-7", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(7).url)
-      assertEqualsValue(actual, "#pageNumber-8", "8")
+      assertLink(actual, "prev", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(10).url)
+
+      pageNumberLinks.filterNot(_ == pageNumber).foreach { index =>
+        assertLink(actual, s"pageNumber-$index", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(index).url)
+      }
+
+      assertEqualsValue(actual, "#pageNumber-11", "11")
       assertEqualsValue(actual, "#next", messages("messages__schemesOverview__pagination__next"))
     }
 
     "not show pagination links when number of schemes is less than pagination" in {
+      val pagination: Int = 10
+
+      val pageNumber: Int = 1
+
+      val numberOfSchemes: Int = fullList.length
+
+      val numberOfPages: Int = paginationService.divide(numberOfSchemes = numberOfSchemes, pagination = pagination)
+
+      val pageNumberLinks: Seq[Int] = paginationService.pageNumberLinks(pageNumber, numberOfSchemes, pagination, numberOfPages)
+
       val actual = asDocument(
         view(
           schemes = fullList,
-          numberOfSchemes = fullList.length,
-          pagination = 10,
-          pageNumber = 1,
-          pageNumberLinks = Seq.range(0, fullList.length),
-          numberOfPages =
-            paginationService.divide(numberOfSchemes = fullList.length, pagination = pagination)
+          numberOfSchemes = numberOfSchemes,
+          pagination = pagination,
+          pageNumber = pageNumber,
+          pageNumberLinks = pageNumberLinks,
+          numberOfPages = numberOfPages
         ).apply()
       )
 
