@@ -291,17 +291,19 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
         ).apply()
       )
 
-      assertEqualsValue(actual, "#pagination-text", "Showing 1 - 10 of 103 schemes")
-      assertEqualsValue(actual, "#prev", messages("messages__schemesOverview__pagination__prev"))
-      assertEqualsValue(actual, "#pageNumber-1", "1")
+      assertEqualsValue(actual, "#pagination-text", "Showing 1 to 10 of 103 schemes")
+      assertNotRenderedByCssSelector(actual, "#first")
+      assertNotRenderedByCssSelector(actual, "#prev")
 
-      pageNumberLinks.filterNot(_ == pageNumber).foreach { index =>
+      pageNumberLinks.foreach { index =>
         assertLink(actual, s"pageNumber-$index", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(index).url)
       }
 
       assertNotRenderedByCssSelector(actual, "#pageNumber-6")
       assertLink(actual, "next", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(2).url)
+      assertLink(actual, "last", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(numberOfPages).url)
       assertEqualsValue(actual, "#next", messages("messages__schemesOverview__pagination__next"))
+      assertEqualsValue(actual, "#last", messages("messages__schemesOverview__pagination__last"))
 
     }
 
@@ -329,18 +331,20 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
         ).apply()
       )
 
-      assertEqualsValue(actual, "#pagination-text", "Showing 31 - 40 of 103 schemes")
+      assertEqualsValue(actual, "#pagination-text", "Showing 31 to 40 of 103 schemes")
+      assertEqualsValue(actual, "#first", messages("messages__schemesOverview__pagination__first"))
       assertEqualsValue(actual, "#prev", messages("messages__schemesOverview__pagination__prev"))
+      assertLink(actual, "first", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(1).url)
       assertLink(actual, "prev", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(3).url)
 
-      assertEqualsValue(actual, "#pageNumber-4", "4")
-
-      pageNumberLinks.filterNot(_ == pageNumber).foreach { index =>
+      pageNumberLinks.foreach { index =>
         assertLink(actual, s"pageNumber-$index", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(index).url)
       }
 
       assertLink(actual, "next", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(5).url)
+      assertLink(actual, "last", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(numberOfPages).url)
       assertEqualsValue(actual, "#next", messages("messages__schemesOverview__pagination__next"))
+      assertEqualsValue(actual, "#last", messages("messages__schemesOverview__pagination__last"))
     }
 
     "show correct pagination links when number of schemes is greater than pagination at end of range" in {
@@ -367,16 +371,17 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
         ).apply()
       )
 
-      assertEqualsValue(actual, "#pagination-text", "Showing 101 - 103 of 103 schemes")
+      assertEqualsValue(actual, "#pagination-text", "Showing 101 to 103 of 103 schemes")
+      assertEqualsValue(actual, "#first", messages("messages__schemesOverview__pagination__first"))
       assertEqualsValue(actual, "#prev", messages("messages__schemesOverview__pagination__prev"))
+      assertLink(actual, "first", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(1).url)
       assertLink(actual, "prev", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(10).url)
 
-      pageNumberLinks.filterNot(_ == pageNumber).foreach { index =>
+      pageNumberLinks.foreach { index =>
         assertLink(actual, s"pageNumber-$index", controllers.routes.ListSchemesController.onPageLoadWithPageNumber(index).url)
       }
-
-      assertEqualsValue(actual, "#pageNumber-11", "11")
-      assertEqualsValue(actual, "#next", messages("messages__schemesOverview__pagination__next"))
+      assertNotRenderedByCssSelector(actual, "#next")
+      assertNotRenderedByCssSelector(actual, "#last")
     }
 
     "not show pagination links when number of schemes is less than pagination" in {

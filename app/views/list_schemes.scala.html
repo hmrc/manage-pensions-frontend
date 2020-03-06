@@ -36,29 +36,44 @@
     messages: Messages
 )
 
-@manageRedirectLink = {
-    <a id="manage-link" href="@appConfig.pensionSchemeOnlineServiceUrl">@messages("messages__schemesOverview__manage__redirect__link")</a>
+@msgPrefix = @{
+    "messages__schemesOverview__pagination__"
 }
 
-@prevNextLink(condition: Boolean, linkText: String, pageNumber: Int) = {
-    @if(condition) {
-        <a id="@linkText.toLowerCase" href="@controllers.routes.ListSchemesController.onPageLoadWithPageNumber(pageNumber)">@linkText</a>
-    } else {
-        <span id="@linkText.toLowerCase">@linkText</span>
-    }
+@manageRedirectLink() = @{
+    val href: String = appConfig.pensionSchemeOnlineServiceUrl
+
+    val linkText: String = messages("messages__schemesOverview__manage__redirect__link")
+
+    Html(s"""<a id="manage-link" href="$href">$linkText</a>""")
 }
 
-@pageNumberLink(linkNumber: Int, pageNumber: Int) = {
-    @if(linkNumber == pageNumber) {
-        <span id="pageNumber-@linkNumber">@linkNumber</span>
-    } else {
-        <a id="pageNumber-@linkNumber" href="@controllers.routes.ListSchemesController.onPageLoadWithPageNumber(linkNumber)">@linkNumber.toString</a>
-    }
+@prevNextLastLink(linkText: String, pageNumber: Int) = @{
+    val id: String = linkText.toLowerCase
+
+    val href: String = controllers.routes.ListSchemesController.onPageLoadWithPageNumber(pageNumber).url
+
+    val ariaLabel = messages(s"$msgPrefix${linkText.toLowerCase}__hiddenText")
+
+    Html(s"""<span class="nav-item"><a id="$id" href="$href" aria-label="$ariaLabel">$linkText</a></span>""")
+}
+
+@pageNumberLink(linkNumber: Int, pageNumber: Int, numberOfPages: Int) = @{
+    val id: String = s"pageNumber-$linkNumber"
+
+    val href: String = controllers.routes.ListSchemesController.onPageLoadWithPageNumber(linkNumber).url
+
+    val ariaLabelLink: String = messages(s"${msgPrefix}pageNumberLinkLabel", linkNumber, numberOfPages)
+
+    if(linkNumber == pageNumber)
+        Html(s"""<span class="nav-item"><a id="$id" href="$href" aria-current="page" aria-label="$ariaLabelLink">$linkNumber</a></span>""")
+    else
+        Html(s"""<span class="nav-item"><a id="$id" href="$href" aria-label="$ariaLabelLink">$linkNumber</a></span>""")
 }
 
 @paginationText(pageNumber: Int, pagination: Int, numberOfSchemes: Int) = @{
     messages(
-        "messages__schemesOverview__pagination__text",
+        s"${msgPrefix}text",
         if (pageNumber == 1) pageNumber else (pageNumber * pagination) - (pagination -1),
         if (pageNumber == numberOfPages) numberOfSchemes else pageNumber * pagination,
         numberOfSchemes
@@ -99,26 +114,37 @@
                         numberOfSchemes = numberOfSchemes
                     )
                 </p>
-                <p class="govuk-margin-top-5">
-                    @prevNextLink(
-                        condition = pageNumber > 1,
-                        linkText = messages("messages__schemesOverview__pagination__prev"),
-                        pageNumber = pageNumber - 1
-                    )
+                <nav class="govuk-margin-top-5" aria-label="page">
+                    @if(pageNumber > 1) {
+                        @prevNextLastLink(
+                            linkText = messages(s"${msgPrefix}first"),
+                            pageNumber = 1
+                        )
+                        @prevNextLastLink(
+                            linkText = messages(s"${msgPrefix}prev"),
+                            pageNumber = pageNumber - 1
+                        )
+                    }
 
                     @for((int, i) <- pageNumberLinks.zipWithIndex) {
                         @pageNumberLink(
                             linkNumber = pageNumberLinks(i),
-                            pageNumber = pageNumber
+                            pageNumber = pageNumber,
+                            numberOfPages = numberOfPages
                         )
                     }
 
-                    @prevNextLink(
-                        condition = pageNumber < numberOfPages,
-                        linkText = messages("messages__schemesOverview__pagination__next"),
-                        pageNumber = pageNumber + 1
-                    )
-                </p>
+                    @if(pageNumber < numberOfPages) {
+                        @prevNextLastLink(
+                            linkText = messages(s"${msgPrefix}next"),
+                            pageNumber = pageNumber + 1
+                        )
+                        @prevNextLastLink(
+                            linkText = messages(s"${msgPrefix}last"),
+                            pageNumber = numberOfPages
+                        )
+                    }
+                </nav>
             </div>
         </div>
     }

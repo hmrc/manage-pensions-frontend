@@ -102,7 +102,7 @@ class ListSchemesController @Inject()(
 
           val numberOfPages: Int = paginationService.divide(numberOfSchemes, pagination)
 
-          if (pageNumber <= numberOfPages)
+          if (pageNumber > 0 && pageNumber <= numberOfPages)
             renderView(
               schemeDetails = schemeDetails(listOfSchemes).slice((pageNumber * pagination) - pagination, pageNumber * pagination),
               numberOfSchemes = numberOfSchemes,

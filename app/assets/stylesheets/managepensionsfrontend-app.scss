@@ -22,8 +22,15 @@
 @import 'partials/_palette';
 @import 'partials/_focus';
 
-.scheme-overview-info {
-  p{
-    margin-bottom: 0px;
+nav span.nav-item {
+  display: inline-block;
+  padding: 0.2rem;
 }
+
+nav span.nav-item a[aria-current="page"] {
+  border-bottom: 0.4rem solid black;
+}
+
+nav span.nav-item a[aria-current="page"]:focus {
+  border-bottom: 0;
 }
