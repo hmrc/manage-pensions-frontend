@@ -40,7 +40,7 @@
     "messages__schemesOverview__pagination__"
 }
 
-@manageRedirectLink() = @{
+@manageRedirectLink = @{
     val href: String = appConfig.pensionSchemeOnlineServiceUrl
 
     val linkText: String = messages("messages__schemesOverview__manage__redirect__link")
@@ -48,35 +48,39 @@
     Html(s"""<a id="manage-link" href="$href">$linkText</a>""")
 }
 
-@prevNextLastLink(linkText: String, pageNumber: Int) = @{
+@navLink(linkText: String, pageNumber: Int) = @{
     val id: String = linkText.toLowerCase
 
     val href: String = controllers.routes.ListSchemesController.onPageLoadWithPageNumber(pageNumber).url
 
-    val ariaLabel = messages(s"$msgPrefix${linkText.toLowerCase}__hiddenText")
+    val ariaLabel: String = messages(s"$msgPrefix${linkText.toLowerCase}__ariaLabel")
 
     Html(s"""<span class="nav-item"><a id="$id" href="$href" aria-label="$ariaLabel">$linkText</a></span>""")
 }
 
-@pageNumberLink(linkNumber: Int, pageNumber: Int, numberOfPages: Int) = @{
+@ariaAttrs(linkNumber: Int) = @{
+    val ariaLabelLinkCurrent: String = messages(s"${msgPrefix}pageNumberCurrent__ariaLabel", linkNumber, numberOfPages)
+
+    val ariaLabelLink: String = messages(s"${msgPrefix}pageNumber__ariaLabel", linkNumber, numberOfPages)
+
+    if(linkNumber == pageNumber)
+        s"""aria-current="page" aria-label="$ariaLabelLinkCurrent""""
+    else
+        s"""aria-label="$ariaLabelLink""""
+}
+
+@pageNumberLink(linkNumber: Int) = @{
     val id: String = s"pageNumber-$linkNumber"
 
     val href: String = controllers.routes.ListSchemesController.onPageLoadWithPageNumber(linkNumber).url
 
-    val ariaLabelLink: String = messages(s"${msgPrefix}pageNumberLinkLabel", linkNumber, numberOfPages)
-
-    val ariaLabelLinkCurrent: String = messages(s"${msgPrefix}pageNumberLinkLabelCurrent", linkNumber, numberOfPages)
-
-    if(linkNumber == pageNumber)
-        Html(s"""<span class="nav-item"><a id="$id" href="$href" aria-current="page" aria-label="$ariaLabelLinkCurrent">$linkNumber</a></span>""")
-    else
-        Html(s"""<span class="nav-item"><a id="$id" href="$href" aria-label="$ariaLabelLink">$linkNumber</a></span>""")
+    Html(s"""<span class="nav-item"><a id="$id" href="$href" ${ariaAttrs(linkNumber)}>$linkNumber</a></span>""")
 }
 
-@paginationText(pageNumber: Int, pagination: Int, numberOfSchemes: Int) = @{
+@paginationText = @{
     messages(
         s"${msgPrefix}text",
-        if (pageNumber == 1) pageNumber else (pageNumber * pagination) - (pagination -1),
+        if (pageNumber == 1) pageNumber else ((pageNumber * pagination) - pagination) + 1,
         if (pageNumber == numberOfPages) numberOfSchemes else pageNumber * pagination,
         numberOfSchemes
     )
@@ -110,19 +114,15 @@
         <div class="grid-row">
             <div class="column-two-thirds">
                 <p class="govuk-margin-top-5" id="pagination-text">
-                    @paginationText(
-                        pageNumber = pageNumber,
-                        pagination = pagination,
-                        numberOfSchemes = numberOfSchemes
-                    )
+                    @paginationText
                 </p>
                 <nav class="govuk-margin-top-5" aria-label="page">
                     @if(pageNumber > 1) {
-                        @prevNextLastLink(
+                        @navLink(
                             linkText = messages(s"${msgPrefix}first"),
                             pageNumber = 1
                         )
-                        @prevNextLastLink(
+                        @navLink(
                             linkText = messages(s"${msgPrefix}prev"),
                             pageNumber = pageNumber - 1
                         )
@@ -130,18 +130,16 @@
 
                     @for((int, i) <- pageNumberLinks.zipWithIndex) {
                         @pageNumberLink(
-                            linkNumber = pageNumberLinks(i),
-                            pageNumber = pageNumber,
-                            numberOfPages = numberOfPages
+                            linkNumber = pageNumberLinks(i)
                         )
                     }
 
                     @if(pageNumber < numberOfPages) {
-                        @prevNextLastLink(
+                        @navLink(
                             linkText = messages(s"${msgPrefix}next"),
                             pageNumber = pageNumber + 1
                         )
-                        @prevNextLastLink(
+                        @navLink(
                             linkText = messages(s"${msgPrefix}last"),
                             pageNumber = numberOfPages
                         )

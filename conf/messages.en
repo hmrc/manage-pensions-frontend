@@ -118,14 +118,14 @@ messages__schemesOverview__change_details_delete__link = Delete the changes made
 messages__schemesOverview__pagination__text = Showing {0} to {1} of {2} schemes
 messages__schemesOverview__pagination__prev = Prev
 messages__schemesOverview__pagination__next = Next
-messages__schemesOverview__pagination__prev__hiddenText = Previous page
-messages__schemesOverview__pagination__next__hiddenText = Next page
+messages__schemesOverview__pagination__prev__ariaLabel = Previous page
+messages__schemesOverview__pagination__next__ariaLabel = Next page
 messages__schemesOverview__pagination__first = First
 messages__schemesOverview__pagination__last = Last
-messages__schemesOverview__pagination__first__hiddenText = First page
-messages__schemesOverview__pagination__last__hiddenText = Last page
-messages__schemesOverview__pagination__pageNumberLinkLabel = page {0} of {1}
-messages__schemesOverview__pagination__pageNumberLinkLabelCurrent = current page, page {0} of {1}
+messages__schemesOverview__pagination__first__ariaLabel = First page
+messages__schemesOverview__pagination__last__ariaLabel = Last page
+messages__schemesOverview__pagination__pageNumber__ariaLabel = page {0} of {1}
+messages__schemesOverview__pagination__pageNumberCurrent__ariaLabel = current page, page {0} of {1}
 
 
 messages__schemeOverview__psa_id = Administrator ID:

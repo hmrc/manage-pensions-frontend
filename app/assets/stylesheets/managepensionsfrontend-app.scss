@@ -24,7 +24,20 @@
 
 nav span.nav-item {
   display: inline-block;
-  padding: 0.2rem;
+  padding-right: 2rem;
+}
+@media (max-width: 640px) {
+  nav span.nav-item:first-child {
+    padding: 0 0.5rem 0 0;
+  }
+
+  nav span.nav-item {
+    padding: 0 0.5rem;
+  }
+
+  nav span.nav-item:last-child {
+    padding: 0 0 0 0.5rem;
+  }
 }
 
 nav span.nav-item a[aria-current="page"] {
