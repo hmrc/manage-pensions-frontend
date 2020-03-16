@@ -18,6 +18,7 @@ package connectors.aft
 
 import com.google.inject.{ImplementedBy, Inject, Singleton}
 import config.FrontendAppConfig
+import models.AFTVersion
 import play.api.Logger
 import play.api.http.Status
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
@@ -28,17 +29,17 @@ import scala.util.{Failure, Try}
 
 @ImplementedBy(classOf[AFTConnectorImpl])
 trait AFTConnector {
-  def getListOfVersions(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Seq[Int]]]
+  def getListOfVersions(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Seq[AFTVersion]]]
 }
 
 @Singleton
 class AFTConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) extends AFTConnector {
-  def getListOfVersions(pstr: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Seq[Int]]] = {
+  def getListOfVersions(pstr: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Seq[AFTVersion]]] = {
     val url = config.aftListOfVersions
     val schemeHc = hc.withExtraHeaders("pstr" -> pstr, "startDate" -> "2020-04-01")
     http.GET[HttpResponse](url)(implicitly, schemeHc, implicitly).map { response =>
       require(response.status == Status.OK)
-      Option(response.json.as[Seq[Int]])
+      Option(response.json.as[Seq[AFTVersion]])
     } andThen {
       logExceptions
     } recoverWith {
@@ -46,11 +47,11 @@ class AFTConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) ex
     }
   }
 
-  private def logExceptions: PartialFunction[Try[Option[Seq[Int]]], Unit] = {
+  private def logExceptions: PartialFunction[Try[Option[Seq[AFTVersion]]], Unit] = {
     case Failure(t: Throwable) => Logger.error("Unable to retrieve list of versions", t)
   }
 
-  private def translateExceptions(): PartialFunction[Throwable, Future[Option[Seq[Int]]]] = {
-    case ex: Exception => Future.successful(None)
+  private def translateExceptions(): PartialFunction[Throwable, Future[Option[Seq[AFTVersion]]]] = {
+    case _: Exception => Future.successful(None)
   }
 }

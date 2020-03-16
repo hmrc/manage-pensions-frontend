@@ -61,7 +61,8 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
         false
     }
   }
-  private def createAFTViewModel(optVersions: Option[Seq[Int]], optLockedBy: Option[String],
+
+  private def createAFTViewModel(optVersions: Option[Seq[AFTVersion]], optLockedBy: Option[String],
                                  srn: String, startDate: String, endDate: String): Option[AFTViewModel] = {
     val dateFormatterYMD: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     val formattedStartDate: String = LocalDate.parse(startDate, dateFormatterYMD).format(DateTimeFormatter.ofPattern("d MMMM"))
@@ -94,23 +95,35 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
           else {
             Some(Message("messages__schemeDetails__aft_locked"))
           },
-          Link(id = "aftSummaryPageLink", url = appConfig.aftSummaryPageUrl.format(srn, startDate, versions.headOption.getOrElse("1")),
+          Link(id = "aftSummaryPageLink", url = appConfig.aftSummaryPageUrl.format(srn, startDate, versions.head.reportVersion),
             linkText = Message("messages__schemeDetails__aft_view"))
         )
         )
-      case (Some(versions), None) =>
+      case (Some(versions), None) if versions.size == 1 =>
         Option(AFTViewModel(
-          Some(Message("messages__schemeDetails__aft_period", formattedStartDate, formattedEndDate)),
+          Some(Message("messages__schemeDetails__aft_single", formattedStartDate, formattedEndDate)),
           Some(Message("messages__schemeDetails__aft_inProgress")),
           Link(
             id = "aftSummaryPageLink",
-            url = appConfig.aftSummaryPageUrl.format(srn, startDate, versions.headOption.getOrElse("1")),
+            url = appConfig.aftSummaryPageUrl.format(srn, startDate, versions.head.reportVersion),
+            linkText = Message("messages__schemeDetails__aft_view"))
+        )
+        )
+
+      case (Some(versions), None) =>
+        Option(AFTViewModel(
+          Some(Message("messages__schemeDetails__aft_multiple")),
+          None,
+          Link(
+            id = "aftSummaryPageLink",
+            url = appConfig.aftSummaryPageUrl.format(srn, startDate, versions.head.reportVersion),
             linkText = Message("messages__schemeDetails__aft_view"))
         )
         )
       case _ => None
     }
   }
+
   def displayChangeLink(isSchemeOpen: Boolean, lock: Option[Lock]): Boolean = {
     if (!isSchemeOpen) {
       false
