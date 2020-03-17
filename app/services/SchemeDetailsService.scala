@@ -105,7 +105,7 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
           Some(Message("messages__schemeDetails__aft_inProgress")),
           Link(
             id = "aftSummaryPageLink",
-            url = appConfig.aftSummaryPageUrl.format(srn, startDate, versions.head.reportVersion),
+            url = appConfig.aftReturnHistoryUrl.format(srn, startDate),
             linkText = Message("messages__schemeDetails__aft_view"))
         )
         )
@@ -116,7 +116,7 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
           None,
           Link(
             id = "aftSummaryPageLink",
-            url = appConfig.aftSummaryPageUrl.format(srn, startDate, versions.head.reportVersion),
+            url = appConfig.aftReturnHistoryUrl.format(srn, startDate),
             linkText = Message("messages__schemeDetails__aft_view"))
         )
         )
