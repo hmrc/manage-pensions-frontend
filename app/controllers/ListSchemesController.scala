@@ -22,17 +22,19 @@ import connectors.UserAnswersCacheConnector
 import connectors.admin.MinimalPsaConnector
 import connectors.scheme.ListOfSchemesConnector
 import controllers.actions.{AuthAction, DataRetrievalAction}
+import forms.ListSchemesFormProvider
 import identifiers.PSANameId
 import models.requests.OptionalDataRequest
-import models.{Index, ListOfSchemes, SchemeDetail}
+import models.{ListOfSchemes, SchemeDetail, Index}
+import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.api.mvc.{Result, AnyContent, MessagesControllerComponents, Action}
 import services.PaginationService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import views.html.list_schemes
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{Future, ExecutionContext}
 
 class ListSchemesController @Inject()(
                                        val appConfig: FrontendAppConfig,
@@ -44,10 +46,13 @@ class ListSchemesController @Inject()(
                                        userAnswersCacheConnector: UserAnswersCacheConnector,
                                        val controllerComponents: MessagesControllerComponents,
                                        view: list_schemes,
-                                       paginationService: PaginationService
+                                       paginationService: PaginationService,
+                                       formProvider:ListSchemesFormProvider
                                      )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
-  val pagination: Int = appConfig.listSchemePagination
+  private val pagination: Int = appConfig.listSchemePagination
+
+  private val form: Form[String] = formProvider()
 
   def listOfSchemes(implicit hc: HeaderCarrier,request: OptionalDataRequest[AnyContent]): Future[ListOfSchemes] =
     listSchemesConnector.getListOfSchemes(request.psaId.id)
@@ -63,6 +68,7 @@ class ListSchemesController @Inject()(
         userAnswersCacheConnector.save(request.externalId, PSANameId, name).map {
           _ =>
             Ok(view(
+              form,
               schemes = schemeDetails,
               psaName = name,
               numberOfSchemes = numberOfSchemes,
@@ -77,21 +83,57 @@ class ListSchemesController @Inject()(
     })
   }
 
+  private def test(func:List[SchemeDetail]=>List[SchemeDetail] = identity)(implicit request:OptionalDataRequest[AnyContent]):Future[Result] = {
+    listOfSchemes.flatMap {
+      listOfSchemes =>
+        val numberOfSchemes: Int = func(schemeDetails(listOfSchemes)).length
+
+        val numberOfPages: Int = paginationService.divide(numberOfSchemes, pagination)
+
+        renderView(
+          schemeDetails = schemeDetails(listOfSchemes).take(pagination),
+          numberOfSchemes = numberOfSchemes,
+          pageNumber = 1,
+          numberOfPages = numberOfPages
+        )
+    }
+  }
+
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
-      listOfSchemes.flatMap {
-        listOfSchemes =>
-          val numberOfSchemes: Int = schemeDetails(listOfSchemes).length
+      test()
+  }
 
-          val numberOfPages: Int = paginationService.divide(numberOfSchemes, pagination)
+  private val srnRegex = "^S[0-9]{10}$".r
+  private val pstrRegex = "^[0-9]{8}[A-Za-z]{2}$".r
 
-          renderView(
-            schemeDetails = schemeDetails(listOfSchemes).take(pagination),
-            numberOfSchemes = numberOfSchemes,
-            pageNumber = 1,
-            numberOfPages = numberOfPages
-          )
-      }
+  val func: (String, List[SchemeDetail]) => List[SchemeDetail] = (searchText, list) => {
+    searchText match {
+      case srn if srnRegex.findFirstIn(searchText).isDefined =>
+      println( "\n>>SRN:" + srn)
+        list.filter(_.referenceNumber.startsWith(searchText))
+      case pstr if pstrRegex.findFirstIn(searchText).isDefined =>
+
+        println( "\n>>>" + list)
+
+        println( "\n>>PSTR:" + pstr + "...")
+
+        list.filter(_.pstr.exists(_ == searchText))
+      case _ =>
+      println( "\nNOPE")
+        list
+    }
+  }
+
+  def onSubmit: Action[AnyContent] = (authenticate andThen getData).async {
+    implicit request =>
+      form.bindFromRequest().fold(
+        (formWithErrors: Form[_]) =>
+          Future.successful(BadRequest("WAAA")), value =>
+        {
+          test(func(value, _:List[SchemeDetail]))
+        }
+      )
   }
 
   def onPageLoadWithPageNumber(pageNumber: Index): Action[AnyContent] = (authenticate andThen getData).async {
