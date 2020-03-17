@@ -99,6 +99,7 @@ messages__listSchemes__searchText_label = Search for a scheme
 messages__listSchemes__searchText_hint = Enter a scheme name, SRN or PSTR
 messages__listSchemes__searchText_clearlink = Clear Search
 messages__listSchemes__search_noMatches = We did not find any schemes that match what you searched for.
+messages__listSchemes__search_submit = Search
 
 messages__schemesOverview__title = Pension scheme administrator overview
 messages__schemesOverview__heading = Managing pension schemes
