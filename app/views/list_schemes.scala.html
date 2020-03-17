@@ -106,20 +106,34 @@
                     hint  = Some(messages("messages__listSchemes__searchText_hint"))
                 )
 
-                <p>
-                    <a id="clear-search-link" href="@ListSchemesController.onPageLoad"> @messages("messages__listSchemes__searchText_clearlink")</a>
-                </p>
+                @if(form("searchText").value.exists(_.length > 0)){
+                    <p>
+                        <a id="clear-search-link" href="@ListSchemesController.onPageLoad"> @messages("messages__listSchemes__searchText_clearlink")</a>
+                    </p>
+                }else{
+                    <p>@Html(messages("messages__schemesOverview__manage__redirect__text", manageRedirectLink))</p>
+                }
 
                 @components.submit_button("site.continue")
 
-                <p>@Html(messages("messages__schemesOverview__manage__redirect__text", manageRedirectLink))</p>
+
             </div>
         </div>
+
+        @if(form("searchText").value.exists(_.length > 0)){
+            @if(schemes.size>0){
+                @{schemes.size} results
+            }
+        }
 
         @if(schemes.isEmpty) {
             <div class="grid-row">
                 <div class="column-two-thirds">
-                    <p id="noSchemes">@messages("messages__listSchemes__noSchemes")</p>
+                    @if(form("searchText").value.exists(_.length > 0)){
+                        <p id="noMatches">@messages("messages__listSchemes__search_noMatches")</p>
+                    }else{
+                        <p id="noSchemes">@messages("messages__listSchemes__noSchemes")</p>
+                    }
                 </div>
             </div>
         } else {

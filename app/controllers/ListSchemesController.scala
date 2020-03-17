@@ -128,6 +128,9 @@ class ListSchemesController @Inject()(
         (formWithErrors: Form[_]) =>
           Future.successful(BadRequest("WAAA")), value =>
         {
+
+
+
           search(filter = filter(value, _:List[SchemeDetail]),searchText = value )
         }
       )
