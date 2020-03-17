@@ -26,6 +26,7 @@ nav span.nav-item {
   display: inline-block;
   padding-right: 2rem;
 }
+
 @media (max-width: 640px) {
   nav span.nav-item:first-child {
     padding: 0 0.5rem 0 0;
@@ -38,6 +39,10 @@ nav span.nav-item {
   nav span.nav-item:last-child {
     padding: 0 0 0 0.5rem;
   }
+}
+
+.govuk-box-highlight {
+  background: #00703c;
 }
 
 nav span.nav-item a[aria-current="page"] {
