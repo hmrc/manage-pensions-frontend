@@ -97,6 +97,7 @@ messages__listSchemes__PSTR__screen_reader = {0}’s Pension Scheme Tax Referenc
 messages__listSchemes__status__screen_reader = {0}’s status is {1}
 messages__listSchemes__searchText_label = Search for a scheme
 messages__listSchemes__searchText_hint = Enter a scheme name, SRN or PSTR
+messages__listSchemes__searchText_clearlink = Clear Search
 
 messages__schemesOverview__title = Pension scheme administrator overview
 messages__schemesOverview__heading = Managing pension schemes

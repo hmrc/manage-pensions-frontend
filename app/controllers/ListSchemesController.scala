@@ -60,15 +60,17 @@ class ListSchemesController @Inject()(
   def schemeDetails(listOfSchemes: ListOfSchemes): List[SchemeDetail] =
     listOfSchemes.schemeDetail.getOrElse(List.empty[SchemeDetail])
 
-  def renderView(schemeDetails: List[SchemeDetail], numberOfSchemes: Int, pageNumber: Int, numberOfPages: Int)
+  def renderView(schemeDetails: List[SchemeDetail], numberOfSchemes: Int, pageNumber: Int, numberOfPages: Int,
+                 searchText:String )
                 (implicit hc: HeaderCarrier, request: OptionalDataRequest[AnyContent]): Future[Result] = {
+    val filledForm = form.fill(searchText)
 
     minimalPsaConnector.getPsaNameFromPsaID(request.psaId.id).flatMap(_.map {
       name =>
         userAnswersCacheConnector.save(request.externalId, PSANameId, name).map {
           _ =>
             Ok(view(
-              form,
+              filledForm,
               schemes = schemeDetails,
               psaName = name,
               numberOfSchemes = numberOfSchemes,
@@ -83,15 +85,17 @@ class ListSchemesController @Inject()(
     })
   }
 
-  private def test(func:List[SchemeDetail]=>List[SchemeDetail] = identity)(implicit request:OptionalDataRequest[AnyContent]):Future[Result] = {
+  private def search(filter:List[SchemeDetail]=>List[SchemeDetail] = identity, searchText:String)(implicit request:OptionalDataRequest[AnyContent]):Future[Result] = {
     listOfSchemes.flatMap {
       listOfSchemes =>
-        val numberOfSchemes: Int = func(schemeDetails(listOfSchemes)).length
+        val searchResult = filter(schemeDetails(listOfSchemes))
+        val numberOfSchemes: Int = searchResult.length
 
         val numberOfPages: Int = paginationService.divide(numberOfSchemes, pagination)
 
         renderView(
-          schemeDetails = schemeDetails(listOfSchemes).take(pagination),
+          searchText = searchText,
+          schemeDetails = searchResult.take(pagination),
           numberOfSchemes = numberOfSchemes,
           pageNumber = 1,
           numberOfPages = numberOfPages
@@ -101,26 +105,19 @@ class ListSchemesController @Inject()(
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
-      test()
+      search(searchText = "")
   }
 
   private val srnRegex = "^S[0-9]{10}$".r
   private val pstrRegex = "^[0-9]{8}[A-Za-z]{2}$".r
 
-  val func: (String, List[SchemeDetail]) => List[SchemeDetail] = (searchText, list) => {
+  private val filter: (String, List[SchemeDetail]) => List[SchemeDetail] = (searchText, list) => {
     searchText match {
       case srn if srnRegex.findFirstIn(searchText).isDefined =>
-      println( "\n>>SRN:" + srn)
-        list.filter(_.referenceNumber.startsWith(searchText))
+        list.filter(_.referenceNumber == searchText)
       case pstr if pstrRegex.findFirstIn(searchText).isDefined =>
-
-        println( "\n>>>" + list)
-
-        println( "\n>>PSTR:" + pstr + "...")
-
         list.filter(_.pstr.exists(_ == searchText))
       case _ =>
-      println( "\nNOPE")
         list
     }
   }
@@ -131,7 +128,7 @@ class ListSchemesController @Inject()(
         (formWithErrors: Form[_]) =>
           Future.successful(BadRequest("WAAA")), value =>
         {
-          test(func(value, _:List[SchemeDetail]))
+          search(filter = filter(value, _:List[SchemeDetail]),searchText = value )
         }
       )
   }
@@ -146,6 +143,7 @@ class ListSchemesController @Inject()(
 
           if (pageNumber > 0 && pageNumber <= numberOfPages)
             renderView(
+              searchText = "",
               schemeDetails = schemeDetails(listOfSchemes).slice((pageNumber * pagination) - pagination, pageNumber * pagination),
               numberOfSchemes = numberOfSchemes,
               pageNumber = pageNumber,

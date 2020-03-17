@@ -106,6 +106,10 @@
                     hint  = Some(messages("messages__listSchemes__searchText_hint"))
                 )
 
+                <p>
+                    <a id="clear-search-link" href="@ListSchemesController.onPageLoad"> @messages("messages__listSchemes__searchText_clearlink")</a>
+                </p>
+
                 @components.submit_button("site.continue")
 
                 <p>@Html(messages("messages__schemesOverview__manage__redirect__text", manageRedirectLink))</p>
