@@ -18,15 +18,18 @@ package controllers
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
-import connectors.admin.MinimalPsaConnector
 import connectors.UserAnswersCacheConnector
+import connectors.admin.MinimalPsaConnector
 import connectors.scheme.ListOfSchemesConnector
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import controllers.actions.{AuthAction, DataRetrievalAction}
 import identifiers.PSANameId
-import models.SchemeDetail
+import models.requests.OptionalDataRequest
+import models.{Index, ListOfSchemes, SchemeDetail}
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import services.PaginationService
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import views.html.list_schemes
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -40,23 +43,74 @@ class ListSchemesController @Inject()(
                                        minimalPsaConnector: MinimalPsaConnector,
                                        userAnswersCacheConnector: UserAnswersCacheConnector,
                                        val controllerComponents: MessagesControllerComponents,
-                                       view: list_schemes
+                                       view: list_schemes,
+                                       paginationService: PaginationService
                                      )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+
+  val pagination: Int = appConfig.listSchemePagination
+
+  def listOfSchemes(implicit hc: HeaderCarrier,request: OptionalDataRequest[AnyContent]): Future[ListOfSchemes] =
+    listSchemesConnector.getListOfSchemes(request.psaId.id)
+
+  def schemeDetails(listOfSchemes: ListOfSchemes): List[SchemeDetail] =
+    listOfSchemes.schemeDetail.getOrElse(List.empty[SchemeDetail])
+
+  def renderView(schemeDetails: List[SchemeDetail], numberOfSchemes: Int, pageNumber: Int, numberOfPages: Int)
+                (implicit hc: HeaderCarrier, request: OptionalDataRequest[AnyContent]): Future[Result] = {
+
+    minimalPsaConnector.getPsaNameFromPsaID(request.psaId.id).flatMap(_.map {
+      name =>
+        userAnswersCacheConnector.save(request.externalId, PSANameId, name).map {
+          _ =>
+            Ok(view(
+              schemes = schemeDetails,
+              psaName = name,
+              numberOfSchemes = numberOfSchemes,
+              pagination = pagination,
+              pageNumber = pageNumber,
+              pageNumberLinks = paginationService.pageNumberLinks(pageNumber, numberOfSchemes, pagination, numberOfPages),
+              numberOfPages = numberOfPages
+            ))
+        }
+    }.getOrElse {
+      Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+    })
+  }
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
-      listSchemesConnector.getListOfSchemes(request.psaId.id).flatMap {
+      listOfSchemes.flatMap {
         listOfSchemes =>
-          val schemes = listOfSchemes.schemeDetail.getOrElse(List.empty[SchemeDetail])
+          val numberOfSchemes: Int = schemeDetails(listOfSchemes).length
 
-              minimalPsaConnector.getPsaNameFromPsaID(request.psaId.id).flatMap(_.map { name =>
-                 userAnswersCacheConnector.save(request.externalId, PSANameId, name).map { _ =>
-                  Ok(view(schemes, name))
-                }}.getOrElse {
-                Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
-              }
-              )
+          val numberOfPages: Int = paginationService.divide(numberOfSchemes, pagination)
 
+          renderView(
+            schemeDetails = schemeDetails(listOfSchemes).take(pagination),
+            numberOfSchemes = numberOfSchemes,
+            pageNumber = 1,
+            numberOfPages = numberOfPages
+          )
+      }
+  }
+
+  def onPageLoadWithPageNumber(pageNumber: Index): Action[AnyContent] = (authenticate andThen getData).async {
+    implicit request =>
+      listOfSchemes.flatMap {
+        listOfSchemes =>
+          val numberOfSchemes: Int = schemeDetails(listOfSchemes).length
+
+          val numberOfPages: Int = paginationService.divide(numberOfSchemes, pagination)
+
+          if (pageNumber > 0 && pageNumber <= numberOfPages)
+            renderView(
+              schemeDetails = schemeDetails(listOfSchemes).slice((pageNumber * pagination) - pagination, pageNumber * pagination),
+              numberOfSchemes = numberOfSchemes,
+              pageNumber = pageNumber,
+              numberOfPages = numberOfPages
+            )
+          else
+            Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
       }
   }
 }

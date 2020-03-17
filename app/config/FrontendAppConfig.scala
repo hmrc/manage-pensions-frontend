@@ -50,8 +50,8 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val aftUrl: String = servicesConfig.baseUrl("pension-scheme-accounting-for-tax")
   lazy val schemeFrontendUrl: String = servicesConfig.baseUrl("pensions-scheme-frontend")
 
-  lazy val timeout = loadConfig("session._timeoutSeconds")
-  lazy val countdown = loadConfig("session._CountdownInSeconds")
+  lazy val timeout: String = loadConfig("session._timeoutSeconds")
+  lazy val countdown: String = loadConfig("session._CountdownInSeconds")
 
   lazy val loginUrl: String = loadConfig("urls.login")
   lazy val loginContinueUrl: String = loadConfig("urls.loginContinue")
@@ -107,4 +107,6 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val retryAttempts: Int = runModeConfiguration.get[Int]("retry.max.attempts")
   lazy val retryWaitMs: Int = runModeConfiguration.get[Int]("retry.initial.wait.ms")
   lazy val retryWaitFactor: Double = runModeConfiguration.get[Double]("retry.wait.factor")
+
+  lazy val listSchemePagination: Int = runModeConfiguration.get[Int]("listSchemePagination")
 }

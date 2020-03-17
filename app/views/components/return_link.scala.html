@@ -15,19 +15,17 @@
  *@
 
 @(
- returnCall: Call,
- parameter: Option[String] = None,
- messageKey: String = "site.return_to"
- )(implicit messages: Messages)
+    returnCall: Call,
+    parameter: Option[String] = None,
+    messageKey: String = "site.return_to"
+)(implicit messages: Messages)
 
- @returnMessage=@{
-  parameter.fold(messages(messageKey))(name=> messages(messageKey, name))
- }
-
- <div class="grid-row">
-  <div class="column-two-thirds">
-   <p class="govuk-margin-top-5">
-    <a id="return-link" href=@returnCall>@returnMessage</a>
-   </p>
-  </div>
- </div>
+<div class="grid-row">
+    <div class="column-two-thirds">
+        <p class="govuk-margin-top-5">
+            <a id="return-link" href=@returnCall>
+                @parameter.fold(messages(messageKey))(name => messages(messageKey, name))
+            </a>
+        </p>
+    </div>
+</div>

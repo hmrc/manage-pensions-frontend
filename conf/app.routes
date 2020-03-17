@@ -1,38 +1,40 @@
 # microservice specific routes
 
-->         /invitations                                 invitations.Routes
-->         /                                            remove.Routes
+->          /invitations                              invitations.Routes
+->          /                                         remove.Routes
 
-GET        /                                            controllers.SchemesOverviewController.redirect
+GET         /                                         controllers.SchemesOverviewController.redirect
 
-GET        /index                                       controllers.IndexController.onPageLoad
+GET         /index                                    controllers.IndexController.onPageLoad
 
-GET        /assets/*file                                controllers.Assets.versioned(path="/public", file: Asset)
+GET         /assets/*file                             controllers.Assets.versioned(path="/public", file: Asset)
 
-GET        /language/:lang                              controllers.LanguageSwitchController.switchToLanguage(lang: String)
+GET         /language/:lang                           controllers.LanguageSwitchController.switchToLanguage(lang: String)
 
-GET        /this-service-has-been-reset                 controllers.SessionExpiredController.onPageLoad
+GET         /this-service-has-been-reset              controllers.SessionExpiredController.onPageLoad
 
-GET        /unauthorised                                controllers.UnauthorisedController.onPageLoad
+GET         /unauthorised                             controllers.UnauthorisedController.onPageLoad
 
-GET        /logout                                      controllers.LogoutController.onPageLoad
+GET         /logout                                   controllers.LogoutController.onPageLoad
 
-GET        /you-need-to-register                        controllers.YouNeedToRegisterController.onPageLoad()
+GET         /you-need-to-register                     controllers.YouNeedToRegisterController.onPageLoad()
 
-GET        /cannot-start-registration                   controllers.CannotStartRegistrationController.onPageLoad()
+GET         /cannot-start-registration                controllers.CannotStartRegistrationController.onPageLoad()
 
-GET        /your-pension-schemes                        controllers.ListSchemesController.onPageLoad
+GET         /your-pension-schemes                     controllers.ListSchemesController.onPageLoad
 
-GET        /overview                                    controllers.SchemesOverviewController.onPageLoad()
+GET         /your-pension-schemes/page/:pageNumber    controllers.ListSchemesController.onPageLoadWithPageNumber(pageNumber: Int)
 
-GET        /overview/can-scheme-be-registered           controllers.SchemesOverviewController.onClickCheckIfSchemeCanBeRegistered()
+GET         /overview                                 controllers.SchemesOverviewController.onPageLoad()
 
-GET        /pension-scheme-summary/:srn                 controllers.SchemeDetailsController.onPageLoad(srn: SchemeReferenceNumber)
+GET         /overview/can-scheme-be-registered        controllers.SchemesOverviewController.onClickCheckIfSchemeCanBeRegistered()
 
-GET        /discard                                     controllers.DeleteSchemeController.onPageLoad
+GET         /pension-scheme-summary/:srn              controllers.SchemeDetailsController.onPageLoad(srn: SchemeReferenceNumber)
 
-POST       /discard                                     controllers.DeleteSchemeController.onSubmit
+GET         /discard                                  controllers.DeleteSchemeController.onPageLoad
 
-GET        /delete-changes/:srn                         controllers.DeleteSchemeChangesController.onPageLoad(srn: String)
+POST        /discard                                  controllers.DeleteSchemeController.onSubmit
 
-POST       /delete-changes/:srn                         controllers.DeleteSchemeChangesController.onSubmit(srn: String)
+GET         /delete-changes/:srn                      controllers.DeleteSchemeChangesController.onPageLoad(srn: String)
+
+POST        /delete-changes/:srn                      controllers.DeleteSchemeChangesController.onSubmit(srn: String)

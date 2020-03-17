@@ -22,11 +22,33 @@
 @import 'partials/_palette';
 @import 'partials/_focus';
 
-.scheme-overview-info {
-  p{
-    margin-bottom: 0px;
+nav span.nav-item {
+  display: inline-block;
+  padding-right: 2rem;
 }
+
+@media (max-width: 640px) {
+  nav span.nav-item:first-child {
+    padding: 0 0.5rem 0 0;
+  }
+
+  nav span.nav-item {
+    padding: 0 0.5rem;
+  }
+
+  nav span.nav-item:last-child {
+    padding: 0 0 0 0.5rem;
+  }
 }
-.govuk-box-highlight{
-background: #00703c;
+
+.govuk-box-highlight {
+  background: #00703c;
+}
+
+nav span.nav-item a[aria-current="page"] {
+  border-bottom: 0.4rem solid black;
+}
+
+nav span.nav-item a[aria-current="page"]:focus {
+  border-bottom: 0;
 }
