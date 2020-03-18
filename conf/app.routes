@@ -23,7 +23,7 @@ GET         /cannot-start-registration                controllers.CannotStartReg
 
 GET         /your-pension-schemes                     controllers.ListSchemesController.onPageLoad
 
-POST         /your-pension-schemes                    controllers.ListSchemesController.onSubmit
+POST         /your-pension-schemes                    controllers.ListSchemesController.onSearch
 
 GET         /your-pension-schemes/page/:pageNumber    controllers.ListSchemesController.onPageLoadWithPageNumber(pageNumber: Int)
 

@@ -130,30 +130,10 @@ class ListSchemesController @Inject()(
       }
     }
 
-
-
-  def onPageLoad: Action[AnyContent] = (authenticate andThen getData).async {
-    implicit request =>
-      searchAndRenderView(searchText = None, filter = identity)
-  }
-
-  def onSubmit: Action[AnyContent] = (authenticate andThen getData).async {
-    implicit request =>
-      form
-        .bindFromRequest()
-        .fold(
-          (formWithErrors: Form[_]) => Future.successful(BadRequest("WAAA")),
-          value =>
-            searchAndRenderView(
-              searchText = Some(value),
-              filter = filter(value, _: List[SchemeDetail])
-          )
-        )
-  }
-
   private def searchAndRenderView(
                                    searchText: Option[String],
-                                   filter: List[SchemeDetail] => List[SchemeDetail]
+                                   filter: List[SchemeDetail] => List[SchemeDetail],
+                                   pageNumber: Int
                                  )(implicit request: OptionalDataRequest[AnyContent]): Future[Result] = {
     listOfSchemes.flatMap { listOfSchemes =>
       val searchResult = filter(schemeDetails(listOfSchemes))
@@ -162,40 +142,64 @@ class ListSchemesController @Inject()(
       val numberOfPages: Int =
         paginationService.divide(numberOfSchemes, pagination)
 
-      renderView(
-        searchText = searchText,
-        schemeDetails = searchResult.take(pagination),
-        numberOfSchemes = numberOfSchemes,
-        pageNumber = 1,
-        numberOfPages = numberOfPages
-      )
-    }
-  }
+      val optionSearchResultToRender = pageNumber match {
+        case 1 => Some(searchResult.take(pagination))
+        case x if x <= numberOfPages =>
+          Some(searchResult.slice(
+            (pageNumber * pagination) - pagination,
+            pageNumber * pagination
+          ))
+        case _ =>
+          None
+      }
 
-  def onPageLoadWithPageNumber(pageNumber: Index): Action[AnyContent] =
-    (authenticate andThen getData).async { implicit request =>
-      listOfSchemes.flatMap { listOfSchemes =>
-        val numberOfSchemes: Int = schemeDetails(listOfSchemes).length
-
-        val numberOfPages: Int =
-          paginationService.divide(numberOfSchemes, pagination)
-
-        if (pageNumber > 0 && pageNumber <= numberOfPages) {
+      optionSearchResultToRender match {
+        case Some(searchResultToRender) =>
           renderView(
-            searchText = None,
-            schemeDetails = schemeDetails(listOfSchemes).slice(
-              (pageNumber * pagination) - pagination,
-              pageNumber * pagination
-            ),
+            searchText = searchText,
+            schemeDetails = searchResultToRender,
             numberOfSchemes = numberOfSchemes,
             pageNumber = pageNumber,
             numberOfPages = numberOfPages
           )
-        } else {
+        case _ =>
           Future.successful(
             Redirect(controllers.routes.SessionExpiredController.onPageLoad())
           )
-        }
       }
+    }
+  }
+
+  def onPageLoad: Action[AnyContent] = (authenticate andThen getData).async {
+    implicit request =>
+      searchAndRenderView(
+        searchText = None,
+        filter = identity,
+        pageNumber = 1
+      )
+  }
+
+  def onSearch: Action[AnyContent] = (authenticate andThen getData).async {
+    implicit request =>
+      form
+        .bindFromRequest()
+        .fold(
+          (formWithErrors: Form[_]) => Future.successful(BadRequest("WAAA")),
+          value =>
+            searchAndRenderView(
+              searchText = Some(value),
+              filter = filter(value, _: List[SchemeDetail]),
+              pageNumber = 1
+          )
+        )
+  }
+
+  def onPageLoadWithPageNumber(pageNumber: Index): Action[AnyContent] =
+    (authenticate andThen getData).async { implicit request =>
+      searchAndRenderView(
+        searchText = None,
+        filter = identity,
+        pageNumber = pageNumber
+      )
     }
 }
