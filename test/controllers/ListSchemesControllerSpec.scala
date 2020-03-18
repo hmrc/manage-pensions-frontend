@@ -174,7 +174,11 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
                            pagination: Int,
                            pageNumber: Int,
                            pageNumberLinks: Seq[Int],
-                           numberOfPages: Int
+                           numberOfPages: Int,
+                            noResultsMessageKey:Option[String]
+
+
+
                           ): String =
     view(
       form = listSchemesFormProvider.apply(),
@@ -211,7 +215,8 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
         pagination = pagination,
         pageNumber = 1,
         pageNumberLinks = Seq.empty,
-        numberOfPages = numberOfPages
+        numberOfPages = numberOfPages,
+        noResultsMessageKey = None
       )
     }
 
@@ -234,7 +239,8 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
         pagination = pagination,
         pageNumber = 1,
         pageNumberLinks = Seq.empty,
-        numberOfPages = numberOfPages
+        numberOfPages = numberOfPages,
+        noResultsMessageKey = None
       )
     }
 
@@ -261,7 +267,8 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
         pagination = pagination,
         pageNumber = 1,
         pageNumberLinks = paginationService.pageNumberLinks(pageNumber, numberOfSchemes, pagination, numberOfPages),
-        numberOfPages = numberOfPages
+        numberOfPages = numberOfPages,
+        noResultsMessageKey = None
       )
     }
 
@@ -288,7 +295,8 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
         pagination = pagination,
         pageNumber = pageNumber,
         pageNumberLinks = paginationService.pageNumberLinks(pageNumber, numberOfSchemes, pagination, numberOfPages),
-        numberOfPages = numberOfPages
+        numberOfPages = numberOfPages,
+        noResultsMessageKey = None
       )
     }
   }
