@@ -79,11 +79,11 @@ class ListSchemesController @Inject()(
     pageNumber: Int,
     numberOfPages: Int,
     searchText: Option[String],
-    noResultsMessageKey: Option[String]
+    noResultsMessageKey: Option[String],
+    status: Status,
+    form:Form[_]
   )(implicit hc: HeaderCarrier,
     request: OptionalDataRequest[AnyContent]): Future[Result] = {
-    val filledForm = searchText.fold(form)(form.fill)
-
     minimalPsaConnector
       .getPsaNameFromPsaID(request.psaId.id)
       .flatMap(_.map {
@@ -91,20 +91,15 @@ class ListSchemesController @Inject()(
           userAnswersCacheConnector
             .save(request.externalId, PSANameId, name)
             .map { _ =>
-              Ok(
+              status(
                 view(
-                  filledForm,
+                  form,
                   schemes = schemeDetails,
                   psaName = name,
                   numberOfSchemes = numberOfSchemes,
                   pagination = pagination,
                   pageNumber = pageNumber,
-                  pageNumberLinks = paginationService.pageNumberLinks(
-                    pageNumber,
-                    numberOfSchemes,
-                    pagination,
-                    numberOfPages
-                  ),
+                  pageNumberLinks = paginationService.pageNumberLinks( pageNumber, numberOfSchemes, pagination, numberOfPages),
                   numberOfPages = numberOfPages,
                   noResultsMessageKey
                 )
@@ -135,7 +130,9 @@ class ListSchemesController @Inject()(
   private def searchAndRenderView(
     searchText: Option[String],
     pageNumber: Int,
-    doSearch: Boolean
+    doSearch: Boolean,
+    status: Status,
+    form: Form[_]
   )(implicit request: OptionalDataRequest[AnyContent]): Future[Result] = {
     listOfSchemes.flatMap { listOfSchemes =>
       val filterSearchResults: List[SchemeDetail] => List[SchemeDetail] =
@@ -170,7 +167,9 @@ class ListSchemesController @Inject()(
             numberOfSchemes = numberOfSchemes,
             pageNumber = pageNumber,
             numberOfPages = numberOfPages,
-            noResultsMessageKey = noResultsMessageKey
+            noResultsMessageKey = noResultsMessageKey,
+            status = status,
+            form = form
           )
         case _ =>
           Future.successful(
@@ -201,7 +200,7 @@ class ListSchemesController @Inject()(
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
-      searchAndRenderView(searchText = None, pageNumber = 1, doSearch = false)
+      searchAndRenderView(searchText = None, pageNumber = 1, doSearch = false, status = Ok, form = form)
   }
 
   def onPageLoadWithPageNumber(pageNumber: Index): Action[AnyContent] =
@@ -209,17 +208,21 @@ class ListSchemesController @Inject()(
       searchAndRenderView(
         searchText = None,
         pageNumber = pageNumber,
-        doSearch = false
+        doSearch = false,
+        status = Ok,
+        form = form
       )
     }
 
   def onSearch: Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
-      val value = form
+      form
         .bindFromRequest()
-        .fold((formWithErrors: Form[_]) => None, value => Some(value))
-
-      searchAndRenderView(searchText = value, pageNumber = 1, doSearch = true)
+        .fold((formWithErrors: Form[_]) =>
+          searchAndRenderView(searchText = None, pageNumber = 1, doSearch = false, status = BadRequest, form = formWithErrors),
+          value =>
+            searchAndRenderView(searchText = Some(value), pageNumber = 1, doSearch = true, status = Ok, form = form.fill(value))
+        )
   }
 
 }

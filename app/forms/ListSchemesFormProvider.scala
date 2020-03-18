@@ -23,6 +23,6 @@ import play.api.data.Form
 class ListSchemesFormProvider @Inject()() extends Mappings {
 
   def apply(): Form[String] = Form(
-    "searchText" -> text("messages__confirmStopBeingPsa_required")
+    "searchText" -> text("messages__listSchemes__search_required")
   )
 }
