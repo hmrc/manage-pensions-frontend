@@ -32,7 +32,8 @@
     pagination: Int,
     pageNumber: Int,
     pageNumberLinks: Seq[Int],
-    numberOfPages: Int
+    numberOfPages: Int,
+    noResultsMessageKey: Option[String]
 )(implicit
     request: Request[_],
     messages: Messages
@@ -124,17 +125,15 @@
             }
         }
 
-        @if(schemes.isEmpty) {
+        @noResultsMessageKey.map{ text =>
             <div class="grid-row">
                 <div class="column-two-thirds">
-                    @if(form("searchText").value.exists(_.length > 0)){
-                        <p id="noMatches">@messages("messages__listSchemes__search_noMatches")</p>
-                    }else{
-                        <p id="noSchemes">@messages("messages__listSchemes__noSchemes")</p>
-                    }
+                    <p id="noMatches">@messages(text)</p>
                 </div>
             </div>
-        } else {
+        }
+
+        @if(schemes.nonEmpty) {
             @components.scheme_list(schemes, appConfig)
         }
 

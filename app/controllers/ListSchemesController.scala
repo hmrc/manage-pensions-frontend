@@ -78,7 +78,8 @@ class ListSchemesController @Inject()(
     numberOfSchemes: Int,
     pageNumber: Int,
     numberOfPages: Int,
-    searchText: Option[String]
+    searchText: Option[String],
+    noResultsMessageKey: Option[String]
   )(implicit hc: HeaderCarrier,
     request: OptionalDataRequest[AnyContent]): Future[Result] = {
     val filledForm = searchText.fold(form)(form.fill)
@@ -104,7 +105,8 @@ class ListSchemesController @Inject()(
                     pagination,
                     numberOfPages
                   ),
-                  numberOfPages = numberOfPages
+                  numberOfPages = numberOfPages,
+                  noResultsMessageKey
                 )
               )
             }
@@ -131,36 +133,41 @@ class ListSchemesController @Inject()(
     }
 
   private def searchAndRenderView(
-                                   searchText: Option[String],
-                                   filter: List[SchemeDetail] => List[SchemeDetail],
-                                   pageNumber: Int
-                                 )(implicit request: OptionalDataRequest[AnyContent]): Future[Result] = {
+    searchText: Option[String],
+    pageNumber: Int,
+    doSearch: Boolean
+  )(implicit request: OptionalDataRequest[AnyContent]): Future[Result] = {
     listOfSchemes.flatMap { listOfSchemes =>
-      val searchResult = filter(schemeDetails(listOfSchemes))
+      val filterSearchResults: List[SchemeDetail] => List[SchemeDetail] =
+        if (doSearch && searchText.isDefined) {
+          filter(searchText.getOrElse(""), _: List[SchemeDetail])
+        } else {
+          identity
+        }
+
+      val searchResult = filterSearchResults(schemeDetails(listOfSchemes))
+
+      val noResultsMessageKey = (doSearch, searchResult.isEmpty, searchText.isDefined) match {
+        case (true, _, false) => Some("messages__listSchemes__search_noMatches")
+        case (true, true, _) => Some("messages__listSchemes__search_noMatches")
+        case (false, true, _) => Some("messages__listSchemes__noSchemes")
+        case _ => None
+      }
+
       val numberOfSchemes: Int = searchResult.length
 
       val numberOfPages: Int =
         paginationService.divide(numberOfSchemes, pagination)
 
-      val optionSearchResultToRender = pageNumber match {
-        case 1 => Some(searchResult.take(pagination))
-        case p if p <= numberOfPages =>
-          Some(searchResult.slice(
-            (pageNumber * pagination) - pagination,
-            pageNumber * pagination
-          ))
-        case _ =>
-          None
-      }
-
-      optionSearchResultToRender match {
+      selectPage(searchResult, pageNumber, numberOfPages) match {
         case Some(searchResultToRender) =>
           renderView(
             searchText = searchText,
             schemeDetails = searchResultToRender,
             numberOfSchemes = numberOfSchemes,
             pageNumber = pageNumber,
-            numberOfPages = numberOfPages
+            numberOfPages = numberOfPages,
+            noResultsMessageKey = noResultsMessageKey
           )
         case _ =>
           Future.successful(
@@ -170,42 +177,42 @@ class ListSchemesController @Inject()(
     }
   }
 
-  def onPageLoad: Action[AnyContent] = (authenticate andThen getData).async {
-    implicit request =>
-      searchAndRenderView(
-        searchText = None,
-        filter = identity,
-        pageNumber = 1
-      )
+  private def selectPage(searchResult: List[SchemeDetail], pageNumber: Int, numberOfPages: Int):Option[List[SchemeDetail]] = {
+    pageNumber match {
+      case 1 => Some(searchResult.take(pagination))
+      case p if p <= numberOfPages =>
+        Some(
+          searchResult.slice(
+            (pageNumber * pagination) - pagination,
+            pageNumber * pagination
+          )
+        )
+      case _ =>
+        None
+    }
   }
 
-  def onSearch: Action[AnyContent] = (authenticate andThen getData).async {
+  def onPageLoad: Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
-      val value = form
-        .bindFromRequest()
-        .fold(
-          (formWithErrors: Form[_]) => None,
-          value => Some(value)
-        )
-
-      val f: List[SchemeDetail] => List[SchemeDetail] = value match {
-        case Some(v) => filter(v, _: List[SchemeDetail])
-        case _ => _ => List.empty
-      }
-
-      searchAndRenderView(
-        searchText = value,
-        filter = f,
-        pageNumber = 1
-      )
+      searchAndRenderView(searchText = None, pageNumber = 1, doSearch = false)
   }
 
   def onPageLoadWithPageNumber(pageNumber: Index): Action[AnyContent] =
     (authenticate andThen getData).async { implicit request =>
       searchAndRenderView(
         searchText = None,
-        filter = identity,
-        pageNumber = pageNumber
+        pageNumber = pageNumber,
+        doSearch = false
       )
     }
+
+  def onSearch: Action[AnyContent] = (authenticate andThen getData).async {
+    implicit request =>
+      val value = form
+        .bindFromRequest()
+        .fold((formWithErrors: Form[_]) => None, value => Some(value))
+
+      searchAndRenderView(searchText = value, pageNumber = 1, doSearch = true)
+  }
+
 }
