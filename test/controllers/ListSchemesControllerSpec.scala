@@ -21,6 +21,7 @@ import connectors.admin.MinimalPsaConnector
 import connectors.FakeUserAnswersCacheConnector
 import connectors.scheme.ListOfSchemesConnector
 import controllers.actions.{AuthAction, FakeAuthAction}
+import forms.ListSchemesFormProvider
 import models.{ListOfSchemes, SchemeDetail, SchemeStatus}
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -41,6 +42,7 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
   private val mockMinimalPsaConnector: MinimalPsaConnector = mock[MinimalPsaConnector]
   private val mockAppConfig: FrontendAppConfig = mock[FrontendAppConfig]
   private val paginationService = new PaginationService
+  private val listSchemesFormProvider = new ListSchemesFormProvider
 
   private val fullSchemes: List[SchemeDetail] =
     List(
@@ -159,13 +161,15 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
         FakeUserAnswersCacheConnector,
         stubMessagesControllerComponents(),
         view,
-        paginationService
+        paginationService,
+        listSchemesFormProvider
       )
   }
 
   private val view: list_schemes = app.injector.instanceOf[list_schemes]
 
-  private def viewAsString(schemes: List[SchemeDetail],
+  private def viewAsString(
+                            schemes: List[SchemeDetail],
                            numberOfSchemes: Int,
                            pagination: Int,
                            pageNumber: Int,
@@ -173,13 +177,15 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
                            numberOfPages: Int
                           ): String =
     view(
+      form = listSchemesFormProvider.apply(),
       schemes = schemes,
       psaName = psaName,
       numberOfSchemes = numberOfSchemes,
       pagination = pagination,
       pageNumber = pageNumber,
       pageNumberLinks = pageNumberLinks,
-      numberOfPages = numberOfPages
+      numberOfPages = numberOfPages,
+      noResultsMessageKey = Some("messages__listSchemes__noSchemes")
     )(fakeRequest, messages).toString()
 
   "ListSchemesController" when {
