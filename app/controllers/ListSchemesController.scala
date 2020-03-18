@@ -147,12 +147,15 @@ class ListSchemesController @Inject()(
 
       val searchResult = filterSearchResults(schemeDetails(listOfSchemes))
 
-      val noResultsMessageKey = (doSearch, searchResult.isEmpty, searchText.isDefined) match {
-        case (true, _, false) => Some("messages__listSchemes__search_noMatches")
-        case (true, true, _) => Some("messages__listSchemes__search_noMatches")
-        case (false, true, _) => Some("messages__listSchemes__noSchemes")
-        case _ => None
-      }
+      val noResultsMessageKey =
+        (doSearch, searchResult.isEmpty, searchText.isDefined) match {
+          case (true, _, false) =>
+            Some("messages__listSchemes__search_noMatches")
+          case (true, true, _) =>
+            Some("messages__listSchemes__search_noMatches")
+          case (false, true, _) => Some("messages__listSchemes__noSchemes")
+          case _                => None
+        }
 
       val numberOfSchemes: Int = searchResult.length
 
@@ -177,7 +180,11 @@ class ListSchemesController @Inject()(
     }
   }
 
-  private def selectPageOfResults(searchResult: List[SchemeDetail], pageNumber: Int, numberOfPages: Int):Option[List[SchemeDetail]] = {
+  private def selectPageOfResults(
+    searchResult: List[SchemeDetail],
+    pageNumber: Int,
+    numberOfPages: Int
+  ): Option[List[SchemeDetail]] = {
     pageNumber match {
       case 1 => Some(searchResult.take(pagination))
       case p if p <= numberOfPages =>
