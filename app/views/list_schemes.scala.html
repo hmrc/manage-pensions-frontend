@@ -89,6 +89,14 @@
     )
 }
 
+@button_content = @{
+    if(form("searchText").value.exists(_.length > 0)) {
+        "messages__listSchemes__search_again"
+    } else {
+        "messages__listSchemes__search_submit"
+    }
+}
+
 @main_template(
     title = messages("messages__listSchemes__title"),
     bodyClasses = Some("full-width")
@@ -106,7 +114,7 @@
                 label = messages("messages__listSchemes__searchText_label"),
                 hint  = Some(messages("messages__listSchemes__searchText_hint")),
                 labelClass = Some("heading-medium"),
-                messageKey = messages("messages__listSchemes__search_submit")
+                messageKey = messages(button_content)
                 )
                 @if(form("searchText").value.exists(_.length > 0)){
                     <p>

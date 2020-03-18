@@ -73,15 +73,15 @@ class ListSchemesController @Inject()(
   private def schemeDetails(listOfSchemes: ListOfSchemes): List[SchemeDetail] =
     listOfSchemes.schemeDetail.getOrElse(List.empty[SchemeDetail])
 
+  //scalastyle:off parameter.number
   private def renderView(
     schemeDetails: List[SchemeDetail],
     numberOfSchemes: Int,
     pageNumber: Int,
     numberOfPages: Int,
-    searchText: Option[String],
     noResultsMessageKey: Option[String],
     status: Status,
-    form:Form[_]
+    form: Form[_]
   )(implicit hc: HeaderCarrier,
     request: OptionalDataRequest[AnyContent]): Future[Result] = {
     minimalPsaConnector
@@ -99,7 +99,12 @@ class ListSchemesController @Inject()(
                   numberOfSchemes = numberOfSchemes,
                   pagination = pagination,
                   pageNumber = pageNumber,
-                  pageNumberLinks = paginationService.pageNumberLinks( pageNumber, numberOfSchemes, pagination, numberOfPages),
+                  pageNumberLinks = paginationService.pageNumberLinks(
+                    pageNumber,
+                    numberOfSchemes,
+                    pagination,
+                    numberOfPages
+                  ),
                   numberOfPages = numberOfPages,
                   noResultsMessageKey
                 )
@@ -145,12 +150,10 @@ class ListSchemesController @Inject()(
       val searchResult = filterSearchResults(schemeDetails(listOfSchemes))
 
       val noResultsMessageKey =
-        (doSearch, searchResult.isEmpty, searchText.isDefined) match {
-          case (true, _, false) =>
+        (doSearch, searchResult.isEmpty) match {
+          case (true, true) =>
             Some("messages__listSchemes__search_noMatches")
-          case (true, true, _) =>
-            Some("messages__listSchemes__search_noMatches")
-          case (false, true, _) => Some("messages__listSchemes__noSchemes")
+          case (false, true) => Some("messages__listSchemes__noSchemes")
           case _                => None
         }
 
@@ -162,7 +165,6 @@ class ListSchemesController @Inject()(
       selectPageOfResults(searchResult, pageNumber, numberOfPages) match {
         case Some(searchResultToRender) =>
           renderView(
-            searchText = searchText,
             schemeDetails = searchResultToRender,
             numberOfSchemes = numberOfSchemes,
             pageNumber = pageNumber,
@@ -200,7 +202,13 @@ class ListSchemesController @Inject()(
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
-      searchAndRenderView(searchText = None, pageNumber = 1, doSearch = false, status = Ok, form = form)
+      searchAndRenderView(
+        searchText = None,
+        pageNumber = 1,
+        doSearch = false,
+        status = Ok,
+        form = form
+      )
   }
 
   def onPageLoadWithPageNumber(pageNumber: Index): Action[AnyContent] =
@@ -218,10 +226,23 @@ class ListSchemesController @Inject()(
     implicit request =>
       form
         .bindFromRequest()
-        .fold((formWithErrors: Form[_]) =>
-          searchAndRenderView(searchText = None, pageNumber = 1, doSearch = false, status = BadRequest, form = formWithErrors),
+        .fold(
+          (formWithErrors: Form[_]) =>
+            searchAndRenderView(
+              searchText = None,
+              pageNumber = 1,
+              doSearch = false,
+              status = BadRequest,
+              form = formWithErrors
+          ),
           value =>
-            searchAndRenderView(searchText = Some(value), pageNumber = 1, doSearch = true, status = Ok, form = form.fill(value))
+            searchAndRenderView(
+              searchText = Some(value),
+              pageNumber = 1,
+              doSearch = true,
+              status = Ok,
+              form = form.fill(value)
+          )
         )
   }
 
