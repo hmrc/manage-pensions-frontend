@@ -70,8 +70,9 @@ class ListSchemesController @Inject()(
   ): Future[ListOfSchemes] =
     listSchemesConnector.getListOfSchemes(request.psaId.id)
 
-  private def schemeDetails(listOfSchemes: ListOfSchemes): List[SchemeDetail] =
+  private def schemeDetails(listOfSchemes: ListOfSchemes): List[SchemeDetail] = {
     listOfSchemes.schemeDetail.getOrElse(List.empty[SchemeDetail])
+  }
 
   //scalastyle:off parameter.number
   private def renderView(
@@ -235,14 +236,15 @@ class ListSchemesController @Inject()(
               status = BadRequest,
               form = formWithErrors
           ),
-          value =>
+          value => {
             searchAndRenderView(
               searchText = Some(value),
               pageNumber = 1,
               doSearch = true,
               status = Ok,
               form = form.fill(value)
-          )
+            )
+          }
         )
   }
 
