@@ -159,7 +159,7 @@ class ListSchemesController @Inject()(
       val numberOfPages: Int =
         paginationService.divide(numberOfSchemes, pagination)
 
-      selectPage(searchResult, pageNumber, numberOfPages) match {
+      selectPageOfResults(searchResult, pageNumber, numberOfPages) match {
         case Some(searchResultToRender) =>
           renderView(
             searchText = searchText,
@@ -177,7 +177,7 @@ class ListSchemesController @Inject()(
     }
   }
 
-  private def selectPage(searchResult: List[SchemeDetail], pageNumber: Int, numberOfPages: Int):Option[List[SchemeDetail]] = {
+  private def selectPageOfResults(searchResult: List[SchemeDetail], pageNumber: Int, numberOfPages: Int):Option[List[SchemeDetail]] = {
     pageNumber match {
       case 1 => Some(searchResult.take(pagination))
       case p if p <= numberOfPages =>
