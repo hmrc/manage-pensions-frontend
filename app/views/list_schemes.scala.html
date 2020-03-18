@@ -93,7 +93,7 @@
     bodyClasses = Some("full-width")
 ) {
 
-    @formHelper(action = ListSchemesController.onSubmit, 'autoComplete -> "off") {
+    @formHelper(action = ListSchemesController.onSearch, 'autoComplete -> "off") {
         @components.back_link()
 
         <div class="grid-row">

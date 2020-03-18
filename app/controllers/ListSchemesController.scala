@@ -126,7 +126,7 @@ class ListSchemesController @Inject()(
         case pstr if pstrRegex.findFirstIn(searchText).isDefined =>
           list.filter(_.pstr.exists(_ == searchText))
         case _ =>
-          list
+          List.empty
       }
     }
 
@@ -144,7 +144,7 @@ class ListSchemesController @Inject()(
 
       val optionSearchResultToRender = pageNumber match {
         case 1 => Some(searchResult.take(pagination))
-        case x if x <= numberOfPages =>
+        case p if p <= numberOfPages =>
           Some(searchResult.slice(
             (pageNumber * pagination) - pagination,
             pageNumber * pagination
@@ -181,17 +181,23 @@ class ListSchemesController @Inject()(
 
   def onSearch: Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
-      form
+      val value = form
         .bindFromRequest()
         .fold(
-          (formWithErrors: Form[_]) => Future.successful(BadRequest("WAAA")),
-          value =>
-            searchAndRenderView(
-              searchText = Some(value),
-              filter = filter(value, _: List[SchemeDetail]),
-              pageNumber = 1
-          )
+          (formWithErrors: Form[_]) => None,
+          value => Some(value)
         )
+
+      val f: List[SchemeDetail] => List[SchemeDetail] = value match {
+        case Some(v) => filter(v, _: List[SchemeDetail])
+        case _ => _ => List.empty
+      }
+
+      searchAndRenderView(
+        searchText = value,
+        filter = f,
+        pageNumber = 1
+      )
   }
 
   def onPageLoadWithPageNumber(pageNumber: Index): Action[AnyContent] =
