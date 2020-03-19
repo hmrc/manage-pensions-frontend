@@ -64,7 +64,7 @@
         value="@{field.value}"
         @if(field.hasErrors || hint.nonEmpty){aria-describedby="@{ariaDescribedBy}"}
         />
-        <button id="searchsubmit" class="button" @if(disableSubmission) {disabled}>@messages(messageKey)</button>
+        <button id="searchsubmit" class="button btn--inline-textbox" @if(disableSubmission) {disabled}>@messages(messageKey)</button>
     </div>
 </fieldset>
 
