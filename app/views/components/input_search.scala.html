@@ -32,7 +32,7 @@
     (hintId ++ errorId).mkString(" ")
 }
 
-<div id="@{field.id}-form" class="form-group @groupClass @if(field.hasErrors){form-field--error}">
+<fieldset id="@{field.id}-form" class="form-field-group @groupClass @if(field.hasErrors){form-field--error}">
 
     @if(headingIsLegend){
     <h1>
@@ -66,5 +66,5 @@
         />
         <button id="searchsubmit" class="button" @if(disableSubmission) {disabled}>@messages(messageKey)</button>
     </div>
-</div>
+</fieldset>
 

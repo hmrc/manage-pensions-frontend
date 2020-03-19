@@ -114,6 +114,7 @@
                 label = messages("messages__listSchemes__searchText_label"),
                 hint  = Some(messages("messages__listSchemes__searchText_hint")),
                 labelClass = Some("heading-medium"),
+                inputClass = Some("form-control--width-two-thirds"),
                 messageKey = messages(button_content)
                 )
                 @if(form("searchText").value.exists(_.length > 0)){
@@ -129,7 +130,11 @@
 
         @if(form("searchText").value.exists(_.length > 0)){
             @if(schemes.size>0){
-                @{schemes.size} results
+            <div class="grid-row">
+                <div class="column-two-thirds">
+                    <p class="govuk-margin-top-5 govuk-margin-bottom-0">@{schemes.size} results</p>
+                </div>
+            </div>
             }
         }
 
