@@ -45,8 +45,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                                         errorHandler: ErrorHandler,
                                         val controllerComponents: MessagesControllerComponents,
                                         schemeDetailsService: SchemeDetailsService,
-                                        view: schemeDetails,
-                                        aftConnector: AFTConnector
+                                        view: schemeDetails
                                        )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate.async {
