@@ -16,12 +16,18 @@
 
 package connectors.aft
 
+import java.time.LocalDate
+
 import com.google.inject.{ImplementedBy, Inject, Singleton}
 import config.FrontendAppConfig
+import models.{AFTOverview, Quarters}
 import play.api.Logger
 import play.api.http.Status
+import play.api.http.Status.OK
+import play.api.libs.json.{JsError, JsResultException, JsSuccess, Json}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
+import utils.HttpResponseHelper
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Try}
@@ -29,11 +35,13 @@ import scala.util.{Failure, Try}
 @ImplementedBy(classOf[AFTConnectorImpl])
 trait AFTConnector {
   def getListOfVersions(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Seq[Int]]]
+
+  def getAftOverview(pstr: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Seq[AFTOverview]]
 }
 
 @Singleton
-class AFTConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) extends AFTConnector {
-  def getListOfVersions(pstr: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Seq[Int]]] = {
+class AFTConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) extends AFTConnector with HttpResponseHelper {
+  override def getListOfVersions(pstr: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Seq[Int]]] = {
     val url = config.aftListOfVersions
     val schemeHc = hc.withExtraHeaders("pstr" -> pstr, "startDate" -> "2020-04-01")
     http.GET[HttpResponse](url)(implicitly, schemeHc, implicitly).map { response =>
@@ -43,6 +51,31 @@ class AFTConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) ex
       logExceptions
     } recoverWith {
       translateExceptions()
+    }
+  }
+
+  override def getAftOverview(pstr: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Seq[AFTOverview]] = {
+    val url = config.aftOverviewUrl
+
+    val numberOfYears = 6
+    val endDate = Quarters.getCurrentQuarter.endDate
+    val startYear = endDate.minusYears(numberOfYears).getYear
+    val startDate = LocalDate.of(startYear, 1, 1)
+
+    val schemeHc = hc.withExtraHeaders("pstr" -> pstr, "startDate" -> startDate.toString, "endDate" -> endDate.toString)
+
+    http.GET[HttpResponse](url)(implicitly, schemeHc, implicitly).map { response =>
+      response.status match {
+        case OK =>
+          val json = Json.parse(response.body)
+          json.validate[Seq[AFTOverview]] match {
+            case JsSuccess(value, _) => value
+            case JsError(errors) => throw JsResultException(errors)
+          }
+        case _ => handleErrorResponse("GET", url)(response)
+      }
+    } andThen {
+      case Failure(t: Throwable) => Logger.warn("Unable to get aft overview", t)
     }
   }
 
