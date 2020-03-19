@@ -70,21 +70,22 @@ class ListSchemesController @Inject()(
   ): Future[ListOfSchemes] =
     listSchemesConnector.getListOfSchemes(request.psaId.id)
 
-  private def schemeDetails(listOfSchemes: ListOfSchemes): List[SchemeDetail] = {
+  private def schemeDetails(
+    listOfSchemes: ListOfSchemes
+  ): List[SchemeDetail] = {
     listOfSchemes.schemeDetail.getOrElse(List.empty[SchemeDetail])
   }
 
-  //scalastyle:off parameter.number
   private def renderView(
     schemeDetails: List[SchemeDetail],
     numberOfSchemes: Int,
     pageNumber: Int,
     numberOfPages: Int,
     noResultsMessageKey: Option[String],
-    status: Status,
     form: Form[_]
   )(implicit hc: HeaderCarrier,
     request: OptionalDataRequest[AnyContent]): Future[Result] = {
+    val status = if (form.hasErrors) BadRequest else Ok
     minimalPsaConnector
       .getPsaNameFromPsaID(request.psaId.id)
       .flatMap(_.map {
@@ -121,7 +122,8 @@ class ListSchemesController @Inject()(
   private val srnRegex = "^S[0-9]{10}$".r
   private val pstrRegex = "^[0-9]{8}[A-Za-z]{2}$".r
 
-  private val filterSchemesBySrnOrPstr: (String, List[SchemeDetail]) => List[SchemeDetail] =
+  private val filterSchemesBySrnOrPstr
+    : (String, List[SchemeDetail]) => List[SchemeDetail] =
     (searchText, list) => {
       searchText match {
         case srn if srnRegex.findFirstIn(searchText).isDefined =>
@@ -139,12 +141,10 @@ class ListSchemesController @Inject()(
     filterText: Option[String]
   )(implicit request: OptionalDataRequest[AnyContent]): Future[Result] = {
     listOfSchemes.flatMap { listOfSchemes =>
-      val filterSearchResults: List[SchemeDetail] => List[SchemeDetail] =
-        if (filterText.isDefined) {
-          filterSchemesBySrnOrPstr(filterText.getOrElse(""), _: List[SchemeDetail])
-        } else {
-          identity
-        }
+      val filterSearchResults =
+        filterText.fold[List[SchemeDetail] => List[SchemeDetail]](identity)(
+          ft => filterSchemesBySrnOrPstr(ft, _: List[SchemeDetail])
+        )
 
       val searchResult = filterSearchResults(schemeDetails(listOfSchemes))
 
@@ -153,7 +153,7 @@ class ListSchemesController @Inject()(
           case (true, true) =>
             Some("messages__listSchemes__search_noMatches")
           case (false, true) => Some("messages__listSchemes__noSchemes")
-          case _                => None
+          case _             => None
         }
 
       val numberOfSchemes: Int = searchResult.length
@@ -169,7 +169,6 @@ class ListSchemesController @Inject()(
             pageNumber = pageNumber,
             numberOfPages = numberOfPages,
             noResultsMessageKey = noResultsMessageKey,
-            status = if(form.hasErrors) BadRequest else Ok,
             form = form
           )
         case _ =>
@@ -201,11 +200,7 @@ class ListSchemesController @Inject()(
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
-      searchAndRenderView(
-        filterText = None,
-        pageNumber = 1,
-        form = form
-      )
+      searchAndRenderView(filterText = None, pageNumber = 1, form = form)
   }
 
   def onPageLoadWithPageNumber(pageNumber: Index): Action[AnyContent] =
@@ -237,5 +232,4 @@ class ListSchemesController @Inject()(
           }
         )
   }
-
 }
