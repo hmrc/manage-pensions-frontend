@@ -17,15 +17,12 @@
 package controllers
 
 import config.FrontendAppConfig
-import connectors.admin.MinimalPsaConnector
 import connectors.FakeUserAnswersCacheConnector
+import connectors.admin.MinimalPsaConnector
 import connectors.scheme.ListOfSchemesConnector
-import controllers.actions.AuthAction
-import controllers.actions.FakeAuthAction
+import controllers.actions.{AuthAction, FakeAuthAction}
 import forms.ListSchemesFormProvider
-import models.ListOfSchemes
-import models.SchemeDetail
-import models.SchemeStatus
+import models.{ListOfSchemes, SchemeDetail, SchemeStatus}
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -35,8 +32,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import views.html.list_schemes
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
   private val psaIdNoSchemes: String = "A0000001"
@@ -124,6 +120,7 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
         underAppeal = None
       )
     )
+  private val view: list_schemes = app.injector.instanceOf[list_schemes]
 
   private def testFixture(psaId: String): TestFixture =
     new TestFixture with MockitoSugar {
@@ -135,8 +132,8 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
         new ListOfSchemesConnector {
 
           override def getListOfSchemes(psaId: String)(
-            implicit hc: HeaderCarrier,
-            ec: ExecutionContext
+              implicit hc: HeaderCarrier,
+              ec: ExecutionContext
           ): Future[ListOfSchemes] = {
             psaId match {
               case `psaIdNoSchemes` =>
@@ -181,8 +178,6 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
         )
     }
 
-  private val view: list_schemes = app.injector.instanceOf[list_schemes]
-
   private def viewAsString(schemes: List[SchemeDetail],
                            numberOfSchemes: Int,
                            pagination: Int,
@@ -190,11 +185,14 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
                            pageNumberLinks: Seq[Int],
                            numberOfPages: Int,
                            noResultsMessageKey: Option[String],
-                           formValue: Option[String]): String =
+                           formValue: Option[String]): String = {
+
     view(
-      form = formValue.fold(listSchemesFormProvider())(
-        v => listSchemesFormProvider().fill(v)
-      ),
+      form = formValue.fold(listSchemesFormProvider()) {
+        v =>
+          val value = Map("searchText" -> v)
+          listSchemesFormProvider().bind(value)
+      },
       schemes = schemes,
       psaName = psaName,
       numberOfSchemes = numberOfSchemes,
@@ -204,6 +202,7 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
       numberOfPages = numberOfPages,
       noResultsMessageKey = noResultsMessageKey
     )(fakeRequest, messages).toString()
+  }
 
   "onPageLoad" when {
 
@@ -384,6 +383,98 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
         numberOfPages = numberOfPages,
         noResultsMessageKey = None,
         Some(matchSRN)
+      )
+
+      contentAsString(result) mustBe expected
+    }
+
+    "return BADREQUEST and error when no value is entered into search" in {
+      val pagination: Int = 10
+
+      val numberOfPages =
+        paginationService.divide(fullSchemes.length, pagination)
+
+      when(mockAppConfig.listSchemePagination) thenReturn pagination
+
+      val fixture = testFixture(psaIdWithSchemes)
+      val postRequest =
+        fakeRequest.withFormUrlEncodedBody(("searchText", ""))
+      val result = fixture.controller.onSearch(postRequest)
+
+      status(result) mustBe BAD_REQUEST
+
+      val expected = viewAsString(
+        schemes = fullSchemes,
+        numberOfSchemes = fullSchemes.length,
+        pagination = pagination,
+        pageNumber = 1,
+        pageNumberLinks = Seq.empty,
+        numberOfPages = numberOfPages,
+        noResultsMessageKey = None,
+        Some("")
+      )
+
+      contentAsString(result) mustBe expected
+    }
+
+    "return OK and the correct view when unrecognised format is entered into search" in {
+      val pagination: Int = 10
+
+      val numberOfPages =
+        paginationService.divide(fullSchemes.length, pagination)
+
+      when(mockAppConfig.listSchemePagination) thenReturn pagination
+
+      val incorrectSearchText = "Incorrect"
+
+      val fixture = testFixture(psaIdWithSchemes)
+      val postRequest =
+        fakeRequest.withFormUrlEncodedBody(("searchText", incorrectSearchText))
+      val result = fixture.controller.onSearch(postRequest)
+
+      status(result) mustBe OK
+
+
+      val expected = viewAsString(
+        schemes = List.empty,
+        numberOfSchemes = 0,
+        pagination = pagination,
+        pageNumber = 1,
+        pageNumberLinks = Seq.empty,
+        numberOfPages = numberOfPages,
+        noResultsMessageKey = Some("messages__listSchemes__search_noMatches"),
+        Some(incorrectSearchText)
+      )
+
+      contentAsString(result) mustBe expected
+    }
+    "return OK and the correct view when correct format is entered into search but no results are found" in {
+      val pagination: Int = 10
+
+      val numberOfPages =
+        paginationService.divide(fullSchemes.length, pagination)
+
+      when(mockAppConfig.listSchemePagination) thenReturn pagination
+
+      val searchText = "S2400000016"
+
+      val fixture = testFixture(psaIdWithSchemes)
+      val postRequest =
+        fakeRequest.withFormUrlEncodedBody(("searchText", searchText))
+      val result = fixture.controller.onSearch(postRequest)
+
+      status(result) mustBe OK
+
+
+      val expected = viewAsString(
+        schemes = List.empty,
+        numberOfSchemes = 0,
+        pagination = pagination,
+        pageNumber = 1,
+        pageNumberLinks = Seq.empty,
+        numberOfPages = numberOfPages,
+        noResultsMessageKey = Some("messages__listSchemes__search_noMatches"),
+        Some(searchText)
       )
 
       contentAsString(result) mustBe expected
