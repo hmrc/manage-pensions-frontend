@@ -18,6 +18,7 @@ package controllers
 
 import config.FrontendAppConfig
 import connectors._
+import connectors.aft.AFTConnector
 import connectors.scheme.{ListOfSchemesConnector, PensionSchemeVarianceLockConnector, SchemeDetailsConnector}
 import controllers.actions._
 import handlers.ErrorHandler
@@ -44,7 +45,8 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                                         errorHandler: ErrorHandler,
                                         val controllerComponents: MessagesControllerComponents,
                                         schemeDetailsService: SchemeDetailsService,
-                                        view: schemeDetails
+                                        view: schemeDetails,
+                                        aftConnector: AFTConnector
                                        )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate.async {

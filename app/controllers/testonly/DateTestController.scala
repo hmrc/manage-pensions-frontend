@@ -32,22 +32,22 @@ import scala.concurrent.ExecutionContext
 @Singleton
 class DateTestController @Inject()(
                                     override val messagesApi: MessagesApi,
-                                    date_test: date_test,
+                                    view: date_test,
                                     val controllerComponents: MessagesControllerComponents
                                   )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
-  val form: Form[Option[LocalDate]] = Form("testDate" -> optional(localDate("d MMMM yyyy")))
+  val form: Form[Option[LocalDate]] = Form("date" -> optional(localDate("d MMMM yyyy")))
 
   def present: Action[AnyContent] = Action {
     implicit request =>
-      Ok(date_test(form.fill(DateHelper.overriddenDate)))
+      Ok(view(form.fill(DateHelper.overriddenDate)))
   }
 
   def submit: Action[AnyContent] = Action {
     implicit request =>
       form.bindFromRequest.fold(
         invalidForm => {
-          BadRequest(date_test(invalidForm))
+          BadRequest(view(invalidForm))
         },
         date => {
           DateHelper.setDate(date)

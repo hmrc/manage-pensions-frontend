@@ -18,5 +18,5 @@ GET        /manage-pension-schemes/test-only/toggle-on/:featureSwitch           
 GET        /manage-pension-schemes/test-only/toggle-off/:featureSwitch                  controllers.testonly.TestFeatureSwitchManagerController.toggleOff(featureSwitch: String)
 GET        /manage-pension-schemes/test-only/reset/:featureSwitch                       controllers.testonly.TestFeatureSwitchManagerController.reset(featureSwitch: String)
 
-GET        /manage-pension-scheme-accounting-for-tax/test-only/set-date             @controllers.testonly.DateTestController.present()
-POST       /manage-pension-scheme-accounting-for-tax/test-only/set-date             @controllers.testonly.DateTestController.submit()
+GET        /manage-pension-schemes/test-only/set-date                                   controllers.testonly.DateTestController.present()
+POST       /manage-pension-schemes/test-only/set-date                                   controllers.testonly.DateTestController.submit()

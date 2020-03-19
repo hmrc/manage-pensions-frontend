@@ -57,11 +57,6 @@ class AFTConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) ex
   override def getAftOverview(pstr: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Seq[AFTOverview]] = {
     val url = config.aftOverviewUrl
 
-    val numberOfYears = 6
-    val endDate = Quarters.getCurrentQuarter.endDate
-    val startYear = endDate.minusYears(numberOfYears).getYear
-    val startDate = LocalDate.of(startYear, 1, 1)
-
     val schemeHc = hc.withExtraHeaders("pstr" -> pstr, "startDate" -> startDate.toString, "endDate" -> endDate.toString)
 
     http.GET[HttpResponse](url)(implicitly, schemeHc, implicitly).map { response =>
@@ -84,6 +79,20 @@ class AFTConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) ex
   }
 
   private def translateExceptions(): PartialFunction[Throwable, Future[Option[Seq[Int]]]] = {
-    case ex: Exception => Future.successful(None)
+    case _: Exception => Future.successful(None)
+  }
+
+  def endDate: LocalDate = Quarters.getCurrentQuarter.endDate
+
+  def startDate =  {
+    val earliestStartDate = LocalDate.parse(config.quarterStartDate)
+    val startYear = endDate.minusYears(config.aftNoOfYearsDisplayed).getYear
+    val calculatedStartDate = LocalDate.of(startYear, 1, 1)
+
+    if(calculatedStartDate.isAfter(earliestStartDate)) {
+      calculatedStartDate
+    } else {
+      earliestStartDate
+    }
   }
 }

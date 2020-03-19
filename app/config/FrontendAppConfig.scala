@@ -89,6 +89,7 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
 
   lazy val quarterStartDate: String = "2020-04-01"
   lazy val quarterEndDate: String = "2020-06-30"
+  lazy val aftNoOfYearsDisplayed: Int = 6
 
   def languageMap: Map[String, Lang] = Map(
     "english" -> Lang("en"),
