@@ -121,7 +121,7 @@ class ListSchemesController @Inject()(
   private val srnRegex = "^S[0-9]{10}$".r
   private val pstrRegex = "^[0-9]{8}[A-Za-z]{2}$".r
 
-  private val filter: (String, List[SchemeDetail]) => List[SchemeDetail] =
+  private val filterSchemesBySrnOrPstr: (String, List[SchemeDetail]) => List[SchemeDetail] =
     (searchText, list) => {
       searchText match {
         case srn if srnRegex.findFirstIn(searchText).isDefined =>
@@ -134,16 +134,14 @@ class ListSchemesController @Inject()(
     }
 
   private def searchAndRenderView(
-    searchText: Option[String],
+    form: Form[_],
     pageNumber: Int,
-    doSearch: Boolean,
-    status: Status,
-    form: Form[_]
+    filterText: Option[String]
   )(implicit request: OptionalDataRequest[AnyContent]): Future[Result] = {
     listOfSchemes.flatMap { listOfSchemes =>
       val filterSearchResults: List[SchemeDetail] => List[SchemeDetail] =
-        if (doSearch && searchText.isDefined) {
-          filter(searchText.getOrElse(""), _: List[SchemeDetail])
+        if (filterText.isDefined) {
+          filterSchemesBySrnOrPstr(filterText.getOrElse(""), _: List[SchemeDetail])
         } else {
           identity
         }
@@ -151,7 +149,7 @@ class ListSchemesController @Inject()(
       val searchResult = filterSearchResults(schemeDetails(listOfSchemes))
 
       val noResultsMessageKey =
-        (doSearch, searchResult.isEmpty) match {
+        (filterText.isDefined, searchResult.isEmpty) match {
           case (true, true) =>
             Some("messages__listSchemes__search_noMatches")
           case (false, true) => Some("messages__listSchemes__noSchemes")
@@ -171,7 +169,7 @@ class ListSchemesController @Inject()(
             pageNumber = pageNumber,
             numberOfPages = numberOfPages,
             noResultsMessageKey = noResultsMessageKey,
-            status = status,
+            status = if(form.hasErrors) BadRequest else Ok,
             form = form
           )
         case _ =>
@@ -204,10 +202,8 @@ class ListSchemesController @Inject()(
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
       searchAndRenderView(
-        searchText = None,
+        filterText = None,
         pageNumber = 1,
-        doSearch = false,
-        status = Ok,
         form = form
       )
   }
@@ -215,10 +211,8 @@ class ListSchemesController @Inject()(
   def onPageLoadWithPageNumber(pageNumber: Index): Action[AnyContent] =
     (authenticate andThen getData).async { implicit request =>
       searchAndRenderView(
-        searchText = None,
+        filterText = None,
         pageNumber = pageNumber,
-        doSearch = false,
-        status = Ok,
         form = form
       )
     }
@@ -230,18 +224,14 @@ class ListSchemesController @Inject()(
         .fold(
           (formWithErrors: Form[_]) =>
             searchAndRenderView(
-              searchText = None,
+              filterText = None,
               pageNumber = 1,
-              doSearch = false,
-              status = BadRequest,
               form = formWithErrors
           ),
           value => {
             searchAndRenderView(
-              searchText = Some(value),
+              filterText = Some(value),
               pageNumber = 1,
-              doSearch = true,
-              status = Ok,
               form = form.fill(value)
             )
           }
