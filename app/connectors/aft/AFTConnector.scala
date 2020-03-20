@@ -20,7 +20,7 @@ import java.time.LocalDate
 
 import com.google.inject.{ImplementedBy, Inject, Singleton}
 import config.FrontendAppConfig
-import models.{AFTOverview, Quarters}
+import models.{AFTOverview, AFTVersion, Quarters}
 import play.api.Logger
 import play.api.http.Status
 import play.api.http.Status.OK
@@ -34,24 +34,32 @@ import scala.util.{Failure, Try}
 
 @ImplementedBy(classOf[AFTConnectorImpl])
 trait AFTConnector {
-  def getListOfVersions(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Seq[Int]]]
+  def getListOfVersions(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Seq[AFTVersion]]]
 
   def getAftOverview(pstr: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Seq[AFTOverview]]
 }
 
 @Singleton
 class AFTConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) extends AFTConnector with HttpResponseHelper {
-  override def getListOfVersions(pstr: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Seq[Int]]] = {
+  override def getListOfVersions(pstr: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Seq[AFTVersion]]] = {
     val url = config.aftListOfVersions
     val schemeHc = hc.withExtraHeaders("pstr" -> pstr, "startDate" -> "2020-04-01")
     http.GET[HttpResponse](url)(implicitly, schemeHc, implicitly).map { response =>
       require(response.status == Status.OK)
-      Option(response.json.as[Seq[Int]])
+      Option(response.json.as[Seq[AFTVersion]])
     } andThen {
       logExceptions
     } recoverWith {
       translateExceptions()
     }
+  }
+
+  private def logExceptions: PartialFunction[Try[Option[Seq[AFTVersion]]], Unit] = {
+    case Failure(t: Throwable) => Logger.error("Unable to retrieve list of versions", t)
+  }
+
+  private def translateExceptions(): PartialFunction[Throwable, Future[Option[Seq[AFTVersion]]]] = {
+    case _: Exception => Future.successful(None)
   }
 
   override def getAftOverview(pstr: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Seq[AFTOverview]] = {
@@ -74,20 +82,12 @@ class AFTConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) ex
     }
   }
 
-  private def logExceptions: PartialFunction[Try[Option[Seq[Int]]], Unit] = {
-    case Failure(t: Throwable) => Logger.error("Unable to retrieve list of versions", t)
-  }
-
-  private def translateExceptions(): PartialFunction[Throwable, Future[Option[Seq[Int]]]] = {
-    case _: Exception => Future.successful(None)
-  }
-
   def endDate: LocalDate = Quarters.getCurrentQuarter.endDate
 
-  def startDate =  {
+  def startDate: LocalDate =  {
     val earliestStartDate = LocalDate.parse(config.quarterStartDate)
-    val startYear = endDate.minusYears(config.aftNoOfYearsDisplayed).getYear
-    val calculatedStartDate = LocalDate.of(startYear, 1, 1)
+    val calculatedStartYear = endDate.minusYears(config.aftNoOfYearsDisplayed).getYear
+    val calculatedStartDate = LocalDate.of(calculatedStartYear, 1, 1)
 
     if(calculatedStartDate.isAfter(earliestStartDate)) {
       calculatedStartDate

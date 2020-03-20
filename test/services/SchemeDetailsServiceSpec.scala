@@ -55,6 +55,10 @@ class SchemeDetailsServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
 
   private val aftCacheConnector = mock[AftCacheConnector]
 
+  private val version1 = AFTVersion(1, LocalDate.now())
+  private val version2 = AFTVersion(2, LocalDate.now())
+  private val versions = Seq(version1, version2)
+
   def service: SchemeDetailsService =
     new SchemeDetailsService(frontendAppConfig, aftConnector, aftCacheConnector,
       lockConnector, minimalPsaConnector)
@@ -62,7 +66,7 @@ class SchemeDetailsServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
   "retrieveOptionAFTViewModel" must {
     "return the correct model when return is locked by another credentials" in {
       when(aftConnector.getListOfVersions(any())(any(), any()))
-        .thenReturn(Future.successful(Some(Seq(1))))
+        .thenReturn(Future.successful(Some(Seq(version1))))
       when(aftCacheConnector.lockedBy(any(), any())(any(), any()))
         .thenReturn(Future.successful(Some(name)))
       val ua = UserAnswers().set(PSTRId)(pstr).flatMap(_.set(SchemeStatusId)(Open.value)).asOpt.get
@@ -98,7 +102,7 @@ class SchemeDetailsServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
 
     "return the correct model when return is in progress but not locked" in {
       when(aftConnector.getListOfVersions(any())(any(), any()))
-        .thenReturn(Future.successful(Some(Seq(1))))
+        .thenReturn(Future.successful(Some(Seq(version1))))
       when(aftCacheConnector.lockedBy(any(), any())(any(), any()))
         .thenReturn(Future.successful(None))
       val ua = UserAnswers().set(PSTRId)(pstr).flatMap(_.set(SchemeStatusId)(Open.value)).asOpt.get
@@ -110,7 +114,7 @@ class SchemeDetailsServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
 
     "return None when the scheme status is other than Open/Wound-up/Deregistered" in {
       when(aftConnector.getListOfVersions(any())(any(), any()))
-        .thenReturn(Future.successful(Some(Seq(1))))
+        .thenReturn(Future.successful(Some(Seq(version1))))
       when(aftCacheConnector.lockedBy(any(), any())(any(), any()))
         .thenReturn(Future.successful(None))
       val ua = UserAnswers().set(PSTRId)(pstr).flatMap(_.set(SchemeStatusId)(Rejected.value)).asOpt.get

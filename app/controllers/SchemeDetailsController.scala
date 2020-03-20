@@ -18,7 +18,6 @@ package controllers
 
 import config.FrontendAppConfig
 import connectors._
-import connectors.aft.AFTConnector
 import connectors.scheme.{ListOfSchemesConnector, PensionSchemeVarianceLockConnector, SchemeDetailsConnector}
 import controllers.actions._
 import handlers.ErrorHandler
