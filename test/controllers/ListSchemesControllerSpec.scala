@@ -188,11 +188,8 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
                            formValue: Option[String]): String = {
 
     view(
-      form = formValue.fold(listSchemesFormProvider()) {
-        v =>
-          val value = Map("searchText" -> v)
-          listSchemesFormProvider().bind(value)
-      },
+      form = formValue
+        .fold(listSchemesFormProvider()) (v => listSchemesFormProvider().bind(Map("searchText" -> v))),
       schemes = schemes,
       psaName = psaName,
       numberOfSchemes = numberOfSchemes,
