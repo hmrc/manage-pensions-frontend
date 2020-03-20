@@ -102,7 +102,7 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
 
       case (Some(versions), None) =>
         Option(AFTViewModel(
-          Some(Message("messages__schemeDetails__aft_single", formattedStartDate, formattedEndDate)),
+          Some(Message("messages__schemeDetails__aft_period", formattedStartDate, formattedEndDate)),
           Some(Message("messages__schemeDetails__aft_inProgress")),
           Link(
             id = "aftSummaryPageLink",
