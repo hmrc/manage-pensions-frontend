@@ -23,24 +23,24 @@ import org.scalatest.{Matchers, WordSpec}
 
 class DateHelperSpec extends WordSpec with Matchers {
 
-  def dateHelper(date: String): DateHelper = new DateHelper {
-
-    override val currentDate: LocalDate = LocalDate.parse(date, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-  }
+  val currentDate: LocalDate = LocalDate.parse("2018-01-04T00:00:01", DateTimeFormatter.ISO_LOCAL_DATE_TIME)
 
   val daysAhead = 30
 
   "thirtyDaysFromNowInSeconds" should {
     "respond correctly for a date at 1 second after midnight" in {
-      val result = dateHelper("2018-01-04T00:00:01").dateTimeFromNowToMidnightAfterDays(daysAhead).toString
+      DateHelper.setDate(Some(currentDate))
+      val result = DateHelper.dateTimeFromNowToMidnightAfterDays(daysAhead).toString
       result shouldBe "2018-02-04T00:00"
     }
     "respond correctly for a date around the middle of the day" in {
-      val result = dateHelper("2018-01-04T12:00:00").dateTimeFromNowToMidnightAfterDays(daysAhead).toString
+      DateHelper.setDate(Some(currentDate))
+      val result = DateHelper.dateTimeFromNowToMidnightAfterDays(daysAhead).toString
       result shouldBe "2018-02-04T00:00"
     }
     "respond correctly for a date at 1 second to midnight" in {
-      val result = dateHelper("2018-01-04T23:59:59").dateTimeFromNowToMidnightAfterDays(daysAhead).toString
+      DateHelper.setDate(Some(currentDate))
+      val result = DateHelper.dateTimeFromNowToMidnightAfterDays(daysAhead).toString
       result shouldBe "2018-02-04T00:00"
     }
   }
@@ -48,7 +48,8 @@ class DateHelperSpec extends WordSpec with Matchers {
   "displayExpiryDate " should {
 
     "return one day less with the correct format" in {
-      val result = dateHelper("2018-01-04T00:00:01").displayExpiryDate(dateHelper("2018-01-04T00:00:01").currentDate)
+      DateHelper.setDate(Some(currentDate))
+      val result = DateHelper.displayExpiryDate(DateHelper.currentDate)
       result shouldBe "3 January 2018"
     }
   }

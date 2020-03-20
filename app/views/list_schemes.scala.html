@@ -16,8 +16,6 @@
 
 @import config.FrontendAppConfig
 @import models.SchemeDetail
-@import controllers.invitations.routes
-@import viewmodels.Message
 
 @this(
     main_template: main_template,
@@ -25,41 +23,131 @@
     appConfig: FrontendAppConfig
 )
 
-@(schemes: List[SchemeDetail], psaName: String)(implicit request: Request[_], messages: Messages)
+@(
+    schemes: List[SchemeDetail],
+    psaName: String,
+    numberOfSchemes: Int,
+    pagination: Int,
+    pageNumber: Int,
+    pageNumberLinks: Seq[Int],
+    numberOfPages: Int
+)(implicit
+    request: Request[_],
+    messages: Messages
+)
 
-@manageRedirectLink = {<a id="manage-link" href="@appConfig.pensionSchemeOnlineServiceUrl">@messages("messages__schemesOverview__manage__redirect__link")</a>}
+@msgPrefix = @{
+    "messages__schemesOverview__pagination__"
+}
+
+@manageRedirectLink = @{
+    val href: String = appConfig.pensionSchemeOnlineServiceUrl
+
+    val linkText: String = messages("messages__schemesOverview__manage__redirect__link")
+
+    Html(s"""<a id="manage-link" href="$href">$linkText</a>""")
+}
+
+@navLink(linkText: String, pageNumber: Int) = @{
+    val id: String = linkText.toLowerCase
+
+    val href: String = controllers.routes.ListSchemesController.onPageLoadWithPageNumber(pageNumber).url
+
+    val ariaLabel: String = messages(s"$msgPrefix${linkText.toLowerCase}__ariaLabel")
+
+    Html(s"""<span class="nav-item"><a id="$id" href="$href" aria-label="$ariaLabel">$linkText</a></span>""")
+}
+
+@ariaAttrs(linkNumber: Int) = @{
+    val ariaLabelLinkCurrent: String = messages(s"${msgPrefix}pageNumberCurrent__ariaLabel", linkNumber, numberOfPages)
+
+    val ariaLabelLink: String = messages(s"${msgPrefix}pageNumber__ariaLabel", linkNumber, numberOfPages)
+
+    if(linkNumber == pageNumber)
+        s"""aria-current="page" aria-label="$ariaLabelLinkCurrent""""
+    else
+        s"""aria-label="$ariaLabelLink""""
+}
+
+@pageNumberLink(linkNumber: Int) = @{
+    val id: String = s"pageNumber-$linkNumber"
+
+    val href: String = controllers.routes.ListSchemesController.onPageLoadWithPageNumber(linkNumber).url
+
+    Html(s"""<span class="nav-item"><a id="$id" href="$href" ${ariaAttrs(linkNumber)}>$linkNumber</a></span>""")
+}
+
+@paginationText = @{
+    messages(
+        s"${msgPrefix}text",
+        if (pageNumber == 1) pageNumber else ((pageNumber * pagination) - pagination) + 1,
+        if (pageNumber == numberOfPages) numberOfSchemes else pageNumber * pagination,
+        numberOfSchemes
+    )
+}
 
 @main_template(
     title = messages("messages__listSchemes__title"),
-
-    bodyClasses = Some("full-width")) {
+    bodyClasses = Some("full-width")
+) {
     @components.back_link()
 
     <div class="grid-row">
         <div class="column-two-thirds">
-
             @components.heading(headingKey = messages("messages__listSchemes__title"))
 
-            <p>@Html(Message("messages__schemesOverview__manage__redirect__text").withArgs(manageRedirectLink))</p>
+            <p>@Html(messages("messages__schemesOverview__manage__redirect__text", manageRedirectLink))</p>
+        </div>
+    </div>
 
-        </div>
-    </div>
     @if(schemes.isEmpty) {
-    <div class="grid-row">
-        <div class="column-two-thirds">
-            <p id="noSchemes">@messages("messages__listSchemes__noSchemes")</p>
+        <div class="grid-row">
+            <div class="column-two-thirds">
+                <p id="noSchemes">@messages("messages__listSchemes__noSchemes")</p>
+            </div>
         </div>
-    </div>
     } else {
-        @components.scheme_list(
-            schemes,
-            appConfig
-        )
+        @components.scheme_list(schemes, appConfig)
     }
-    <div class="grid-row">
-        <div class="column-two-thirds">
-            <p class="govuk-margin-top-5">
-                @components.return_link(controllers.routes.SchemesOverviewController.onPageLoad(), Some(psaName))</p>
+
+    @if(numberOfSchemes > pagination) {
+        <div class="grid-row">
+            <div class="column-two-thirds">
+                <p class="govuk-margin-top-5" id="pagination-text">
+                    @paginationText
+                </p>
+                <nav class="govuk-margin-top-5" aria-label="page">
+                    @if(pageNumber > 1) {
+                        @navLink(
+                            linkText = messages(s"${msgPrefix}first"),
+                            pageNumber = 1
+                        )
+                        @navLink(
+                            linkText = messages(s"${msgPrefix}prev"),
+                            pageNumber = pageNumber - 1
+                        )
+                    }
+
+                    @for((int, i) <- pageNumberLinks.zipWithIndex) {
+                        @pageNumberLink(
+                            linkNumber = pageNumberLinks(i)
+                        )
+                    }
+
+                    @if(pageNumber < numberOfPages) {
+                        @navLink(
+                            linkText = messages(s"${msgPrefix}next"),
+                            pageNumber = pageNumber + 1
+                        )
+                        @navLink(
+                            linkText = messages(s"${msgPrefix}last"),
+                            pageNumber = numberOfPages
+                        )
+                    }
+                </nav>
+            </div>
         </div>
-    </div>
+    }
+
+    @components.return_link(controllers.routes.SchemesOverviewController.onPageLoad(), Some(psaName))
 }

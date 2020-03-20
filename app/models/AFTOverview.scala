@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,20 +12,22 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@(
-    returnCall: Call,
-    parameter: Option[String] = None,
-    messageKey: String = "site.return_to"
-)(implicit messages: Messages)
+package models
 
-<div class="grid-row">
-    <div class="column-two-thirds">
-        <p class="govuk-margin-top-5">
-            <a id="return-link" href=@returnCall>
-                @parameter.fold(messages(messageKey))(name => messages(messageKey, name))
-            </a>
-        </p>
-    </div>
-</div>
+import java.time.LocalDate
+
+import play.api.libs.json.{Format, Json}
+
+case class AFTOverview(
+                            periodStartDate: LocalDate,
+                            periodEndDate: LocalDate,
+                            numberOfVersions: Int,
+                            submittedVersionAvailable: Boolean,
+                            compiledVersionAvailable: Boolean
+                          )
+
+object AFTOverview {
+  implicit val formats: Format[AFTOverview] = Json.format[AFTOverview]
+}

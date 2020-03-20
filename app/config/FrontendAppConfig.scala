@@ -50,8 +50,8 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val aftUrl: String = servicesConfig.baseUrl("pension-scheme-accounting-for-tax")
   lazy val schemeFrontendUrl: String = servicesConfig.baseUrl("pensions-scheme-frontend")
 
-  lazy val timeout = loadConfig("session._timeoutSeconds")
-  lazy val countdown = loadConfig("session._CountdownInSeconds")
+  lazy val timeout: String = loadConfig("session._timeoutSeconds")
+  lazy val countdown: String = loadConfig("session._CountdownInSeconds")
 
   lazy val loginUrl: String = loadConfig("urls.login")
   lazy val loginContinueUrl: String = loadConfig("urls.loginContinue")
@@ -84,11 +84,15 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val aftSummaryPageUrl: String = loadConfig("urls.aftSummaryPageLink")
   lazy val aftSummaryPageNoVersionUrl: String = loadConfig("urls.aftSummaryPageNoVersionLink")
   lazy val aftReturnHistoryUrl: String = loadConfig("urls.aftReturnHistoryLink")
+  lazy val aftAmendUrl: String = loadConfig("urls.aftAmendLink")
   lazy val isAFTEnabled: Boolean = runModeConfiguration.underlying.getBoolean("features.aft-return-enabled")
   lazy val aftListOfVersions: String = s"${servicesConfig.baseUrl("pension-scheme-accounting-for-tax")}${runModeConfiguration.underlying.getString("urls.aftListOfVersions")}"
+  lazy val aftOverviewUrl: String = s"${servicesConfig.baseUrl("pension-scheme-accounting-for-tax")}${runModeConfiguration.underlying.getString("urls.aftOverview")}"
 
+  lazy val overviewApiEnablementDate: String = "2020-07-01"
   lazy val quarterStartDate: String = "2020-04-01"
   lazy val quarterEndDate: String = "2020-06-30"
+  lazy val aftNoOfYearsDisplayed: Int = 6
 
   def languageMap: Map[String, Lang] = Map(
     "english" -> Lang("en"),
@@ -108,4 +112,6 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val retryAttempts: Int = runModeConfiguration.get[Int]("retry.max.attempts")
   lazy val retryWaitMs: Int = runModeConfiguration.get[Int]("retry.initial.wait.ms")
   lazy val retryWaitFactor: Double = runModeConfiguration.get[Double]("retry.wait.factor")
+
+  lazy val listSchemePagination: Int = runModeConfiguration.get[Int]("listSchemePagination")
 }

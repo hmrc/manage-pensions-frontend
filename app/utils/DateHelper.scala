@@ -18,9 +18,15 @@ package utils
 
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDate, LocalDateTime}
+import java.util.concurrent.atomic.AtomicReference
 
-trait DateHelper {
-  def currentDate: LocalDate = LocalDate.now()
+object DateHelper {
+
+  private val mockDate: AtomicReference[Option[LocalDate]] = new AtomicReference(None)
+
+  def currentDate: LocalDate = mockDate.get().getOrElse(LocalDate.now())
+  def setDate(date: Option[LocalDate]): Unit = mockDate.set(date)
+  def overriddenDate: Option[LocalDate] = mockDate.get()
 
   val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
   def formatDate(date: LocalDate): String = {
@@ -34,5 +40,3 @@ trait DateHelper {
     formatDate(date.minusDays(1))
   }
 }
-
-object DateHelper extends DateHelper

@@ -99,24 +99,14 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
             linkText = Message("messages__schemeDetails__aft_view"))
         )
         )
-      case (Some(versions), None) if versions.size == 1 =>
+
+      case (Some(versions), None) =>
         Option(AFTViewModel(
           Some(Message("messages__schemeDetails__aft_single", formattedStartDate, formattedEndDate)),
           Some(Message("messages__schemeDetails__aft_inProgress")),
           Link(
             id = "aftSummaryPageLink",
-            url = appConfig.aftReturnHistoryUrl.format(srn, startDate),
-            linkText = Message("messages__schemeDetails__aft_view"))
-        )
-        )
-
-      case (Some(versions), None) =>
-        Option(AFTViewModel(
-          Some(Message("messages__schemeDetails__aft_multiple")),
-          None,
-          Link(
-            id = "aftSummaryPageLink",
-            url = appConfig.aftReturnHistoryUrl.format(srn, startDate),
+            url = appConfig.aftSummaryPageUrl.format(srn, startDate, versions.head.reportVersion),
             linkText = Message("messages__schemeDetails__aft_view"))
         )
         )

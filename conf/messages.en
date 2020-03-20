@@ -115,6 +115,17 @@ messages__schemesOverview__change_details__p1 = You have made changes to {0} but
 messages__schemesOverview__change_details_continue__link = Continue changing {0}’s details
 messages__schemesOverview__change_details__p2 = You can only change the details of 1 scheme at a time.
 messages__schemesOverview__change_details_delete__link = Delete the changes made to {0}’s details
+messages__schemesOverview__pagination__text = Showing {0} to {1} of {2} schemes
+messages__schemesOverview__pagination__prev = Prev
+messages__schemesOverview__pagination__next = Next
+messages__schemesOverview__pagination__prev__ariaLabel = Previous page
+messages__schemesOverview__pagination__next__ariaLabel = Next page
+messages__schemesOverview__pagination__first = First
+messages__schemesOverview__pagination__last = Last
+messages__schemesOverview__pagination__first__ariaLabel = First page
+messages__schemesOverview__pagination__last__ariaLabel = Last page
+messages__schemesOverview__pagination__pageNumber__ariaLabel = page {0} of {1}
+messages__schemesOverview__pagination__pageNumberCurrent__ariaLabel = current page, page {0} of {1}
 
 
 messages__schemeOverview__psa_id = Administrator ID:
@@ -283,6 +294,7 @@ messages__schemeDetails__return_link = Return to your pension schemes
 messages__schemeDetails__remove = Remove
 messages__schemeDetails__aft_h1 = Accounting for Tax (AFT) returns
 messages__schemeDetails__aft_startLink= Start the AFT return for {0} to {1}
+messages__schemeDetails__aft_start = Start a new AFT return
 messages__schemeDetails__aft_single = View or change past AFT return for {0} to {1}
 messages__schemeDetails__aft_multiple = View or change past AFT returns
 messages__schemeDetails__aft_inProgress = In progress
