@@ -29,6 +29,8 @@ object DateHelper {
   def overriddenDate: Option[LocalDate] = mockDate.get()
 
   val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
+  val startDateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMMM")
+  val endDateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
   def formatDate(date: LocalDate): String = {
     date.format(formatter)
   }
@@ -39,4 +41,6 @@ object DateHelper {
   def displayExpiryDate(date: LocalDate): String = {
     formatDate(date.minusDays(1))
   }
+
+
 }

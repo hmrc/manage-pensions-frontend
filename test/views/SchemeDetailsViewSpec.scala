@@ -28,10 +28,10 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
   val messageKeyPrefix = "schemeDetails"
   val schemeName = "Test Scheme Name"
   val openedDate = "29 February 2017"
-  val administrators = Seq(AssociatedPsa("First Psa", true), AssociatedPsa("Second User", false))
-  val administratorsNoRemove = Seq(AssociatedPsa("First Psa", false), AssociatedPsa("Second User", false))
+  val administrators = Seq(AssociatedPsa("First Psa", canRemove = true), AssociatedPsa("Second User", canRemove = false))
+  val administratorsNoRemove = Seq(AssociatedPsa("First Psa", canRemove = false), AssociatedPsa("Second User", canRemove = false))
   val srn = "P12345678"
-  val pstr = Some("87654321XX")
+  val pstr: Option[String] = Some("87654321XX")
   private val schemeDetailsView = injector.instanceOf[schemeDetails]
 
   def createView(date: Option[String] = Some(openedDate),
@@ -39,7 +39,7 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
                  isSchemeOpen: Boolean = true,
                  displayChangeLink: Boolean = false,
                  lockingPsa: Option[String] = None,
-                 optionAFTViewModel: Option[AFTViewModel] = None
+                 seqAFTViewModel: Seq[AFTViewModel] = Nil
                 ): () => HtmlFormat.Appendable = () =>
     schemeDetailsView(
       schemeName,
@@ -50,7 +50,7 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
       isSchemeOpen,
       displayChangeLink,
       lockingPsa,
-      optionAFTViewModel
+      seqAFTViewModel
     )(fakeRequest, messages)
 
   "SchemesDetails view" must {
@@ -140,12 +140,12 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
     }
 
     "have a link for AFT when suitable model passed in" in {
-      Jsoup.parse(createView(optionAFTViewModel = Some(AFTViewModel(None, None, Link("aftID", "url", "text"))))().toString()).select("a[id=aftID]") must
+      Jsoup.parse(createView(seqAFTViewModel = Seq(AFTViewModel(None, None, Link("aftID", "url", "text"))))().toString()).select("a[id=aftID]") must
         haveLink("url")
     }
 
     "have a link for AFT and period and status when suitable model passed in" in {
-      val result = Jsoup.parse(createView(optionAFTViewModel = Some(AFTViewModel(Some(Message("period")),
+      val result = Jsoup.parse(createView(seqAFTViewModel = Seq(AFTViewModel(Some(Message("period")),
         Some(Message("status")),
         Link("aftID", "url", "text"))))().toString())
 

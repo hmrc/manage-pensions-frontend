@@ -37,7 +37,7 @@
     isSchemeOpen: Boolean,
     displayChangeLink: Boolean,
     lockingPsa: Option[String],
-    optionAFTViewModel: Option[AFTViewModel]
+    seqAFTViewModel: Seq[AFTViewModel]
 )(implicit request: Request[_], messages: Messages)
 
     @main_template(
@@ -66,7 +66,7 @@
             <p>@openedDate</p>
         }
 
-        @optionAFTViewModel.map{ aftViewModel =>
+        @seqAFTViewModel.map{ aftViewModel =>
             <h2>@Html(messages("messages__schemeDetails__aft_h1"))</h2>
             @if(aftViewModel.period.isEmpty){
                 <a id='@{aftViewModel.link.id}' href='@{aftViewModel.link.url}'>

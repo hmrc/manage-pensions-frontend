@@ -120,7 +120,7 @@ class SchemeDetailsServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
       val ua = UserAnswers().set(PSTRId)(pstr).flatMap(_.set(SchemeStatusId)(Rejected.value)).asOpt.get
 
       whenReady(service.retrieveOptionAFTViewModel(ua, srn)) {
-        _ mustBe None
+        _ mustBe Nil
       }
     }
   }
@@ -213,7 +213,7 @@ object SchemeDetailsServiceSpec {
   private val name = "test-name"
   private val date = "2020-01-01"
   val minimalPsaName: Option[String] = Some("John Doe Doe")
-  val lockedAftModel: Option[AFTViewModel] = Some(
+  val lockedAftModel: Seq[AFTViewModel] = Seq(
     AFTViewModel(
       Some(Message("messages__schemeDetails__aft_period", formattedStartDate, formattedEndDate)),
       Some(Message("messages__schemeDetails__aft_lockedBy", name)),
@@ -223,7 +223,7 @@ object SchemeDetailsServiceSpec {
         linkText = Message("messages__schemeDetails__aft_view"))
     )
   )
-  val unlockedEmptyAftModel: Option[AFTViewModel] = Some(
+  val unlockedEmptyAftModel: Seq[AFTViewModel] = Seq(
     AFTViewModel(
       None,
       None,
@@ -233,7 +233,7 @@ object SchemeDetailsServiceSpec {
         linkText = Message("messages__schemeDetails__aft_startLink", formattedStartDate, formattedEndDate))
     )
   )
-  val lockedAftModelWithNoVersion: Option[AFTViewModel] = Some(
+  val lockedAftModelWithNoVersion: Seq[AFTViewModel] = Seq(
     AFTViewModel(
       Some(Message("messages__schemeDetails__aft_period", formattedStartDate, formattedEndDate)),
       Some(Message("messages__schemeDetails__aft_lockedBy", name)),
@@ -243,7 +243,7 @@ object SchemeDetailsServiceSpec {
         linkText = Message("messages__schemeDetails__aft_view"))
     )
   )
-  val inProgressUnlockedAftModel: Option[AFTViewModel] = Option(
+  val inProgressUnlockedAftModel: Seq[AFTViewModel] = Seq(
     AFTViewModel(
       Some(Message("messages__schemeDetails__aft_period", formattedStartDate, formattedEndDate)),
       Some(Message("messages__schemeDetails__aft_inProgress")),
