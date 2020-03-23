@@ -253,9 +253,9 @@ import ListSchemesControllerSpec._
         contentAsString(result) mustBe expected
       }
 
-      "return OK and the correct view with correct no matches message when correct format is entered into search but no results are found" in {
+      "return OK and the correct view with correct no matches message when nothing is entered into search but no results are found" in {
 
-        val searchText = "S2400000016"
+        val searchText = ""
         when(mockSchemeSearchService.search(any(), Matchers.eq(Some(searchText)))(any(), any())).thenReturn(Future.successful(Nil))
         val pagination: Int = 10
 
@@ -279,7 +279,7 @@ import ListSchemesControllerSpec._
           pageNumber = 1,
           pageNumberLinks = Seq.empty,
           numberOfPages = numberOfPages,
-          noResultsMessageKey = Some("messages__listSchemes__search_noMatches"),
+          noResultsMessageKey = Some("messages__listSchemes__noSchemes"),
           Some(searchText)
         )
 
