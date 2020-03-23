@@ -252,39 +252,6 @@ import ListSchemesControllerSpec._
 
         contentAsString(result) mustBe expected
       }
-
-      "return OK and the correct view with correct no matches message when nothing is entered into search but no results are found" in {
-
-        val searchText = ""
-        when(mockSchemeSearchService.search(any(), Matchers.eq(Some(searchText)))(any(), any())).thenReturn(Future.successful(Nil))
-        val pagination: Int = 10
-
-        val numberOfPages =
-          paginationService.divide(fullSchemes.length, pagination)
-
-        when(mockAppConfig.listSchemePagination) thenReturn pagination
-
-        val fixture = testFixture(psaIdWithSchemes)
-        val postRequest =
-          fakeRequest.withFormUrlEncodedBody(("searchText", searchText))
-        val result = fixture.controller.onSearch(postRequest)
-
-        status(result) mustBe OK
-
-
-        val expected = viewAsString(
-          schemes = List.empty,
-          numberOfSchemes = 0,
-          pagination = pagination,
-          pageNumber = 1,
-          pageNumberLinks = Seq.empty,
-          numberOfPages = numberOfPages,
-          noResultsMessageKey = Some("messages__listSchemes__noSchemes"),
-          Some(searchText)
-        )
-
-        contentAsString(result) mustBe expected
-      }
   }
 }
 
