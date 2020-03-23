@@ -17,9 +17,10 @@
 package services
 
 import base.SpecBase
-import connectors.admin.MinimalPsaConnector
 import connectors.scheme.ListOfSchemesConnector
-import models.{ListOfSchemes, SchemeDetail, SchemeStatus}
+import models.ListOfSchemes
+import models.SchemeDetail
+import models.SchemeStatus
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -30,65 +31,59 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-class SchemeSearchServiceSpec extends SpecBase with MockitoSugar with BeforeAndAfterEach with ScalaFutures {
+class SchemeSearchServiceSpec extends SpecBase with MockitoSugar with ScalaFutures {
 
   import SchemeSearchServiceSpec._
 
-  "Search" when {
-
-    when(mockMinimalPsaConnector.getPsaNameFromPsaID(any())(any(), any()))
-      .thenReturn(Future.successful(Some(psaName)))
-
+  "Search" must {
     "return correct list of scheme details with search on correct pstr" in {
       val mockSchemesConnector = mock[ListOfSchemesConnector]
-      when(mockSchemesConnector.getListOfSchemes(Matchers.eq(psaId))(any(), any())).thenReturn(Future.successful(listOfSchemes))
+      when(mockSchemesConnector.getListOfSchemes(Matchers.eq(psaId))(any(), any()))
+        .thenReturn(Future.successful(listOfSchemes))
 
       val schemeSearchService = new SchemeSearchService(mockSchemesConnector)
+      val pstr = "24000001IN"
 
-      val expectedResult = fullSchemes.filter(_.pstr contains "24000001IN")
-
-      whenReady(schemeSearchService.search(psaId, Some("24000001IN"))) { result =>
-        result mustBe expectedResult
+      whenReady(schemeSearchService.search(psaId, Some(pstr))) { result =>
+        result mustBe fullSchemes.filter(_.pstr contains pstr)
       }
     }
 
     "return correct list of scheme details with search on correct srn" in {
       val mockSchemesConnector = mock[ListOfSchemesConnector]
-      when(mockSchemesConnector.getListOfSchemes(Matchers.eq(psaId))(any(), any())).thenReturn(Future.successful(listOfSchemes))
+      when(mockSchemesConnector.getListOfSchemes(Matchers.eq(psaId))(any(), any()))
+        .thenReturn(Future.successful(listOfSchemes))
 
       val schemeSearchService = new SchemeSearchService(mockSchemesConnector)
+      val srn = "S2400000005"
 
-      val expectedResult = fullSchemes.filter(_.referenceNumber == "S2400000005")
-
-      whenReady(schemeSearchService.search(psaId, Some("S2400000005"))) { result =>
-        result mustBe expectedResult
+      whenReady(schemeSearchService.search(psaId, Some(srn))) { result =>
+        result mustBe fullSchemes.filter(_.referenceNumber == srn)
       }
     }
 
     "return empty list for correct format pstr/srn but no match" in {
       val mockSchemesConnector = mock[ListOfSchemesConnector]
       val emptyList = ListOfSchemes("", "", None)
-      when(mockSchemesConnector.getListOfSchemes(Matchers.eq(psaId))(any(), any())).thenReturn(Future.successful(emptyList))
+      when(mockSchemesConnector.getListOfSchemes(Matchers.eq(psaId))(any(), any()))
+        .thenReturn(Future.successful(emptyList))
 
       val schemeSearchService = new SchemeSearchService(mockSchemesConnector)
 
-      val expectedResult = Nil
-
       whenReady(schemeSearchService.search(psaId, Some("S2400000016"))) { result =>
-        result mustBe expectedResult
+        result mustBe Nil
       }
     }
 
     "return empty list for incorrect format pstr/srn" in {
       val mockSchemesConnector = mock[ListOfSchemesConnector]
-      when(mockSchemesConnector.getListOfSchemes(Matchers.eq(psaId))(any(), any())).thenReturn(Future.successful(listOfSchemes))
+      when(mockSchemesConnector.getListOfSchemes(Matchers.eq(psaId))(any(), any()))
+        .thenReturn(Future.successful(listOfSchemes))
 
       val schemeSearchService = new SchemeSearchService(mockSchemesConnector)
 
-      val expectedResult = Nil
-
-      whenReady(schemeSearchService.search(psaId, Some("incorrectFormat"))) { result =>
-        result mustBe expectedResult
+      whenReady(schemeSearchService.search(psaId, Some("incorrectformat"))) { result =>
+        result mustBe Nil
       }
     }
   }
@@ -98,24 +93,12 @@ object SchemeSearchServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  private val mockMinimalPsaConnector: MinimalPsaConnector =
-    mock[MinimalPsaConnector]
-  private val psaName: String = "Test Psa Name"
   private val psaId: String = "psaId"
 
   def listOfSchemes = ListOfSchemes("", "", Some(fullSchemes))
 
   def fullSchemes: List[SchemeDetail] =
     List(
-      SchemeDetail(
-        name = "scheme-0",
-        referenceNumber = "srn-0",
-        schemeStatus = SchemeStatus.Open.value,
-        openDate = None,
-        pstr = Some("pstr-0"),
-        relationShip = None,
-        underAppeal = None
-      ),
       SchemeDetail(
         name = "scheme-1",
         referenceNumber = "srn-1",
@@ -130,7 +113,7 @@ object SchemeSearchServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
         referenceNumber = "S2400000005",
         schemeStatus = SchemeStatus.Deregistered.value,
         openDate = None,
-        pstr = Some("pstr-2"),
+        pstr = Some("pstr-1"),
         relationShip = None,
         underAppeal = None
       )
