@@ -1,3 +1,19 @@
+/*
+ * Copyright 2020 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package services
 
 import org.scalatestplus.mockito.MockitoSugar
@@ -80,66 +96,6 @@ class SchemeSearchServiceSpec extends SpecBase with MockitoSugar with BeforeAndA
   //
 
   //
-  //  "return OK and the correct view when unrecognised format is entered into search" in {
-  //    val pagination: Int = 10
-  //
-  //    val numberOfPages =
-  //      paginationService.divide(fullSchemes.length, pagination)
-  //
-  //    when(mockAppConfig.listSchemePagination) thenReturn pagination
-  //
-  //    val incorrectSearchText = "Incorrect"
-  //
-  //    val fixture = testFixture(psaIdWithSchemes)
-  //    val postRequest =
-  //      fakeRequest.withFormUrlEncodedBody(("searchText", incorrectSearchText))
-  //    val result = fixture.controller.onSearch(postRequest)
-  //
-  //    status(result) mustBe OK
-  //
-  //
-  //    val expected = viewAsString(
-  //      schemes = List.empty,
-  //      numberOfSchemes = 0,
-  //      pagination = pagination,
-  //      pageNumber = 1,
-  //      pageNumberLinks = Seq.empty,
-  //      numberOfPages = numberOfPages,
-  //      noResultsMessageKey = Some("messages__listSchemes__search_noMatches"),
-  //      Some(incorrectSearchText)
-  //    )
-  //
-  //    contentAsString(result) mustBe expected
-  //  }
-  //  "return OK and the correct view when correct format is entered into search but no results are found" in {
-  //    val pagination: Int = 10
-  //
-  //    val numberOfPages =
-  //      paginationService.divide(fullSchemes.length, pagination)
-  //
-  //    when(mockAppConfig.listSchemePagination) thenReturn pagination
-  //
-  //    val searchText = "S2400000016"
-  //
-  //    val fixture = testFixture(psaIdWithSchemes)
-  //    val postRequest =
-  //      fakeRequest.withFormUrlEncodedBody(("searchText", searchText))
-  //    val result = fixture.controller.onSearch(postRequest)
-  //
-  //    status(result) mustBe OK
-  //
-  //
-  //    val expected = viewAsString(
-  //      schemes = List.empty,
-  //      numberOfSchemes = 0,
-  //      pagination = pagination,
-  //      pageNumber = 1,
-  //      pageNumberLinks = Seq.empty,
-  //      numberOfPages = numberOfPages,
-  //      noResultsMessageKey = Some("messages__listSchemes__search_noMatches"),
-  //      Some(searchText)
-  //    )
-  //
-  //    contentAsString(result) mustBe expected
-  //  }
+
+
 }
