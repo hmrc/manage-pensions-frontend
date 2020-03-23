@@ -37,6 +37,7 @@ import play.api.mvc.AnyContent
 import play.api.mvc.MessagesControllerComponents
 import play.api.mvc.Result
 import services.PaginationService
+import services.SchemeSearchService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import views.html.list_schemes
@@ -49,13 +50,13 @@ class ListSchemesController @Inject()(
   override val messagesApi: MessagesApi,
   authenticate: AuthAction,
   getData: DataRetrievalAction,
-  listSchemesConnector: ListOfSchemesConnector,
   minimalPsaConnector: MinimalPsaConnector,
   userAnswersCacheConnector: UserAnswersCacheConnector,
   val controllerComponents: MessagesControllerComponents,
   view: list_schemes,
   paginationService: PaginationService,
-  formProvider: ListSchemesFormProvider
+  formProvider: ListSchemesFormProvider,
+  schemeSearchService: SchemeSearchService
 )(implicit val ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
@@ -63,18 +64,6 @@ class ListSchemesController @Inject()(
   private val pagination: Int = appConfig.listSchemePagination
 
   private val form: Form[String] = formProvider()
-
-  private def listOfSchemes(
-    implicit hc: HeaderCarrier,
-    request: OptionalDataRequest[AnyContent]
-  ): Future[ListOfSchemes] =
-    listSchemesConnector.getListOfSchemes(request.psaId.id)
-
-  private def schemeDetails(
-    listOfSchemes: ListOfSchemes
-  ): List[SchemeDetail] = {
-    listOfSchemes.schemeDetail.getOrElse(List.empty[SchemeDetail])
-  }
 
   private def renderView(
     schemeDetails: List[SchemeDetail],
@@ -119,34 +108,12 @@ class ListSchemesController @Inject()(
       })
   }
 
-  private val srnRegex = "^S[0-9]{10}$".r
-  private val pstrRegex = "^[0-9]{8}[A-Za-z]{2}$".r
-
-  private val filterSchemesBySrnOrPstr
-    : (String, List[SchemeDetail]) => List[SchemeDetail] =
-    (searchText, list) => {
-      searchText match {
-        case srn if srnRegex.findFirstIn(searchText).isDefined =>
-          list.filter(_.referenceNumber == searchText)
-        case pstr if pstrRegex.findFirstIn(searchText).isDefined =>
-          list.filter(_.pstr.exists(_ == searchText))
-        case _ =>
-          List.empty
-      }
-    }
-
   private def searchAndRenderView(
     form: Form[_],
     pageNumber: Int,
     filterText: Option[String]
   )(implicit request: OptionalDataRequest[AnyContent]): Future[Result] = {
-    listOfSchemes.flatMap { listOfSchemes =>
-      val filterSearchResults =
-        filterText.fold[List[SchemeDetail] => List[SchemeDetail]](identity)(
-          ft => filterSchemesBySrnOrPstr(ft, _: List[SchemeDetail])
-        )
-
-      val searchResult = filterSearchResults(schemeDetails(listOfSchemes))
+    schemeSearchService.search(request.psaId.id, filterText).flatMap{ searchResult =>
 
       val noResultsMessageKey =
         (filterText.isDefined, searchResult.isEmpty) match {
