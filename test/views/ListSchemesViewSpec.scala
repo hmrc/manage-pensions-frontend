@@ -16,19 +16,41 @@
 
 package views
 
+import config.FrontendAppConfig
+import controllers.ListSchemesControllerSpec.mockAppConfig
+import controllers.actions.DataRetrievalAction
 import forms.ListSchemesFormProvider
-import models.{SchemeDetail, SchemeStatus}
+import models.SchemeDetail
+import models.SchemeStatus
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.i18n.Messages
+import play.api.inject.bind
+import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.inject.guice.GuiceableModule
 import play.api.mvc.Request
 import play.twirl.api.HtmlFormat
 import services.PaginationService
 import views.behaviours.ViewBehaviours
 import views.html.list_schemes
+import org.mockito.Matchers
+import org.mockito.Matchers.any
+import org.mockito.Mockito._
+import org.scalatest.BeforeAndAfterEach
 
-class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
+class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours with MockitoSugar with BeforeAndAfterEach{
 
   private val emptyList: List[SchemeDetail] = List.empty[SchemeDetail]
   private val pagination: Int = 10
+
+  private val mockAppConfig = mock[FrontendAppConfig]
+
+  override val injector = new GuiceApplicationBuilder()
+    .overrides(
+      Seq[GuiceableModule](
+        bind[FrontendAppConfig].toInstance(mockAppConfig)
+      ): _*
+    ).injector()
+
   private val listSchemesView = injector.instanceOf[list_schemes]
   private val paginationService = new PaginationService
   private val listSchemesFormProvider = new ListSchemesFormProvider
@@ -112,6 +134,10 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
 
   implicit private val request: Request[_] = fakeRequest
 
+  override def beforeEach(): Unit = {
+    when(mockAppConfig.minimumSchemeSearchResults) thenReturn 5
+  }
+
   "list-schemes view" must {
 
     behave like normalPage(
@@ -129,6 +155,7 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
     )
 
     "have link to redirect to Pension Schemes Online service" in {
+      when(mockAppConfig.pensionSchemeOnlineServiceUrl) thenReturn "onlineserviceurl"
       view(schemes = emptyList,
         numberOfSchemes = emptyList.length,
         pagination = pagination,
@@ -137,6 +164,36 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
         numberOfPages =
           paginationService.divide(numberOfSchemes = emptyList.length, pagination = pagination)
       ) must haveLink(frontendAppConfig.pensionSchemeOnlineServiceUrl, "manage-link")
+    }
+
+    "have search bar when more than minimum schemes" in {
+
+      val doc = asDocument(view(schemes = fullList,
+        numberOfSchemes = emptyList.length,
+        pagination = pagination,
+        pageNumber = 1,
+        pageNumberLinks = Seq.empty,
+        numberOfPages =
+          paginationService.divide(numberOfSchemes = emptyList.length, pagination = pagination)
+      ).apply()
+      )
+
+      assertRenderedById(doc, "searchText-form")
+    }
+
+    "NOT have search bar when less than minimum schemes" in {
+      when(mockAppConfig.minimumSchemeSearchResults) thenReturn 10
+      val doc = asDocument(view(schemes = fullList,
+        numberOfSchemes = emptyList.length,
+        pagination = pagination,
+        pageNumber = 1,
+        pageNumberLinks = Seq.empty,
+        numberOfPages =
+          paginationService.divide(numberOfSchemes = emptyList.length, pagination = pagination)
+      ).apply()
+      )
+
+      assertNotRenderedById(doc, "searchText-form")
     }
 
     "display a suitable message when there are no schemes to display" in {

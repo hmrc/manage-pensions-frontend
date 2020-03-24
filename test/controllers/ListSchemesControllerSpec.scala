@@ -19,14 +19,21 @@ package controllers
 import config.FrontendAppConfig
 import connectors.FakeUserAnswersCacheConnector
 import connectors.admin.MinimalPsaConnector
+import controllers.SchemeDetailsControllerSpec.fakeListOfSchemesConnector
+import controllers.SchemeDetailsControllerSpec.fakeSchemeDetailsConnector
+import controllers.SchemeDetailsControllerSpec.fakeSchemeLockConnector
+import controllers.SchemeDetailsControllerSpec.schemeDetailsService
 import controllers.actions.AuthAction
 import controllers.actions.FakeAuthAction
 import forms.ListSchemesFormProvider
 import models.SchemeDetail
 import models.SchemeStatus
+import models.VarianceLock
 import org.mockito.Matchers
 import org.mockito.Matchers.any
+import org.mockito.Mockito.reset
 import org.mockito.Mockito.when
+import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.test.Helpers._
 import services.PaginationService
@@ -36,8 +43,12 @@ import views.html.list_schemes
 
 import scala.concurrent.Future
 
-class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
+class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar with BeforeAndAfterEach {
 import ListSchemesControllerSpec._
+
+  override def beforeEach(): Unit = {
+    when(mockAppConfig.minimumSchemeSearchResults) thenReturn 1
+  }
 
   "onPageLoad" when {
 
