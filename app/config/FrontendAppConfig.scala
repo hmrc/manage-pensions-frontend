@@ -83,11 +83,16 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val aftLoginUrl: String = loadConfig("urls.aftLoginLink")
   lazy val aftSummaryPageUrl: String = loadConfig("urls.aftSummaryPageLink")
   lazy val aftSummaryPageNoVersionUrl: String = loadConfig("urls.aftSummaryPageNoVersionLink")
+  lazy val aftReturnHistoryUrl: String = loadConfig("urls.aftReturnHistoryLink")
+  lazy val aftAmendUrl: String = loadConfig("urls.aftAmendLink")
   lazy val isAFTEnabled: Boolean = runModeConfiguration.underlying.getBoolean("features.aft-return-enabled")
   lazy val aftListOfVersions: String = s"${servicesConfig.baseUrl("pension-scheme-accounting-for-tax")}${runModeConfiguration.underlying.getString("urls.aftListOfVersions")}"
+  lazy val aftOverviewUrl: String = s"${servicesConfig.baseUrl("pension-scheme-accounting-for-tax")}${runModeConfiguration.underlying.getString("urls.aftOverview")}"
 
+  lazy val overviewApiEnablementDate: String = "2020-07-01"
   lazy val quarterStartDate: String = "2020-04-01"
   lazy val quarterEndDate: String = "2020-06-30"
+  lazy val aftNoOfYearsDisplayed: Int = 6
 
   def languageMap: Map[String, Lang] = Map(
     "english" -> Lang("en"),
