@@ -109,14 +109,19 @@
             <div class="column-two-thirds">
                 @components.heading(headingKey = messages("messages__listSchemes__title"))
 
-                @components.input_search(
-                    field = form("searchText"),
-                    label = messages("messages__listSchemes__searchText_label"),
-                    hint  = Some(messages("messages__listSchemes__searchText_hint")),
-                    labelClass = Some("heading-medium"),
-                    inputClass = Some("form-control--width-two-thirds"),
-                    messageKey = messages(button_content)
-                )
+                @if(schemes.size>=appConfig.minimumSchemeSearchResultsForSearch || form("searchText").value.isDefined){
+
+                    @components.input_search(
+                        field = form("searchText"),
+                        label = messages("messages__listSchemes__searchText_label"),
+                        hint  = Some(messages("messages__listSchemes__searchText_hint")),
+                        labelClass = Some("heading-medium"),
+                        inputClass = Some("form-control--width-two-thirds"),
+                        messageKey = messages(button_content)
+                    )
+
+                }
+
                 @if(form("searchText").value.exists(_.length > 0)){
                     <p>
                         <a id="clear-search-link" href="@ListSchemesController.onPageLoad"> @messages("messages__listSchemes__searchText_clearlink")</a>
