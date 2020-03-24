@@ -61,6 +61,9 @@ Taken from GDS Elements
 
 @media screen and (min-width: 641px) {
   @include form-control-sizes;
+  .form-control--width-two-thirds{
+    width: 66.6%!important;
+  }
 }
 
 .form-hint {

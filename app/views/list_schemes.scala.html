@@ -16,6 +16,7 @@
 
 @import config.FrontendAppConfig
 @import models.SchemeDetail
+@import controllers.routes.ListSchemesController
 
 @this(
     main_template: main_template,
@@ -24,13 +25,15 @@
 )
 
 @(
+    form: Form[_],
     schemes: List[SchemeDetail],
     psaName: String,
     numberOfSchemes: Int,
     pagination: Int,
     pageNumber: Int,
     pageNumberLinks: Seq[Int],
-    numberOfPages: Int
+    numberOfPages: Int,
+    noResultsMessageKey: Option[String]
 )(implicit
     request: Request[_],
     messages: Messages
@@ -86,68 +89,106 @@
     )
 }
 
+@button_content = @{
+    if(form("searchText").value.exists(_.length > 0)) {
+        "messages__listSchemes__search_again"
+    } else {
+        "messages__listSchemes__search_submit"
+    }
+}
+
 @main_template(
     title = messages("messages__listSchemes__title"),
     bodyClasses = Some("full-width")
 ) {
-    @components.back_link()
 
-    <div class="grid-row">
-        <div class="column-two-thirds">
-            @components.heading(headingKey = messages("messages__listSchemes__title"))
+    @formHelper(action = ListSchemesController.onSearch, 'autoComplete -> "off") {
+        @components.back_link()
 
-            <p>@Html(messages("messages__schemesOverview__manage__redirect__text", manageRedirectLink))</p>
-        </div>
-    </div>
-
-    @if(schemes.isEmpty) {
         <div class="grid-row">
             <div class="column-two-thirds">
-                <p id="noSchemes">@messages("messages__listSchemes__noSchemes")</p>
+                @components.heading(headingKey = messages("messages__listSchemes__title"))
+
+                @components.input_search(
+                    field = form("searchText"),
+                    label = messages("messages__listSchemes__searchText_label"),
+                    hint  = Some(messages("messages__listSchemes__searchText_hint")),
+                    labelClass = Some("heading-medium"),
+                    inputClass = Some("form-control--width-two-thirds"),
+                    messageKey = messages(button_content)
+                )
+                @if(form("searchText").value.exists(_.length > 0)){
+                    <p>
+                        <a id="clear-search-link" href="@ListSchemesController.onPageLoad"> @messages("messages__listSchemes__searchText_clearlink")</a>
+                    </p>
+                }else{
+                    <p>@Html(messages("messages__schemesOverview__manage__redirect__text", manageRedirectLink))</p>
+                }
+
             </div>
         </div>
-    } else {
-        @components.scheme_list(schemes, appConfig)
-    }
 
-    @if(numberOfSchemes > pagination) {
-        <div class="grid-row">
-            <div class="column-two-thirds">
-                <p class="govuk-margin-top-5" id="pagination-text">
-                    @paginationText
-                </p>
-                <nav class="govuk-margin-top-5" aria-label="page">
-                    @if(pageNumber > 1) {
-                        @navLink(
-                            linkText = messages(s"${msgPrefix}first"),
-                            pageNumber = 1
-                        )
-                        @navLink(
-                            linkText = messages(s"${msgPrefix}prev"),
-                            pageNumber = pageNumber - 1
-                        )
-                    }
+        @if(form("searchText").value.exists(_.length > 0)){
+            @if(schemes.size>0){
+                <div class="grid-row">
+                    <div class="column-two-thirds">
+                        <p class="govuk-margin-top-5 govuk-margin-bottom-0">@{schemes.size} results</p>
+                    </div>
+                </div>
+            }
+        }
 
-                    @for((int, i) <- pageNumberLinks.zipWithIndex) {
-                        @pageNumberLink(
-                            linkNumber = pageNumberLinks(i)
-                        )
-                    }
-
-                    @if(pageNumber < numberOfPages) {
-                        @navLink(
-                            linkText = messages(s"${msgPrefix}next"),
-                            pageNumber = pageNumber + 1
-                        )
-                        @navLink(
-                            linkText = messages(s"${msgPrefix}last"),
-                            pageNumber = numberOfPages
-                        )
-                    }
-                </nav>
+        @noResultsMessageKey.map{ text =>
+            <div class="grid-row">
+                <div class="column-two-thirds">
+                    <p id="noSchemes">@messages(text)</p>
+                </div>
             </div>
-        </div>
-    }
+        }
 
-    @components.return_link(controllers.routes.SchemesOverviewController.onPageLoad(), Some(psaName))
+        @if(schemes.nonEmpty) {
+            @components.scheme_list(schemes, appConfig)
+        }
+
+        @if(numberOfSchemes > pagination) {
+            <div class="grid-row">
+                <div class="column-two-thirds">
+                    <p class="govuk-margin-top-5" id="pagination-text">
+                        @paginationText
+                    </p>
+                    <nav class="govuk-margin-top-5" aria-label="page">
+                        @if(pageNumber > 1) {
+                            @navLink(
+                                linkText = messages(s"${msgPrefix}first"),
+                                pageNumber = 1
+                            )
+                            @navLink(
+                                linkText = messages(s"${msgPrefix}prev"),
+                                pageNumber = pageNumber - 1
+                            )
+                        }
+
+                        @for((int, i) <- pageNumberLinks.zipWithIndex) {
+                            @pageNumberLink(
+                                linkNumber = pageNumberLinks(i)
+                            )
+                        }
+
+                        @if(pageNumber < numberOfPages) {
+                            @navLink(
+                                linkText = messages(s"${msgPrefix}next"),
+                                pageNumber = pageNumber + 1
+                            )
+                            @navLink(
+                                linkText = messages(s"${msgPrefix}last"),
+                                pageNumber = numberOfPages
+                            )
+                        }
+                    </nav>
+                </div>
+            </div>
+        }
+
+        @components.return_link(controllers.routes.SchemesOverviewController.onPageLoad(), Some(psaName))
+    }
 }

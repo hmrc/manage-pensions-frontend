@@ -16,6 +16,7 @@
 
 package views
 
+import forms.ListSchemesFormProvider
 import models.{SchemeDetail, SchemeStatus}
 import play.api.i18n.Messages
 import play.api.mvc.Request
@@ -30,6 +31,7 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
   private val pagination: Int = 10
   private val listSchemesView = injector.instanceOf[list_schemes]
   private val paginationService = new PaginationService
+  private val listSchemesFormProvider = new ListSchemesFormProvider
 
   private val fullList: List[SchemeDetail] = List(
     SchemeDetail(
@@ -419,12 +421,14 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours {
                    numberOfPages: Int
                   )(implicit request: Request[_], messages: Messages): () => HtmlFormat.Appendable = () =>
     listSchemesView(
+      form = listSchemesFormProvider.apply(),
       schemes = schemes,
       psaName = psaName,
       numberOfSchemes = numberOfSchemes,
       pagination = pagination,
       pageNumber = pageNumber,
       pageNumberLinks = pageNumberLinks,
-      numberOfPages = numberOfPages
+      numberOfPages = numberOfPages,
+      noResultsMessageKey = Some("messages__listSchemes__noSchemes")
     )
 }
