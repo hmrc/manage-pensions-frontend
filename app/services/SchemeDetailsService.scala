@@ -45,46 +45,40 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
       val pstrId = userAnswers.get(PSTRId)
         .getOrElse(throw new RuntimeException(s"No PSTR ID found for srn $srn"))
 
-
-      for {
-        optVersions <- aftConnector.getListOfVersions(pstrId)
-        optLockedBy <- aftCacheConnector.lockedBy(srn, appConfig.quarterStartDate)
-      } yield {
-        createAFTViewModel(optVersions, optLockedBy, srn, appConfig.quarterStartDate, appConfig.quarterEndDate)
+      if(isOverviewApiDisabled) { //TODO This case to be deleted after 1 July 2020 and only the else section for this if to remain
+        for {
+          optVersions <- aftConnector.getListOfVersions(pstrId)
+          optLockedBy <- aftCacheConnector.lockedBy(srn, appConfig.quarterStartDate)
+        } yield {
+          createAFTViewModel(optVersions, optLockedBy, srn, appConfig.quarterStartDate, appConfig.quarterEndDate)
+        }
+      } else {
+        createAFTOverviewModel(pstrId, srn)
       }
     } else {
       Future.successful(Nil)
     }
   }
 
-  private def isOverviewApiEnabled: Boolean =
-    !LocalDate.parse(appConfig.overviewApiEnablementDate).isAfter(DateHelper.currentDate)
+  private def isOverviewApiDisabled: Boolean =
+    LocalDate.parse(appConfig.overviewApiEnablementDate).isAfter(DateHelper.currentDate)
 
-  def retrieveAFTOverviewModel(userAnswers: UserAnswers, srn: String)(implicit hc: HeaderCarrier): Future[Seq[AFTViewModel]] = {
-    if (appConfig.isAFTEnabled && isCorrectSchemeStatus(userAnswers)) {
-      val pstrId = userAnswers.get(PSTRId)
-        .getOrElse(throw new RuntimeException(s"No PSTR ID found for srn $srn"))
-      for {
-        overview <- aftConnector.getAftOverview(pstrId)
-        inProgressReturnsOpt <- getInProgressReturnsModel(overview, srn)
-      } yield {
-        createAFTOverviewModel(overview, inProgressReturnsOpt, srn)
-      }
-    } else {
-      Future.successful(Nil)
+
+  private def createAFTOverviewModel(pstrId: String, srn: String)(
+    implicit hc: HeaderCarrier): Future[Seq[AFTViewModel]] = {
+    for {
+      overview <- aftConnector.getAftOverview(pstrId)
+      inProgressReturnsOpt <- getInProgressReturnsModel(overview, srn)
+    } yield {
+
+      val inProgressReturns = inProgressReturnsOpt.map(Seq(_)).getOrElse(Nil)
+      val startReturns = getStartReturnsModel(overview, srn).map(Seq(_)).getOrElse(Nil)
+      val pastReturns = getPastReturnsModel(overview, srn).map(Seq(_)).getOrElse(Nil)
+
+      Seq(inProgressReturns, startReturns, pastReturns).flatten
+
     }
   }
-
-  private def createAFTOverviewModel(overview: Seq[AFTOverview], inProgress: Option[AFTViewModel], srn: String)(
-    implicit hc: HeaderCarrier): Seq[AFTViewModel] = {
-
-    for{
-
-      inProgressReturns <- inProgress
-      startReturns <- getStartReturnsModel(overview, srn)
-      pastReturns <- getPastReturnsModel(overview, srn)
-    } yield Seq(inProgressReturns, startReturns, pastReturns)
-  }.getOrElse(Nil)
 
 
 
@@ -102,7 +96,7 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
       Some(
         AFTViewModel(None, None,
           Link(id = "aftLoginLink", url = appConfig.aftLoginUrl.format(srn),
-            linkText = Message("messages__schemeDetails__aft_startLink")))
+            linkText = Message("messages__schemeDetails__aft_start")))
       )
     } else {
       None
@@ -114,14 +108,13 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
 
     if (pastReturns.nonEmpty) {
       Some(AFTViewModel(
-        Some(Message("messages__schemeDetails__aft_period")),
-        Some(Message("messages__schemeDetails__aft_inProgress")),
+        None,
+        None,
         Link(
-          id = "aftSummaryPageLink",
+          id = "aftAmendLink",
           url = appConfig.aftAmendUrl.format(srn),
-          linkText = Message("messages__schemeDetails__aft_view"))
-      )
-      )
+          linkText = Message("messages__schemeDetails__aft_view_or_change"))
+      ))
     } else {
       None
     }
@@ -144,24 +137,24 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
           else {
             Some(Message("messages__schemeDetails__aft_locked"))
           },
-          Link(id = "aftSummaryPageLink", url = appConfig.aftReturnHistoryUrl.format(srn, startDate),
+          Link(id = "aftReturnHistoryLink", url = appConfig.aftReturnHistoryUrl.format(srn, startDate),
             linkText = Message("messages__schemeDetails__aft_view"))
         ))
         case _ => Some(AFTViewModel(
           Some(Message("messages__schemeDetails__aft_period", startDate.format(startDateFormat), endDate.format(endDateFormat))),
           Some(Message("messages__schemeDetails__aft_inProgress")),
           Link(
-            id = "aftSummaryPageLink",
+            id = "aftReturnHistoryLink",
             url = appConfig.aftReturnHistoryUrl.format(srn, startDate),
             linkText = Message("messages__schemeDetails__aft_view"))
         ))
       }
     } else if(inProgressReturns.nonEmpty) {
       Future.successful(Some(AFTViewModel(
-        Some(Message("messages__schemeDetails__aft_period")),
-        Some(Message("messages__schemeDetails__aft_inProgress")),
+        Some(Message("messages__schemeDetails__aft_multiple_inProgress")),
+        Some(Message("messages__schemeDetails__aft_inProgressCount").withArgs(inProgressReturns.size)),
         Link(
-          id = "aftSummaryPageLink",
+          id = "aftAmendLink",
           url = appConfig.aftAmendUrl.format(srn),
           linkText = Message("messages__schemeDetails__aft_view"))
       )))
