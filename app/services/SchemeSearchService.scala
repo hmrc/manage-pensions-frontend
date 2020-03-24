@@ -47,7 +47,7 @@ class SchemeSearchService @Inject()(listSchemesConnector: ListOfSchemesConnector
       .map{ listOfSchemes =>
         val filterSearchResults =
           searchText.fold[List[SchemeDetail] => List[SchemeDetail]](identity)(
-            ft => filterSchemesBySrnOrPstr(ft, _: List[SchemeDetail])
+            st => filterSchemesBySrnOrPstr(st, _: List[SchemeDetail])
           )
 
         filterSearchResults(listOfSchemes.schemeDetail.getOrElse(List.empty[SchemeDetail]))

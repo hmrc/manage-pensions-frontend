@@ -111,12 +111,12 @@ class ListSchemesController @Inject()(
   private def searchAndRenderView(
     form: Form[_],
     pageNumber: Int,
-    filterText: Option[String]
+    searchText: Option[String]
   )(implicit request: OptionalDataRequest[AnyContent]): Future[Result] = {
-    schemeSearchService.search(request.psaId.id, filterText).flatMap{ searchResult =>
+    schemeSearchService.search(request.psaId.id, searchText).flatMap{ searchResult =>
 
       val noResultsMessageKey =
-        (filterText.isDefined, searchResult.isEmpty) match {
+        (searchText.isDefined, searchResult.isEmpty) match {
           case (true, true) =>
             Some("messages__listSchemes__search_noMatches")
           case (false, true) => Some("messages__listSchemes__noSchemes")
@@ -167,13 +167,13 @@ class ListSchemesController @Inject()(
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
-      searchAndRenderView(filterText = None, pageNumber = 1, form = form)
+      searchAndRenderView(searchText = None, pageNumber = 1, form = form)
   }
 
   def onPageLoadWithPageNumber(pageNumber: Index): Action[AnyContent] =
     (authenticate andThen getData).async { implicit request =>
       searchAndRenderView(
-        filterText = None,
+        searchText = None,
         pageNumber = pageNumber,
         form = form
       )
@@ -186,13 +186,13 @@ class ListSchemesController @Inject()(
         .fold(
           (formWithErrors: Form[_]) =>
             searchAndRenderView(
-              filterText = None,
+              searchText = None,
               pageNumber = 1,
               form = formWithErrors
           ),
           value => {
             searchAndRenderView(
-              filterText = Some(value),
+              searchText = Some(value),
               pageNumber = 1,
               form = form.fill(value)
             )
