@@ -47,7 +47,7 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar wit
 import ListSchemesControllerSpec._
 
   override def beforeEach(): Unit = {
-    when(mockAppConfig.minimumSchemeSearchResultsForSearch) thenReturn 1
+    when(mockAppConfig.minimumSchemeSearchResults) thenReturn 1
   }
 
   "onPageLoad" when {

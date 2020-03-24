@@ -109,7 +109,7 @@
             <div class="column-two-thirds">
                 @components.heading(headingKey = messages("messages__listSchemes__title"))
 
-                @if(schemes.size>=appConfig.minimumSchemeSearchResultsForSearch || form("searchText").value.isDefined){
+                @if(schemes.size>=appConfig.minimumSchemeSearchResults || form("searchText").value.isDefined){
 
                     @components.input_search(
                         field = form("searchText"),

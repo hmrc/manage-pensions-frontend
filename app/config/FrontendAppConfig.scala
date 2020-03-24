@@ -114,5 +114,5 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val retryWaitFactor: Double = runModeConfiguration.get[Double]("retry.wait.factor")
 
   lazy val listSchemePagination: Int = runModeConfiguration.get[Int]("listSchemePagination")
-  lazy val minimumSchemeSearchResultsForSearch: Int = runModeConfiguration.get[Int]("minimumSchemeSearchResultsForSearch")
+  lazy val minimumSchemeSearchResults: Int = runModeConfiguration.get[Int]("minimumSchemeSearchResults")
 }

@@ -135,7 +135,7 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours with MockitoS
   implicit private val request: Request[_] = fakeRequest
 
   override def beforeEach(): Unit = {
-    when(mockAppConfig.minimumSchemeSearchResultsForSearch) thenReturn 5
+    when(mockAppConfig.minimumSchemeSearchResults) thenReturn 5
   }
 
   "list-schemes view" must {
@@ -182,7 +182,7 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours with MockitoS
     }
 
     "NOT have search bar when less than minimum schemes" in {
-      when(mockAppConfig.minimumSchemeSearchResultsForSearch) thenReturn 10
+      when(mockAppConfig.minimumSchemeSearchResults) thenReturn 10
       val doc = asDocument(view(schemes = fullList,
         numberOfSchemes = emptyList.length,
         pagination = pagination,
