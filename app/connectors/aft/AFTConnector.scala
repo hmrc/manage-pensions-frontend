@@ -43,8 +43,7 @@ trait AFTConnector {
 class AFTConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) extends AFTConnector with HttpResponseHelper {
   override def getListOfVersions(pstr: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Seq[AFTVersion]]] = {
     val url = config.aftListOfVersions
-    val startDate = Quarters.getCurrentQuarter.startDate.toString
-    val schemeHc = hc.withExtraHeaders("pstr" -> pstr, "startDate" -> startDate)
+    val schemeHc = hc.withExtraHeaders("pstr" -> pstr, "startDate" -> "2020-04-01")
     http.GET[HttpResponse](url)(implicitly, schemeHc, implicitly).map { response =>
       require(response.status == Status.OK)
       Option(response.json.as[Seq[AFTVersion]])

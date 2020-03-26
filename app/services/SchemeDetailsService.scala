@@ -40,16 +40,13 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
                                     )(implicit ec: ExecutionContext) {
   def retrieveOptionAFTViewModel(userAnswers: UserAnswers, srn: String)(implicit hc: HeaderCarrier): Future[Option[AFTViewModel]] = {
     if (appConfig.isAFTEnabled && isCorrectSchemeStatus(userAnswers)) {
-      val startDate = Quarters.getCurrentQuarter.startDate.toString
-      val endDate = Quarters.getCurrentQuarter.endDate.toString
-
       val pstrId = userAnswers.get(PSTRId)
         .getOrElse(throw new RuntimeException(s"No PSTR ID found for srn $srn"))
       for {
         optVersions <- aftConnector.getListOfVersions(pstrId)
-        optLockedBy <- aftCacheConnector.lockedBy(srn, startDate)
+        optLockedBy <- aftCacheConnector.lockedBy(srn, appConfig.quarterStartDate)
       } yield {
-        createAFTViewModel(optVersions, optLockedBy, srn, startDate, endDate)
+        createAFTViewModel(optVersions, optLockedBy, srn, appConfig.quarterStartDate, appConfig.quarterEndDate)
       }
     } else {
       Future.successful(None)

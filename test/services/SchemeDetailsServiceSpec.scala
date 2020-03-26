@@ -38,7 +38,7 @@ import play.api.libs.json.{JsArray, Json}
 import play.api.mvc.AnyContent
 import uk.gov.hmrc.domain.PsaId
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.{DateHelper, UserAnswers}
+import utils.UserAnswers
 import viewmodels.{AFTViewModel, AssociatedPsa, Message}
 
 import scala.concurrent.Future
@@ -57,7 +57,7 @@ class SchemeDetailsServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
 
   private val version1 = AFTVersion(1, LocalDate.now())
   private val version2 = AFTVersion(2, LocalDate.now())
-  DateHelper.setDate(Some(LocalDate.of(2020, 4, 1)))
+  private val versions = Seq(version1, version2)
 
   def service: SchemeDetailsService =
     new SchemeDetailsService(frontendAppConfig, aftConnector, aftCacheConnector,
@@ -65,7 +65,6 @@ class SchemeDetailsServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
 
   "retrieveOptionAFTViewModel" must {
     "return the correct model when return is locked by another credentials" in {
-
       when(aftConnector.getListOfVersions(any())(any(), any()))
         .thenReturn(Future.successful(Some(Seq(version1))))
       when(aftCacheConnector.lockedBy(any(), any())(any(), any()))
