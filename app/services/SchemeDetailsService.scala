@@ -95,7 +95,7 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
     if (isStartEnabled) {
       Some(
         AFTViewModel(None, None,
-          Link(id = "aftLoginLink1", url = appConfig.aftLoginUrl.format(srn),
+          Link(id = "aftLoginLink", url = appConfig.aftLoginUrl.format(srn),
             linkText = Message("messages__schemeDetails__aft_start")))
       )
     } else {
