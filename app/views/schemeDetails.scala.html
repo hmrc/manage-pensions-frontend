@@ -85,7 +85,7 @@
                                 @{aftViewModel.status.map(_.resolve)}
                             </div>
                             <div class="column-one-sixth table-column">
-                                <a id='@{aftViewModel.link.id}' href='@{aftViewModel.link.url}'>
+                                <a id='wewewewewew@{aftViewModel.link.id}' href='@{aftViewModel.link.url}'>
                                     @{aftViewModel.link.linkText.resolve}
                                 </a>
                             </div>
@@ -109,7 +109,8 @@
                         <div class="column-two-sixths table-column">
                             @if(psa.canRemove){
                                 <a id="remove-link" href="@controllers.remove.routes.RemovePsaController.onPageLoad()">
-                                    @messages("messages__schemeDetails__remove")
+                                    <span>@messages("messages__schemeDetails__remove")</span>
+                                    <span class="visually-hidden">@messages("messages__schemeDetails__remove_hidden", psa.name)</span>
                                 </a>
                             }
                         </div>
