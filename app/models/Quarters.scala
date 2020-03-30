@@ -18,8 +18,9 @@ package models
 
 import java.time.LocalDate
 
+import config.FrontendAppConfig
 import play.api.libs.json.{Format, Json}
-import utils.DateHelper._
+import utils.DateHelper.{currentDate, _}
 
 import scala.language.implicitConversions
 
@@ -30,6 +31,8 @@ sealed trait Quarters {
   def endMonth: Int
 }
 object Quarters {
+
+  private val currentYear = currentDate.getYear
 
   case object Q1 extends WithName("q1") with Quarters {
     override def startMonth = 1
@@ -53,13 +56,17 @@ object Quarters {
     override def endMonth = 12
   }
 
-  def getQuarter(quarter: Quarters, year: Int): Quarter = {
-    Quarter(LocalDate.of(year, quarter.startMonth, quarter.startDay),
+  def getQuarterDates(quarter: Quarters, year: Int): QuarterDates = {
+    QuarterDates(LocalDate.of(year, quarter.startMonth, quarter.startDay),
       LocalDate.of(year, quarter.endMonth, quarter.endDay))
   }
 
-  def getCurrentQuarter: Quarter =
-    getQuarter(getQuartersFromDate(currentDate), currentDate.getYear)
+  def getQuarterDates(date: LocalDate): QuarterDates = {
+    getQuarterDates(getQuartersFromDate(date), date.getYear)
+  }
+
+  def getCurrentQuarter: QuarterDates =
+    getQuarterDates(getQuartersFromDate(currentDate), currentDate.getYear)
 
   def getQuartersFromDate(date: LocalDate): Quarters =
     date.getMonthValue match {
@@ -69,12 +76,37 @@ object Quarters {
       case _ => Q4
     }
 
+  def validQuartersForYear(year: Int)(implicit config: FrontendAppConfig): Seq[Quarters] = {
+    val earliestValidYear: Int = LocalDate.parse(config.quarterStartDate).getYear
+    year match {
+      case _ if year == currentYear => getCurrentYearQuarters
+      case _ if year == earliestValidYear => Seq(Q2, Q3, Q4)
+      case _ => Seq(Q1, Q2, Q3, Q4)
+    }
+  }
+
+  private def getCurrentYearQuarters(implicit config: FrontendAppConfig): Seq[Quarters] = {
+    val earliestValidYear: Int = LocalDate.parse(config.quarterStartDate).getYear
+    val quartersCY = currentDate.getMonthValue match {
+      case i if i > 9 => Seq(Q1, Q2, Q3, Q4)
+      case i if i > 6 => Seq(Q1, Q2, Q3)
+      case i if i  > 3 => Seq(Q1, Q2)
+      case _ => Seq(Q1)
+    }
+
+    if(currentYear == earliestValidYear) {
+      quartersCY.filter(_ != Q1)
+    }
+    else {
+      quartersCY
+    }
+  }
+
 }
 
-case class Quarter(startDate: LocalDate, endDate: LocalDate)
+case class QuarterDates(startDate: LocalDate, endDate: LocalDate)
 
-object Quarter {
-
-  implicit lazy val formats: Format[Quarter] =
-    Json.format[Quarter]
+object QuarterDates {
+  implicit lazy val formats: Format[QuarterDates] =
+    Json.format[QuarterDates]
 }

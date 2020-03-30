@@ -84,12 +84,12 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
       when(schemeDetailsService.openedDate(any(), any(), any())).thenReturn(openDate)
       when(schemeDetailsService.administratorsVariations(any(), any(), any())).thenReturn(administrators)
       when(schemeDetailsService.lockingPsa(any(), any())(any(), any())).thenReturn(Future.successful(Some("test-psa")))
-      when(schemeDetailsService.retrieveOptionAFTViewModel(any(), any())(any())).thenReturn(Future(Some(aftViewModel)))
+      when(schemeDetailsService.retrieveOptionAFTViewModel(any(), any())(any())).thenReturn(Future(Seq(aftViewModel)))
 
       val result = controller().onPageLoad(srn)(fakeRequest)
       status(result) mustBe OK
       contentAsString(result) mustBe schemeDetailsView(schemeName, pstr, openDate, administrators, srn, isSchemeOpen = true,
-        displayChangeLink = false, lockingPsa = Some("test-psa"), optionAFTViewModel = Some(aftViewModel))(fakeRequest, messages).toString()
+        displayChangeLink = false, lockingPsa = Some("test-psa"), seqAFTViewModel = Seq(aftViewModel))(fakeRequest, messages).toString()
     }
 
     "return NOT_FOUND when PSA data is not returned by API (as we don't know who administers the scheme)" in {

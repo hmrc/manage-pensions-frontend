@@ -38,7 +38,8 @@ import play.api.libs.json.{JsArray, Json}
 import play.api.mvc.AnyContent
 import uk.gov.hmrc.domain.PsaId
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.UserAnswers
+import utils.DateHelper.{endDateFormat, startDateFormat}
+import utils.{DateHelper, UserAnswers}
 import viewmodels.{AFTViewModel, AssociatedPsa, Message}
 
 import scala.concurrent.Future
@@ -63,8 +64,77 @@ class SchemeDetailsServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
     new SchemeDetailsService(frontendAppConfig, aftConnector, aftCacheConnector,
       lockConnector, minimalPsaConnector)
 
-  "retrieveOptionAFTViewModel" must {
+  "retrieveOptionAFTViewModel after overviewApiEnablement" must {
+    "return overview api returns multiple returns in progress, multiple past returns and start link needs to be displayed" in {
+      DateHelper.setDate(Some(LocalDate.of(2021,4,1)))
+      when(aftConnector.getAftOverview(any())(any(), any()))
+        .thenReturn(Future.successful(allTypesMultipleReturnsPresent))
+      when(aftConnector.aftStartDate).thenReturn(LocalDate.of(2020, 4, 1))
+      when(aftConnector.aftEndDate).thenReturn(LocalDate.of(2021, 6, 30))
+
+      val ua = UserAnswers().set(PSTRId)(pstr).flatMap(_.set(SchemeStatusId)(Open.value)).asOpt.get
+
+      whenReady(service.retrieveOptionAFTViewModel(ua, srn)) {
+        _ mustBe allTypesMultipleReturnsModel
+      }
+    }
+
+    "return the correct model when return no returns are in progress" in {
+      when(aftConnector.getAftOverview(any())(any(), any()))
+        .thenReturn(Future.successful(noInProgress))
+      when(aftConnector.aftStartDate).thenReturn(LocalDate.of(2020, 4, 1))
+      when(aftConnector.aftEndDate).thenReturn(LocalDate.of(2021, 6, 30))
+      val ua = UserAnswers().set(PSTRId)(pstr).flatMap(_.set(SchemeStatusId)(Open.value)).asOpt.get
+
+      whenReady(service.retrieveOptionAFTViewModel(ua, srn)) {
+        _ mustBe noInProgressModel
+      }
+    }
+
+    "return the correct model when return one return is in progress but not locked" in {
+      when(aftConnector.getAftOverview(any())(any(), any()))
+        .thenReturn(Future.successful(oneInProgress))
+      when(aftConnector.aftStartDate).thenReturn(LocalDate.of(2020, 4, 1))
+      when(aftConnector.aftEndDate).thenReturn(LocalDate.of(2021, 6, 30))
+      when(aftCacheConnector.lockedBy(any(), any())(any(), any()))
+        .thenReturn(Future.successful(None))
+      val ua = UserAnswers().set(PSTRId)(pstr).flatMap(_.set(SchemeStatusId)(Open.value)).asOpt.get
+
+      whenReady(service.retrieveOptionAFTViewModel(ua, srn)) {
+        _ mustBe oneInProgressModelNotLocked
+      }
+    }
+
+    "return the correct model when one return is in progress and locked by another user" in {
+      when(aftConnector.getAftOverview(any())(any(), any()))
+        .thenReturn(Future.successful(oneInProgress))
+      when(aftConnector.aftStartDate).thenReturn(LocalDate.of(2020, 4, 1))
+      when(aftConnector.aftEndDate).thenReturn(LocalDate.of(2021, 6, 30))
+      when(aftCacheConnector.lockedBy(any(), any())(any(), any()))
+        .thenReturn(Future.successful(Some(name)))
+      val ua = UserAnswers().set(PSTRId)(pstr).flatMap(_.set(SchemeStatusId)(Open.value)).asOpt.get
+
+      whenReady(service.retrieveOptionAFTViewModel(ua, srn)) {
+        _ mustBe oneInProgressModelLocked
+      }
+    }
+
+    "return None when the scheme status is other than Open/Wound-up/Deregistered" in {
+      when(aftConnector.getListOfVersions(any())(any(), any()))
+        .thenReturn(Future.successful(Some(Seq(version1))))
+      when(aftCacheConnector.lockedBy(any(), any())(any(), any()))
+        .thenReturn(Future.successful(None))
+      val ua = UserAnswers().set(PSTRId)(pstr).flatMap(_.set(SchemeStatusId)(Rejected.value)).asOpt.get
+
+      whenReady(service.retrieveOptionAFTViewModel(ua, srn)) {
+        _ mustBe Nil
+      }
+    }
+  }
+
+  "retrieveOptionAFTViewModel before overviewApiEnablement" must {
     "return the correct model when return is locked by another credentials" in {
+      DateHelper.setDate(Some(LocalDate.of(2020,4,1)))
       when(aftConnector.getListOfVersions(any())(any(), any()))
         .thenReturn(Future.successful(Some(Seq(version1))))
       when(aftCacheConnector.lockedBy(any(), any())(any(), any()))
@@ -120,7 +190,7 @@ class SchemeDetailsServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
       val ua = UserAnswers().set(PSTRId)(pstr).flatMap(_.set(SchemeStatusId)(Rejected.value)).asOpt.get
 
       whenReady(service.retrieveOptionAFTViewModel(ua, srn)) {
-        _ mustBe None
+        _ mustBe Nil
       }
     }
   }
@@ -213,7 +283,7 @@ object SchemeDetailsServiceSpec {
   private val name = "test-name"
   private val date = "2020-01-01"
   val minimalPsaName: Option[String] = Some("John Doe Doe")
-  val lockedAftModel: Option[AFTViewModel] = Some(
+  val lockedAftModel: Seq[AFTViewModel] = Seq(
     AFTViewModel(
       Some(Message("messages__schemeDetails__aft_period", formattedStartDate, formattedEndDate)),
       Some(Message("messages__schemeDetails__aft_lockedBy", name)),
@@ -223,7 +293,7 @@ object SchemeDetailsServiceSpec {
         linkText = Message("messages__schemeDetails__aft_view"))
     )
   )
-  val unlockedEmptyAftModel: Option[AFTViewModel] = Some(
+  val unlockedEmptyAftModel: Seq[AFTViewModel] = Seq(
     AFTViewModel(
       None,
       None,
@@ -233,7 +303,7 @@ object SchemeDetailsServiceSpec {
         linkText = Message("messages__schemeDetails__aft_startLink", formattedStartDate, formattedEndDate))
     )
   )
-  val lockedAftModelWithNoVersion: Option[AFTViewModel] = Some(
+  val lockedAftModelWithNoVersion: Seq[AFTViewModel] = Seq(
     AFTViewModel(
       Some(Message("messages__schemeDetails__aft_period", formattedStartDate, formattedEndDate)),
       Some(Message("messages__schemeDetails__aft_lockedBy", name)),
@@ -243,7 +313,7 @@ object SchemeDetailsServiceSpec {
         linkText = Message("messages__schemeDetails__aft_view"))
     )
   )
-  val inProgressUnlockedAftModel: Option[AFTViewModel] = Option(
+  val inProgressUnlockedAftModel: Seq[AFTViewModel] = Seq(
     AFTViewModel(
       Some(Message("messages__schemeDetails__aft_period", formattedStartDate, formattedEndDate)),
       Some(Message("messages__schemeDetails__aft_inProgress")),
@@ -284,4 +354,81 @@ object SchemeDetailsServiceSpec {
     )
   ))
   val listOfSchemes: ListOfSchemes = ListOfSchemes("", "", Some(List(SchemeDetail(name, srn, "Open", Some(date), Some(pstr), None))))
+
+  val overviewApril20: AFTOverview = AFTOverview(
+    LocalDate.of(2020, 4, 1),
+    LocalDate.of(2020, 6, 30),
+    2,
+    submittedVersionAvailable = true,
+    compiledVersionAvailable = false
+  )
+
+  val overviewJuly20: AFTOverview = AFTOverview(
+    LocalDate.of(2020, 7, 1),
+    LocalDate.of(2020, 9, 30),
+    2,
+    submittedVersionAvailable = true,
+    compiledVersionAvailable = false
+  )
+
+  val overviewOctober20: AFTOverview = AFTOverview(
+    LocalDate.of(2020, 10, 1),
+    LocalDate.of(2020, 12, 31),
+    2,
+    submittedVersionAvailable = true,
+    compiledVersionAvailable = true
+  )
+
+  val overviewJan21: AFTOverview = AFTOverview(
+    LocalDate.of(2021, 1, 1),
+    LocalDate.of(2021, 3, 31),
+    2,
+    submittedVersionAvailable = true,
+    compiledVersionAvailable = true
+  )
+
+  val aftLoginUrl: String = "http://localhost:8206/manage-pension-scheme-accounting-for-tax/srn/new-return/aft-login"
+  val amendUrl: String = "http://localhost:8206/manage-pension-scheme-accounting-for-tax/srn/previous-return/amend-select"
+  val returnHistoryUrl: String = "http://localhost:8206/manage-pension-scheme-accounting-for-tax/srn/previous-return/2020-10-01/amend-previous"
+
+  val startModel: AFTViewModel = AFTViewModel(None, None,
+    Link(id = "aftLoginLink", url = aftLoginUrl,
+      linkText = Message("messages__schemeDetails__aft_start")))
+
+  val pastReturnsModel: AFTViewModel = AFTViewModel(None, None,
+    Link(
+      id = "aftAmendLink",
+      url = amendUrl,
+      linkText = Message("messages__schemeDetails__aft_view_or_change")))
+
+  def multipleInProgressModel(count: Int): AFTViewModel = AFTViewModel(
+    Some(Message("messages__schemeDetails__aft_multiple_inProgress")),
+    Some(Message("messages__schemeDetails__aft_inProgressCount").withArgs(count)),
+    Link(
+      id = "aftAmendLink",
+      url = amendUrl,
+      linkText = Message("messages__schemeDetails__aft_view"))
+  )
+
+  def oneInProgressModel(locked: Boolean): AFTViewModel = AFTViewModel(
+    Some(Message("messages__schemeDetails__aft_period", "1 October", "31 December 2020")),
+    if (locked) {
+      Some(Message("messages__schemeDetails__aft_lockedBy", name))
+    }
+    else {
+      Some(Message("messages__schemeDetails__aft_inProgress"))
+    },
+    Link(id = "aftReturnHistoryLink", url = returnHistoryUrl,
+      linkText = Message("messages__schemeDetails__aft_view"))
+  )
+
+  val allTypesMultipleReturnsPresent = Seq(overviewApril20, overviewJuly20, overviewOctober20, overviewJan21)
+  val noInProgress = Seq(overviewApril20, overviewJuly20)
+  val oneInProgress = Seq(overviewApril20 , overviewOctober20)
+
+  val allTypesMultipleReturnsModel = Seq(multipleInProgressModel(2), startModel, pastReturnsModel)
+  val noInProgressModel = Seq(startModel, pastReturnsModel)
+  val oneInProgressModelLocked = Seq(oneInProgressModel(locked = true), startModel, pastReturnsModel)
+  val oneInProgressModelNotLocked = Seq(oneInProgressModel(locked = false), startModel, pastReturnsModel)
+
 }

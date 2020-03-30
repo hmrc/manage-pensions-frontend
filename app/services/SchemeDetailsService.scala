@@ -32,26 +32,138 @@ import uk.gov.hmrc.http.HeaderCarrier
 import utils.{DateHelper, UserAnswers}
 import viewmodels.{AFTViewModel, AssociatedPsa, Message}
 import scala.concurrent.{ExecutionContext, Future}
+import utils.DateHelper._
+
 class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
                                      aftConnector: AFTConnector,
                                      aftCacheConnector: AftCacheConnector,
                                      schemeVarianceLockConnector: PensionSchemeVarianceLockConnector,
                                      minimalPsaConnector: MinimalPsaConnector
                                     )(implicit ec: ExecutionContext) {
-  def retrieveOptionAFTViewModel(userAnswers: UserAnswers, srn: String)(implicit hc: HeaderCarrier): Future[Option[AFTViewModel]] = {
+  def retrieveOptionAFTViewModel(userAnswers: UserAnswers, srn: String)(implicit hc: HeaderCarrier): Future[Seq[AFTViewModel]] = {
     if (appConfig.isAFTEnabled && isCorrectSchemeStatus(userAnswers)) {
       val pstrId = userAnswers.get(PSTRId)
         .getOrElse(throw new RuntimeException(s"No PSTR ID found for srn $srn"))
-      for {
-        optVersions <- aftConnector.getListOfVersions(pstrId)
-        optLockedBy <- aftCacheConnector.lockedBy(srn, appConfig.quarterStartDate)
-      } yield {
-        createAFTViewModel(optVersions, optLockedBy, srn, appConfig.quarterStartDate, appConfig.quarterEndDate)
+
+      if(isOverviewApiDisabled) { //TODO This case to be deleted after 1 July 2020 and only the else section for this if to remain
+        for {
+          optVersions <- aftConnector.getListOfVersions(pstrId)
+          optLockedBy <- aftCacheConnector.lockedBy(srn, appConfig.quarterStartDate)
+        } yield {
+          createAFTViewModel(optVersions, optLockedBy, srn, appConfig.quarterStartDate, appConfig.quarterEndDate)
+        }
+      } else {
+        createAFTOverviewModel(pstrId, srn)
       }
     } else {
+      Future.successful(Nil)
+    }
+  }
+
+  private def isOverviewApiDisabled: Boolean =
+    LocalDate.parse(appConfig.overviewApiEnablementDate).isAfter(DateHelper.currentDate)
+
+
+  private def createAFTOverviewModel(pstrId: String, srn: String)(
+    implicit hc: HeaderCarrier): Future[Seq[AFTViewModel]] = {
+    for {
+      overview <- aftConnector.getAftOverview(pstrId)
+      inProgressReturnsOpt <- getInProgressReturnsModel(overview, srn)
+    } yield {
+
+      val inProgressReturns = inProgressReturnsOpt.map(Seq(_)).getOrElse(Nil)
+      val startReturns = getStartReturnsModel(overview, srn).map(Seq(_)).getOrElse(Nil)
+      val pastReturns = getPastReturnsModel(overview, srn).map(Seq(_)).getOrElse(Nil)
+
+      Seq(inProgressReturns, startReturns, pastReturns).flatten
+
+    }
+  }
+
+
+
+  private def getStartReturnsModel(overview: Seq[AFTOverview], srn: String)(implicit hc: HeaderCarrier): Option[AFTViewModel] = {
+    val isStartEnabled: Boolean = {
+      val aftValidYears = aftConnector.aftStartDate.getYear to aftConnector.aftEndDate.getYear
+      aftValidYears.flatMap { year =>
+        Quarters.validQuartersForYear(year)(appConfig).map { quarter =>
+          !overview.map(_.periodStartDate).contains(Quarters.getQuarterDates(quarter, year).startDate)
+        }
+      }.contains(true)
+    }
+
+    if (isStartEnabled) {
+      Some(
+        AFTViewModel(None, None,
+          Link(id = "aftLoginLink1", url = appConfig.aftLoginUrl.format(srn),
+            linkText = Message("messages__schemeDetails__aft_start")))
+      )
+    } else {
+      None
+    }
+  }
+
+  private def getPastReturnsModel(overview: Seq[AFTOverview], srn: String)(implicit hc: HeaderCarrier): Option[AFTViewModel] = {
+    val pastReturns = overview.filter(!_.compiledVersionAvailable)
+
+    if (pastReturns.nonEmpty) {
+      Some(AFTViewModel(
+        None,
+        None,
+        Link(
+          id = "aftAmendLink",
+          url = appConfig.aftAmendUrl.format(srn),
+          linkText = Message("messages__schemeDetails__aft_view_or_change"))
+      ))
+    } else {
+      None
+    }
+  }
+
+
+    private def getInProgressReturnsModel(overview: Seq[AFTOverview], srn: String)(implicit hc: HeaderCarrier): Future[Option[AFTViewModel]] = {
+    val inProgressReturns = overview.filter(_.compiledVersionAvailable)
+
+    if(inProgressReturns.size == 1){
+      val startDate: LocalDate = inProgressReturns.head.periodStartDate
+      val endDate = Quarters.getQuarterDates(startDate).endDate
+
+      aftCacheConnector.lockedBy(srn, startDate.toString).map {
+        case Some(lockedBy) => Some(AFTViewModel(
+          Some(Message("messages__schemeDetails__aft_period", startDate.format(startDateFormat), endDate.format(endDateFormat))),
+          if (lockedBy.nonEmpty) {
+            Some(Message("messages__schemeDetails__aft_lockedBy", lockedBy))
+          }
+          else {
+            Some(Message("messages__schemeDetails__aft_locked"))
+          },
+          Link(id = "aftReturnHistoryLink", url = appConfig.aftReturnHistoryUrl.format(srn, startDate),
+            linkText = Message("messages__schemeDetails__aft_view"))
+        ))
+        case _ => Some(AFTViewModel(
+          Some(Message("messages__schemeDetails__aft_period", startDate.format(startDateFormat), endDate.format(endDateFormat))),
+          Some(Message("messages__schemeDetails__aft_inProgress")),
+          Link(
+            id = "aftReturnHistoryLink",
+            url = appConfig.aftReturnHistoryUrl.format(srn, startDate),
+            linkText = Message("messages__schemeDetails__aft_view"))
+        ))
+      }
+    } else if(inProgressReturns.nonEmpty) {
+      Future.successful(Some(AFTViewModel(
+        Some(Message("messages__schemeDetails__aft_multiple_inProgress")),
+        Some(Message("messages__schemeDetails__aft_inProgressCount").withArgs(inProgressReturns.size)),
+        Link(
+          id = "aftAmendLink",
+          url = appConfig.aftAmendUrl.format(srn),
+          linkText = Message("messages__schemeDetails__aft_view"))
+      )))
+    }
+    else {
       Future.successful(None)
     }
   }
+
   private def isCorrectSchemeStatus(ua: UserAnswers): Boolean = {
     val validStatus = Seq(Open.value, WoundUp.value, Deregistered.value)
     ua.get(SchemeStatusId) match {
@@ -63,18 +175,18 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
   }
 
   private def createAFTViewModel(optVersions: Option[Seq[AFTVersion]], optLockedBy: Option[String],
-                                 srn: String, startDate: String, endDate: String): Option[AFTViewModel] = {
+                                 srn: String, startDate: String, endDate: String): Seq[AFTViewModel] = {
     val dateFormatterYMD: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    val formattedStartDate: String = LocalDate.parse(startDate, dateFormatterYMD).format(DateTimeFormatter.ofPattern("d MMMM"))
-    val formattedEndDate: String = LocalDate.parse(endDate, dateFormatterYMD).format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
+    val formattedStartDate: String = LocalDate.parse(startDate, dateFormatterYMD).format(startDateFormat)
+    val formattedEndDate: String = LocalDate.parse(endDate, dateFormatterYMD).format(endDateFormat)
     (optVersions, optLockedBy) match {
       case (Some(versions), None) if versions.isEmpty =>
-        Option(AFTViewModel(None, None,
+        Seq(AFTViewModel(None, None,
           Link(id = "aftChargeTypePageLink", url = appConfig.aftLoginUrl.format(srn),
             linkText = Message("messages__schemeDetails__aft_startLink", formattedStartDate, formattedEndDate)))
         )
       case (Some(versions), Some(name)) if versions.isEmpty =>
-        Option(AFTViewModel(
+        Seq(AFTViewModel(
           Some(Message("messages__schemeDetails__aft_period", formattedStartDate, formattedEndDate)),
           if (name.nonEmpty) {
             Some(Message("messages__schemeDetails__aft_lockedBy", name))
@@ -87,7 +199,7 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
         )
         )
       case (Some(versions), Some(name)) =>
-        Option(AFTViewModel(
+        Seq(AFTViewModel(
           Some(Message("messages__schemeDetails__aft_period", formattedStartDate, formattedEndDate)),
           if (name.nonEmpty) {
             Some(Message("messages__schemeDetails__aft_lockedBy", name))
@@ -101,7 +213,7 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
         )
 
       case (Some(versions), None) =>
-        Option(AFTViewModel(
+        Seq(AFTViewModel(
           Some(Message("messages__schemeDetails__aft_period", formattedStartDate, formattedEndDate)),
           Some(Message("messages__schemeDetails__aft_inProgress")),
           Link(
@@ -110,7 +222,7 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
             linkText = Message("messages__schemeDetails__aft_view"))
         )
         )
-      case _ => None
+      case _ => Nil
     }
   }
 
