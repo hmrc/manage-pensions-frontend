@@ -154,7 +154,7 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
         Some(Message("messages__schemeDetails__aft_multiple_inProgress")),
         Some(Message("messages__schemeDetails__aft_inProgressCount").withArgs(inProgressReturns.size)),
         Link(
-          id = "aftAmendLink",
+          id = "aftAmendInProgressLink",
           url = appConfig.aftAmendUrl.format(srn),
           linkText = Message("messages__schemeDetails__aft_view"))
       )))

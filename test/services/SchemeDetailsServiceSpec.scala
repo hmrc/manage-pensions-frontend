@@ -405,7 +405,7 @@ object SchemeDetailsServiceSpec {
     Some(Message("messages__schemeDetails__aft_multiple_inProgress")),
     Some(Message("messages__schemeDetails__aft_inProgressCount").withArgs(count)),
     Link(
-      id = "aftAmendLink",
+      id = "aftAmendInProgressLink",
       url = amendUrl,
       linkText = Message("messages__schemeDetails__aft_view"))
   )
