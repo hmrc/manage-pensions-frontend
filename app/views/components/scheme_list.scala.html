@@ -90,8 +90,7 @@ s"srn-$index"
         <div class="row-group grid-row">
             <div class="column-one-fourth table-column scheme-name">
                 <a id="@{schemeNameId(index)}" href="@{controllers.routes.SchemeDetailsController.onPageLoad(scheme.referenceNumber).url}" target="_self" data-sso="false">
-                    <span aria-hidden="true">@{scheme.name}</span>
-                    <span class="visually-hidden">@messages("messages__listSchemes__schemeName__screen_reader", scheme.name)</span>
+                    <span>@{scheme.name}</span>
                 </a>
             </div>
 
