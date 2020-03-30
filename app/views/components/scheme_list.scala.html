@@ -71,40 +71,40 @@ s"srn-$index"
 }
 
 <div id="schemeList">
-    <div class="grid-row" aria-hidden="true">
-        <div class="column-one-fourth table-header">
-            <p id="@schemeNameHeaderID" class="heading-small">@messages("messages__listSchemes__column_schemeName")</p>
-        </div>
-        <div class="column-one-fourth table-header">
-            <p id="@srnHeaderID" class="heading-small">@messages("messages__listSchemes__column_srn")</p>
-        </div>
-        <div class="column-one-fourth table-header">
-            <p id="@pstrHeaderID" class="heading-small">@messages("messages__listSchemes__column_pstr")</p>
-        </div>
-        <div class="column-one-fourth table-header">
-            <p id="@statusHeaderID" class="heading-small">@messages("messages__listSchemes__column_status")</p>
-        </div>
-    </div>
+    <dl class="grid-row" aria-hidden="true">
+        <div class="grid-row" aria-hidden="true">
+            <dt class="column-one-fourth table-header">
+                <span id="@schemeNameHeaderID" class="heading-small">@messages("messages__listSchemes__column_schemeName")</span>
+            </dt>
+            <dd class="column-one-fourth table-header">
+                <span id="@srnHeaderID" class="heading-small">@messages("messages__listSchemes__column_srn")</span>
+            </dd>
 
-    @for((scheme, index) <- schemes.zipWithIndex) {
-        <div class="row-group grid-row">
-            <div class="column-one-fourth table-column scheme-name">
-                <a id="@{schemeNameId(index)}" href="@{controllers.routes.SchemeDetailsController.onPageLoad(scheme.referenceNumber).url}" target="_self" data-sso="false">
-                    <span>@{scheme.name}</span>
-                </a>
-            </div>
+            <dd class="column-one-fourth table-header">
+                <span id="@pstrHeaderID" class="heading-small">@messages("messages__listSchemes__column_pstr")</span>
+            </dd>
 
-            <div class="column-one-fourth table-column scheme-name">
-                <p id="@{srnId(index)}">
-                        <span aria-hidden="true">
-                            @{scheme.referenceNumber}
-                        </span>
-                    <span class="visually-hidden">@messages("messages__listSchemes__SRN__screen_reader", scheme.name, scheme.referenceNumber)</span>
-                </p>
-            </div>
-
-            <div class="column-one-fourth table-column scheme-name">
-                <p id="@{pstrId(index)}">
+            <dd class="column-one-fourth table-header">
+                <span id="@statusHeaderID" class="heading-small">@messages("messages__listSchemes__column_status")</span>
+            </dd>
+        </div>
+        @for((scheme, index) <- schemes.zipWithIndex) {
+            <div class="row-group grid-row">
+                <dt class="column-one-fourth table-column scheme-name">
+                    <a id="@{schemeNameId(index)}" href="@{controllers.routes.SchemeDetailsController.onPageLoad(scheme.referenceNumber).url}" target="_self" data-sso="false">
+                        <span>@{scheme.name}</span>
+                    </a>
+                </dt>
+                <dd class="column-one-fourth table-column scheme-name">
+                    <p id="@{srnId(index)}">
+                            <span aria-hidden="true">
+                                @{scheme.referenceNumber}
+                            </span>
+                        <span class="visually-hidden">@messages("messages__listSchemes__SRN__screen_reader", scheme.name, scheme.referenceNumber)</span>
+                    </p>
+                </dd>
+                <dd class="column-one-fourth table-column scheme-name">
+                    <p id="@{pstrId(index)}">
                     <span aria-hidden="true">
                         @if(scheme.pstr.nonEmpty) {
                             @pstrValue(scheme.pstr)
@@ -112,16 +112,16 @@ s"srn-$index"
                             @messages("messages__listSchemes__pstr_not_assigned")
                         }
                     </span>
-                    <span class="visually-hidden">@messages("messages__listSchemes__PSTR__screen_reader", scheme.name, pstrValue(scheme.pstr))</span>
-                </p>
+                        <span class="visually-hidden">@messages("messages__listSchemes__PSTR__screen_reader", scheme.name, pstrValue(scheme.pstr))</span>
+                    </p>
+                </dd>
+                <dd class="column-one-fourth table-column scheme-name">
+                    <p id="@{statusId(index)}">
+                        <span aria-hidden="true">@statusValue(scheme.schemeStatus)</span>
+                        <span class="visually-hidden">@messages("messages__listSchemes__status__screen_reader", scheme.name, scheme.schemeStatus)</span>
+                    </p>
+                </dd>
             </div>
-
-            <div class="column-one-fourth table-column scheme-name">
-                <p id="@{statusId(index)}">
-                    <span aria-hidden="true">@statusValue(scheme.schemeStatus)</span>
-                    <span class="visually-hidden">@messages("messages__listSchemes__status__screen_reader", scheme.name, scheme.schemeStatus)</span>
-                </p>
-            </div>
-        </div>
-    }
+        }
+    </dl>
 </div>
