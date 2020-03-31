@@ -72,56 +72,43 @@ s"srn-$index"
 
 <table id="schemeList">
         <thead>
-        <tr class="grid-row">
-            <th class="column-one-fourth table-header">
+        <tr>
+            <th scope="col">
                 <span id="@schemeNameHeaderID" class="heading-small">@messages("messages__listSchemes__column_schemeName")</span>
             </th>
-            <th class="column-one-fourth table-header">
+            <th scope="col">
                 <span id="@srnHeaderID" class="heading-small">@messages("messages__listSchemes__column_srn")</span>
             </th>
 
-            <th class="column-one-fourth table-header">
+            <th scope="col">
                 <span id="@pstrHeaderID" class="heading-small">@messages("messages__listSchemes__column_pstr")</span>
             </th>
 
-            <th class="column-one-fourth table-header">
+            <th scope="col">
                 <span id="@statusHeaderID" class="heading-small">@messages("messages__listSchemes__column_status")</span>
             </th>
         </tr>
         </thead>
         @for((scheme, index) <- schemes.zipWithIndex) {
             <tbody>
-            <tr class="row-group grid-row">
-                <td class="column-one-fourth table-column scheme-name">
+            <tr>
+                <th scope="row">
                     <a id="@{schemeNameId(index)}" href="@{controllers.routes.SchemeDetailsController.onPageLoad(scheme.referenceNumber).url}" target="_self" data-sso="false">
-                        <span>@{scheme.name}</span>
+                    @{scheme.name}
                     </a>
-                </td>
-                <td class="column-one-fourth table-column scheme-name">
-                    <p id="@{srnId(index)}">
-                            <span aria-hidden="true">
+                </th>
+                <td id="@{srnId(index)}">
                                 @{scheme.referenceNumber}
-                            </span>
-                        <span class="visually-hidden">@messages("messages__listSchemes__SRN__screen_reader", scheme.name, scheme.referenceNumber)</span>
-                    </p>
                 </td>
-                <td class="column-one-fourth table-column scheme-name">
-                    <p id="@{pstrId(index)}">
-                    <span aria-hidden="true">
+                <td id="@{pstrId(index)}">
                         @if(scheme.pstr.nonEmpty) {
                             @pstrValue(scheme.pstr)
                         } else {
                             @messages("messages__listSchemes__pstr_not_assigned")
                         }
-                    </span>
-                        <span class="visually-hidden">@messages("messages__listSchemes__PSTR__screen_reader", scheme.name, pstrValue(scheme.pstr))</span>
-                    </p>
                 </td>
-                <td class="column-one-fourth table-column scheme-name">
-                    <p id="@{statusId(index)}">
-                        <span aria-hidden="true">@statusValue(scheme.schemeStatus)</span>
-                        <span class="visually-hidden">@messages("messages__listSchemes__status__screen_reader", scheme.name, scheme.schemeStatus)</span>
-                    </p>
+                <td id="@{statusId(index)}">
+                   @statusValue(scheme.schemeStatus)
                 </td>
             </tr>
             </tbody>
