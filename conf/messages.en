@@ -299,7 +299,6 @@ messages__schemeDetails__invite_link = Add a scheme administrator
 messages__schemeDetails__invite_p1 = To add a pension administrator they must be registered with the managing pension scheme service. You will need the name and administrator ID. They will get an invitation that they will have to accept.
 messages__schemeDetails__return_link = Return to your pension schemes
 messages__schemeDetails__remove = Remove
-messages__schemeDetails__remove_hidden = Remove {0}
 messages__schemeDetails__aft_h1 = Accounting for Tax (AFT) returns
 messages__schemeDetails__aft_startLink= Start the AFT return for {0} to {1}
 messages__schemeDetails__aft_start = Start a new AFT return
