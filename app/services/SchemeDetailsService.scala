@@ -126,7 +126,7 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
 
     if(inProgressReturns.size == 1){
       val startDate: LocalDate = inProgressReturns.head.periodStartDate
-      val endDate = Quarters.getQuarterDates(startDate).endDate
+      val endDate: LocalDate = Quarters.getQuarterDates(startDate).endDate
 
       aftCacheConnector.lockedBy(srn, startDate.toString).map {
         case Some(lockedBy) => Some(AFTViewModel(
@@ -137,8 +137,14 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
           else {
             Some(Message("messages__schemeDetails__aft_locked"))
           },
-          Link(id = "aftReturnHistoryLink", url = appConfig.aftReturnHistoryUrl.format(srn, startDate),
-            linkText = Message("messages__schemeDetails__aft_view"))
+          if(inProgressReturns.head.submittedVersionAvailable) {
+            Link(id = "aftReturnHistoryLink", url = appConfig.aftReturnHistoryUrl.format(srn, startDate),
+              linkText = Message("messages__schemeDetails__aft_view"))
+          }
+          else {
+            Link(id = "aftSummaryLink", url = appConfig.aftSummaryPageUrl.format(srn, startDate, 1),
+              linkText = Message("messages__schemeDetails__aft_view"))
+          }
         ))
         case _ => Some(AFTViewModel(
           Some(Message("messages__schemeDetails__aft_period", startDate.format(startDateFormat), endDate.format(endDateFormat))),
