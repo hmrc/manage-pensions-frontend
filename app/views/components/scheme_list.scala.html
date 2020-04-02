@@ -70,45 +70,49 @@ s"srn-$index"
     }
 }
 
-<table id="schemeList">
-        <thead>
-        <tr>
-            <th scope="col">
+<table id="schemeList" class="hmrc-responsive-table">
+        <thead role="rowgroup">
+        <tr role="row">
+            <th class="govuk-table__header" scope="col" role="columnheader">
                 <span id="@schemeNameHeaderID" class="heading-small">@messages("messages__listSchemes__column_schemeName")</span>
             </th>
-            <th scope="col">
+            <th class="govuk-table__header" scope="col" role="columnheader">
                 <span id="@srnHeaderID" class="heading-small">@messages("messages__listSchemes__column_srn")</span>
             </th>
 
-            <th scope="col">
+            <th class="govuk-table__header" scope="col" role="columnheader">
                 <span id="@pstrHeaderID" class="heading-small">@messages("messages__listSchemes__column_pstr")</span>
             </th>
 
-            <th scope="col">
+            <th class="govuk-table__header" scope="col" role="columnheader">
                 <span id="@statusHeaderID" class="heading-small">@messages("messages__listSchemes__column_status")</span>
             </th>
         </tr>
         </thead>
         @for((scheme, index) <- schemes.zipWithIndex) {
             <tbody>
-            <tr>
-                <th scope="row">
+            <tr class="member-details" role="row">
+                <td class="govuk-table__cell" role="cell">
+                    <span class="hmrc-responsive-table__heading" aria-hidden="true">@messages("messages__listSchemes__column_schemeName")</span>
                     <a id="@{schemeNameId(index)}" href="@{controllers.routes.SchemeDetailsController.onPageLoad(scheme.referenceNumber).url}" target="_self" data-sso="false">
                     @{scheme.name}
                     </a>
-                </th>
-                <td id="@{srnId(index)}">
+                </td>
+                <td class="govuk-table__cell" role="cell" id="@{srnId(index)}">
+                    <span class="hmrc-responsive-table__heading" aria-hidden="true">@messages("messages__listSchemes__column_srn")</span>
                                 @{scheme.referenceNumber}
                 </td>
-                <td id="@{pstrId(index)}">
+                <td class="govuk-table__cell" role="cell" id="@{pstrId(index)}">
+                    <span class="hmrc-responsive-table__heading" aria-hidden="true">@messages("messages__listSchemes__column_pstr")</span>
                         @if(scheme.pstr.nonEmpty) {
                             @pstrValue(scheme.pstr)
                         } else {
                             @messages("messages__listSchemes__pstr_not_assigned")
                         }
                 </td>
-                <td id="@{statusId(index)}">
-                   @statusValue(scheme.schemeStatus)
+                <td class="govuk-table__cell" role="cell" id="@{statusId(index)}">
+                    <span class="hmrc-responsive-table__heading" aria-hidden="true">@messages("messages__listSchemes__column_status")</span>
+                    @statusValue(scheme.schemeStatus)
                 </td>
             </tr>
             </tbody>
