@@ -23,14 +23,26 @@ hint: Option[String] = None,
 headingIsLegend: Boolean = false
 )(implicit messages: Messages)
 
-@ariaList = @{
-    val hintId = if(hint.nonEmpty){field.id+"-date-hint "}else{" "}
-    val errorId = if(field.errors.nonEmpty){"error-notification-"+field.id+"-input"}else{""}
-    hintId + errorId
+@ariaDescribedBy = @{
+    val seqIDs = (
+        if (hint.nonEmpty) {
+            Seq(field.id + "-date-hint")
+        } else {
+            Nil
+        }
+    ) ++
+    (
+        if(field.errors.nonEmpty){
+            Seq("error-notification-"+field.id+"-input")
+        } else {
+            Nil
+        }
+    )
+    seqIDs.mkString(" ")
 }
 
 <div class="form-field @if(Seq(field, field("day"), field("month"), field("year")).flatMap(_.errors).nonEmpty){form-field--error}">
-<fieldset id="@field.id" role="group" aria-describedby="@ariaList">
+<fieldset id="@field.id" role="group" aria-describedby="@ariaDescribedBy">
 
     <legend>
         @if(headingIsLegend){
