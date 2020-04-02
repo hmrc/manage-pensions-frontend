@@ -39,15 +39,14 @@
         @components.error_summary(form.errors)
 
         <div class="form-group @if(form.hasErrors){form-group--error}">
-        @components.heading(messages("messages__removalDate__heading", psaName, schemeName))
-
-        <p>@messages("messages__removalDate__lede", psaName, associationDate)</p>
 
         @components.input_date(
             field = form("removalDate"),
-            label = messages("date"),
-            legendClass = "visuallyhidden",
-            hint = Some(messages("messages__common__date_hint"))
+            label = messages("messages__removalDate__heading", psaName, schemeName),
+            labelClass = "visuallyhidden",
+            secondaryLabel = Some(messages("messages__removalDate__lede", psaName, associationDate)),
+            hint = Some(messages("messages__common__date_hint")),
+            headingIsLegend = true
         )
         </div>
         @components.submit_button()
