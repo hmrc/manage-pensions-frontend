@@ -70,59 +70,51 @@ s"srn-$index"
     }
 }
 
-<div id="schemeList">
-    <div class="grid-row" aria-hidden="true">
-        <div class="column-one-fourth table-header">
-            <p id="@schemeNameHeaderID" class="heading-small">@messages("messages__listSchemes__column_schemeName")</p>
-        </div>
-        <div class="column-one-fourth table-header">
-            <p id="@srnHeaderID" class="heading-small">@messages("messages__listSchemes__column_srn")</p>
-        </div>
-        <div class="column-one-fourth table-header">
-            <p id="@pstrHeaderID" class="heading-small">@messages("messages__listSchemes__column_pstr")</p>
-        </div>
-        <div class="column-one-fourth table-header">
-            <p id="@statusHeaderID" class="heading-small">@messages("messages__listSchemes__column_status")</p>
-        </div>
-    </div>
+<table id="schemeList" class="hmrc-responsive-table">
+        <thead role="rowgroup">
+        <tr role="row">
+            <th class="govuk-table__header" scope="col" role="columnheader">
+                <span id="@schemeNameHeaderID" class="heading-small">@messages("messages__listSchemes__column_schemeName")</span>
+            </th>
+            <th class="govuk-table__header" scope="col" role="columnheader">
+                <span id="@srnHeaderID" class="heading-small">@messages("messages__listSchemes__column_srn")</span>
+            </th>
 
-    @for((scheme, index) <- schemes.zipWithIndex) {
-        <div class="row-group grid-row">
-            <div class="column-one-fourth table-column scheme-name">
-                <a id="@{schemeNameId(index)}" href="@{controllers.routes.SchemeDetailsController.onPageLoad(scheme.referenceNumber).url}" target="_self" data-sso="false">
-                    <span aria-hidden="true">@{scheme.name}</span>
-                    <span class="visually-hidden">@messages("messages__listSchemes__schemeName__screen_reader", scheme.name)</span>
-                </a>
-            </div>
+            <th class="govuk-table__header" scope="col" role="columnheader">
+                <span id="@pstrHeaderID" class="heading-small">@messages("messages__listSchemes__column_pstr")</span>
+            </th>
 
-            <div class="column-one-fourth table-column scheme-name">
-                <p id="@{srnId(index)}">
-                        <span aria-hidden="true">
-                            @{scheme.referenceNumber}
-                        </span>
-                    <span class="visually-hidden">@messages("messages__listSchemes__SRN__screen_reader", scheme.name, scheme.referenceNumber)</span>
-                </p>
-            </div>
-
-            <div class="column-one-fourth table-column scheme-name">
-                <p id="@{pstrId(index)}">
-                    <span aria-hidden="true">
+            <th class="govuk-table__header" scope="col" role="columnheader">
+                <span id="@statusHeaderID" class="heading-small">@messages("messages__listSchemes__column_status")</span>
+            </th>
+        </tr>
+        </thead>
+        @for((scheme, index) <- schemes.zipWithIndex) {
+            <tbody>
+            <tr class="member-details" role="row">
+                <td class="govuk-table__cell" role="cell">
+                    <span class="hmrc-responsive-table__heading" aria-hidden="true">@messages("messages__listSchemes__column_schemeName")</span>
+                    <a id="@{schemeNameId(index)}" href="@{controllers.routes.SchemeDetailsController.onPageLoad(scheme.referenceNumber).url}" target="_self" data-sso="false">
+                        @{scheme.name}
+                    </a>
+                </td>
+                <td class="govuk-table__cell" role="cell" id="@{srnId(index)}">
+                    <span class="hmrc-responsive-table__heading" aria-hidden="true">@messages("messages__listSchemes__column_srn")</span>
+                                @{scheme.referenceNumber}
+                </td>
+                <td class="govuk-table__cell" role="cell" id="@{pstrId(index)}">
+                    <span class="hmrc-responsive-table__heading" aria-hidden="true">@messages("messages__listSchemes__column_pstr")</span>
                         @if(scheme.pstr.nonEmpty) {
                             @pstrValue(scheme.pstr)
                         } else {
                             @messages("messages__listSchemes__pstr_not_assigned")
                         }
-                    </span>
-                    <span class="visually-hidden">@messages("messages__listSchemes__PSTR__screen_reader", scheme.name, pstrValue(scheme.pstr))</span>
-                </p>
-            </div>
-
-            <div class="column-one-fourth table-column scheme-name">
-                <p id="@{statusId(index)}">
-                    <span aria-hidden="true">@statusValue(scheme.schemeStatus)</span>
-                    <span class="visually-hidden">@messages("messages__listSchemes__status__screen_reader", scheme.name, scheme.schemeStatus)</span>
-                </p>
-            </div>
-        </div>
-    }
-</div>
+                </td>
+                <td class="govuk-table__cell" role="cell" id="@{statusId(index)}">
+                    <span class="hmrc-responsive-table__heading" aria-hidden="true">@messages("messages__listSchemes__column_status")</span>
+                    @statusValue(scheme.schemeStatus)
+                </td>
+            </tr>
+            </tbody>
+        }
+</table>
