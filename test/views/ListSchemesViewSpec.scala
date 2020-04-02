@@ -240,7 +240,7 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours with MockitoS
         )
 
         actual must haveLinkWithUrlAndContent(s"schemeName-$index",
-          controllers.routes.SchemeDetailsController.onPageLoad(s"reference-number-$index").url, s"scheme-name-$index The scheme name is: scheme-name-$index")
+          controllers.routes.SchemeDetailsController.onPageLoad(s"reference-number-$index").url, s"scheme-name-$index")
       }
     }
 
@@ -257,15 +257,15 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours with MockitoS
         ).apply()
       )
 
-      assertEqualsValue(actual, "#schemeStatus-4 span:nth-child(1)", "Open")
-      assertEqualsValue(actual, "#schemeStatus-5 span:nth-child(1)", "De-registered")
-      assertEqualsValue(actual, "#schemeStatus-6 span:nth-child(1)", "Wound-up")
+      assertEqualsValue(actual, "#schemeStatus-4", "Open")
+      assertEqualsValue(actual, "#schemeStatus-5", "De-registered")
+      assertEqualsValue(actual, "#schemeStatus-6", "Wound-up")
 
-      assertEqualsValue(actual, "#schemeStatus-0 span:nth-child(1)", "Pending")
-      assertEqualsValue(actual, "#schemeStatus-1 span:nth-child(1)", "Pending information required")
-      assertEqualsValue(actual, "#schemeStatus-2 span:nth-child(1)", "Pending information received")
-      assertEqualsValue(actual, "#schemeStatus-3 span:nth-child(1)", "Rejected")
-      assertEqualsValue(actual, "#schemeStatus-7 span:nth-child(1)", "Rejected under appeal")
+      assertEqualsValue(actual, "#schemeStatus-0", "Pending")
+      assertEqualsValue(actual, "#schemeStatus-1", "Pending information required")
+      assertEqualsValue(actual, "#schemeStatus-2", "Pending information received")
+      assertEqualsValue(actual, "#schemeStatus-3", "Rejected")
+      assertEqualsValue(actual, "#schemeStatus-7", "Rejected under appeal")
     }
 
     "show the SRN column with correct values" in {
@@ -281,14 +281,14 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours with MockitoS
         ).apply()
       )
 
-      assertEqualsValue(actual, "#srn-0 span:nth-child(1)", messages("reference-number-0"))
-      assertEqualsValue(actual, "#srn-1 span:nth-child(1)", messages("reference-number-1"))
-      assertEqualsValue(actual, "#srn-2 span:nth-child(1)", messages("reference-number-2"))
-      assertEqualsValue(actual, "#srn-3 span:nth-child(1)", messages("reference-number-3"))
-      assertEqualsValue(actual, "#srn-4 span:nth-child(1)", messages("reference-number-4"))
-      assertEqualsValue(actual, "#srn-5 span:nth-child(1)", messages("reference-number-5"))
-      assertEqualsValue(actual, "#srn-6 span:nth-child(1)", messages("reference-number-6"))
-      assertEqualsValue(actual, "#srn-7 span:nth-child(1)", messages("reference-number-7"))
+      assertEqualsValue(actual, "#srn-0", messages("reference-number-0"))
+      assertEqualsValue(actual, "#srn-1", messages("reference-number-1"))
+      assertEqualsValue(actual, "#srn-2", messages("reference-number-2"))
+      assertEqualsValue(actual, "#srn-3", messages("reference-number-3"))
+      assertEqualsValue(actual, "#srn-4", messages("reference-number-4"))
+      assertEqualsValue(actual, "#srn-5", messages("reference-number-5"))
+      assertEqualsValue(actual, "#srn-6", messages("reference-number-6"))
+      assertEqualsValue(actual, "#srn-7", messages("reference-number-7"))
     }
 
     "show the PSTR column with correct values" in {
@@ -304,14 +304,14 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours with MockitoS
         ).apply()
       )
 
-      assertEqualsValue(actual, "#pstr-0 span:nth-child(1)", messages("messages__listSchemes__pstr_not_assigned"))
-      assertEqualsValue(actual, "#pstr-1 span:nth-child(1)", messages("messages__listSchemes__pstr_not_assigned"))
-      assertEqualsValue(actual, "#pstr-2 span:nth-child(1)", messages("messages__listSchemes__pstr_not_assigned"))
-      assertEqualsValue(actual, "#pstr-3 span:nth-child(1)", messages("messages__listSchemes__pstr_not_assigned"))
-      assertEqualsValue(actual, "#pstr-4 span:nth-child(1)", messages("PSTR-4"))
-      assertEqualsValue(actual, "#pstr-5 span:nth-child(1)", messages("PSTR-5"))
-      assertEqualsValue(actual, "#pstr-6 span:nth-child(1)", messages("PSTR-6"))
-      assertEqualsValue(actual, "#pstr-7 span:nth-child(1)", messages("messages__listSchemes__pstr_not_assigned"))
+      assertEqualsValue(actual, "#pstr-0", messages("messages__listSchemes__pstr_not_assigned"))
+      assertEqualsValue(actual, "#pstr-1", messages("messages__listSchemes__pstr_not_assigned"))
+      assertEqualsValue(actual, "#pstr-2", messages("messages__listSchemes__pstr_not_assigned"))
+      assertEqualsValue(actual, "#pstr-3", messages("messages__listSchemes__pstr_not_assigned"))
+      assertEqualsValue(actual, "#pstr-4", messages("PSTR-4"))
+      assertEqualsValue(actual, "#pstr-5", messages("PSTR-5"))
+      assertEqualsValue(actual, "#pstr-6", messages("PSTR-6"))
+      assertEqualsValue(actual, "#pstr-7", messages("messages__listSchemes__pstr_not_assigned"))
     }
 
     "display a link to return to overview page" in {
