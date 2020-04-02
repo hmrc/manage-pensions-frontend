@@ -52,3 +52,12 @@ nav span.nav-item a[aria-current="page"] {
 nav span.nav-item a[aria-current="page"]:focus {
   border-bottom: 0;
 }
+
+/*
+====================================
+Fix to render radio buttons visible in IE8
+====================================
+*/
+@media \0screen\,screen\9 {
+    .multiple-choice input {filter: none}
+}
