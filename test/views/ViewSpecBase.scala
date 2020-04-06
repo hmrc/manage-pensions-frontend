@@ -110,6 +110,15 @@ trait ViewSpecBase extends SpecBase {
   def assertEqualsMessage(doc: Document, cssSelector: String, expectedMessageKey: String): Assertion =
     assertEqualsValue(doc, cssSelector, messages(expectedMessageKey))
 
+  def assertEqualsValueOwnText(doc: Document, cssSelector: String, expectedValue: String): Assertion = {
+    val elements = doc.select(cssSelector)
+
+    if (elements.isEmpty) throw new IllegalArgumentException(s"CSS Selector $cssSelector wasn't rendered.")
+
+    //<p> HTML elements are rendered out with a carriage return on some pages, so discount for comparison
+    assert(elements.first().ownText().replace("\n", "") == expectedValue)
+  }
+
   def assertEqualsValue(doc: Document, cssSelector: String, expectedValue: String): Assertion = {
     val elements = doc.select(cssSelector)
 

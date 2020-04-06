@@ -46,19 +46,19 @@ import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
 class ListSchemesController @Inject()(
-  val appConfig: FrontendAppConfig,
-  override val messagesApi: MessagesApi,
-  authenticate: AuthAction,
-  getData: DataRetrievalAction,
-  minimalPsaConnector: MinimalPsaConnector,
-  userAnswersCacheConnector: UserAnswersCacheConnector,
-  val controllerComponents: MessagesControllerComponents,
-  view: list_schemes,
-  paginationService: PaginationService,
-  formProvider: ListSchemesFormProvider,
-  schemeSearchService: SchemeSearchService
-)(implicit val ec: ExecutionContext)
-    extends FrontendBaseController
+                                       val appConfig: FrontendAppConfig,
+                                       override val messagesApi: MessagesApi,
+                                       authenticate: AuthAction,
+                                       getData: DataRetrievalAction,
+                                       minimalPsaConnector: MinimalPsaConnector,
+                                       userAnswersCacheConnector: UserAnswersCacheConnector,
+                                       val controllerComponents: MessagesControllerComponents,
+                                       view: list_schemes,
+                                       paginationService: PaginationService,
+                                       formProvider: ListSchemesFormProvider,
+                                       schemeSearchService: SchemeSearchService
+                                     )(implicit val ec: ExecutionContext)
+  extends FrontendBaseController
     with I18nSupport {
 
   private val pagination: Int = appConfig.listSchemePagination
@@ -66,14 +66,14 @@ class ListSchemesController @Inject()(
   private val form: Form[String] = formProvider()
 
   private def renderView(
-    schemeDetails: List[SchemeDetail],
-    numberOfSchemes: Int,
-    pageNumber: Int,
-    numberOfPages: Int,
-    noResultsMessageKey: Option[String],
-    form: Form[_]
-  )(implicit hc: HeaderCarrier,
-    request: OptionalDataRequest[AnyContent]): Future[Result] = {
+                          schemeDetails: List[SchemeDetail],
+                          numberOfSchemes: Int,
+                          pageNumber: Int,
+                          numberOfPages: Int,
+                          noResultsMessageKey: Option[String],
+                          form: Form[_]
+                        )(implicit hc: HeaderCarrier,
+                          request: OptionalDataRequest[AnyContent]): Future[Result] = {
     val status = if (form.hasErrors) BadRequest else Ok
     minimalPsaConnector
       .getPsaNameFromPsaID(request.psaId.id)
@@ -109,18 +109,18 @@ class ListSchemesController @Inject()(
   }
 
   private def searchAndRenderView(
-    form: Form[_],
-    pageNumber: Int,
-    searchText: Option[String]
-  )(implicit request: OptionalDataRequest[AnyContent]): Future[Result] = {
-    schemeSearchService.search(request.psaId.id, searchText).flatMap{ searchResult =>
+                                   form: Form[_],
+                                   pageNumber: Int,
+                                   searchText: Option[String]
+                                 )(implicit request: OptionalDataRequest[AnyContent]): Future[Result] = {
+    schemeSearchService.search(request.psaId.id, searchText).flatMap { searchResult =>
 
       val noResultsMessageKey =
         (searchText.isDefined, searchResult.isEmpty) match {
           case (true, true) =>
             Some("messages__listSchemes__search_noMatches")
           case (false, true) => Some("messages__listSchemes__noSchemes")
-          case _             => None
+          case _ => None
         }
 
       val numberOfSchemes: Int = searchResult.length
@@ -147,10 +147,10 @@ class ListSchemesController @Inject()(
   }
 
   private def selectPageOfResults(
-    searchResult: List[SchemeDetail],
-    pageNumber: Int,
-    numberOfPages: Int
-  ): Option[List[SchemeDetail]] = {
+                                   searchResult: List[SchemeDetail],
+                                   pageNumber: Int,
+                                   numberOfPages: Int
+                                 ): Option[List[SchemeDetail]] = {
     pageNumber match {
       case 1 => Some(searchResult.take(pagination))
       case p if p <= numberOfPages =>
@@ -189,7 +189,7 @@ class ListSchemesController @Inject()(
               searchText = None,
               pageNumber = 1,
               form = formWithErrors
-          ),
+            ),
           value => {
             searchAndRenderView(
               searchText = Some(value),
