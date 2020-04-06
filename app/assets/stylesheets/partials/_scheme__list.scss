@@ -271,5 +271,17 @@ table td:last-child, table th:last-child {
 
 
 
+.dl--label-value dd{
+  font-weight: 400;
+}
+@media (max-width: 640px) {
+.dl--label-value dt, .dl--label-value dd{
+  width: 100%
+}
+.dl--label-value dd{
+  text-align: left;
+}
+
+}
 
 
