@@ -101,22 +101,23 @@
 
             <div id="admins-list">
 
+            <dl class="dl--label-value">
                 @for(psa <- admins){
-                    <div class="row-group grid-row">
-                        <div class="column-two-thirds table-column">
-                            @psa.name
-                        </div>
-                        <div class="column-two-sixths table-column">
+                <div class="row-group">
+                            <dt>
+                                @psa.name
+                            </dt>
                             @if(psa.canRemove){
+                            <dd>
                                 <a id="remove-link" href="@controllers.remove.routes.RemovePsaController.onPageLoad()">
                                     @messages("messages__schemeDetails__remove")
+                                    <span class="visually-hidden">@psa.name</span>
                                 </a>
+                            </dd>
                             }
-                        </div>
-                    </div>
+                </div>
                 }
-
-            </div>
+            </dl>
 
             <br/>
         }
