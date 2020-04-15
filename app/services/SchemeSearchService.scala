@@ -24,33 +24,28 @@ import uk.gov.hmrc.http.HeaderCarrier
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
-class SchemeSearchService @Inject()(listSchemesConnector: ListOfSchemesConnector) {
+class SchemeSearchService @Inject()(listSchemesConnector: ListOfSchemesConnector,
+                                    fuzzyMatching: FuzzyMatchingService) {
+
   private val srnRegex = "^S[0-9]{10}$".r
   private val pstrRegex = "^[0-9]{8}[A-Za-z]{2}$".r
 
-  private val filterSchemesBySrnOrPstr
-  : (String, List[SchemeDetail]) => List[SchemeDetail] =
-    (searchText, list) => {
-      searchText match {
-        case srn if srnRegex.findFirstIn(searchText).isDefined =>
-          list.filter(_.referenceNumber == searchText)
-        case pstr if pstrRegex.findFirstIn(searchText).isDefined =>
-          list.filter(_.pstr.exists(_ == searchText))
-        case _ =>
-          List.empty
+
+  def search(psaId: String, searchText: Option[String])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[List[SchemeDetail]] = {
+
+    listSchemesConnector.getListOfSchemes(psaId).map { listOfSchemes =>
+
+      val list = listOfSchemes.schemeDetail.getOrElse(Nil)
+
+      searchText.fold[List[SchemeDetail]](list) {
+        case srn if srnRegex.findFirstIn(srn).isDefined =>
+          list.filter(_.referenceNumber == srn)
+        case pstr if pstrRegex.findFirstIn(pstr).isDefined =>
+          list.filter(_.pstr.exists(_ == pstr))
+        case schemeName =>
+          list.filter(scheme => fuzzyMatching.score(scheme.name, schemeName) > 0.85)
+
       }
     }
-
-
-  def search( psaId: String, searchText: Option[String])(implicit hc: HeaderCarrier, ec: ExecutionContext):Future[List[SchemeDetail]] = {
-    listSchemesConnector.getListOfSchemes(psaId)
-      .map{ listOfSchemes =>
-        val filterSearchResults =
-          searchText.fold[List[SchemeDetail] => List[SchemeDetail]](identity)(
-            st => filterSchemesBySrnOrPstr(st, _: List[SchemeDetail])
-          )
-
-        filterSearchResults(listOfSchemes.schemeDetail.getOrElse(List.empty[SchemeDetail]))
-      }
-  }:Future[List[SchemeDetail]]
+  }
 }

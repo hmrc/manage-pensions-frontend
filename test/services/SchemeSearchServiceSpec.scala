@@ -41,7 +41,7 @@ class SchemeSearchServiceSpec extends SpecBase with MockitoSugar with ScalaFutur
       when(mockSchemesConnector.getListOfSchemes(Matchers.eq(psaId))(any(), any()))
         .thenReturn(Future.successful(listOfSchemes))
 
-      val schemeSearchService = new SchemeSearchService(mockSchemesConnector)
+      val schemeSearchService = new SchemeSearchService(mockSchemesConnector, fuzzyMatchingService)
       val pstr = "24000001IN"
 
       whenReady(schemeSearchService.search(psaId, Some(pstr))) { result =>
@@ -54,7 +54,7 @@ class SchemeSearchServiceSpec extends SpecBase with MockitoSugar with ScalaFutur
       when(mockSchemesConnector.getListOfSchemes(Matchers.eq(psaId))(any(), any()))
         .thenReturn(Future.successful(listOfSchemes))
 
-      val schemeSearchService = new SchemeSearchService(mockSchemesConnector)
+      val schemeSearchService = new SchemeSearchService(mockSchemesConnector, fuzzyMatchingService)
       val srn = "S2400000005"
 
       whenReady(schemeSearchService.search(psaId, Some(srn))) { result =>
@@ -68,21 +68,33 @@ class SchemeSearchServiceSpec extends SpecBase with MockitoSugar with ScalaFutur
       when(mockSchemesConnector.getListOfSchemes(Matchers.eq(psaId))(any(), any()))
         .thenReturn(Future.successful(emptyList))
 
-      val schemeSearchService = new SchemeSearchService(mockSchemesConnector)
+      val schemeSearchService = new SchemeSearchService(mockSchemesConnector, fuzzyMatchingService)
 
       whenReady(schemeSearchService.search(psaId, Some("S2400000016"))) { result =>
         result mustBe Nil
       }
     }
 
-    "return empty list for incorrect format pstr/srn" in {
+    "return list of fuzzy matched scheme names if the search does not match srn or pstr" in {
       val mockSchemesConnector = mock[ListOfSchemesConnector]
       when(mockSchemesConnector.getListOfSchemes(Matchers.eq(psaId))(any(), any()))
         .thenReturn(Future.successful(listOfSchemes))
 
-      val schemeSearchService = new SchemeSearchService(mockSchemesConnector)
+      val schemeSearchService = new SchemeSearchService(mockSchemesConnector, fuzzyMatchingService)
 
-      whenReady(schemeSearchService.search(psaId, Some("incorrectformat"))) { result =>
+      whenReady(schemeSearchService.search(psaId, Some("Open"))) { result =>
+        result mustBe List(scheme1, scheme3)
+      }
+    }
+
+    "return an empty list if fuzzyMatching does not return any results" in {
+      val mockSchemesConnector = mock[ListOfSchemesConnector]
+      when(mockSchemesConnector.getListOfSchemes(Matchers.eq(psaId))(any(), any()))
+        .thenReturn(Future.successful(listOfSchemes))
+
+      val schemeSearchService = new SchemeSearchService(mockSchemesConnector, fuzzyMatchingService)
+
+      whenReady(schemeSearchService.search(psaId, Some("xyz"))) { result =>
         result mustBe Nil
       }
     }
@@ -91,31 +103,43 @@ class SchemeSearchServiceSpec extends SpecBase with MockitoSugar with ScalaFutur
 
 object SchemeSearchServiceSpec extends SpecBase with MockitoSugar with BeforeAndAfterEach {
 
+  val fuzzyMatchingService: FuzzyMatchingService = injector.instanceOf[FuzzyMatchingService]
+
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
   private val psaId: String = "psaId"
 
-  def listOfSchemes = ListOfSchemes("", "", Some(fullSchemes))
+  val scheme1: SchemeDetail = SchemeDetail(
+    name = "Open scheme one",
+    referenceNumber = "srn-1",
+    schemeStatus = SchemeStatus.Deregistered.value,
+    openDate = None,
+    pstr = Some("24000001IN"),
+    relationShip = None,
+    underAppeal = None
+  )
 
-  def fullSchemes: List[SchemeDetail] =
-    List(
-      SchemeDetail(
-        name = "scheme-1",
-        referenceNumber = "srn-1",
-        schemeStatus = SchemeStatus.Deregistered.value,
-        openDate = None,
-        pstr = Some("24000001IN"),
-        relationShip = None,
-        underAppeal = None
-      ),
-      SchemeDetail(
-        name = "scheme-2",
-        referenceNumber = "S2400000005",
-        schemeStatus = SchemeStatus.Deregistered.value,
-        openDate = None,
-        pstr = Some("pstr-1"),
-        relationShip = None,
-        underAppeal = None
-      )
-    )
+  val scheme2: SchemeDetail = SchemeDetail(
+    name = "Pending scheme two",
+    referenceNumber = "S2400000005",
+    schemeStatus = SchemeStatus.Deregistered.value,
+    openDate = None,
+    pstr = Some("pstr-1"),
+    relationShip = None,
+    underAppeal = None
+  )
+
+  val scheme3: SchemeDetail = SchemeDetail(
+    name = "Open abc three",
+    referenceNumber = "S2400000005",
+    schemeStatus = SchemeStatus.Deregistered.value,
+    openDate = None,
+    pstr = Some("pstr-1"),
+    relationShip = None,
+    underAppeal = None
+  )
+
+  val fullSchemes: List[SchemeDetail] = List(scheme1, scheme2, scheme3)
+
+  val listOfSchemes: ListOfSchemes = ListOfSchemes("", "", Some(fullSchemes))
 }
