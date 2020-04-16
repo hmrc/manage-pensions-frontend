@@ -48,7 +48,6 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val pensionsSchemeUrl: String = servicesConfig.baseUrl("pensions-scheme")
   lazy val pensionAdminUrl: String = servicesConfig.baseUrl("pension-administrator")
   lazy val aftUrl: String = servicesConfig.baseUrl("pension-scheme-accounting-for-tax")
-  lazy val schemeFrontendUrl: String = servicesConfig.baseUrl("pensions-scheme-frontend")
 
   lazy val timeout: String = loadConfig("session._timeoutSeconds")
   lazy val countdown: String = loadConfig("session._CountdownInSeconds")
