@@ -46,9 +46,26 @@ This service does not have it's own backend, instead it the following backends f
 
 |Service        |HTTP Method |Route                                  |Purpose |
 |---------------|--- |----------------|----------------------------------|
-|Tai            |GET |/tai/${nino}/tax-account/${year} /expenses/flat-rate-expenses| Returns details of a users tax account specifically that of IABD 57 |
-|Tai            |POST|/tai/${nino}/tax-account/${year} /expenses/flat-rate-expenses| Updates a users tax account specifically that of IABD 57  |
-|Citizen Details|GET |/citizen-details/${nino}/etag|retrieves the users etag which is added to their update request to NPS to ensure optimistic locking|
+|Pension Administrator            |POST |/pension-administrator/invite| Stores an invitation in the invitations mongo collection |
+|Pension Administrator            |POST |/pension-administrator/accept-invitation| Creates an association of the PSA with the scheme and removes invitation |
+|Pension Administrator            |POST |/pension-administrator/invite| Stores an invitation in the invitations mongo collection |
+|Pension Administrator            |POST |/pension-administrator/remove-psa| Removes the association between PSA and pension scheme |
+|Pension Administrator            |POST |/pension-administrator/deregister-psa/{psaId}| De-enrols a PSA from the service |
+|Pension Administrator            |GET |/pension-administrator/can-deregister/{psaId}| Returns true is PSA has already dissociated themselves from all active schemes and false if any such associations remain |
+|Pension Administrator            |GET |/pension-administrator/get-minimal-psa| Returns minimal details of the PSA |
+|Pension Administrator            |GET |/pension-administrator/psa-subscription-details| Returns all the details of a PSA subscription |
+|Pensions Scheme            |GET|/pensions-scheme/list-of-schemes | Returns a list of all the schemes that the PSA is associated to  |
+|Pensions Scheme            |GET|/pensions-scheme/scheme | Returns pension scheme details of the selected scheme  |
+|Pensions Scheme            |GET|/update-scheme/get-lock | Returns an edit lock placed on the selected scheme, if present  |
+|Pensions Scheme            |GET|/update-scheme/get-lock | Returns an edit lock for the given PSA-scheme combination, if present  |
+|Pensions Scheme            |GET|/update-scheme/get-lock-by-psa | Returns an edit lock placed on any scheme by the logged in PSA  |
+|Pensions Scheme            |GET|/update-scheme/get-lock-by-scheme | Returns an edit lock placed on the selected scheme by any PSA  |
+|Pensions Scheme            |GET|/update-scheme/isLockByPsaOrScheme | Returns an edit lock placed either on the selected scheme or by the logged in PSA  |
+|Pensions Scheme            |DELETE|/update-scheme/release-lock | Release the edit lock on the scheme  |
+|Pension Scheme Accounting For Tax            |GET|/pension-scheme-accounting-for-tax/get-aft-versions | Return the data from all versions of aft returns of a scheme for a given quarter  |
+|Pension Scheme Accounting For Tax            |GET|/pension-scheme-accounting-for-tax/get-aft-overview | Return the data overview of all aft returns of a scheme for a given time range  |
+|Tax Enrolments            |DELETE|/tax-enrolments/users/{groupId}/enrolments/{enrolmentKey} | De-enrols a PSA from the service  |
+|Address Lookup            |GET|/v2/uk/addresses?postcode={postCode} | Returns all addresses at given postcode  |
 
 ## Running the service
 
@@ -58,7 +75,7 @@ Port: 8204
 
 Link: http://localhost:8204/manage-pension-schemes
 
-PSAIds: `A2100005` (local and Staging environments only)
+Enrolment: `HMRC-PODS-ORG` `PsaId` `A2100005` (local and Staging environments only)
 
 ## Tests and prototype
 
