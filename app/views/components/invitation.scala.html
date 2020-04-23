@@ -33,6 +33,7 @@ srn: String
         <p>@messages("messages__yourInvitations__scheme_expiry_date", displayExpiryDate(expiryDate.toLocalDate))</p>
         <a id= "accept-invitation-@id" href="@controllers.invitations.routes.YourInvitationsController.onSelect(srn)">
             @messages("messages__yourInvitations__accept_link", schemeName)
+            <span class="visually-hidden">@messages("messages__yourInvitations__accept_link_hidden", schemeName)</span>
         </a>
     </div>
 </li>

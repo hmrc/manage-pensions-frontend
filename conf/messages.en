@@ -284,7 +284,8 @@ messages__yourInvitations__heading = Your invitations
 messages__yourInvitations__lede = You have been invited to be a scheme administrator for:
 messages__yourInvitations__not_found = You do not have any invitation
 messages__yourInvitations__scheme_expiry_date = This invitation will expire on {0}.
-messages__yourInvitations__accept_link = Accept invitation to be a scheme administrator for {0}
+messages__yourInvitations__accept_link = Accept invitation
+messages__yourInvitations__accept_link_hidden = Accept invitation to be a scheme administrator for {0}
 
 messages__error__declaration__required = You need to agree to all the declarations before you can continue
 
