@@ -25,12 +25,14 @@ id: String,
 srn: String
 )(implicit messages: Messages)
 
+
+
 <li>
     <div>
         <h2 class="bold">@schemeName</h2>
         <p>@messages("messages__yourInvitations__scheme_expiry_date", displayExpiryDate(expiryDate.toLocalDate))</p>
         <a id= "accept-invitation-@id" href="@controllers.invitations.routes.YourInvitationsController.onSelect(srn)">
-            @messages("messages__yourInvitations__accept_link")
+            @messages("messages__yourInvitations__accept_link", schemeName)
         </a>
     </div>
 </li>
