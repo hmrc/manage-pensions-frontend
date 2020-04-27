@@ -390,6 +390,7 @@ object SchemeDetailsServiceSpec {
   val aftLoginUrl: String = "http://localhost:8206/manage-pension-scheme-accounting-for-tax/srn/new-return/aft-login"
   val amendUrl: String = "http://localhost:8206/manage-pension-scheme-accounting-for-tax/srn/previous-return/amend-select"
   val returnHistoryUrl: String = "http://localhost:8206/manage-pension-scheme-accounting-for-tax/srn/previous-return/2020-10-01/amend-previous"
+  val continueUrl: String = "http://localhost:8206/manage-pension-scheme-accounting-for-tax/srn/new-return/select-quarter-in-progress"
 
   val startModel: AFTViewModel = AFTViewModel(None, None,
     Link(id = "aftLoginLink", url = aftLoginUrl,
@@ -406,7 +407,7 @@ object SchemeDetailsServiceSpec {
     Some(Message("messages__schemeDetails__aft_inProgressCount").withArgs(count)),
     Link(
       id = "aftAmendInProgressLink",
-      url = amendUrl,
+      url = continueUrl,
       linkText = Message("messages__schemeDetails__aft_view"))
   )
 
