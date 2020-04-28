@@ -17,18 +17,24 @@
 package controllers
 
 import config.FrontendAppConfig
+import connectors.aft.AftCacheConnector
 import javax.inject.Inject
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 
+import scala.concurrent.ExecutionContext
+
 class LogoutController @Inject()(
                                   appConfig: FrontendAppConfig,
+                                  aftCacheConnector: AftCacheConnector,
                                   val controllerComponents: MessagesControllerComponents
-                                ) extends FrontendBaseController with I18nSupport {
+                                )(implicit ec : ExecutionContext) extends FrontendBaseController with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = Action {
+  def onPageLoad: Action[AnyContent] = Action.async {
     implicit request =>
-      Redirect(appConfig.serviceSignOut).withNewSession
+      aftCacheConnector.removeLock.map {_ =>
+        Redirect(appConfig.serviceSignOut).withNewSession
+      }
   }
 }
