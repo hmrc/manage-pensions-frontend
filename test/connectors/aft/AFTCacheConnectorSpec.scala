@@ -43,8 +43,7 @@ class AFTCacheConnectorSpec extends AsyncWordSpec with MustMatchers with WireMoc
   protected lazy val connector: AftCacheConnector = injector.instanceOf[AftCacheConnector]
 
   "lockedBy" must {
-
-
+    
     "return `None` when the server returns a 404" in {
       server.stubFor(
         get(urlEqualTo(lockUrl))
