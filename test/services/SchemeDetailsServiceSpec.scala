@@ -119,6 +119,27 @@ class SchemeDetailsServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
       }
     }
 
+    "return a model with start link and only 2 returns in progress" when {
+      "a scheme has 3 compiles in progress but one has been zeroed out and all quarters have been initiated (ie no start link)" in {
+        DateHelper.setDate(Some(LocalDate.of(2020, 12, 31)))
+        when(aftConnector.getAftOverview(any())(any(), any()))
+          .thenReturn(Future.successful(oneCompileZeroedOut))
+        when(aftConnector.aftStartDate).thenReturn(LocalDate.of(2020, 4, 1))
+        when(aftConnector.aftEndDate).thenReturn(LocalDate.of(2021, 12, 31))
+        when(aftCacheConnector.lockedBy(any(), any())(any(), any()))
+          .thenReturn(Future.successful(None))
+        when(aftConnector.getIsAftNonZero(any(), Matchers.eq("2020-07-01"), any())(any(), any()))
+          .thenReturn(Future.successful(false))
+        when(aftConnector.getIsAftNonZero(any(), Matchers.eq("2020-04-01"), any())(any(), any()))
+          .thenReturn(Future.successful(true))
+        val ua = UserAnswers().set(PSTRId)(pstr).flatMap(_.set(SchemeStatusId)(Open.value)).asOpt.get
+
+        whenReady(service.retrieveOptionAFTViewModel(ua, srn)) {
+          _ mustBe oneCompileZeroedOutModel
+        }
+      }
+    }
+
     "return None when the scheme status is other than Open/Wound-up/Deregistered" in {
       when(aftConnector.getListOfVersions(any())(any(), any()))
         .thenReturn(Future.successful(Some(Seq(version1))))
@@ -390,7 +411,6 @@ object SchemeDetailsServiceSpec {
   val aftLoginUrl: String = "http://localhost:8206/manage-pension-scheme-accounting-for-tax/srn/new-return/aft-login"
   val amendUrl: String = "http://localhost:8206/manage-pension-scheme-accounting-for-tax/srn/previous-return/amend-select"
   val returnHistoryUrl: String = "http://localhost:8206/manage-pension-scheme-accounting-for-tax/srn/previous-return/2020-10-01/amend-previous"
-  val continueUrl: String = "http://localhost:8206/manage-pension-scheme-accounting-for-tax/srn/new-return/select-quarter-in-progress"
 
   val startModel: AFTViewModel = AFTViewModel(None, None,
     Link(id = "aftLoginLink", url = aftLoginUrl,
@@ -407,7 +427,7 @@ object SchemeDetailsServiceSpec {
     Some(Message("messages__schemeDetails__aft_inProgressCount").withArgs(count)),
     Link(
       id = "aftAmendInProgressLink",
-      url = continueUrl,
+      url = amendUrl,
       linkText = Message("messages__schemeDetails__aft_view"))
   )
 
@@ -431,5 +451,10 @@ object SchemeDetailsServiceSpec {
   val noInProgressModel = Seq(startModel, pastReturnsModel)
   val oneInProgressModelLocked = Seq(oneInProgressModel(locked = true), startModel, pastReturnsModel)
   val oneInProgressModelNotLocked = Seq(oneInProgressModel(locked = false), startModel, pastReturnsModel)
+
+  val oneCompileZeroedOut = Seq(overviewApril20.copy(numberOfVersions = 1, compiledVersionAvailable = true),
+                            overviewJuly20.copy(numberOfVersions = 1, compiledVersionAvailable = true),
+                            overviewOctober20.copy(numberOfVersions = 2, compiledVersionAvailable = true))
+  val oneCompileZeroedOutModel = Seq(multipleInProgressModel(2), startModel)
 
 }
