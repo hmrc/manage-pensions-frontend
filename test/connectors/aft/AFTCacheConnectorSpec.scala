@@ -44,6 +44,7 @@ class AFTCacheConnectorSpec extends AsyncWordSpec with MustMatchers with WireMoc
 
   "lockedBy" must {
 
+
     "return `None` when the server returns a 404" in {
       server.stubFor(
         get(urlEqualTo(lockUrl))
