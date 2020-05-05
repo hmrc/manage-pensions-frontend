@@ -61,3 +61,10 @@ Fix to render radio buttons visible in IE8
 @media \0screen\,screen\9 {
     .multiple-choice input {filter: none}
 }
+
+/*
+====================================
+Fix to remove some of the urls visible in print/pdfs
+====================================
+*/
+@media print { a[href]::after { content: none !important; } }
