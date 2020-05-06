@@ -38,6 +38,9 @@ trait AFTConnector {
 
   def getAftOverview(pstr: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Seq[AFTOverview]]
 
+  def getIsAftNonZero(pstr: String, startDate: String, aftVersion: String
+                        )(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[Boolean]
+
   def aftStartDate: LocalDate
   def aftEndDate: LocalDate
 }
@@ -54,6 +57,18 @@ class AFTConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) ex
       logExceptions
     } recoverWith {
       translateExceptions()
+    }
+  }
+
+  def getIsAftNonZero(pstr: String, startDate: String, aftVersion: String
+                        )(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[Boolean] = {
+    val url = config.isAftNonZero
+    val aftHc = hc.withExtraHeaders(headers = "pstr" -> pstr, "startDate" -> startDate, "aftVersion" -> aftVersion)
+    http.GET[HttpResponse](url)(implicitly, aftHc, implicitly).map { response =>
+      require(response.status == Status.OK)
+      response.json.as[Boolean]
+    } andThen {
+      case Failure(t: Throwable) => Logger.warn("Unable to get isAftNonZero", t)
     }
   }
 

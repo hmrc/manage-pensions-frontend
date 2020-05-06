@@ -68,22 +68,27 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
     implicit hc: HeaderCarrier): Future[Seq[AFTViewModel]] = {
     for {
       overview <- aftConnector.getAftOverview(pstrId)
-      inProgressReturnsOpt <- getInProgressReturnsModel(overview, srn)
+      inProgressReturnsOpt <- getInProgressReturnsModel(overview, srn, pstrId)
+      startReturnsOpt <- getStartReturnsModel(overview, srn, pstrId)
     } yield {
-
-      val inProgressReturns = inProgressReturnsOpt.map(Seq(_)).getOrElse(Nil)
-      val startReturns = getStartReturnsModel(overview, srn).map(Seq(_)).getOrElse(Nil)
-      val pastReturns = getPastReturnsModel(overview, srn).map(Seq(_)).getOrElse(Nil)
-
-      Seq(inProgressReturns, startReturns, pastReturns).flatten
-
+      Seq(inProgressReturnsOpt, startReturnsOpt, getPastReturnsModel(overview, srn)).flatten
     }
   }
 
 
+  /* Returns a start link if:
+      1. Return has not been initiated for any of the quarters that are valid for starting a return OR
+      2. Any of the returns in their first compile have been zeroed out due to deletion of all charges
+   */
 
-  private def getStartReturnsModel(overview: Seq[AFTOverview], srn: String)(implicit hc: HeaderCarrier): Option[AFTViewModel] = {
-    val isStartEnabled: Boolean = {
+  private def getStartReturnsModel(overview: Seq[AFTOverview], srn: String, pstr: String
+                                  )(implicit hc: HeaderCarrier): Future[Option[AFTViewModel]] = {
+
+    val startLink: Option[AFTViewModel] = Some(AFTViewModel(None, None,
+        Link(id = "aftLoginLink", url = appConfig.aftLoginUrl.format(srn),
+          linkText = Message("messages__schemeDetails__aft_start"))))
+
+    val isReturnNotInitiatedForAnyQuarter: Boolean = {
       val aftValidYears = aftConnector.aftStartDate.getYear to aftConnector.aftEndDate.getYear
       aftValidYears.flatMap { year =>
         Quarters.validQuartersForYear(year)(appConfig).map { quarter =>
@@ -92,15 +97,27 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
       }.contains(true)
     }
 
-    if (isStartEnabled) {
-      Some(
-        AFTViewModel(None, None,
-          Link(id = "aftLoginLink", url = appConfig.aftLoginUrl.format(srn),
-            linkText = Message("messages__schemeDetails__aft_start")))
-      )
+    if (isReturnNotInitiatedForAnyQuarter) {
+     Future.successful(startLink)
     } else {
-      None
+
+      retrieveZeroedOutReturns(overview, pstr).map {
+        case zeroedReturns if zeroedReturns.nonEmpty => startLink //if any returns in first compile are zeroed out, display start link
+        case _ => None
+      }
     }
+  }
+
+  /* Returns a seq of the aftReturns in their first compile have been zeroed out due to deletion of all charges
+  */
+  private def retrieveZeroedOutReturns(overview: Seq[AFTOverview], pstr: String
+                                      )(implicit hc: HeaderCarrier): Future[Seq[AFTOverview]] = {
+    val firstCompileReturns = overview.filter(_.compiledVersionAvailable).filter(_.numberOfVersions == 1)
+
+      Future.sequence(firstCompileReturns.map(aftReturn =>
+        aftConnector.getIsAftNonZero(pstr, aftReturn.periodStartDate.toString, "1"))).map {
+        isNonZero => (firstCompileReturns zip isNonZero).filter(!_._2).map(_._1)
+      }
   }
 
   private def getPastReturnsModel(overview: Seq[AFTOverview], srn: String)(implicit hc: HeaderCarrier): Option[AFTViewModel] = {
@@ -121,52 +138,80 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
   }
 
 
-    private def getInProgressReturnsModel(overview: Seq[AFTOverview], srn: String)(implicit hc: HeaderCarrier): Future[Option[AFTViewModel]] = {
+    private def getInProgressReturnsModel(overview: Seq[AFTOverview], srn: String, pstr: String)(implicit hc: HeaderCarrier): Future[Option[AFTViewModel]] = {
     val inProgressReturns = overview.filter(_.compiledVersionAvailable)
 
     if(inProgressReturns.size == 1){
       val startDate: LocalDate = inProgressReturns.head.periodStartDate
       val endDate: LocalDate = Quarters.getQuarterDates(startDate).endDate
 
-      aftCacheConnector.lockedBy(srn, startDate.toString).map {
-        case Some(lockedBy) => Some(AFTViewModel(
-          Some(Message("messages__schemeDetails__aft_period", startDate.format(startDateFormat), endDate.format(endDateFormat))),
-          if (lockedBy.nonEmpty) {
-            Some(Message("messages__schemeDetails__aft_lockedBy", lockedBy))
-          }
-          else {
-            Some(Message("messages__schemeDetails__aft_locked"))
-          },
-          if(inProgressReturns.head.submittedVersionAvailable) {
-            Link(id = "aftReturnHistoryLink", url = appConfig.aftReturnHistoryUrl.format(srn, startDate),
-              linkText = Message("messages__schemeDetails__aft_view"))
-          }
-          else {
-            Link(id = "aftSummaryLink", url = appConfig.aftSummaryPageUrl.format(srn, startDate, 1),
-              linkText = Message("messages__schemeDetails__aft_view"))
-          }
-        ))
-        case _ => Some(AFTViewModel(
-          Some(Message("messages__schemeDetails__aft_period", startDate.format(startDateFormat), endDate.format(endDateFormat))),
-          Some(Message("messages__schemeDetails__aft_inProgress")),
-          Link(
-            id = "aftReturnHistoryLink",
-            url = appConfig.aftReturnHistoryUrl.format(srn, startDate),
-            linkText = Message("messages__schemeDetails__aft_view"))
-        ))
+      if(inProgressReturns.head.numberOfVersions == 1) {
+       aftConnector.getIsAftNonZero(pstr, startDate.toString, "1").flatMap {
+          case true => modelForSingleInProgressReturn(srn, startDate, endDate, inProgressReturns.head)
+          case _ => Future.successful(None)
+       }
+      } else {
+        modelForSingleInProgressReturn(srn, startDate, endDate, inProgressReturns.head)
       }
+
     } else if(inProgressReturns.nonEmpty) {
-      Future.successful(Some(AFTViewModel(
-        Some(Message("messages__schemeDetails__aft_multiple_inProgress")),
-        Some(Message("messages__schemeDetails__aft_inProgressCount").withArgs(inProgressReturns.size)),
-        Link(
-          id = "aftAmendInProgressLink",
-          url = appConfig.aftContinueReturnUrl.format(srn),
-          linkText = Message("messages__schemeDetails__aft_view"))
-      )))
+      modelForMultipleInProgressReturns(srn, pstr, inProgressReturns)
     }
     else {
       Future.successful(None)
+    }
+  }
+
+  private def modelForSingleInProgressReturn(srn: String, startDate: LocalDate, endDate: LocalDate, overview: AFTOverview
+                                            )(implicit  hc: HeaderCarrier): Future[Option[AFTViewModel]] = {
+    aftCacheConnector.lockedBy(srn, startDate.toString).map {
+      case Some(lockedBy) => Some(AFTViewModel(
+        Some(Message("messages__schemeDetails__aft_period", startDate.format(startDateFormat), endDate.format(endDateFormat))),
+        if (lockedBy.nonEmpty) {
+          Some(Message("messages__schemeDetails__aft_lockedBy", lockedBy))
+        }
+        else {
+          Some(Message("messages__schemeDetails__aft_locked"))
+        },
+        if(overview.submittedVersionAvailable) {
+          Link(id = "aftReturnHistoryLink", url = appConfig.aftReturnHistoryUrl.format(srn, startDate),
+            linkText = Message("messages__schemeDetails__aft_view"))
+        }
+        else {
+          Link(id = "aftSummaryLink", url = appConfig.aftSummaryPageUrl.format(srn, startDate, 1),
+            linkText = Message("messages__schemeDetails__aft_view"))
+        }
+      ))
+      case _ => Some(AFTViewModel(
+        Some(Message("messages__schemeDetails__aft_period", startDate.format(startDateFormat), endDate.format(endDateFormat))),
+        Some(Message("messages__schemeDetails__aft_inProgress")),
+        Link(
+          id = "aftReturnHistoryLink",
+          url = appConfig.aftReturnHistoryUrl.format(srn, startDate),
+          linkText = Message("messages__schemeDetails__aft_view"))
+      ))
+    }
+  }
+
+  private def modelForMultipleInProgressReturns(srn: String, pstr: String, inProgressReturns: Seq[AFTOverview]
+                                               )(implicit hc: HeaderCarrier): Future[Option[AFTViewModel]] = {
+
+    retrieveZeroedOutReturns(inProgressReturns, pstr).map { zeroedReturns =>
+
+      val countInProgress:Int = inProgressReturns.size - zeroedReturns.size
+
+      if(countInProgress > 0) {
+        Some(AFTViewModel(
+          Some(Message("messages__schemeDetails__aft_multiple_inProgress")),
+          Some(Message("messages__schemeDetails__aft_inProgressCount").withArgs(countInProgress)),
+          Link(
+            id = "aftContinueInProgressLink",
+            url = appConfig.aftContinueReturnUrl.format(srn),
+            linkText = Message("messages__schemeDetails__aft_view"))
+        ))
+    } else {
+      None
+      }
     }
   }
 
