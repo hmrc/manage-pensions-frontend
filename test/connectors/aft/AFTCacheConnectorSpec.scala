@@ -16,6 +16,7 @@
 
 package connectors.aft
 
+import akka.http.scaladsl.model.HttpHeader.ParsingResult.Ok
 import com.github.tomakehurst.wiremock.client.WireMock._
 import identifiers.TypedIdentifier
 import org.scalatest.{AsyncWordSpec, MustMatchers, OptionValues}
@@ -24,6 +25,8 @@ import play.api.libs.json.Json
 import testhelpers.InvitationBuilder._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpException}
 import utils.WireMockHelper
+import play.api.mvc.Results
+
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -40,7 +43,7 @@ class AFTCacheConnectorSpec extends AsyncWordSpec with MustMatchers with WireMoc
   protected lazy val connector: AftCacheConnector = injector.instanceOf[AftCacheConnector]
 
   "lockedBy" must {
-
+    
     "return `None` when the server returns a 404" in {
       server.stubFor(
         get(urlEqualTo(lockUrl))
@@ -82,6 +85,18 @@ class AFTCacheConnectorSpec extends AsyncWordSpec with MustMatchers with WireMoc
         connector.lockedBy(srn, startDate)
       } map {
         _.responseCode mustEqual Status.INTERNAL_SERVER_ERROR
+      }
+    }
+  }
+
+  ".removeLock" must {
+
+    "return OK after removing all the data from the collection" in {
+      server.stubFor(delete(urlEqualTo(lockUrl)).
+        willReturn(ok)
+      )
+      connector.removeLock.map {
+        _ mustEqual Results.Ok
       }
     }
   }

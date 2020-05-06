@@ -16,16 +16,29 @@
 
 package controllers
 
+import connectors.aft.{AFTConnector, AftCacheConnector}
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
+import org.mockito.Matchers.any
+import org.mockito.Mockito.reset
+import org.mockito.Mockito.when
+import play.api.mvc.Results.Ok
 
-class LogoutControllerSpec extends ControllerSpecBase {
 
-  def logoutController = new LogoutController(frontendAppConfig, stubMessagesControllerComponents())
+import scala.concurrent.Future
+
+class LogoutControllerSpec extends ControllerSpecBase with MockitoSugar {
+
+  val mockAftCacheConnector = mock[AftCacheConnector]
+
+  def logoutController = new LogoutController(frontendAppConfig, mockAftCacheConnector, stubMessagesControllerComponents())
 
   "Logout Controller" must {
 
     "redirect to feedback survey page for an Individual" in {
+
+      when(mockAftCacheConnector.removeLock(any(), any())).thenReturn(Future.successful(Ok))
       val result = logoutController.onPageLoad(fakeRequest)
 
       status(result) mustBe SEE_OTHER

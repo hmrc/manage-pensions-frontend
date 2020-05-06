@@ -20,7 +20,9 @@ import com.google.inject.Inject
 import config.FrontendAppConfig
 import play.api.http.Status.{NOT_FOUND, OK}
 import play.api.libs.ws.WSClient
+import play.api.mvc.Result
 import uk.gov.hmrc.http.{HeaderCarrier, HttpException}
+import play.api.mvc.Results.Ok
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -49,5 +51,13 @@ class AftCacheConnector @Inject()(
               Future.failed(new HttpException(response.body, response.status))
           }
       }
+  }
+
+  def removeLock(implicit ec: ExecutionContext,
+                 hc: HeaderCarrier): Future[Result] = {
+    http.url(url)
+      .withHttpHeaders(hc.headers: _*)
+      .delete()
+      .map(_ => Ok)
   }
 }
