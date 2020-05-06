@@ -173,14 +173,8 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
         else {
           Some(Message("messages__schemeDetails__aft_locked"))
         },
-        if(overview.submittedVersionAvailable) {
-          Link(id = "aftReturnHistoryLink", url = appConfig.aftReturnHistoryUrl.format(srn, startDate),
-            linkText = Message("messages__schemeDetails__aft_view"))
-        }
-        else {
-          Link(id = "aftSummaryLink", url = appConfig.aftSummaryPageUrl.format(srn, startDate, 1),
-            linkText = Message("messages__schemeDetails__aft_view"))
-        }
+        Link(id = "aftSummaryLink", url = appConfig.aftSummaryPageUrl.format(srn, startDate, 1),
+          linkText = Message("messages__schemeDetails__aft_view"))
       ))
       case _ => Some(AFTViewModel(
         Some(Message("messages__schemeDetails__aft_period", startDate.format(startDateFormat), endDate.format(endDateFormat))),
