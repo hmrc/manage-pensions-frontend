@@ -205,8 +205,8 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
           Some(Message("messages__schemeDetails__aft_multiple_inProgress")),
           Some(Message("messages__schemeDetails__aft_inProgressCount").withArgs(countInProgress)),
           Link(
-            id = "aftAmendInProgressLink",
-            url = appConfig.aftAmendUrl.format(srn),
+            id = "aftContinueInProgressLink",
+            url = appConfig.aftContinueReturnUrl.format(srn),
             linkText = Message("messages__schemeDetails__aft_view"))
         ))
     } else {
