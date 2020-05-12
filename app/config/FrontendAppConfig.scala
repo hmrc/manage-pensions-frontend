@@ -31,18 +31,27 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
 
   protected def mode: Mode = environment.mode
 
+  private def baseUrl(serviceName: String) = {
+    val protocol = runModeConfiguration.getOptional[String](s"microservice.services.$serviceName.protocol").getOrElse("http")
+    val host = runModeConfiguration.get[String](s"microservice.services.$serviceName.host")
+    val port = runModeConfiguration.get[String](s"microservice.services.$serviceName.port")
+    s"$protocol://$host:$port"
+  }
+
+  private def getConfigString(key: String) = servicesConfig.getConfString(key, throw new Exception(s"Could not find config '$key'"))
+
   private def loadConfig(key: String): String = runModeConfiguration.get[String](key)
 
-  private lazy val contactHost = runModeConfiguration.get[String]("contact-frontend.host")
-  private val contactFormServiceIdentifier = "managepensionsfrontend"
+  lazy val contactHost = baseUrl("contact-frontend")
 
   lazy val appName: String = runModeConfiguration.underlying.getString("appName")
   lazy val googleTagManagerIdAvailable: Boolean = runModeConfiguration.underlying.getBoolean(s"google-tag-manager.id-available")
   lazy val googleTagManagerId: String = loadConfig(s"google-tag-manager.id")
-  lazy val reportAProblemPartialUrl = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
-  lazy val reportAProblemNonJSUrl = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
-  lazy val betaFeedbackUrl = s"$contactHost/contact/beta-feedback"
-  lazy val betaFeedbackUnauthenticatedUrl = s"$contactHost/contact/beta-feedback-unauthenticated"
+
+  val reportAProblemPartialUrl = getConfigString("contact-frontend.report-problem-url.with-js")
+  val reportAProblemNonJSUrl = getConfigString("contact-frontend.report-problem-url.non-js")
+  val betaFeedbackUrl = getConfigString("contact-frontend.beta-feedback-url.authenticated")
+  val betaFeedbackUnauthenticatedUrl = getConfigString("contact-frontend.beta-feedback-url.unauthenticated")
 
   lazy val authUrl: String = servicesConfig.baseUrl("auth")
   lazy val pensionsSchemeUrl: String = servicesConfig.baseUrl("pensions-scheme")
