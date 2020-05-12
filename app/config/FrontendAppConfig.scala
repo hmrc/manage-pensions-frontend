@@ -33,6 +33,7 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
 
   private def loadConfig(key: String): String = runModeConfiguration.get[String](key)
 
+  private lazy val contactHost = runModeConfiguration.get[String]("contact-frontend.host")
   private val contactFormServiceIdentifier = "managepensionsfrontend"
 
   lazy val appName: String = runModeConfiguration.underlying.getString("appName")
@@ -108,7 +109,6 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val locationCanonicalListEUAndEEA: String = loadConfig("location.canonical.list.EUAndEEA")
   lazy val addressLookUp: String = servicesConfig.baseUrl("address-lookup")
 
-  lazy val contactHost = servicesConfig.baseUrl("contact-frontend")
 
   lazy val retryAttempts: Int = runModeConfiguration.get[Int]("retry.max.attempts")
   lazy val retryWaitMs: Int = runModeConfiguration.get[Int]("retry.initial.wait.ms")
