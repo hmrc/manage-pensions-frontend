@@ -33,7 +33,6 @@ class FuzzyMatching {
           case Some(_) => true
           case _ =>
             seqOfInputStrings.exists { iInputString =>
-              val searchStringLength = iSearchString.length
               val matchPercentage =
                 if (iInputString.length >= iSearchString.length) {
                   (iInputString.length - distance(iSearchString, iInputString)) * 100 / iInputString.length
@@ -41,10 +40,10 @@ class FuzzyMatching {
                   (iSearchString.length - distance(iSearchString, iInputString)) * 100 / iSearchString.length
                 }
 
-              searchStringLength < 5 match {
-                case true if matchPercentage == 100 => true
-                case false if matchPercentage >= 80 => true
-                case _ => false
+              if (iSearchString.length >= 5 && matchPercentage >= 80) {
+                true
+              } else {
+                false
               }
             }
         }
