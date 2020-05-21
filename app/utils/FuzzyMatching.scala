@@ -19,23 +19,26 @@ package utils
 class FuzzyMatching {
 
   def doFuzzyMatching(searchString: String, inputString: String): Boolean = {
-    if (searchString.length < 3) {
+    val searchStringLower = searchString.toLowerCase()
+    val inputStringLower = inputString.toLowerCase()
+
+    if (searchStringLower.length < 3) {
       false
     } else {
-      val seqOfSearchStrings = searchString.split("[ /]").toSeq
-      val seqOfInputStrings = inputString.split("[ /]").toSeq
+      val seqOfSearchStrings = searchStringLower.split("[ /]").toSeq
+      val seqOfInputStrings = inputStringLower.split("[ /]").toSeq
 
-      val isFound = seqOfSearchStrings.map { individualSearchString =>
-        seqOfInputStrings.find(_ == individualSearchString) match {
+      val isFound = seqOfSearchStrings.map { iSearchString =>
+        seqOfInputStrings.find(_ == iSearchString) match {
           case Some(_) => true
           case _ =>
-            seqOfInputStrings.exists { individualInputString =>
-              val searchStringLength = individualSearchString.length
+            seqOfInputStrings.exists { iInputString =>
+              val searchStringLength = iSearchString.length
               val matchPercentage =
-                if (individualInputString.length >= individualSearchString.length) {
-                  (individualInputString.length - distance(individualSearchString, individualInputString)) * 100 / individualInputString.length
+                if (iInputString.length >= iSearchString.length) {
+                  (iInputString.length - distance(iSearchString, iInputString)) * 100 / iInputString.length
                 } else {
-                  (individualSearchString.length - distance(individualSearchString, individualInputString)) * 100 / individualSearchString.length
+                  (iSearchString.length - distance(iSearchString, iInputString)) * 100 / iSearchString.length
                 }
 
               searchStringLength < 5 match {
