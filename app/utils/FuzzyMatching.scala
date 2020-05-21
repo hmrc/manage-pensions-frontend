@@ -19,28 +19,20 @@ package utils
 class FuzzyMatching {
 
   def doFuzzyMatching(searchString: String, inputString: String): Boolean = {
-    val searchStringLower = searchString.toLowerCase()
-    val inputStringLower = inputString.toLowerCase()
 
-    if (searchStringLower.length < 3) {
+    if (searchString.length < 3) {
       false
     } else {
-      val seqOfSearchStrings = searchStringLower.split("[ /]").toSeq
-      val seqOfInputStrings = inputStringLower.split("[ /]").toSeq
+      val seqOfSearchStrings = searchString.toLowerCase().split("[ /]").toSeq
+      val seqOfInputStrings = inputString.toLowerCase().split("[ /]").toSeq
 
       val isFound = seqOfSearchStrings.map { iSearchString =>
         seqOfInputStrings.find(_ == iSearchString) match {
           case Some(_) => true
           case _ =>
             seqOfInputStrings.exists { iInputString =>
-              val matchPercentage =
-                if (iInputString.length >= iSearchString.length) {
-                  (iInputString.length - distance(iSearchString, iInputString)) * 100 / iInputString.length
-                } else {
-                  (iSearchString.length - distance(iSearchString, iInputString)) * 100 / iSearchString.length
-                }
-
-              if (iSearchString.length >= 5 && matchPercentage >= 80) {
+              val percentage = matchPercentage(iInputString, iSearchString)
+              if (iSearchString.length >= 5 && percentage >= 80) {
                 true
               } else {
                 false
@@ -50,6 +42,14 @@ class FuzzyMatching {
       }
 
       !isFound.contains(false)
+    }
+  }
+
+  private def matchPercentage(inputString: String, searchString: String): Int = {
+    if (inputString.length >= searchString.length) {
+      (inputString.length - distance(searchString, inputString)) * 100 / inputString.length
+    } else {
+      (searchString.length - distance(searchString, inputString)) * 100 / searchString.length
     }
   }
 
