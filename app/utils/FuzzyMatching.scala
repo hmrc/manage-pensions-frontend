@@ -31,16 +31,11 @@ class FuzzyMatching {
           case Some(_) => true
           case _ =>
             seqOfInputStrings.exists { iInputString =>
-              val percentage = matchPercentage(iInputString, iSearchString)
-              if (iSearchString.length >= 5 && percentage >= 80) {
-                true
-              } else {
-                false
-              }
+              iSearchString.length >= 5 &&
+                matchPercentage(iInputString, iSearchString) >= 80
             }
         }
       }
-
       !isFound.contains(false)
     }
   }
