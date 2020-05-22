@@ -99,10 +99,7 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val aftOverviewUrl: String = s"${servicesConfig.baseUrl("pension-scheme-accounting-for-tax")}${runModeConfiguration.underlying.getString("urls.aftOverview")}"
   lazy val isAftNonZero: String = s"${servicesConfig.baseUrl("pension-scheme-accounting-for-tax")}${runModeConfiguration.underlying.getString("urls.isAftNonZero")}"
 
-  lazy val overviewApiEnablementDate: String = "2020-07-01"
-  lazy val quarterStartDate: String = "2020-04-01"
   lazy val quarterEndDate: String = "2020-06-30"
-  lazy val aftNoOfYearsDisplayed: Int = 6
 
   def languageMap: Map[String, Lang] = Map(
     "english" -> Lang("en"),
@@ -125,4 +122,7 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
 
   lazy val listSchemePagination: Int = runModeConfiguration.get[Int]("listSchemePagination")
   lazy val minimumSchemeSearchResults: Int = runModeConfiguration.get[Int]("minimumSchemeSearchResults")
+  lazy val overviewApiEnablementDate: String = runModeConfiguration.get[String]("overviewApiEnablementDate")
+  lazy val quarterStartDate: String = runModeConfiguration.get[String]("earliestStartDate")
+  lazy val aftNoOfYearsDisplayed: Int = runModeConfiguration.get[Int]("aftNoOfYearsDisplayed")
 }
