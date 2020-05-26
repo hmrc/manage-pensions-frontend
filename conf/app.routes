@@ -1,6 +1,7 @@
 # microservice specific routes
 
 ->          /invitations                              invitations.Routes
+->          /guidance-triage                          triage.Routes
 ->          /                                         remove.Routes
 
 GET         /                                         controllers.SchemesOverviewController.redirect

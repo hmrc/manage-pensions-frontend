@@ -391,3 +391,14 @@ messages__cannotDeregister__title = You must remove yourself from all schemes fi
 messages__cannotDeregister__p1 = You cannot stop being a pension scheme administrator until you remove yourself from any scheme you are currently an administrator for.
 messages__cannotDeregister__p2 = This includes any schemes that have a status of wound up.
 
+messages__whatDoYouWantToDo__title = What do you want to do?
+messages__whatDoYouWantToDo__opt1 = View and manage an existing pension scheme
+messages__whatDoYouWantToDo__opt2 = Check the status and details of any scheme that you have applied to register
+messages__whatDoYouWantToDo__opt3 = Invite other scheme administrators to your scheme
+messages__whatDoYouWantToDo__opt4 = Become an administrator for another scheme
+messages__whatDoYouWantToDo__opt5 = Update your scheme information
+messages__whatDoYouWantToDo__opt6 = Change scheme administrator details
+
+messages__doesPSTRStartWithTwo__title = Does the scheme’s Pension Scheme Tax Reference (PSTR) start with a '2'?
+
+

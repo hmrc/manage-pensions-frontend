@@ -1,0 +1,6 @@
+
+GET        /what-do-you-want-to-do      controllers.triage.WhatDoYouWantToDoController.onPageLoad
+POST       /what-do-you-want-to-do      controllers.triage.WhatDoYouWantToDoController.onSubmit
+
+GET        /does-pstr-start-with-2      controllers.triage.DoesPSTRStartWithTwoController.onPageLoad
+POST       /does-pstr-start-with-2      controllers.triage.DoesPSTRStartWithTwoController.onSubmit
