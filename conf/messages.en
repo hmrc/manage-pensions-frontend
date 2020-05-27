@@ -188,7 +188,7 @@ messages__incorrectPsaDetails__linkText = Return to {0}
 messages__invitationSuccess__title = An invitation has been sent to the scheme administrator
 messages__invitationSuccess__heading = An invitation has been sent to {0}
 messages__invitationSuccess__schemeName = This is to be added as a scheme administrator of {0}.
-messages__invitationSuccess__emailAdvice = {0} will be sent an email confirming your invitation.
+messages__invitationSuccess__emailAdvice = An email confirming your invitation has been sent to
 messages__invitationSuccess__expiryDate = They will have until {0} to accept the invitation. If the invitation is not accepted by this date, it will be deleted and you will have to add them again.
 
 messages__adviser__address__title = What is your pension adviser’s address?
