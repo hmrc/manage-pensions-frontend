@@ -20,37 +20,40 @@ import com.google.inject.Inject
 import connectors.scheme.ListOfSchemesConnector
 import models.SchemeDetail
 import uk.gov.hmrc.http.HeaderCarrier
+import utils.FuzzyMatching
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
-class SchemeSearchService @Inject()(listSchemesConnector: ListOfSchemesConnector) {
+class SchemeSearchService @Inject()(listSchemesConnector: ListOfSchemesConnector, fuzzyMatching: FuzzyMatching) {
   private val srnRegex = "^S[0-9]{10}$".r
   private val pstrRegex = "^[0-9]{8}[A-Za-z]{2}$".r
 
-  private val filterSchemesBySrnOrPstr
+  private val filterSchemesBySrnOrPstrOrSchemeName
   : (String, List[SchemeDetail]) => List[SchemeDetail] =
     (searchText, list) => {
       searchText match {
-        case srn if srnRegex.findFirstIn(searchText).isDefined =>
+        case _ if srnRegex.findFirstIn(searchText).isDefined =>
           list.filter(_.referenceNumber == searchText)
-        case pstr if pstrRegex.findFirstIn(searchText).isDefined =>
+        case _ if pstrRegex.findFirstIn(searchText).isDefined =>
           list.filter(_.pstr.exists(_ == searchText))
         case _ =>
-          List.empty
+          list.flatMap { schemeDetail =>
+            val isMatch = fuzzyMatching.doFuzzyMatching(searchText, schemeDetail.name)
+            if (isMatch) Some(schemeDetail) else None
+          }
       }
     }
 
-
-  def search( psaId: String, searchText: Option[String])(implicit hc: HeaderCarrier, ec: ExecutionContext):Future[List[SchemeDetail]] = {
+  def search(psaId: String, searchText: Option[String])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[List[SchemeDetail]] = {
     listSchemesConnector.getListOfSchemes(psaId)
-      .map{ listOfSchemes =>
+      .map { listOfSchemes =>
         val filterSearchResults =
           searchText.fold[List[SchemeDetail] => List[SchemeDetail]](identity)(
-            st => filterSchemesBySrnOrPstr(st, _: List[SchemeDetail])
+            st => filterSchemesBySrnOrPstrOrSchemeName(st, _: List[SchemeDetail])
           )
 
         filterSearchResults(listOfSchemes.schemeDetail.getOrElse(List.empty[SchemeDetail]))
       }
-  }:Future[List[SchemeDetail]]
+  }: Future[List[SchemeDetail]]
 }

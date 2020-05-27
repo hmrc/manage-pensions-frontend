@@ -18,9 +18,7 @@ package services
 
 import base.SpecBase
 import connectors.scheme.ListOfSchemesConnector
-import models.ListOfSchemes
-import models.SchemeDetail
-import models.SchemeStatus
+import models.{ListOfSchemes, SchemeDetail, SchemeStatus}
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -28,6 +26,7 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.http.HeaderCarrier
+import utils.FuzzyMatching
 
 import scala.concurrent.Future
 
@@ -35,14 +34,16 @@ class SchemeSearchServiceSpec extends SpecBase with MockitoSugar with ScalaFutur
 
   import SchemeSearchServiceSpec._
 
+  private val mockSchemesConnector = mock[ListOfSchemesConnector]
+  private val mockFuzzyMatching = mock[FuzzyMatching]
+  private val pstr = "24000001IN"
+  private val srn = "S2400000005"
+  private val schemeSearchService = new SchemeSearchService(mockSchemesConnector, mockFuzzyMatching)
+
   "Search" must {
     "return correct list of scheme details with search on correct pstr" in {
-      val mockSchemesConnector = mock[ListOfSchemesConnector]
       when(mockSchemesConnector.getListOfSchemes(Matchers.eq(psaId))(any(), any()))
         .thenReturn(Future.successful(listOfSchemes))
-
-      val schemeSearchService = new SchemeSearchService(mockSchemesConnector)
-      val pstr = "24000001IN"
 
       whenReady(schemeSearchService.search(psaId, Some(pstr))) { result =>
         result mustBe fullSchemes.filter(_.pstr contains pstr)
@@ -50,12 +51,8 @@ class SchemeSearchServiceSpec extends SpecBase with MockitoSugar with ScalaFutur
     }
 
     "return correct list of scheme details with search on correct srn" in {
-      val mockSchemesConnector = mock[ListOfSchemesConnector]
       when(mockSchemesConnector.getListOfSchemes(Matchers.eq(psaId))(any(), any()))
         .thenReturn(Future.successful(listOfSchemes))
-
-      val schemeSearchService = new SchemeSearchService(mockSchemesConnector)
-      val srn = "S2400000005"
 
       whenReady(schemeSearchService.search(psaId, Some(srn))) { result =>
         result mustBe fullSchemes.filter(_.referenceNumber == srn)
@@ -63,26 +60,32 @@ class SchemeSearchServiceSpec extends SpecBase with MockitoSugar with ScalaFutur
     }
 
     "return empty list for correct format pstr/srn but no match" in {
-      val mockSchemesConnector = mock[ListOfSchemesConnector]
       val emptyList = ListOfSchemes("", "", None)
       when(mockSchemesConnector.getListOfSchemes(Matchers.eq(psaId))(any(), any()))
         .thenReturn(Future.successful(emptyList))
-
-      val schemeSearchService = new SchemeSearchService(mockSchemesConnector)
 
       whenReady(schemeSearchService.search(psaId, Some("S2400000016"))) { result =>
         result mustBe Nil
       }
     }
 
-    "return empty list for incorrect format pstr/srn" in {
-      val mockSchemesConnector = mock[ListOfSchemesConnector]
+    "return correct list of scheme details with search on scheme name" in {
+      when(mockFuzzyMatching.doFuzzyMatching(any(), any())).thenReturn(true).thenReturn(false)
       when(mockSchemesConnector.getListOfSchemes(Matchers.eq(psaId))(any(), any()))
         .thenReturn(Future.successful(listOfSchemes))
 
-      val schemeSearchService = new SchemeSearchService(mockSchemesConnector)
+      whenReady(schemeSearchService.search(psaId, Some("scheme-1"))) { result =>
+        result mustBe fullSchemes.filter(_.name == "scheme-1")
+      }
+    }
 
-      whenReady(schemeSearchService.search(psaId, Some("incorrectformat"))) { result =>
+    "return empty list when fuzzy matching fails" in {
+      when(mockFuzzyMatching.doFuzzyMatching(any(), any())).thenReturn(false)
+      val emptyList = ListOfSchemes("", "", None)
+      when(mockSchemesConnector.getListOfSchemes(Matchers.eq(psaId))(any(), any()))
+        .thenReturn(Future.successful(emptyList))
+
+      whenReady(schemeSearchService.search(psaId, Some("no matching"))) { result =>
         result mustBe Nil
       }
     }
