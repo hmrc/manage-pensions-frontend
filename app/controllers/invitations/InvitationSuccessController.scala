@@ -24,7 +24,7 @@ import connectors.admin.MinimalPsaConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import identifiers.MinimalSchemeDetailId
-import identifiers.invitations.{InvitationSuccessId, InviteeNameId}
+import identifiers.invitations.{InvitationSuccessId, InviteeNameId, InviteePSAId}
 import javax.inject.Inject
 import models.{NormalMode, SchemeReferenceNumber}
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -54,9 +54,10 @@ class InvitationSuccessController @Inject()(
 
       val continue = controllers.invitations.routes.InvitationSuccessController.onSubmit(srn)
       val ua = request.userAnswers
-      minimalPsaConnector.getMinimalPsaDetails(request.psaId.id).flatMap { minimalPsaDetails =>
-        (ua.get(MinimalSchemeDetailId), ua.get(InviteeNameId)) match {
-          case (Some(schemeDetail), Some(inviteeName)) =>
+
+      (ua.get(MinimalSchemeDetailId), ua.get(InviteeNameId), ua.get(InviteePSAId)) match {
+        case (Some(schemeDetail), Some(inviteeName), Some(inviteePsaId)) =>
+          minimalPsaConnector.getMinimalPsaDetails(inviteePsaId).flatMap { minimalPsaDetails =>
             userAnswersCacheConnector.removeAll(request.externalId).map { _ =>
               Ok(view(
                 inviteeName,
@@ -66,9 +67,9 @@ class InvitationSuccessController @Inject()(
                 continue
               ))
             }
-          case _ =>
-            Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
-        }
+          }
+        case _ =>
+          Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
       }
   }
 

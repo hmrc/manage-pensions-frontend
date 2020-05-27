@@ -36,6 +36,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class InvitationSuccessControllerSpec extends ControllerWithNormalPageBehaviours {
 
   private val testSrn: String = "test-srn"
+  private val testPsaId = "A2100000"
   private val testInviteeName = "test-invitee-name"
   private val testPstr = "test-pstr"
   private val testSchemeName = "test-scheme-name"
@@ -45,6 +46,7 @@ class InvitationSuccessControllerSpec extends ControllerWithNormalPageBehaviours
 
   private val userAnswer = UserAnswers()
     .inviteeName(testInviteeName)
+    .inviteeId(testPsaId)
     .minimalSchemeDetails(testSchemeDetail)
     .dataRetrievalAction
 
