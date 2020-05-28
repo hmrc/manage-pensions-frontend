@@ -14,16 +14,11 @@
  * limitations under the License.
  */
 
-package forms.triage
+package identifiers.triage
 
-import forms.mappings.Mappings
-import javax.inject.Inject
-import play.api.data.Form
+import identifiers.TypedIdentifier
+import models.triage.DoesPSAStartWithATwo
 
-class DoesPSTRStartWithTwoFormProvider @Inject() extends Mappings {
-
-  def apply(): Form[Boolean] =
-    Form(
-      "value" -> boolean("messages__error_required")
-    )
+case object DoesPSAStartWithATwoId extends TypedIdentifier[DoesPSAStartWithATwo] {
+  override def toString: String = "doesPSAStartWithATwo"
 }

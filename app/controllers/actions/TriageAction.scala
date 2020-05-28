@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
-package forms.triage
+package controllers.actions
 
-import forms.mappings.Mappings
-import javax.inject.Inject
-import play.api.data.Form
+import com.google.inject.{ImplementedBy, Inject}
+import models.requests.TriageRequest
+import play.api.mvc._
 
-class DoesPSTRStartWithTwoFormProvider @Inject() extends Mappings {
+import scala.concurrent.{ExecutionContext, Future}
 
-  def apply(): Form[Boolean] =
-    Form(
-      "value" -> boolean("messages__error_required")
-    )
+class TriageActionImpl @Inject()(val parser: BodyParsers.Default)(implicit val executionContext: ExecutionContext) extends TriageAction {
+  override def invokeBlock[A](request: Request[A], block: TriageRequest[A] => Future[Result]): Future[Result] = {
+    block(TriageRequest(request))
+  }
 }
+
+@ImplementedBy(classOf[TriageActionImpl])
+trait TriageAction extends ActionBuilder[TriageRequest, AnyContent]

@@ -19,6 +19,7 @@ package controllers
 import base.SpecBase
 import controllers.actions.FakeDataRetrievalAction
 import identifiers.PSANameId
+import play.api.inject.guice.{GuiceApplicationBuilder, GuiceableModule}
 import play.api.libs.json.Json
 
 trait ControllerSpecBase extends SpecBase {
@@ -32,5 +33,9 @@ trait ControllerSpecBase extends SpecBase {
   def getDataWithPsaName(psaId: String = "A0000000"): FakeDataRetrievalAction = new FakeDataRetrievalAction(Some(Json.obj(
     PSANameId.toString -> "Test Psa Name"
   )), psaId)
+
+  protected def applicationBuilder(modules: Seq[GuiceableModule] = Seq.empty): GuiceApplicationBuilder =
+    new GuiceApplicationBuilder()
+      .overrides(modules: _*)
 
 }

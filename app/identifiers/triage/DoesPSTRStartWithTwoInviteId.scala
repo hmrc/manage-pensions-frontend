@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-package forms.triage
+package identifiers.triage
 
-import forms.mappings.Mappings
-import javax.inject.Inject
-import play.api.data.Form
+import identifiers.TypedIdentifier
 
-class DoesPSTRStartWithTwoFormProvider @Inject() extends Mappings {
-
-  def apply(): Form[Boolean] =
-    Form(
-      "value" -> boolean("messages__error_required")
-    )
+case object DoesPSTRStartWithTwoInviteId extends TypedIdentifier[Boolean] {
+  override def toString: String = "doesPSTRStartWithTwoInvite"
 }

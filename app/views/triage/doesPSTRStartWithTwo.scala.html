@@ -28,13 +28,13 @@
     formHelper: FormWithCSRF
 )
 
-@(form: Form[_])(implicit request: Request[_], messages: Messages)
+@(form: Form[_], postCall: Call, noRadioHint: Option[String] = None)(implicit request: Request[_], messages: Messages)
 
 @main_template(
 title = titleWithErrors(form, messages("messages__doesPSTRStartWithTwo__title"))
 ) {
 
-    @formHelper(action = controllers.triage.routes.DoesPSTRStartWithTwoController.onSubmit(), 'autoComplete -> "off") {
+    @formHelper(action = postCall, 'autoComplete -> "off") {
 
         @components.back_link()
 
@@ -48,7 +48,8 @@ title = titleWithErrors(form, messages("messages__doesPSTRStartWithTwo__title"))
                 field = form("value"),
                 label = messages("messages__doesPSTRStartWithTwo__title"),
                 labelClass = Some("visually-hidden"),
-                fieldsetClass = None
+                fieldsetClass = None,
+                noHint = noRadioHint
             )
         </div>
             @components.submit_button("site.continue")

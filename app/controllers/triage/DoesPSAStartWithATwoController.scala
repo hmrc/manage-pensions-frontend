@@ -19,32 +19,32 @@ package controllers.triage
 import config.FrontendAppConfig
 import controllers.Retrievals
 import controllers.actions.TriageAction
-import forms.triage.WhatDoYouWantToDoFormProvider
-import identifiers.triage.WhatDoYouWantToDoId
+import forms.triage.DoesPSAStartWithATwoFormProvider
+import identifiers.triage.DoesPSAStartWithATwoId
 import javax.inject.Inject
 import models.NormalMode
-import models.triage.WhatDoYouWantToDo
+import models.triage.DoesPSAStartWithATwo
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.annotations.Triage
 import utils.{Enumerable, Navigator, UserAnswers}
-import views.html.triage.whatDoYouWantToDo
+import views.html.triage.doesPSAStartWithATwo
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class WhatDoYouWantToDoController @Inject()(appConfig: FrontendAppConfig,
-                                            override val messagesApi: MessagesApi,
-                                            @Triage navigator: Navigator,
-                                            triageAction: TriageAction,
-                                            formProvider: WhatDoYouWantToDoFormProvider,
-                                            val controllerComponents: MessagesControllerComponents,
-                                            val view: whatDoYouWantToDo
-                                           )(implicit val executionContext: ExecutionContext
-                                           ) extends FrontendBaseController with I18nSupport with Enumerable.Implicits with Retrievals {
+class DoesPSAStartWithATwoController @Inject()(appConfig: FrontendAppConfig,
+                                               override val messagesApi: MessagesApi,
+                                               @Triage navigator: Navigator,
+                                               triageAction: TriageAction,
+                                               formProvider: DoesPSAStartWithATwoFormProvider,
+                                               val controllerComponents: MessagesControllerComponents,
+                                               val view: doesPSAStartWithATwo
+                                              )(implicit val executionContext: ExecutionContext
+                                              ) extends FrontendBaseController with I18nSupport with Enumerable.Implicits with Retrievals {
 
-  private def form: Form[WhatDoYouWantToDo] = formProvider()
+  private def form: Form[DoesPSAStartWithATwo] = formProvider()
 
   def onPageLoad: Action[AnyContent] = triageAction.async {
     implicit request =>
@@ -57,8 +57,8 @@ class WhatDoYouWantToDoController @Inject()(appConfig: FrontendAppConfig,
         (formWithErrors: Form[_]) =>
           Future.successful(BadRequest(view(formWithErrors))),
         value => {
-          val uaUpdated = UserAnswers().set(WhatDoYouWantToDoId)(value).asOpt.getOrElse(UserAnswers())
-          Future.successful(Redirect(navigator.nextPage(WhatDoYouWantToDoId, NormalMode, uaUpdated)))
+          val uaUpdated = UserAnswers().set(DoesPSAStartWithATwoId)(value).asOpt.getOrElse(UserAnswers())
+          Future.successful(Redirect(navigator.nextPage(DoesPSAStartWithATwoId, NormalMode, uaUpdated)(request, implicitly, implicitly)))
         }
       )
   }

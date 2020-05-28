@@ -23,7 +23,9 @@
         yesAssoc: Option[String] = None,
         noAssoc: Option[String] = None,
         labelClass: Option[String] = None,
-        headingIsLegend: Boolean = false
+        headingIsLegend: Boolean = false,
+        yesHint: Option[String] = None,
+        noHint: Option[String] = None
 )(implicit messages: Messages)
 
 @ariaDescribedBy = @{
@@ -57,12 +59,18 @@ val hintId = if (hint.nonEmpty) Seq(s"${field.id}-yesno-hint") else Seq.empty
             <input id="@{field.id}-yes" type="radio" name="@{field.id}" value="true" @if(field.value.contains("true")){checked="checked"} />
             <label class="block-label" for="@{field.id}-yes">
                 @messages("site.yes")
+                @if(yesHint.nonEmpty){
+                    <span id="@{field.id}-yes-hint" class="form-hint">@yesHint</span>
+                }
             </label>
         </div>
         <div class="multiple-choice" data-target="@if(noAssoc.nonEmpty){@noAssoc}">
             <input id="@{field.id}-no" type="radio" name="@{field.id}" value="false" @if(field.value.contains("false")){checked="checked"} />
             <label class="block-label" for="@{field.id}-no">
                 @messages("site.no")
+                @if(noHint.nonEmpty){
+                    <span id="@{field.id}-no-hint" class="form-hint">@noHint</span>
+                }
             </label>
         </div>
     </fieldset>
