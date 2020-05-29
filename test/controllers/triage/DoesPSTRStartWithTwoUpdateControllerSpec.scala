@@ -39,7 +39,7 @@ class DoesPSTRStartWithTwoUpdateControllerSpec extends ControllerSpecBase with S
 
   private def postCall: Call = controllers.triage.routes.DoesPSTRStartWithTwoUpdateController.onSubmit()
 
-  private val hint = Some(messages("messages__doesPSTRStartWithTwo_update__hint"))
+  private val hint = Some(messages("messages__doesPSTRStartWithTwo_update__hint", "\'2'"))
   private val view = injector.instanceOf[doesPSTRStartWithTwo]
   private val formProvider = new DoesPSTRStartWithTwoFormProvider()
 

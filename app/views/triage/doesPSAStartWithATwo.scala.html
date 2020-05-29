@@ -17,7 +17,6 @@
 @import config.FrontendAppConfig
 @import uk.gov.hmrc.play.views.html._
 @import controllers.triage.routes._
-@import models.{Mode}
 @import models.triage.DoesPSAStartWithATwo
 @import utils.ViewHelper.titleWithErrors
 
@@ -29,21 +28,21 @@
 @(form: Form[_])(implicit request: Request[_], messages: Messages)
 
 @main_template(
-    title = titleWithErrors(form, messages("messages__doesPSAStartWithATwo__title"))) {
+    title = titleWithErrors(form, messages("messages__doesPSAStartWithATwo__title", "\'A2'"))) {
 
-    @formHelper(action = controllers.triage.routes.DoesPSAStartWithATwoController.onSubmit(), 'autoComplete -> "off") {
+    @formHelper(action = DoesPSAStartWithATwoController.onSubmit(), 'autoComplete -> "off") {
 
         @components.back_link()
 
         @components.error_summary(form.errors)
 
-        @components.input_radio(
-            field = form("value"),
-            legend = messages("messages__doesPSAStartWithATwo__title"),
-            legendClass = Some("visually-hidden"),
-            inputs = DoesPSAStartWithATwo.options,
-            headingIsLegend=true
-        )
+            @components.input_radio(
+                field = form("value"),
+                legend = messages("messages__doesPSAStartWithATwo__title", "\'A2'"),
+                legendClass = Some("visually-hidden"),
+                inputs = DoesPSAStartWithATwo.options,
+                headingIsLegend=true
+            )
 
         @components.submit_button("site.continue")
     }

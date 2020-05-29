@@ -22,10 +22,9 @@ import forms.triage.DoesPSTRStartWithTwoFormProvider
 import identifiers.triage.DoesPSTRStartWithTwoInviteId
 import javax.inject.Inject
 import models.NormalMode
-import models.requests.TriageRequest
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.annotations.Triage
 import utils.{Navigator, UserAnswers}
@@ -43,9 +42,9 @@ class DoesPSTRStartWithTwoInviteController @Inject()(
                                                       view: doesPSTRStartWithTwo
                                                     )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
-  private val form: Form[Boolean] = formProvider()
-  private def postCall = controllers.triage.routes.DoesPSTRStartWithTwoInviteController.onSubmit()
-  private def hint(implicit messages: Messages) = Some(messages("messages__doesPSTRStartWithTwo_invite__hint"))
+  private def form(implicit messages: Messages): Form[Boolean] = formProvider()
+  private def postCall: Call = controllers.triage.routes.DoesPSTRStartWithTwoInviteController.onSubmit()
+  private def hint(implicit messages: Messages) = Some(messages("messages__doesPSTRStartWithTwo_invite__hint", "\'2'"))
 
   def onPageLoad: Action[AnyContent] = triageAction.async {
     implicit request =>
@@ -60,7 +59,7 @@ class DoesPSTRStartWithTwoInviteController @Inject()(
           Future.successful(BadRequest(view(formWithErrors, postCall, hint))),
         value => {
           val uaUpdated = UserAnswers().set(DoesPSTRStartWithTwoInviteId)(value).asOpt.getOrElse(UserAnswers())
-          Future.successful(Redirect(navigator.nextPage(DoesPSTRStartWithTwoInviteId, NormalMode, uaUpdated)(request, implicitly, implicitly)))
+          Future.successful(Redirect(navigator.nextPage(DoesPSTRStartWithTwoInviteId, NormalMode, uaUpdated)))
         }
       )
   }

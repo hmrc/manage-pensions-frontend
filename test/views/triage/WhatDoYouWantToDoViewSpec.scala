@@ -40,7 +40,7 @@ class WhatDoYouWantToDoViewSpec extends ViewBehaviours {
       form
     )(fakeRequest, messages)
 
-  "DoesPSTRStartWithTwoView" must {
+  "WhatDoYouWantToDoView" must {
     behave like normalPage(createView(), messageKeyPrefix, messages(s"messages__${messageKeyPrefix}__title"))
 
     behave like pageWithSubmitButton(createView())

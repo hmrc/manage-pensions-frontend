@@ -23,7 +23,7 @@ import identifiers.triage.DoesPSTRStartWithTwoId
 import javax.inject.Inject
 import models.NormalMode
 import play.api.data.Form
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.annotations.Triage
@@ -42,7 +42,7 @@ class DoesPSTRStartWithTwoController @Inject()(
                                                 view: doesPSTRStartWithTwo
                                               )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
-  private val form: Form[Boolean] = formProvider()
+  private def form(implicit messages: Messages): Form[Boolean] = formProvider()
   private def postCall: Call = controllers.triage.routes.DoesPSTRStartWithTwoController.onSubmit()
 
   def onPageLoad: Action[AnyContent] = triageAction.async {
@@ -57,7 +57,7 @@ class DoesPSTRStartWithTwoController @Inject()(
           Future.successful(BadRequest(view(formWithErrors, postCall))),
         value => {
           val uaUpdated = UserAnswers().set(DoesPSTRStartWithTwoId)(value).asOpt.getOrElse(UserAnswers())
-          Future.successful(Redirect(navigator.nextPage(DoesPSTRStartWithTwoId, NormalMode, uaUpdated)(request, implicitly, implicitly)))
+          Future.successful(Redirect(navigator.nextPage(DoesPSTRStartWithTwoId, NormalMode, uaUpdated)))
         }
       )
   }

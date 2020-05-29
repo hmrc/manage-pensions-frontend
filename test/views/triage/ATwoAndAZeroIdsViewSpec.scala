@@ -33,10 +33,11 @@ class ATwoAndAZeroIdsViewSpec extends ViewBehaviours {
     view(managePensionSchemesServiceLink, pensionSchemesOnlineServiceLink, returnLink)(fakeRequest, messages)
 
   "Psa Suspended page" must {
-    behave like normalPage(
+    behave like normalPageWithTitle(
       createView,
       messageKeyPrefix,
-      messages(s"messages__${messageKeyPrefix}__h1")
+      messages(s"messages__${messageKeyPrefix}__title"),
+      messages(s"messages__${messageKeyPrefix}__h1", "\'A2' and 'A0'")
     )
 
     "have link to redirect to change psa details url" in {

@@ -53,6 +53,11 @@ nav span.nav-item a[aria-current="page"]:focus {
   border-bottom: 0;
 }
 
+.multiple-choice .form-hint{
+clear: both;
+padding-left: 12px;
+}
+
 /*
 ====================================
 Fix to render radio buttons visible in IE8

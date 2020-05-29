@@ -39,7 +39,7 @@ class DoesPSTRStartWithTwoInviteControllerSpec extends ControllerSpecBase with S
 
   private def postCall: Call = controllers.triage.routes.DoesPSTRStartWithTwoInviteController.onSubmit()
 
-  private val hint = Some(messages("messages__doesPSTRStartWithTwo_invite__hint"))
+  private val hint = Some(messages("messages__doesPSTRStartWithTwo_invite__hint", "\'2'"))
   private val view = injector.instanceOf[doesPSTRStartWithTwo]
   private val formProvider = new DoesPSTRStartWithTwoFormProvider()
 

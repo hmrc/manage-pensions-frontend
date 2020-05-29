@@ -17,11 +17,17 @@
 package forms.triage
 
 import forms.behaviours.BooleanFieldBehaviours
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.data.FormError
+import play.api.i18n.{Messages, MessagesApi}
+import play.api.test.FakeRequest
 
-class DoesPSTRStartWithTwoFormProviderSpec extends BooleanFieldBehaviours {
+class DoesPSTRStartWithTwoFormProviderSpec extends BooleanFieldBehaviours with GuiceOneAppPerSuite {
 
-  val requiredKey = "messages__doesPSTRStartWithTwo__error__required"
+  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  implicit val messages: Messages = messagesApi.preferred(FakeRequest())
+
+  val requiredKey = messages("messages__doesPSTRStartWithTwo__error__required", "\'2'")
   val invalidKey = "error.boolean"
 
   val formProvider = new DoesPSTRStartWithTwoFormProvider()

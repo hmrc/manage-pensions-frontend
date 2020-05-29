@@ -400,25 +400,25 @@ messages__whatDoYouWantToDo__opt4 = Become an administrator for another scheme
 messages__whatDoYouWantToDo__opt5 = Update your scheme information
 messages__whatDoYouWantToDo__opt6 = Change scheme administrator details
 
-messages__doesPSTRStartWithTwo__title = Does the scheme’s Pension Scheme Tax Reference (PSTR) start with a ‘2’?
-messages__doesPSTRStartWithTwo__error__required = Select yes if the scheme’s PSTR starts with a ‘2’
+messages__doesPSTRStartWithTwo__title = Does the scheme’s Pension Scheme Tax Reference (PSTR) start with a {0}?
+messages__doesPSTRStartWithTwo__error__required = Select yes if the scheme’s PSTR starts with a {0}
 
-messages__doesPSTRStartWithTwo_invite__hint = We will show you how to invite (or "associate") another scheme administrator with a scheme that does not have a PSTR starting with a ‘2’.
-messages__doesPSTRStartWithTwo_invited__hint = We will show you how to add yourself to a scheme that does not have a PSTR starting with a ‘2’. An existing scheme administrator will have to associate you with the scheme first.
-messages__doesPSTRStartWithTwo_update__hint = We will show you how to update a scheme that does not have a PSTR starting with a ‘2’.
+messages__doesPSTRStartWithTwo_invite__hint = We will show you how to invite (or "associate") another scheme administrator with a scheme that does not have a PSTR starting with a {0}.
+messages__doesPSTRStartWithTwo_invited__hint = We will show you how to add yourself to a scheme that does not have a PSTR starting with a {0}. An existing scheme administrator will have to associate you with the scheme first.
+messages__doesPSTRStartWithTwo_update__hint = We will show you how to update a scheme that does not have a PSTR starting with a {0}.
 
-messages__doesPSAStartWithATwo__title = Does your scheme administrator ID start with ‘A2’?
-messages__doesPSAStartWithATwo__error__required = Select if your scheme administrator ID starts with ‘A2’
+messages__doesPSAStartWithATwo__title = Does your scheme administrator ID start with {0}?
+messages__doesPSAStartWithATwo__error__required = Select if your scheme administrator ID starts with {0}
 messages__doesPSAStartWithATwo__opt1 = Yes
 messages__doesPSAStartWithATwo__opt2 = No
 messages__doesPSAStartWithATwo__opt3 = I have IDs starting with ‘A2’ and ‘A0’
 
-messages__invitingPSTRStartWithTwo__title = Inviting a scheme administrator when the PSTR starts with a ‘2’
+messages__invitingPSTRStartWithTwo__title = Inviting a scheme administrator when the PSTR starts with a {0}
 messages__invitingPSTRStartWithTwo__p1 = You can only send an invitation to a scheme administrator that has already registered on the Managing Pension Schemes service.
 messages__invitingPSTRStartWithTwo__p2 = After you have invited the new administrator they will have 30 days to accept your invitation.
 messages__invitingPSTRStartWithTwo__p3 = If they do not respond to your invitation within 30 days, the invitation will be automatically withdrawn.
 
-messages__updatingPSTRStartWithTwo__title = Updating scheme information when the PSTR starts with a ‘2’
+messages__updatingPSTRStartWithTwo__title = Updating scheme information when the PSTR starts with a {0}
 messages__updatingPSTRStartWithTwo__p1 = If you need to change the name of the scheme establisher, trustee, partner or director, you should add the updated details as a new record and delete the previous information.
 messages__updatingPSTRStartWithTwo__p2 = You can save and return to the changes you made in your scheme details but they will not be updated on the Managing Pension Schemes service until you have completed a declaration.
 messages__updatingPSTRStartWithTwo__p3 = If you do not make and submit the declaration within 30 days of changing the scheme details, the changes will be lost and you’ll have to make them again.
@@ -427,8 +427,8 @@ messages__updatingPSTRStartWithTwo__p5 = You’ll have to wait to make any addit
 messages__updatingPSTRStartWithTwo__p6 = If you’re making changes to more than one scheme that you’re the administrator of on the Managing Pension Schemes service, you must submit the change and declaration for the first scheme before you can make changes to another scheme.
 
 messages__aTwoAndAZeroIds__title = Changing scheme administrator details
-messages__aTwoAndAZeroIds__h1 = Changing scheme administrator details when you have IDs starting with ‘A2’ and ‘A0’
-messages__aTwoAndAZeroIds__p1 = If you have administrator IDs that start with ‘A2’ and ‘A0’, you will need to change your scheme administrator details on both the Managing Pension Schemes service and the Pensions Schemes Online service.
+messages__aTwoAndAZeroIds__h1 = Changing scheme administrator details when you have IDs starting with {0}
+messages__aTwoAndAZeroIds__p1 = If you have administrator IDs that start with {0}, you will need to change your scheme administrator details on both the Managing Pension Schemes service and the Pensions Schemes Online service.
 
 messages__aTwoAndAZeroIds__managePensionSchemesService__link = Manage Pension Schemes service
 messages__aTwoAndAZeroIds__pensionSchemesOnlineService__link = Pension Schemes Online service

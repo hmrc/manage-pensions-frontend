@@ -17,8 +17,6 @@
 @import config.FrontendAppConfig
 @import uk.gov.hmrc.play.views.html._
 @import views.html._
-@import models.Mode
-@import viewmodels.Message
 @import play.api.mvc.Call
 @import views.html._
 @import utils.ViewHelper.titleWithErrors
@@ -30,8 +28,16 @@
 
 @(form: Form[_], postCall: Call, noRadioHint: Option[String] = None)(implicit request: Request[_], messages: Messages)
 
+@radioClass=@{
+    if (noRadioHint.nonEmpty) {
+        Some("bold")
+    } else {
+        None
+    }
+}
+
 @main_template(
-title = titleWithErrors(form, messages("messages__doesPSTRStartWithTwo__title"))
+title = titleWithErrors(form, messages("messages__doesPSTRStartWithTwo__title", "\'2'"))
 ) {
 
     @formHelper(action = postCall, 'autoComplete -> "off") {
@@ -40,18 +46,15 @@ title = titleWithErrors(form, messages("messages__doesPSTRStartWithTwo__title"))
 
         @components.error_summary(form.errors)
 
-        <div class="form-group @if(form.hasErrors){form-group--error}">
-
-            @components.heading(Message("messages__doesPSTRStartWithTwo__title"))
-
             @components.input_yes_no(
                 field = form("value"),
-                label = messages("messages__doesPSTRStartWithTwo__title"),
+                label = messages("messages__doesPSTRStartWithTwo__title", "\'2'"),
                 labelClass = Some("visually-hidden"),
                 fieldsetClass = None,
-                noHint = noRadioHint
+                headingIsLegend=true,
+                noHint = noRadioHint,
+                radioLabelClass = radioClass
             )
-        </div>
             @components.submit_button("site.continue")
     }
 }

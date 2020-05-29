@@ -16,12 +16,17 @@
 
 package forms.triage
 
-import base.SpecBase
 import forms.behaviours.FormBehaviours
 import models.triage.DoesPSAStartWithATwo
 import models.{Field, Invalid, Required}
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.i18n.{Messages, MessagesApi}
+import play.api.test.FakeRequest
 
-class DoesPSAStartWithATwoFormProviderSpec extends FormBehaviours {
+class DoesPSAStartWithATwoFormProviderSpec extends FormBehaviours with GuiceOneAppPerSuite {
+
+  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  implicit val messages: Messages = messagesApi.preferred(FakeRequest())
 
   val validData: Map[String, String] = Map(
     "value" -> DoesPSAStartWithATwo.options.head.value
@@ -36,7 +41,7 @@ class DoesPSAStartWithATwoFormProviderSpec extends FormBehaviours {
     behave like formWithOptionField(
       Field(
         "value",
-        Required -> "messages__doesPSAStartWithATwo__error__required",
+        Required -> messages("messages__doesPSAStartWithATwo__error__required", "\'2'"),
         Invalid -> "error.invalid"
       ),
       DoesPSAStartWithATwo.options.map(_.value): _*)

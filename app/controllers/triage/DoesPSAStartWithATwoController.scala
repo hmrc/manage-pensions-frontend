@@ -25,7 +25,7 @@ import javax.inject.Inject
 import models.NormalMode
 import models.triage.DoesPSAStartWithATwo
 import play.api.data.Form
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.annotations.Triage
@@ -44,7 +44,7 @@ class DoesPSAStartWithATwoController @Inject()(appConfig: FrontendAppConfig,
                                               )(implicit val executionContext: ExecutionContext
                                               ) extends FrontendBaseController with I18nSupport with Enumerable.Implicits with Retrievals {
 
-  private def form: Form[DoesPSAStartWithATwo] = formProvider()
+  private def form(implicit messages: Messages): Form[DoesPSAStartWithATwo] = formProvider()
 
   def onPageLoad: Action[AnyContent] = triageAction.async {
     implicit request =>
@@ -58,7 +58,7 @@ class DoesPSAStartWithATwoController @Inject()(appConfig: FrontendAppConfig,
           Future.successful(BadRequest(view(formWithErrors))),
         value => {
           val uaUpdated = UserAnswers().set(DoesPSAStartWithATwoId)(value).asOpt.getOrElse(UserAnswers())
-          Future.successful(Redirect(navigator.nextPage(DoesPSAStartWithATwoId, NormalMode, uaUpdated)(request, implicitly, implicitly)))
+          Future.successful(Redirect(navigator.nextPage(DoesPSAStartWithATwoId, NormalMode, uaUpdated)))
         }
       )
   }

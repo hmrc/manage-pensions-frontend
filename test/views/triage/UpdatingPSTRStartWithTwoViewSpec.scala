@@ -31,10 +31,11 @@ class UpdatingPSTRStartWithTwoViewSpec extends ViewBehaviours {
     view()(fakeRequest, messages)
 
   "UpdatingPSTRStartWithTwoView" must {
-    behave like normalPage(
+    behave like normalPageWithTitle(
       createView,
       messageKeyPrefix,
-      messages(s"messages__${messageKeyPrefix}__title"),
+      messages(s"messages__${messageKeyPrefix}__title", "\'2'"),
+      messages(s"messages__${messageKeyPrefix}__title", "\'2'"),
       "_p1", "_p2", "_p3", "_p4", "_p5", "_p6"
     )
 

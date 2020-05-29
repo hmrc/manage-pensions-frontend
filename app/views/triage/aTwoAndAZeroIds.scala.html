@@ -30,11 +30,14 @@ appConfig: FrontendAppConfig
 
     bodyClasses = None) {
     @components.back_link()
-    @components.heading(Messages("messages__aTwoAndAZeroIds__h1"))
+    @components.heading(Messages("messages__aTwoAndAZeroIds__h1", "\'A2' and 'A0'"))
 
-    @components.paragraph_text(Messages("messages__aTwoAndAZeroIds__p1"))
+    @components.paragraph_text(Messages("messages__aTwoAndAZeroIds__p1", "\'A2' and 'A0'"))
 
-    <p><a id="manage-pension-schemes-service" href=@managePensionSchemesServiceLink>@Messages("messages__aTwoAndAZeroIds__managePensionSchemesService__link")</a></p>
-    <p><a id="pension-schemes-online-service" href=@pensionSchemesOnlineServiceLink>@Messages("messages__aTwoAndAZeroIds__pensionSchemesOnlineService__link")</a></p>
+    <div class="section">
+        <p><a id="manage-pension-schemes-service" href=@managePensionSchemesServiceLink>@Messages("messages__aTwoAndAZeroIds__managePensionSchemesService__link")</a></p>
+        <p><a id="pension-schemes-online-service" href=@pensionSchemesOnlineServiceLink>@Messages("messages__aTwoAndAZeroIds__pensionSchemesOnlineService__link")</a></p>
+    </div>
+
     <p><a id="return-to-guidance" href=@returnLink>@Messages("messages__aTwoAndAZeroIds__returnToManagePensionSchemesGuidance__link")</a></p>
 }
