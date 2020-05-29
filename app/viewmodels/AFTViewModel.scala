@@ -16,6 +16,18 @@
 
 package viewmodels
 
-import models.Link
+import play.api.libs.json.{Format, Json}
 
-case class AFTViewModel(period:Option[Message], status:Option[Message], link:Link)
+
+case class AFTLink(id: String, url: String, linkText: String)
+
+object AFTLink {
+  implicit val format: Format[AFTLink] = Json.format[AFTLink]
+}
+
+case class AFTViewModel(period:Option[String], status:Option[String], link:AFTLink)
+
+
+object AFTViewModel {
+  implicit val format: Format[AFTViewModel] = Json.format[AFTViewModel]
+}

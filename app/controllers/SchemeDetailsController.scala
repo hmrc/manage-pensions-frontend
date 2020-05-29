@@ -25,11 +25,13 @@ import identifiers.{SchemeNameId, SchemeSrnId, SchemeStatusId}
 import javax.inject.Inject
 import models._
 import models.requests.AuthenticatedRequest
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.SchemeDetailsService
+import play.twirl.api.Html
+import services.{HeaderCarrierFunctions, SchemeDetailsService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.UserAnswers
+import viewmodels.AFTViewModel
 import views.html.schemeDetails
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -44,7 +46,8 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                                         errorHandler: ErrorHandler,
                                         val controllerComponents: MessagesControllerComponents,
                                         schemeDetailsService: SchemeDetailsService,
-                                        view: schemeDetails
+                                        view: schemeDetails,
+                                        partialHtmlConnector: FrontendConnector
                                        )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate.async {
@@ -61,6 +64,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
             val updatedUa = userAnswers.set(SchemeSrnId)(srn.id).flatMap(_.set(SchemeNameId)(schemeName)).asOpt.getOrElse(userAnswers)
             val displayChangeLink = schemeDetailsService.displayChangeLink(isSchemeOpen, lock)
             for {
+              aftHtml <- partialHtmlConnector.retrieveAftViewModel(srn.id)
               optionAFTViewModel <- schemeDetailsService.retrieveOptionAFTViewModel(userAnswers, srn.id)
               list <- listSchemesConnector.getListOfSchemes(request.psaId.id)
               _ <- userAnswersCacheConnector.upsert(request.externalId, updatedUa.json)
@@ -75,7 +79,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                 isSchemeOpen,
                 displayChangeLink,
                 lockingPsa,
-                optionAFTViewModel
+                aftHtml
               ))
             }
           } else {

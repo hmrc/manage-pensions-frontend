@@ -17,6 +17,7 @@
 package services
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+
 import com.google.inject.Inject
 import config.FrontendAppConfig
 import connectors.admin.MinimalPsaConnector
@@ -27,10 +28,12 @@ import identifiers.invitations.PSTRId
 import models.SchemeStatus.{Deregistered, Open, WoundUp}
 import models._
 import models.requests.AuthenticatedRequest
+import play.api.i18n.Messages
 import play.api.mvc.AnyContent
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.{DateHelper, UserAnswers}
 import viewmodels.{AFTViewModel, AssociatedPsa, Message}
+
 import scala.concurrent.{ExecutionContext, Future}
 import utils.DateHelper._
 
@@ -40,7 +43,7 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
                                      schemeVarianceLockConnector: PensionSchemeVarianceLockConnector,
                                      minimalPsaConnector: MinimalPsaConnector
                                     )(implicit ec: ExecutionContext) {
-  def retrieveOptionAFTViewModel(userAnswers: UserAnswers, srn: String)(implicit hc: HeaderCarrier): Future[Seq[AFTViewModel]] = {
+  def retrieveOptionAFTViewModel(userAnswers: UserAnswers, srn: String)(implicit hc: HeaderCarrier, messages: Messages): Future[Seq[AFTViewModel]] = {
     if (appConfig.isAFTEnabled && isCorrectSchemeStatus(userAnswers)) {
       val pstrId = userAnswers.get(PSTRId)
         .getOrElse(throw new RuntimeException(s"No PSTR ID found for srn $srn"))
@@ -65,7 +68,7 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
 
 
   private def createAFTOverviewModel(pstrId: String, srn: String)(
-    implicit hc: HeaderCarrier): Future[Seq[AFTViewModel]] = {
+    implicit hc: HeaderCarrier, messages: Messages): Future[Seq[AFTViewModel]] = {
     for {
       overview <- aftConnector.getAftOverview(pstrId)
       inProgressReturnsOpt <- getInProgressReturnsModel(overview, srn, pstrId)
@@ -82,11 +85,11 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
    */
 
   private def getStartReturnsModel(overview: Seq[AFTOverview], srn: String, pstr: String
-                                  )(implicit hc: HeaderCarrier): Future[Option[AFTViewModel]] = {
+                                  )(implicit hc: HeaderCarrier, messages: Messages): Future[Option[AFTViewModel]] = {
 
     val startLink: Option[AFTViewModel] = Some(AFTViewModel(None, None,
-        Link(id = "aftLoginLink", url = appConfig.aftLoginUrl.format(srn),
-          linkText = Message("messages__schemeDetails__aft_start"))))
+        Linkx(id = "aftLoginLink", url = appConfig.aftLoginUrl.format(srn),
+          linkText = Message("messages__schemeDetails__aft_start").resolve)))
 
     val isReturnNotInitiatedForAnyQuarter: Boolean = {
       val aftValidYears = aftConnector.aftStartDate.getYear to aftConnector.aftEndDate.getYear
@@ -120,17 +123,17 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
       }
   }
 
-  private def getPastReturnsModel(overview: Seq[AFTOverview], srn: String)(implicit hc: HeaderCarrier): Option[AFTViewModel] = {
+  private def getPastReturnsModel(overview: Seq[AFTOverview], srn: String)(implicit hc: HeaderCarrier, messages: Messages): Option[AFTViewModel] = {
     val pastReturns = overview.filter(!_.compiledVersionAvailable)
 
     if (pastReturns.nonEmpty) {
       Some(AFTViewModel(
         None,
         None,
-        Link(
+        Linkx(
           id = "aftAmendLink",
           url = appConfig.aftAmendUrl.format(srn),
-          linkText = Message("messages__schemeDetails__aft_view_or_change"))
+          linkText = Message("messages__schemeDetails__aft_view_or_change").resolve)
       ))
     } else {
       None
@@ -138,7 +141,8 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
   }
 
 
-    private def getInProgressReturnsModel(overview: Seq[AFTOverview], srn: String, pstr: String)(implicit hc: HeaderCarrier): Future[Option[AFTViewModel]] = {
+    private def getInProgressReturnsModel(overview: Seq[AFTOverview], srn: String, pstr: String)
+                                         (implicit hc: HeaderCarrier, messages: Messages): Future[Option[AFTViewModel]] = {
     val inProgressReturns = overview.filter(_.compiledVersionAvailable)
 
     if(inProgressReturns.size == 1){
@@ -163,7 +167,7 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
   }
 
   private def modelForSingleInProgressReturn(srn: String, startDate: LocalDate, endDate: LocalDate, overview: AFTOverview
-                                            )(implicit  hc: HeaderCarrier): Future[Option[AFTViewModel]] = {
+                                            )(implicit  hc: HeaderCarrier, messages: Messages): Future[Option[AFTViewModel]] = {
     aftCacheConnector.lockedBy(srn, startDate.toString).map {
       case Some(lockedBy) => Some(AFTViewModel(
         Some(Message("messages__schemeDetails__aft_period", startDate.format(startDateFormat), endDate.format(endDateFormat))),
@@ -173,22 +177,22 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
         else {
           Some(Message("messages__schemeDetails__aft_locked"))
         },
-        Link(id = "aftSummaryLink", url = appConfig.aftSummaryPageUrl.format(srn, startDate, overview.numberOfVersions),
-          linkText = Message("messages__schemeDetails__aft_view"))
+        Linkx(id = "aftSummaryLink", url = appConfig.aftSummaryPageUrl.format(srn, startDate, overview.numberOfVersions),
+          linkText = Message("messages__schemeDetails__aft_view").resolve)
       ))
       case _ => Some(AFTViewModel(
         Some(Message("messages__schemeDetails__aft_period", startDate.format(startDateFormat), endDate.format(endDateFormat))),
         Some(Message("messages__schemeDetails__aft_inProgress")),
-        Link(
+        Linkx(
           id = "aftSummaryLink",
           url = appConfig.aftSummaryPageUrl.format(srn, startDate, overview.numberOfVersions),
-          linkText = Message("messages__schemeDetails__aft_view"))
+          linkText = Message("messages__schemeDetails__aft_view").resolve)
       ))
     }
   }
 
   private def modelForMultipleInProgressReturns(srn: String, pstr: String, inProgressReturns: Seq[AFTOverview]
-                                               )(implicit hc: HeaderCarrier): Future[Option[AFTViewModel]] = {
+                                               )(implicit hc: HeaderCarrier, messages: Messages): Future[Option[AFTViewModel]] = {
 
     retrieveZeroedOutReturns(inProgressReturns, pstr).map { zeroedReturns =>
 
@@ -196,12 +200,12 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
 
       if(countInProgress > 0) {
         Some(AFTViewModel(
-          Some(Message("messages__schemeDetails__aft_multiple_inProgress")),
+          Some(Message("messages__schemeDetails__aft_multiple_inProgress").resolve),
           Some(Message("messages__schemeDetails__aft_inProgressCount").withArgs(countInProgress)),
-          Link(
+          Linkx(
             id = "aftContinueInProgressLink",
             url = appConfig.aftContinueReturnUrl.format(srn),
-            linkText = Message("messages__schemeDetails__aft_view"))
+            linkText = Message("messages__schemeDetails__aft_view").resolve)
         ))
     } else {
       None
@@ -220,26 +224,26 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
   }
 
   private def createAFTViewModel(optVersions: Option[Seq[AFTVersion]], optLockedBy: Option[String],
-                                 srn: String, startDate: String, endDate: String): Seq[AFTViewModel] = {
+                                 srn: String, startDate: String, endDate: String)(implicit messages: Messages): Seq[AFTViewModel] = {
     val dateFormatterYMD: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     val formattedStartDate: String = LocalDate.parse(startDate, dateFormatterYMD).format(startDateFormat)
     val formattedEndDate: String = LocalDate.parse(endDate, dateFormatterYMD).format(endDateFormat)
     (optVersions, optLockedBy) match {
       case (Some(versions), None) if versions.isEmpty =>
         Seq(AFTViewModel(None, None,
-          Link(id = "aftChargeTypePageLink", url = appConfig.aftLoginUrl.format(srn),
-            linkText = Message("messages__schemeDetails__aft_startLink", formattedStartDate, formattedEndDate)))
+          Linkx(id = "aftChargeTypePageLink", url = appConfig.aftLoginUrl.format(srn),
+            linkText = Message("messages__schemeDetails__aft_startLink", formattedStartDate, formattedEndDate).resolve))
         )
       case (Some(versions), Some(name)) if versions.isEmpty =>
         Seq(AFTViewModel(
-          Some(Message("messages__schemeDetails__aft_period", formattedStartDate, formattedEndDate)),
+          Some(Message("messages__schemeDetails__aft_period", formattedStartDate, formattedEndDate).resolve),
           if (name.nonEmpty) {
-            Some(Message("messages__schemeDetails__aft_lockedBy", name))
+            Some(Message("messages__schemeDetails__aft_lockedBy", name).resolve)
           }
           else {
-            Some(Message("messages__schemeDetails__aft_locked"))
+            Some(Message("messages__schemeDetails__aft_locked").resolve)
           },
-          Link(id = "aftSummaryPageLink", url = appConfig.aftSummaryPageNoVersionUrl.format(srn, startDate),
+          Linkx(id = "aftSummaryPageLink", url = appConfig.aftSummaryPageNoVersionUrl.format(srn, startDate),
             linkText = Message("messages__schemeDetails__aft_view"))
         )
         )
@@ -252,8 +256,8 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
           else {
             Some(Message("messages__schemeDetails__aft_locked"))
           },
-          Link(id = "aftSummaryPageLink", url = appConfig.aftSummaryPageUrl.format(srn, startDate, versions.head.reportVersion),
-            linkText = Message("messages__schemeDetails__aft_view"))
+          Linkx(id = "aftSummaryPageLink", url = appConfig.aftSummaryPageUrl.format(srn, startDate, versions.head.reportVersion),
+            linkText = Message("messages__schemeDetails__aft_view").resolve)
         )
         )
 
@@ -261,7 +265,7 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
         Seq(AFTViewModel(
           Some(Message("messages__schemeDetails__aft_period", formattedStartDate, formattedEndDate)),
           Some(Message("messages__schemeDetails__aft_inProgress")),
-          Link(
+          Linkx(
             id = "aftSummaryPageLink",
             url = appConfig.aftSummaryPageUrl.format(srn, startDate, versions.head.reportVersion),
             linkText = Message("messages__schemeDetails__aft_view"))
