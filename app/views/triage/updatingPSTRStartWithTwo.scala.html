@@ -35,13 +35,13 @@ appConfig: FrontendAppConfig
     @components.back_link()
     @components.heading(Messages("messages__updatingPSTRStartWithTwo__title"))
 
-    @components.paragraph_text(Message("messages__updatingPSTRStartWithTwo__p1"))
+    @components.paragraph_text(Message("messages__updatingPSTRStartWithTwo__p1"), "p1_id")
 
-    @components.paragraph_text(Message("messages__updatingPSTRStartWithTwo__p2"))
-    @components.paragraph_text(Message("messages__updatingPSTRStartWithTwo__p3"))
-    @components.paragraph_text(Message("messages__updatingPSTRStartWithTwo__p4"))
-    @components.paragraph_text(Message("messages__updatingPSTRStartWithTwo__p5"))
-    @components.paragraph_text(Message("messages__updatingPSTRStartWithTwo__p6"))
+    @components.paragraph_text(Message("messages__updatingPSTRStartWithTwo__p2"), "p2_id")
+    @components.paragraph_text(Message("messages__updatingPSTRStartWithTwo__p3"), "p3_id")
+    @components.paragraph_text(Message("messages__updatingPSTRStartWithTwo__p4"), "p4_id")
+    @components.paragraph_text(Message("messages__updatingPSTRStartWithTwo__p5"), "p5_id")
+    @components.paragraph_text(Message("messages__updatingPSTRStartWithTwo__p6"), "p6_id")
 
     @components.button_link("site.continue", Call("GET", s"${appConfig.loginUrl}?continue=${appConfig.loginToListSchemesUrl}").url, "submit_button")
 }

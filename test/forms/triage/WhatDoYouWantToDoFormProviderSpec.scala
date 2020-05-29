@@ -16,15 +16,28 @@
 
 package forms.triage
 
-import forms.mappings.Mappings
-import javax.inject.Inject
+import forms.behaviours.FormBehaviours
 import models.triage.WhatDoYouWantToDo
-import play.api.data.Form
+import models.{Field, Invalid, Required}
 
-class WhatDoYouWantToDoFormProvider @Inject() extends Mappings {
+class WhatDoYouWantToDoFormProviderSpec extends FormBehaviours {
 
-  def apply(): Form[WhatDoYouWantToDo] =
-    Form(
-      "value" -> enumerable[WhatDoYouWantToDo]("messages__whatDoYouWantToDo__error__required")
-    )
+  val validData: Map[String, String] = Map(
+    "value" -> WhatDoYouWantToDo.options.head.value
+  )
+
+  val form = new WhatDoYouWantToDoFormProvider()()
+
+  "WhatDoYouWantToDoFormProvider" must {
+
+    behave like questionForm[WhatDoYouWantToDo](WhatDoYouWantToDo.values.head)
+
+    behave like formWithOptionField(
+      Field(
+        "value",
+        Required -> "messages__whatDoYouWantToDo__error__required",
+        Invalid -> "error.invalid"
+      ),
+      WhatDoYouWantToDo.options.map(_.value): _*)
+  }
 }

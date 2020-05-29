@@ -24,6 +24,6 @@ class DoesPSTRStartWithTwoFormProvider @Inject() extends Mappings {
 
   def apply(): Form[Boolean] =
     Form(
-      "value" -> boolean("messages__error_required")
+      "value" -> boolean("messages__doesPSTRStartWithTwo__error__required")
     )
 }

@@ -392,6 +392,7 @@ messages__cannotDeregister__p1 = You cannot stop being a pension scheme administ
 messages__cannotDeregister__p2 = This includes any schemes that have a status of wound up.
 
 messages__whatDoYouWantToDo__title = What do you want to do?
+messages__whatDoYouWantToDo__error__required = Select what you want to do
 messages__whatDoYouWantToDo__opt1 = View and manage an existing pension scheme
 messages__whatDoYouWantToDo__opt2 = Check the status and details of any scheme that you have applied to register
 messages__whatDoYouWantToDo__opt3 = Invite other scheme administrators to your scheme
@@ -400,12 +401,14 @@ messages__whatDoYouWantToDo__opt5 = Update your scheme information
 messages__whatDoYouWantToDo__opt6 = Change scheme administrator details
 
 messages__doesPSTRStartWithTwo__title = Does the scheme’s Pension Scheme Tax Reference (PSTR) start with a ‘2’?
+messages__doesPSTRStartWithTwo__error__required = Select yes if the scheme’s PSTR starts with a ‘2’
 
 messages__doesPSTRStartWithTwo_invite__hint = We will show you how to invite (or "associate") another scheme administrator with a scheme that does not have a PSTR starting with a ‘2’.
 messages__doesPSTRStartWithTwo_invited__hint = We will show you how to add yourself to a scheme that does not have a PSTR starting with a ‘2’. An existing scheme administrator will have to associate you with the scheme first.
 messages__doesPSTRStartWithTwo_update__hint = We will show you how to update a scheme that does not have a PSTR starting with a ‘2’.
 
 messages__doesPSAStartWithATwo__title = Does your scheme administrator ID start with ‘A2’?
+messages__doesPSAStartWithATwo__error__required = Select if your scheme administrator ID starts with ‘A2’
 messages__doesPSAStartWithATwo__opt1 = Yes
 messages__doesPSAStartWithATwo__opt2 = No
 messages__doesPSAStartWithATwo__opt3 = I have IDs starting with ‘A2’ and ‘A0’

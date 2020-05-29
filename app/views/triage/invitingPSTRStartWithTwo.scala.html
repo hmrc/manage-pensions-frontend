@@ -35,10 +35,9 @@ appConfig: FrontendAppConfig
     @components.back_link()
     @components.heading(Messages("messages__invitingPSTRStartWithTwo__title"))
 
-    @components.paragraph_text(Message("messages__invitingPSTRStartWithTwo__p1"))
-
-    @components.paragraph_text(Message("messages__invitingPSTRStartWithTwo__p2"))
-    @components.paragraph_text(Message("messages__invitingPSTRStartWithTwo__p3"))
+    @components.paragraph_text(Message("messages__invitingPSTRStartWithTwo__p1"), "p1_id")
+    @components.paragraph_text(Message("messages__invitingPSTRStartWithTwo__p2"), "p2_id")
+    @components.paragraph_text(Message("messages__invitingPSTRStartWithTwo__p3"), "p3_id")
 
     @components.button_link("site.continue", Call("GET", s"${appConfig.loginUrl}?continue=${appConfig.loginToListSchemesUrl}").url, "submit_button")
 }

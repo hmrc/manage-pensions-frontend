@@ -45,7 +45,7 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
       val pstrId = userAnswers.get(PSTRId)
         .getOrElse(throw new RuntimeException(s"No PSTR ID found for srn $srn"))
 
-      if(isOverviewApiDisabled) { //TODO This case to be deleted after 1 July 2020 and only the else section for this if to remain
+      if(isOverviewApiDisabled) { //TODO This case to be deleted after 21st July 2020 and only the else section for this if to remain
         for {
           optVersions <- aftConnector.getListOfVersions(pstrId)
           optLockedBy <- aftCacheConnector.lockedBy(srn, appConfig.quarterStartDate)

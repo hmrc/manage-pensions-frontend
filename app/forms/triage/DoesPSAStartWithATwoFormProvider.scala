@@ -25,6 +25,6 @@ class DoesPSAStartWithATwoFormProvider @Inject() extends Mappings {
 
   def apply(): Form[DoesPSAStartWithATwo] =
     Form(
-      "value" -> enumerable[DoesPSAStartWithATwo]("messages__error_required")
+      "value" -> enumerable[DoesPSAStartWithATwo]("messages__doesPSAStartWithATwo__error__required")
     )
 }

@@ -23,8 +23,6 @@ import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
-import utils.Navigator
-import utils.annotations.Triage
 import views.html.triage.invitingPSTRStartWithTwo
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -33,7 +31,6 @@ import scala.concurrent.{ExecutionContext, Future}
 class InvitingPSTRStartWithTwoController @Inject()(
                                                     override val messagesApi: MessagesApi,
                                                     frontendAppConfig: FrontendAppConfig,
-                                                    @Triage navigator: Navigator,
                                                     triageAction: TriageAction,
                                                     val controllerComponents: MessagesControllerComponents,
                                                     view: invitingPSTRStartWithTwo
