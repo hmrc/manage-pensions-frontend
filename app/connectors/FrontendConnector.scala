@@ -18,37 +18,29 @@ package connectors
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
-import play.api.Logger
-import play.api.http.Status
+import play.api.mvc.Request
+import play.twirl.api.Html
 import services.HeaderCarrierFunctions
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
-import viewmodels.AFTViewModel
-import play.api.mvc.Request
+import uk.gov.hmrc.play.partials.HtmlPartial
+import uk.gov.hmrc.play.partials.HtmlPartial.connectionExceptionsAsHtmlPartialFailure
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Failure
-
-
-import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Failure
 
 class FrontendConnector @Inject()(http: HttpClient, config: FrontendAppConfig) {
 
-  def aftUrl(srn: String): String = config.aftPartialHtmlUrl.format(srn)
+  def retrieveAftPartial[A](srn: String)(implicit request: Request[A], ec: ExecutionContext): Future[Html] = {
 
-  def retrieveAftViewModel[A](srn: String)(implicit request: Request[A], ec: ExecutionContext): Future[Seq[AFTViewModel]] = {
     val url = config.aftPartialHtmlUrl.format(srn)
     implicit val hc: HeaderCarrier = HeaderCarrierFunctions.headerCarrierForPartials(request).toHeaderCarrier
-    http.GET(url).map { response =>
-      require(response.status == Status.OK)
-     response.json.as[Seq[AFTViewModel]]
-    } andThen {
-      case Failure(t: Throwable) => Logger.error("Unable to retrieve aft partial", t)
-    } recoverWith {
-      case _: Exception => Future.successful(Nil)
+
+    http.GET[HtmlPartial](url) recover connectionExceptionsAsHtmlPartialFailure map {
+      case HtmlPartial.Success(_, content) =>
+        content
+      case HtmlPartial.Failure(_, _) =>
+        Html("Sorry, there's been a technical problem retrieving your info")
     }
   }
-
 
 }

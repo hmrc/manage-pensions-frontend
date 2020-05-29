@@ -18,7 +18,7 @@ package controllers
 
 import connectors._
 import connectors.scheme.{ListOfSchemesConnector, PensionSchemeVarianceLockConnector, SchemeDetailsConnector}
-import controllers.actions.{DataRetrievalAction, _}
+import controllers.actions._
 import handlers.ErrorHandler
 import identifiers.SchemeNameId
 import identifiers.invitations.PSTRId
@@ -29,11 +29,12 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.{JsArray, Json}
 import play.api.test.Helpers.{contentAsString, _}
+import play.twirl.api.Html
 import services.SchemeDetailsService
 import testhelpers.CommonBuilders._
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.UserAnswers
-import viewmodels.{AFTViewModel, AssociatedPsa, Message}
+import viewmodels.AssociatedPsa
 import views.html.{error_template, error_template_page_not_found, schemeDetails}
 
 import scala.concurrent.Future
@@ -47,7 +48,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
   val errorHandlerNotFoundView: error_template_page_not_found = app.injector.instanceOf[error_template_page_not_found]
   val errorHandler = new ErrorHandler(frontendAppConfig, messagesApi, errorHandlerView, errorHandlerNotFoundView)
 
-  def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): SchemeDetailsController = {
+  def controller(): SchemeDetailsController = {
     new SchemeDetailsController(
       frontendAppConfig,
       messagesApi,
@@ -73,8 +74,6 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
   "SchemeDetailsController" must {
 
     "return OK and the correct view for a GET" in {
-      val aftViewModel = AFTViewModel(None, None, Link(id = "aftChargeTypePageLink", url = frontendAppConfig.aftLoginUrl.format(srn),
-        linkText = Message("messages__schemeDetails__aft_startLink")))
       when(fakeSchemeDetailsConnector.getSchemeDetails(eqTo("A0000000"), any(), any())(any(), any()))
         .thenReturn(Future.successful(desUserAnswers))
       when(fakeListOfSchemesConnector.getListOfSchemes(any())(any(), any()))
@@ -84,12 +83,12 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
       when(schemeDetailsService.openedDate(any(), any(), any())).thenReturn(openDate)
       when(schemeDetailsService.administratorsVariations(any(), any(), any())).thenReturn(administrators)
       when(schemeDetailsService.lockingPsa(any(), any())(any(), any())).thenReturn(Future.successful(Some("test-psa")))
-      when(schemeDetailsService.retrieveOptionAFTViewModel(any(), any())(any())).thenReturn(Future(Seq(aftViewModel)))
+      when(schemeDetailsService.retrieveAftHtml(any(), any())(any())).thenReturn(Future(Html("test-aft-html")))
 
       val result = controller().onPageLoad(srn)(fakeRequest)
       status(result) mustBe OK
       contentAsString(result) mustBe schemeDetailsView(schemeName, pstr, openDate, administrators, srn, isSchemeOpen = true,
-        displayChangeLink = false, lockingPsa = Some("test-psa"), seqAFTViewModel = Seq(aftViewModel))(fakeRequest, messages).toString()
+        displayChangeLink = false, lockingPsa = Some("test-psa"), aftHtml = aftHtml)(fakeRequest, messages).toString()
     }
 
     "return NOT_FOUND when PSA data is not returned by API (as we don't know who administers the scheme)" in {
@@ -129,12 +128,13 @@ private object SchemeDetailsControllerSpec extends MockitoSugar {
   private val pstr = Some("10000678RE")
   private val openDate = Some("10 October 2012")
   private val srn = SchemeReferenceNumber("S1000000456")
+  private val aftHtml = Html("test-aft-html")
 
   private val administrators =
     Some(
       Seq(
-        AssociatedPsa("Taylor Middle Rayon", true),
-        AssociatedPsa("Smith A Tony", false)
+        AssociatedPsa("Taylor Middle Rayon", canRemove = true),
+        AssociatedPsa("Smith A Tony", canRemove = false)
       )
     )
 

@@ -89,17 +89,6 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val updateSchemeDetailsUrl: String = s"${servicesConfig.baseUrl("pensions-scheme")}${runModeConfiguration.underlying.getString("urls.updateSchemeDetails")}"
 
   lazy val aftPartialHtmlUrl: String = loadConfig("urls.aftPartialHtml")
-  lazy val aftLoginUrl: String = loadConfig("urls.aftLoginLink")
-  lazy val aftSummaryPageUrl: String = loadConfig("urls.aftSummaryPageLink")
-  lazy val aftSummaryPageNoVersionUrl: String = loadConfig("urls.aftSummaryPageNoVersionLink")
-  lazy val aftReturnHistoryUrl: String = loadConfig("urls.aftReturnHistoryLink")
-  lazy val aftContinueReturnUrl: String = loadConfig("urls.aftContinueReturn")
-  lazy val aftAmendUrl: String = loadConfig("urls.aftAmendLink")
-  lazy val isAFTEnabled: Boolean = runModeConfiguration.underlying.getBoolean("features.aft-return-enabled")
-  lazy val aftListOfVersions: String = s"${servicesConfig.baseUrl("pension-scheme-accounting-for-tax")}${runModeConfiguration.underlying.getString("urls.aftListOfVersions")}"
-  lazy val aftOverviewUrl: String = s"${servicesConfig.baseUrl("pension-scheme-accounting-for-tax")}${runModeConfiguration.underlying.getString("urls.aftOverview")}"
-  lazy val isAftNonZero: String = s"${servicesConfig.baseUrl("pension-scheme-accounting-for-tax")}${runModeConfiguration.underlying.getString("urls.isAftNonZero")}"
-
 
   def languageMap: Map[String, Lang] = Map(
     "english" -> Lang("en"),

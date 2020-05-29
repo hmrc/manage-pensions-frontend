@@ -46,8 +46,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                                         errorHandler: ErrorHandler,
                                         val controllerComponents: MessagesControllerComponents,
                                         schemeDetailsService: SchemeDetailsService,
-                                        view: schemeDetails,
-                                        partialHtmlConnector: FrontendConnector
+                                        view: schemeDetails
                                        )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate.async {
@@ -64,8 +63,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
             val updatedUa = userAnswers.set(SchemeSrnId)(srn.id).flatMap(_.set(SchemeNameId)(schemeName)).asOpt.getOrElse(userAnswers)
             val displayChangeLink = schemeDetailsService.displayChangeLink(isSchemeOpen, lock)
             for {
-              aftHtml <- partialHtmlConnector.retrieveAftViewModel(srn.id)
-              optionAFTViewModel <- schemeDetailsService.retrieveOptionAFTViewModel(userAnswers, srn.id)
+              aftHtml <- schemeDetailsService.retrieveAftHtml(userAnswers, srn.id)
               list <- listSchemesConnector.getListOfSchemes(request.psaId.id)
               _ <- userAnswersCacheConnector.upsert(request.externalId, updatedUa.json)
               lockingPsa <- schemeDetailsService.lockingPsa(lock, srn)

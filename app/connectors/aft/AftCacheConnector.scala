@@ -33,26 +33,6 @@ class AftCacheConnector @Inject()(
 
   private def url = s"${config.aftUrl}/pension-scheme-accounting-for-tax/journey-cache/aft/lock"
 
-  def lockedBy(srn: String, startDate: String)(implicit
-                             ec: ExecutionContext,
-                             hc: HeaderCarrier
-  ): Future[Option[String]] = {
-    http.url(url)
-      .withHttpHeaders(hc.withExtraHeaders(("id", srn + startDate)).headers: _*)
-      .get()
-      .flatMap {
-        response =>
-          response.status match {
-            case NOT_FOUND =>
-              Future.successful(None)
-            case OK =>
-              Future.successful(Some(response.body))
-            case _ =>
-              Future.failed(new HttpException(response.body, response.status))
-          }
-      }
-  }
-
   def removeLock(implicit ec: ExecutionContext,
                  hc: HeaderCarrier): Future[Result] = {
     http.url(url)

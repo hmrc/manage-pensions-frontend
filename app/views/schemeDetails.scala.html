@@ -37,7 +37,7 @@
     isSchemeOpen: Boolean,
     displayChangeLink: Boolean,
     lockingPsa: Option[String],
-    aftModels: Seq[AFTViewModel]
+    aftHtml: Html
 )(implicit request: Request[_], messages: Messages)
 
     @main_template(
@@ -66,35 +66,7 @@
             <p>@openedDate</p>
         }
 
-        @if(aftModels.nonEmpty){
-            <h2>@Html(messages("messages__schemeDetails__aft_h1"))</h2>
-            @aftModels.map { aftViewModel =>
-
-                @if(aftViewModel.period.isEmpty){
-                    <br/>
-                    <p><a id='@{aftViewModel.link.id}' href='@{aftViewModel.link.url}'>
-                        @aftViewModel.link.linkText
-                    </a></p>
-                }else{
-                <div id="aft-list">
-                        <div class="row-group grid-row">
-                            <div id="aftPeriod" class="column-one-half table-column">
-                                @aftViewModel.period
-                            </div>
-                            <div id="aftStatus" class="column-one-third table-column">
-                                @aftViewModel.status
-                            </div>
-                            <div class="column-one-sixth table-column">
-                                <a id='@{aftViewModel.link.id}' href='@{aftViewModel.link.url}'>
-                                    @aftViewModel.link.linkText
-                                </a>
-                            </div>
-                        </div>
-                </div>
-                }
-
-            }
-    }
+        @aftHtml
 
         @admins.map { admins =>
             <h2>@messages("messages__schemeDetails__psa_list_head")</h2>
