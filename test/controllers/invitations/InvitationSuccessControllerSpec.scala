@@ -20,33 +20,26 @@ import java.time.LocalDate
 
 import config.FrontendAppConfig
 import connectors.FakeUserAnswersCacheConnector
-import connectors.admin.MinimalPsaConnector
 import controllers.actions._
 import controllers.behaviours.ControllerWithNormalPageBehaviours
-import models.{MinimalPSA, MinimalSchemeDetail}
+import models.MinimalSchemeDetail
 import play.api.mvc.Call
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.{DateHelper, UserAnswers}
 import views.html.invitations.invitation_success
 
-import scala.concurrent.{ExecutionContext, Future}
-
 class InvitationSuccessControllerSpec extends ControllerWithNormalPageBehaviours {
 
   private val testSrn: String = "test-srn"
-  private val testPsaId = "A2100000"
   private val testInviteeName = "test-invitee-name"
   private val testPstr = "test-pstr"
   private val testSchemeName = "test-scheme-name"
-  private val testEmail = "test@test.com"
   private val testSchemeDetail = MinimalSchemeDetail(testSrn, Some(testPstr), testSchemeName)
   private lazy val continue: Call = controllers.invitations.routes.InvitationSuccessController.onSubmit(testSrn)
 
   private val userAnswer = UserAnswers()
     .inviteeName(testInviteeName)
-    .inviteeId(testPsaId)
     .minimalSchemeDetails(testSchemeDetail)
     .dataRetrievalAction
 
@@ -54,29 +47,21 @@ class InvitationSuccessControllerSpec extends ControllerWithNormalPageBehaviours
 
   def viewAsString() = invitationSuccessView(
     testInviteeName,
-    testEmail,
     testSchemeName,
     testExpiryDate(frontendAppConfig),
     continue)(fakeRequest, messages).toString
 
-  private def fakeMinimalPsaConnector = new MinimalPsaConnector {
-    override def getMinimalPsaDetails(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSA] =
-      Future.successful(MinimalPSA(testEmail, false, Some(testInviteeName), None))
-
-    override def getPsaNameFromPsaID(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = ???
-  }
-
-  private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
+  def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
     new InvitationSuccessController(
-      messagesApi, frontendAppConfig, fakeAuth, dataRetrievalAction, requiredDateAction, FakeUserAnswersCacheConnector, fakeMinimalPsaConnector, navigator,
+      messagesApi, frontendAppConfig, fakeAuth, dataRetrievalAction, requiredDateAction, FakeUserAnswersCacheConnector, navigator,
       stubMessagesControllerComponents(), invitationSuccessView).onPageLoad(testSrn)
   }
 
-  private def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
+  def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
     new InvitationSuccessController(
-      messagesApi, frontendAppConfig, fakeAuth, dataRetrievalAction, requiredDateAction, FakeUserAnswersCacheConnector, fakeMinimalPsaConnector, navigator,
+      messagesApi, frontendAppConfig, fakeAuth, dataRetrievalAction, requiredDateAction, FakeUserAnswersCacheConnector, navigator,
       stubMessagesControllerComponents(), invitationSuccessView).onSubmit(testSrn)
   }
 

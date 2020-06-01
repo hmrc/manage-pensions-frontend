@@ -20,11 +20,10 @@ import java.time.LocalDate
 
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
-import connectors.admin.MinimalPsaConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import identifiers.MinimalSchemeDetailId
-import identifiers.invitations.{InvitationSuccessId, InviteeNameId, InviteePSAId}
+import identifiers.invitations.{InvitationSuccessId, InviteeNameId}
 import javax.inject.Inject
 import models.{NormalMode, SchemeReferenceNumber}
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -43,7 +42,6 @@ class InvitationSuccessController @Inject()(
                                              getData: DataRetrievalAction,
                                              requireData: DataRequiredAction,
                                              userAnswersCacheConnector: UserAnswersCacheConnector,
-                                             minimalPsaConnector: MinimalPsaConnector,
                                              @Invitation navigator: Navigator,
                                              val controllerComponents: MessagesControllerComponents,
                                              view: invitation_success
@@ -53,23 +51,21 @@ class InvitationSuccessController @Inject()(
     implicit request =>
 
       val continue = controllers.invitations.routes.InvitationSuccessController.onSubmit(srn)
-      val ua = request.userAnswers
 
-      (ua.get(MinimalSchemeDetailId), ua.get(InviteeNameId), ua.get(InviteePSAId)) match {
-        case (Some(schemeDetail), Some(inviteeName), Some(inviteePsaId)) =>
-          minimalPsaConnector.getMinimalPsaDetails(inviteePsaId).flatMap { minimalPsaDetails =>
-            userAnswersCacheConnector.removeAll(request.externalId).map { _ =>
-              Ok(view(
-                inviteeName,
-                minimalPsaDetails.email,
-                schemeDetail.schemeName,
-                LocalDate.now().plusDays(frontendAppConfig.invitationExpiryDays),
-                continue
-              ))
-            }
-          }
-        case _ =>
-          Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+      (for {
+        psaName <- request.userAnswers.get(InviteeNameId)
+        schemeDetail <- request.userAnswers.get(MinimalSchemeDetailId)
+      } yield {
+        userAnswersCacheConnector.removeAll(request.externalId).map { _ =>
+          Ok(view(
+            psaName,
+            schemeDetail.schemeName,
+            LocalDate.now().plusDays(frontendAppConfig.invitationExpiryDays),
+            continue
+          ))
+        }
+      }) getOrElse {
+        Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
       }
   }
 
