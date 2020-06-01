@@ -112,8 +112,4 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
 
   lazy val listSchemePagination: Int = runModeConfiguration.get[Int]("listSchemePagination")
   lazy val minimumSchemeSearchResults: Int = runModeConfiguration.get[Int]("minimumSchemeSearchResults")
-  lazy val overviewApiEnablementDate: String = runModeConfiguration.get[String]("overviewApiEnablementDate")
-  lazy val quarterStartDate: String = runModeConfiguration.get[String]("earliestStartDate")
-  lazy val quarterEndDate: String = "2020-06-30"
-  lazy val aftNoOfYearsDisplayed: Int = runModeConfiguration.get[Int]("aftNoOfYearsDisplayed")
 }
