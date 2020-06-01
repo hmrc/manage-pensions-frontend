@@ -18,6 +18,7 @@ package connectors
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
+import play.api.Logger
 import play.api.mvc.Request
 import play.twirl.api.Html
 import services.HeaderCarrierFunctions
@@ -41,7 +42,8 @@ class FrontendConnector @Inject()(http: HttpClient, config: FrontendAppConfig) {
       case HtmlPartial.Success(_, content) =>
         content
       case HtmlPartial.Failure(_, _) =>
-        Html("Sorry, there's been a technical problem retrieving your info")
+        Logger.warn("Failed to retrieve AFT partial")
+        Html("")
     }
   }
 
