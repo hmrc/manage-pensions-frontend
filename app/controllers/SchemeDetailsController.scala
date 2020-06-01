@@ -25,9 +25,10 @@ import identifiers.{SchemeNameId, SchemeSrnId, SchemeStatusId}
 import javax.inject.Inject
 import models._
 import models.requests.AuthenticatedRequest
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.SchemeDetailsService
+import play.twirl.api.Html
+import services.{HeaderCarrierFunctions, SchemeDetailsService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.UserAnswers
 import views.html.schemeDetails
@@ -61,7 +62,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
             val updatedUa = userAnswers.set(SchemeSrnId)(srn.id).flatMap(_.set(SchemeNameId)(schemeName)).asOpt.getOrElse(userAnswers)
             val displayChangeLink = schemeDetailsService.displayChangeLink(isSchemeOpen, lock)
             for {
-              optionAFTViewModel <- schemeDetailsService.retrieveOptionAFTViewModel(userAnswers, srn.id)
+              aftHtml <- schemeDetailsService.retrieveAftHtml(userAnswers, srn.id)
               list <- listSchemesConnector.getListOfSchemes(request.psaId.id)
               _ <- userAnswersCacheConnector.upsert(request.externalId, updatedUa.json)
               lockingPsa <- schemeDetailsService.lockingPsa(lock, srn)
@@ -75,7 +76,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                 isSchemeOpen,
                 displayChangeLink,
                 lockingPsa,
-                optionAFTViewModel
+                aftHtml
               ))
             }
           } else {

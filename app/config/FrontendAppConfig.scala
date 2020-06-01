@@ -88,18 +88,8 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val taxDeEnrolmentUrl: String = servicesConfig.baseUrl("tax-enrolments") +runModeConfiguration.underlying.getString("urls.tax-de-enrolment")
   lazy val updateSchemeDetailsUrl: String = s"${servicesConfig.baseUrl("pensions-scheme")}${runModeConfiguration.underlying.getString("urls.updateSchemeDetails")}"
 
-  lazy val aftLoginUrl: String = loadConfig("urls.aftLoginLink")
-  lazy val aftSummaryPageUrl: String = loadConfig("urls.aftSummaryPageLink")
-  lazy val aftSummaryPageNoVersionUrl: String = loadConfig("urls.aftSummaryPageNoVersionLink")
-  lazy val aftReturnHistoryUrl: String = loadConfig("urls.aftReturnHistoryLink")
-  lazy val aftContinueReturnUrl: String = loadConfig("urls.aftContinueReturn")
-  lazy val aftAmendUrl: String = loadConfig("urls.aftAmendLink")
-  lazy val isAFTEnabled: Boolean = runModeConfiguration.underlying.getBoolean("features.aft-return-enabled")
-  lazy val aftListOfVersions: String = s"${servicesConfig.baseUrl("pension-scheme-accounting-for-tax")}${runModeConfiguration.underlying.getString("urls.aftListOfVersions")}"
-  lazy val aftOverviewUrl: String = s"${servicesConfig.baseUrl("pension-scheme-accounting-for-tax")}${runModeConfiguration.underlying.getString("urls.aftOverview")}"
-  lazy val isAftNonZero: String = s"${servicesConfig.baseUrl("pension-scheme-accounting-for-tax")}${runModeConfiguration.underlying.getString("urls.isAftNonZero")}"
+  lazy val aftPartialHtmlUrl: String = s"${servicesConfig.baseUrl("aft-frontend")}${runModeConfiguration.underlying.getString("urls.aftPartialHtml")}"
 
-  lazy val quarterEndDate: String = "2020-06-30"
 
   def languageMap: Map[String, Lang] = Map(
     "english" -> Lang("en"),
@@ -122,7 +112,4 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
 
   lazy val listSchemePagination: Int = runModeConfiguration.get[Int]("listSchemePagination")
   lazy val minimumSchemeSearchResults: Int = runModeConfiguration.get[Int]("minimumSchemeSearchResults")
-  lazy val overviewApiEnablementDate: String = runModeConfiguration.get[String]("overviewApiEnablementDate")
-  lazy val quarterStartDate: String = runModeConfiguration.get[String]("earliestStartDate")
-  lazy val aftNoOfYearsDisplayed: Int = runModeConfiguration.get[Int]("aftNoOfYearsDisplayed")
 }

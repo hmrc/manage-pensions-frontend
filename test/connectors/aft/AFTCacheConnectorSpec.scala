@@ -42,53 +42,6 @@ class AFTCacheConnectorSpec extends AsyncWordSpec with MustMatchers with WireMoc
 
   protected lazy val connector: AftCacheConnector = injector.instanceOf[AftCacheConnector]
 
-  "lockedBy" must {
-    
-    "return `None` when the server returns a 404" in {
-      server.stubFor(
-        get(urlEqualTo(lockUrl))
-          .willReturn(
-            notFound
-          )
-      )
-      connector.lockedBy(srn, startDate) map {
-        result =>
-          result mustBe None
-      }
-    }
-
-    "return data when the server returns 200" in {
-      val data = Json.obj("testId" -> "data")
-      server.stubFor(
-        get(urlEqualTo(lockUrl))
-          .willReturn(
-            ok(data.toString)
-          )
-      )
-
-      connector.lockedBy(srn, startDate) map {
-        result =>
-          result.value mustEqual data.toString()
-      }
-    }
-
-    "return a failed future on upstream error" in {
-
-      server.stubFor(
-        get(urlEqualTo(lockUrl))
-          .willReturn(
-            serverError
-          )
-      )
-
-      recoverToExceptionIf[HttpException] {
-        connector.lockedBy(srn, startDate)
-      } map {
-        _.responseCode mustEqual Status.INTERNAL_SERVER_ERROR
-      }
-    }
-  }
-
   ".removeLock" must {
 
     "return OK after removing all the data from the collection" in {
