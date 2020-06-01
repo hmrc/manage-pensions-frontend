@@ -18,7 +18,6 @@ package views.invitations
 
 import java.time.LocalDate
 
-import org.jsoup.Jsoup
 import play.api.mvc.Call
 import play.twirl.api.HtmlFormat
 import utils.DateHelper
@@ -30,7 +29,6 @@ class InvitationSuccessSpec extends ViewBehaviours {
   private val testSrn = "test-srn"
   private val testInviteeName: String = "Joe Bloggs"
   private val testSchemeName: String = "Test Scheme Ltd"
-  private val testEmail: String = "test@test.com"
   private val testExpiryDate: LocalDate = LocalDate.now()
 
   private val messageKeyPrefix = "invitationSuccess"
@@ -42,7 +40,6 @@ class InvitationSuccessSpec extends ViewBehaviours {
   def createView(): () => HtmlFormat.Appendable = () =>
     view(
       testInviteeName,
-      testEmail,
       testSchemeName,
       testExpiryDate,
       continue
@@ -60,8 +57,8 @@ class InvitationSuccessSpec extends ViewBehaviours {
       createView() must haveElementWithText("schemeName", Message("messages__invitationSuccess__schemeName", testSchemeName))
     }
 
-    "render an email" in {
-      Jsoup.parse(createView()().toString()) must haveDynamicText(testEmail)
+    "state invitee will be send an email" in {
+      createView() must haveElementWithText("emailAdvice", Message("messages__invitationSuccess__emailAdvice", testInviteeName))
     }
 
     "state expiry date of invitation" in {
