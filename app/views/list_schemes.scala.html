@@ -114,7 +114,6 @@
                     @components.input_search(
                         field = form("searchText"),
                         label = messages("messages__listSchemes__searchText_label"),
-                        hint  = Some(messages("messages__listSchemes__searchText_hint")),
                         labelClass = Some("heading-medium"),
                         inputClass = Some("form-control--width-two-thirds"),
                         messageKey = messages(button_content)
@@ -127,7 +126,7 @@
                         <a id="clear-search-link" href="@ListSchemesController.onPageLoad"> @messages("messages__listSchemes__searchText_clearlink")</a>
                     </p>
                 }else{
-                    <p>@Html(messages("messages__schemesOverview__manage__redirect__text", manageRedirectLink))</p>
+                    <p class="panel panel-border-wide" >@Html(messages("messages__schemesOverview__manage__redirect__text", manageRedirectLink))</p>
                 }
 
             </div>
