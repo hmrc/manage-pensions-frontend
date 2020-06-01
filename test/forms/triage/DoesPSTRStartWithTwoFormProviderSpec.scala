@@ -27,7 +27,7 @@ class DoesPSTRStartWithTwoFormProviderSpec extends BooleanFieldBehaviours with G
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   implicit val messages: Messages = messagesApi.preferred(FakeRequest())
 
-  val requiredKey = messages("messages__doesPSTRStartWithTwo__error__required", "\'2'")
+  val requiredKey = messages("messages__doesPSTRStartWithTwo__error__required")
   val invalidKey = "error.boolean"
 
   val formProvider = new DoesPSTRStartWithTwoFormProvider()

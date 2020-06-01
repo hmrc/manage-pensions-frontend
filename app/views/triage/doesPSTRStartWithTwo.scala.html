@@ -37,7 +37,7 @@
 }
 
 @main_template(
-title = titleWithErrors(form, messages("messages__doesPSTRStartWithTwo__title", "\'2'"))
+title = titleWithErrors(form, messages("messages__doesPSTRStartWithTwo__title"))
 ) {
 
     @formHelper(action = postCall, 'autoComplete -> "off") {
@@ -48,7 +48,7 @@ title = titleWithErrors(form, messages("messages__doesPSTRStartWithTwo__title", 
 
             @components.input_yes_no(
                 field = form("value"),
-                label = messages("messages__doesPSTRStartWithTwo__title", "\'2'"),
+                label = messages("messages__doesPSTRStartWithTwo__title"),
                 labelClass = Some("visually-hidden"),
                 fieldsetClass = None,
                 headingIsLegend=true,

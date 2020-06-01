@@ -29,11 +29,11 @@ appConfig: FrontendAppConfig
 @()(implicit request: Request[_], messages: Messages)
 
 @main_template(
-    title = messages("messages__invitingPSTRStartWithTwo__title", "\'2'"),
+    title = messages("messages__invitingPSTRStartWithTwo__title"),
 
     bodyClasses = None) {
     @components.back_link()
-    @components.heading(Messages("messages__invitingPSTRStartWithTwo__title", "\'2'"))
+    @components.heading(Messages("messages__invitingPSTRStartWithTwo__title"))
 
     @components.paragraph_text(Message("messages__invitingPSTRStartWithTwo__p1"), "p1_id")
     @components.paragraph_text(Message("messages__invitingPSTRStartWithTwo__p2"), "p2_id")

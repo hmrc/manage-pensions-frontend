@@ -28,7 +28,7 @@
 @(form: Form[_])(implicit request: Request[_], messages: Messages)
 
 @main_template(
-    title = titleWithErrors(form, messages("messages__doesPSAStartWithATwo__title", "\'A2'"))) {
+    title = titleWithErrors(form, messages("messages__doesPSAStartWithATwo__title"))) {
 
     @formHelper(action = DoesPSAStartWithATwoController.onSubmit(), 'autoComplete -> "off") {
 
@@ -38,7 +38,7 @@
 
             @components.input_radio(
                 field = form("value"),
-                legend = messages("messages__doesPSAStartWithATwo__title", "\'A2'"),
+                legend = messages("messages__doesPSAStartWithATwo__title"),
                 legendClass = Some("visually-hidden"),
                 inputs = DoesPSAStartWithATwo.options,
                 headingIsLegend=true

@@ -41,7 +41,7 @@ class DoesPSAStartWithATwoFormProviderSpec extends FormBehaviours with GuiceOneA
     behave like formWithOptionField(
       Field(
         "value",
-        Required -> messages("messages__doesPSAStartWithATwo__error__required", "\'2'"),
+        Required -> messages("messages__doesPSAStartWithATwo__error__required"),
         Invalid -> "error.invalid"
       ),
       DoesPSAStartWithATwo.options.map(_.value): _*)

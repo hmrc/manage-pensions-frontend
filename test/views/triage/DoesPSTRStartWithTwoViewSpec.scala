@@ -44,14 +44,14 @@ class DoesPSTRStartWithTwoViewSpec extends YesNoViewBehaviours {
     )(fakeRequest, messages)
 
   "DoesPSTRStartWithTwoView" must {
-    behave like normalPageWithTitle(createView(), messageKeyPrefix, messages(s"messages__${messageKeyPrefix}__title", "\'2'"),
-      messages(s"messages__${messageKeyPrefix}__title", "\'2'"))
+    behave like normalPageWithTitle(createView(), messageKeyPrefix, messages(s"messages__${messageKeyPrefix}__title"),
+      messages(s"messages__${messageKeyPrefix}__title"))
 
     behave like pageWithSubmitButton(createView())
 
     behave like yesNoPageExplicitLegend(createView = createViewUsingForm, messageKeyPrefix = messageKeyPrefix,
       expectedFormAction = "/",
-      legend = messages(s"messages__${messageKeyPrefix}__title", "\'2'"))
+      legend = messages(s"messages__${messageKeyPrefix}__title"))
   }
 }
 

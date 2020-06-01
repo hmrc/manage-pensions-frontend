@@ -37,7 +37,7 @@ class ATwoAndAZeroIdsViewSpec extends ViewBehaviours {
       createView,
       messageKeyPrefix,
       messages(s"messages__${messageKeyPrefix}__title"),
-      messages(s"messages__${messageKeyPrefix}__h1", "\'A2' and 'A0'")
+      messages(s"messages__${messageKeyPrefix}__h1")
     )
 
     "have link to redirect to change psa details url" in {

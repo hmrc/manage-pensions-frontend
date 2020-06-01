@@ -44,7 +44,7 @@ class DoesPSTRStartWithTwoInvitedController @Inject()(
 
   private def form(implicit messages: Messages): Form[Boolean] = formProvider()
 
-  private def hint(implicit messages: Messages) = Some(messages("messages__doesPSTRStartWithTwo_invited__hint", "\'2'"))
+  private def hint(implicit messages: Messages) = Some(messages("messages__doesPSTRStartWithTwo_invited__hint"))
   private def postCall: Call = controllers.triage.routes.DoesPSTRStartWithTwoInvitedController.onSubmit()
 
   def onPageLoad: Action[AnyContent] = triageAction.async {

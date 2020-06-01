@@ -42,7 +42,7 @@ class DoesPSAStartWithATwoViewSpec extends ViewBehaviours {
 
   "DoesPSTRStartWithTwoView" must {
     behave like normalPageWithTitle(createView(), messageKeyPrefix,
-      messages(s"messages__${messageKeyPrefix}__title", "\'A2'"), messages(s"messages__${messageKeyPrefix}__title", "\'A2'"))
+      messages(s"messages__${messageKeyPrefix}__title"), messages(s"messages__${messageKeyPrefix}__title"))
 
     behave like pageWithSubmitButton(createView())
 

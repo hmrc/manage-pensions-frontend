@@ -44,7 +44,7 @@ class DoesPSTRStartWithTwoUpdateController @Inject()(
 
   private def form(implicit messages: Messages): Form[Boolean] = formProvider()
 
-  private def hint(implicit messages: Messages) = Some(messages("messages__doesPSTRStartWithTwo_update__hint", "\'2'"))
+  private def hint(implicit messages: Messages) = Some(messages("messages__doesPSTRStartWithTwo_update__hint"))
   private def postCall: Call = controllers.triage.routes.DoesPSTRStartWithTwoUpdateController.onSubmit()
 
   def onPageLoad: Action[AnyContent] = triageAction.async {
