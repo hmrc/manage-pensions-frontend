@@ -54,10 +54,6 @@ class SchemeDetailsServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
   private val lockConnector = mock[PensionSchemeVarianceLockConnector]
   private val frontendConnector = mock[FrontendConnector]
 
-  private val version1 = AFTVersion(1, LocalDate.now())
-  private val version2 = AFTVersion(2, LocalDate.now())
-  private val versions = Seq(version1, version2)
-
   def service: SchemeDetailsService =
     new SchemeDetailsService(frontendAppConfig, frontendConnector, lockConnector, minimalPsaConnector)
 

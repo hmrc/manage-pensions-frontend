@@ -27,7 +27,7 @@ import utils.WireMockHelper
 
 class FrontendConnectorSpec extends AsyncWordSpec with MustMatchers with WireMockHelper with OptionValues {
 
-  override protected def portConfigKey: String = "8206"
+  override protected def portConfigKey: String = "microservice.services.aft-frontend.port"
 
   implicit val headerCarrier: HeaderCarrierForPartials =
     HeaderCarrierForPartials(hc = HeaderCarrier(), encodedCookies = "")
@@ -55,24 +55,6 @@ class FrontendConnectorSpec extends AsyncWordSpec with MustMatchers with WireMoc
           aftModel mustBe aftHtml
         )
       }
-
-      "call the micro service with the correct uri and return appropriately for a 400" in {
-
-          server.stubFor(
-            get(urlEqualTo(aftPartialUrl))
-              .willReturn(
-                serverError
-              )
-          )
-
-        val connector = injector.instanceOf[FrontendConnector]
-
-        recoverToExceptionIf[HttpException] {
-          connector.retrieveAftPartial(srn)
-        } map {
-          _.responseCode mustBe Status.INTERNAL_SERVER_ERROR
-        }
-        }
       }
     }
 

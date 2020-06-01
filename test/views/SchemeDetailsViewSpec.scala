@@ -138,9 +138,5 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
         haveDynamicText("messages__schemeDetails__psa_making_changes", "Gilderoy Lockhart")
     }
 
-    "have a link for AFT when suitable html passed in" in {
-      Jsoup.parse(createView(aftHtml = Html("test-aft-html"))().toString()).select("a[id=aftID]") must
-        haveLink("url")
-    }
   }
 }

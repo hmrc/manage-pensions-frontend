@@ -88,7 +88,8 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val taxDeEnrolmentUrl: String = servicesConfig.baseUrl("tax-enrolments") +runModeConfiguration.underlying.getString("urls.tax-de-enrolment")
   lazy val updateSchemeDetailsUrl: String = s"${servicesConfig.baseUrl("pensions-scheme")}${runModeConfiguration.underlying.getString("urls.updateSchemeDetails")}"
 
-  lazy val aftPartialHtmlUrl: String = loadConfig("urls.aftPartialHtml")
+  lazy val aftPartialHtmlUrl: String = s"${servicesConfig.baseUrl("aft-frontend")}${runModeConfiguration.underlying.getString("urls.aftPartialHtml")}"
+
 
   def languageMap: Map[String, Lang] = Map(
     "english" -> Lang("en"),
