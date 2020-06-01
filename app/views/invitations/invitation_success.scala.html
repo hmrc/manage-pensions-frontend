@@ -27,7 +27,7 @@ main_template: main_template,
 formHelper: FormWithCSRF
 )
 
-@(inviteeName: String, schemeName: String, expiryDate: LocalDate, continue: Call)(implicit request: Request[_], messages: Messages)
+@(inviteeName: String, inviteeEmail: String, schemeName: String, expiryDate: LocalDate, continue: Call)(implicit request: Request[_], messages: Messages)
 
 @main_template(
     title = messages("messages__invitationSuccess__title"),
@@ -41,7 +41,10 @@ formHelper: FormWithCSRF
 
     <p id="schemeName">@Messages("messages__invitationSuccess__schemeName", schemeName)</p>
 
-    <p id="emailAdvice">@Messages("messages__invitationSuccess__emailAdvice", inviteeName)</p>
+    <p id="emailAdvice">
+        @Messages("messages__invitationSuccess__emailAdvice")
+        <span class="bold">@inviteeEmail</span>.
+    </p>
 
     <p id="expiryDate">@Messages("messages__invitationSuccess__expiryDate", DateHelper.formatDate(expiryDate))</p>
 
