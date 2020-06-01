@@ -20,6 +20,28 @@ import play.api.data.Form
 import play.twirl.api.HtmlFormat
 
 trait YesNoViewBehaviours extends QuestionViewBehaviours[Boolean] {
+  def yesNoPageExplicitLegend(createView: Form[Boolean] => HtmlFormat.Appendable,
+                              messageKeyPrefix: String,
+                              expectedFormAction: String,
+                              legend: String,
+                              expectedHintKey: Option[String] = None,
+                              valueId:String = "value"): Unit = {
+
+    "behave like a page with a Yes/No question" when {
+      "rendered" must {
+        "contain a legend for the question" in {
+          val doc = asDocument(createView(form))
+          val legends = if (expectedHintKey.nonEmpty) doc.select("legend > span") else doc.select("legend")
+          legends.size mustBe expectedHintKey.map(_ => 2).getOrElse(1)
+          legends.first.text mustBe legend
+          expectedHintKey.foreach(key =>
+            legends.next.text mustBe messages(s"messages__${messageKeyPrefix}_$key")
+          )
+        }
+      }
+    }
+    yesNoPage(createView, messageKeyPrefix, expectedFormAction, valueId)
+  }
 
   def yesNoPage(createView: (Form[Boolean]) => HtmlFormat.Appendable,
                 messageKeyPrefix: String,
@@ -29,16 +51,6 @@ trait YesNoViewBehaviours extends QuestionViewBehaviours[Boolean] {
 
     "behave like a page with a Yes/No question" when {
       "rendered" must {
-        "contain a legend for the question" in {
-          val doc = asDocument(createView(form))
-          val legends = doc.select("legend > span")
-          legends.size mustBe expectedHintKey.map(_ => 2).getOrElse(1)
-          legends.first.text mustBe messages(s"messages__${messageKeyPrefix}_$legendKey")
-          expectedHintKey.foreach(key =>
-            legends.next.text mustBe messages(s"messages__${messageKeyPrefix}_$key")
-          )
-        }
-
         "contain an input for the value" in {
           val doc = asDocument(createView(form))
           assertRenderedById(doc, "value-yes")

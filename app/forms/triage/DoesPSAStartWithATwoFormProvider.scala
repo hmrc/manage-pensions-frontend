@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,7 +12,20 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@(text: String, id: String = "para_id")
-<p id=@id>@text</p>
+package forms.triage
+
+import forms.mappings.Mappings
+import javax.inject.Inject
+import models.triage.DoesPSAStartWithATwo
+import play.api.data.Form
+import play.api.i18n.Messages
+
+class DoesPSAStartWithATwoFormProvider @Inject() extends Mappings {
+
+  def apply()(implicit messages: Messages): Form[DoesPSAStartWithATwo] =
+    Form(
+      "value" -> enumerable[DoesPSAStartWithATwo](messages("messages__doesPSAStartWithATwo__error__required"))
+    )
+}

@@ -1,0 +1,25 @@
+
+GET        /what-do-you-want-to-do      controllers.triage.WhatDoYouWantToDoController.onPageLoad
+POST       /what-do-you-want-to-do      controllers.triage.WhatDoYouWantToDoController.onSubmit
+
+GET        /does-pstr-start-with-2      controllers.triage.DoesPSTRStartWithTwoController.onPageLoad
+POST       /does-pstr-start-with-2      controllers.triage.DoesPSTRStartWithTwoController.onSubmit
+
+GET        /does-pstr-start-with-2-invite      controllers.triage.DoesPSTRStartWithTwoInviteController.onPageLoad
+POST       /does-pstr-start-with-2-invite      controllers.triage.DoesPSTRStartWithTwoInviteController.onSubmit
+
+GET        /does-pstr-start-with-2-invited      controllers.triage.DoesPSTRStartWithTwoInvitedController.onPageLoad
+POST       /does-pstr-start-with-2-invited      controllers.triage.DoesPSTRStartWithTwoInvitedController.onSubmit
+
+GET        /does-pstr-start-with-2-update      controllers.triage.DoesPSTRStartWithTwoUpdateController.onPageLoad
+POST       /does-pstr-start-with-2-update      controllers.triage.DoesPSTRStartWithTwoUpdateController.onSubmit
+
+GET        /inviting-pstr-start-with-2      controllers.triage.InvitingPSTRStartWithTwoController.onPageLoad
+
+GET        /does-psa-start-with-a2      controllers.triage.DoesPSAStartWithATwoController.onPageLoad
+POST       /does-psa-start-with-a2      controllers.triage.DoesPSAStartWithATwoController.onSubmit
+
+GET        /updating-pstr-start-with-2      controllers.triage.UpdatingPSTRStartWithTwoController.onPageLoad
+
+GET        /a2-and-a0-ids                   controllers.triage.ATwoAndAZeroIdsController.onPageLoad
+
