@@ -31,7 +31,6 @@ import play.twirl.api.Html
 import services.{HeaderCarrierFunctions, SchemeDetailsService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.UserAnswers
-import viewmodels.AFTViewModel
 import views.html.schemeDetails
 
 import scala.concurrent.{ExecutionContext, Future}
