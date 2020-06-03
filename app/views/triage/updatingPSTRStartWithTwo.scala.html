@@ -43,5 +43,5 @@ appConfig: FrontendAppConfig
     @components.paragraph_text(Message("messages__updatingPSTRStartWithTwo__p5"), "p5_id")
     @components.paragraph_text(Message("messages__updatingPSTRStartWithTwo__p6"), "p6_id")
 
-    @components.button_link("site.continue", Call("GET", s"${appConfig.loginUrl}?continue=${appConfig.loginToListSchemesUrl}").url, "submit_button")
+    @components.button_link("site.continue", Call("GET", s"${appConfig.loginUrl}?continue=${appConfig.loginToListSchemesUrl}").url, "submit")
 }
