@@ -244,7 +244,7 @@ object SchemesOverviewServiceSpec extends SpecBase with MockitoSugar  {
     ) ++ schemeSubscriptionLinks ++ schemeVariationLinks
   )
 
-  private val deregisterLink = Seq(Link("deregister-link", controllers.deregister.routes.ConfirmStopBeingPsaController.onPageLoad().url,
+  private val deregisterLink = Seq(Link("deregister-link", frontendAppConfig.psaDeregisterUrl,
     Message("messages__schemeOverview__psa_deregister")))
 
   private val invitationsLink = Seq(Link("invitations-received", controllers.invitations.routes.YourInvitationsController.onPageLoad().url,

@@ -106,8 +106,7 @@ class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
     }
 
   private def deregisterLink(psaId: String)(implicit hc: HeaderCarrier): Seq[Link] =
-    Seq(Link("deregister-link", controllers.deregister.routes.ConfirmStopBeingPsaController.onPageLoad().url,
-      Message("messages__schemeOverview__psa_deregister")))
+    Seq(Link("deregister-link", appConfig.psaDeregisterUrl, Message("messages__schemeOverview__psa_deregister")))
 
   private def subscriptionLinks(implicit request: OptionalDataRequest[AnyContent], hc: HeaderCarrier): Future[Seq[Link]] =
     dataCacheConnector.fetch(request.externalId).flatMap {
