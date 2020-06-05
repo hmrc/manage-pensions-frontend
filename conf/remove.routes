@@ -10,12 +10,3 @@ GET        /remove-psa                                  controllers.remove.Remov
 
 GET        /unable-to-remove-scheme-administrator       controllers.remove.CanNotBeRemovedController.onPageLoadWhereSuspended()
 GET        /cannot-remove-scheme-administrator          controllers.remove.CanNotBeRemovedController.onPageLoadWhereRemovalDelay()
-
-GET        /stopped-being-scheme-administrator          controllers.deregister.SuccessfulDeregistrationController.onPageLoad()
-
-GET        /stop-being-scheme-administrator             controllers.deregister.ConfirmStopBeingPsaController.onPageLoad
-POST       /stop-being-scheme-administrator             controllers.deregister.ConfirmStopBeingPsaController.onSubmit
-
-GET        /unable-to-stop-being-scheme-administrator   controllers.deregister.UnableToStopBeingPsaController.onPageLoad
-
-GET        /remove-yourself-from-schemes                controllers.deregister.CannotDeregisterController.onPageLoad
