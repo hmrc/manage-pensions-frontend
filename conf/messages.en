@@ -143,11 +143,6 @@ messages__schemeOverview__psa_view_more_invitations = View your {0} scheme admin
 messages__schemeOverview__psa_deregister = Stop being a pension scheme administrator
 messages__schemeOverview__scheme_heading = Pension schemes
 messages__schemeOverview__scheme_view = View your pension schemes
-messages__schemeOverview__scheme_subscription = Apply to register a new pension scheme
-messages__schemeOverview__scheme_subscription_continue = Finish adding scheme details for {0} by {1}
-messages__schemeOverview__scheme_subscription_delete = Delete details already entered for {0}
-messages__schemeOverview__scheme_variations_continue = Finish making changes to {0} by {1}
-messages__schemeOverview__scheme_variations_delete = Delete changes already entered for {0}
 
 messages__doYouHaveWorkingKnowledge__title = Do you have working knowledge of pensions and pensions tax legislation?
 messages__doYouHaveWorkingKnowledge__heading = Do you have working knowledge of pensions and pensions tax legislation?
@@ -155,12 +150,6 @@ messages__doYouHaveWorkingKnowledge_p1 = There needs to be someone with working 
 messages__doYouHaveWorkingKnowledge_p2 = For example, if you are an employer, or a director of an employer, who has registered a pension scheme, you might not have working knowledge of pensions and pensions tax legislation.
 messages__doYouHaveWorkingKnowledge_p3 = If you do not have that knowledge, you must be helped by a pension practitioner or provider who has the knowledge. You will need to tell HMRC who that is.
 messages__doYouHaveWorkingKnowledge_p4 = HMRC might decide not to register the pension scheme if the scheme administrator does not have working knowledge and is not helped by someone who has that knowledge.
-
-messages__cannotStartRegistration__title = A scheme registration cannot be started
-messages__cannotStartRegistration__heading = A scheme registration cannot be started
-messages__cannotStartRegistration__p1 = A scheme registration cannot be started at the moment.
-messages__cannotStartRegistration__p2 = You need to phone Pension Scheme Services on 0300 123 1079.
-messages__cannotStartRegistration__returnToOverview__link = Return to manage and register pension schemes
 
 messages__psa__name__title = What is the name of the scheme administrator you want to add?
 messages__psa__name__heading = What is the name of the scheme administrator you want to add?
@@ -305,11 +294,6 @@ messages__check__your__answer__adviser__name__label = Who has working knowledge 
 messages__check__your__answer__adviser__email__label = {0}’s email address
 messages__check__your__answer__adviser__address__label = {0}’s address
 
-messages__deleteScheme__title = Are you sure you want to delete the details already entered for this scheme?
-messages__deleteScheme__heading = Are you sure you want to delete the details already entered for {0}’s scheme?
-messages__deleteScheme__hint = This will remove all of the details entered so far for this scheme.
-messages__deleteScheme__error__required = Select yes if you want to cancel your registration
-
 messages__confirmRemovePsa__title = Are you sure you want to remove the scheme administrator?
 messages__confirmRemovePsa__heading = Are you sure you want to remove {0} as scheme administrator for {1}?
 messages__confirmRemovePsa_required = Select yes if you are sure you want to remove the scheme administrator
@@ -367,12 +351,6 @@ messages__whatYouWillNeed__lede = The scheme administrator you are adding must h
 messages__whatYouWillNeed__list_heading = You will need to tell us their:
 messages__whatYouWillNeed__item1 = name they used to register
 messages__whatYouWillNeed__item2 = administrator ID
-
-messages__deleteSchemeChanges__title = Are you sure you want to delete the changes you have made to the scheme’s details?
-messages__deleteSchemeChanges__heading = Are you sure you want to delete the changes you have made to {0}’s details?
-messages__deleteSchemeChanges__p1 = This will only delete the changes you have entered for this scheme.
-messages__deleteSchemeChanges__p2 = The pension scheme will not be removed.
-messages__deleteSchemeChanges__error__required = Select yes if you want to delete changes to the scheme’s details
 
 messages__cannotDeregister__title = You must remove yourself from all schemes first
 messages__cannotDeregister__p1 = You cannot stop being a pension scheme administrator until you remove yourself from any scheme you are currently an administrator for.

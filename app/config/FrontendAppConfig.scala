@@ -96,6 +96,7 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val updateSchemeDetailsUrl: String = s"${servicesConfig.baseUrl("pensions-scheme")}${runModeConfiguration.underlying.getString("urls.updateSchemeDetails")}"
 
   lazy val aftPartialHtmlUrl: String = s"${servicesConfig.baseUrl("aft-frontend")}${runModeConfiguration.underlying.getString("urls.aftPartialHtml")}"
+  lazy val schemeUrlsPartialHtmlUrl: String = s"${servicesConfig.baseUrl("scheme-frontend")}${runModeConfiguration.underlying.getString("urls.schemeUrlsPartialHtml")}"
 
 
   def languageMap: Map[String, Lang] = Map(

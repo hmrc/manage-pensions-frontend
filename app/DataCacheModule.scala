@@ -17,7 +17,7 @@
 import connectors._
 import play.api.inject.{Binding, Module}
 import play.api.{Configuration, Environment}
-import utils.annotations.{PensionAdminCache, PensionsSchemeCache}
+import utils.annotations.PensionAdminCache
 
 class DataCacheModule extends Module {
 
@@ -25,7 +25,6 @@ class DataCacheModule extends Module {
     Seq(
       bind[UserAnswersCacheConnector].to[ManagePensionsCacheConnector],
       bind[InvitationsCacheConnector].to[InvitationsCacheConnectorImpl],
-      bind[UserAnswersCacheConnector].qualifiedWith(classOf[PensionsSchemeCache]).to[scheme.SchemeSubscriptionCacheConnector],
       bind[UserAnswersCacheConnector].qualifiedWith(classOf[PensionAdminCache]).to[admin.PensionAdminCacheConnector]
     )
   }

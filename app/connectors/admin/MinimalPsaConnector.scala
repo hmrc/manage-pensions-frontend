@@ -58,7 +58,7 @@ class MinimalPsaConnectorImpl @Inject()(http: HttpClient, config: FrontendAppCon
     }
   }
 
-  def getPsaNameFromPsaID(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = {
+  override def getPsaNameFromPsaID(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = {
     getMinimalPsaDetails(psaId).map { minimalDetails =>
       (minimalDetails.individualDetails, minimalDetails.organisationName) match {
         case (Some(individual), None) => Some(individual.fullName)
