@@ -39,5 +39,6 @@ appConfig: FrontendAppConfig
     @components.paragraph_text(Message("messages__invitingPSTRStartWithTwo__p2"), "p2_id")
     @components.paragraph_text(Message("messages__invitingPSTRStartWithTwo__p3"), "p3_id")
 
-    @components.button_link("site.continue", Call("GET", s"${appConfig.loginUrl}?continue=${appConfig.loginToListSchemesUrl}").url, "submit_button")
+    @components.button_link("site.continue", Call("GET", s"${appConfig.loginUrl}?continue=${appConfig.loginToListSchemesUrl}").url, "submit")
+
 }
