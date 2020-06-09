@@ -40,14 +40,13 @@ appConfig: FrontendAppConfig
         @components.error_summary(form.errors)
 
         <div class="form-group @if(form.hasErrors){form-group--error}">
-        @components.heading(messages("messages__psa__name__heading"))
-
-        <p>@messages("messages__psa__name__p1")</p>
 
         @components.input_text(
           field = form("psaName"),
           label = messages("messages__psa__name__heading"),
-          labelClass=Some("visually-hidden")
+          labelClass=Some("visually-hidden"),
+            paragraphText = Some(messages("messages__psa__name__p1")),
+            headingIsLegend = true
         )
         </div>
         @components.submit_button()

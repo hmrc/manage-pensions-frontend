@@ -19,6 +19,7 @@
         label: String,
         inputClass: Option[String] = None,
         groupClass: Option[String] = None,
+        paragraphText: Option[String] = None,
         hint: Option[String] = None,
         labelClass: Option[String] = None,
         headingIsLegend: Boolean = false
@@ -42,6 +43,10 @@
     <label class="form-label" for="@{field.id}">
         <span class="bold @if(labelClass.nonEmpty){@labelClass}">@label</span>
     </label>
+    }
+
+    @paragraphText.map{para=>
+    <p>@para</p>
     }
 
     @hint.map{hintText=>

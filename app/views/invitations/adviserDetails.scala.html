@@ -41,14 +41,13 @@
         @components.error_summary(form.errors)
 
         <div class="form-group @if(form.hasErrors){form-group--error}">
-        @components.heading(messages("messages__adviser__name__heading"))
-
-        <p>@messages("messages__adviser__name__p1")</p>
 
         @components.input_text(
           field = form("adviserName"),
           label = messages("messages__adviser__name__heading"),
-          labelClass=Some("visually-hidden")
+          labelClass=Some("visually-hidden"),
+            paragraphText = Some(messages("messages__adviser__name__p1")),
+            headingIsLegend = true
         )
         </div>
         @components.submit_button()
