@@ -40,7 +40,7 @@ class DeleteSchemeViewSpec extends YesNoViewBehaviours {
   "DeleteScheme view" must {
 
     behave like normalPageWithTitle(createView, messageKeyPrefix, Message("messages__deleteScheme__title"),
-      Message("messages__deleteScheme__heading", schemeName), expectedGuidanceKeys = "_hint")
+      Message("messages__deleteScheme__heading", schemeName))
 
     behave like pageWithBackLink(createView)
 

@@ -50,7 +50,7 @@ trait ViewBehaviours extends ViewSpecBase {
           assertEqualsMessage(doc, "title", titleKey)
         }
 
-        "display the correct page title" in {
+        "display the correct page header" in {
           val doc = asDocument(view())
           assertPageTitleEqualsMessage(doc, pageHeader)
         }

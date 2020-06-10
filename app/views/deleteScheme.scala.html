@@ -43,7 +43,7 @@ title = titleWithErrors(form, messages("messages__deleteScheme__title")),
 
         @components.input_yes_no(
             field = form("value"),
-            label = Messages("messages__deleteScheme__heading", schemeName)),
+            label = Messages("messages__deleteScheme__heading", schemeName),
             labelClass = Some("visually-hidden"),
             paragraphText = Some(Messages("messages__deleteScheme__hint")),
             headingIsLegend = true
