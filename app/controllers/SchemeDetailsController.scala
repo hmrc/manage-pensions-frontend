@@ -25,10 +25,9 @@ import identifiers.{SchemeNameId, SchemeSrnId, SchemeStatusId}
 import javax.inject.Inject
 import models._
 import models.requests.AuthenticatedRequest
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import play.twirl.api.Html
-import services.{HeaderCarrierFunctions, SchemeDetailsService}
+import services.SchemeDetailsService
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.UserAnswers
 import views.html.schemeDetails

@@ -21,7 +21,7 @@ import java.time.LocalDate
 import controllers.routes.ListSchemesController
 import models.Link
 import org.jsoup.Jsoup
-import play.twirl.api.HtmlFormat
+import play.twirl.api.{Html, HtmlFormat}
 import viewmodels.{CardViewModel, Message}
 import views.behaviours.ViewBehaviours
 import views.html.schemesOverview
@@ -37,6 +37,7 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
   val deleteDate: String = LocalDate.now.plusDays(frontendAppConfig.daysDataSaved).toString
   private val psaId = "A0000000"
   private val srn = "123"
+  val html: Html = Html("test-html")
 
   private val adminCard = CardViewModel(
     id = "administrator-card",
@@ -53,37 +54,21 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
   ))
 
 
-  private val schemeCardWithNoActiveChanges = CardViewModel(
+  private val schemeCard = CardViewModel(
     id = "scheme-card",
     heading = Message("messages__schemeOverview__scheme_heading"),
     links = Seq(
-      Link("view-schemes", ListSchemesController.onPageLoad().url, Message("messages__schemeOverview__scheme_view")),
-      Link("register-new-scheme", controllers.routes.SchemesOverviewController.onClickCheckIfSchemeCanBeRegistered().url,
-        Message("messages__schemeOverview__scheme_subscription"))
-    )
+      Link("view-schemes", ListSchemesController.onPageLoad().url, Message("messages__schemeOverview__scheme_view"))
+    ),
+    html = Some(html)
   )
 
-  private val schemeCardWithActiveChanges = CardViewModel(
-    id = "scheme-card",
-    heading = Message("messages__schemeOverview__scheme_heading"),
-    links = Seq(
-      Link("view-schemes", ListSchemesController.onPageLoad().url, Message("messages__schemeOverview__scheme_view")),
-      Link("continue-registration", controllers.routes.SchemesOverviewController.onClickCheckIfSchemeCanBeRegistered().url,
-        Message("messages__schemeOverview__scheme_subscription_continue", schemeName, deleteDate)),
-      Link("delete-registration", controllers.routes.DeleteSchemeController.onPageLoad().url,
-        Message("messages__schemeOverview__scheme_subscription_delete", schemeName)),
-      Link("continue-variation", frontendAppConfig.viewSchemeDetailsUrl.format(srn),
-        Message("messages__schemeOverview__scheme_variations_continue", schemeName, deleteDate)),
-      Link("delete-variation", controllers.routes.DeleteSchemeChangesController.onPageLoad(srn).url,
-        Message("messages__schemeOverview__scheme_variations_delete", schemeName))
-    )
-  )
   private val schemesOverviewView = injector.instanceOf[schemesOverview]
 
   def createView: () => HtmlFormat.Appendable = () =>
-    schemesOverviewView(psaName, Seq(adminCard, schemeCardWithActiveChanges))(fakeRequest, messages)
+    schemesOverviewView(psaName, Seq(adminCard, schemeCard))(fakeRequest, messages)
 
-  def createFreshView: () => HtmlFormat.Appendable = () => schemesOverviewView(psaName, Seq(adminCard, schemeCardWithNoActiveChanges))(fakeRequest, messages)
+  def createFreshView: () => HtmlFormat.Appendable = () => schemesOverviewView(psaName, Seq(adminCard, schemeCard))(fakeRequest, messages)
 
   "SchemesOverview view when a scheme has been partially defined and which has no scheme variation" must {
     behave like normalPageWithoutBrowserTitle(
@@ -115,54 +100,11 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
       createView must haveLink(controllers.routes.ListSchemesController.onPageLoad().url, "view-schemes")
     }
 
-    "have dynamic text with date of data deletion and scheme name for subscription" in {
+    "have html partial retrieved from scheme frontend" in {
       Jsoup.parse(createView().toString()) must
-        haveDynamicText(Message("messages__schemeOverview__scheme_subscription_continue", schemeName, deleteDate))
-    }
+        haveDynamicText("test-html", schemeName)    }
 
-    "have link for continue registration" in {
-      createView must
-        haveLink(controllers.routes.SchemesOverviewController.onClickCheckIfSchemeCanBeRegistered().url, "continue-registration")
-    }
 
-    "have dynamic text for delete registration" in {
-      Jsoup.parse(createView().toString()) must
-        haveDynamicText(messages("messages__schemeOverview__scheme_subscription_delete", schemeName))
-    }
-
-    "have link for delete registration" in {
-      Jsoup.parse(createView().toString()).select("a[id=delete-registration]") must
-        haveLink(controllers.routes.DeleteSchemeController.onPageLoad().url)
-    }
-
-    "have dynamic text with date of data deletion and scheme name for variations" in {
-      Jsoup.parse(createView().toString()) must
-        haveDynamicText(Message("messages__schemeOverview__scheme_variations_continue", schemeName, deleteDate))
-    }
-
-    "have link for continue variation" in {
-      createView must
-        haveLink(frontendAppConfig.viewSchemeDetailsUrl.format(srn), "continue-variation")
-    }
-
-    "have dynamic text for delete variation" in {
-      Jsoup.parse(createView().toString()) must
-        haveDynamicText(messages("messages__schemeOverview__scheme_variations_delete", schemeName))
-    }
-
-    "have link for delete variation" in {
-      Jsoup.parse(createView().toString()).select("a[id=delete-variation]") must
-        haveLink(controllers.routes.DeleteSchemeChangesController.onPageLoad(srn).url)
-    }
-
-  }
-
-  "SchemesOverview view when a scheme has not been defined" must {
-
-    "have link for registration" in {
-      Jsoup.parse(createFreshView().toString()).select("a[id=register-new-scheme]") must
-        haveLink(controllers.routes.SchemesOverviewController.onClickCheckIfSchemeCanBeRegistered().url)
-    }
 
   }
 }

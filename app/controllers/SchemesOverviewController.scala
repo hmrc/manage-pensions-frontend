@@ -60,11 +60,6 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
       }
   }
 
-  def onClickCheckIfSchemeCanBeRegistered: Action[AnyContent] = (authenticate andThen getData).async {
-    implicit request =>
-      service.checkIfSchemeCanBeRegistered(request.psaId.id)
-  }
-
   def redirect: Action[AnyContent] = Action.async(Future.successful(Redirect(controllers.routes.SchemesOverviewController.onPageLoad())))
 
 }

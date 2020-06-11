@@ -28,8 +28,8 @@ import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
-import play.api.mvc.Results.Redirect
 import play.api.test.Helpers.{contentAsString, _}
+import play.twirl.api.Html
 import services.SchemesOverviewService
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import viewmodels.{CardViewModel, Message}
@@ -75,18 +75,6 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
 
     }
 
-    "onClickCheckIfSchemeCanBeRegistered" must {
-      "redirect to the url returned by the service" in {
-      when(fakeSchemesOverviewService.checkIfSchemeCanBeRegistered(eqTo(psaId))(any(), any()))
-        .thenReturn(Future.successful(Redirect(frontendAppConfig.registerSchemeUrl)))
-
-      val result = controller().onClickCheckIfSchemeCanBeRegistered(fakeRequest)
-
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result).value mustBe frontendAppConfig.registerSchemeUrl
-    }
-  }
-
   "onRedirect" must {
 
     "redirect to overview page" in {
@@ -105,7 +93,7 @@ object SchemesOverviewControllerSpec extends ControllerSpecBase {
   val psaName = "Test Psa Name"
   private val formatter = DateTimeFormat.forPattern("dd MMMM YYYY")
   private val psaId = "A0000000"
-  private val srn = "srn"
+  val html: Html = Html("test-html")
   val deleteDate: String = DateTime.now(DateTimeZone.UTC).plusDays(frontendAppConfig.daysDataSaved).toString(formatter)
 
   private val adminCard = CardViewModel(
@@ -126,16 +114,9 @@ object SchemesOverviewControllerSpec extends ControllerSpecBase {
     id = "scheme-card",
     heading = Message("messages__schemeOverview__scheme_heading"),
     links = Seq(
-      Link("view-schemes", ListSchemesController.onPageLoad().url, Message("messages__schemeOverview__scheme_view")),
-      Link("continue-registration", controllers.routes.SchemesOverviewController.onClickCheckIfSchemeCanBeRegistered().url,
-        Message("messages__schemeOverview__scheme_subscription_continue", schemeName, deleteDate)),
-      Link("delete-registration", controllers.routes.DeleteSchemeController.onPageLoad().url,
-        Message("messages__schemeOverview__scheme_subscription_delete", schemeName)),
-      Link("continue-variation", frontendAppConfig.viewSchemeDetailsUrl.format(srn),
-        Message("messages__schemeOverview__scheme_variations_continue", schemeName, deleteDate)),
-      Link("delete-variation", controllers.routes.DeleteSchemeChangesController.onPageLoad(srn).url,
-        Message("messages__schemeOverview__scheme_variations_delete", schemeName))
-    )
+      Link("view-schemes", ListSchemesController.onPageLoad().url, Message("messages__schemeOverview__scheme_view"))
+    ),
+    html = Some(html)
   )
 
   private val tiles = Seq(adminCard, schemeCard)

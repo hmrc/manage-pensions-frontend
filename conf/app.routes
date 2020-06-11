@@ -20,8 +20,6 @@ GET         /logout                                   controllers.LogoutControll
 
 GET         /you-need-to-register                     controllers.YouNeedToRegisterController.onPageLoad()
 
-GET         /cannot-start-registration                controllers.CannotStartRegistrationController.onPageLoad()
-
 GET         /your-pension-schemes                     controllers.ListSchemesController.onPageLoad
 
 POST         /your-pension-schemes                    controllers.ListSchemesController.onSearch
@@ -30,14 +28,5 @@ GET         /your-pension-schemes/page/:pageNumber    controllers.ListSchemesCon
 
 GET         /overview                                 controllers.SchemesOverviewController.onPageLoad()
 
-GET         /overview/can-scheme-be-registered        controllers.SchemesOverviewController.onClickCheckIfSchemeCanBeRegistered()
-
 GET         /pension-scheme-summary/:srn              controllers.SchemeDetailsController.onPageLoad(srn: SchemeReferenceNumber)
 
-GET         /discard                                  controllers.DeleteSchemeController.onPageLoad
-
-POST        /discard                                  controllers.DeleteSchemeController.onSubmit
-
-GET         /delete-changes/:srn                      controllers.DeleteSchemeChangesController.onPageLoad(srn: String)
-
-POST        /delete-changes/:srn                      controllers.DeleteSchemeChangesController.onSubmit(srn: String)
