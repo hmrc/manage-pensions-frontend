@@ -40,7 +40,7 @@ class UpdatingPSTRStartWithTwoViewSpec extends ViewBehaviours {
     )
 
     "have button link to redirect to list schemes url" in {
-      Jsoup.parse(createView().toString()).select("a[id=submit_button]") must
+      Jsoup.parse(createView().toString()).select("a[id=submit]") must
         haveLink(managePensionSchemesServiceLink)
     }
   }

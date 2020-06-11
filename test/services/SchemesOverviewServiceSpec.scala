@@ -20,9 +20,8 @@ import java.time.format.DateTimeFormatter
 import java.time.{LocalDate, ZoneOffset}
 
 import base.SpecBase
+import connectors._
 import connectors.admin.MinimalPsaConnector
-import connectors.scheme.{PensionSchemeVarianceLockConnector, UpdateSchemeCacheConnector}
-import connectors.{UserAnswersCacheConnector, _}
 import controllers.routes.ListSchemesController
 import models._
 import models.requests.OptionalDataRequest
@@ -31,11 +30,10 @@ import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.libs.json.{JsNumber, JsObject, Json}
-import play.api.mvc.Results.Ok
-import play.api.mvc.{AnyContent, Call}
+import play.api.libs.json.{JsObject, Json}
+import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.twirl.api.Html
 import testhelpers.InvitationBuilder.{invitation1, invitationList}
 import uk.gov.hmrc.domain.PsaId
 import uk.gov.hmrc.http.HeaderCarrier
@@ -49,10 +47,8 @@ class SchemesOverviewServiceSpec extends SpecBase with MockitoSugar with BeforeA
 
   import SchemesOverviewServiceSpec._
 
-  private val dataCacheConnector: UserAnswersCacheConnector = mock[MicroserviceCacheConnector]
   private val minimalPsaConnector: MinimalPsaConnector = mock[MinimalPsaConnector]
-  private val lockConnector = mock[PensionSchemeVarianceLockConnector]
-  private val updateConnector = mock[UpdateSchemeCacheConnector]
+  private val frontendConnector = mock[FrontendConnector]
   private val invitationsCacheConnector = mock[InvitationsCacheConnector]
 
   override def beforeEach(): Unit = {
@@ -60,22 +56,13 @@ class SchemesOverviewServiceSpec extends SpecBase with MockitoSugar with BeforeA
       .thenReturn(Future.successful(minimalPsaName))
     when(invitationsCacheConnector.getForInvitee(any())(any(), any()))
       .thenReturn(Future.successful(invitationList))
-    when(dataCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(Some(schemeNameJsonOption)))
-    when(dataCacheConnector.lastUpdated(any())(any(), any()))
-      .thenReturn(Future.successful(Some(JsNumber(BigDecimal(timestamp)))))
-
-    when(lockConnector.getLockByPsa(any())(any(), any()))
-      .thenReturn(Future.successful(Some(SchemeVariance(psaId, srn))))
-    when(updateConnector.fetch(any())(any(), any()))
-      .thenReturn(Future.successful(Some(schemeNameJsonOption)))
-    when(updateConnector.lastUpdated(any())(any(), any()))
-      .thenReturn(Future.successful(Some(JsNumber(BigDecimal(timestamp)))))
+    when(frontendConnector.retrieveSchemeUrlsPartial(any(), any())).thenReturn(Future.successful(html))
     super.beforeEach()
   }
 
   def service: SchemesOverviewService =
-    new SchemesOverviewService(frontendAppConfig, dataCacheConnector, minimalPsaConnector,
-      lockConnector, updateConnector, invitationsCacheConnector)
+    new SchemesOverviewService(frontendAppConfig, minimalPsaConnector,
+      invitationsCacheConnector, frontendConnector)
 
   "getTiles" must {
 
@@ -106,90 +93,8 @@ class SchemesOverviewServiceSpec extends SpecBase with MockitoSugar with BeforeA
         }
       }
 
-      "when there is no ongoing subscription" in {
-        when(dataCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(None))
-
-        whenReady(service.getTiles(psaId)) {
-          _ mustBe tiles(scheme = schemeCard(registerLink))
-        }
-      }
-
-      "when there is no lock for any scheme" in {
-        when(lockConnector.getLockByPsa(eqTo(psaId))(any(), any())).thenReturn(Future.successful(None))
-
-        whenReady(service.getTiles(psaId)) {
-          _ mustBe tiles(scheme = schemeCard(schemeVariationLinks = Nil))
-        }
-      }
-
-      "when there is a lock for a scheme but the scheme is not in the update collection" in {
-         when(updateConnector.fetch(any())(any(), any()))
-          .thenReturn(Future.successful(None))
-
-        whenReady(service.getTiles(psaId)) {
-          _ mustBe tiles(scheme = schemeCard(schemeVariationLinks = Nil))
-        }
-      }
-
     }
   }
-
-    "checkIfSchemeCanBeRegistered" must {
-
-      "redirect to the cannot start registration page if called without a psa name but psa is suspended" in {
-        when(minimalPsaConnector.getMinimalPsaDetails(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaDetails(true)))
-        when(dataCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
-
-        val result = service.checkIfSchemeCanBeRegistered(psaId)
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).value mustBe cannotStartRegistrationUrl.url
-      }
-
-      "redirect to the register scheme page if called without psa name but psa is not suspended" in {
-        when(minimalPsaConnector.getMinimalPsaDetails(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaDetails(false)))
-        when(dataCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(None))
-
-        val result = service.checkIfSchemeCanBeRegistered(psaId)
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).value mustBe frontendAppConfig.registerSchemeUrl
-      }
-
-      "redirect to continue register a scheme page if called with a psa name and psa is not suspended" in {
-        when(minimalPsaConnector.getMinimalPsaDetails(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaDetails(false)))
-        when(dataCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(Some(schemeNameJsonOption)))
-
-        val result = service.checkIfSchemeCanBeRegistered(psaId)
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).value mustBe frontendAppConfig.continueSchemeUrl
-      }
-
-      "redirect to cannot start registration page if called with a psa name and psa is suspended" in {
-        when(minimalPsaConnector.getMinimalPsaDetails(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaDetails(true)))
-        when(dataCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(Some(schemeNameJsonOption)))
-
-        val result = service.checkIfSchemeCanBeRegistered(psaId)
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).value mustBe cannotStartRegistrationUrl.url
-      }
-
-
-      "redirect to cannot start registration page if  scheme details are found with scheme name missing and srn number present" in {
-        when(dataCacheConnector.fetch(eqTo("id"))(any(), any())).thenReturn(Future.successful(schemeSrnNumberOnlyData))
-        when(dataCacheConnector.removeAll(eqTo("id"))(any(), any())).thenReturn(Future(Ok))
-        when(minimalPsaConnector.getMinimalPsaDetails(eqTo(psaId))(any(), any())).thenReturn(Future.successful(minimalPsaDetails(false)))
-
-
-        val result = service.checkIfSchemeCanBeRegistered(psaId)
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).value mustBe frontendAppConfig.registerSchemeUrl
-        verify(dataCacheConnector, times(1)).removeAll(any())(any(), any())
-      }
-    }
 
 }
 
@@ -202,6 +107,7 @@ object SchemesOverviewServiceSpec extends SpecBase with MockitoSugar  {
 
 
 
+  val html: Html = Html("test-html")
   val psaName: String = "John Doe"
   val schemeName = "Test Scheme Name"
   val timestamp: Long = System.currentTimeMillis
@@ -209,21 +115,19 @@ object SchemesOverviewServiceSpec extends SpecBase with MockitoSugar  {
   private val srn = "srn"
   private val formatter = DateTimeFormatter.ofPattern("dd MMMM YYYY")
 
-  val deleteDate = LocalDate.now(ZoneOffset.UTC).plusDays(frontendAppConfig.daysDataSaved).format(formatter)
+  val deleteDate: String = LocalDate.now(ZoneOffset.UTC).plusDays(frontendAppConfig.daysDataSaved).format(formatter)
 
-  def minimalPsaDetails(psaSuspended: Boolean) = MinimalPSA("test@test.com", psaSuspended, Some("Org Name"), None)
+  def minimalPsaDetails(psaSuspended: Boolean): MinimalPSA = MinimalPSA("test@test.com", psaSuspended, Some("Org Name"), None)
 
-  val minimalPsaName = Some("John Doe Doe")
-  val minimalPsaOrgName = Some("Org Name")
-  val expectedPsaOrgName = Some("Org Name")
-  val individualPsaDetailsWithNoMiddleName = Some("John Doe")
-  val minimalPsaDetailsOrg = MinimalPSA("test@test.com", isPsaSuspended = false, Some("Org Name"), None)
+  val minimalPsaName: Option[String] = Some("John Doe Doe")
+  val minimalPsaOrgName: Option[String] = Some("Org Name")
+  val expectedPsaOrgName: Option[String] = Some("Org Name")
+  val individualPsaDetailsWithNoMiddleName: Option[String] = Some("John Doe")
+  val minimalPsaDetailsOrg: MinimalPSA = MinimalPSA("test@test.com", isPsaSuspended = false, Some("Org Name"), None)
   val expectedName: String = "John Doe Doe"
 
-  val cannotStartRegistrationUrl: Call = controllers.routes.CannotStartRegistrationController.onPageLoad()
-
   val schemeNameJsonOption: JsObject = Json.obj("schemeName" -> schemeName)
-  val schemeSrnNumberOnlyData = Some(Json.obj("submissionReferenceNumber" -> Json.obj("schemeReferenceNumber" -> srn)))
+  val schemeSrnNumberOnlyData: Option[JsObject] = Some(Json.obj("submissionReferenceNumber" -> Json.obj("schemeReferenceNumber" -> srn)))
 
   private def adminCard(deregistration: Seq[Link] = deregisterLink,
                         invitation: Seq[Link] = invitationsLink) = CardViewModel(
@@ -235,13 +139,13 @@ object SchemesOverviewServiceSpec extends SpecBase with MockitoSugar  {
       Link("psaLink", frontendAppConfig.registeredPsaDetailsUrl, Message("messages__schemeOverview__psa_change"))
     ) ++ invitation ++ deregistration)
 
-  private def schemeCard(schemeSubscriptionLinks: Seq[Link] = subscriptionLinks,
-                         schemeVariationLinks: Seq[Link] = variationLinks) = CardViewModel(
+  private def schemeCard = CardViewModel(
     id = "scheme-card",
     heading = Message("messages__schemeOverview__scheme_heading"),
     links = Seq(
       Link("view-schemes", ListSchemesController.onPageLoad().url, Message("messages__schemeOverview__scheme_view"))
-    ) ++ schemeSubscriptionLinks ++ schemeVariationLinks
+    ),
+    html = Some(html)
   )
 
   private val deregisterLink = Seq(Link("deregister-link", frontendAppConfig.psaDeregisterUrl,
@@ -256,20 +160,7 @@ object SchemesOverviewServiceSpec extends SpecBase with MockitoSugar  {
   private val oneInvitationsLink = Seq(Link("invitations-received", controllers.invitations.routes.YourInvitationsController.onPageLoad().url,
     Message("messages__schemeOverview__psa_view_one_invitation")))
 
-  private val registerLink = Seq(Link("register-new-scheme", controllers.routes.SchemesOverviewController.onClickCheckIfSchemeCanBeRegistered().url,
-    Message("messages__schemeOverview__scheme_subscription")))
-
-  private val subscriptionLinks = Seq(Link("continue-registration", controllers.routes.SchemesOverviewController.onClickCheckIfSchemeCanBeRegistered().url,
-    Message("messages__schemeOverview__scheme_subscription_continue", schemeName, deleteDate)),
-  Link("delete-registration", controllers.routes.DeleteSchemeController.onPageLoad().url,
-    Message("messages__schemeOverview__scheme_subscription_delete", schemeName)))
-
-  private val variationLinks = Seq(Link("continue-variation", frontendAppConfig.viewSchemeDetailsUrl.format(srn),
-    Message("messages__schemeOverview__scheme_variations_continue", schemeName, deleteDate)),
-    Link("delete-variation", controllers.routes.DeleteSchemeChangesController.onPageLoad(srn).url,
-      Message("messages__schemeOverview__scheme_variations_delete", schemeName)))
-
-  private def tiles(admin: CardViewModel = adminCard(), scheme: CardViewModel = schemeCard()): Seq[CardViewModel] = Seq(admin, scheme)
+  private def tiles(admin: CardViewModel = adminCard(), scheme: CardViewModel = schemeCard): Seq[CardViewModel] = Seq(admin, scheme)
 }
 
 

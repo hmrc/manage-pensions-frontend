@@ -35,7 +35,14 @@ case class MinimalPSA(
                        isPsaSuspended: Boolean,
                        organisationName: Option[String],
                        individualDetails: Option[IndividualDetails]
-                     )
+                     ) {
+  def name: String = {
+    individualDetails
+      .map(_.fullName)
+      .orElse(organisationName)
+      .getOrElse("Pension Scheme Administrator")
+  }
+}
 
 object MinimalPSA {
   implicit val format: Format[MinimalPSA] = Json.format[MinimalPSA]

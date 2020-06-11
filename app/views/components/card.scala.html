@@ -40,7 +40,14 @@
                     <a id="@link.id" href="@link.url">@messages(link.linkText)</a>
                 </li>
             }
+
+            @if(cardModel.html.nonEmpty){
+                @cardModel.html
+            }
         </ul>
     }
+
     </div>
+
+
 </div>

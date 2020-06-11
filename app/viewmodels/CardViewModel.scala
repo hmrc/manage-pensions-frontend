@@ -17,9 +17,11 @@
 package viewmodels
 
 import models.Link
+import play.twirl.api.Html
 
 case class CardViewModel(id: String,
                 heading: String,
                 subHeading: Option[String] = None,
                 subHeadingParam: Option[String] = None,
-                links: Seq[Link] = Nil)
+                links: Seq[Link] = Nil,
+                html: Option[Html] = None)
