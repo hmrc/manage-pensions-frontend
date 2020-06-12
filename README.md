@@ -9,7 +9,7 @@ This service allows an individual to -
 2. Accept an invitation to become a pension scheme administrator
 3. Remove themselves from a pension scheme
 4. Deregister as a pension scheme administer
-
+ 
 This service also redirects a user to other services to do the following things -
 1. Register as a pension scheme administrator
 2. Edit their pension administrator details
