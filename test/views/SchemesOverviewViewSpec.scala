@@ -49,7 +49,7 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
     Link("invitations-received", controllers.invitations.routes.YourInvitationsController.onPageLoad().url,
       Message("messages__schemeOverview__psa_view_invitations")
     ),
-    Link("deregister-link", controllers.deregister.routes.ConfirmStopBeingPsaController.onPageLoad().url,
+    Link("deregister-link", frontendAppConfig.psaDeregisterUrl,
       Message("messages__schemeOverview__psa_deregister"))
   ))
 
@@ -93,7 +93,7 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
     }
 
     "display a link to stop being a psa" in {
-      createView must haveLink(controllers.deregister.routes.ConfirmStopBeingPsaController.onPageLoad().url, "deregister-link")
+      createView must haveLink(frontendAppConfig.psaDeregisterUrl, "deregister-link")
     }
 
     "have link to view all schemes" in {

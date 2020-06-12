@@ -85,7 +85,7 @@ class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
     }
 
   private def deregisterLink(implicit hc: HeaderCarrier): Seq[Link] =
-    Seq(Link("deregister-link", controllers.deregister.routes.ConfirmStopBeingPsaController.onPageLoad().url,
+    Seq(Link("deregister-link", appConfig.psaDeregisterUrl,
       Message("messages__schemeOverview__psa_deregister")))
 
 

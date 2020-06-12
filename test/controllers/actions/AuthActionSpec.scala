@@ -125,8 +125,8 @@ object AuthActionSpec {
     }
   }
 
-  private def authRetrievals: Future[Some[String] ~ Enrolments ~ Some[AffinityGroup.Individual.type] ~ Some[Credentials]] =
-    Future.successful(new ~(new ~(new ~(Some("id"), Enrolments(Set())), Some(AffinityGroup.Individual)), Some(Credentials("providerId", "providerType"))))
+  private def authRetrievals: Future[Some[String] ~ Enrolments ~ Some[AffinityGroup.Individual.type]] =
+    Future.successful(new ~(new ~(Some("id"), Enrolments(Set())), Some(AffinityGroup.Individual)))
 
   class Harness(authAction: AuthAction) extends Controller {
     def onPageLoad(): Action[AnyContent] = authAction { _ => Ok }

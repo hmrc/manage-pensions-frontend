@@ -79,6 +79,7 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val tpssWelcomeUrl: String = loadConfig("urls.tpssWelcome")
   lazy val tpssInitialQuestionsUrl: String = loadConfig("urls.tpssInitialQuestions")
   lazy val registeredPsaDetailsUrl: String = loadConfig("urls.psaDetails")
+  lazy val psaDeregisterUrl: String = loadConfig("urls.psaDeregister")
   lazy val languageTranslationEnabled: Boolean = runModeConfiguration.get[Boolean]("features.welsh-translation")
   lazy val registerSchemeUrl: String = runModeConfiguration.underlying.getString("urls.registerScheme")
   lazy val listOfSchemesUrl: String = s"${servicesConfig.baseUrl("pensions-scheme")}${runModeConfiguration.underlying.getString("urls.listOfSchemes")}"
@@ -89,9 +90,6 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val viewSchemeDetailsUrl: String = runModeConfiguration.underlying.getString("urls.viewSchemeDetails")
   lazy val subscriptionDetailsUrl: String = s"${servicesConfig.baseUrl("pension-administrator")}${runModeConfiguration.underlying.getString("urls.subscriptionDetails")}"
   lazy val removePsaUrl : String = s"${servicesConfig.baseUrl("pension-administrator")}${runModeConfiguration.underlying.getString("urls.removePsa")}"
-  lazy val deregisterPsaUrl : String = s"${servicesConfig.baseUrl("pension-administrator")}${runModeConfiguration.underlying.getString("urls.deregisterPsa")}"
-  def canDeRegisterPsaUrl(psaId: String): String = s"${servicesConfig.baseUrl("pension-administrator") +
-    runModeConfiguration.underlying.getString("urls.canDeRegister").format(psaId)}"
   lazy val taxDeEnrolmentUrl: String = servicesConfig.baseUrl("tax-enrolments") +runModeConfiguration.underlying.getString("urls.tax-de-enrolment")
   lazy val updateSchemeDetailsUrl: String = s"${servicesConfig.baseUrl("pensions-scheme")}${runModeConfiguration.underlying.getString("urls.updateSchemeDetails")}"
 

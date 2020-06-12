@@ -58,10 +58,5 @@ class PODSModule extends AbstractModule {
     bind(classOf[CountryOptions])
       .annotatedWith(classOf[EUAndEEA])
       .to(classOf[CountryOptionsEUAndEEA])
-
-    bind(classOf[Navigator])
-      .annotatedWith(classOf[PsaDeRegistration])
-      .to(classOf[PsaDeRegistrationNavigator])
-
   }
 }

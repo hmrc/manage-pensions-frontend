@@ -49,7 +49,7 @@ class SchemeDetailsServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
   import SchemeDetailsServiceSpec._
 
   private implicit val hc: HeaderCarrier = HeaderCarrier()
-  implicit val authReq: AuthenticatedRequest[AnyContent] = AuthenticatedRequest(fakeRequest, "id", PsaId(psaId), Individual, "test-id")
+  implicit val authReq: AuthenticatedRequest[AnyContent] = AuthenticatedRequest(fakeRequest, "id", PsaId(psaId), Individual)
   private val minimalPsaConnector: MinimalPsaConnector = mock[MinimalPsaConnector]
   private val lockConnector = mock[PensionSchemeVarianceLockConnector]
   private val frontendConnector = mock[FrontendConnector]

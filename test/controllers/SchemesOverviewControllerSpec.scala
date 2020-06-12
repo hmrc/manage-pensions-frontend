@@ -106,7 +106,7 @@ object SchemesOverviewControllerSpec extends ControllerSpecBase {
       Link("invitations-received", controllers.invitations.routes.YourInvitationsController.onPageLoad().url,
         Message("messages__schemeOverview__psa_view_invitations")
       ),
-      Link("deregister-link", controllers.deregister.routes.ConfirmStopBeingPsaController.onPageLoad().url,
+      Link("deregister-link", frontendAppConfig.psaDeregisterUrl,
         Message("messages__schemeOverview__psa_deregister"))
     ))
 

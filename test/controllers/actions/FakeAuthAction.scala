@@ -27,14 +27,13 @@ import scala.concurrent.{ExecutionContextExecutor, Future}
 object FakeAuthAction {
   private val externalId: String = "id"
   private val defaultPsaId: String = "A0000000"
-  private val defaultUserId: String = "user-id"
 
   def apply(): AuthAction = {
     new AuthAction {
       val parser: BodyParser[AnyContent] = stubMessagesControllerComponents().parsers.defaultBodyParser
       implicit val executionContext: ExecutionContextExecutor = scala.concurrent.ExecutionContext.Implicits.global
       override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] =
-        block(AuthenticatedRequest(request, externalId, PsaId(defaultPsaId), Individual, defaultUserId))
+        block(AuthenticatedRequest(request, externalId, PsaId(defaultPsaId), Individual))
     }
   }
 
@@ -43,7 +42,7 @@ object FakeAuthAction {
       val parser: BodyParser[AnyContent] = stubMessagesControllerComponents().parsers.defaultBodyParser
       implicit val executionContext: ExecutionContextExecutor = scala.concurrent.ExecutionContext.Implicits.global
       override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] =
-        block(AuthenticatedRequest(request, externalId, PsaId(psaId), Individual, defaultUserId))
+        block(AuthenticatedRequest(request, externalId, PsaId(psaId), Individual))
     }
   }
 
@@ -52,7 +51,7 @@ object FakeAuthAction {
       val parser: BodyParser[AnyContent] = stubMessagesControllerComponents().parsers.defaultBodyParser
       implicit val executionContext: ExecutionContextExecutor = scala.concurrent.ExecutionContext.Implicits.global
       override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] =
-        block(AuthenticatedRequest(request, externalId, PsaId(defaultPsaId), userType, defaultUserId))
+        block(AuthenticatedRequest(request, externalId, PsaId(defaultPsaId), userType))
     }
   }
 }
