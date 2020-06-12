@@ -29,10 +29,6 @@ class PensionSchemeCacheConnectorSpec extends AsyncWordSpec with MustMatchers wi
 
   protected def updateSchemeCacheConnectorUrl(id: String): String = s"/pensions-scheme/journey-cache/update-scheme/$id"
   protected def updateSchemeCacheConnectorLastUpdatedUrl(id: String) = s"/pensions-scheme/journey-cache/update-scheme/$id/lastUpdated"
-
-  protected def schemeSubscriptionCacheConnectorUrl(id: String): String = s"/pensions-scheme/journey-cache/scheme-subscription/$id"
-  protected def schemeSubscriptionCacheConnectorLastUpdatedUrl(id: String) = s"/pensions-scheme/journey-cache/scheme-subscription/$id/lastUpdated"
-
   "MicroserviceCacheConnector" must {
 
     behave like cacheConnector[MicroserviceCacheConnector](userAnswersCacheConnectorUrl, userAnswersCacheConnectorLastUpdatedUrl)
@@ -43,8 +39,4 @@ class PensionSchemeCacheConnectorSpec extends AsyncWordSpec with MustMatchers wi
     behave like cacheConnector[UpdateSchemeCacheConnector](updateSchemeCacheConnectorUrl, updateSchemeCacheConnectorLastUpdatedUrl)
   }
 
-  "SchemeSubscriptionCacheConnector" must {
-
-    behave like cacheConnector[SchemeSubscriptionCacheConnector](schemeSubscriptionCacheConnectorUrl, schemeSubscriptionCacheConnectorLastUpdatedUrl)
-  }
 }
