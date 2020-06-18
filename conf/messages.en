@@ -367,6 +367,8 @@ messages__whatDoYouWantToDo__opt6 = Change scheme administrator details
 
 messages__doesPSTRStartWithTwo__title = Does the scheme’s Pension Scheme Tax Reference (PSTR) start with a ''2'' or a ''0''?
 messages__doesPSTRStartWithTwo__error__required = Select yes if the scheme’s PSTR starts with a ''2''
+messages__doesPSTRStartWithATwo__opt1 = Starts with a ‘2’
+messages__doesPSTRStartWithATwo__opt2 = Starts with a ‘0’
 
 messages__doesPSTRStartWithTwo_invite__hint = We will show you how to invite (or "associate") another scheme administrator with a scheme that does not have a PSTR starting with a ''2''.
 messages__doesPSTRStartWithTwo_invited__hint = We will show you how to add yourself to a scheme that does not have a PSTR starting with a ''2''. An existing scheme administrator will have to associate you with the scheme first.

@@ -20,6 +20,7 @@
 @import play.api.mvc.Call
 @import views.html._
 @import utils.ViewHelper.titleWithErrors
+@import models.triage.DoesPSTRStartWithATwo
 
 @this(
     main_template: main_template,
@@ -46,15 +47,15 @@ title = titleWithErrors(form, messages("messages__doesPSTRStartWithTwo__title"))
 
         @components.error_summary(form.errors)
 
-            @components.input_yes_no(
+            @components.input_radio(
                 field = form("value"),
-                label = messages("messages__doesPSTRStartWithTwo__title"),
-                labelClass = Some("visually-hidden"),
-                fieldsetClass = None,
-                headingIsLegend=true,
-                noHint = noRadioHint,
-                radioLabelClass = radioClass
+                legend = messages("messages__doesPSTRStartWithTwo__title"),
+                legendClass = Some("visually-hidden"),
+                inputs = DoesPSTRStartWithATwo.options,
+                headingIsLegend=true
             )
+
+
             @components.submit_button("site.continue")
     }
 }
