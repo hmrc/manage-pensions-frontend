@@ -31,9 +31,13 @@ object DoesPSTRStartWithATwo {
     Yes, No
   )
 
-  val options: Seq[InputOption] = values.map {
+  def options(noHint: Option[String]): Seq[InputOption] = values.map {
     value =>
-      InputOption(value.toString, s"messages__doesPSTRStartWithATwo__${value.toString}")
+      val hintText: Set[String] = (value, noHint) match {
+        case (No, Some(hint)) => Set(hint)
+        case _ => Set.empty
+      }
+      InputOption(value.toString, s"messages__doesPSTRStartWithATwo__${value.toString}", hint = hintText)
   }
 
   implicit val enumerable: Enumerable[DoesPSTRStartWithATwo] =

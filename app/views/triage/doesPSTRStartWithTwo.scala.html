@@ -51,7 +51,7 @@ title = titleWithErrors(form, messages("messages__doesPSTRStartWithTwo__title"))
                 field = form("value"),
                 legend = messages("messages__doesPSTRStartWithTwo__title"),
                 legendClass = Some("visually-hidden"),
-                inputs = DoesPSTRStartWithATwo.options,
+                inputs = DoesPSTRStartWithATwo.options(noRadioHint),
                 headingIsLegend=true
             )
 
