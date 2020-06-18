@@ -21,7 +21,7 @@ import controllers.routes._
 import identifiers.Identifier
 import identifiers.triage._
 import javax.inject.{Inject, Singleton}
-import models.triage.DoesPSAStartWithATwo.{Yes, No, StartWithA2AndA0}
+import models.triage.DoesPSAStartWithATwo.{Yes, No}
 import models.triage.DoesPSTRStartWithATwo
 import models.triage.WhatDoYouWantToDo._
 import play.api.mvc.Call
@@ -55,7 +55,6 @@ class TriageNavigator @Inject()(appConfig: FrontendAppConfig) extends Navigator 
     ua.get(DoesPSAStartWithATwoId) match {
       case Some(Yes) => Call("GET", s"${appConfig.loginUrl}?continue=${appConfig.registeredPsaDetailsUrl}")
       case Some(No) => Call("GET", appConfig.tpssInitialQuestionsUrl)
-      case Some(StartWithA2AndA0) => controllers.triage.routes.ATwoAndAZeroIdsController.onPageLoad()
       case _ => controllers.routes.SessionExpiredController.onPageLoad()
     }
   }

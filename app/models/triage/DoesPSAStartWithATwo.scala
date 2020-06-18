@@ -27,10 +27,8 @@ object DoesPSAStartWithATwo {
 
   case object No extends WithName("opt2") with DoesPSAStartWithATwo
 
-  case object StartWithA2AndA0 extends WithName("opt3") with DoesPSAStartWithATwo
-
   val values: Seq[DoesPSAStartWithATwo] = Seq(
-    Yes, No, StartWithA2AndA0
+    Yes, No
   )
 
   val options: Seq[InputOption] = values.map {
