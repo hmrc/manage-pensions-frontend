@@ -54,7 +54,7 @@ class TriageNavigator @Inject()(appConfig: FrontendAppConfig) extends Navigator 
   private def doesPSAStartWithATwoRoutes(ua: UserAnswers): Call = {
     ua.get(DoesPSAStartWithATwoId) match {
       case Some(Yes) => Call("GET", s"${appConfig.loginUrl}?continue=${appConfig.registeredPsaDetailsUrl}")
-      case Some(No) => Call("GET", appConfig.tpssInitialQuestionsUrl)
+      case Some(No) => controllers.triage.routes.UpdateBothController.onPageLoad()
       case _ => controllers.routes.SessionExpiredController.onPageLoad()
     }
   }

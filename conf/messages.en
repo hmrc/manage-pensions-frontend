@@ -399,3 +399,12 @@ messages__aTwoAndAZeroIds__p1 = If you have administrator IDs that start with ''
 messages__aTwoAndAZeroIds__managePensionSchemesService__link = Manage Pension Schemes service
 messages__aTwoAndAZeroIds__pensionSchemesOnlineService__link = Pension Schemes Online service
 messages__aTwoAndAZeroIds__returnToManagePensionSchemesGuidance__link = Return to Manage a registered pension scheme guidance
+
+messages__updateBoth__heading = Changing scheme administrator details when the ID starts with ''A0''
+messages__updateBoth__title = Changing scheme administrator details when the ID starts with ''A0''
+messages__updateBoth__p1 = If you have a scheme administrator ID starting with an ''A0'', you need to update your details on the Pension Schemes Online service.
+messages__updateBoth__p2 = If you are also enrolled on the Managing Pension Schemes service, you must update your details on both services.
+messages__updateBoth__managePensionSchemesService__link = Manage Pension Schemes service
+messages__updateBoth__pensionSchemesOnlineService__link = Pension Schemes Online service
+
+

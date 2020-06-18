@@ -23,3 +23,5 @@ GET        /updating-pstr-start-with-2      controllers.triage.UpdatingPSTRStart
 
 GET        /a2-and-a0-ids                   controllers.triage.ATwoAndAZeroIdsController.onPageLoad
 
+GET        /a0-update-both                   controllers.triage.UpdateBothController.onPageLoad
+
