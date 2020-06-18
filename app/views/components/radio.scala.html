@@ -19,12 +19,18 @@
  label: String,
  value: String,
  dataTarget: Option[String] = None,
- hint: Set[String] = Set.empty
+ hint: Set[String] = Set.empty,
+ fieldId: Option[String] = None
 )(implicit messages: Messages)
+
+@getId=@{
+    val xx = fieldId.fold("")(x => "-" + x)
+    s"${field.id}-hint" + xx
+}
 
 <div class="multiple-choice" @dataTarget.map { dataTarget => data-target="@dataTarget" }>
   <input id="@field.id-@value" type="radio" name="@field.name" value="@value" @if(field.value.contains(value)){ checked="checked" }
-         @if(hint.nonEmpty){aria-describedby="@{field.id}-hint"}>
+         @if(hint.nonEmpty){aria-describedby="@getId"}>
 
   <label class="block-label" for="@field.id-@value">
     @messages(label)
@@ -32,7 +38,7 @@
 
  @if(hint.nonEmpty) {
    @hint.map { hintText =>
-    <p id="@{field.id}-hint" class="form-hint">@messages(hintText)</p>
+    <p id="@getId" class="form-hint">@messages(hintText)</p>
    }
  }
 
