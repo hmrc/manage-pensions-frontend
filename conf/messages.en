@@ -372,7 +372,7 @@ messages__doesPSTRStartWithATwo__opt2 = Starts with a ‘0’
 
 messages__doesPSTRStartWithTwo_invite__hint = We will show you how to invite (or associate) another scheme administrator to a scheme that has a PSTR starting with a ''0''.
 messages__doesPSTRStartWithTwo_invited__hint = We will show you how to add yourself to a scheme that has a PSTR starting with a ''0''. An existing scheme administrator will have to associate you with the scheme first.
-messages__doesPSTRStartWithTwo_update__hint = We will show you how to update a scheme that does not have a PSTR starting with a ''2''.
+messages__doesPSTRStartWithTwo_update__hint = We will show you how to update a scheme that has a PSTR starting with a ''0''.
 
 messages__doesPSAStartWithATwo__title = Does your scheme administrator ID start with ''A2''?
 messages__doesPSAStartWithATwo__error__required = Select if your scheme administrator ID starts with ''A2''

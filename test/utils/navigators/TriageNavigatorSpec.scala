@@ -44,7 +44,7 @@ class TriageNavigatorSpec extends SpecBase with NavigatorBehaviour {
 
   private def pensionSchemesInvitationGuideGovUkPage: Call = Call("GET", frontendAppConfig.pensionSchemesInvitationGuideGovUkLink)
 
-  private def pensionSchemesGuideGovUkPage: Call = Call("GET", frontendAppConfig.pensionSchemesGuideGovUkLink)
+  private def pensionSchemesGuideGovUkPage: Call = Call("GET", frontendAppConfig.pensionSchemesGuideMandatoryOnlineFilingGovUkLink)
 
   def routes(): TableFor4[Identifier, UserAnswers, Call, Option[Call]] = Table(
     ("Id", "User Answers", "Next Page (NormalMode)", "Next Page (CheckMode)"),

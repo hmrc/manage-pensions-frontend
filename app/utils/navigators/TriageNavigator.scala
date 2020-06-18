@@ -87,7 +87,7 @@ class TriageNavigator @Inject()(appConfig: FrontendAppConfig) extends Navigator 
   private def doesPSTRStartWithTwoUpdateRoutes(answers: UserAnswers): Call = {
     answers.get(DoesPSTRStartWithTwoUpdateId) match {
       case Some(DoesPSTRStartWithATwo.Yes) => controllers.triage.routes.UpdatingPSTRStartWithTwoController.onPageLoad()
-      case Some(DoesPSTRStartWithATwo.No) => Call("GET", appConfig.pensionSchemesGuideGovUkLink)
+      case Some(DoesPSTRStartWithATwo.No) => Call("GET", appConfig.pensionSchemesGuideMandatoryOnlineFilingGovUkLink)
       case _ => controllers.routes.SessionExpiredController.onPageLoad()
     }
   }
