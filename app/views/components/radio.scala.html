@@ -24,8 +24,10 @@
 )(implicit messages: Messages)
 
 @getId=@{
-    val xx = fieldId.fold("")(x => "-" + x)
-    s"${field.id}-hint" + xx
+    fieldId match {
+        case None => s"${field.id}-hint"
+        case Some(id) => s"${field.id}-hint-$id"
+    }
 }
 
 <div class="multiple-choice" @dataTarget.map { dataTarget => data-target="@dataTarget" }>
