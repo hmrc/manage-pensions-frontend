@@ -17,7 +17,8 @@
 package controllers.triage
 
 import controllers.ControllerSpecBase
-import forms.triage.{DoesPSTRStartWithTwoFormProvider, WhatDoYouWantToDoFormProvider}
+import forms.triage.{WhatDoYouWantToDoFormProvider, DoesPSTRStartWithTwoFormProvider}
+import models.triage.DoesPSTRStartWithATwo
 import models.triage.WhatDoYouWantToDo
 import models.triage.WhatDoYouWantToDo.ManageExistingScheme
 import org.scalatest.concurrent.ScalaFutures
@@ -41,7 +42,7 @@ class DoesPSTRStartWithTwoControllerSpec extends ControllerSpecBase with ScalaFu
   private def postCall: Call = controllers.triage.routes.DoesPSTRStartWithTwoController.onSubmit()
   private val view = injector.instanceOf[doesPSTRStartWithTwo]
   private val formProvider = new DoesPSTRStartWithTwoFormProvider()
-  private def viewAsString(form: Form[Boolean] = formProvider()): String = view(form, postCall)(fakeRequest, messages).toString
+  private def viewAsString(form: Form[DoesPSTRStartWithATwo] = formProvider()): String = view(form, postCall)(fakeRequest, messages).toString
 
   "WhatDoYouWantToDoController" must {
 

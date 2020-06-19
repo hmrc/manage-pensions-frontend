@@ -18,6 +18,7 @@ package controllers.triage
 
 import controllers.ControllerSpecBase
 import forms.triage.DoesPSTRStartWithTwoFormProvider
+import models.triage.DoesPSTRStartWithATwo
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.data.Form
@@ -43,7 +44,7 @@ class DoesPSTRStartWithTwoUpdateControllerSpec extends ControllerSpecBase with S
   private val view = injector.instanceOf[doesPSTRStartWithTwo]
   private val formProvider = new DoesPSTRStartWithTwoFormProvider()
 
-  private def viewAsString(form: Form[Boolean] = formProvider()): String = view(form, postCall, hint)(fakeRequest, messages).toString
+  private def viewAsString(form: Form[DoesPSTRStartWithATwo] = formProvider()): String = view(form, postCall, hint)(fakeRequest, messages).toString
 
   "WhatDoYouWantToDoController" must {
 
