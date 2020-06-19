@@ -75,8 +75,7 @@ class TriageNavigatorSpec extends SpecBase with NavigatorBehaviour {
     (DoesPSTRStartWithTwoUpdateId, doesPSTRStartWithTwoUpdateAnswers(DoesPSTRStartWithATwo.No), pensionSchemesGuideGovUkPage, None),
     (DoesPSTRStartWithTwoUpdateId, emptyAnswers, sessionExpiredPage, None),
     (DoesPSAStartWithATwoId, doesPSAStartWithATwoAnswers(Yes), loginToChangePsaDetailsPage, None),
-    (DoesPSAStartWithATwoId, doesPSAStartWithATwoAnswers(No), tpssInitialQuestionsPage, None),
-    (DoesPSAStartWithATwoId, doesPSAStartWithATwoAnswers(Yes), aTwoAndAZeroIdsPage, None),
+    (DoesPSAStartWithATwoId, doesPSAStartWithATwoAnswers(No), updateBothPage, None),
     (DoesPSAStartWithATwoId, emptyAnswers, sessionExpiredPage, None)
   )
 
@@ -119,7 +118,7 @@ object TriageNavigatorSpec extends OptionValues with Enumerable.Implicits {
 
   private def updatingPSTRStartWithTwoPage: Call = controllers.triage.routes.UpdatingPSTRStartWithTwoController.onPageLoad()
 
-  private def aTwoAndAZeroIdsPage: Call = controllers.triage.routes.ATwoAndAZeroIdsController.onPageLoad()
+  private def updateBothPage: Call = controllers.triage.routes.UpdateBothController.onPageLoad()
 
   private def sessionExpiredPage: Call = controllers.routes.SessionExpiredController.onPageLoad()
 

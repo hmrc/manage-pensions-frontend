@@ -66,7 +66,7 @@ class DoesPSTRStartWithTwoInvitedControllerSpec extends ControllerSpecBase with 
     }
 
     "redirect to the next page for a valid request" in {
-      val postRequest = FakeRequest(POST, routes.DoesPSTRStartWithTwoInvitedController.onSubmit().url).withFormUrlEncodedBody("value" -> "true")
+      val postRequest = FakeRequest(POST, routes.DoesPSTRStartWithTwoInvitedController.onSubmit().url).withFormUrlEncodedBody("value" -> "opt1")
       val result = route(application, postRequest).value
 
       status(result) mustBe SEE_OTHER

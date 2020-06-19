@@ -17,17 +17,20 @@
 package views.triage
 
 import forms.triage.DoesPSTRStartWithTwoFormProvider
+import models.triage.DoesPSTRStartWithATwo
 import play.api.data.Form
-import views.behaviours.YesNoViewBehaviours
+import views.behaviours.ViewBehaviours
 import views.html.triage.doesPSTRStartWithTwo
 
-class DoesPSTRStartWithTwoViewSpec extends YesNoViewBehaviours {
+class DoesPSTRStartWithTwoViewSpec extends ViewBehaviours {
 
   private val messageKeyPrefix = "doesPSTRStartWithTwo"
   private val postCall = controllers.triage.routes.DoesPSTRStartWithTwoController.onPageLoad()
 
+  private val hint = Some("opt1")
+
   val formProvider = new DoesPSTRStartWithTwoFormProvider
-  val form: Form[Boolean] = formProvider()
+  val form: Form[DoesPSTRStartWithATwo] = formProvider()
 
   private val doesPSTRStartWithTwoView = injector.instanceOf[doesPSTRStartWithTwo]
 
@@ -49,9 +52,25 @@ class DoesPSTRStartWithTwoViewSpec extends YesNoViewBehaviours {
 
     behave like pageWithSubmitButton(createView())
 
-    behave like yesNoPageExplicitLegend(createView = createViewUsingForm, messageKeyPrefix = messageKeyPrefix,
-      expectedFormAction = "/",
-      legend = messages(s"messages__${messageKeyPrefix}__title"))
+    "contain radio buttons for the value" in {
+      val doc = asDocument(createViewUsingForm(form))
+      for (option <- DoesPSTRStartWithATwo.options(hint)) {
+        assertContainsRadioButton(doc, s"value-${option.value}", "value", option.value, isChecked = false)
+      }
+    }
+
+    for (option <- DoesPSTRStartWithATwo.options(hint)) {
+      s"rendered with a value of '${option.value}'" must {
+        s"have the '${option.value}' radio button selected" in {
+          val doc = asDocument(createViewUsingForm(form.bind(Map("value" -> s"${option.value}"))))
+          assertContainsRadioButton(doc, s"value-${option.value}", "value", option.value, isChecked = true)
+
+          for (unselectedOption <- DoesPSTRStartWithATwo.options(hint).filterNot(o => o == option)) {
+            assertContainsRadioButton(doc, s"value-${unselectedOption.value}", "value", unselectedOption.value, isChecked = false)
+          }
+        }
+      }
+    }
   }
 }
 
