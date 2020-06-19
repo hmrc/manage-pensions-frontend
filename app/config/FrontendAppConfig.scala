@@ -32,20 +32,23 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   protected def mode: Mode = environment.mode
 
   private def baseUrl(serviceName: String) = {
-    val protocol = runModeConfiguration.getOptional[String](s"microservice.services.$serviceName.protocol").getOrElse("http")
+    val protocol = runModeConfiguration.getOptional[String](s"microservice.services.$serviceName.protocol")
+      .getOrElse("http")
     val host = runModeConfiguration.get[String](s"microservice.services.$serviceName.host")
     val port = runModeConfiguration.get[String](s"microservice.services.$serviceName.port")
     s"$protocol://$host:$port"
   }
 
-  private def getConfigString(key: String) = servicesConfig.getConfString(key, throw new Exception(s"Could not find config '$key'"))
+  private def getConfigString(key: String) = servicesConfig.getConfString(key,
+    throw new Exception(s"Could not find config '$key'"))
 
   private def loadConfig(key: String): String = runModeConfiguration.get[String](key)
 
   lazy val contactHost = baseUrl("contact-frontend")
 
   lazy val appName: String = runModeConfiguration.underlying.getString("appName")
-  lazy val googleTagManagerIdAvailable: Boolean = runModeConfiguration.underlying.getBoolean(s"google-tag-manager.id-available")
+  lazy val googleTagManagerIdAvailable: Boolean = runModeConfiguration.underlying
+    .getBoolean(s"google-tag-manager.id-available")
   lazy val googleTagManagerId: String = loadConfig(s"google-tag-manager.id")
 
   val reportAProblemPartialUrl = getConfigString("contact-frontend.report-problem-url.with-js")
@@ -66,12 +69,18 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val loginToListSchemesUrl: String = loadConfig("urls.loginToListSchemes")
   lazy val serviceSignOut: String = loadConfig("urls.logout")
   lazy val registerSchemeAdministratorUrl: String = loadConfig("urls.registerSchemeAdministrator")
-  lazy val pensionAdministratorGovUkLink: String = runModeConfiguration.underlying.getString("urls.pensionAdministratorGovUkLink")
-  lazy val pensionPractitionerGovUkLink: String = runModeConfiguration.underlying.getString("urls.pensionPractitionerGovUkLink")
-  lazy val pensionSchemesGuideMandatoryOnlineFilingGovUkLink: String = runModeConfiguration.underlying.getString("urls.pensionSchemesGuideMandatoryOnlineFilingGovUkLink")
-  lazy val guidanceStartPageGovUkLink: String = runModeConfiguration.underlying.getString("urls.guidanceStartPageGovUkLink")
-  lazy val pensionSchemesInvitationGuideGovUkLink: String = runModeConfiguration.underlying.getString("urls.pensionSchemesInvitationGuideGovUkLink")
-  lazy val pensionSchemesAddToSchemeGuideGovUkLink: String = runModeConfiguration.underlying.getString("urls.pensionSchemesAddToSchemeGuideGovUkLink")
+  lazy val pensionAdministratorGovUkLink: String = runModeConfiguration.underlying
+    .getString("urls.pensionAdministratorGovUkLink")
+  lazy val pensionPractitionerGovUkLink: String = runModeConfiguration.underlying
+    .getString("urls.pensionPractitionerGovUkLink")
+  lazy val pensionSchemesGuideMandatoryOnlineFilingGovUkLink: String = runModeConfiguration.underlying
+    .getString("urls.pensionSchemesGuideMandatoryOnlineFilingGovUkLink")
+  lazy val guidanceStartPageGovUkLink: String = runModeConfiguration.underlying
+    .getString("urls.guidanceStartPageGovUkLink")
+  lazy val pensionSchemesInvitationGuideGovUkLink: String = runModeConfiguration.underlying
+    .getString("urls.pensionSchemesInvitationGuideGovUkLink")
+  lazy val pensionSchemesAddToSchemeGuideGovUkLink: String = runModeConfiguration.underlying
+    .getString("urls.pensionSchemesAddToSchemeGuideGovUkLink")
   lazy val govUkLink: String = runModeConfiguration.underlying.getString("urls.govUkLink")
   lazy val continueSchemeUrl = s"${loadConfig("urls.continueSchemeRegistration")}"
   lazy val userResearchUrl: String = runModeConfiguration.underlying.getString("urls.userResearch")
@@ -82,19 +91,30 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val psaDeregisterUrl: String = loadConfig("urls.psaDeregister")
   lazy val languageTranslationEnabled: Boolean = runModeConfiguration.get[Boolean]("features.welsh-translation")
   lazy val registerSchemeUrl: String = runModeConfiguration.underlying.getString("urls.registerScheme")
-  lazy val listOfSchemesUrl: String = s"${servicesConfig.baseUrl("pensions-scheme")}${runModeConfiguration.underlying.getString("urls.listOfSchemes")}"
-  lazy val inviteUrl: String = s"${servicesConfig.baseUrl("pension-administrator")}${runModeConfiguration.underlying.getString("urls.invite")}"
-  lazy val minimalPsaDetailsUrl: String = s"${servicesConfig.baseUrl("pension-administrator")}${runModeConfiguration.underlying.getString("urls.minimalPsaDetails")}"
-  lazy val acceptInvitationUrl = s"${servicesConfig.baseUrl("pension-administrator")}${runModeConfiguration.underlying.getString("urls.acceptInvite")}"
-  lazy val schemeDetailsUrl: String = s"${servicesConfig.baseUrl("pensions-scheme")}${runModeConfiguration.underlying.getString("urls.schemeDetails")}"
+  lazy val listOfSchemesUrl: String = s"${servicesConfig.baseUrl("pensions-scheme")}${runModeConfiguration.underlying
+    .getString("urls.listOfSchemes")}"
+  lazy val inviteUrl: String = s"${servicesConfig.baseUrl("pension-administrator")}${runModeConfiguration.underlying
+    .getString("urls.invite")}"
+  lazy val minimalPsaDetailsUrl: String = s"${servicesConfig.baseUrl("pension-administrator")}${runModeConfiguration.underlying
+    .getString("urls.minimalPsaDetails")}"
+  lazy val acceptInvitationUrl = s"${servicesConfig.baseUrl("pension-administrator")}${runModeConfiguration.underlying
+    .getString("urls.acceptInvite")}"
+  lazy val schemeDetailsUrl: String = s"${servicesConfig.baseUrl("pensions-scheme")}${runModeConfiguration.underlying
+    .getString("urls.schemeDetails")}"
   lazy val viewSchemeDetailsUrl: String = runModeConfiguration.underlying.getString("urls.viewSchemeDetails")
-  lazy val subscriptionDetailsUrl: String = s"${servicesConfig.baseUrl("pension-administrator")}${runModeConfiguration.underlying.getString("urls.subscriptionDetails")}"
-  lazy val removePsaUrl : String = s"${servicesConfig.baseUrl("pension-administrator")}${runModeConfiguration.underlying.getString("urls.removePsa")}"
-  lazy val taxDeEnrolmentUrl: String = servicesConfig.baseUrl("tax-enrolments") +runModeConfiguration.underlying.getString("urls.tax-de-enrolment")
-  lazy val updateSchemeDetailsUrl: String = s"${servicesConfig.baseUrl("pensions-scheme")}${runModeConfiguration.underlying.getString("urls.updateSchemeDetails")}"
+  lazy val subscriptionDetailsUrl: String = s"${servicesConfig.baseUrl("pension-administrator")}${runModeConfiguration.underlying
+    .getString("urls.subscriptionDetails")}"
+  lazy val removePsaUrl : String = s"${servicesConfig.baseUrl("pension-administrator")}${runModeConfiguration.underlying
+    .getString("urls.removePsa")}"
+  lazy val taxDeEnrolmentUrl: String = servicesConfig.baseUrl("tax-enrolments") + runModeConfiguration.underlying
+    .getString("urls.tax-de-enrolment")
+  lazy val updateSchemeDetailsUrl: String = s"${servicesConfig.baseUrl("pensions-scheme")}${runModeConfiguration.underlying
+    .getString("urls.updateSchemeDetails")}"
 
-  lazy val aftPartialHtmlUrl: String = s"${servicesConfig.baseUrl("aft-frontend")}${runModeConfiguration.underlying.getString("urls.aftPartialHtml")}"
-  lazy val schemeUrlsPartialHtmlUrl: String = s"${servicesConfig.baseUrl("scheme-frontend")}${runModeConfiguration.underlying.getString("urls.schemeUrlsPartialHtml")}"
+  lazy val aftPartialHtmlUrl: String = s"${servicesConfig.baseUrl("aft-frontend")}${runModeConfiguration.underlying
+    .getString("urls.aftPartialHtml")}"
+  lazy val schemeUrlsPartialHtmlUrl: String = s"${servicesConfig.baseUrl("scheme-frontend")}${runModeConfiguration.underlying
+    .getString("urls.schemeUrlsPartialHtml")}"
 
 
   def languageMap: Map[String, Lang] = Map(

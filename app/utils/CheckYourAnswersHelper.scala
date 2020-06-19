@@ -27,13 +27,15 @@ class CheckYourAnswersHelper(userAnswers: UserAnswers, countryOptions: CountryOp
 
   def psaName: Option[AnswerRow] = {
     userAnswers.get(InviteeNameId) map { answer =>
-      AnswerRow("messages__check__your__answer__psa__name__label", Seq(answer), true, Some(controllers.invitations.routes.PsaNameController.onPageLoad(CheckMode).url))
+      AnswerRow("messages__check__your__answer__psa__name__label", Seq(answer), true,
+        Some(controllers.invitations.routes.PsaNameController.onPageLoad(CheckMode).url))
     }
   }
 
   def psaId: Option[AnswerRow] = {
     userAnswers.get(InviteePSAId) map { answer =>
-      AnswerRow("messages__check__your__answer__psa__id__label", Seq(answer), true, Some(controllers.invitations.routes.PsaIdController.onPageLoad(CheckMode).url))
+      AnswerRow("messages__check__your__answer__psa__id__label", Seq(answer), true,
+        Some(controllers.invitations.routes.PsaIdController.onPageLoad(CheckMode).url))
     }
   }
 
