@@ -66,7 +66,7 @@ class DoesPSTRStartWithTwoUpdateControllerSpec extends ControllerSpecBase with S
     }
 
     "redirect to the next page for a valid request" in {
-      val postRequest = FakeRequest(POST, routes.DoesPSTRStartWithTwoUpdateController.onSubmit().url).withFormUrlEncodedBody("value" -> "true")
+      val postRequest = FakeRequest(POST, routes.DoesPSTRStartWithTwoUpdateController.onSubmit().url).withFormUrlEncodedBody("value" -> "opt1")
       val result = route(application, postRequest).value
 
       status(result) mustBe SEE_OTHER

@@ -34,7 +34,7 @@ class DoesPSTRStartWithTwoFormProviderSpec extends FormBehaviours with GuiceOneA
   val validData: Map[String, String] = Map(
     "value" -> DoesPSTRStartWithATwo.options(hint).head.value
   )
-  
+
   private val requiredKey = messages("messages__doesPSTRStartWithTwo__error__required")
 
   val formProvider = new DoesPSTRStartWithTwoFormProvider()
