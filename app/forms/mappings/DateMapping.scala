@@ -28,6 +28,7 @@ trait DateMapping extends Constraints {
 
   import DateMapping._
 
+  //scalastyle:off cyclomatic.complexity
   def individualValidation(errors: DateErrors): Constraint[(String, String, String)] = Constraint {
     case (day, month, year) if day.isEmpty && month.isEmpty && year.isEmpty => Invalid(errors.allBlank)
     case (day, month, _) if day.isEmpty && month.isEmpty => Invalid(errors.dayMonthBlank)

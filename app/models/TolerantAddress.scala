@@ -101,6 +101,7 @@ object TolerantAddress {
     lines.mkString("").toLowerCase().contains(elementToCheck.trim().toLowerCase())
   }
 
+  //scalastyle:off cyclomatic.complexity
   private def getTownOrCounty(
                                town: Option[String],
                                county: Option[String],

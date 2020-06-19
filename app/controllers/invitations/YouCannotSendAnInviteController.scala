@@ -32,7 +32,8 @@ class YouCannotSendAnInviteController @Inject()(appConfig: FrontendAppConfig,
                                                 getData: DataRetrievalAction,
                                                 requireData: DataRequiredAction,
                                                 val controllerComponents: MessagesControllerComponents,
-                                                view: youCannotSendAnInvite)(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+                                                view: youCannotSendAnInvite)(implicit val ec: ExecutionContext) extends
+  FrontendBaseController with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = authenticate {
     implicit request =>
