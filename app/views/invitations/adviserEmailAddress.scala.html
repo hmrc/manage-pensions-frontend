@@ -34,7 +34,7 @@ appConfig: FrontendAppConfig
 
     bodyClasses = None) {
 
-    @formHelper(action = AdviserEmailAddressController.onSubmit(mode), 'autoComplete -> "off") {
+    @formHelper(action = AdviserEmailAddressController.onSubmit(mode), 'autoComplete -> "off", 'novalidate -> "novalidate") {
 
         @components.back_link()
 
@@ -46,7 +46,8 @@ appConfig: FrontendAppConfig
             label = messages("messages__adviser__email__address__heading", adviserName),
             labelClass=Some("visually-hidden"),
             paragraphText = Some(messages("messages__adviser__email__address__p1")),
-            headingIsLegend = true
+            headingIsLegend = true,
+            typeValue = "email"
         )
         </div>
         @components.submit_button()
