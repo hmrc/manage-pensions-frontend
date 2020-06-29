@@ -22,15 +22,17 @@ import forms.triage.DoesPSTRStartWithTwoFormProvider
 import identifiers.triage.DoesPSTRStartWithTwoUpdateId
 import javax.inject.Inject
 import models.NormalMode
+import models.triage.DoesPSTRStartWithATwo
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
-import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
+import play.api.mvc.{Call, AnyContent, MessagesControllerComponents, Action}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
+import utils.Enumerable
 import utils.annotations.Triage
 import utils.{Navigator, UserAnswers}
 import views.html.triage.doesPSTRStartWithTwo
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{Future, ExecutionContext}
 
 class DoesPSTRStartWithTwoUpdateController @Inject()(
                                                       appConfig: FrontendAppConfig,
@@ -40,9 +42,9 @@ class DoesPSTRStartWithTwoUpdateController @Inject()(
                                                       formProvider: DoesPSTRStartWithTwoFormProvider,
                                                       val controllerComponents: MessagesControllerComponents,
                                                       view: doesPSTRStartWithTwo
-                                                    )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+                                                    )(implicit val ec: ExecutionContext) extends FrontendBaseController with Enumerable.Implicits with I18nSupport {
 
-  private def form(implicit messages: Messages): Form[Boolean] = formProvider()
+  private def form(implicit messages: Messages): Form[DoesPSTRStartWithATwo] = formProvider()
 
   private def hint(implicit messages: Messages) = Some(messages("messages__doesPSTRStartWithTwo_update__hint"))
   private def postCall: Call = controllers.triage.routes.DoesPSTRStartWithTwoUpdateController.onSubmit()

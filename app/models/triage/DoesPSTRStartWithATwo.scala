@@ -19,24 +19,28 @@ package models.triage
 import models.WithName
 import utils.{Enumerable, InputOption}
 
-sealed trait DoesPSAStartWithATwo
+sealed trait DoesPSTRStartWithATwo
 
-object DoesPSAStartWithATwo {
+object DoesPSTRStartWithATwo {
 
-  case object Yes extends WithName("opt1") with DoesPSAStartWithATwo
+  case object Yes extends WithName("opt1") with DoesPSTRStartWithATwo
 
-  case object No extends WithName("opt2") with DoesPSAStartWithATwo
+  case object No extends WithName("opt2") with DoesPSTRStartWithATwo
 
-  val values: Seq[DoesPSAStartWithATwo] = Seq(
+  val values: Seq[DoesPSTRStartWithATwo] = Seq(
     Yes, No
   )
 
-  val options: Seq[InputOption] = values.map {
+  def options(noHint: Option[String]): Seq[InputOption] = values.map {
     value =>
-      InputOption(value.toString, s"messages__doesPSAStartWithATwo__${value.toString}")
+      val hintText: Set[String] = (value, noHint) match {
+        case (No, Some(hint)) => Set(hint)
+        case _ => Set.empty
+      }
+      InputOption(value.toString, s"messages__doesPSTRStartWithATwo__${value.toString}", hint = hintText)
   }
 
-  implicit val enumerable: Enumerable[DoesPSAStartWithATwo] =
+  implicit val enumerable: Enumerable[DoesPSTRStartWithATwo] =
     Enumerable(values.map(v => v.toString -> v): _*)
 }
 

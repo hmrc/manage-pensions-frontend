@@ -19,21 +19,30 @@
  label: String,
  value: String,
  dataTarget: Option[String] = None,
- hint: Set[String] = Set.empty
+ hint: Set[String] = Set.empty,
+ fieldId: Option[String] = None
 )(implicit messages: Messages)
 
+@getId=@{
+    fieldId match {
+        case None => s"${field.id}-hint"
+        case Some(id) => s"${field.id}-hint-$id"
+    }
+}
+
 <div class="multiple-choice" @dataTarget.map { dataTarget => data-target="@dataTarget" }>
-  <input id="@field.id-@value" type="radio" name="@field.name" value="@value" @if(field.value.contains(value)){ checked="checked" }>
+  <input id="@field.id-@value" type="radio" name="@field.name" value="@value" @if(field.value.contains(value)){ checked="checked" }
+         @if(hint.nonEmpty){aria-describedby="@getId"}>
+
   <label class="block-label" for="@field.id-@value">
     @messages(label)
   </label>
 
  @if(hint.nonEmpty) {
-  <div class="panel">
    @hint.map { hintText =>
-    <p>@messages(hintText)</p>
+    <p id="@getId" class="form-hint">@messages(hintText)</p>
    }
-  </div>
  }
 
 </div>
+

@@ -17,7 +17,8 @@
 package identifiers.triage
 
 import identifiers.TypedIdentifier
+import models.triage.DoesPSTRStartWithATwo
 
-case object DoesPSTRStartWithTwoInvitedId extends TypedIdentifier[Boolean] {
+case object DoesPSTRStartWithTwoInvitedId extends TypedIdentifier[DoesPSTRStartWithATwo] {
   override def toString: String = "doesPSTRStartWithTwoInvited"
 }

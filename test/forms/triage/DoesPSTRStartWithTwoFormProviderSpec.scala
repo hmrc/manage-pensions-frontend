@@ -16,19 +16,26 @@
 
 package forms.triage
 
-import forms.behaviours.BooleanFieldBehaviours
+import forms.behaviours.FormBehaviours
+import models.triage.DoesPSTRStartWithATwo
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.data.FormError
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
+import models.{Field, Invalid, Required}
 
-class DoesPSTRStartWithTwoFormProviderSpec extends BooleanFieldBehaviours with GuiceOneAppPerSuite {
+class DoesPSTRStartWithTwoFormProviderSpec extends FormBehaviours with GuiceOneAppPerSuite {
+
+  private val hint = Some("opt1")
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   implicit val messages: Messages = messagesApi.preferred(FakeRequest())
 
-  val requiredKey = messages("messages__doesPSTRStartWithTwo__error__required")
-  val invalidKey = "error.boolean"
+  val validData: Map[String, String] = Map(
+    "value" -> DoesPSTRStartWithATwo.options(hint).head.value
+  )
+
+  private val requiredKey = messages("messages__doesPSTRStartWithTwo__error__required")
 
   val formProvider = new DoesPSTRStartWithTwoFormProvider()
   val form = formProvider()
@@ -37,17 +44,16 @@ class DoesPSTRStartWithTwoFormProviderSpec extends BooleanFieldBehaviours with G
 
     val fieldName = "value"
 
-    behave like booleanField(
-      form,
-      fieldName,
-      invalidError = FormError(fieldName, invalidKey)
-    )
+    behave like questionForm[DoesPSTRStartWithATwo](DoesPSTRStartWithATwo.values.head)
 
-    behave like mandatoryField(
-      form,
-      fieldName,
-      requiredError = FormError(fieldName, requiredKey)
-    )
+    behave like formWithOptionField(
+      Field(
+        fieldName,
+        Required -> requiredKey,
+        Invalid -> "error.invalid"
+      ),
+      DoesPSTRStartWithATwo.options(hint).map(_.value): _*)
+
   }
 
 }

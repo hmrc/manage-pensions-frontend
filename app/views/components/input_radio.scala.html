@@ -50,8 +50,9 @@
         <span class="error-notification" id="error-message-@{field.id}-input">
                     <span class="visually-hidden">@messages("site.error")</span> @messages(error.message, error.args: _*)</span>
         }
-        @for(input <- inputs) {
-            @components.radio(field, input.label, input.value, input.dataTarget, input.hint)
+
+        @for((input, i) <- inputs.zipWithIndex){
+            @components.radio(field, input.label, input.value, input.dataTarget, input.hint, Some(i.toString))
         }
     </fieldset>
 </div>

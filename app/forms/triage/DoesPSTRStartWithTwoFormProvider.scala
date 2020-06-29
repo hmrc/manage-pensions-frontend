@@ -18,13 +18,14 @@ package forms.triage
 
 import forms.mappings.Mappings
 import javax.inject.Inject
+import models.triage.DoesPSTRStartWithATwo
 import play.api.data.Form
 import play.api.i18n.Messages
 
 class DoesPSTRStartWithTwoFormProvider @Inject() extends Mappings {
 
-  def apply()(implicit messages: Messages): Form[Boolean] =
+  def apply()(implicit messages: Messages): Form[DoesPSTRStartWithATwo] =
     Form(
-      "value" -> boolean(messages("messages__doesPSTRStartWithTwo__error__required"))
+      "value" -> enumerable[DoesPSTRStartWithATwo](messages("messages__doesPSTRStartWithTwo__error__required"))
     )
 }

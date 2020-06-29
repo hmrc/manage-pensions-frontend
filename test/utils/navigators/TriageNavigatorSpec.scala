@@ -19,14 +19,24 @@ package utils.navigators
 import base.SpecBase
 import identifiers.Identifier
 import identifiers.triage._
-import models.triage.DoesPSAStartWithATwo.{No, StartWithA2AndA0, Yes}
-import models.triage.{DoesPSAStartWithATwo, WhatDoYouWantToDo}
-import models.triage.WhatDoYouWantToDo.{BecomeAnAdmin, ChangeAdminDetails, CheckTheSchemeStatus, Invite, ManageExistingScheme, UpdateSchemeInformation}
+import models.triage.DoesPSAStartWithATwo.No
+import models.triage.DoesPSAStartWithATwo.Yes
+import models.triage.DoesPSTRStartWithATwo
+import models.triage.DoesPSAStartWithATwo
+import models.triage.WhatDoYouWantToDo
+import models.triage.WhatDoYouWantToDo.BecomeAnAdmin
+import models.triage.WhatDoYouWantToDo.ChangeAdminDetails
+import models.triage.WhatDoYouWantToDo.CheckTheSchemeStatus
+import models.triage.WhatDoYouWantToDo.Invite
+import models.triage.WhatDoYouWantToDo.ManageExistingScheme
+import models.triage.WhatDoYouWantToDo.UpdateSchemeInformation
 import org.scalatest.OptionValues
 import org.scalatest.prop.TableFor4
 import play.api.libs.json.Json
 import play.api.mvc.Call
-import utils.{Enumerable, NavigatorBehaviour, UserAnswers}
+import utils.Enumerable
+import utils.NavigatorBehaviour
+import utils.UserAnswers
 
 class TriageNavigatorSpec extends SpecBase with NavigatorBehaviour {
 
@@ -44,7 +54,7 @@ class TriageNavigatorSpec extends SpecBase with NavigatorBehaviour {
 
   private def pensionSchemesInvitationGuideGovUkPage: Call = Call("GET", frontendAppConfig.pensionSchemesInvitationGuideGovUkLink)
 
-  private def pensionSchemesGuideGovUkPage: Call = Call("GET", frontendAppConfig.pensionSchemesGuideGovUkLink)
+  private def pensionSchemesGuideGovUkPage: Call = Call("GET", frontendAppConfig.pensionSchemesGuideMandatoryOnlineFilingGovUkLink)
 
   def routes(): TableFor4[Identifier, UserAnswers, Call, Option[Call]] = Table(
     ("Id", "User Answers", "Next Page (NormalMode)", "Next Page (CheckMode)"),
@@ -55,18 +65,17 @@ class TriageNavigatorSpec extends SpecBase with NavigatorBehaviour {
     (WhatDoYouWantToDoId, whatDoYouWantToDoAnswers(UpdateSchemeInformation), doesPSTRTStartWithTwoUpdatePage, None),
     (WhatDoYouWantToDoId, whatDoYouWantToDoAnswers(ChangeAdminDetails), doesPSATStartWithATwoPage, None),
     (WhatDoYouWantToDoId, emptyAnswers, sessionExpiredPage, None),
-    (DoesPSTRStartWithTwoId, doesPSTRStartWithTwoAnswers(true), loginToYourSchemesPage, None),
-    (DoesPSTRStartWithTwoId, doesPSTRStartWithTwoAnswers(false), tpssWelcomePage, None),
+    (DoesPSTRStartWithTwoId, doesPSTRStartWithTwoAnswers(DoesPSTRStartWithATwo.Yes), loginToYourSchemesPage, None),
+    (DoesPSTRStartWithTwoId, doesPSTRStartWithTwoAnswers(DoesPSTRStartWithATwo.No), tpssWelcomePage, None),
     (DoesPSTRStartWithTwoId, emptyAnswers, sessionExpiredPage, None),
-    (DoesPSTRStartWithTwoInviteId, doesPSTRStartWithTwoInviteAnswers(true), invitingPSTRStartWithTwoPage, None),
-    (DoesPSTRStartWithTwoInviteId, doesPSTRStartWithTwoInviteAnswers(false), pensionSchemesInvitationGuideGovUkPage, None),
+    (DoesPSTRStartWithTwoInviteId, doesPSTRStartWithTwoInviteAnswers(DoesPSTRStartWithATwo.Yes), invitingPSTRStartWithTwoPage, None),
+    (DoesPSTRStartWithTwoInviteId, doesPSTRStartWithTwoInviteAnswers(DoesPSTRStartWithATwo.No), pensionSchemesInvitationGuideGovUkPage, None),
     (DoesPSTRStartWithTwoInviteId, emptyAnswers, sessionExpiredPage, None),
-    (DoesPSTRStartWithTwoUpdateId, doesPSTRStartWithTwoUpdateAnswers(true), updatingPSTRStartWithTwoPage, None),
-    (DoesPSTRStartWithTwoUpdateId, doesPSTRStartWithTwoUpdateAnswers(false), pensionSchemesGuideGovUkPage, None),
+    (DoesPSTRStartWithTwoUpdateId, doesPSTRStartWithTwoUpdateAnswers(DoesPSTRStartWithATwo.Yes), updatingPSTRStartWithTwoPage, None),
+    (DoesPSTRStartWithTwoUpdateId, doesPSTRStartWithTwoUpdateAnswers(DoesPSTRStartWithATwo.No), pensionSchemesGuideGovUkPage, None),
     (DoesPSTRStartWithTwoUpdateId, emptyAnswers, sessionExpiredPage, None),
     (DoesPSAStartWithATwoId, doesPSAStartWithATwoAnswers(Yes), loginToChangePsaDetailsPage, None),
-    (DoesPSAStartWithATwoId, doesPSAStartWithATwoAnswers(No), tpssInitialQuestionsPage, None),
-    (DoesPSAStartWithATwoId, doesPSAStartWithATwoAnswers(StartWithA2AndA0), aTwoAndAZeroIdsPage, None),
+    (DoesPSAStartWithATwoId, doesPSAStartWithATwoAnswers(No), updateBothPage, None),
     (DoesPSAStartWithATwoId, emptyAnswers, sessionExpiredPage, None)
   )
 
@@ -83,13 +92,17 @@ object TriageNavigatorSpec extends OptionValues with Enumerable.Implicits {
 
   private def whatDoYouWantToDoAnswers(answer: WhatDoYouWantToDo): UserAnswers = UserAnswers().set(WhatDoYouWantToDoId)(answer).asOpt.value
 
-  private def doesPSAStartWithATwoAnswers(answer: DoesPSAStartWithATwo): UserAnswers = UserAnswers().set(DoesPSAStartWithATwoId)(answer).asOpt.value
+  private def doesPSAStartWithATwoAnswers(answer: DoesPSAStartWithATwo): UserAnswers =
+    UserAnswers().set(DoesPSAStartWithATwoId)(answer).asOpt.value
 
-  private def doesPSTRStartWithTwoAnswers(answer: Boolean): UserAnswers = UserAnswers().set(DoesPSTRStartWithTwoId)(answer).asOpt.value
+  private def doesPSTRStartWithTwoAnswers(answer: DoesPSTRStartWithATwo): UserAnswers =
+    UserAnswers().set(DoesPSTRStartWithTwoId)(answer).asOpt.value
 
-  private def doesPSTRStartWithTwoInviteAnswers(answer: Boolean): UserAnswers = UserAnswers().set(DoesPSTRStartWithTwoInviteId)(answer).asOpt.value
+  private def doesPSTRStartWithTwoInviteAnswers(answer: DoesPSTRStartWithATwo): UserAnswers =
+    UserAnswers().set(DoesPSTRStartWithTwoInviteId)(answer).asOpt.value
 
-  private def doesPSTRStartWithTwoUpdateAnswers(answer: Boolean): UserAnswers = UserAnswers().set(DoesPSTRStartWithTwoUpdateId)(answer).asOpt.value
+  private def doesPSTRStartWithTwoUpdateAnswers(answer: DoesPSTRStartWithATwo): UserAnswers =
+    UserAnswers().set(DoesPSTRStartWithTwoUpdateId)(answer).asOpt.value
 
   private def doesPSTRTStartWithTwoPage: Call = controllers.triage.routes.DoesPSTRStartWithTwoController.onPageLoad()
 
@@ -105,7 +118,7 @@ object TriageNavigatorSpec extends OptionValues with Enumerable.Implicits {
 
   private def updatingPSTRStartWithTwoPage: Call = controllers.triage.routes.UpdatingPSTRStartWithTwoController.onPageLoad()
 
-  private def aTwoAndAZeroIdsPage: Call = controllers.triage.routes.ATwoAndAZeroIdsController.onPageLoad()
+  private def updateBothPage: Call = controllers.triage.routes.UpdateBothController.onPageLoad()
 
   private def sessionExpiredPage: Call = controllers.routes.SessionExpiredController.onPageLoad()
 

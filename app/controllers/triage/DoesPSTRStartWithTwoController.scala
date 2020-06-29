@@ -16,21 +16,30 @@
 
 package controllers.triage
 
-import config.FrontendAppConfig
-import controllers.actions.TriageAction
 import forms.triage.DoesPSTRStartWithTwoFormProvider
 import identifiers.triage.DoesPSTRStartWithTwoId
+import models.triage.DoesPSTRStartWithATwo
+import play.api.mvc.Call
+import views.html.triage.doesPSTRStartWithTwo
+import config.FrontendAppConfig
+import controllers.actions.TriageAction
 import javax.inject.Inject
 import models.NormalMode
 import play.api.data.Form
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
-import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
+import play.api.i18n.I18nSupport
+import play.api.i18n.Messages
+import play.api.i18n.MessagesApi
+import play.api.mvc.Action
+import play.api.mvc.AnyContent
+import play.api.mvc.MessagesControllerComponents
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.annotations.Triage
-import utils.{Navigator, UserAnswers}
-import views.html.triage.doesPSTRStartWithTwo
+import utils.Enumerable
+import utils.Navigator
+import utils.UserAnswers
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 class DoesPSTRStartWithTwoController @Inject()(
                                                 appConfig: FrontendAppConfig,
@@ -40,9 +49,9 @@ class DoesPSTRStartWithTwoController @Inject()(
                                                 formProvider: DoesPSTRStartWithTwoFormProvider,
                                                 val controllerComponents: MessagesControllerComponents,
                                                 view: doesPSTRStartWithTwo
-                                              )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+                                              )(implicit val ec: ExecutionContext) extends FrontendBaseController with Enumerable.Implicits with I18nSupport {
 
-  private def form(implicit messages: Messages): Form[Boolean] = formProvider()
+  private def form(implicit messages: Messages): Form[DoesPSTRStartWithATwo] = formProvider()
   private def postCall: Call = controllers.triage.routes.DoesPSTRStartWithTwoController.onSubmit()
 
   def onPageLoad: Action[AnyContent] = triageAction.async {

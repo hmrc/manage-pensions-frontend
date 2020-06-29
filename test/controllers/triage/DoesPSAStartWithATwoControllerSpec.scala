@@ -18,9 +18,8 @@ package controllers.triage
 
 import controllers.ControllerSpecBase
 import forms.triage.DoesPSAStartWithATwoFormProvider
-import models.triage.DoesPSAStartWithATwo.StartWithA2AndA0
-import models.triage.{DoesPSAStartWithATwo, WhatDoYouWantToDo}
-import models.triage.WhatDoYouWantToDo.ManageExistingScheme
+import identifiers.triage.DoesPSAStartWithATwoId
+import models.triage.DoesPSAStartWithATwo
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.data.Form
@@ -31,7 +30,8 @@ import play.api.test.CSRFTokenHelper.addCSRFToken
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import utils.annotations.Triage
-import utils.{FakeNavigator, Navigator}
+import utils.FakeNavigator
+import utils.Navigator
 import views.html.triage.doesPSAStartWithATwo
 
 class DoesPSAStartWithATwoControllerSpec extends ControllerSpecBase with ScalaFutures with MockitoSugar {
@@ -64,7 +64,8 @@ class DoesPSAStartWithATwoControllerSpec extends ControllerSpecBase with ScalaFu
     }
 
     "redirect to the next page for a valid request" in {
-      val postRequest = FakeRequest(POST, routes.DoesPSAStartWithATwoController.onSubmit().url).withFormUrlEncodedBody("value" -> StartWithA2AndA0.toString)
+      val postRequest = FakeRequest(POST, routes.DoesPSAStartWithATwoController.onSubmit().url).withFormUrlEncodedBody("value" ->
+        DoesPSAStartWithATwo.Yes.toString)
       val result = route(application, postRequest).value
 
       status(result) mustBe SEE_OTHER
