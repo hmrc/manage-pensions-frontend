@@ -72,4 +72,10 @@ Fix to render radio buttons visible in IE8
 Fix to remove some of the urls visible in print/pdfs
 ====================================
 */
-@media print { a[href]::after { content: none !important; } }
+@media print { a[href]::after { content: none !important; }
+
+ header nav ul , #global-header .header-proposition a.menu {
+  display: none !important;
+ }
+
+ }
