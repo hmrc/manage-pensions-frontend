@@ -29,7 +29,7 @@
     bodyClasses: Option[String] = None,
     mainClass: Option[String] = None,
     scriptElem: Option[Html] = None,
-articleClasses: Option[String] = None
+    mainContentContainerClasses: Option[String] = None
 )(
     mainContent: Html
 )(implicit
@@ -47,8 +47,15 @@ articleClasses: Option[String] = None
     }
 }
 
-@contentBody = {
-    <div class="content__body">
+@mainContentContainerClassesAsString = @{
+    mainContentContainerClasses match {
+        case None => "content__body"
+        case Some(c) => s"content__body $c"
+    }
+}
+
+@mainContentBody = {
+    <div class="@mainContentContainerClassesAsString">
         @mainContent
     </div>
 }
@@ -59,7 +66,7 @@ articleClasses: Option[String] = None
     bodyClasses = bodyClasses,
     sidebar = sidebarF,
     contentHeader = contentHeader,
-    mainContent = contentBody,
+    mainContent = mainContentBody,
     serviceInfoContent = serviceInfoContent,
     scriptElem = scriptElem
 )
