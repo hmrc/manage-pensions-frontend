@@ -19,7 +19,6 @@
 @this(
     config: FrontendAppConfig,
     govuk_wrapper: govuk_wrapper,
-    article: Article,
     sidebar: Sidebar
 )
 
@@ -48,13 +47,19 @@ articleClasses: Option[String] = None
     }
 }
 
+@contentBody = {
+    <div class="content__body">
+        @mainContent
+    </div>
+}
+
 @govuk_wrapper(
     title = title + " - " + Messages("messages__manage_pension_schemes__title"),
     mainClass = mainClass,
     bodyClasses = bodyClasses,
     sidebar = sidebarF,
     contentHeader = contentHeader,
-    mainContent = article(mainContent, includeGridWrapper = false, articleClasses = articleClasses),
+    mainContent = contentBody,
     serviceInfoContent = serviceInfoContent,
     scriptElem = scriptElem
 )
