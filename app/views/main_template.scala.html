@@ -19,7 +19,6 @@
 @this(
     config: FrontendAppConfig,
     govuk_wrapper: govuk_wrapper,
-    article: Article,
     sidebar: Sidebar
 )
 
@@ -30,7 +29,7 @@
     bodyClasses: Option[String] = None,
     mainClass: Option[String] = None,
     scriptElem: Option[Html] = None,
-articleClasses: Option[String] = None
+    mainContentContainerClasses: Option[String] = None
 )(
     mainContent: Html
 )(implicit
@@ -48,13 +47,26 @@ articleClasses: Option[String] = None
     }
 }
 
+@mainContentContainerClassesAsString = @{
+    mainContentContainerClasses match {
+        case None => "content__body"
+        case Some(c) => s"content__body $c"
+    }
+}
+
+@mainContentBody = {
+    <div class="@mainContentContainerClassesAsString">
+        @mainContent
+    </div>
+}
+
 @govuk_wrapper(
     title = title + " - " + Messages("messages__manage_pension_schemes__title"),
     mainClass = mainClass,
     bodyClasses = bodyClasses,
     sidebar = sidebarF,
     contentHeader = contentHeader,
-    mainContent = article(mainContent, includeGridWrapper = false, articleClasses = articleClasses),
+    mainContent = mainContentBody,
     serviceInfoContent = serviceInfoContent,
     scriptElem = scriptElem
 )
