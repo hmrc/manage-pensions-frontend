@@ -45,21 +45,21 @@ abstract class AbstractSchemeStatus(
 
 object SchemeStatus {
 
-  case object Pending extends AbstractSchemeStatus("Pending", false, true, false)
+  case object Pending extends AbstractSchemeStatus(value = "Pending", canRemovePsa = false, pending = true, rejected = false)
 
-  case object PendingInfoRequired extends AbstractSchemeStatus("Pending Info Required", false, true, false)
+  case object PendingInfoRequired extends AbstractSchemeStatus(value = "Pending Info Required", canRemovePsa = false, pending = true, rejected = false)
 
-  case object PendingInfoReceived extends AbstractSchemeStatus("Pending Info Received", false, true, false)
+  case object PendingInfoReceived extends AbstractSchemeStatus(value = "Pending Info Received", canRemovePsa = false, pending = true, rejected = false)
 
-  case object Rejected extends AbstractSchemeStatus("Rejected", true, false, true)
+  case object Rejected extends AbstractSchemeStatus(value = "Rejected", canRemovePsa = true, pending = false, rejected = true)
 
-  case object Open extends AbstractSchemeStatus("Open", true, false, false)
+  case object Open extends AbstractSchemeStatus(value = "Open", canRemovePsa = true, pending = false, rejected = false)
 
-  case object Deregistered extends AbstractSchemeStatus("Deregistered", false, false, false)
+  case object Deregistered extends AbstractSchemeStatus(value = "Deregistered", canRemovePsa = false, pending = false, rejected = false)
 
-  case object WoundUp extends AbstractSchemeStatus("Wound-up", true, false, false)
+  case object WoundUp extends AbstractSchemeStatus(value = "Wound-up", canRemovePsa = true, pending = false, rejected = false)
 
-  case object RejectedUnderAppeal extends AbstractSchemeStatus("Rejected Under Appeal", false, false, true)
+  case object RejectedUnderAppeal extends AbstractSchemeStatus(value = "Rejected Under Appeal", canRemovePsa = false, pending = false, rejected = true)
 
   lazy val statuses: Seq[SchemeStatus] =
     Seq(
