@@ -51,7 +51,7 @@ object SchemeStatus {
 
   case object PendingInfoReceived extends AbstractSchemeStatus("Pending Info Received", false, true, false)
 
-  case object Rejected extends AbstractSchemeStatus("Rejected", false, false, true)
+  case object Rejected extends AbstractSchemeStatus("Rejected", true, false, true)
 
   case object Open extends AbstractSchemeStatus("Open", true, false, false)
 
