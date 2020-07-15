@@ -47,13 +47,16 @@ class PsaSchemeDetailsSpec extends WordSpec with MustMatchers with GeneratorDriv
         }
       }
 
-      "there are other PSAs and the scheme has a status of Rejected" in {
-        val statuses = Gen.oneOf(SchemeStatus.statuses.filter(_.rejected))
+      "there are other PSAs and the scheme has a status of Rejected Under Appeal" in {
+            PsaSchemeDetails.canRemovePsaVariations(
+              testPsaId1, Seq(testPsa1(), testPsa2),
+              SchemeStatus.RejectedUnderAppeal.value) mustBe false
+      }
 
-        forAll(statuses) {
-          status =>
-            PsaSchemeDetails.canRemovePsaVariations(testPsaId1, Seq(testPsa1(), testPsa2), status.value) mustBe false
-        }
+      "there are other PSAs and the scheme has a status of Rejected" in {
+        PsaSchemeDetails.canRemovePsaVariations(
+          testPsaId1, Seq(testPsa1(), testPsa2),
+          SchemeStatus.Rejected.value) mustBe true
       }
 
       "there are other PSAs and the scheme has a status of De-Registered" in {
