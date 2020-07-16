@@ -50,21 +50,13 @@ class SchemeStatusSpec extends FlatSpec with Matchers with GeneratorDrivenProper
 
     SchemeStatus.Rejected.value shouldBe "Rejected"
     SchemeStatus.Rejected.rejected shouldBe true
+    SchemeStatus.Rejected.canRemovePsa shouldBe true
 
     SchemeStatus.RejectedUnderAppeal.value shouldBe "Rejected Under Appeal"
     SchemeStatus.RejectedUnderAppeal.rejected shouldBe true
+    SchemeStatus.RejectedUnderAppeal.canRemovePsa shouldBe false
 
-    val rejected = SchemeStatus.statuses.filter(_.rejected)
-    rejected.size shouldBe 2
-
-    val statuses = Gen.oneOf(rejected)
-
-    forAll(statuses) {
-      status =>
-        status.pending shouldBe false
-        status.canRemovePsa shouldBe false
-    }
-
+    SchemeStatus.statuses.count(_.rejected) shouldBe 2
   }
 
   it should "correctly configure Open" in {
