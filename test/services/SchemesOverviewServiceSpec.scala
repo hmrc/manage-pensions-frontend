@@ -57,6 +57,7 @@ class SchemesOverviewServiceSpec extends SpecBase with MockitoSugar with BeforeA
     when(invitationsCacheConnector.getForInvitee(any())(any(), any()))
       .thenReturn(Future.successful(invitationList))
     when(frontendConnector.retrieveSchemeUrlsPartial(any(), any())).thenReturn(Future.successful(html))
+    when(frontendConnector.retrievePenaltiesUrlPartial(any(), any())).thenReturn(Future.successful(html))
     super.beforeEach()
   }
 
@@ -137,7 +138,8 @@ object SchemesOverviewServiceSpec extends SpecBase with MockitoSugar  {
     subHeadingParam = Some(psaId),
     links = Seq(
       Link("psaLink", frontendAppConfig.registeredPsaDetailsUrl, Message("messages__schemeOverview__psa_change"))
-    ) ++ invitation ++ deregistration)
+    ) ++ invitation ++ deregistration,
+    html = Some(html))
 
   private def schemeCard = CardViewModel(
     id = "scheme-card",

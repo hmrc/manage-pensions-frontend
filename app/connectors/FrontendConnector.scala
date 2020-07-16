@@ -37,6 +37,8 @@ class FrontendConnector @Inject()(http: HttpClient, config: FrontendAppConfig) {
   def retrieveSchemeUrlsPartial[A](implicit request: Request[A], ec: ExecutionContext): Future[Html] =
     retrievePartial(config.schemeUrlsPartialHtmlUrl)
 
+  def retrievePenaltiesUrlPartial[A](implicit request: Request[A], ec: ExecutionContext): Future[Html] =
+    retrievePartial(config.penaltiesUrlPartialHtmlUrl)
 
   private def retrievePartial[A](url: String)(implicit request: Request[A], ec: ExecutionContext): Future[Html] = {
     implicit val hc: HeaderCarrier = HeaderCarrierFunctions.headerCarrierForPartials(request).toHeaderCarrier

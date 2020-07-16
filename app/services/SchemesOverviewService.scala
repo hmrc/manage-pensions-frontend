@@ -40,11 +40,12 @@ class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
   def getTiles(psaId: String)(implicit request: OptionalDataRequest[AnyContent], hc: HeaderCarrier, messages: Messages): Future[Seq[CardViewModel]] =
     for {
       invitationLink <- invitationsLink
-      html <- frontendConnector.retrieveSchemeUrlsPartial
+      adminHtml <- frontendConnector.retrievePenaltiesUrlPartial
+      schemeHtml <- frontendConnector.retrieveSchemeUrlsPartial
     } yield {
       Seq(
-        adminCard(invitationLink, deregisterLink, psaId),
-        schemeCard(html)
+        adminCard(invitationLink, deregisterLink, psaId, adminHtml),
+        schemeCard(schemeHtml)
       )
     }
 
@@ -52,7 +53,8 @@ class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
     minimalPsaConnector.getPsaNameFromPsaID(psaId).map(identity)
 
   //TILES HELPER METHODS
-  private def adminCard(invitationLink: Seq[Link], deregistrationLink: Seq[Link], psaId: String)(implicit messages: Messages): CardViewModel =
+  private def adminCard(invitationLink: Seq[Link], deregistrationLink: Seq[Link], psaId: String, html: Html)
+                       (implicit messages: Messages): CardViewModel =
 
     CardViewModel(
       id = "administrator-card",
@@ -61,7 +63,8 @@ class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
       subHeadingParam = Some(psaId),
       links = Seq(
         Link("psaLink", appConfig.registeredPsaDetailsUrl, Message("messages__schemeOverview__psa_change"))
-      ) ++ invitationLink ++ deregistrationLink
+      ) ++ invitationLink ++ deregistrationLink,
+      html = Some(html)
     )
 
   private def schemeCard(html: Html)(implicit messages: Messages): CardViewModel =
