@@ -113,6 +113,10 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
 
   lazy val aftPartialHtmlUrl: String = s"${servicesConfig.baseUrl("aft-frontend")}${runModeConfiguration.underlying
     .getString("urls.aftPartialHtml")}"
+
+  lazy val paymentsAndChargesPartialHtmlUrl: String = s"${servicesConfig.baseUrl("aft-frontend")}${runModeConfiguration.underlying
+    .getString("urls.paymentsAndChargesPartialHtml")}"
+
   lazy val schemeUrlsPartialHtmlUrl: String = s"${servicesConfig.baseUrl("scheme-frontend")}${runModeConfiguration.underlying
     .getString("urls.schemeUrlsPartialHtml")}"
 

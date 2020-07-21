@@ -78,6 +78,17 @@ class SchemeDetailsServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
     }
   }
 
+  "retrievePaymentsAndChargesHtml" must {
+    "return the Html for payments and charges" in {
+      when(frontendConnector.retrievePaymentsAndChargesPartial(any())(any(), any()))
+        .thenReturn(Future.successful(Html("test-payments-and-charges-html")))
+
+      whenReady(service.retrievePaymentsAndChargesHtml(srn)) {
+        _ mustBe Html("test-payments-and-charges-html")
+      }
+    }
+  }
+
   "displayChangeLink" must {
     "return true if Lock is VarianceLock" in {
       service.displayChangeLink(isSchemeOpen = true, Some(VarianceLock)) mustBe true

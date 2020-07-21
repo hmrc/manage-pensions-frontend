@@ -38,7 +38,8 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
                  isSchemeOpen: Boolean = true,
                  displayChangeLink: Boolean = false,
                  lockingPsa: Option[String] = None,
-                 aftHtml: Html = Html("")
+                 aftHtml: Html = Html(""),
+                 paymetsAndChargesHtml: Html = Html("")
                 ): () => HtmlFormat.Appendable = () =>
     schemeDetailsView(
       schemeName,
@@ -49,7 +50,8 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
       isSchemeOpen,
       displayChangeLink,
       lockingPsa,
-      aftHtml
+      aftHtml,
+      paymetsAndChargesHtml
     )(fakeRequest, messages)
 
   "SchemesDetails view" must {

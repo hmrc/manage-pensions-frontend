@@ -36,7 +36,8 @@
     isSchemeOpen: Boolean,
     displayChangeLink: Boolean,
     lockingPsa: Option[String],
-    aftHtml: Html
+    aftHtml: Html,
+    paymentsAndChargesHtml: Html
 )(implicit request: Request[_], messages: Messages)
 
     @main_template(
@@ -66,6 +67,8 @@
         }
 
         @aftHtml
+
+        @paymentsAndChargesHtml
 
         @admins.map { admins =>
             <h2>@messages("messages__schemeDetails__psa_list_head")</h2>
