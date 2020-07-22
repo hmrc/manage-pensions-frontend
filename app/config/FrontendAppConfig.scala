@@ -142,4 +142,7 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
 
   lazy val listSchemePagination: Int = runModeConfiguration.get[Int]("listSchemePagination")
   lazy val minimumSchemeSearchResults: Int = runModeConfiguration.get[Int]("minimumSchemeSearchResults")
+
+  lazy val isFSEnabled: Boolean = runModeConfiguration.get[Boolean]("features.is-fs-enabled")
+
 }
