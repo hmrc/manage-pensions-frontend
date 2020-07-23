@@ -48,6 +48,14 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
     }
   }
 
+  def retrievePaymentsAndChargesHtml[A](srn: String)(implicit request: Request[A]): Future[Html] = {
+    if(appConfig.isFSEnabled) {
+      frontendConnector.retrievePaymentsAndChargesPartial(srn)
+    } else {
+      Future.successful(Html(""))
+    }
+  }
+
   private def isCorrectSchemeStatus(ua: UserAnswers): Boolean = {
     val validStatus = Seq(Open.value, WoundUp.value, Deregistered.value)
     ua.get(SchemeStatusId) match {

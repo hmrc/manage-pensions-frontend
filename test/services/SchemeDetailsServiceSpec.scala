@@ -20,6 +20,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 import base.SpecBase
+import config.FrontendAppConfig
 import connectors.FrontendConnector
 import connectors.admin.MinimalPsaConnector
 import connectors.scheme.PensionSchemeVarianceLockConnector
@@ -53,9 +54,10 @@ class SchemeDetailsServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
   private val minimalPsaConnector: MinimalPsaConnector = mock[MinimalPsaConnector]
   private val lockConnector = mock[PensionSchemeVarianceLockConnector]
   private val frontendConnector = mock[FrontendConnector]
+  private val mockAppConfig = mock[FrontendAppConfig]
 
   def service: SchemeDetailsService =
-    new SchemeDetailsService(frontendAppConfig, frontendConnector, lockConnector, minimalPsaConnector)
+    new SchemeDetailsService(mockAppConfig, frontendConnector, lockConnector, minimalPsaConnector)
 
   "retrieveOptionAFTViewModel" must {
     "return model fron aft-frontend is Scheme status is open" in {
@@ -74,6 +76,28 @@ class SchemeDetailsServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
 
       whenReady(service.retrieveAftHtml(ua, srn)) {
         _ mustBe Html("")
+      }
+    }
+  }
+
+  "retrievePaymentsAndChargesHtml" must {
+    "return the Html for payments and charges if toggle is enabled" in {
+      when(mockAppConfig.isFSEnabled).thenReturn(true)
+      when(frontendConnector.retrievePaymentsAndChargesPartial(any())(any(), any()))
+        .thenReturn(Future.successful(Html("test-payments-and-charges-html")))
+
+      whenReady(service.retrievePaymentsAndChargesHtml(srn)) {
+        _ mustBe Html("test-payments-and-charges-html")
+      }
+    }
+
+    "return empty Html if toggle not enabled" in {
+      when(mockAppConfig.isFSEnabled).thenReturn(true)
+      when(frontendConnector.retrievePaymentsAndChargesPartial(any())(any(), any()))
+        .thenReturn(Future.successful(Html("test-payments-and-charges-html")))
+
+      whenReady(service.retrievePaymentsAndChargesHtml(srn)) {
+        _ mustBe Html("test-payments-and-charges-html")
       }
     }
   }
