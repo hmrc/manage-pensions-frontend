@@ -24,7 +24,7 @@ import javax.inject.Inject
 import models.Link
 import models.requests.OptionalDataRequest
 import play.api.i18n.Messages
-import play.api.mvc.AnyContent
+import play.api.mvc.{AnyContent, Request}
 import play.twirl.api.Html
 import uk.gov.hmrc.http.HeaderCarrier
 import viewmodels.{CardViewModel, Message}
@@ -40,7 +40,7 @@ class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
   def getTiles(psaId: String)(implicit request: OptionalDataRequest[AnyContent], hc: HeaderCarrier, messages: Messages): Future[Seq[CardViewModel]] =
     for {
       invitationLink <- invitationsLink
-      adminHtml <- frontendConnector.retrievePenaltiesUrlPartial
+      adminHtml <- retrievePenaltiesUrlPartial
       schemeHtml <- frontendConnector.retrieveSchemeUrlsPartial
     } yield {
       Seq(
@@ -53,6 +53,14 @@ class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
     minimalPsaConnector.getPsaNameFromPsaID(psaId).map(identity)
 
   //TILES HELPER METHODS
+
+  private def retrievePenaltiesUrlPartial[A](implicit request: Request[A]): Future[Html] = {
+    if(appConfig.isFSEnabled) {
+      frontendConnector.retrievePenaltiesUrlPartial
+    } else {
+      Future.successful(Html(""))
+    }
+  }
   private def adminCard(invitationLink: Seq[Link], deregistrationLink: Seq[Link], psaId: String, html: Html)
                        (implicit messages: Messages): CardViewModel =
 
