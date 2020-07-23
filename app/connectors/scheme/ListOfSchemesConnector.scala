@@ -22,7 +22,7 @@ import models.ListOfSchemes
 import play.api.Logger
 import play.api.http.Status
 import play.api.libs.json.{JsError, JsResultException, JsSuccess, Json}
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpResponse, Upstream5xxResponse}
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpResponse, Upstream5xxResponse, UpstreamErrorResponse}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -67,9 +67,9 @@ class ListOfSchemesConnectorImpl @Inject()(http: HttpClient, config: FrontendApp
     case ex: BadRequestException
       if ex.message.contains("INVALID_CORRELATION_ID")
     => Future.failed(InvalidCorrelationIdException())
-    case Upstream5xxResponse(_, Status.INTERNAL_SERVER_ERROR, _)
+    case UpstreamErrorResponse(_, Status.INTERNAL_SERVER_ERROR, _, _)
     => Future.failed(InternalServerErrorException())
-    case Upstream5xxResponse(_, Status.SERVICE_UNAVAILABLE, _)
+    case UpstreamErrorResponse(_, Status.SERVICE_UNAVAILABLE, _, _)
     => Future.failed(ServiceUnavailableException())
   }
 
