@@ -62,21 +62,25 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
             val displayChangeLink = schemeDetailsService.displayChangeLink(isSchemeOpen, lock)
             for {
               aftHtml <- schemeDetailsService.retrieveAftHtml(userAnswers, srn.id)
-              list <- listSchemesConnector.getListOfSchemes(request.psaId.id)
+              listOfSchemes <- listSchemesConnector.getListOfSchemes(request.psaId.id)
               _ <- userAnswersCacheConnector.upsert(request.externalId, updatedUa.json)
               lockingPsa <- schemeDetailsService.lockingPsa(lock, srn)
             } yield {
-              Ok(view(
-                schemeName,
-                schemeDetailsService.pstr(srn.id, list),
-                schemeDetailsService.openedDate(srn.id, list, isSchemeOpen),
-                schemeDetailsService.administratorsVariations(request.psaId.id, userAnswers, schemeStatus),
-                srn.id,
-                isSchemeOpen,
-                displayChangeLink,
-                lockingPsa,
-                aftHtml
-              ))
+              listOfSchemes match {
+                case Right(list) =>
+                  Ok(view(
+                    schemeName,
+                    schemeDetailsService.pstr(srn.id, list),
+                    schemeDetailsService.openedDate(srn.id, list, isSchemeOpen),
+                    schemeDetailsService.administratorsVariations(request.psaId.id, userAnswers, schemeStatus),
+                    srn.id,
+                    isSchemeOpen,
+                    displayChangeLink,
+                    lockingPsa,
+                    aftHtml
+                  ))
+                case _ => NotFound(errorHandler.notFoundTemplate)
+              }
             }
           } else {
             Future.successful(NotFound(errorHandler.notFoundTemplate))

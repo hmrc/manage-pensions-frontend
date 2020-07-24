@@ -16,9 +16,10 @@
 
 package connectors
 
-import com.google.inject.{ImplementedBy, Inject}
+import com.google.inject.Inject
 import config.FrontendAppConfig
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -29,8 +30,8 @@ class MongoDiagnosticsConnector @Inject()(http: HttpClient, config: FrontendAppC
   def fetchDiagnostics()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[String] = {
 
     for {
-      admin <- http.GET(s"${config.pensionAdminUrl}/test-only/mongo-diagnostics")
-      scheme <- http.GET(s"${config.pensionsSchemeUrl}/test-only/mongo-diagnostics")
+      admin <- http.GET[HttpResponse](s"${config.pensionAdminUrl}/test-only/mongo-diagnostics")
+      scheme <- http.GET[HttpResponse](s"${config.pensionsSchemeUrl}/test-only/mongo-diagnostics")
     } yield {
       admin.body + "\n" + scheme.body
     }

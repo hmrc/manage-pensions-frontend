@@ -77,7 +77,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
       when(fakeSchemeDetailsConnector.getSchemeDetails(eqTo("A0000000"), any(), any())(any(), any()))
         .thenReturn(Future.successful(desUserAnswers))
       when(fakeListOfSchemesConnector.getListOfSchemes(any())(any(), any()))
-        .thenReturn(Future.successful(listOfSchemesResponse))
+        .thenReturn(Future.successful(Right(listOfSchemesResponse)))
       when(schemeDetailsService.displayChangeLink(any(), any())).thenReturn(false)
       when(schemeDetailsService.pstr(any(), any())).thenReturn(pstr)
       when(schemeDetailsService.openedDate(any(), any(), any())).thenReturn(openDate)

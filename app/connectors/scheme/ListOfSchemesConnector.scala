@@ -20,58 +20,42 @@ import com.google.inject.{ImplementedBy, Inject, Singleton}
 import config.FrontendAppConfig
 import models.ListOfSchemes
 import play.api.Logger
-import play.api.http.Status
+import play.api.http.Status._
 import play.api.libs.json.{JsError, JsResultException, JsSuccess, Json}
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, HttpResponse, Upstream5xxResponse, UpstreamErrorResponse}
+import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Try}
 
 @ImplementedBy(classOf[ListOfSchemesConnectorImpl])
 trait ListOfSchemesConnector {
 
-  def getListOfSchemes(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[ListOfSchemes]
+  def getListOfSchemes(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]]
 
 }
 
 @Singleton
 class ListOfSchemesConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) extends ListOfSchemesConnector {
 
-  def getListOfSchemes(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[ListOfSchemes] = {
+  def getListOfSchemes(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]] = {
     val url = config.listOfSchemesUrl
     val schemeHc = hc.withExtraHeaders("psaId" -> psaId)
     http.GET[HttpResponse](url)(implicitly, schemeHc, implicitly).map { response =>
-      require(response.status == Status.OK)
-
-      val json = Json.parse(response.body)
-      json.validate[ListOfSchemes] match {
-        case JsSuccess(value, _) => value
-        case JsError(errors) => throw new JsResultException(errors)
+      response.status match {
+        case OK => val json = Json.parse(response.body)
+          json.validate[ListOfSchemes] match {
+            case JsSuccess(value, _) => Right(value)
+            case JsError(errors) => throw JsResultException(errors)
+          }
+        case _ =>
+          Logger.error(response.body)
+          Left(response)
       }
-    } andThen {
-      logExceptions
-    } recoverWith {
-      translateExceptions()
     }
   }
 
-  private def logExceptions: PartialFunction[Try[ListOfSchemes], Unit] = {
-    case Failure(t: Throwable) => Logger.error("Unable to retrieve list of schemes", t)
-  }
 
-  private def translateExceptions(): PartialFunction[Throwable, Future[ListOfSchemes]] = {
-    case ex: BadRequestException
-      if ex.message.contains("INVALID_PAYLOAD")
-    => Future.failed(InvalidPayloadException())
-    case ex: BadRequestException
-      if ex.message.contains("INVALID_CORRELATION_ID")
-    => Future.failed(InvalidCorrelationIdException())
-    case UpstreamErrorResponse(_, Status.INTERNAL_SERVER_ERROR, _, _)
-    => Future.failed(InternalServerErrorException())
-    case UpstreamErrorResponse(_, Status.SERVICE_UNAVAILABLE, _, _)
-    => Future.failed(ServiceUnavailableException())
-  }
 
 }
 

@@ -43,7 +43,7 @@ class SchemeSearchServiceSpec extends SpecBase with MockitoSugar with ScalaFutur
   "Search" must {
     "return correct list of scheme details with search on correct pstr" in {
       when(mockSchemesConnector.getListOfSchemes(Matchers.eq(psaId))(any(), any()))
-        .thenReturn(Future.successful(listOfSchemes))
+        .thenReturn(Future.successful(Right(listOfSchemes)))
 
       whenReady(schemeSearchService.search(psaId, Some(pstr))) { result =>
         result mustBe fullSchemes.filter(_.pstr contains pstr)
@@ -52,7 +52,7 @@ class SchemeSearchServiceSpec extends SpecBase with MockitoSugar with ScalaFutur
 
     "return correct list of scheme details with search on correct srn" in {
       when(mockSchemesConnector.getListOfSchemes(Matchers.eq(psaId))(any(), any()))
-        .thenReturn(Future.successful(listOfSchemes))
+        .thenReturn(Future.successful(Right(listOfSchemes)))
 
       whenReady(schemeSearchService.search(psaId, Some(srn))) { result =>
         result mustBe fullSchemes.filter(_.referenceNumber == srn)
@@ -62,7 +62,7 @@ class SchemeSearchServiceSpec extends SpecBase with MockitoSugar with ScalaFutur
     "return empty list for correct format pstr/srn but no match" in {
       val emptyList = ListOfSchemes("", "", None)
       when(mockSchemesConnector.getListOfSchemes(Matchers.eq(psaId))(any(), any()))
-        .thenReturn(Future.successful(emptyList))
+        .thenReturn(Future.successful(Right(emptyList)))
 
       whenReady(schemeSearchService.search(psaId, Some("S2400000016"))) { result =>
         result mustBe Nil
@@ -72,7 +72,7 @@ class SchemeSearchServiceSpec extends SpecBase with MockitoSugar with ScalaFutur
     "return correct list of scheme details with search on scheme name" in {
       when(mockFuzzyMatching.doFuzzyMatching(any(), any())).thenReturn(true).thenReturn(false)
       when(mockSchemesConnector.getListOfSchemes(Matchers.eq(psaId))(any(), any()))
-        .thenReturn(Future.successful(listOfSchemes))
+        .thenReturn(Future.successful(Right(listOfSchemes)))
 
       whenReady(schemeSearchService.search(psaId, Some("scheme-1"))) { result =>
         result mustBe fullSchemes.filter(_.name == "scheme-1")
@@ -83,7 +83,7 @@ class SchemeSearchServiceSpec extends SpecBase with MockitoSugar with ScalaFutur
       when(mockFuzzyMatching.doFuzzyMatching(any(), any())).thenReturn(false)
       val emptyList = ListOfSchemes("", "", None)
       when(mockSchemesConnector.getListOfSchemes(Matchers.eq(psaId))(any(), any()))
-        .thenReturn(Future.successful(emptyList))
+        .thenReturn(Future.successful(Right(emptyList)))
 
       whenReady(schemeSearchService.search(psaId, Some("no matching"))) { result =>
         result mustBe Nil
@@ -98,7 +98,7 @@ object SchemeSearchServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
 
   private val psaId: String = "psaId"
 
-  def listOfSchemes = ListOfSchemes("", "", Some(fullSchemes))
+  def listOfSchemes: ListOfSchemes = ListOfSchemes("", "", Some(fullSchemes))
 
   def fullSchemes: List[SchemeDetail] =
     List(

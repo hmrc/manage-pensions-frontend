@@ -18,10 +18,12 @@ package connectors.scheme
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
 import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.http.HttpReads.Implicits._
+import play.api.http.Status._
 
 trait FeatureSwitchConnector {
   def toggleOn(name: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean]
@@ -39,46 +41,40 @@ class PensionsSchemeFeatureSwitchConnectorImpl @Inject()(http: HttpClient, appCo
 
     val url = appConfig.pensionsSchemeUrl + s"/pensions-scheme/test-only/toggle-on/$name"
 
-    http.GET(url).map { _ =>
-      true
-    }.recoverWith {
-      case _ =>
-        Future.successful(false)
-    }
+    http.GET[HttpResponse](url).map(_.status match {
+      case NO_CONTENT => true
+      case _ =>false
+    })
   }
 
   override def toggleOff(name: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
 
     val url = appConfig.pensionsSchemeUrl + s"/pensions-scheme/test-only/toggle-off/$name"
 
-    http.GET(url).map { _ =>
-      true
-    }.recoverWith {
-      case _ =>
-        Future.successful(false)
-    }
+    http.GET[HttpResponse](url).map(_.status match {
+      case NO_CONTENT => true
+      case _ =>false
+    })
   }
 
   override def reset(name: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     val url = appConfig.pensionsSchemeUrl + s"/pensions-scheme/test-only/reset/$name"
 
-    http.GET(url).map { _ =>
-      true
-    }.recoverWith {
-      case _ =>
-        Future.successful(false)
-    }
+    http.GET[HttpResponse](url).map(_.status match {
+      case NO_CONTENT => true
+      case _ => false
+    })
   }
 
   override def get(name: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Boolean]] = {
     val url = appConfig.pensionsSchemeUrl + s"/pensions-scheme/test-only/get/$name"
 
-    http.GET(url).map { value =>
-      val currentValue = value.json.as[Boolean]
-      Option(currentValue)
-    }.recoverWith {
-      case _ =>
-        Future.successful(None)
+    http.GET[HttpResponse](url).map { response =>
+      response.status match {
+        case OK => val currentValue = response.json.as[Boolean]
+          Option(currentValue)
+        case _ => None
+      }
     }
   }
 }
