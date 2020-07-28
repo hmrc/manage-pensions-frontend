@@ -24,7 +24,7 @@ import javax.inject.Inject
 import models.Link
 import models.requests.OptionalDataRequest
 import play.api.i18n.Messages
-import play.api.mvc.AnyContent
+import play.api.mvc.{AnyContent, Request}
 import play.twirl.api.Html
 import uk.gov.hmrc.http.HeaderCarrier
 import viewmodels.{CardViewModel, Message}
@@ -40,11 +40,12 @@ class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
   def getTiles(psaId: String)(implicit request: OptionalDataRequest[AnyContent], hc: HeaderCarrier, messages: Messages): Future[Seq[CardViewModel]] =
     for {
       invitationLink <- invitationsLink
-      html <- frontendConnector.retrieveSchemeUrlsPartial
+      adminHtml <- retrievePenaltiesUrlPartial
+      schemeHtml <- frontendConnector.retrieveSchemeUrlsPartial
     } yield {
       Seq(
-        adminCard(invitationLink, deregisterLink, psaId),
-        schemeCard(html)
+        adminCard(invitationLink, deregisterLink, psaId, adminHtml),
+        schemeCard(schemeHtml)
       )
     }
 
@@ -52,7 +53,16 @@ class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
     minimalPsaConnector.getPsaNameFromPsaID(psaId).map(identity)
 
   //TILES HELPER METHODS
-  private def adminCard(invitationLink: Seq[Link], deregistrationLink: Seq[Link], psaId: String)(implicit messages: Messages): CardViewModel =
+
+  private def retrievePenaltiesUrlPartial[A](implicit request: Request[A]): Future[Html] = {
+    if(appConfig.isFSEnabled) {
+      frontendConnector.retrievePenaltiesUrlPartial
+    } else {
+      Future.successful(Html(""))
+    }
+  }
+  private def adminCard(invitationLink: Seq[Link], deregistrationLink: Seq[Link], psaId: String, html: Html)
+                       (implicit messages: Messages): CardViewModel =
 
     CardViewModel(
       id = "administrator-card",
@@ -61,7 +71,8 @@ class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
       subHeadingParam = Some(psaId),
       links = Seq(
         Link("psaLink", appConfig.registeredPsaDetailsUrl, Message("messages__schemeOverview__psa_change"))
-      ) ++ invitationLink ++ deregistrationLink
+      ) ++ invitationLink ++ deregistrationLink,
+      html = Some(html)
     )
 
   private def schemeCard(html: Html)(implicit messages: Messages): CardViewModel =

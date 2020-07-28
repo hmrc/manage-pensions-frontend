@@ -62,6 +62,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
             val displayChangeLink = schemeDetailsService.displayChangeLink(isSchemeOpen, lock)
             for {
               aftHtml <- schemeDetailsService.retrieveAftHtml(userAnswers, srn.id)
+              paymentsAndChargesHtml <- schemeDetailsService.retrievePaymentsAndChargesHtml(srn.id)
               listOfSchemes <- listSchemesConnector.getListOfSchemes(request.psaId.id)
               _ <- userAnswersCacheConnector.upsert(request.externalId, updatedUa.json)
               lockingPsa <- schemeDetailsService.lockingPsa(lock, srn)
@@ -77,7 +78,8 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                     isSchemeOpen,
                     displayChangeLink,
                     lockingPsa,
-                    aftHtml
+                    aftHtml,
+                    paymentsAndChargesHtml
                   ))
                 case _ => NotFound(errorHandler.notFoundTemplate)
               }

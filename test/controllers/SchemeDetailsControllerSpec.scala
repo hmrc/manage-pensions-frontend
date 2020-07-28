@@ -84,11 +84,13 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
       when(schemeDetailsService.administratorsVariations(any(), any(), any())).thenReturn(administrators)
       when(schemeDetailsService.lockingPsa(any(), any())(any(), any())).thenReturn(Future.successful(Some("test-psa")))
       when(schemeDetailsService.retrieveAftHtml(any(), any())(any())).thenReturn(Future(Html("test-aft-html")))
+      when(schemeDetailsService.retrievePaymentsAndChargesHtml(any())(any())).thenReturn(Future(Html("test-payments-and-charges-html")))
 
       val result = controller().onPageLoad(srn)(fakeRequest)
       status(result) mustBe OK
       contentAsString(result) mustBe schemeDetailsView(schemeName, pstr, openDate, administrators, srn, isSchemeOpen = true,
-        displayChangeLink = false, lockingPsa = Some("test-psa"), aftHtml = aftHtml)(fakeRequest, messages).toString()
+        displayChangeLink = false, lockingPsa = Some("test-psa"), aftHtml = aftHtml,
+        paymentsAndChargesHtml = paymentsAndChargesHtml)(fakeRequest, messages).toString()
     }
 
     "return NOT_FOUND when PSA data is not returned by API (as we don't know who administers the scheme)" in {
@@ -129,6 +131,7 @@ private object SchemeDetailsControllerSpec extends MockitoSugar {
   private val openDate = Some("10 October 2012")
   private val srn = SchemeReferenceNumber("S1000000456")
   private val aftHtml = Html("test-aft-html")
+  private val paymentsAndChargesHtml = Html("test-payments-and-charges-html")
 
   private val administrators =
     Some(

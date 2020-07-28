@@ -31,10 +31,12 @@ class FrontendConnectorSpec extends AsyncWordSpec with MustMatchers with WireMoc
 
   implicit val headerCarrier: HeaderCarrierForPartials =
     HeaderCarrierForPartials(hc = HeaderCarrier(), encodedCookies = "")
-  val aftPartialUrl = "/manage-pension-scheme-accounting-for-tax/srn/aft-partial"
+  private val aftPartialUrl = "/manage-pension-scheme-accounting-for-tax/srn/aft-partial"
+  private val paymentsAndChargesPartialHtmlUrl = "/manage-pension-scheme-accounting-for-tax/srn/payments-and-charges-partial"
   private val srn = "srn"
-  implicit val request = FakeRequest("", "")
-  val aftHtml: Html = Html("test-aft-html")
+  implicit val request: FakeRequest[_] = FakeRequest("", "")
+  private val aftHtml: Html = Html("test-aft-html")
+  private val paymentsAndChargesHtml: Html = Html("test-payments-and-charges-html")
 
   "FrontedConnector" when {
     "asked to retrieve AFT models" should {
@@ -55,7 +57,27 @@ class FrontendConnectorSpec extends AsyncWordSpec with MustMatchers with WireMoc
           aftModel mustBe aftHtml
         )
       }
+    }
+
+    "asked to retrieve Payment and charges partial" should {
+      "call the micro service with the correct uri and return the contents" in {
+        server.stubFor(
+          get(urlEqualTo(paymentsAndChargesPartialHtmlUrl))
+            .willReturn(
+              aResponse()
+                .withStatus(Status.OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(paymentsAndChargesHtml.toString())
+            )
+        )
+
+        val connector = injector.instanceOf[FrontendConnector]
+
+        connector.retrievePaymentsAndChargesPartial(srn).map(paymentsAndChargesHtml =>
+          paymentsAndChargesHtml mustBe paymentsAndChargesHtml
+        )
       }
     }
+  }
 
 }

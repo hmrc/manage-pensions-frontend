@@ -17,10 +17,10 @@
 package forms.mappings
 
 import org.scalatest.{MustMatchers, OptionValues, WordSpec}
-import org.scalatest.prop.GeneratorDrivenPropertyChecks
+import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import play.api.data.{Form, FormError}
 
-class MappingsSpec extends WordSpec with MustMatchers with OptionValues with Mappings with GeneratorDrivenPropertyChecks {
+class MappingsSpec extends WordSpec with MustMatchers with OptionValues with Mappings with ScalaCheckDrivenPropertyChecks {
 
   "boolean" must {
 

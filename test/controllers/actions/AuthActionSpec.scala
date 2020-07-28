@@ -18,7 +18,7 @@ package controllers.actions
 
 import base.SpecBase
 import controllers.routes
-import play.api.mvc.{Action, AnyContent, BodyParsers, Controller}
+import play.api.mvc.{Action, AnyContent, BaseController, BodyParsers, Controller, MessagesControllerComponents}
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
@@ -27,6 +27,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 
 class AuthActionSpec extends SpecBase {
 
@@ -128,7 +129,7 @@ object AuthActionSpec {
   private def authRetrievals: Future[Some[String] ~ Enrolments ~ Some[AffinityGroup.Individual.type]] =
     Future.successful(new ~(new ~(Some("id"), Enrolments(Set())), Some(AffinityGroup.Individual)))
 
-  class Harness(authAction: AuthAction) extends Controller {
+  class Harness(authAction: AuthAction, val controllerComponents: MessagesControllerComponents = stubMessagesControllerComponents()) extends BaseController {
     def onPageLoad(): Action[AnyContent] = authAction { _ => Ok }
   }
 

@@ -113,8 +113,14 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
 
   lazy val aftPartialHtmlUrl: String = s"${servicesConfig.baseUrl("aft-frontend")}${runModeConfiguration.underlying
     .getString("urls.aftPartialHtml")}"
+
+  lazy val paymentsAndChargesPartialHtmlUrl: String = s"${servicesConfig.baseUrl("aft-frontend")}${runModeConfiguration.underlying
+    .getString("urls.paymentsAndChargesPartialHtml")}"
+
   lazy val schemeUrlsPartialHtmlUrl: String = s"${servicesConfig.baseUrl("scheme-frontend")}${runModeConfiguration.underlying
     .getString("urls.schemeUrlsPartialHtml")}"
+  lazy val penaltiesUrlPartialHtmlUrl: String = s"${servicesConfig.baseUrl("aft-frontend")}${runModeConfiguration.underlying
+    .getString("urls.penaltiesPartialHtml")}"
 
 
   def languageMap: Map[String, Lang] = Map(
@@ -138,4 +144,7 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
 
   lazy val listSchemePagination: Int = runModeConfiguration.get[Int]("listSchemePagination")
   lazy val minimumSchemeSearchResults: Int = runModeConfiguration.get[Int]("minimumSchemeSearchResults")
+
+  lazy val isFSEnabled: Boolean = runModeConfiguration.get[Boolean]("features.is-fs-enabled")
+
 }

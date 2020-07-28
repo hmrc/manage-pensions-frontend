@@ -27,7 +27,7 @@ class FeatureToggleBehaviours extends WordSpec with Matchers {
     val injector = new GuiceApplicationBuilder()
       .configure(on.fold ("features"->"")(b=> s"features.$name" -> b.toString)).build().injector
 
-    injector.instanceOf[Configuration].getBoolean(s"features.$name").getOrElse(false)
+    injector.instanceOf[Configuration].getOptional[Boolean](s"features.$name").getOrElse(false)
 
   }
 
@@ -48,7 +48,7 @@ class FeatureToggleBehaviours extends WordSpec with Matchers {
       }
 
       s"return actual conf value" in {
-        new GuiceApplicationBuilder().build().injector.instanceOf[Configuration].getBoolean(s"features.$name") shouldBe Some(actualValue)
+        new GuiceApplicationBuilder().build().injector.instanceOf[Configuration].get[Boolean](s"features.$name") shouldBe Some(actualValue)
       }
 
     }

@@ -22,11 +22,11 @@ import java.time.format.DateTimeFormatter
 import forms.FormSpec
 import generators.Generators
 import org.scalacheck.Gen
-import org.scalatest.prop.PropertyChecks
+import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import play.api.data.{Form, FormError}
 
 //noinspection ScalaStyle
-trait FieldBehaviours extends FormSpec with PropertyChecks with Generators {
+trait FieldBehaviours extends FormSpec with ScalaCheckDrivenPropertyChecks with Generators {
 
   def fieldThatBindsValidData(form: Form[_],
                               fieldName: String,

@@ -18,13 +18,13 @@ package utils
 
 import org.scalacheck.Gen
 import org.scalatest.{FlatSpec, Matchers}
-import org.scalatest.prop.GeneratorDrivenPropertyChecks
+import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import play.api.http.Status._
 import uk.gov.hmrc.http._
 
 // scalastyle:off magic.number
 
-class HttpResponseHelperSpec extends FlatSpec with Matchers with GeneratorDrivenPropertyChecks {
+class HttpResponseHelperSpec extends FlatSpec with Matchers with ScalaCheckDrivenPropertyChecks {
 
   import HttpResponseHelperSpec._
 
@@ -43,9 +43,9 @@ class HttpResponseHelperSpec extends FlatSpec with Matchers with GeneratorDriven
 
     forAll(userErrors) {
       userError =>
-        val ex = the[Upstream4xxResponse] thrownBy fixture()(responseFor(userError))
+        val ex = the[UpstreamErrorResponse] thrownBy fixture()(responseFor(userError))
         ex.reportAs shouldBe userError
-        ex.upstreamResponseCode shouldBe userError
+        ex.statusCode shouldBe userError
     }
   }
 
@@ -54,9 +54,9 @@ class HttpResponseHelperSpec extends FlatSpec with Matchers with GeneratorDriven
 
     forAll(serverErrors) {
       serverError =>
-        val ex = the[Upstream5xxResponse] thrownBy fixture()(responseFor(serverError))
+        val ex = the[UpstreamErrorResponse] thrownBy fixture()(responseFor(serverError))
         ex.reportAs shouldBe BAD_GATEWAY
-        ex.upstreamResponseCode shouldBe serverError
+        ex.statusCode shouldBe serverError
     }
   }
 
@@ -77,8 +77,7 @@ object HttpResponseHelperSpec {
     new HttpResponseHelper {}.handleErrorResponse("test-mnethod", "test-url")
   }
 
-  def responseFor(status: Int): HttpResponse = {
-    HttpResponse(status, None, Map.empty, Some(s"Message for $status"))
-  }
+  def responseFor(status: Int): HttpResponse = HttpResponse(status, s"Message for $status")
+
 
 }

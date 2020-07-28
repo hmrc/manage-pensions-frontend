@@ -20,14 +20,15 @@ import identifiers.Identifier
 import models.requests.IdentifiedRequest
 import models.{CheckMode, NormalMode}
 import org.scalatest.exceptions.TableDrivenPropertyCheckFailedException
-import org.scalatest.prop.{PropertyChecks, TableFor4}
+import org.scalatest.prop.TableFor4
 import org.scalatest.{MustMatchers, OptionValues, WordSpec}
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import play.api.mvc.Call
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-trait NavigatorBehaviour extends PropertyChecks with OptionValues {
+trait NavigatorBehaviour extends ScalaCheckPropertyChecks with OptionValues {
   this: WordSpec with MustMatchers =>
 
   protected implicit val request: IdentifiedRequest = new IdentifiedRequest {
