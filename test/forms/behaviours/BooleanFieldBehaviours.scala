@@ -16,13 +16,11 @@
 
 package forms.behaviours
 
-import org.scalacheck.Arbitrary.arbitrary
-import org.scalacheck.Gen
 import org.scalatest.OptionValues
-import org.scalatest.prop.GeneratorDrivenPropertyChecks
+import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import play.api.data.{Form, FormError}
 
-trait BooleanFieldBehaviours extends FieldBehaviours with OptionValues with GeneratorDrivenPropertyChecks {
+trait BooleanFieldBehaviours extends FieldBehaviours with OptionValues with ScalaCheckDrivenPropertyChecks {
 
   def booleanField(form: Form[_],
                    fieldName: String,

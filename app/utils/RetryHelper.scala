@@ -20,7 +20,8 @@ import akka.actor.ActorSystem
 import akka.pattern.Patterns.after
 import config.FrontendAppConfig
 import play.api.Logger
-import uk.gov.hmrc.http.Upstream5xxResponse
+import uk.gov.hmrc.http.{HttpErrorFunctions, Upstream5xxResponse, UpstreamErrorResponse}
+import HttpErrorFunctions.is5xx
 
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
@@ -38,7 +39,7 @@ trait RetryHelper  {
                                    currentWait: Int,
                                    f: () => Future[T], config: FrontendAppConfig)(implicit ec: ExecutionContext): Future[T] = {
     f.apply().recoverWith {
-      case e: Upstream5xxResponse =>
+      case e: UpstreamErrorResponse if is5xx(e.statusCode) =>
         if ( currentAttempt < config.retryAttempts) {
           val wait = Math.ceil(currentWait * config.retryWaitFactor).toInt
           Logger.warn(s"Failure, retrying after $wait ms, attempt $currentAttempt")

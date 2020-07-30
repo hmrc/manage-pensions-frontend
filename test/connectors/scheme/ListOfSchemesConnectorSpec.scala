@@ -19,7 +19,7 @@ package connectors.scheme
 import com.github.tomakehurst.wiremock.client.WireMock._
 import models.{ListOfSchemes, SchemeDetail, SchemeStatus}
 import org.scalatest.{AsyncFlatSpec, Matchers, OptionValues}
-import play.api.http.Status
+import play.api.http.Status._
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.WireMockHelper
@@ -37,7 +37,7 @@ class ListOfSchemesConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
         .withHeader("psaId", equalTo(psaId))
         .willReturn(
           aResponse()
-            .withStatus(Status.OK)
+            .withStatus(OK)
             .withHeader("Content-Type", "application/json")
             .withBody(validResponse)
         )
@@ -46,7 +46,7 @@ class ListOfSchemesConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
     val connector = injector.instanceOf[ListOfSchemesConnector]
 
     connector.getListOfSchemes(psaId).map(listOfSchemes =>
-      listOfSchemes shouldBe expectedResponse
+      listOfSchemes.right.get shouldBe expectedResponse
     )
 
   }
@@ -64,28 +64,9 @@ class ListOfSchemesConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
 
     val connector = injector.instanceOf[ListOfSchemesConnector]
 
-    recoverToSucceededIf[InvalidPayloadException] {
-      connector.getListOfSchemes(psaId)
-    }
-  }
-
-  it should "throw InvalidCorrelationIdException for a 400 INVALID_CORRELATION_ID response" in {
-
-    server.stubFor(
-      get(urlEqualTo(listOfSchemesUrl))
-        .willReturn(
-          badRequest
-            .withHeader("Content-Type", "application/json")
-            .withBody(invalidCorrelationIdResponse)
-        )
+    connector.getListOfSchemes(psaId).map(listOfSchemes =>
+      listOfSchemes.left.get.status shouldBe BAD_REQUEST
     )
-
-    val connector = injector.instanceOf[ListOfSchemesConnector]
-
-    recoverToSucceededIf[InvalidCorrelationIdException] {
-      connector.getListOfSchemes(psaId)
-    }
-
   }
 
   it should "throw InternalServerErrorException for a 500 response" in {
@@ -94,7 +75,7 @@ class ListOfSchemesConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
       get(urlEqualTo(listOfSchemesUrl))
         .willReturn(
           aResponse()
-            .withStatus(Status.INTERNAL_SERVER_ERROR)
+            .withStatus(INTERNAL_SERVER_ERROR)
             .withHeader("Content-Type", "application/json")
             .withBody("{}")
         )
@@ -105,26 +86,9 @@ class ListOfSchemesConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
     recoverToSucceededIf[InternalServerErrorException] {
       connector.getListOfSchemes(psaId)
     }
-
-  }
-
-  it should "throw ServiceUnavailableException for a 503 response" in {
-
-    server.stubFor(
-      get(urlEqualTo(listOfSchemesUrl))
-        .willReturn(
-          aResponse()
-            .withStatus(Status.SERVICE_UNAVAILABLE)
-            .withHeader("Content-Type", "application/json")
-            .withBody("{}")
-        )
+    connector.getListOfSchemes(psaId).map(listOfSchemes =>
+      listOfSchemes.left.get.status shouldBe INTERNAL_SERVER_ERROR
     )
-
-    val connector = injector.instanceOf[ListOfSchemesConnector]
-
-    recoverToSucceededIf[ServiceUnavailableException] {
-      connector.getListOfSchemes(psaId)
-    }
 
   }
 
@@ -165,14 +129,6 @@ object ListOfSchemesConnectorSpec extends OptionValues {
     Json.stringify(
       Json.obj(
         "code" -> "INVALID_PAYLOAD",
-        "reason" -> "test-reason"
-      )
-    )
-
-  private val invalidCorrelationIdResponse =
-    Json.stringify(
-      Json.obj(
-        "code" -> "INVALID_CORRELATION_ID",
         "reason" -> "test-reason"
       )
     )

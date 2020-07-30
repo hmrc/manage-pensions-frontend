@@ -16,13 +16,14 @@
 
 package models
 
-import models.SchemeStatus.WoundUp
 import java.time.LocalDate
-import org.scalacheck.Gen
-import org.scalatest.prop.GeneratorDrivenPropertyChecks
-import org.scalatest.{MustMatchers, WordSpec}
 
-class PsaSchemeDetailsSpec extends WordSpec with MustMatchers with GeneratorDrivenPropertyChecks {
+import models.SchemeStatus.WoundUp
+import org.scalacheck.Gen
+import org.scalatest.{MustMatchers, WordSpec}
+import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
+
+class PsaSchemeDetailsSpec extends WordSpec with MustMatchers with ScalaCheckDrivenPropertyChecks {
 
   import PsaSchemeDetailsSpec._
 

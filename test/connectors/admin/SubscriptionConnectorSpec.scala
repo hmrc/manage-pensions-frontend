@@ -22,7 +22,7 @@ import org.scalatest.{AsyncFlatSpec, Matchers}
 import org.scalatestplus.scalacheck.Checkers
 import play.api.http.Status._
 import play.api.libs.json.{JsResultException, Json}
-import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse, UpstreamErrorResponse}
 import utils.WireMockHelper
 
 class SubscriptionConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper with Checkers {
@@ -133,7 +133,7 @@ class SubscriptionConnectorSpec extends AsyncFlatSpec with Matchers with WireMoc
         )
     )
 
-    recoverToExceptionIf[Upstream5xxResponse] {
+    recoverToExceptionIf[UpstreamErrorResponse] {
       connector.getSubscriptionDetails(psaId)
     } map {
       _ =>

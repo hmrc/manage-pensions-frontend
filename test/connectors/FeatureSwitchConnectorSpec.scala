@@ -95,7 +95,7 @@ class FeatureSwitchConnectorSpec extends AsyncWordSpec with MustMatchers with Wi
       server.stubFor(
         get(urlEqualTo(resetUrl))
           .willReturn(
-            ok()
+            noContent()
           )
       )
       connector.reset(featureSwitch).map(response =>

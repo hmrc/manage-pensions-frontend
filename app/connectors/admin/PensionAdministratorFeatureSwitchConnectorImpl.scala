@@ -19,10 +19,11 @@ package connectors.admin
 import com.google.inject.Inject
 import config.FrontendAppConfig
 import connectors.scheme.FeatureSwitchConnector
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
 import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.http.HttpReads.Implicits._
 
 class PensionAdministratorFeatureSwitchConnectorImpl @Inject()(http: HttpClient, appConfig: FrontendAppConfig) extends FeatureSwitchConnector {
 
@@ -30,7 +31,7 @@ class PensionAdministratorFeatureSwitchConnectorImpl @Inject()(http: HttpClient,
 
     val url = appConfig.pensionAdminUrl + s"/pension-administrator/test-only/toggle-on/$name"
 
-    http.GET(url).map { _ =>
+    http.GET[HttpResponse](url).map { _ =>
       true
     }.recoverWith {
       case _ =>
@@ -42,7 +43,7 @@ class PensionAdministratorFeatureSwitchConnectorImpl @Inject()(http: HttpClient,
 
     val url = appConfig.pensionAdminUrl + s"/pension-administrator/test-only/toggle-off/$name"
 
-    http.GET(url).map { _ =>
+    http.GET[HttpResponse](url).map { _ =>
       true
     }.recoverWith {
       case _ =>
@@ -52,7 +53,7 @@ class PensionAdministratorFeatureSwitchConnectorImpl @Inject()(http: HttpClient,
   override def reset(name: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     val url = appConfig.pensionAdminUrl + s"/pension-administrator/test-only/reset/$name"
 
-    http.GET(url).map { _ =>
+    http.GET[HttpResponse](url).map { _ =>
       true
     }.recoverWith {
       case _ =>
@@ -63,7 +64,7 @@ class PensionAdministratorFeatureSwitchConnectorImpl @Inject()(http: HttpClient,
   override def get(name: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Boolean]] = {
     val url = appConfig.pensionAdminUrl + s"/pension-administrator/test-only/get/$name"
 
-    http.GET(url).map { value =>
+    http.GET[HttpResponse](url).map { value =>
       val currentValue = value.json.as[Boolean]
       Option(currentValue)
     }.recoverWith {

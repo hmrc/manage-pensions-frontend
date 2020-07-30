@@ -47,13 +47,15 @@ class SchemeSearchService @Inject()(listSchemesConnector: ListOfSchemesConnector
 
   def search(psaId: String, searchText: Option[String])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[List[SchemeDetail]] = {
     listSchemesConnector.getListOfSchemes(psaId)
-      .map { listOfSchemes =>
-        val filterSearchResults =
-          searchText.fold[List[SchemeDetail] => List[SchemeDetail]](identity)(
-            st => filterSchemesBySrnOrPstrOrSchemeName(st, _: List[SchemeDetail])
-          )
+      .map {
+        case Right(listOfSchemes) =>
+          val filterSearchResults =
+            searchText.fold[List[SchemeDetail] => List[SchemeDetail]](identity)(
+              st => filterSchemesBySrnOrPstrOrSchemeName(st, _: List[SchemeDetail])
+            )
 
-        filterSearchResults(listOfSchemes.schemeDetail.getOrElse(List.empty[SchemeDetail]))
+          filterSearchResults(listOfSchemes.schemeDetail.getOrElse(List.empty[SchemeDetail]))
+        case _ => List.empty[SchemeDetail]
       }
   }: Future[List[SchemeDetail]]
 }
