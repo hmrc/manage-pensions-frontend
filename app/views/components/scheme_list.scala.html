@@ -70,7 +70,7 @@ case _ => status
 }
 }
 
-<table id="schemeList" class="hmrc-responsive-table" role="grid">
+<table id="schemeList" class="hmrc-responsive-table" role="table">
     <thead role="rowgroup">
     <tr role="row">
         <th class="govuk-table__header" scope="col">
@@ -89,20 +89,22 @@ case _ => status
         </th>
     </tr>
     </thead>
-    @for((scheme, index) <- schemes.zipWithIndex) {
+
     <tbody>
+    @for((scheme, index) <- schemes.zipWithIndex) {
+
     <tr class="member-details" role="row">
-        <td class="govuk-table__cell" role="gridcell">
+        <td class="govuk-table__cell" role="cell">
             <span class="hmrc-responsive-table__heading" aria-hidden="true">@messages("messages__listSchemes__column_schemeName")</span>
             <a id="@{schemeNameId(index)}" href="@{controllers.routes.SchemeDetailsController.onPageLoad(scheme.referenceNumber).url}" target="_self" data-sso="false">
                 @{scheme.name}
             </a>
         </td>
-        <td class="govuk-table__cell" role="gridcell" id="@{srnId(index)}">
+        <td class="govuk-table__cell" role="cell" id="@{srnId(index)}">
             <span class="hmrc-responsive-table__heading" aria-hidden="true">@messages("messages__listSchemes__column_srn")</span>
             @{scheme.referenceNumber}
         </td>
-        <td class="govuk-table__cell" role="gridcell" id="@{pstrId(index)}">
+        <td class="govuk-table__cell" role="cell" id="@{pstrId(index)}">
             <span class="hmrc-responsive-table__heading" aria-hidden="true">@messages("messages__listSchemes__column_pstr")</span>
             @if(scheme.pstr.nonEmpty) {
             @pstrValue(scheme.pstr)
@@ -110,11 +112,11 @@ case _ => status
             @messages("messages__listSchemes__pstr_not_assigned")
             }
         </td>
-        <td class="govuk-table__cell" role="gridcell" id="@{statusId(index)}">
+        <td class="govuk-table__cell" role="cell" id="@{statusId(index)}">
             <span class="hmrc-responsive-table__heading" aria-hidden="true">@messages("messages__listSchemes__column_status")</span>
             @statusValue(scheme.schemeStatus)
         </td>
     </tr>
-    </tbody>
     }
+    </tbody>
 </table>
