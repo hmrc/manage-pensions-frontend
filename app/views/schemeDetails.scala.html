@@ -88,7 +88,12 @@
                                     <span class="visually-hidden">@psa.name</span>
                                 </a>
                             </dd>
+                            } else {
+                            <dd>
+                                <span class="visually-hidden">@messages("messages__schemeDetails__visuallyhidden_remove",psa.name)</span>
+                            </dd>
                             }
+
                 </div>
                 }
             </dl>

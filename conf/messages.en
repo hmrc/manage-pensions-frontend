@@ -288,6 +288,7 @@ messages__schemeDetails__invite_link = Add a scheme administrator
 messages__schemeDetails__invite_p1 = To add a pension administrator they must be registered with the managing pension scheme service. You will need the name and administrator ID. They will get an invitation that they will have to accept.
 messages__schemeDetails__return_link = Return to your pension schemes
 messages__schemeDetails__remove = Remove
+messages__schemeDetails__visuallyhidden_remove = Cannot remove {0}
 
 messages__check__your__answer__main__containt__label = You are adding this scheme administrator to {0}.
 messages__check__your__answer__adviser__name__label = Who has working knowledge of pensions and pensions tax legislation?
