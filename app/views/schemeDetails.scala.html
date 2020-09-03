@@ -40,10 +40,7 @@
     paymentsAndChargesHtml: Html
 )(implicit request: Request[_], messages: Messages)
 
-    @main_template(
-        title = messages("messages__schemeDetails__title"),
-
-        bodyClasses = None) {
+    @main_template(schemeName, None) {
 
         @components.back_link()
 

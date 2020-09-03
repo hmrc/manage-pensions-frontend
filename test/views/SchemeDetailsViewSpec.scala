@@ -55,7 +55,7 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
     )(fakeRequest, messages)
 
   "SchemesDetails view" must {
-    behave like normalPage(
+    behave like normalPageWithoutBrowserTitle(
       createView(),
       messageKeyPrefix,
       schemeName,
