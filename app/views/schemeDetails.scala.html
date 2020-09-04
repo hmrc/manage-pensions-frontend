@@ -73,7 +73,7 @@
         @admins.map { admins =>
             <h2>@messages("messages__schemeDetails__psa_list_head")</h2>
 
-            <div id="admins-list">
+            <div id="admins-list" class="dl--margin-bottom">
 
             <dl class="dl--label-value">
                 @for(psa <- admins){
@@ -98,7 +98,6 @@
                 }
             </dl>
             </div>
-            <br/>
         }
 
         @if(isSchemeOpen){
