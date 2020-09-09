@@ -16,17 +16,19 @@
 
 package utils
 
+import java.util.concurrent.Callable
+
 import akka.actor.ActorSystem
 import akka.pattern.Patterns.after
 import config.FrontendAppConfig
 import play.api.Logger
-import uk.gov.hmrc.http.{HttpErrorFunctions, Upstream5xxResponse, UpstreamErrorResponse}
-import HttpErrorFunctions.is5xx
+import uk.gov.hmrc.http.HttpErrorFunctions.is5xx
+import uk.gov.hmrc.http.UpstreamErrorResponse
 
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 
-trait RetryHelper  {
+trait RetryHelper {
 
 
   val as: ActorSystem = ActorSystem()
@@ -35,15 +37,22 @@ trait RetryHelper  {
     retryWithBackOff(1, config.retryWaitMs, f, config)
   }
 
-  private def retryWithBackOff[T] (currentAttempt: Int,
-                                   currentWait: Int,
-                                   f: () => Future[T], config: FrontendAppConfig)(implicit ec: ExecutionContext): Future[T] = {
+  private def retryWithBackOff[T](currentAttempt: Int,
+                                  currentWait: Int,
+                                  f: () => Future[T], config: FrontendAppConfig)(implicit ec: ExecutionContext): Future[T] = {
     f.apply().recoverWith {
       case e: UpstreamErrorResponse if is5xx(e.statusCode) =>
-        if ( currentAttempt < config.retryAttempts) {
+        if (currentAttempt < config.retryAttempts) {
           val wait = Math.ceil(currentWait * config.retryWaitFactor).toInt
           Logger.warn(s"Failure, retrying after $wait ms, attempt $currentAttempt")
-          after(wait.milliseconds, as.scheduler, ec, Future.successful(1)).flatMap { _ =>
+          after(
+            duration = wait.milliseconds,
+            scheduler = as.scheduler,
+            context = ec,
+            value = new Callable[Future[Int]] {
+              override def call(): Future[Int] = Future.successful(1)
+            }
+          ).flatMap { _ =>
             retryWithBackOff(currentAttempt + 1, wait.toInt, f, config)
           }
         } else {
