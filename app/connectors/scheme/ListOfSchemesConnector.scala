@@ -17,11 +17,12 @@
 package connectors.scheme
 
 import com.google.inject.{ImplementedBy, Inject, Singleton}
-import config.FrontendAppConfig
+import config.{FeatureSwitchManagementService, FrontendAppConfig}
 import models.ListOfSchemes
 import play.api.Logger
 import play.api.http.Status._
 import play.api.libs.json.{JsError, JsResultException, JsSuccess, Json}
+import toggles.Toggles
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
@@ -36,12 +37,27 @@ trait ListOfSchemesConnector {
 }
 
 @Singleton
-class ListOfSchemesConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) extends ListOfSchemesConnector {
+class ListOfSchemesConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig,
+                                           fs: FeatureSwitchManagementService) extends ListOfSchemesConnector {
 
   def getListOfSchemes(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]] = {
-    val url = config.listOfSchemesUrl
-    val schemeHc = hc.withExtraHeaders("psaId" -> psaId)
-    http.GET[HttpResponse](url)(implicitly, schemeHc, implicitly).map { response =>
+    val (url, schemeHc) = if(fs.get(Toggles.listOfSchemesIFEnabled)) {
+        (config.listOfSchemesIFUrl, hc.withExtraHeaders("idType" -> "PSA", "idValue" -> psaId))
+    } else {
+        (config.listOfSchemesUrl, hc.withExtraHeaders("psaId" -> psaId))
+    }
+
+    listOfSchemes(url)(schemeHc, ec)
+  }
+
+  def getListOfSchemesForPsp(pspId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]] = {
+    val schemeHc = hc.withExtraHeaders("idType" -> "PSP", "idValue" -> pspId)
+    listOfSchemes(config.listOfSchemesIFUrl)(schemeHc, ec)
+  }
+
+  private def listOfSchemes(url: String)
+                           (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]] = {
+    http.GET[HttpResponse](url).map { response =>
       response.status match {
         case OK => val json = Json.parse(response.body)
           json.validate[ListOfSchemes] match {

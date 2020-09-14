@@ -18,7 +18,7 @@ package services
 
 import base.SpecBase
 import connectors.scheme.ListOfSchemesConnector
-import models.{ListOfSchemes, SchemeDetail, SchemeStatus}
+import models.{ListOfSchemes, SchemeDetails, SchemeStatus}
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -100,24 +100,24 @@ object SchemeSearchServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
 
   def listOfSchemes: ListOfSchemes = ListOfSchemes("", "", Some(fullSchemes))
 
-  def fullSchemes: List[SchemeDetail] =
+  def fullSchemes: List[SchemeDetails] =
     List(
-      SchemeDetail(
+      SchemeDetails(
         name = "scheme-1",
         referenceNumber = "srn-1",
         schemeStatus = SchemeStatus.Deregistered.value,
         openDate = None,
         pstr = Some("24000001IN"),
-        relationShip = None,
+        relationship = None,
         underAppeal = None
       ),
-      SchemeDetail(
+      SchemeDetails(
         name = "scheme-2",
         referenceNumber = "S2400000005",
         schemeStatus = SchemeStatus.Deregistered.value,
         openDate = None,
         pstr = Some("pstr-1"),
-        relationShip = None,
+        relationship = None,
         underAppeal = None
       )
     )

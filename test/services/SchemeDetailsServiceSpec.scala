@@ -16,9 +16,6 @@
 
 package services
 
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-
 import base.SpecBase
 import config.FrontendAppConfig
 import connectors.FrontendConnector
@@ -216,6 +213,6 @@ object SchemeDetailsServiceSpec {
       )
     )
   ))
-  val listOfSchemes: ListOfSchemes = ListOfSchemes("", "", Some(List(SchemeDetail(name, srn, "Open", Some(date), Some(pstr), None))))
+  val listOfSchemes: ListOfSchemes = ListOfSchemes("", "", Some(List(SchemeDetails(name, srn, "Open", Some(date), Some(pstr), None))))
 
 }

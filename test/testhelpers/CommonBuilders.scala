@@ -34,10 +34,10 @@ object CommonBuilders {
   val psaDetails3 = PsaDetails("A0000000",Some("partnetship name 2"),None, None)
 
 
-  val schemeDetail = SchemeDetail("abcdefghi", "S1000000456", SchemeStatus.Pending.value, Some("2012-10-10"),
+  val schemeDetail = SchemeDetails("abcdefghi", "S1000000456", SchemeStatus.Pending.value, Some("2012-10-10"),
     Some("10000678RE"), Some("Primary PSA"), None)
 
-  val schemeDetailWithoutDate = SchemeDetail("abcdefghi", "S1000000456", SchemeStatus.Pending.value, None,
+  val schemeDetailWithoutDate = SchemeDetails("abcdefghi", "S1000000456", SchemeStatus.Pending.value, None,
     Some("10000678RE"), Some("Primary PSA"), None)
 
   val listOfSchemesResponse = ListOfSchemes("2001-12-17T09:30:47Z", "1", Some(List(schemeDetail)))

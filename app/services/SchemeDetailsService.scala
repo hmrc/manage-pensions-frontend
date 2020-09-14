@@ -86,7 +86,7 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
     }
   def openedDate(srn: String, list: ListOfSchemes, isSchemeOpen: Boolean): Option[String] = {
     if (isSchemeOpen) {
-      list.schemeDetail.flatMap {
+      list.schemeDetails.flatMap {
         listOfSchemes =>
           val currentScheme = listOfSchemes.filter(_.referenceNumber.contains(srn))
           if (currentScheme.nonEmpty) {
@@ -101,7 +101,7 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
     }
   }
   def pstr(srn: String, list: ListOfSchemes): Option[String] =
-    list.schemeDetail.flatMap { listOfSchemes =>
+    list.schemeDetails.flatMap { listOfSchemes =>
       val currentScheme = listOfSchemes.filter(_.referenceNumber.contains(srn))
       if (currentScheme.nonEmpty) {
         currentScheme.head.pstr

@@ -20,30 +20,20 @@ import com.google.inject.Inject
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import connectors.admin.MinimalPsaConnector
-import connectors.scheme.ListOfSchemesConnector
-import controllers.actions.AuthAction
-import controllers.actions.DataRetrievalAction
+import controllers.actions.{AuthAction, DataRetrievalAction}
 import forms.ListSchemesFormProvider
 import identifiers.PSANameId
 import models.requests.OptionalDataRequest
-import models.Index
-import models.ListOfSchemes
-import models.SchemeDetail
+import models.{Index, SchemeDetails}
 import play.api.data.Form
-import play.api.i18n.I18nSupport
-import play.api.i18n.MessagesApi
-import play.api.mvc.Action
-import play.api.mvc.AnyContent
-import play.api.mvc.MessagesControllerComponents
-import play.api.mvc.Result
-import services.PaginationService
-import services.SchemeSearchService
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import services.{PaginationService, SchemeSearchService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import views.html.list_schemes
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class ListSchemesController @Inject()(
                                        val appConfig: FrontendAppConfig,
@@ -66,7 +56,7 @@ class ListSchemesController @Inject()(
   private val form: Form[String] = formProvider()
 
   private def renderView(
-                          schemeDetails: List[SchemeDetail],
+                          schemeDetails: List[SchemeDetails],
                           numberOfSchemes: Int,
                           pageNumber: Int,
                           numberOfPages: Int,
@@ -147,10 +137,10 @@ class ListSchemesController @Inject()(
   }
 
   private def selectPageOfResults(
-                                   searchResult: List[SchemeDetail],
+                                   searchResult: List[SchemeDetails],
                                    pageNumber: Int,
                                    numberOfPages: Int
-                                 ): Option[List[SchemeDetail]] = {
+                                 ): Option[List[SchemeDetails]] = {
     pageNumber match {
       case 1 => Some(searchResult.take(pagination))
       case p if p <= numberOfPages =>

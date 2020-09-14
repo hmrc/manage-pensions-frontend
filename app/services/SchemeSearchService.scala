@@ -18,7 +18,7 @@ package services
 
 import com.google.inject.Inject
 import connectors.scheme.ListOfSchemesConnector
-import models.SchemeDetail
+import models.SchemeDetails
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.FuzzyMatching
 
@@ -30,7 +30,7 @@ class SchemeSearchService @Inject()(listSchemesConnector: ListOfSchemesConnector
   private val pstrRegex = "^[0-9]{8}[A-Za-z]{2}$".r
 
   private val filterSchemesBySrnOrPstrOrSchemeName
-  : (String, List[SchemeDetail]) => List[SchemeDetail] =
+  : (String, List[SchemeDetails]) => List[SchemeDetails] =
     (searchText, list) => {
       searchText match {
         case _ if srnRegex.findFirstIn(searchText).isDefined =>
@@ -45,17 +45,17 @@ class SchemeSearchService @Inject()(listSchemesConnector: ListOfSchemesConnector
       }
     }
 
-  def search(psaId: String, searchText: Option[String])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[List[SchemeDetail]] = {
+  def search(psaId: String, searchText: Option[String])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[List[SchemeDetails]] = {
     listSchemesConnector.getListOfSchemes(psaId)
       .map {
         case Right(listOfSchemes) =>
           val filterSearchResults =
-            searchText.fold[List[SchemeDetail] => List[SchemeDetail]](identity)(
-              st => filterSchemesBySrnOrPstrOrSchemeName(st, _: List[SchemeDetail])
+            searchText.fold[List[SchemeDetails] => List[SchemeDetails]](identity)(
+              st => filterSchemesBySrnOrPstrOrSchemeName(st, _: List[SchemeDetails])
             )
 
-          filterSearchResults(listOfSchemes.schemeDetail.getOrElse(List.empty[SchemeDetail]))
-        case _ => List.empty[SchemeDetail]
+          filterSearchResults(listOfSchemes.schemeDetails.getOrElse(List.empty[SchemeDetails]))
+        case _ => List.empty[SchemeDetails]
       }
-  }: Future[List[SchemeDetail]]
+  }: Future[List[SchemeDetails]]
 }

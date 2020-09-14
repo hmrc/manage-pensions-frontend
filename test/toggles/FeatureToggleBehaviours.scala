@@ -48,7 +48,7 @@ class FeatureToggleBehaviours extends WordSpec with Matchers {
       }
 
       s"return actual conf value" in {
-        new GuiceApplicationBuilder().build().injector.instanceOf[Configuration].get[Boolean](s"features.$name") shouldBe Some(actualValue)
+        new GuiceApplicationBuilder().build().injector.instanceOf[Configuration].get[Boolean](s"features.$name") shouldBe actualValue
       }
 
     }
