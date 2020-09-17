@@ -16,8 +16,6 @@
 
 package toggles
 
-class TogglesSpec extends FeatureToggleBehaviours {
-  "list-of-schemes-IF-enabled new feature toggle" should {
-    behave like featureToggle("list-of-schemes-IF-enabled", false)
-  }
+object Toggles {
+  val listOfSchemesIFEnabled: String = "list-of-schemes-IF-enabled"
 }

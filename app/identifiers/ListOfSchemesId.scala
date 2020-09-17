@@ -16,9 +16,9 @@
 
 package identifiers
 
-import models.SchemeDetail
+import models.SchemeDetails
 
-object ListOfSchemesId extends TypedIdentifier[List[SchemeDetail]] {
+object ListOfSchemesId extends TypedIdentifier[List[SchemeDetails]] {
 
   override def toString: String = "listOfSchemes"
 

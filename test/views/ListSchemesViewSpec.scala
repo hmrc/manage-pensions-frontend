@@ -20,7 +20,7 @@ import config.FrontendAppConfig
 import controllers.ListSchemesControllerSpec.mockAppConfig
 import controllers.actions.DataRetrievalAction
 import forms.ListSchemesFormProvider
-import models.SchemeDetail
+import models.SchemeDetails
 import models.SchemeStatus
 import org.jsoup.nodes.Document
 import org.scalatestplus.mockito.MockitoSugar
@@ -41,7 +41,7 @@ import org.scalatest.BeforeAndAfterEach
 
 class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours with MockitoSugar with BeforeAndAfterEach{
 
-  private val emptyList: List[SchemeDetail] = List.empty[SchemeDetail]
+  private val emptyList: List[SchemeDetails] = List.empty[SchemeDetails]
   private val pagination: Int = 10
 
   private val mockAppConfig = mock[FrontendAppConfig]
@@ -57,8 +57,8 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours with MockitoS
   private val paginationService = new PaginationService
   private val listSchemesFormProvider = new ListSchemesFormProvider
 
-  private val fullList: List[SchemeDetail] = List(
-    SchemeDetail(
+  private val fullList: List[SchemeDetails] = List(
+    SchemeDetails(
       "scheme-name-0",
       "reference-number-0",
       SchemeStatus.Pending.value,
@@ -67,7 +67,7 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours with MockitoS
       None,
       None
     ),
-    SchemeDetail(
+    SchemeDetails(
       "scheme-name-1",
       "reference-number-1",
       SchemeStatus.PendingInfoRequired.value,
@@ -76,7 +76,7 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours with MockitoS
       None,
       None
     ),
-    SchemeDetail(
+    SchemeDetails(
       "scheme-name-2",
       "reference-number-2",
       SchemeStatus.PendingInfoReceived.value,
@@ -85,7 +85,7 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours with MockitoS
       None,
       None
     ),
-    SchemeDetail(
+    SchemeDetails(
       "scheme-name-3",
       "reference-number-3",
       SchemeStatus.Rejected.value,
@@ -94,7 +94,7 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours with MockitoS
       None,
       None
     ),
-    SchemeDetail(
+    SchemeDetails(
       "scheme-name-4",
       "reference-number-4",
       SchemeStatus.Open.value,
@@ -103,7 +103,7 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours with MockitoS
       None,
       None
     ),
-    SchemeDetail(
+    SchemeDetails(
       "scheme-name-5",
       "reference-number-5",
       SchemeStatus.Deregistered.value,
@@ -112,7 +112,7 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours with MockitoS
       None,
       None
     ),
-    SchemeDetail(
+    SchemeDetails(
       "scheme-name-6",
       "reference-number-6",
       SchemeStatus.WoundUp.value,
@@ -121,7 +121,7 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours with MockitoS
       None,
       None
     ),
-    SchemeDetail(
+    SchemeDetails(
       "scheme-name-7",
       "reference-number-7",
       SchemeStatus.RejectedUnderAppeal.value,
@@ -331,7 +331,7 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours with MockitoS
     }
 
     "show correct pagination links when number of schemes is greater than pagination at start of range" in {
-      val schemes: List[SchemeDetail] = List.fill(103)(fullList.head)
+      val schemes: List[SchemeDetails] = List.fill(103)(fullList.head)
 
       val pageNumber: Int = 1
 
@@ -371,7 +371,7 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours with MockitoS
     }
 
     "show correct pagination links when number of schemes is greater than pagination at middle of range" in {
-      val schemes: List[SchemeDetail] = List.fill(103)(fullList.head)
+      val schemes: List[SchemeDetails] = List.fill(103)(fullList.head)
 
       val pageNumber: Int = 4
 
@@ -411,7 +411,7 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours with MockitoS
     }
 
     "show correct pagination links when number of schemes is greater than pagination at end of range" in {
-      val schemes: List[SchemeDetail] = List.fill(103)(fullList.head)
+      val schemes: List[SchemeDetails] = List.fill(103)(fullList.head)
 
       val pageNumber: Int = 11
 
@@ -474,7 +474,7 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours with MockitoS
     }
   }
 
-  private def view(schemes: List[SchemeDetail],
+  private def view(schemes: List[SchemeDetails],
                    numberOfSchemes: Int,
                    pagination: Int,
                    pageNumber: Int,

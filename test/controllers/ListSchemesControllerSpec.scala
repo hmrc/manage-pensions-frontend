@@ -19,25 +19,16 @@ package controllers
 import config.FrontendAppConfig
 import connectors.FakeUserAnswersCacheConnector
 import connectors.admin.MinimalPsaConnector
-import controllers.SchemeDetailsControllerSpec.fakeListOfSchemesConnector
-import controllers.SchemeDetailsControllerSpec.fakeSchemeDetailsConnector
-import controllers.SchemeDetailsControllerSpec.fakeSchemeLockConnector
-import controllers.SchemeDetailsControllerSpec.schemeDetailsService
-import controllers.actions.AuthAction
-import controllers.actions.FakeAuthAction
+import controllers.actions.{AuthAction, FakeAuthAction}
 import forms.ListSchemesFormProvider
-import models.SchemeDetail
-import models.SchemeStatus
-import models.VarianceLock
+import models.{SchemeDetails, SchemeStatus}
 import org.mockito.Matchers
 import org.mockito.Matchers.any
-import org.mockito.Mockito.reset
 import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.test.Helpers._
-import services.PaginationService
-import services.SchemeSearchService
+import services.{PaginationService, SchemeSearchService}
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import views.html.list_schemes
 
@@ -274,7 +265,7 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
   private val psaIdNoSchemes: String = "A0000001"
   private val psaIdWithSchemes: String = "A0000002"
   private val psaName: String = "Test Psa Name"
-  private val emptySchemes: List[SchemeDetail] = List.empty[SchemeDetail]
+  private val emptySchemes: List[SchemeDetails] = List.empty[SchemeDetails]
   private val mockMinimalPsaConnector: MinimalPsaConnector =
     mock[MinimalPsaConnector]
   private val mockAppConfig: FrontendAppConfig = mock[FrontendAppConfig]
@@ -282,78 +273,78 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
   private val listSchemesFormProvider = new ListSchemesFormProvider
   private val mockSchemeSearchService = mock[SchemeSearchService]
 
-  private val fullSchemes: List[SchemeDetail] =
+  private val fullSchemes: List[SchemeDetails] =
     List(
-      SchemeDetail(
+      SchemeDetails(
         name = "scheme-0",
         referenceNumber = "srn-0",
         schemeStatus = SchemeStatus.Open.value,
         openDate = None,
         pstr = Some("pstr-0"),
-        relationShip = None,
+        relationship = None,
         underAppeal = None
       ),
-      SchemeDetail(
+      SchemeDetails(
         name = "scheme-1",
         referenceNumber = "srn-1",
         schemeStatus = SchemeStatus.Deregistered.value,
         openDate = None,
         pstr = Some("24000001IN"),
-        relationShip = None,
+        relationship = None,
         underAppeal = None
       ),
-      SchemeDetail(
+      SchemeDetails(
         name = "scheme-2",
         referenceNumber = "S2400000005",
         schemeStatus = SchemeStatus.Deregistered.value,
         openDate = None,
         pstr = Some("pstr-2"),
-        relationShip = None,
+        relationship = None,
         underAppeal = None
       ),
-      SchemeDetail(
+      SchemeDetails(
         name = "scheme-3",
         referenceNumber = "srn-3",
         schemeStatus = SchemeStatus.Deregistered.value,
         openDate = None,
         pstr = Some("pstr-3"),
-        relationShip = None,
+        relationship = None,
         underAppeal = None
       ),
-      SchemeDetail(
+      SchemeDetails(
         name = "scheme-4",
         referenceNumber = "srn-4",
         schemeStatus = SchemeStatus.Deregistered.value,
         openDate = None,
         pstr = Some("pstr-4"),
-        relationShip = None,
+        relationship = None,
         underAppeal = None
       ),
-      SchemeDetail(
+      SchemeDetails(
         name = "scheme-5",
         referenceNumber = "srn-5",
         schemeStatus = SchemeStatus.Deregistered.value,
         openDate = None,
         pstr = Some("pstr-5"),
-        relationShip = None,
+        relationship = None,
         underAppeal = None
       ),
-      SchemeDetail(
+      SchemeDetails(
         name = "scheme-6",
         referenceNumber = "srn-6",
         schemeStatus = SchemeStatus.Deregistered.value,
         openDate = None,
         pstr = Some("pstr-6"),
-        relationShip = None,
+        relationship = None,
         underAppeal = None
       ),
-      SchemeDetail(
+      SchemeDetails(
         name = "scheme-7",
         referenceNumber = "srn-7",
         schemeStatus = SchemeStatus.Deregistered.value,
         openDate = None,
         pstr = Some("pstr-7"),
-        relationShip = None,
+        relationship = None,
         underAppeal = None
       )
     )
@@ -381,7 +372,7 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
         )
     }
 
-  private def viewAsString(schemes: List[SchemeDetail],
+  private def viewAsString(schemes: List[SchemeDetails],
                            numberOfSchemes: Int,
                            pagination: Int,
                            pageNumber: Int,
