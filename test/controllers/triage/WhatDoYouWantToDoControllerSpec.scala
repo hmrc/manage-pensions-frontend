@@ -59,7 +59,8 @@ class WhatDoYouWantToDoControllerSpec extends ControllerSpecBase with ScalaFutur
       val result = route(application, postRequest).value
 
       status(result) mustBe BAD_REQUEST
-      contentAsString(result) mustBe viewAsString(boundForm)
+      contentAsString(result) mustBe view(boundForm)(postRequest, messages).toString
+
     }
 
     "redirect to the next page for a valid request" in {
