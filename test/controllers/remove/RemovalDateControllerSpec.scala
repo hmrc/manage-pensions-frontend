@@ -75,6 +75,8 @@ class RemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours wit
 
   private def viewAsString(form: Form[LocalDate]): String =
     view(form, psaName, schemeName, srn, formatDate(associationDate))(fakeRequest, messages).toString
+  private def viewAsStringPostRequest(form: Form[LocalDate]): String =
+    view(form, psaName, schemeName, srn, formatDate(associationDate))(postRequest, messages).toString
 
   override def beforeEach(): Unit = {
     reset(mockedPensionSchemeVarianceLockConnector)
@@ -86,7 +88,7 @@ class RemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours wit
     userAnswer.dataRetrievalAction, form(associationDate, frontendAppConfig.earliestDatePsaRemoval), viewAsString)
 
   behave like controllerWithOnSubmitMethod(onSubmitAction, data, form(associationDate, frontendAppConfig.earliestDatePsaRemoval).bind(dateKeys),
-    viewAsString, postRequest, Some(emptyPostRequest))
+    viewAsStringPostRequest, postRequest, Some(emptyPostRequest))
 
   behave like controllerThatSavesUserAnswers(onSaveAction, postRequest, RemovalDateId, date)
 
