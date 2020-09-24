@@ -17,7 +17,7 @@
 @import config.FrontendAppConfig
 @import uk.gov.hmrc.play.views.html._
 @import views.html._
-@import controllers.invitations.routes._
+@import controllers.invitations.psp.routes._
 @import utils.ViewHelper.titleWithErrors
 
 @this(
@@ -33,15 +33,15 @@ appConfig: FrontendAppConfig
 
     bodyClasses = None) {
 
-    @formHelper(action = PsaIdController.onSubmit(mode), 'autoComplete -> "off") {
+    @formHelper(action = PspIdController.onSubmit(mode), 'autoComplete -> "off") {
 
         @components.back_link()
 
         @components.error_summary(form.errors)
 
         @components.input_text(
-          field = form("psaId"),
-          label = messages("messages__pspId__title", pspName),
+          field = form("pspId"),
+          label = messages("messages__pspId__heading", pspName),
           labelClass=Some("visually-hidden"),
             headingIsLegend = true
         )

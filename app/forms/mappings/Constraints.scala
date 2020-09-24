@@ -97,7 +97,7 @@ trait Constraints {
 
   protected def psaName(errorKey: String): Constraint[String] = regexp(psaNameRegex, errorKey)
 
-  protected def psaId(errorKey: String): Constraint[String] = regexp(psaIdRegx, errorKey)
+  protected def psaPspId(errorKey: String): Constraint[String] = regexp(psaIdRegx, errorKey)
 
   protected def addressLine(errorKey: String): Constraint[String] = regexp(addressLineRegex, errorKey)
 

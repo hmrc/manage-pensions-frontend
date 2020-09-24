@@ -16,33 +16,32 @@
 
 package views.invitations.psp
 
-import forms.invitations.psp.PspNameFormProvider
-import models.{CheckMode, NormalMode}
+import forms.invitations.psp.PspIdFormProvider
+import models.NormalMode
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import views.behaviours.QuestionViewBehaviours
-import views.html.invitations.psp.pspName
+import views.html.invitations.psp.pspId
 
-class PspNameViewSpec extends QuestionViewBehaviours[String] {
+class PspIdViewSpec extends QuestionViewBehaviours[String] {
 
-  val messageKeyPrefix = "pspName"
+  val messageKeyPrefix = "pspId"
 
-  val formProvider = new PspNameFormProvider()
+  val formProvider = new PspIdFormProvider()
   override val form = formProvider()
 
-  private val pspNameView = injector.instanceOf[pspName]
+  private val pspIdView = injector.instanceOf[pspId]
 
-  def createView: () => HtmlFormat.Appendable = () => pspNameView(form, NormalMode)(fakeRequest, messages)
+  def createView: () => HtmlFormat.Appendable = () => pspIdView(form, "pspName", NormalMode)(fakeRequest, messages)
 
-  def createViewUsingForm: Form[_] => HtmlFormat.Appendable = (form: Form[_]) => pspNameView(form, CheckMode)(fakeRequest, messages)
+  def createViewUsingForm: Form[_] => HtmlFormat.Appendable = (form: Form[_]) => pspIdView(form, "pspName", NormalMode)(fakeRequest, messages)
 
-  "PspName view" must {
+  "PspId view" must {
 
     behave like normalPage(
       createView,
       messageKeyPrefix,
-      messages(s"messages__${messageKeyPrefix}__title"),
-      s"_p1"
+      messages(s"messages__${messageKeyPrefix}__heading",  "pspName")
     )
 
     behave like pageWithBackLink(createView)
@@ -50,8 +49,8 @@ class PspNameViewSpec extends QuestionViewBehaviours[String] {
     behave like pageWithErrorOutsideLabel(
       createViewUsingForm,
       messageKeyPrefix,
-      controllers.invitations.routes.PsaNameController.onSubmit(NormalMode).url,
-      "pspName"
+      controllers.invitations.psp.routes.PspIdController.onSubmit(NormalMode).url,
+      "pspId"
     )
   }
 }

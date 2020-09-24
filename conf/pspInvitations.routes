@@ -2,7 +2,12 @@
 GET        /what-you-will-need                          controllers.invitations.psp.WhatYouWillNeedController.onPageLoad()
 POST       /what-you-will-need                          controllers.invitations.psp.WhatYouWillNeedController.onSubmit()
 
-GET        /name-of-invited-psa                         controllers.invitations.psp.PspNameController.onPageLoad(mode: Mode = NormalMode)
-POST       /name-of-invited-psa                         controllers.invitations.psp.PspNameController.onSubmit(mode: Mode = NormalMode)
-GET        /change-name-of-invited-psa                  controllers.invitations.psp.PspNameController.onPageLoad(mode: Mode = CheckMode)
-POST       /change-name-of-invited-psa                  controllers.invitations.psp.PspNameController.onSubmit(mode: Mode = CheckMode)
+GET        /what-is-the-name                            controllers.invitations.psp.PspNameController.onPageLoad(mode: Mode = NormalMode)
+POST       /what-is-the-name                            controllers.invitations.psp.PspNameController.onSubmit(mode: Mode = NormalMode)
+GET        /change-what-is-the-name                  controllers.invitations.psp.PspNameController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-what-is-the-name                  controllers.invitations.psp.PspNameController.onSubmit(mode: Mode = CheckMode)
+
+GET        /what-is-the-practitioner-id                       controllers.invitations.psp.PspIdController.onPageLoad(mode: Mode = NormalMode)
+POST       /what-is-the-practitioner-id                       controllers.invitations.psp.PspIdController.onSubmit(mode: Mode = NormalMode)
+GET        /change-what-is-the-practitioner-id                controllers.invitations.psp.PspIdController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-what-is-the-practitioner-id                controllers.invitations.psp.PspIdController.onSubmit(mode: Mode = CheckMode)

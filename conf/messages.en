@@ -421,3 +421,10 @@ messages__pspWhatYouWillNeed__list_heading = You will need to tell us:
 messages__pspWhatYouWillNeed__item1 = the practitioner's name
 messages__pspWhatYouWillNeed__item2 = the practitioner's ID
 messages__pspWhatYouWillNeed__item3 = the client reference you have agreed with the practitioner (optional)
+
+messages__pspId__title = What is their practitioner ID?
+messages__pspId__heading = What is the practitioner ID for {0}?
+
+messages__error__pspId__required = Enter the practitioner ID
+messages__error__pspId__invalid = Enter a PSP ID using the letter A followed by 7 numbers
+

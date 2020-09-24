@@ -28,7 +28,7 @@ class PsaIdFormProvider @Inject() extends Mappings with Transforms {
       transform(noSpaceWithUpperCaseTransform, noTransform).
       verifying(firstError(
         maxLength(PsaIdFormProvider.psaIdLength, "messages__error__psa__id__invalid"),
-        psaId("messages__error__psa__id__invalid")))
+        psaPspId("messages__error__psa__id__invalid")))
   )
 }
 
