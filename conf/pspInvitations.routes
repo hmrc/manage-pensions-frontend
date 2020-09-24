@@ -1,0 +1,8 @@
+
+GET        /what-you-will-need                          controllers.invitations.psp.WhatYouWillNeedController.onPageLoad()
+POST       /what-you-will-need                          controllers.invitations.psp.WhatYouWillNeedController.onSubmit()
+
+GET        /name-of-invited-psa                         controllers.invitations.psp.PspNameController.onPageLoad(mode: Mode = NormalMode)
+POST       /name-of-invited-psa                         controllers.invitations.psp.PspNameController.onSubmit(mode: Mode = NormalMode)
+GET        /change-name-of-invited-psa                  controllers.invitations.psp.PspNameController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-name-of-invited-psa                  controllers.invitations.psp.PspNameController.onSubmit(mode: Mode = CheckMode)
