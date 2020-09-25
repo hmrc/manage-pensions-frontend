@@ -45,9 +45,9 @@ object ClientReference {
 
   implicit val reads: Reads[ClientReference] = {
 
-    (JsPath \ "name").read[Boolean].flatMap {
+    (JsPath \ "name").read[String].flatMap {
 
-      case true =>
+      case "true" =>
         (JsPath \ "reference").read[String]
           .map[ClientReference](HaveClientReference.apply)
           .orElse(Reads[ClientReference](_ => JsError("ClientReference expected")))

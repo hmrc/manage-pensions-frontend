@@ -66,7 +66,6 @@ class PspClientReferenceController @Inject()(appConfig: FrontendAppConfig,
           form.bindFromRequest().fold(
             (formWithErrors: Form[_]) => {
 
-              println("\n\n >>>>>>>>>>>>>>>>>>>>>>>> \n\n formWithErrors "+formWithErrors)
               PspNameId.retrieve.right.map {
                 pspName =>
                   Future.successful(BadRequest(view(formWithErrors, pspName, mode)))

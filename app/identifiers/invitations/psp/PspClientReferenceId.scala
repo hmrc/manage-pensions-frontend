@@ -21,6 +21,6 @@ import models.invitations.psp.ClientReference
 
 object PspClientReferenceId extends TypedIdentifier[ClientReference] {
 
-  override def toString: String = "pspClientReferenceId"
+  override def toString: String = "pspClientReference"
 
 }

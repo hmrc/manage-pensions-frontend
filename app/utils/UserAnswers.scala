@@ -32,10 +32,9 @@ case class UserAnswers(json: JsValue = Json.obj()) {
     get[A](id.path)
   }
 
-  def get[A](path: JsPath)(implicit rds: Reads[A]): Option[A] = {
+  def get[A](path: JsPath)(implicit rds: Reads[A]): Option[A] =
     JsLens.fromPath(path).get(json)
       .flatMap(Json.fromJson[A]).asOpt
-  }
 
   def getAll[A](path: JsPath)(implicit rds: Reads[A]): Option[Seq[A]] = {
     (JsLens.fromPath(path) andThen JsLens.atAllIndices)
