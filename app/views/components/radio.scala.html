@@ -20,7 +20,8 @@
  value: String,
  dataTarget: Option[String] = None,
  hint: Set[String] = Set.empty,
- fieldId: Option[String] = None
+ fieldId: Option[String] = None,
+ labelClass: Option[String] = None
 )(implicit messages: Messages)
 
 @getId=@{
@@ -34,7 +35,7 @@
   <input id="@field.id-@value" type="radio" name="@field.name" value="@value" @if(field.value.contains(value)){ checked="checked" }
          @if(hint.nonEmpty){aria-describedby="@getId"}>
 
-  <label class="block-label" for="@field.id-@value">
+  <label class="block-label" for="@field.id-@value" @if(labelClass.nonEmpty) { class=@labelClass }>
     @messages(label)
   </label>
 

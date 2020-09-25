@@ -11,3 +11,8 @@ GET        /what-is-the-practitioner-id                       controllers.invita
 POST       /what-is-the-practitioner-id                       controllers.invitations.psp.PspIdController.onSubmit(mode: Mode = NormalMode)
 GET        /change-what-is-the-practitioner-id                controllers.invitations.psp.PspIdController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-what-is-the-practitioner-id                controllers.invitations.psp.PspIdController.onSubmit(mode: Mode = CheckMode)
+
+GET        /do-you-have-client-reference                       controllers.invitations.psp.PspClientReferenceController.onPageLoad(mode: Mode = NormalMode)
+POST       /do-you-have-client-reference                       controllers.invitations.psp.PspClientReferenceController.onSubmit(mode: Mode = NormalMode)
+GET        /change-do-you-have-client-reference                controllers.invitations.psp.PspClientReferenceController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-do-you-have-client-reference                controllers.invitations.psp.PspClientReferenceController.onSubmit(mode: Mode = CheckMode)
