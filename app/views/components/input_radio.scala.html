@@ -54,6 +54,12 @@
 
         @for((input, i) <- inputs.zipWithIndex){
             @components.radio(field, input.label, input.value, input.dataTarget, input.hint, Some(i.toString), labelClass)
+        @if(input.dataTarget){
+        <div class="panel panel-border-narrow js-hidden" id="@input.dataTarget">
+            <label class="form-label" for="@{input.label}-text">@input</label>
+            <input class="form-control" name="@{input.label}-text" type="text" id="@{input.label}-text">
+        </div>
+        }
         }
     </fieldset>
 </div>
