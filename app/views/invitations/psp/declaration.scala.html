@@ -17,7 +17,7 @@
 @import uk.gov.hmrc.play.views.html._
 @import views.html._
 @import viewmodels.Message
-@import controllers.invitations.routes._
+@import controllers.invitations.psp.routes._
 @import utils.ViewHelper.titleWithErrors
 
 @this(
@@ -39,7 +39,7 @@
 
     @formHelper(action = DeclarationController.onSubmit(), 'autoComplete -> "off") {
 
-        @components.paragraph_text(messages("messages__psp_declaration__continue") + ":")
+        @components.paragraph_text(messages("messages__psp_declaration__continue"))
 
         <ol class="list list-number">
 
@@ -53,15 +53,15 @@
 
         @components.fieldSet(
             field = form("agree"),
-            legend = Message("messages__psp_declaration__title"),
+            legend = messages("messages__psp_declaration__title"),
             hiddenLegend = true
         ) {
             <div class="multiple-choice">
                 <input id="consent" name="agree" type="checkbox" value="agreed">
-                <label for="consent">I agree</label>
+                <label for="consent">@messages("messages__psp_declaration__agree")</label>
             </div>
         }
 
-        @components.submit_button("site.continue")
+        @components.submit_button("site.save_and_continue")
     }
 }

@@ -21,15 +21,11 @@ import config.FrontendAppConfig
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.invitations.psp.DeclarationFormProvider
-import identifiers.invitations._
-import models.NormalMode
 import models.requests.DataRequest
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
-import utils.Navigator
-import utils.annotations.AcceptInvitation
 import views.html.invitations.psp.declaration
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -56,9 +52,9 @@ class DeclarationController @Inject()(
 
       form.bindFromRequest().fold(
         (formWithErrors: Form[Boolean]) =>
-              Future.successful(BadRequest(view(formWithErrors))),
+          Future.successful(BadRequest(view(formWithErrors))),
         _ =>
-             inviteAndRedirect()
+          inviteAndRedirect()
       )
    }
 

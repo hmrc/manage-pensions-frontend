@@ -38,7 +38,7 @@ class DeclarationViewSpec extends QuestionViewBehaviours[Boolean] {
 
   "declaration view" must {
 
-    behave like normalPage(declarationView(), messageKeyPrefix, Message("messages__psp_declaration__heading"))
+    behave like normalPage(declarationView(), messageKeyPrefix, Message("messages__psp_declaration__title"))
 
     behave like pageWithBackLink(declarationView())
 

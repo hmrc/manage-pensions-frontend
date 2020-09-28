@@ -16,13 +16,10 @@
 
 package controllers.invitations.psp
 
-import java.time.LocalDate
-
-import config.FrontendAppConfig
 import connectors.FakeUserAnswersCacheConnector
 import controllers.actions._
 import controllers.behaviours.ControllerWithNormalPageBehaviours
-import identifiers.invitations.SchemeNameId
+import identifiers.SchemeNameId
 import identifiers.invitations.psp.PspNameId
 import play.api.mvc.{Action, AnyContent, Call}
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
@@ -53,9 +50,6 @@ class ConfirmationControllerSpec extends ControllerWithNormalPageBehaviours {
       stubMessagesControllerComponents(), confirmationView).onPageLoad()
   }
 
-  def testExpiryDate(config: FrontendAppConfig): LocalDate = {
-    LocalDate.now().plusDays(config.invitationExpiryDays)
-  }
 
   def redirectionCall(): Call = onwardRoute
 

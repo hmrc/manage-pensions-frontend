@@ -27,7 +27,7 @@ class ConfirmationViewSpec extends ViewBehaviours {
   private val testPspName: String = "Joe Bloggs"
   private val testSchemeName: String = "Test Scheme Ltd"
 
-  private val messageKeyPrefix = "invitationSuccess"
+  private val messageKeyPrefix = "pspConfirmation"
 
   private val view = injector.instanceOf[confirmation]
 

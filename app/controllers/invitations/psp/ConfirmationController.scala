@@ -43,7 +43,6 @@ class ConfirmationController @Inject()(
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
-
       (SchemeNameId and PspNameId).retrieve.right.map {
         case schemeName ~ pspName =>
           userAnswersCacheConnector.removeAll(request.externalId).map { _ =>
