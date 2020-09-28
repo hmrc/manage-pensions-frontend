@@ -55,7 +55,6 @@ object AuthorisePspNavigatorSpec extends OptionValues {
   lazy val checkYourAnswer: Call = CheckYourAnswersController.onPageLoad()
   lazy val pspIdPage: Call = PspIdController.onPageLoad(NormalMode)
   lazy val pspClientRefPage: Call = PspClientReferenceController.onPageLoad(NormalMode)
-  lazy val pspIdPage: Call = PspIdController.onPageLoad(NormalMode)
 
   implicit val ex: IdentifiedRequest = new IdentifiedRequest() {
     val externalId: String = "test-external-id"

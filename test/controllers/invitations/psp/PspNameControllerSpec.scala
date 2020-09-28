@@ -36,11 +36,14 @@ class PspNameControllerSpec extends ControllerWithQuestionPageBehaviours {
   private val schemeName = "Test Scheme"
   private val srn = "srn"
   private val userAnswer = UserAnswers()
+    .set(SchemeNameId)(schemeName).asOpt.value
+    .set(SchemeSrnId)(srn).asOpt.value
+  private val userAnswerWithPspName = UserAnswers()
     .set(PspNameId)("xyz").asOpt.value
     .set(SchemeNameId)(schemeName).asOpt.value
     .set(SchemeSrnId)(srn).asOpt.value
 
-  private val postRequest = fakeRequest.withJsonBody(userAnswer.json)
+  private val postRequest = fakeRequest.withJsonBody(userAnswerWithPspName.json)
   private val pspNameView = injector.instanceOf[pspName]
 
 
@@ -64,10 +67,10 @@ class PspNameControllerSpec extends ControllerWithQuestionPageBehaviours {
   private def viewAsString(form: Form[_]): String = pspNameView(form, NormalMode, schemeName, returnCall)(fakeRequest, messages).toString
 
 
-  behave like controllerWithOnPageLoadMethod(onPageLoadAction, userAnswer.dataRetrievalAction, userAnswer.dataRetrievalAction,
+  behave like controllerWithOnPageLoadMethod(onPageLoadAction, userAnswer.dataRetrievalAction, userAnswerWithPspName.dataRetrievalAction,
     form, form.fill("xyz"), viewAsString)
 
-  behave like controllerWithOnSubmitMethod(onSubmitAction, userAnswer.dataRetrievalAction, form.bind(Map("pspName" -> "")),
+  behave like controllerWithOnSubmitMethod(onSubmitAction, userAnswerWithPspName.dataRetrievalAction, form.bind(Map("pspName" -> "")),
     viewAsString, postRequest)
 
 }
