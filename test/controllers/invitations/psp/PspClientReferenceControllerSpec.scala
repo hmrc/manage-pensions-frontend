@@ -19,33 +19,16 @@ package controllers.invitations.psp
 import connectors.FakeUserAnswersCacheConnector
 import controllers.ControllerSpecBase
 import controllers.actions._
-import controllers.behaviours.ControllerWithQuestionPageBehaviours
-import forms.invitations.psp.{PspClientReferenceFormProvider, PspIdFormProvider}
-import identifiers.invitations.psp.{PspClientReferenceId, PspId, PspNameId}
-import models.NormalMode
-import models.invitations.psp.ClientReference
+import forms.invitations.psp.PspClientReferenceFormProvider
+import identifiers.invitations.psp.{PspClientReferenceId, PspNameId}
+import models.{NormalMode, SchemeReferenceNumber}
 import models.invitations.psp.ClientReference._
 import play.api.data.Form
-import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent, Call}
-import play.api.test.FakeRequest
-import play.api.test.Helpers.{contentAsString, redirectLocation, status}
+import play.api.mvc.Call
+import play.api.test.Helpers.{contentAsString, redirectLocation, status, _}
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.{FakeNavigator, UserAnswers}
 import views.html.invitations.psp.pspClientReference
-import connectors.FakeUserAnswersCacheConnector
-import controllers.ControllerSpecBase
-import controllers.actions._
-import forms.invitations.AdviserEmailFormProvider
-import identifiers.invitations.{AdviserEmailId, AdviserNameId}
-import models.NormalMode
-import play.api.data.Form
-import play.api.libs.json.Json
-import play.api.mvc.Call
-import play.api.test.Helpers._
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
-import utils.FakeNavigator
-import views.html.invitations.adviserEmailAddress
 
 
 class PspClientReferenceControllerSpec extends ControllerSpecBase {
@@ -56,6 +39,10 @@ class PspClientReferenceControllerSpec extends ControllerSpecBase {
   val userAnswer: UserAnswers = UserAnswers().set(PspNameId)("xyz").asOpt.value
   val userAnswerWithPspClientRef: UserAnswers = userAnswer.set(PspClientReferenceId)(HaveClientReference("A0000000")).asOpt.value
   val minimalData = new FakeDataRetrievalAction(Some(userAnswer.json))
+  private val schemeName = "Test Scheme"
+
+  private val returnCall = controllers.routes.SchemeDetailsController.onPageLoad(SchemeReferenceNumber("srn"))
+
 
   private val view = injector.instanceOf[pspClientReference]
 
@@ -64,7 +51,7 @@ class PspClientReferenceControllerSpec extends ControllerSpecBase {
     dataRetrievalAction, new DataRequiredActionImpl, formProvider, stubMessagesControllerComponents(), view
   )
 
-  private def viewAsString(form: Form[_] = form): String = view(form, "xyz", NormalMode)(fakeRequest, messages).toString
+  private def viewAsString(form: Form[_] = form): String = view(form, "xyz", NormalMode, schemeName, returnCall)(fakeRequest, messages).toString
 
   "PspClientReferenceController" when {
     "on a GET" must {

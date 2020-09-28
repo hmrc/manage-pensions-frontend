@@ -17,7 +17,7 @@
 package views.invitations.psp
 
 import forms.invitations.psp.PspNameFormProvider
-import models.{CheckMode, NormalMode}
+import models.{CheckMode, NormalMode, SchemeReferenceNumber}
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import views.behaviours.QuestionViewBehaviours
@@ -32,9 +32,13 @@ class PspNameViewSpec extends QuestionViewBehaviours[String] {
 
   private val pspNameView = injector.instanceOf[pspName]
 
-  def createView: () => HtmlFormat.Appendable = () => pspNameView(form, NormalMode)(fakeRequest, messages)
+  private val schemeName = "Test Scheme"
 
-  def createViewUsingForm: Form[_] => HtmlFormat.Appendable = (form: Form[_]) => pspNameView(form, CheckMode)(fakeRequest, messages)
+  private val returnCall = controllers.routes.SchemeDetailsController.onPageLoad(SchemeReferenceNumber("srn"))
+
+  def createView: () => HtmlFormat.Appendable = () => pspNameView(form, NormalMode, schemeName, returnCall)(fakeRequest, messages)
+
+  def createViewUsingForm: Form[_] => HtmlFormat.Appendable = (form: Form[_]) => pspNameView(form, CheckMode, schemeName, returnCall)(fakeRequest, messages)
 
   "PspName view" must {
 
