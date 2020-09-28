@@ -29,7 +29,7 @@ import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
-import utils.annotations.Invitation
+import utils.annotations.AuthorisePsp
 import utils.{Navigator, UserAnswers}
 import views.html.invitations.psp.pspName
 
@@ -38,7 +38,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class PspNameController @Inject()(appConfig: FrontendAppConfig,
                                   override val messagesApi: MessagesApi,
                                   dataCacheConnector: UserAnswersCacheConnector,
-                                  @Invitation navigator: Navigator,
+                                  @AuthorisePsp navigator: Navigator,
                                   authenticate: AuthAction,
                                   getData: DataRetrievalAction,
                                   requireData: DataRequiredAction,

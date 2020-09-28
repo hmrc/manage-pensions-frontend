@@ -59,7 +59,7 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
     def onSubmit(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
         implicit request =>
 
-            Future.successful(Redirect(controllers.routes.IndexController.onPageLoad()))
+            Future.successful(Redirect(controllers.invitations.psp.routes.DeclarationController.onPageLoad()))
     }
 }
 

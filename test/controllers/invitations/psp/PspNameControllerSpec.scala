@@ -20,6 +20,7 @@ import connectors.FakeUserAnswersCacheConnector
 import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.invitations.psp.PspNameFormProvider
+import identifiers.{SchemeNameId, SchemeSrnId}
 import identifiers.invitations.psp.PspNameId
 import models.{NormalMode, SchemeReferenceNumber}
 import play.api.data.Form
@@ -32,10 +33,16 @@ class PspNameControllerSpec extends ControllerWithQuestionPageBehaviours {
 
   private val formProvider = new PspNameFormProvider()
   private val form = formProvider()
-  private val userAnswer = UserAnswers().set(PspNameId)("xyz").asOpt.value
+  private val schemeName = "Test Scheme"
+  private val srn = "srn"
+  private val userAnswer = UserAnswers()
+    .set(PspNameId)("xyz").asOpt.value
+    .set(SchemeNameId)(schemeName).asOpt.value
+    .set(SchemeSrnId)(srn).asOpt.value
+
   private val postRequest = fakeRequest.withJsonBody(userAnswer.json)
   private val pspNameView = injector.instanceOf[pspName]
-  private val schemeName = "Test Scheme"
+
 
   private val returnCall = controllers.routes.SchemeDetailsController.onPageLoad(SchemeReferenceNumber("srn"))
 
@@ -57,9 +64,11 @@ class PspNameControllerSpec extends ControllerWithQuestionPageBehaviours {
   private def viewAsString(form: Form[_]): String = pspNameView(form, NormalMode, schemeName, returnCall)(fakeRequest, messages).toString
 
 
-  behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, userAnswer.dataRetrievalAction, form, form.fill("xyz"), viewAsString)
+  behave like controllerWithOnPageLoadMethod(onPageLoadAction, userAnswer.dataRetrievalAction, userAnswer.dataRetrievalAction,
+    form, form.fill("xyz"), viewAsString)
 
-  behave like controllerWithOnSubmitMethod(onSubmitAction, getEmptyData, form.bind(Map("pspName" -> "")), viewAsString, postRequest)
+  behave like controllerWithOnSubmitMethod(onSubmitAction, userAnswer.dataRetrievalAction, form.bind(Map("pspName" -> "")),
+    viewAsString, postRequest)
 
 }
 

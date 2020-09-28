@@ -20,6 +20,7 @@ import connectors.FakeUserAnswersCacheConnector
 import controllers.ControllerSpecBase
 import controllers.actions._
 import forms.invitations.psp.PspClientReferenceFormProvider
+import identifiers.{SchemeNameId, SchemeSrnId}
 import identifiers.invitations.psp.{PspClientReferenceId, PspNameId}
 import models.{NormalMode, SchemeReferenceNumber}
 import models.invitations.psp.ClientReference._
@@ -35,11 +36,15 @@ class PspClientReferenceControllerSpec extends ControllerSpecBase {
   val formProvider = new PspClientReferenceFormProvider()
   val form = formProvider()
 
-  def onwardRoute = Call("GET", "/foo")
-  val userAnswer: UserAnswers = UserAnswers().set(PspNameId)("xyz").asOpt.value
+  def onwardRoute: Call = Call("GET", "/foo")
+  private val schemeName = "Test Scheme"
+  private val srn = "srn"
+  private val userAnswer = UserAnswers()
+    .set(PspNameId)("xyz").asOpt.value
+    .set(SchemeNameId)(schemeName).asOpt.value
+    .set(SchemeSrnId)(srn).asOpt.value
   val userAnswerWithPspClientRef: UserAnswers = userAnswer.set(PspClientReferenceId)(HaveClientReference("A0000000")).asOpt.value
   val minimalData = new FakeDataRetrievalAction(Some(userAnswer.json))
-  private val schemeName = "Test Scheme"
 
   private val returnCall = controllers.routes.SchemeDetailsController.onPageLoad(SchemeReferenceNumber("srn"))
 

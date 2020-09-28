@@ -20,6 +20,7 @@ import connectors.FakeUserAnswersCacheConnector
 import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.invitations.psp.PspIdFormProvider
+import identifiers.{SchemeNameId, SchemeSrnId}
 import identifiers.invitations.psp.{PspId, PspNameId}
 import models.{NormalMode, SchemeReferenceNumber}
 import play.api.data.Form
@@ -33,11 +34,15 @@ class PspIdControllerSpec extends ControllerWithQuestionPageBehaviours {
 
   val formProvider = new PspIdFormProvider()
   val form: Form[String] = formProvider()
-  val userAnswer: UserAnswers = UserAnswers().set(PspNameId)("xyz").asOpt.value
+  private val schemeName = "Test Scheme"
+  private val srn = "srn"
+  private val userAnswer = UserAnswers()
+    .set(PspNameId)("xyz").asOpt.value
+    .set(SchemeNameId)(schemeName).asOpt.value
+    .set(SchemeSrnId)(srn).asOpt.value
   val userAnswerWithPspId: UserAnswers = userAnswer.set(PspId)("A0000000").asOpt.value
   private val postRequest = FakeRequest().withJsonBody(userAnswerWithPspId.json)
   private val view = injector.instanceOf[pspId]
-  private val schemeName = "Test Scheme"
 
   private val returnCall = controllers.routes.SchemeDetailsController.onPageLoad(SchemeReferenceNumber("srn"))
 
