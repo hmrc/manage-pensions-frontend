@@ -22,12 +22,13 @@ import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
 import controllers.actions._
 import forms.invitations.psp.{PspClientReferenceFormProvider, PspIdFormProvider}
+import identifiers.{SchemeNameId, SchemeSrnId}
 import identifiers.invitations.psp.{PspClientReferenceId, PspId, PspNameId}
-import models.Mode
+import models.{Mode, SchemeReferenceNumber}
 import models.invitations.psp.ClientReference
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.annotations.Invitation
 import utils.{Navigator, UserAnswers}
@@ -52,12 +53,12 @@ class PspClientReferenceController @Inject()(appConfig: FrontendAppConfig,
   def onPageLoad(mode: Mode): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
 
-      PspNameId.retrieve.right.map {
-        pspName =>
+      (SchemeNameId and PspNameId and SchemeSrnId).retrieve.right.map {
+        case schemeName ~ pspName ~ srn =>
           val value = request.userAnswers.get(PspClientReferenceId)
           val preparedForm = value.fold(form)(form.fill)
 
-          Future.successful(Ok(view(preparedForm, pspName, mode)))
+          Future.successful(Ok(view(preparedForm, pspName, mode, schemeName, returnCall(srn))))
       }
   }
 
@@ -66,9 +67,9 @@ class PspClientReferenceController @Inject()(appConfig: FrontendAppConfig,
           form.bindFromRequest().fold(
             (formWithErrors: Form[_]) => {
 
-              PspNameId.retrieve.right.map {
-                pspName =>
-                  Future.successful(BadRequest(view(formWithErrors, pspName, mode)))
+              (SchemeNameId and PspNameId and SchemeSrnId).retrieve.right.map {
+                case schemeName ~ pspName ~ srn =>
+                  Future.successful(BadRequest(view(formWithErrors, pspName, mode, schemeName, returnCall(srn))))
               }},
             value =>
               dataCacheConnector.save(request.externalId, PspClientReferenceId, value).map(
@@ -78,4 +79,7 @@ class PspClientReferenceController @Inject()(appConfig: FrontendAppConfig,
           )
 
   }
+
+    private def returnCall(srn:String):Call  = controllers.routes.SchemeDetailsController.onPageLoad(SchemeReferenceNumber(srn))
+
 }

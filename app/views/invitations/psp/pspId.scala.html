@@ -19,6 +19,8 @@
 @import views.html._
 @import controllers.invitations.psp.routes._
 @import utils.ViewHelper.titleWithErrors
+@import play.api.mvc.Call
+
 
 @this(
 main_template: main_template,
@@ -26,7 +28,7 @@ formHelper: FormWithCSRF,
 appConfig: FrontendAppConfig
 )
 
-@(form: Form[_], pspName: String, mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], pspName: String, mode: Mode, schemeName:String, returnCall: Call)(implicit request: Request[_], messages: Messages)
 
 @main_template(
     title = titleWithErrors(form, messages("messages__pspId__title")),
@@ -47,5 +49,8 @@ appConfig: FrontendAppConfig
         )
 
         @components.submit_button()
+
+        @components.return_link(returnCall, Some(schemeName))
+
     }
 }

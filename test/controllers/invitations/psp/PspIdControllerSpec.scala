@@ -21,7 +21,7 @@ import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.invitations.psp.PspIdFormProvider
 import identifiers.invitations.psp.{PspId, PspNameId}
-import models.NormalMode
+import models.{NormalMode, SchemeReferenceNumber}
 import play.api.data.Form
 import play.api.mvc.{AnyContent, AnyContentAsJson, Request}
 import play.api.test.FakeRequest
@@ -37,6 +37,10 @@ class PspIdControllerSpec extends ControllerWithQuestionPageBehaviours {
   val userAnswerWithPspId: UserAnswers = userAnswer.set(PspId)("A0000000").asOpt.value
   private val postRequest = FakeRequest().withJsonBody(userAnswerWithPspId.json)
   private val view = injector.instanceOf[pspId]
+  private val schemeName = "Test Scheme"
+
+  private val returnCall = controllers.routes.SchemeDetailsController.onPageLoad(SchemeReferenceNumber("srn"))
+
 
   def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
@@ -52,7 +56,7 @@ class PspIdControllerSpec extends ControllerWithQuestionPageBehaviours {
       dataRetrievalAction, requiredDataAction, formProvider, stubMessagesControllerComponents(), view).onSubmit(NormalMode)
   }
 
-  def viewAsString(form: Form[_] = form) = view(form, "xyz", NormalMode)(fakeRequest, messages).toString
+  def viewAsString(form: Form[_] = form) = view(form, "xyz", NormalMode, schemeName, returnCall)(fakeRequest, messages).toString
 
 
   behave like controllerWithOnPageLoadMethod(onPageLoadAction, userAnswer.dataRetrievalAction,

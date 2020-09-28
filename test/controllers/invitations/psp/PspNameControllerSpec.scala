@@ -21,7 +21,7 @@ import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.invitations.psp.PspNameFormProvider
 import identifiers.invitations.psp.PspNameId
-import models.NormalMode
+import models.{NormalMode, SchemeReferenceNumber}
 import play.api.data.Form
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
@@ -35,22 +35,26 @@ class PspNameControllerSpec extends ControllerWithQuestionPageBehaviours {
   private val userAnswer = UserAnswers().set(PspNameId)("xyz").asOpt.value
   private val postRequest = fakeRequest.withJsonBody(userAnswer.json)
   private val pspNameView = injector.instanceOf[pspName]
+  private val schemeName = "Test Scheme"
+
+  private val returnCall = controllers.routes.SchemeDetailsController.onPageLoad(SchemeReferenceNumber("srn"))
+
 
   def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
 
     new PspNameController(
       frontendAppConfig, messagesApi, FakeUserAnswersCacheConnector, navigator, fakeAuth,
-      dataRetrievalAction, formProvider, stubMessagesControllerComponents(), pspNameView).onPageLoad(NormalMode)
+      dataRetrievalAction, requiredDataAction, formProvider, stubMessagesControllerComponents(), pspNameView).onPageLoad(NormalMode)
   }
 
   def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
 
     new PspNameController(
       frontendAppConfig, messagesApi, FakeUserAnswersCacheConnector, navigator, fakeAuth,
-      dataRetrievalAction, formProvider, stubMessagesControllerComponents(), pspNameView).onSubmit(NormalMode)
+      dataRetrievalAction, requiredDataAction, formProvider, stubMessagesControllerComponents(), pspNameView).onSubmit(NormalMode)
   }
 
-  private def viewAsString(form: Form[_]): String = pspNameView(form, NormalMode)(fakeRequest, messages).toString
+  private def viewAsString(form: Form[_]): String = pspNameView(form, NormalMode, schemeName, returnCall)(fakeRequest, messages).toString
 
 
   behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, userAnswer.dataRetrievalAction, form, form.fill("xyz"), viewAsString)
