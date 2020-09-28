@@ -42,12 +42,16 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
 
   import RemovePsaControllerSpec._
 
-  def fakeMinimalPsaConnector(psaMinimalSubscription: MinimalPSA = psaMinimalSubscription): MinimalPsaConnector = new MinimalPsaConnector {
-    override def getMinimalPsaDetails(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSA] =
+  def fakeMinimalPsaConnector(psaMinimalSubscription: MinimalPSAPSP = psaMinimalSubscription): MinimalPsaConnector = new MinimalPsaConnector {
+    override def getMinimalPsaDetails(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP] =
       Future.successful(psaMinimalSubscription)
 
     override def getPsaNameFromPsaID(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] =
       Future.successful(None)
+
+    override def getMinimalPspDetails(pspId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP] = ???
+
+    override def getNameFromPspID(pspId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = ???
   }
 
   val userAnswersJson =
@@ -118,7 +122,7 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
     }
 
   def controller(dataRetrievalAction: DataRetrievalAction = data,
-                 psaMinimalDetails: MinimalPSA = psaMinimalSubscription,
+                 psaMinimalDetails: MinimalPSAPSP = psaMinimalSubscription,
                  schemeDetailsConnector:SchemeDetailsConnector) =
     new RemovePsaController(FakeAuthAction(), dataRetrievalAction,
       new DataRequiredActionImpl,
@@ -225,7 +229,7 @@ object RemovePsaControllerSpec {
   private val userAnswer = UserAnswers().srn("S9000000000")
   private val data = userAnswer.dataRetrievalAction
 
-  private val psaMinimalSubscription = MinimalPSA("test@test.com", false, None, Some(IndividualDetails("First", Some("Middle"), "Last")))
+  private val psaMinimalSubscription = MinimalPSAPSP("test@test.com", false, None, Some(IndividualDetails("First", Some("Middle"), "Last")))
 }
 
 

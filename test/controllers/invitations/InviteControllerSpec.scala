@@ -78,7 +78,7 @@ object InviteControllerSpec extends SpecBase with JsonFileReader {
   val pstr = "24000001IN"
   val schemeName = "Open Single Trust Scheme with Indiv Establisher and Trustees"
 
-  private val psaMinimalSubscription = MinimalPSA(email, false, None, Some(IndividualDetails("First", Some("Middle"), "Last")))
+  private val psaMinimalSubscription = MinimalPSAPSP(email, false, None, Some(IndividualDetails("First", Some("Middle"), "Last")))
   private val mockAuthAction = FakeAuthAction()
 
 
@@ -86,12 +86,15 @@ object InviteControllerSpec extends SpecBase with JsonFileReader {
   val featureSwitch: FeatureSwitchManagementService = new FeatureSwitchManagementServiceTestImpl(config, environment)
 
   def fakeMinimalPsaConnector(isSuspended: Boolean): MinimalPsaConnector = new MinimalPsaConnector {
-    override def getMinimalPsaDetails(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSA] =
+    override def getMinimalPsaDetails(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP] =
       Future.successful(psaMinimalSubscription.copy(isPsaSuspended = isSuspended))
 
     override def getPsaNameFromPsaID(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] =
       Future.successful(None)
 
+    override def getMinimalPspDetails(pspId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP] = ???
+
+    override def getNameFromPspID(pspId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = ???
   }
 
   def fakeSchemeDetailsConnector: SchemeDetailsConnector = new SchemeDetailsConnector {

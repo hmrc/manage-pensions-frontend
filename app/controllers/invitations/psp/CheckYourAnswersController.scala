@@ -18,8 +18,10 @@ package controllers.invitations.psp
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
+import connectors.admin.MinimalPsaConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import identifiers.invitations.psp.{PspId, PspNameId}
 import identifiers.{SchemeNameId, SchemeSrnId}
 import models.SchemeReferenceNumber
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -35,10 +37,10 @@ import scala.concurrent.{ExecutionContext, Future}
 class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
                                            override val messagesApi: MessagesApi,
                                            authenticate: AuthAction,
-                                           @Invitation navigator: Navigator,
                                            getData: DataRetrievalAction,
                                            requireData: DataRequiredAction,
                                            checkYourAnswersFactory: CheckYourAnswersFactory,
+                                           minimalConnector: MinimalPsaConnector,
                                            val controllerComponents: MessagesControllerComponents,
                                            view: check_your_answers
                                           )(implicit val ec: ExecutionContext) extends FrontendBaseController with Retrievals with I18nSupport {
@@ -58,8 +60,15 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
 
     def onSubmit(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
         implicit request =>
-
-            Future.successful(Redirect(controllers.invitations.psp.routes.DeclarationController.onPageLoad()))
+            (PspNameId and PspId).retrieve.right.map {
+                case pspName ~ pspId =>
+                    minimalConnector.getNameFromPspID(pspId).map {
+                        case Some(minPspName) if pspName.equalsIgnoreCase(minPspName) =>
+                            Redirect(controllers.invitations.psp.routes.DeclarationController.onPageLoad())
+                        case _ => //todo interrupt page
+                            Redirect(controllers.routes.SessionExpiredController.onPageLoad())
+                    }
+            }
     }
 }
 

@@ -23,7 +23,7 @@ import connectors.FakeUserAnswersCacheConnector
 import connectors.admin.MinimalPsaConnector
 import controllers.actions._
 import controllers.behaviours.ControllerWithNormalPageBehaviours
-import models.{MinimalPSA, MinimalSchemeDetail}
+import models.{MinimalPSAPSP, MinimalSchemeDetail}
 import play.api.mvc.Call
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.HeaderCarrier
@@ -60,10 +60,14 @@ class InvitationSuccessControllerSpec extends ControllerWithNormalPageBehaviours
     continue)(fakeRequest, messages).toString
 
   private def fakeMinimalPsaConnector = new MinimalPsaConnector {
-    override def getMinimalPsaDetails(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSA] =
-      Future.successful(MinimalPSA(testEmail, false, Some(testInviteeName), None))
+    override def getMinimalPsaDetails(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP] =
+      Future.successful(MinimalPSAPSP(testEmail, false, Some(testInviteeName), None))
 
     override def getPsaNameFromPsaID(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = ???
+
+    override def getMinimalPspDetails(pspId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP] = ???
+
+    override def getNameFromPspID(pspId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = ???
   }
 
   private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {

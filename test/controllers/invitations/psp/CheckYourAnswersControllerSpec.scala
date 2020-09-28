@@ -17,6 +17,7 @@
 package controllers.invitations.psp
 
 import base.JsonFileReader
+import connectors.admin.MinimalPsaConnector
 import controllers.ControllerSpecBase
 import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction}
 import controllers.behaviours.ControllerWithNormalPageBehaviours
@@ -33,15 +34,22 @@ import utils.countryOptions.CountryOptions
 import utils.{CheckYourAnswersFactory, FakeNavigator, UserAnswers}
 import viewmodels.{AnswerRow, AnswerSection}
 import views.html.check_your_answers
+import org.mockito.Matchers.{eq => eqTo, _}
+import org.mockito.Mockito._
+import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.{MustMatchers, OptionValues, WordSpec}
+import org.scalatestplus.mockito.MockitoSugar
+import scala.concurrent.Future
 
 class CheckYourAnswersControllerSpec extends ControllerSpecBase with MockitoSugar {
 
     import CheckYourAnswersControllerSpec._
 
-
-    def controller(dataRetrievalAction: DataRetrievalAction = minimalData) = new CheckYourAnswersController(
-        frontendAppConfig, messagesApi, FakeAuthAction(), new FakeNavigator(onwardRoute),
-        dataRetrievalAction, new DataRequiredActionImpl, checkYourAnswersFactory, stubMessagesControllerComponents(), view
+    private val mockMinConnector = mock[MinimalPsaConnector]
+    def controller(dataRetrievalAction: DataRetrievalAction = data) = new CheckYourAnswersController(
+        frontendAppConfig, messagesApi, FakeAuthAction(),
+        dataRetrievalAction, new DataRequiredActionImpl, checkYourAnswersFactory, mockMinConnector,
+        stubMessagesControllerComponents(), view
     )
 
     "Check Your Answers Controller Spec" must {
@@ -63,27 +71,39 @@ class CheckYourAnswersControllerSpec extends ControllerSpecBase with MockitoSuga
                 redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad().url
             }
         }
+
+        "on a POST" must {
+            "redirect to Declaration if pspName matches the one returned from minDetails API" in {
+                when(mockMinConnector.getNameFromPspID(any())(any(), any())).thenReturn(Future.successful(Some(pspName)))
+                val result = controller(data).onSubmit()(fakeRequest)
+                redirectLocation(result).value mustBe DeclarationController.onPageLoad().url
+            }
+
+            "redirect to interrupt if pspName does not match the one returned from minDetails API" in {
+                when(mockMinConnector.getNameFromPspID(any())(any(), any())).thenReturn(Future.successful(Some(testSchemeName)))
+                val result = controller(data).onSubmit()(fakeRequest)
+                redirectLocation(result).get mustBe controllers.routes.SessionExpiredController.onPageLoad().url
+            }
+        }
     }
 }
 
 
 
 object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours with MockitoSugar with JsonFileReader {
-    private val testSrn: String = "test-srn"
-    private val testPstr = "test-pstr"
+    private val pspName: String = "test-psp"
     private val testSchemeName = "test-scheme-name"
-    private val testSchemeDetail = MinimalSchemeDetail(testSrn, Some(testPstr), testSchemeName)
     private val srn = "S9000000000"
 
-    private val minimalData = UserAnswers()
-            .set(PspNameId)("Bob").asOpt.value
+    private val data = UserAnswers()
+            .set(PspNameId)(pspName).asOpt.value
             .set(PspId)("A1231231").asOpt.value
             .set(PspClientReferenceId)(HaveClientReference("1234567")).asOpt.value
             .set(SchemeNameId)(testSchemeName).asOpt.value
             .dataRetrievalAction
 
     private val expectedValues = List(AnswerSection(None,List(AnswerRow("messages__check__your__answer__psp__name__label",
-        List("Bob"),true,Some(PspNameController.onPageLoad(CheckMode).url)),
+        List(pspName),true,Some(PspNameController.onPageLoad(CheckMode).url)),
         AnswerRow("messages__check__your__answer__psp__id__label",List("A1231231"),true,
             Some(PspIdController.onPageLoad(CheckMode).url)),
         AnswerRow("messages__check__your__answer__psp_client_reference__label",List("1234567"),true,
