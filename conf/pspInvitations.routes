@@ -20,3 +20,7 @@ POST       /change-do-you-have-client-reference                controllers.invit
 GET        /check-your-answers                          controllers.invitations.psp.CheckYourAnswersController.onPageLoad()
 POST       /check-your-answers                          controllers.invitations.psp.CheckYourAnswersController.onSubmit()
 
+GET        /declaration                                 controllers.invitations.psp.DeclarationController.onPageLoad()
+POST       /declaration                                 controllers.invitations.psp.DeclarationController.onSubmit()
+
+GET        /practitioner-is-authorised                  controllers.invitations.psp.ConfirmationController.onPageLoad()
