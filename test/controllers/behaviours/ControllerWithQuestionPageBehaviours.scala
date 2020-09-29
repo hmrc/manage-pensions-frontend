@@ -93,7 +93,6 @@ class ControllerWithQuestionPageBehaviours extends ControllerSpecBase {
     "calling onSubmit" must {
 
       "redirect to the next page when valid data is submitted" in {
-
         val result = onSubmitAction(validData, FakeAuthAction())(postRequest)
 
         status(result) mustBe SEE_OTHER

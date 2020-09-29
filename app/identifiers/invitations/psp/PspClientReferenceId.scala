@@ -14,24 +14,13 @@
  * limitations under the License.
  */
 
-package forms.invitations
+package identifiers.invitations.psp
 
-import javax.inject.Inject
+import identifiers.TypedIdentifier
+import models.invitations.psp.ClientReference
 
-import forms.mappings.{Mappings, Transforms}
-import play.api.data.Form
+object PspClientReferenceId extends TypedIdentifier[ClientReference] {
 
+  override def toString: String = "pspClientReference"
 
-class PsaIdFormProvider @Inject() extends Mappings with Transforms {
-  def apply(): Form[String] = Form(
-    "psaId" -> text("messages__error__psa__id__required").
-      transform(noSpaceWithUpperCaseTransform, noTransform).
-      verifying(firstError(
-        maxLength(PsaIdFormProvider.psaIdLength, "messages__error__psa__id__invalid"),
-        psaPspId("messages__error__psa__id__invalid")))
-  )
-}
-
-object PsaIdFormProvider {
-  val psaIdLength = 8
 }

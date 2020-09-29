@@ -14,24 +14,20 @@
  * limitations under the License.
  */
 
-package forms.invitations
+package forms.invitations.psp
 
-import javax.inject.Inject
-
-import forms.mappings.{Mappings, Transforms}
+import forms.behaviours.CheckboxBehaviour
 import play.api.data.Form
 
+class DeclarationFormProviderSpec extends CheckboxBehaviour {
 
-class PsaIdFormProvider @Inject() extends Mappings with Transforms {
-  def apply(): Form[String] = Form(
-    "psaId" -> text("messages__error__psa__id__required").
-      transform(noSpaceWithUpperCaseTransform, noTransform).
-      verifying(firstError(
-        maxLength(PsaIdFormProvider.psaIdLength, "messages__error__psa__id__invalid"),
-        psaPspId("messages__error__psa__id__invalid")))
-  )
-}
+  private val form: Form[Boolean] = new DeclarationFormProvider()()
+  private val fieldName = "agree"
+  private val trueValue = "agreed"
+  private val invalidKey = "messages__error__psp_declaration__required"
 
-object PsaIdFormProvider {
-  val psaIdLength = 8
+  "DeclarationFormProvider" should {
+    behave like formWithCheckbox(form, fieldName, trueValue, acceptTrueOnly = true, invalidKey)
+  }
+
 }

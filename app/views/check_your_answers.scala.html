@@ -25,7 +25,8 @@
     formHelper: FormWithCSRF
 )
 
-@(answerSections: Seq[Section], secondaryHeader: Option[String], postUrl: Call, guidance:Option[String] = None, guidanceData:Option[String] = None)(implicit request: Request[_], messages: Messages)
+@(answerSections: Seq[Section], secondaryHeader: Option[String], postUrl: Call, guidance:Option[String] = None,
+guidanceData:Option[String] = None, buttonText: Option[String] = None)(implicit request: Request[_], messages: Messages)
 
     @main_template(
         title = messages("checkYourAnswers.title")
@@ -51,7 +52,7 @@
             }
         }
 
-        @components.submit_button("site.confirm")
+        @components.submit_button(buttonText.getOrElse("site.confirm"))
     }
 
 }

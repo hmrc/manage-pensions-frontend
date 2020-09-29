@@ -23,7 +23,8 @@
         hint: Option[String] = None,
         trackGa: Boolean = false,
         inputs: Seq[InputOption],
-        headingIsLegend: Boolean = false
+        headingIsLegend: Boolean = false,
+        labelClass: Option[String] = None
 )(implicit messages: Messages)
 
 @ariaDescribedBy = @{
@@ -52,7 +53,7 @@
         }
 
         @for((input, i) <- inputs.zipWithIndex){
-            @components.radio(field, input.label, input.value, input.dataTarget, input.hint, Some(i.toString))
+            @components.radio(field, input.label, input.value, input.dataTarget, input.hint, Some(i.toString), labelClass)
         }
     </fieldset>
 </div>

@@ -14,24 +14,17 @@
  * limitations under the License.
  */
 
-package forms.invitations
+package utils.annotations;
 
-import javax.inject.Inject
+import com.google.inject.BindingAnnotation;
 
-import forms.mappings.{Mappings, Transforms}
-import play.api.data.Form
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-
-class PsaIdFormProvider @Inject() extends Mappings with Transforms {
-  def apply(): Form[String] = Form(
-    "psaId" -> text("messages__error__psa__id__required").
-      transform(noSpaceWithUpperCaseTransform, noTransform).
-      verifying(firstError(
-        maxLength(PsaIdFormProvider.psaIdLength, "messages__error__psa__id__invalid"),
-        psaPspId("messages__error__psa__id__invalid")))
-  )
-}
-
-object PsaIdFormProvider {
-  val psaIdLength = 8
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.PARAMETER, ElementType.METHOD, ElementType.FIELD})
+@BindingAnnotation
+public @interface AuthorisePsp {
 }

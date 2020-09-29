@@ -109,7 +109,7 @@ object MinimalPsaConnectorSpec extends JsonFileReader {
 
   private val email = "test@test.com"
 
-  private val expectedResponse = MinimalPSA(email,false,None,Some(IndividualDetails("First",Some("Middle"),"Last")))
+  private val expectedResponse = MinimalPSAPSP(email,false,None,Some(IndividualDetails("First",Some("Middle"),"Last")))
 }
 
 

@@ -17,6 +17,8 @@
 package utils
 
 import identifiers.invitations._
+import identifiers.invitations.psp.{PspClientReferenceId, PspId, PspNameId}
+import models.invitations.psp.ClientReference
 import models.{Address, CheckMode}
 import utils.countryOptions.CountryOptions
 import viewmodels.AnswerRow
@@ -66,4 +68,29 @@ class CheckYourAnswersHelper(userAnswers: UserAnswers, countryOptions: CountryOp
       address.addressLine4, address.postcode, Some(country)).flatten
   }
 
+  def pspName: Option[AnswerRow] = {
+    userAnswers.get(PspNameId) map { answer =>
+      AnswerRow("messages__check__your__answer__psp__name__label", Seq(answer), true,
+        Some(controllers.invitations.psp.routes.PspNameController.onPageLoad(CheckMode).url))
+    }
+  }
+
+  def pspId: Option[AnswerRow] = {
+    userAnswers.get(PspId) map { answer =>
+      AnswerRow("messages__check__your__answer__psp__id__label", Seq(answer), true,
+        Some(controllers.invitations.psp.routes.PspIdController.onPageLoad(CheckMode).url))
+    }
+  }
+
+  def pspClientReference: Option[AnswerRow] = {
+    userAnswers.get(PspClientReferenceId) map { answer =>
+      AnswerRow("messages__check__your__answer__psp_client_reference__label", Seq(getClientReference(answer)), true,
+        Some(controllers.invitations.psp.routes.PspClientReferenceController.onPageLoad(CheckMode).url))
+    }
+  }
+
+  private def getClientReference(answer: ClientReference): String = answer match {
+    case ClientReference.HaveClientReference(reference) => reference
+    case ClientReference.NoClientReference => "messages__none"
+  }
 }

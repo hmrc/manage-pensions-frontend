@@ -1,0 +1,26 @@
+
+GET        /what-you-will-need                          controllers.invitations.psp.WhatYouWillNeedController.onPageLoad()
+POST       /what-you-will-need                          controllers.invitations.psp.WhatYouWillNeedController.onSubmit()
+
+GET        /what-is-the-name                            controllers.invitations.psp.PspNameController.onPageLoad(mode: Mode = NormalMode)
+POST       /what-is-the-name                            controllers.invitations.psp.PspNameController.onSubmit(mode: Mode = NormalMode)
+GET        /change-what-is-the-name                  controllers.invitations.psp.PspNameController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-what-is-the-name                  controllers.invitations.psp.PspNameController.onSubmit(mode: Mode = CheckMode)
+
+GET        /what-is-the-practitioner-id                       controllers.invitations.psp.PspIdController.onPageLoad(mode: Mode = NormalMode)
+POST       /what-is-the-practitioner-id                       controllers.invitations.psp.PspIdController.onSubmit(mode: Mode = NormalMode)
+GET        /change-what-is-the-practitioner-id                controllers.invitations.psp.PspIdController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-what-is-the-practitioner-id                controllers.invitations.psp.PspIdController.onSubmit(mode: Mode = CheckMode)
+
+GET        /do-you-have-client-reference                       controllers.invitations.psp.PspClientReferenceController.onPageLoad(mode: Mode = NormalMode)
+POST       /do-you-have-client-reference                       controllers.invitations.psp.PspClientReferenceController.onSubmit(mode: Mode = NormalMode)
+GET        /change-do-you-have-client-reference                controllers.invitations.psp.PspClientReferenceController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-do-you-have-client-reference                controllers.invitations.psp.PspClientReferenceController.onSubmit(mode: Mode = CheckMode)
+
+GET        /check-your-answers                          controllers.invitations.psp.CheckYourAnswersController.onPageLoad()
+POST       /check-your-answers                          controllers.invitations.psp.CheckYourAnswersController.onSubmit()
+
+GET        /declaration                                 controllers.invitations.psp.DeclarationController.onPageLoad()
+POST       /declaration                                 controllers.invitations.psp.DeclarationController.onSubmit()
+
+GET        /practitioner-is-authorised                  controllers.invitations.psp.ConfirmationController.onPageLoad()
