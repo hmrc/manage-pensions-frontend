@@ -64,9 +64,9 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
                 case pspName ~ pspId =>
                     minimalConnector.getNameFromPspID(pspId).map {
                         case Some(minPspName) if pspName.equalsIgnoreCase(minPspName) =>
-                            Redirect(controllers.invitations.psp.routes.DeclarationController.onPageLoad())
+                            Redirect(routes.DeclarationController.onPageLoad())
                         case _ => //todo interrupt page
-                            Redirect(controllers.routes.SessionExpiredController.onPageLoad())
+                            Redirect(routes.PspDoesNotMatchController.onPageLoad())
                     }
             }
     }

@@ -60,7 +60,7 @@ class DeclarationController @Inject()(
 
   private def inviteAndRedirect()(implicit request: DataRequest[AnyContent]): Future[Result] = {
 
-    Future.successful(Redirect(controllers.invitations.psp.routes.ConfirmationController.onPageLoad()))
+    Future.successful(Redirect(routes.ConfirmationController.onPageLoad()))
 
   }
 }

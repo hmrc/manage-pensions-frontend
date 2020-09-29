@@ -82,7 +82,7 @@ class CheckYourAnswersControllerSpec extends ControllerSpecBase with MockitoSuga
             "redirect to interrupt if pspName does not match the one returned from minDetails API" in {
                 when(mockMinConnector.getNameFromPspID(any())(any(), any())).thenReturn(Future.successful(Some(testSchemeName)))
                 val result = controller(data).onSubmit()(fakeRequest)
-                redirectLocation(result).get mustBe controllers.routes.SessionExpiredController.onPageLoad().url
+                redirectLocation(result).get mustBe PspDoesNotMatchController.onPageLoad().url
             }
         }
     }
