@@ -22,15 +22,14 @@ import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
 import controllers.actions._
 import forms.invitations.psp.PspIdFormProvider
-import identifiers.{SchemeNameId, SchemeSrnId}
 import identifiers.invitations.psp.{PspId, PspNameId}
-import identifiers.invitations.{InviteeNameId, InviteePSAId}
+import identifiers.{SchemeNameId, SchemeSrnId}
 import models.{Mode, SchemeReferenceNumber}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
-import utils.annotations.Invitation
+import utils.annotations.AuthorisePsp
 import utils.{Navigator, UserAnswers}
 import views.html.invitations.psp.pspId
 
@@ -40,7 +39,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class PspIdController @Inject()(appConfig: FrontendAppConfig,
                                 override val messagesApi: MessagesApi,
                                 authenticate: AuthAction,
-                                @Invitation navigator: Navigator,
+                                @AuthorisePsp navigator: Navigator,
                                 dataCacheConnector: UserAnswersCacheConnector,
                                 getData: DataRetrievalAction,
                                 requireData: DataRequiredAction,
