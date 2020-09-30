@@ -17,14 +17,12 @@
 package controllers.invitations.psp
 
 import com.google.inject.Inject
-import config.FrontendAppConfig
-import connectors.PspConnector
-import connectors.scheme.{ListOfSchemesConnector, SchemeDetailsConnector}
+import connectors.scheme.ListOfSchemesConnector
+import connectors.{ActiveRelationshipExistsException, PspConnector}
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.invitations.psp.DeclarationFormProvider
 import identifiers.SchemeSrnId
-import identifiers.invitations.PSTRId
 import identifiers.invitations.psp.{PspClientReferenceId, PspId, PspNameId}
 import models.invitations.psp.ClientReference
 import models.requests.DataRequest
@@ -37,9 +35,7 @@ import views.html.invitations.psp.declaration
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class DeclarationController @Inject()(
-                                       appConfig: FrontendAppConfig,
-                                       override val messagesApi: MessagesApi,
+class DeclarationController @Inject()( override val messagesApi: MessagesApi,
                                        formProvider: DeclarationFormProvider,
                                        auth: AuthAction,
                                        getData: DataRetrievalAction,
@@ -51,6 +47,7 @@ class DeclarationController @Inject()(
                                        view: declaration
                                      )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
   val form: Form[Boolean] = formProvider()
+  val sessionExpired: Future[Result] = Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
 
   def onPageLoad(): Action[AnyContent] = (auth andThen getData andThen requireData) {
     implicit request =>
@@ -59,28 +56,35 @@ class DeclarationController @Inject()(
 
   def onSubmit(): Action[AnyContent] = (auth andThen getData andThen requireData).async {
     implicit request =>
-
       form.bindFromRequest().fold(
         (formWithErrors: Form[Boolean]) =>
           Future.successful(BadRequest(view(formWithErrors))),
-        _ =>
-
-          inviteAndRedirect()
+        _ => inviteAndRedirect()
       )
    }
 
-  private def inviteAndRedirect()(implicit request: DataRequest[AnyContent]): Future[Result] = {
+  private def inviteAndRedirect()(implicit request: DataRequest[AnyContent]): Future[Result] =
     (SchemeSrnId and PspNameId and PspId and PspClientReferenceId).retrieve.right.map {
       case srn ~ pspName ~ pspId ~ pspCR =>
-        listOfSchemesConnector.getListOfSchemes(request.psaId.id).map(_.right.map(list =>
-          schemeDetailsService.pstr(srn, list).map {pstr =>
-            pspConnector.authorisePsp(pstr, pspName, pspId, getClientReference(pspCR)).map { x =>
-              Future.successful(Redirect(routes.ConfirmationController.onPageLoad()))
+        getPstr(srn).flatMap {
+          case Some(pstr) =>
+            pspConnector.authorisePsp(pstr, pspName, pspId, getClientReference(pspCR)).map { _ =>
+              Redirect(routes.ConfirmationController.onPageLoad())
+            }.recoverWith {
+              case _: ActiveRelationshipExistsException =>
+                Future.successful(Redirect(controllers.routes.IndexController.onPageLoad()))
+              case _ => sessionExpired
+            }
+          case _ => sessionExpired
+        }
+    }.left.map(_ => sessionExpired)
 
-        }.recoverWith(Redirect(routes.PspDoesNotMatchController.onPageLoad()))}
-        ).left.map(Redirect(controllers.routes.SessionExpiredController.onPageLoad())))
+
+  private def getPstr(srn: String)(implicit request: DataRequest[AnyContent]): Future[Option[String]] =
+    listOfSchemesConnector.getListOfSchemes(request.psaId.id).map {
+      case Right(list) => schemeDetailsService.pstr(srn, list)
+      case _ => None
     }
-  }
 
   private def getClientReference(answer: ClientReference): Option[String] = answer match {
     case ClientReference.HaveClientReference(reference) => Some(reference)
