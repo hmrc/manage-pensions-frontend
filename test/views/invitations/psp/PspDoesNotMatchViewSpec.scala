@@ -42,11 +42,15 @@ class PspDoesNotMatchViewSpec extends ViewBehaviours {
       createView(),
       messageKeyPrefix,
       Message("messages__pspDoesNotMatch__title"),
-      "_p1", "_p2"
+      "_p1"
     )
 
     "render whatHappensNext header" in {
       Jsoup.parse(createView()().toString()) must haveDynamicText(Message("messages__pspDoesNotMatch__psp", testPspName))
+    }
+
+    "render p2" in {
+      Jsoup.parse(createView()().toString()) must haveDynamicText(Message("messages__pspDoesNotMatch__p2", testPspName))
     }
 
   }

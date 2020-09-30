@@ -34,13 +34,15 @@ formHelper: FormWithCSRF
     bodyClasses = None
 ) {
 
+    @components.back_link()
+
     @components.heading(messages("messages__pspDoesNotMatch__title"))
 
     <p>@messages("messages__pspDoesNotMatch__psp", pspName)</p>
 
     <p>@messages("messages__pspDoesNotMatch__p1")</p>
 
-    <p>@messages("messages__pspDoesNotMatch__p2")</p>
+    <p>@messages("messages__pspDoesNotMatch__p2", pspName)</p>
 
     @components.return_link(returnCall, Some(schemeName))
 

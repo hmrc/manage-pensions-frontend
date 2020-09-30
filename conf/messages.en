@@ -459,4 +459,4 @@ messages__pspConfirmation__p2 = The practitioner can create and submit Accountin
 messages__pspDoesNotMatch__title = The name and practitioner ID do not match our records
 messages__pspDoesNotMatch__psp = You should check these details with {0}.
 messages__pspDoesNotMatch__p1 = Their name should be entered exactly as their registered scheme practitioner name.
-messages__pspDoesNotMatch__p2 = If has not registered as a scheme practitioner using this service, they need to do this before you can add them to this scheme.
+messages__pspDoesNotMatch__p2 = If {0} has not registered as a scheme practitioner using this service, they need to do this before you can add them to this scheme.
