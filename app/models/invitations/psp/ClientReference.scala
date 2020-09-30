@@ -30,14 +30,14 @@ object ClientReference {
     Seq(
 
       InputOption(
-        "true",
-        s"site.yes",
-        Some("value_reference-form"),
+        value = "true",
+        label = s"site.yes",
+        dataTarget = Some("value_reference-form"),
         hint = Set.empty
       ),
       InputOption(
-        "false",
-        s"site.no",
+        value = "false",
+        label = s"site.no",
         hint = Set.empty
       )
     )
@@ -45,7 +45,7 @@ object ClientReference {
 
   implicit val reads: Reads[ClientReference] = {
 
-    (JsPath \ "name").read[String].flatMap {
+    (JsPath \ "hasReference").read[String].flatMap {
 
       case "true" =>
         (JsPath \ "reference").read[String]
@@ -60,9 +60,9 @@ object ClientReference {
     def writes(o: ClientReference): JsObject = {
       o match {
         case ClientReference.HaveClientReference(reference) =>
-          Json.obj("name" -> "true", "reference" -> reference)
+          Json.obj("hasReference" -> "true", "reference" -> reference)
         case _ =>
-          Json.obj("name" -> "false")
+          Json.obj("hasReference" -> "false")
       }
     }
   }

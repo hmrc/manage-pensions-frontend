@@ -17,12 +17,11 @@
 package controllers.invitations.psp
 
 import com.google.inject.Inject
-import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
 import controllers.actions._
-import forms.invitations.psp.{PspClientReferenceFormProvider, PspIdFormProvider}
-import identifiers.invitations.psp.{PspClientReferenceId, PspId, PspNameId}
+import forms.invitations.psp.PspClientReferenceFormProvider
+import identifiers.invitations.psp.{PspClientReferenceId, PspNameId}
 import models.Mode
 import models.invitations.psp.ClientReference
 import play.api.data.Form
@@ -36,8 +35,7 @@ import views.html.invitations.psp.pspClientReference
 import scala.concurrent.{ExecutionContext, Future}
 
 
-class PspClientReferenceController @Inject()(appConfig: FrontendAppConfig,
-                                             override val messagesApi: MessagesApi,
+class PspClientReferenceController @Inject()(override val messagesApi: MessagesApi,
                                              authenticate: AuthAction,
                                              @Invitation navigator: Navigator,
                                              dataCacheConnector: UserAnswersCacheConnector,
@@ -45,13 +43,13 @@ class PspClientReferenceController @Inject()(appConfig: FrontendAppConfig,
                                              requireData: DataRequiredAction,
                                              formProvider: PspClientReferenceFormProvider,
                                              val controllerComponents: MessagesControllerComponents,
-                                             view: pspClientReference)(implicit val ec: ExecutionContext) extends FrontendBaseController with Retrievals with I18nSupport {
+                                             view: pspClientReference
+                                            )(implicit val ec: ExecutionContext) extends FrontendBaseController with Retrievals with I18nSupport {
 
   val form: Form[ClientReference] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
-
       PspNameId.retrieve.right.map {
         pspName =>
           val value = request.userAnswers.get(PspClientReferenceId)
@@ -63,19 +61,19 @@ class PspClientReferenceController @Inject()(appConfig: FrontendAppConfig,
 
   def onSubmit(mode: Mode): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
-          form.bindFromRequest().fold(
-            (formWithErrors: Form[_]) => {
-
-              PspNameId.retrieve.right.map {
-                pspName =>
-                  Future.successful(BadRequest(view(formWithErrors, pspName, mode)))
-              }},
-            value =>
-              dataCacheConnector.save(request.externalId, PspClientReferenceId, value).map(
-                cacheMap =>
-                  Redirect(navigator.nextPage(PspClientReferenceId, mode, UserAnswers(cacheMap)))
-              )
+      form.bindFromRequest().fold(
+        (formWithErrors: Form[_]) => {
+          PspNameId.retrieve.right.map {
+            pspName =>
+              Future.successful(BadRequest(view(formWithErrors, pspName, mode)))
+          }
+        },
+        value =>
+          dataCacheConnector.save(request.externalId, PspClientReferenceId, value).map(
+            cacheMap =>
+              Redirect(navigator.nextPage(PspClientReferenceId, mode, UserAnswers(cacheMap)))
           )
+      )
 
   }
 }

@@ -50,10 +50,11 @@ class PspClientReferenceFormProvider @Inject() extends Mappings with Transforms 
       }
 
     tuple(
-      "yesNo" -> boolean("messages__clientReference_yes_no_required"),
-      "reference" -> mandatoryIfTrue("value.yesNo", text("messages__clientReference_required").
-        verifying(firstError(
-          maxLength(clientRefMaxLength, "messages__clientReference_maxLength"))))
+      "hasReference" -> boolean("messages__clientReference_yes_no_required"),
+      "reference" -> mandatoryIfTrue("value.hasReference", text("messages__clientReference_required")
+        .verifying(firstError(
+          maxLength(clientRefMaxLength, "messages__clientReference_maxLength"))
+        ))
     ).transform(toClientReference, fromClientReference)
   }
 }

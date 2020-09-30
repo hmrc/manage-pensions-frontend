@@ -36,19 +36,19 @@
 <div id="@{field.id}-form" class="form-group @groupClass @if(field.hasErrors){form-field--error}">
 
     @if(headingIsLegend){
-    <h1>
-        <label class="form-label" for="@{field.id}">
-            <span class="bold heading-xlarge">@label</span>
-        </label>
-    </h1>
+        <h1>
+            <label class="form-label" for="@{field.id}">
+                <span class="bold heading-xlarge">@label</span>
+            </label>
+        </h1>
     } else {
-    <label class="form-label" for="@{field.id}">
-        <span class="bold @if(labelClass.nonEmpty){@labelClass}">@label</span>
-    </label>
+        <label class="form-label" for="@{field.id}">
+            <span class="bold @if(labelClass.nonEmpty){@labelClass}">@label</span>
+        </label>
     }
 
     @paragraphText.map{para=>
-    <p>@para</p>
+        <p>@para</p>
     }
 
     @hint.map{hintText=>
@@ -56,9 +56,9 @@
     }
 
     @field.errors.map { error =>
-    <span class="error-notification" id="error-notification-@{field.id}-input">
-                <span class="visually-hidden">@messages("site.error")</span> @messages(error.message, error.args:_*)
-            </span>
+        <span class="error-notification" id="error-notification-@{field.id}-input">
+            <span class="visually-hidden">@messages("site.error")</span> @messages(error.message, error.args:_*)
+        </span>
     }
     <div class="form-control-wrapper">
         <input

@@ -18,6 +18,7 @@
 
 @(
         field: Field,
+        hiddenFieldAndLabel: Option[(Field, String)] = None,
         legend: String,
         legendClass: Option[String] = None,
         hint: Option[String] = None,
@@ -45,21 +46,25 @@
         </legend>
 
         @if(hint.nonEmpty){
-        <span id="@{field.id}-radio-hint" class="form-hint">@{hint.get}</span>
+            <span id="@{field.id}-radio-hint" class="form-hint">@{hint.get}</span>
         }
         @field.errors.map { error =>
-        <span class="error-notification" id="error-message-@{field.id}-input">
-                    <span class="visually-hidden">@messages("site.error")</span> @messages(error.message, error.args: _*)</span>
+            <span class="error-notification" id="error-message-@{field.id}-input">
+                <span class="visually-hidden">@messages("site.error")</span> @messages(error.message, error.args: _*)
+            </span>
         }
 
         @for((input, i) <- inputs.zipWithIndex){
             @components.radio(field, input.label, input.value, input.dataTarget, input.hint, Some(i.toString), labelClass)
-        @if(input.dataTarget){
-        <div class="panel panel-border-narrow js-hidden" id="@input.dataTarget">
-            <label class="form-label" for="@{input.label}-text">@input</label>
-            <input class="form-control" name="@{input.label}-text" type="text" id="@{input.label}-text">
-        </div>
-        }
+            @if(input.dataTarget){
+                @hiddenFieldAndLabel.map { fieldAndLabel =>
+                    @components.input_text(
+                        field = fieldAndLabel._1,
+                        label = fieldAndLabel._2,
+                        groupClass = Option("panel panel-border-narrow js-hidden")
+                    )
+                }
+            }
         }
     </fieldset>
 </div>
