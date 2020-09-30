@@ -18,13 +18,20 @@ package controllers.invitations.psp
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
+import connectors.PspConnector
+import connectors.scheme.{ListOfSchemesConnector, SchemeDetailsConnector}
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.invitations.psp.DeclarationFormProvider
+import identifiers.SchemeSrnId
+import identifiers.invitations.PSTRId
+import identifiers.invitations.psp.{PspClientReferenceId, PspId, PspNameId}
+import models.invitations.psp.ClientReference
 import models.requests.DataRequest
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import services.SchemeDetailsService
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import views.html.invitations.psp.declaration
 
@@ -37,6 +44,9 @@ class DeclarationController @Inject()(
                                        auth: AuthAction,
                                        getData: DataRetrievalAction,
                                        requireData: DataRequiredAction,
+                                       pspConnector: PspConnector,
+                                       listOfSchemesConnector: ListOfSchemesConnector,
+                                       schemeDetailsService: SchemeDetailsService,
                                        val controllerComponents: MessagesControllerComponents,
                                        view: declaration
                                      )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
@@ -54,13 +64,26 @@ class DeclarationController @Inject()(
         (formWithErrors: Form[Boolean]) =>
           Future.successful(BadRequest(view(formWithErrors))),
         _ =>
+
           inviteAndRedirect()
       )
    }
 
   private def inviteAndRedirect()(implicit request: DataRequest[AnyContent]): Future[Result] = {
+    (SchemeSrnId and PspNameId and PspId and PspClientReferenceId).retrieve.right.map {
+      case srn ~ pspName ~ pspId ~ pspCR =>
+        listOfSchemesConnector.getListOfSchemes(request.psaId.id).map(_.right.map(list =>
+          schemeDetailsService.pstr(srn, list).map {pstr =>
+            pspConnector.authorisePsp(pstr, pspName, pspId, getClientReference(pspCR)).map { x =>
+              Future.successful(Redirect(routes.ConfirmationController.onPageLoad()))
 
-    Future.successful(Redirect(controllers.invitations.psp.routes.ConfirmationController.onPageLoad()))
+        }.recoverWith(Redirect(routes.PspDoesNotMatchController.onPageLoad()))}
+        ).left.map(Redirect(controllers.routes.SessionExpiredController.onPageLoad())))
+    }
+  }
 
+  private def getClientReference(answer: ClientReference): Option[String] = answer match {
+    case ClientReference.HaveClientReference(reference) => Some(reference)
+    case ClientReference.NoClientReference => None
   }
 }

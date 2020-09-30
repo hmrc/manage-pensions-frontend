@@ -123,6 +123,8 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
     .getString("urls.schemeUrlsPartialHtml")}"
   lazy val penaltiesUrlPartialHtmlUrl: String = s"${servicesConfig.baseUrl("aft-frontend")}${runModeConfiguration.underlying
     .getString("urls.penaltiesPartialHtml")}"
+  lazy val authorisePspUrl = s"${servicesConfig.baseUrl("pension-practitioner")}${runModeConfiguration.underlying
+    .getString("urls.authorisePsp")}"
 
 
   def languageMap: Map[String, Lang] = Map(
