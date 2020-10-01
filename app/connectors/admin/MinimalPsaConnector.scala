@@ -41,6 +41,7 @@ trait MinimalPsaConnector {
   def getNameFromPspID(pspId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]]
 }
 
+class NoMatchFoundException extends Exception
 
 class MinimalPsaConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) extends MinimalPsaConnector with HttpResponseHelper {
 
@@ -59,7 +60,7 @@ class MinimalPsaConnectorImpl @Inject()(http: HttpClient, config: FrontendAppCon
             case JsSuccess(value, _) => value
             case JsError(errors) => throw JsResultException(errors)
           }
-
+        case NOT_FOUND if response.body.contains("no match found") => throw new NoMatchFoundException
         case _ => handleErrorResponse("GET", config.minimalPsaDetailsUrl)(response)
       }
     } andThen {
