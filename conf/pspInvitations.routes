@@ -24,3 +24,4 @@ GET        /declaration                                 controllers.invitations.
 POST       /declaration                                 controllers.invitations.psp.DeclarationController.onSubmit()
 
 GET        /practitioner-is-authorised                  controllers.invitations.psp.ConfirmationController.onPageLoad()
+GET        /do-not-match-our-records                    controllers.invitations.psp.PspDoesNotMatchController.onPageLoad()

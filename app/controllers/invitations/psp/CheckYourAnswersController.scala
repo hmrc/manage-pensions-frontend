@@ -17,25 +17,21 @@
 package controllers.invitations.psp
 
 import com.google.inject.Inject
-import config.FrontendAppConfig
-import connectors.admin.MinimalPsaConnector
+import connectors.admin.{MinimalPsaConnector, NoMatchFoundException}
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import identifiers.SchemeNameId
 import identifiers.invitations.psp.{PspId, PspNameId}
-import identifiers.{SchemeNameId, SchemeSrnId}
-import models.SchemeReferenceNumber
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc._
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
-import utils.annotations.Invitation
-import utils.{CheckYourAnswersFactory, Navigator}
+import utils.CheckYourAnswersFactory
 import viewmodels.AnswerSection
 import views.html.check_your_answers
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
-                                           override val messagesApi: MessagesApi,
+class CheckYourAnswersController @Inject()(override val messagesApi: MessagesApi,
                                            authenticate: AuthAction,
                                            getData: DataRetrievalAction,
                                            requireData: DataRequiredAction,
@@ -64,9 +60,11 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
                 case pspName ~ pspId =>
                     minimalConnector.getNameFromPspID(pspId).map {
                         case Some(minPspName) if pspName.equalsIgnoreCase(minPspName) =>
-                            Redirect(controllers.invitations.psp.routes.DeclarationController.onPageLoad())
-                        case _ => //todo interrupt page
-                            Redirect(controllers.routes.SessionExpiredController.onPageLoad())
+                            Redirect(routes.DeclarationController.onPageLoad())
+                        case _ => Redirect(routes.PspDoesNotMatchController.onPageLoad())
+                    }.recoverWith{
+                        case _: NoMatchFoundException =>
+                            Future.successful(Redirect(routes.PspDoesNotMatchController.onPageLoad()))
                     }
             }
     }
