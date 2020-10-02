@@ -27,9 +27,9 @@ import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import identifiers.invitations.PSTRId
 import identifiers.{AssociatedDateId, PSANameId, SchemeNameId, SchemeSrnId}
-import models.{MinimalPSA, PsaAssociatedDate}
+import models.{MinimalPSAPSP, PsaAssociatedDate}
 import models.requests.DataRequest
-import models.{MinimalPSA, PsaAssociatedDate}
+import models.{MinimalPSAPSP, PsaAssociatedDate}
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json.{JsArray, JsPath, __}
@@ -65,7 +65,7 @@ class RemovePsaController @Inject()(authenticate: AuthAction,
       }
   }
 
-  private def renderPage(request: DataRequest[AnyContent], srn: String, minimalPsaDetails: MinimalPSA)(implicit hd: HeaderCarrier): Future[Result] = {
+  private def renderPage(request: DataRequest[AnyContent], srn: String, minimalPsaDetails: MinimalPSAPSP)(implicit hd: HeaderCarrier): Future[Result] = {
     import identifiers.invitations.{PSTRId, SchemeNameId}
     for {
       scheme <- getSchemeNameAndPstr(srn, request)
@@ -78,7 +78,7 @@ class RemovePsaController @Inject()(authenticate: AuthAction,
     }
   }
 
-  private def getPsaName(minimalPsaDetails: MinimalPSA): String = {
+  private def getPsaName(minimalPsaDetails: MinimalPSAPSP): String = {
     (minimalPsaDetails.individualDetails, minimalPsaDetails.organisationName) match {
       case (Some(individualDetails), _) => individualDetails.fullName
       case (_, Some(orgName)) => orgName

@@ -18,7 +18,7 @@ package views.invitations.psp
 
 import forms.invitations.psp.PspClientReferenceFormProvider
 import forms.triage.DoesPSTRStartWithTwoFormProvider
-import models.NormalMode
+import models.{NormalMode, SchemeReferenceNumber}
 import models.invitations.psp.ClientReference
 import models.triage.DoesPSTRStartWithATwo
 import play.api.data.Form
@@ -31,6 +31,10 @@ class PspClientReferenceViewSpec extends ViewBehaviours {
   private val pspName = "PSP Name"
   private val postCall = controllers.invitations.psp.routes.PspClientReferenceController.onSubmit(NormalMode)
 
+  private val schemeName = "Test Scheme"
+
+  private val returnCall = controllers.routes.SchemeDetailsController.onPageLoad(SchemeReferenceNumber("srn"))
+
   private val hint = Some("opt1")
 
   val formProvider = new PspClientReferenceFormProvider
@@ -39,10 +43,10 @@ class PspClientReferenceViewSpec extends ViewBehaviours {
   private val pspClientRefView = injector.instanceOf[pspClientReference]
 
   private def createView() =
-    () => pspClientRefView(form, pspName, NormalMode)(fakeRequest, messages)
+    () => pspClientRefView(form, pspName, NormalMode, schemeName, returnCall)(fakeRequest, messages)
 
   private def createViewUsingForm =
-    (form: Form[_]) => pspClientRefView(form, pspName, NormalMode)(fakeRequest, messages)
+    (form: Form[_]) => pspClientRefView(form, pspName, NormalMode, schemeName, returnCall)(fakeRequest, messages)
 
   "PspClientReferenceView" must {
     behave like normalPageWithTitle(createView(), messageKeyPrefix, messages(s"messages__${messageKeyPrefix}__title"),
@@ -53,18 +57,18 @@ class PspClientReferenceViewSpec extends ViewBehaviours {
     "contain radio buttons for the value" in {
       val doc = asDocument(createViewUsingForm(form))
       for (option <- ClientReference.options) {
-        assertContainsRadioButton(doc, s"value_yesNo-${option.value}", "value.yesNo", option.value, isChecked = false)
+        assertContainsRadioButton(doc, s"value_hasReference-${option.value}", "value.hasReference", option.value, isChecked = false)
       }
     }
 
     for (option <- ClientReference.options) {
       s"rendered with a value of '${option.value}'" must {
         s"have the '${option.value}' radio button selected" in {
-          val doc = asDocument(createViewUsingForm(form.bind(Map("value.yesNo" -> s"${option.value}"))))
-          assertContainsRadioButton(doc, s"value_yesNo-${option.value}", "value.yesNo", option.value, isChecked = true)
+          val doc = asDocument(createViewUsingForm(form.bind(Map("value.hasReference" -> s"${option.value}"))))
+          assertContainsRadioButton(doc, s"value_hasReference-${option.value}", "value.hasReference", option.value, isChecked = true)
 
           for (unselectedOption <- ClientReference.options.filterNot(o => o == option)) {
-            assertContainsRadioButton(doc, s"value_yesNo-${unselectedOption.value}", "value.yesNo", unselectedOption.value, isChecked = false)
+            assertContainsRadioButton(doc, s"value_hasReference-${unselectedOption.value}", "value.hasReference", unselectedOption.value, isChecked = false)
           }
         }
       }

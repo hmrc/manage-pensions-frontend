@@ -18,7 +18,7 @@ package connectors.admin
 
 import com.google.inject.{ImplementedBy, Inject}
 import config.FrontendAppConfig
-import models.MinimalPSA
+import models.MinimalPSAPSP
 import play.api.Logger
 import play.api.http.Status._
 import play.api.libs.json.{JsError, JsResultException, JsSuccess, Json}
@@ -32,40 +32,53 @@ import scala.util.Failure
 @ImplementedBy(classOf[MinimalPsaConnectorImpl])
 trait MinimalPsaConnector {
 
-  def getMinimalPsaDetails(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSA]
+  def getMinimalPsaDetails(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP]
+
+  def getMinimalPspDetails(pspId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP]
 
   def getPsaNameFromPsaID(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]]
+
+  def getNameFromPspID(pspId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]]
 }
+
+class NoMatchFoundException extends Exception
 
 class MinimalPsaConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) extends MinimalPsaConnector with HttpResponseHelper {
 
-  override def getMinimalPsaDetails(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSA] = {
-    val psaHc = hc.withExtraHeaders("psaId" -> psaId)
+  override def getMinimalPsaDetails(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP] =
+    getMinimalDetails(hc.withExtraHeaders("psaId" -> psaId))
 
-    http.GET[HttpResponse](config.minimalPsaDetailsUrl)(implicitly, psaHc, implicitly) map { response =>
+  override def getMinimalPspDetails(pspId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP] =
+    getMinimalDetails(hc.withExtraHeaders("pspId" -> pspId))
 
-        response.status match {
-          case OK =>
-            Json.parse(response.body).validate[MinimalPSA] match {
-              case JsSuccess(value, _) => value
-              case JsError(errors) => throw JsResultException(errors)
-            }
+  private def getMinimalDetails(hc: HeaderCarrier)(implicit ec: ExecutionContext): Future[MinimalPSAPSP] =
+    http.GET[HttpResponse](config.minimalPsaDetailsUrl)(implicitly, hc, implicitly) map { response =>
 
-          case _ => handleErrorResponse("GET", config.minimalPsaDetailsUrl)(response)
-        }
-    } andThen {
-      case Failure(t: Throwable) => Logger.warn("Unable to invite PSA to administer scheme", t)
-    }
-  }
-
-  override def getPsaNameFromPsaID(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = {
-    getMinimalPsaDetails(psaId).map { minimalDetails =>
-      (minimalDetails.individualDetails, minimalDetails.organisationName) match {
-        case (Some(individual), None) => Some(individual.fullName)
-        case (None, Some(org)) => Some(s"$org")
-        case _ => None
+      response.status match {
+        case OK =>
+          Json.parse(response.body).validate[MinimalPSAPSP] match {
+            case JsSuccess(value, _) => value
+            case JsError(errors) => throw JsResultException(errors)
+          }
+        case NOT_FOUND if response.body.contains("no match found") => throw new NoMatchFoundException
+        case _ => handleErrorResponse("GET", config.minimalPsaDetailsUrl)(response)
       }
+    } andThen {
+      case Failure(t: Throwable) => Logger.warn("Unable to get minimal details", t)
     }
-  }
+
+  override def getPsaNameFromPsaID(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] =
+    getMinimalPsaDetails(psaId).map(getNameFromId)
+
+
+  override def getNameFromPspID(pspId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] =
+    getMinimalPspDetails(pspId).map(getNameFromId)
+
+  private def getNameFromId(minDetails: MinimalPSAPSP): Option[String] =
+    (minDetails.individualDetails, minDetails.organisationName) match {
+      case (Some(individual), None) => Some(individual.fullName)
+      case (None, Some(org)) => Some(s"$org")
+      case _ => None
+    }
 
 }

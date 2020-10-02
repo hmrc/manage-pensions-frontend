@@ -23,13 +23,13 @@ import controllers.Retrievals
 import controllers.actions._
 import forms.invitations.psp.PspIdFormProvider
 import identifiers.invitations.psp.{PspId, PspNameId}
-import identifiers.invitations.{InviteeNameId, InviteePSAId}
-import models.Mode
+import identifiers.{SchemeNameId, SchemeSrnId}
+import models.{Mode, SchemeReferenceNumber}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
-import utils.annotations.Invitation
+import utils.annotations.AuthorisePsp
 import utils.{Navigator, UserAnswers}
 import views.html.invitations.psp.pspId
 
@@ -39,7 +39,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class PspIdController @Inject()(appConfig: FrontendAppConfig,
                                 override val messagesApi: MessagesApi,
                                 authenticate: AuthAction,
-                                @Invitation navigator: Navigator,
+                                @AuthorisePsp navigator: Navigator,
                                 dataCacheConnector: UserAnswersCacheConnector,
                                 getData: DataRetrievalAction,
                                 requireData: DataRequiredAction,
@@ -52,12 +52,12 @@ class PspIdController @Inject()(appConfig: FrontendAppConfig,
   def onPageLoad(mode: Mode): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
 
-      PspNameId.retrieve.right.map {
-        pspName =>
+      (SchemeNameId and PspNameId and SchemeSrnId).retrieve.right.map {
+        case schemeName ~ pspName ~ srn =>
           val value = request.userAnswers.get(PspId)
           val preparedForm = value.fold(form)(form.fill)
 
-          Future.successful(Ok(view(preparedForm, pspName, mode)))
+          Future.successful(Ok(view(preparedForm, pspName, mode, schemeName, returnCall(srn))))
       }
   }
 
@@ -65,9 +65,9 @@ class PspIdController @Inject()(appConfig: FrontendAppConfig,
     implicit request =>
           form.bindFromRequest().fold(
             (formWithErrors: Form[_]) =>
-              PspNameId.retrieve.right.map {
-                pspName =>
-                  Future.successful(BadRequest(view(formWithErrors, pspName, mode)))
+              (SchemeNameId and PspNameId and SchemeSrnId).retrieve.right.map {
+                case schemeName ~ pspName ~ srn =>
+                  Future.successful(BadRequest(view(formWithErrors, pspName, mode, schemeName, returnCall(srn))))
               },
             value =>
               dataCacheConnector.save(request.externalId, PspId, value).map(
@@ -77,4 +77,7 @@ class PspIdController @Inject()(appConfig: FrontendAppConfig,
           )
 
   }
+
+    private def returnCall(srn:String):Call  = controllers.routes.SchemeDetailsController.onPageLoad(SchemeReferenceNumber(srn))
+
 }

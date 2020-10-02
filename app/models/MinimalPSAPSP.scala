@@ -30,7 +30,7 @@ object IndividualDetails {
   implicit val format: Format[IndividualDetails] = Json.format[IndividualDetails]
 }
 
-case class MinimalPSA(
+case class MinimalPSAPSP(
                        email: String,
                        isPsaSuspended: Boolean,
                        organisationName: Option[String],
@@ -44,7 +44,7 @@ case class MinimalPSA(
   }
 }
 
-object MinimalPSA {
-  implicit val format: Format[MinimalPSA] = Json.format[MinimalPSA]
+object MinimalPSAPSP {
+  implicit val format: Format[MinimalPSAPSP] = Json.format[MinimalPSAPSP]
 }
 

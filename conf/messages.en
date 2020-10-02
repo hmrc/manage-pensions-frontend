@@ -1,7 +1,7 @@
 site.service_name = Managing pension schemes
 site.signOut = Sign out
 site.back = Back
-site.save_and_continue = Save and Continue
+site.save_and_continue = Save and continue
 site.continue = Continue
 site.change = Change
 site.confirm = Confirm
@@ -9,6 +9,7 @@ site.yes = Yes
 site.no = No
 site.return_to = Return to {0}
 site.return_to_overview = Return to manage and register your pension schemes
+site.return_to_scheme_overview = Return to pension scheme overview
 site.error = Error:
 
 checkYourAnswers.title = Check your answers
@@ -435,4 +436,27 @@ messages__clientReference_yes_no_required = Select yes if you have a client refe
 messages__clientReference_required = Enter the client reference
 messages__clientReference_maxLength = Enter a client reference using less than 160 characters
 
+messages__check__your__answer__psp__label = You are authorising this scheme practitioner for {0}.
+messages__check__your__answer__psp__name__label = Scheme practitioner’s name
+messages__check__your__answer__psp__id__label = Practitioner ID
+messages__check__your__answer__psp_client_reference__label = Client reference
+messages__none = None
 
+messages__psp_declaration__title = Declaration
+messages__psp_declaration__continue = I confirm:
+messages__psp_declaration__statement1 = I want to authorise this practitioner for this pension scheme.
+messages__psp_declaration__statement2 = I understand that authorising this practitioner for this pension scheme does not negate my responsibilities as pension scheme administrator.
+messages__psp_declaration__statement3 = I know I remain jointly and severally liable with any other scheme administrator(s) of this pension scheme for any tax charges or penalties that arise.
+messages__psp_declaration__agree = Agree
+messages__error__psp_declaration__required = Select the agree box to confirm you accept the declaration
+
+messages__pspConfirmation__title = Practitioner is now authorised
+messages__pspConfirmation__heading = {0} is now authorised as a pension scheme practitioner for {1}
+messages__pspConfirmation__whatHappensNext = What happens next
+messages__pspConfirmation__p1 = A letter will be sent to to confirm they have been authorised as a pension scheme practitioner for {0}.
+messages__pspConfirmation__p2 = The practitioner can create and submit Accounting for Tax returns for {0} by signing in to Managing Pension Schemes on GOV.UK.
+
+messages__pspDoesNotMatch__title = The name and practitioner ID do not match our records
+messages__pspDoesNotMatch__psp = You should check these details with {0}.
+messages__pspDoesNotMatch__p1 = Their name should be entered exactly as their registered scheme practitioner name.
+messages__pspDoesNotMatch__p2 = If {0} has not registered as a scheme practitioner using this service, they need to do this before you can add them to this scheme.

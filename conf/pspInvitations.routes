@@ -16,3 +16,12 @@ GET        /do-you-have-client-reference                       controllers.invit
 POST       /do-you-have-client-reference                       controllers.invitations.psp.PspClientReferenceController.onSubmit(mode: Mode = NormalMode)
 GET        /change-do-you-have-client-reference                controllers.invitations.psp.PspClientReferenceController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-do-you-have-client-reference                controllers.invitations.psp.PspClientReferenceController.onSubmit(mode: Mode = CheckMode)
+
+GET        /check-your-answers                          controllers.invitations.psp.CheckYourAnswersController.onPageLoad()
+POST       /check-your-answers                          controllers.invitations.psp.CheckYourAnswersController.onSubmit()
+
+GET        /declaration                                 controllers.invitations.psp.DeclarationController.onPageLoad()
+POST       /declaration                                 controllers.invitations.psp.DeclarationController.onSubmit()
+
+GET        /practitioner-is-authorised                  controllers.invitations.psp.ConfirmationController.onPageLoad()
+GET        /do-not-match-our-records                    controllers.invitations.psp.PspDoesNotMatchController.onPageLoad()
