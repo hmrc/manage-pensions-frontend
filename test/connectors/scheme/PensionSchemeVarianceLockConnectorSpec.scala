@@ -17,11 +17,15 @@
 package connectors.scheme
 
 import com.github.tomakehurst.wiremock.client.WireMock._
-import models.{PsaLock, SchemeVariance, VarianceLock}
-import org.scalatest.{AsyncFlatSpec, Matchers}
+import models.PsaLock
+import models.SchemeVariance
+import models.VarianceLock
+import org.scalatest.AsyncFlatSpec
+import org.scalatest.Matchers
 import play.api.http.Status
 import play.api.libs.json.Json
-import uk.gov.hmrc.http.{HeaderCarrier, HttpException}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.HttpException
 import utils.WireMockHelper
 
 class PensionSchemeVarianceLockConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper {

@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-import config.{FeatureSwitchManagementService, FeatureSwitchManagementServiceProductionImpl, FeatureSwitchManagementServiceTestImpl}
-import play.api.inject.{Binding, Module}
-import play.api.{Configuration, Environment}
+import config.FeatureSwitchManagementService
+import config.FeatureSwitchManagementServiceProductionImpl
+import config.FeatureSwitchManagementServiceTestImpl
+import play.api.inject.Binding
+import play.api.inject.Module
+import play.api.Configuration
+import play.api.Environment
 
 class FeatureSwitchModule extends Module {
 

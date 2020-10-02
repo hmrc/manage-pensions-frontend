@@ -19,12 +19,16 @@ package controllers.triage
 import com.google.inject.Inject
 import config.FrontendAppConfig
 import controllers.actions.TriageAction
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.i18n.I18nSupport
+import play.api.i18n.MessagesApi
+import play.api.mvc.Action
+import play.api.mvc.AnyContent
+import play.api.mvc.MessagesControllerComponents
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import views.html.triage.updateBoth
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 class UpdateBothController @Inject()(
                                           frontendAppConfig: FrontendAppConfig,

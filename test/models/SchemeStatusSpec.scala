@@ -17,7 +17,8 @@
 package models
 
 import org.scalacheck.Gen
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.FlatSpec
+import org.scalatest.Matchers
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
 class SchemeStatusSpec extends FlatSpec with Matchers with ScalaCheckDrivenPropertyChecks {

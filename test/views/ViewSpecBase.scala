@@ -21,8 +21,10 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
 import org.scalatest.Assertion
-import org.scalatest.matchers.{MatchResult, Matcher}
-import play.twirl.api.{Html, HtmlFormat}
+import org.scalatest.matchers.MatchResult
+import org.scalatest.matchers.Matcher
+import play.twirl.api.Html
+import play.twirl.api.HtmlFormat
 
 trait ViewSpecBase extends SpecBase {
 

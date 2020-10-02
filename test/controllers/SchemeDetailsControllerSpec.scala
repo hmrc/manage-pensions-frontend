@@ -17,25 +17,33 @@
 package controllers
 
 import connectors._
-import connectors.scheme.{ListOfSchemesConnector, PensionSchemeVarianceLockConnector, SchemeDetailsConnector}
+import connectors.scheme.ListOfSchemesConnector
+import connectors.scheme.PensionSchemeVarianceLockConnector
+import connectors.scheme.SchemeDetailsConnector
 import controllers.actions._
 import handlers.ErrorHandler
 import identifiers.SchemeNameId
 import identifiers.invitations.PSTRId
 import models._
-import org.mockito.Matchers.{any, eq => eqTo}
-import org.mockito.Mockito.{reset, when}
+import org.mockito.Matchers.any
+import org.mockito.Matchers.{eq => eqTo}
+import org.mockito.Mockito.reset
+import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.libs.json.{JsArray, Json}
-import play.api.test.Helpers.{contentAsString, _}
+import play.api.libs.json.JsArray
+import play.api.libs.json.Json
+import play.api.test.Helpers.contentAsString
+import play.api.test.Helpers._
 import play.twirl.api.Html
 import services.SchemeDetailsService
 import testhelpers.CommonBuilders._
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.UserAnswers
 import viewmodels.AssociatedPsa
-import views.html.{error_template, error_template_page_not_found, schemeDetails}
+import views.html.error_template
+import views.html.error_template_page_not_found
+import views.html.schemeDetails
 
 import scala.concurrent.Future
 

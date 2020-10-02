@@ -19,11 +19,14 @@ package utils.navigators
 import base.SpecBase
 import connectors.FakeUserAnswersCacheConnector
 import identifiers.Identifier
-import identifiers.remove.{ConfirmRemovePsaId, RemovalDateId}
+import identifiers.remove.ConfirmRemovePsaId
+import identifiers.remove.RemovalDateId
 import org.scalatest.prop.TableFor4
 import play.api.libs.json.Json
 import play.api.mvc.Call
-import utils.{NavigatorBehaviour, UserAnswerOps, UserAnswers}
+import utils.NavigatorBehaviour
+import utils.UserAnswerOps
+import utils.UserAnswers
 
 class RemovePSANavigatorSpec extends SpecBase with NavigatorBehaviour {
 

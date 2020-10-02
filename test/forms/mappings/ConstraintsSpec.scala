@@ -17,9 +17,11 @@
 package forms.mappings
 
 import java.time.LocalDate
-import org.scalatest.{Matchers, WordSpec}
-import play.api.data.validation.{Invalid, Valid}
-import utils.InputOption
+
+import org.scalatest.Matchers
+import org.scalatest.WordSpec
+import play.api.data.validation.Invalid
+import play.api.data.validation.Valid
 import wolfendale.scalacheck.regexp.RegexpGen
 
 // scalastyle:off magic.number

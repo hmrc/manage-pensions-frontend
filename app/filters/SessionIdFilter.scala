@@ -22,9 +22,11 @@ import akka.stream.Materializer
 import com.google.inject.Inject
 import play.api.http.HeaderNames
 import play.api.mvc._
-import uk.gov.hmrc.http.{SessionKeys, HeaderNames => HMRCHeaderNames}
+import uk.gov.hmrc.http.SessionKeys
+import uk.gov.hmrc.http.{HeaderNames => HMRCHeaderNames}
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 class SessionIdFilter(
                        override val mat: Materializer,

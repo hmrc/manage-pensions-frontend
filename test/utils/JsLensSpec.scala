@@ -18,7 +18,9 @@ package utils
 
 import org.scalacheck.Gen
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
-import org.scalatest.{MustMatchers, OptionValues, WordSpec}
+import org.scalatest.MustMatchers
+import org.scalatest.OptionValues
+import org.scalatest.WordSpec
 import play.api.libs.json._
 
 class JsLensSpec extends WordSpec with MustMatchers with ScalaCheckPropertyChecks with OptionValues {

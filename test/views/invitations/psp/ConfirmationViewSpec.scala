@@ -17,7 +17,6 @@
 package views.invitations.psp
 
 import org.jsoup.Jsoup
-import play.api.mvc.Call
 import play.twirl.api.HtmlFormat
 import viewmodels.Message
 import views.behaviours.ViewBehaviours

@@ -17,16 +17,20 @@
 package controllers.invitations
 
 import connectors.FakeUserAnswersCacheConnector
-import controllers.actions.{DataRetrievalAction, _}
+import controllers.actions.DataRetrievalAction
+import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.invitations.AdviserDetailsFormProvider
 import identifiers.invitations.AdviserNameId
 import models.NormalMode
 import play.api.data.Form
-import play.api.mvc.{Action, AnyContent, AnyContentAsJson}
+import play.api.mvc.Action
+import play.api.mvc.AnyContent
+import play.api.mvc.AnyContentAsJson
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
-import utils.{FakeNavigator, UserAnswers}
+import utils.FakeNavigator
+import utils.UserAnswers
 import views.html.invitations.adviserDetails
 
 class AdviserDetailsControllerSpec extends ControllerWithQuestionPageBehaviours {
@@ -56,7 +60,7 @@ class AdviserDetailsControllerSpec extends ControllerWithQuestionPageBehaviours 
       view).onSubmit(NormalMode)
   }
 
-  private def viewAsString(form: Form[_] = form) = view(form, NormalMode)(fakeRequest, messages).toString
+  private def viewAsString(form: Form[_]) = view(form, NormalMode)(fakeRequest, messages).toString
 
 
   behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, userAnswer.dataRetrievalAction, form, form.fill("test"), viewAsString)

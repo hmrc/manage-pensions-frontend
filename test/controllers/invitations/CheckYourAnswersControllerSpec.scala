@@ -17,12 +17,19 @@
 package controllers.invitations
 
 import base.JsonFileReader
-import config.{FeatureSwitchManagementService, FeatureSwitchManagementServiceTestImpl}
+import config.FeatureSwitchManagementService
+import config.FeatureSwitchManagementServiceTestImpl
 import connectors.scheme.SchemeDetailsConnector
-import connectors.{InvitationConnector, NameMatchingFailedException, PsaAlreadyInvitedException}
-import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction}
+import connectors.InvitationConnector
+import connectors.NameMatchingFailedException
+import connectors.PsaAlreadyInvitedException
+import controllers.actions.AuthAction
+import controllers.actions.DataRetrievalAction
+import controllers.actions.FakeAuthAction
 import controllers.behaviours.ControllerWithNormalPageBehaviours
-import models.{AcceptedInvitation, Invitation, MinimalSchemeDetail}
+import models.AcceptedInvitation
+import models.Invitation
+import models.MinimalSchemeDetail
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -30,14 +37,17 @@ import play.api.Configuration
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.countryOptions.CountryOptions
-import utils.{CheckYourAnswersFactory, UserAnswers}
+import utils.CheckYourAnswersFactory
+import utils.UserAnswers
 import viewmodels.AnswerSection
 import views.html.check_your_answers
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 class CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours with MockitoSugar {
 

@@ -18,7 +18,9 @@ package utils
 
 import identifiers.Identifier
 import models.requests.IdentifiedRequest
-import models.{CheckMode, Mode, NormalMode}
+import models.CheckMode
+import models.Mode
+import models.NormalMode
 import play.api.Logger
 import play.api.mvc.Call
 import uk.gov.hmrc.http.HeaderCarrier

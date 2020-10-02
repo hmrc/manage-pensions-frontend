@@ -21,26 +21,36 @@ import java.time.LocalDate
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import connectors.admin.PsaRemovalConnector
-import connectors.scheme.{PensionSchemeVarianceLockConnector, UpdateSchemeCacheConnector}
+import connectors.scheme.PensionSchemeVarianceLockConnector
+import connectors.scheme.UpdateSchemeCacheConnector
 import controllers.Retrievals
 import controllers.actions._
 import forms.remove.RemovalDateFormProvider
-import identifiers.invitations.{PSTRId, SchemeNameId}
+import identifiers.invitations.PSTRId
+import identifiers.invitations.SchemeNameId
 import identifiers.remove.RemovalDateId
-import identifiers.{AssociatedDateId, PSANameId, SchemeSrnId}
+import identifiers.AssociatedDateId
+import identifiers.PSANameId
+import identifiers.SchemeSrnId
 import javax.inject.Inject
-import models.{NormalMode, PsaToBeRemovedFromScheme}
+import models.NormalMode
+import models.PsaToBeRemovedFromScheme
 import play.api.data.Form
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.I18nSupport
+import play.api.i18n.MessagesApi
 import play.api.libs.json.Reads._
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.Action
+import play.api.mvc.AnyContent
+import play.api.mvc.MessagesControllerComponents
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.DateHelper._
 import utils.annotations.RemovePSA
-import utils.{Navigator, UserAnswers}
+import utils.Navigator
+import utils.UserAnswers
 import views.html.remove.removalDate
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 class RemovalDateController @Inject()(appConfig: FrontendAppConfig,
                                       override val messagesApi: MessagesApi,

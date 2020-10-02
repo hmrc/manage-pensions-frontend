@@ -24,7 +24,8 @@ import play.api.mvc.Results._
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.collection.mutable
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 trait FakeUserAnswersCacheConnector extends UserAnswersCacheConnector with Matchers {
 

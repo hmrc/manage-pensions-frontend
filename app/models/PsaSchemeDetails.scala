@@ -18,7 +18,8 @@ package models
 
 import models.SchemeStatus.WoundUp
 import org.joda.time.LocalDate
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.Json
+import play.api.libs.json.OFormat
 
 case class Name(firstName: Option[String], middleName: Option[String], lastName: Option[String])
 

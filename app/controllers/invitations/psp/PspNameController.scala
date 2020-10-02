@@ -21,19 +21,27 @@ import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
 import controllers.actions._
 import forms.invitations.psp.PspNameFormProvider
-import identifiers.{SchemeNameId, SchemeSrnId}
+import identifiers.SchemeNameId
+import identifiers.SchemeSrnId
 import identifiers.invitations.psp.PspNameId
 import javax.inject.Inject
-import models.{Mode, SchemeReferenceNumber}
+import models.Mode
+import models.SchemeReferenceNumber
 import play.api.data.Form
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
+import play.api.i18n.I18nSupport
+import play.api.i18n.MessagesApi
+import play.api.mvc.Action
+import play.api.mvc.AnyContent
+import play.api.mvc.Call
+import play.api.mvc.MessagesControllerComponents
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.annotations.AuthorisePsp
-import utils.{Navigator, UserAnswers}
+import utils.Navigator
+import utils.UserAnswers
 import views.html.invitations.psp.pspName
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 class PspNameController @Inject()(appConfig: FrontendAppConfig,
                                   override val messagesApi: MessagesApi,

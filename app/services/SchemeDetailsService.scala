@@ -22,17 +22,23 @@ import config.FrontendAppConfig
 import connectors.FrontendConnector
 import connectors.admin.MinimalPsaConnector
 import connectors.scheme.PensionSchemeVarianceLockConnector
-import identifiers.{ListOfPSADetailsId, SchemeStatusId}
-import models.SchemeStatus.{Deregistered, Open, WoundUp}
+import identifiers.ListOfPSADetailsId
+import identifiers.SchemeStatusId
+import models.SchemeStatus.Deregistered
+import models.SchemeStatus.Open
+import models.SchemeStatus.WoundUp
 import models._
 import models.requests.AuthenticatedRequest
-import play.api.mvc.{AnyContent, Request}
+import play.api.mvc.AnyContent
+import play.api.mvc.Request
 import play.twirl.api.Html
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.{DateHelper, UserAnswers}
+import utils.DateHelper
+import utils.UserAnswers
 import viewmodels.AssociatedPsa
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
                                      frontendConnector: FrontendConnector,

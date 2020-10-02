@@ -16,15 +16,18 @@
 
 package controllers.invitations
 
-import controllers.actions.{AuthAction, DataRetrievalAction}
+import controllers.actions.AuthAction
+import controllers.actions.DataRetrievalAction
 import controllers.behaviours.ControllerWithNormalPageBehaviours
 import models.CheckMode
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.mvc.Call
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.countryOptions.CountryOptions
-import utils.{CheckYourAnswersFactory, UserAnswers}
-import viewmodels.{AnswerRow, AnswerSection}
+import utils.CheckYourAnswersFactory
+import utils.UserAnswers
+import viewmodels.AnswerRow
+import viewmodels.AnswerSection
 import views.html.check_your_answers
 
 class CheckPensionAdviserAnswersControllerSpec extends ControllerWithNormalPageBehaviours with MockitoSugar{

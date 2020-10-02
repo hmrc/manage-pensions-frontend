@@ -19,16 +19,19 @@ package controllers
 import config.FrontendAppConfig
 import connectors.FakeUserAnswersCacheConnector
 import connectors.admin.MinimalPsaConnector
-import controllers.actions.{AuthAction, FakeAuthAction}
+import controllers.actions.AuthAction
+import controllers.actions.FakeAuthAction
 import forms.ListSchemesFormProvider
-import models.{SchemeDetails, SchemeStatus}
+import models.SchemeDetails
+import models.SchemeStatus
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.test.Helpers._
-import services.{PaginationService, SchemeSearchService}
+import services.PaginationService
+import services.SchemeSearchService
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import views.html.list_schemes
 

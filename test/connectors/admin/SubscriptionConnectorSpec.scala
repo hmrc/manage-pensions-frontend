@@ -18,11 +18,14 @@ package connectors.admin
 
 import base.JsonFileReader
 import com.github.tomakehurst.wiremock.client.WireMock._
-import org.scalatest.{AsyncFlatSpec, Matchers}
+import org.scalatest.AsyncFlatSpec
+import org.scalatest.Matchers
 import org.scalatestplus.scalacheck.Checkers
 import play.api.http.Status._
-import play.api.libs.json.{JsResultException, Json}
-import uk.gov.hmrc.http.{HeaderCarrier, Upstream5xxResponse, UpstreamErrorResponse}
+import play.api.libs.json.JsResultException
+import play.api.libs.json.Json
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import utils.WireMockHelper
 
 class SubscriptionConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper with Checkers {

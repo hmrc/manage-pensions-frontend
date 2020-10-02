@@ -16,16 +16,16 @@
 
 package controllers.invitations.psp
 
-import connectors.FakeUserAnswersCacheConnector
 import controllers.ControllerSpecBase
 import controllers.actions._
-import identifiers.{SchemeNameId, SchemeSrnId}
-import models.{NormalMode, SchemeReferenceNumber}
+import identifiers.SchemeNameId
+import identifiers.SchemeSrnId
+import models.NormalMode
+import models.SchemeReferenceNumber
 import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
-import utils.FakeNavigator
 import views.html.invitations.psp.whatYouWillNeed
 
 class WhatYouWillNeedControllerSpec extends ControllerSpecBase {

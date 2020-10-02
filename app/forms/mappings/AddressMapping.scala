@@ -16,7 +16,8 @@
 
 package forms.mappings
 
-import play.api.data.{FormError, Mapping}
+import play.api.data.FormError
+import play.api.data.Mapping
 import utils.countryOptions.CountryOptions
 
 trait AddressMapping extends Mappings with Transforms with Constraints {

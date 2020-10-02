@@ -18,13 +18,13 @@ package connectors.aft
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
-import play.api.http.Status.{NOT_FOUND, OK}
 import play.api.libs.ws.WSClient
 import play.api.mvc.Result
-import uk.gov.hmrc.http.{HeaderCarrier, HttpException}
+import uk.gov.hmrc.http.HeaderCarrier
 import play.api.mvc.Results.Ok
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 class AftCacheConnector @Inject()(
                                    config: FrontendAppConfig,

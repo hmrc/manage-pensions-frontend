@@ -16,16 +16,20 @@
 
 package connectors.scheme
 
-import com.google.inject.{ImplementedBy, Inject, Singleton}
+import com.google.inject.ImplementedBy
+import com.google.inject.Inject
+import com.google.inject.Singleton
 import config.FrontendAppConfig
 import play.api.Logger
 import play.api.http.Status.OK
 import play.api.libs.json.Json
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
-import utils.{HttpResponseHelper, UserAnswers}
+import utils.HttpResponseHelper
+import utils.UserAnswers
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 import scala.util.Failure
 
 @ImplementedBy(classOf[SchemeDetailsConnectorImpl])

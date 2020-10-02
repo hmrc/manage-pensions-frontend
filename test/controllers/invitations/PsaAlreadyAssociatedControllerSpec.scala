@@ -18,12 +18,15 @@ package controllers.invitations
 
 import base.SpecBase
 import controllers.ControllerSpecBase
-import controllers.actions.{DataRequiredActionImpl, FakeAuthAction, FakeUnAuthorisedAction}
+import controllers.actions.DataRequiredActionImpl
+import controllers.actions.FakeAuthAction
+import controllers.actions.FakeUnAuthorisedAction
 import models.MinimalSchemeDetail
 import play.api.mvc.Call
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
-import utils.{FakeNavigator, UserAnswers}
+import utils.FakeNavigator
+import utils.UserAnswers
 import views.html.invitations.psa_already_associated
 
 class PsaAlreadyAssociatedControllerSpec extends ControllerSpecBase {

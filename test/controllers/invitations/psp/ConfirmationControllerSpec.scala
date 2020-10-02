@@ -21,7 +21,9 @@ import controllers.actions._
 import controllers.behaviours.ControllerWithNormalPageBehaviours
 import identifiers.SchemeNameId
 import identifiers.invitations.psp.PspNameId
-import play.api.mvc.{Action, AnyContent, Call}
+import play.api.mvc.Action
+import play.api.mvc.AnyContent
+import play.api.mvc.Call
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.UserAnswers
 import views.html.invitations.psp.confirmation

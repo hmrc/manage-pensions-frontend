@@ -16,20 +16,26 @@
 
 package controllers.invitations.psp
 
-import config.FrontendAppConfig
-import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
-import identifiers.{SchemeNameId, SchemeSrnId}
+import controllers.actions.AuthAction
+import controllers.actions.DataRequiredAction
+import controllers.actions.DataRetrievalAction
+import identifiers.SchemeNameId
+import identifiers.SchemeSrnId
 import identifiers.invitations.psp.PspNameId
 import javax.inject.Inject
 import models.SchemeReferenceNumber
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
+import play.api.i18n.I18nSupport
+import play.api.i18n.MessagesApi
+import play.api.mvc.Action
+import play.api.mvc.AnyContent
+import play.api.mvc.Call
+import play.api.mvc.MessagesControllerComponents
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import views.html.invitations.psp.pspDoesNotMatch
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 class PspDoesNotMatchController @Inject()(
                                              override val messagesApi: MessagesApi,

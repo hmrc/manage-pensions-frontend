@@ -19,16 +19,22 @@ package controllers.remove
 import java.time.LocalDate
 
 import connectors.admin.PsaRemovalConnector
-import connectors.scheme.{PensionSchemeVarianceLockConnector, UpdateSchemeCacheConnector}
-import connectors.{FakeUserAnswersCacheConnector, UserAnswersCacheConnector, _}
+import connectors.scheme.PensionSchemeVarianceLockConnector
+import connectors.scheme.UpdateSchemeCacheConnector
+import connectors.FakeUserAnswersCacheConnector
+import connectors.UserAnswersCacheConnector
 import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.remove.RemovalDateFormProvider
 import identifiers.remove.RemovalDateId
-import models.{PsaToBeRemovedFromScheme, SchemeVariance}
+import models.PsaToBeRemovedFromScheme
+import models.SchemeVariance
 import org.mockito.Matchers
 import org.mockito.Matchers.any
-import org.mockito.Mockito.{reset, times, verify, when}
+import org.mockito.Mockito.reset
+import org.mockito.Mockito.times
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito._
 import play.api.data.Form
@@ -36,14 +42,17 @@ import play.api.libs.json.Json
 import play.api.mvc.AnyContentAsJson
 import play.api.mvc.Results.Ok
 import play.api.test.FakeRequest
-import play.api.test.Helpers.{redirectLocation, status, _}
+import play.api.test.Helpers.redirectLocation
+import play.api.test.Helpers.status
+import play.api.test.Helpers._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.DateHelper._
 import utils.UserAnswers
 import views.html.remove.removalDate
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 class RemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours with MockitoSugar with BeforeAndAfterEach{
 

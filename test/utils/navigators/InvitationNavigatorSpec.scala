@@ -18,7 +18,10 @@ package utils.navigators
 
 import base.SpecBase
 import identifiers.Identifier
-import identifiers.invitations.{CheckYourAnswersId, InvitationSuccessId, InviteeNameId, InviteePSAId}
+import identifiers.invitations.CheckYourAnswersId
+import identifiers.invitations.InvitationSuccessId
+import identifiers.invitations.InviteeNameId
+import identifiers.invitations.InviteePSAId
 import models.NormalMode
 import models.requests.IdentifiedRequest
 import org.scalatest.OptionValues
@@ -26,7 +29,8 @@ import org.scalatest.prop.TableFor4
 import play.api.libs.json.Json
 import play.api.mvc.Call
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.{NavigatorBehaviour, UserAnswers}
+import utils.NavigatorBehaviour
+import utils.UserAnswers
 
 class InvitationNavigatorSpec extends SpecBase with NavigatorBehaviour {
 

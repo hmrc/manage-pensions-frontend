@@ -18,7 +18,7 @@ package models
 
 import config.FrontendAppConfig
 import play.api.libs.json._
-import utils.{InputOption}
+import utils.InputOption
 
 sealed trait SchemeType
 

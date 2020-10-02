@@ -17,26 +17,38 @@
 package controllers.invitations
 
 import com.google.inject.Inject
-import config.{FeatureSwitchManagementService, FrontendAppConfig}
+import config.FeatureSwitchManagementService
+import config.FrontendAppConfig
 import connectors.scheme.SchemeDetailsConnector
-import connectors.{InvitationConnector, InvitationsCacheConnector, UserAnswersCacheConnector}
+import connectors.InvitationConnector
+import connectors.InvitationsCacheConnector
+import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import controllers.actions.AuthAction
+import controllers.actions.DataRequiredAction
+import controllers.actions.DataRetrievalAction
 import forms.invitations.DeclarationFormProvider
 import identifiers.invitations._
-import identifiers.{SchemeSrnId, SchemeTypeId, SchemeNameId => GetSchemeNameId}
+import identifiers.SchemeSrnId
+import identifiers.SchemeTypeId
+import identifiers.{SchemeNameId => GetSchemeNameId}
 import models.SchemeType.MasterTrust
 import models._
 import models.requests.DataRequest
 import play.api.data.Form
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.api.i18n.I18nSupport
+import play.api.i18n.MessagesApi
+import play.api.mvc.Action
+import play.api.mvc.AnyContent
+import play.api.mvc.MessagesControllerComponents
+import play.api.mvc.Result
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.Navigator
 import utils.annotations.AcceptInvitation
 import views.html.invitations.declaration
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 class DeclarationController @Inject()(
                                        appConfig: FrontendAppConfig,

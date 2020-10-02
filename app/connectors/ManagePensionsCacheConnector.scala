@@ -19,7 +19,6 @@ package connectors
 import com.google.inject.Inject
 import config.FrontendAppConfig
 import play.api.libs.ws.WSClient
-import uk.gov.hmrc.crypto.ApplicationCrypto
 
 class ManagePensionsCacheConnector @Inject()(
                                               config: FrontendAppConfig,

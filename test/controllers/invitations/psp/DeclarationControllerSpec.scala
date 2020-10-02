@@ -18,7 +18,9 @@ package controllers.invitations.psp
 
 import base.JsonFileReader
 import controllers.ControllerSpecBase
-import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction}
+import controllers.actions.DataRequiredActionImpl
+import controllers.actions.DataRetrievalAction
+import controllers.actions.FakeAuthAction
 import forms.invitations.psp.DeclarationFormProvider
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
