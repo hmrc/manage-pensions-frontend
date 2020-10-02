@@ -17,19 +17,33 @@
 package controllers.invitations.psp
 
 import base.JsonFileReader
+import connectors.{ActiveRelationshipExistsException, PspConnector}
+import connectors.scheme.ListOfSchemesConnector
 import controllers.ControllerSpecBase
-import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction}
+import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
 import forms.invitations.psp.DeclarationFormProvider
-import org.scalatest.BeforeAndAfterEach
+import identifiers.SchemeSrnId
+import identifiers.invitations.psp.{PspClientReferenceId, PspId, PspNameId}
+import models.ListOfSchemes
+import models.invitations.psp.ClientReference
+import models.invitations.psp.ClientReference.HaveClientReference
+import org.mockito.Matchers._
+import org.mockito.Mockito._
+import org.scalatest.{BeforeAndAfterEach, RecoverMethods}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.Configuration
 import play.api.data.Form
 import play.api.mvc.Call
 import play.api.test.Helpers._
+import services.SchemeDetailsService
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
+import utils.UserAnswers
 import views.html.invitations.psp.declaration
 
-class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar with BeforeAndAfterEach with JsonFileReader {
+import scala.concurrent.Future
+
+class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar with BeforeAndAfterEach with JsonFileReader
+  with RecoverMethods {
 
   def onwardRoute: Call = controllers.invitations.psp.routes.ConfirmationController.onPageLoad()
 
@@ -40,13 +54,33 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
   private val view = injector.instanceOf[declaration]
   private def sessionExpired: String = controllers.routes.SessionExpiredController.onPageLoad().url
 
+  private val mockPspConnector = mock[PspConnector]
+  private val mockListOfSchemesConnector = mock[ListOfSchemesConnector]
+  private val mockSchemeDetailsService = mock[SchemeDetailsService]
+
+  val srn: String = "srn"
+  val pstr: String = "pstr"
+  val pspName: String = "psp-name"
+  val pspId: String = "psp-id"
+  val pspCR: ClientReference = HaveClientReference("psp-client-reference")
+
+  val userAnswers: UserAnswers = UserAnswers().set(SchemeSrnId)(srn).asOpt.value
+    .set(PspNameId)(pspName).asOpt.value
+    .set(PspId)(pspId).asOpt.value
+    .set(PspClientReferenceId)(pspCR).asOpt.value
+
+  val data: DataRetrievalAction = new FakeDataRetrievalAction(Some(userAnswers.json))
+  val listOfSchemesResponse: Future[Right[Nothing, ListOfSchemes]] = Future.successful(Right(ListOfSchemes("", "", None)))
+
   def controller(dataRetrievalAction: DataRetrievalAction = getEmptyData) = new DeclarationController(
-    frontendAppConfig,
     messagesApi,
     formProvider,
     FakeAuthAction(),
     dataRetrievalAction,
     new DataRequiredActionImpl,
+    mockPspConnector,
+    mockListOfSchemesConnector,
+    mockSchemeDetailsService,
     stubMessagesControllerComponents(),
     view
   )
@@ -74,8 +108,13 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
 
     "on a POST" must {
 
-      "invite psp and redirect to next page when valid data is submitted" in {
-        val result = controller().onSubmit()(fakeRequest.withFormUrlEncodedBody("agree" -> "agreed"))
+      "invite psp and redirect to confirmation page when valid data is submitted" in {
+
+        when(mockListOfSchemesConnector.getListOfSchemes(any())(any(), any())).thenReturn(listOfSchemesResponse)
+        when(mockSchemeDetailsService.pstr(any(), any())).thenReturn(Some(pstr))
+        when(mockPspConnector.authorisePsp(any(), any(), any(), any())(any(), any())).thenReturn(Future.successful(()))
+
+        val result = controller(data).onSubmit()(fakeRequest.withFormUrlEncodedBody("agree" -> "agreed"))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).value mustBe onwardRoute.url
         }

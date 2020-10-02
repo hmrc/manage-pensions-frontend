@@ -24,21 +24,19 @@ import controllers.behaviours.ControllerWithNormalPageBehaviours
 import controllers.invitations.psp.routes._
 import identifiers.SchemeNameId
 import identifiers.invitations.psp.{PspClientReferenceId, PspId, PspNameId}
+import models.CheckMode
 import models.invitations.psp.ClientReference.HaveClientReference
-import models.{CheckMode, MinimalSchemeDetail}
+import org.mockito.Matchers._
+import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.mvc.Call
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.countryOptions.CountryOptions
-import utils.{CheckYourAnswersFactory, FakeNavigator, UserAnswers}
+import utils.{CheckYourAnswersFactory, UserAnswers}
 import viewmodels.{AnswerRow, AnswerSection}
 import views.html.check_your_answers
-import org.mockito.Matchers.{eq => eqTo, _}
-import org.mockito.Mockito._
-import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.{MustMatchers, OptionValues, WordSpec}
-import org.scalatestplus.mockito.MockitoSugar
+
 import scala.concurrent.Future
 
 class CheckYourAnswersControllerSpec extends ControllerSpecBase with MockitoSugar {
