@@ -455,3 +455,8 @@ messages__pspConfirmation__heading = {0} is now authorised as a pension scheme p
 messages__pspConfirmation__whatHappensNext = What happens next
 messages__pspConfirmation__p1 = A letter will be sent to to confirm they have been authorised as a pension scheme practitioner for {0}.
 messages__pspConfirmation__p2 = The practitioner can create and submit Accounting for Tax returns for {0} by signing in to Managing Pension Schemes on GOV.UK.
+
+messages__pspDoesNotMatch__title = The name and practitioner ID do not match our records
+messages__pspDoesNotMatch__psp = You should check these details with {0}.
+messages__pspDoesNotMatch__p1 = Their name should be entered exactly as their registered scheme practitioner name.
+messages__pspDoesNotMatch__p2 = If {0} has not registered as a scheme practitioner using this service, they need to do this before you can add them to this scheme.

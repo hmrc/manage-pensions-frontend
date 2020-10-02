@@ -45,9 +45,8 @@ class CheckYourAnswersControllerSpec extends ControllerSpecBase with MockitoSuga
 
     private val mockMinConnector = mock[MinimalPsaConnector]
     def controller(dataRetrievalAction: DataRetrievalAction = data) = new CheckYourAnswersController(
-        frontendAppConfig, messagesApi, FakeAuthAction(),
-        dataRetrievalAction, new DataRequiredActionImpl, checkYourAnswersFactory, mockMinConnector,
-        stubMessagesControllerComponents(), view
+        messagesApi, FakeAuthAction(), dataRetrievalAction, new DataRequiredActionImpl,
+        checkYourAnswersFactory, mockMinConnector, stubMessagesControllerComponents(), view
     )
 
     "Check Your Answers Controller Spec" must {
@@ -80,18 +79,15 @@ class CheckYourAnswersControllerSpec extends ControllerSpecBase with MockitoSuga
             "redirect to interrupt if pspName does not match the one returned from minDetails API" in {
                 when(mockMinConnector.getNameFromPspID(any())(any(), any())).thenReturn(Future.successful(Some(testSchemeName)))
                 val result = controller(data).onSubmit()(fakeRequest)
-                redirectLocation(result).get mustBe controllers.routes.SessionExpiredController.onPageLoad().url
+                redirectLocation(result).get mustBe PspDoesNotMatchController.onPageLoad().url
             }
         }
     }
 }
 
-
-
 object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours with MockitoSugar with JsonFileReader {
     private val pspName: String = "test-psp"
     private val testSchemeName = "test-scheme-name"
-    private val srn = "S9000000000"
 
     private val data = UserAnswers()
             .set(PspNameId)(pspName).asOpt.value
@@ -101,10 +97,10 @@ object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours
             .dataRetrievalAction
 
     private val expectedValues = List(AnswerSection(None,List(AnswerRow("messages__check__your__answer__psp__name__label",
-        List(pspName),true,Some(PspNameController.onPageLoad(CheckMode).url)),
-        AnswerRow("messages__check__your__answer__psp__id__label",List("A1231231"),true,
+        List(pspName),answerIsMessageKey = true,Some(PspNameController.onPageLoad(CheckMode).url)),
+        AnswerRow("messages__check__your__answer__psp__id__label",List("A1231231"),answerIsMessageKey = true,
             Some(PspIdController.onPageLoad(CheckMode).url)),
-        AnswerRow("messages__check__your__answer__psp_client_reference__label",List("1234567"),true,
+        AnswerRow("messages__check__your__answer__psp_client_reference__label",List("1234567"),answerIsMessageKey = true,
             Some(PspClientReferenceController.onPageLoad(CheckMode).url)))))
 
 
@@ -116,8 +112,8 @@ object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours
 
     def call: Call = controllers.invitations.psp.routes.CheckYourAnswersController.onSubmit()
 
-    def viewAsString() = view(expectedValues, None, call,
-        Some("messages__check__your__answer__psp__label"), Some(testSchemeName), Some("site.save_and_continue"))(fakeRequest, messages).toString
+    def viewAsString(): String = view(expectedValues, None, call, Some("messages__check__your__answer__psp__label"),
+        Some(testSchemeName), Some("site.save_and_continue"))(fakeRequest, messages).toString
 
 
 
