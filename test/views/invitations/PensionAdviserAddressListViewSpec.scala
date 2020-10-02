@@ -17,7 +17,8 @@
 package views.invitations
 
 import forms.invitations.PensionAdviserAddressListFormProvider
-import models.{NormalMode, TolerantAddress}
+import models.NormalMode
+import models.TolerantAddress
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours

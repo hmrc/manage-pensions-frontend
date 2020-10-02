@@ -20,13 +20,17 @@ import connectors.FakeUserAnswersCacheConnector
 import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.invitations.psp.PspNameFormProvider
-import identifiers.{SchemeNameId, SchemeSrnId}
+import identifiers.SchemeNameId
+import identifiers.SchemeSrnId
 import identifiers.invitations.psp.PspNameId
-import models.{NormalMode, SchemeReferenceNumber}
+import models.NormalMode
+import models.SchemeReferenceNumber
 import play.api.data.Form
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.Action
+import play.api.mvc.AnyContent
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
-import utils.{UserAnswers, _}
+import utils.UserAnswers
+import utils._
 import views.html.invitations.psp.pspName
 
 class PspNameControllerSpec extends ControllerWithQuestionPageBehaviours {

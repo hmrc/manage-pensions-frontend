@@ -20,7 +20,8 @@ import java.time.LocalDate
 
 import models.SchemeStatus.WoundUp
 import org.scalacheck.Gen
-import org.scalatest.{MustMatchers, WordSpec}
+import org.scalatest.MustMatchers
+import org.scalatest.WordSpec
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
 class PsaSchemeDetailsSpec extends WordSpec with MustMatchers with ScalaCheckDrivenPropertyChecks {

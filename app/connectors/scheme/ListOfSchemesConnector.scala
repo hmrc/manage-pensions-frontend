@@ -16,18 +16,26 @@
 
 package connectors.scheme
 
-import com.google.inject.{ImplementedBy, Inject, Singleton}
-import config.{FeatureSwitchManagementService, FrontendAppConfig}
+import com.google.inject.ImplementedBy
+import com.google.inject.Inject
+import com.google.inject.Singleton
+import config.FeatureSwitchManagementService
+import config.FrontendAppConfig
 import models.ListOfSchemes
 import play.api.Logger
 import play.api.http.Status._
-import play.api.libs.json.{JsError, JsResultException, JsSuccess, Json}
+import play.api.libs.json.JsError
+import play.api.libs.json.JsResultException
+import play.api.libs.json.JsSuccess
+import play.api.libs.json.Json
 import toggles.Toggles
 import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 @ImplementedBy(classOf[ListOfSchemesConnectorImpl])
 trait ListOfSchemesConnector {

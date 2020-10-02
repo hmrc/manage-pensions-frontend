@@ -19,22 +19,30 @@ package controllers.remove
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import controllers.actions.AuthAction
+import controllers.actions.DataRequiredAction
+import controllers.actions.DataRetrievalAction
 import forms.remove.ConfirmRemovePsaFormProvider
-import identifiers.{PSANameId, SchemeSrnId}
+import identifiers.PSANameId
+import identifiers.SchemeSrnId
 import identifiers.invitations.SchemeNameId
 import identifiers.remove.ConfirmRemovePsaId
 import javax.inject.Inject
 import models.NormalMode
 import play.api.data.Form
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
+import play.api.i18n.I18nSupport
+import play.api.i18n.MessagesApi
+import play.api.mvc.Action
+import play.api.mvc.AnyContent
+import play.api.mvc.MessagesControllerComponents
+import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.annotations.RemovePSA
-import utils.{Navigator, UserAnswers}
+import utils.Navigator
+import utils.UserAnswers
 import views.html.remove.confirmRemovePsa
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 class ConfirmRemovePsaController @Inject()(
                                             val appConfig: FrontendAppConfig,

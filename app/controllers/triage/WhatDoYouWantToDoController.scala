@@ -25,14 +25,20 @@ import javax.inject.Inject
 import models.NormalMode
 import models.triage.WhatDoYouWantToDo
 import play.api.data.Form
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.i18n.I18nSupport
+import play.api.i18n.MessagesApi
+import play.api.mvc.Action
+import play.api.mvc.AnyContent
+import play.api.mvc.MessagesControllerComponents
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.annotations.Triage
-import utils.{Enumerable, Navigator, UserAnswers}
+import utils.Enumerable
+import utils.Navigator
+import utils.UserAnswers
 import views.html.triage.whatDoYouWantToDo
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 class WhatDoYouWantToDoController @Inject()(appConfig: FrontendAppConfig,
                                             override val messagesApi: MessagesApi,

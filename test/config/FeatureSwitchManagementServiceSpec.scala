@@ -19,7 +19,8 @@ package config
 import org.scalatestplus.play.PlaySpec
 import play.api.inject.Injector
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.{Configuration, Environment}
+import play.api.Configuration
+import play.api.Environment
 
 class FeatureSwitchManagementServiceSpec extends PlaySpec {
 

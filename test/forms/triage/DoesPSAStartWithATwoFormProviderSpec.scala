@@ -18,9 +18,12 @@ package forms.triage
 
 import forms.behaviours.FormBehaviours
 import models.triage.DoesPSAStartWithATwo
-import models.{Field, Invalid, Required}
+import models.Field
+import models.Invalid
+import models.Required
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.i18n.{Messages, MessagesApi}
+import play.api.i18n.Messages
+import play.api.i18n.MessagesApi
 import play.api.test.FakeRequest
 
 class DoesPSAStartWithATwoFormProviderSpec extends FormBehaviours with GuiceOneAppPerSuite {

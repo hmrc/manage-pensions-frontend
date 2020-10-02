@@ -16,13 +16,15 @@
 
 package utils.navigators
 
-import connectors.UserAnswersCacheConnector
-import identifiers.{Identifier, SchemeSrnId}
+import identifiers.Identifier
+import identifiers.SchemeSrnId
 import identifiers.invitations._
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
+import javax.inject.Singleton
 import models.NormalMode
 import play.api.mvc.Call
-import utils.{Navigator, UserAnswers}
+import utils.Navigator
+import utils.UserAnswers
 
 @Singleton
 class AcceptInvitationNavigator @Inject() extends Navigator {

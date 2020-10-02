@@ -17,7 +17,9 @@
 package views.invitations.psp
 
 import forms.invitations.psp.PspNameFormProvider
-import models.{CheckMode, NormalMode, SchemeReferenceNumber}
+import models.CheckMode
+import models.NormalMode
+import models.SchemeReferenceNumber
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import views.behaviours.QuestionViewBehaviours

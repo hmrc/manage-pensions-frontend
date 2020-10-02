@@ -16,11 +16,10 @@
 
 package services
 
-import play.api.mvc.{Request, RequestHeader}
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.HeaderCarrierConverter
+import play.api.mvc.Request
 import uk.gov.hmrc.play.bootstrap.controller.FrontendHeaderCarrierProvider
-import uk.gov.hmrc.play.partials.{HeaderCarrierForPartials, HeaderCarrierForPartialsConverter}
+import uk.gov.hmrc.play.partials.HeaderCarrierForPartials
+import uk.gov.hmrc.play.partials.HeaderCarrierForPartialsConverter
 
 object HeaderCarrierFunctions extends FrontendHeaderCarrierProvider {
 

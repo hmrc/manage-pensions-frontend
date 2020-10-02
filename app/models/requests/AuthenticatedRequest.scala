@@ -17,7 +17,8 @@
 package models.requests
 
 import models.UserType
-import play.api.mvc.{Request, WrappedRequest}
+import play.api.mvc.Request
+import play.api.mvc.WrappedRequest
 import uk.gov.hmrc.domain.PsaId
 
 trait IdentifiedRequest {

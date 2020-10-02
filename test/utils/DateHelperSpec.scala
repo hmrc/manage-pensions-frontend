@@ -19,7 +19,8 @@ package utils
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.Matchers
+import org.scalatest.WordSpec
 
 class DateHelperSpec extends WordSpec with Matchers {
 

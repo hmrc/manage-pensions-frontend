@@ -17,7 +17,8 @@
 package forms.mappings
 
 import play.api.data.validation.Constraint
-import play.api.data.{FormError, Mapping}
+import play.api.data.FormError
+import play.api.data.Mapping
 
 class CustomBindMapping[T](
                             fieldName: String,

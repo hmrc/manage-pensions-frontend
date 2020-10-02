@@ -18,7 +18,8 @@ package controllers.invitations
 
 import controllers.actions._
 import controllers.behaviours.ControllerWithNormalPageBehaviours
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.Action
+import play.api.mvc.AnyContent
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import views.html.invitations.youCannotSendAnInvite
 

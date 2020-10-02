@@ -17,7 +17,8 @@
 package views.behaviours
 
 import forms.mappings.RegexBehaviourSpec
-import play.api.data.{Form, FormError}
+import play.api.data.Form
+import play.api.data.FormError
 import wolfendale.scalacheck.regexp.RegexpGen
 
 trait StringFieldBehaviours extends FieldBehaviours with RegexBehaviourSpec {

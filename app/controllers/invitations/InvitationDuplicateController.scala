@@ -18,18 +18,24 @@ package controllers.invitations
 
 import config.FrontendAppConfig
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import controllers.actions.AuthAction
+import controllers.actions.DataRequiredAction
+import controllers.actions.DataRetrievalAction
 import identifiers.MinimalSchemeDetailId
 import identifiers.invitations.InviteeNameId
 import javax.inject.Inject
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
+import play.api.i18n.I18nSupport
+import play.api.i18n.MessagesApi
+import play.api.mvc.Action
+import play.api.mvc.AnyContent
+import play.api.mvc.MessagesControllerComponents
+import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.Navigator
 import utils.annotations.Invitation
 import views.html.invitations.invitation_duplicate
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 
 class InvitationDuplicateController @Inject()(

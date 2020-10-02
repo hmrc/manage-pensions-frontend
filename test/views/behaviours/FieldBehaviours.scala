@@ -23,7 +23,8 @@ import forms.FormSpec
 import generators.Generators
 import org.scalacheck.Gen
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
-import play.api.data.{Form, FormError}
+import play.api.data.Form
+import play.api.data.FormError
 
 //noinspection ScalaStyle
 trait FieldBehaviours extends FormSpec with ScalaCheckDrivenPropertyChecks with Generators {

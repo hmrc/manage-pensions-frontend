@@ -17,13 +17,14 @@
 package utils.navigators
 
 import controllers.invitations.psp.routes._
-import controllers.routes._
 import identifiers.Identifier
 import identifiers.invitations.psp._
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
+import javax.inject.Singleton
 import models.NormalMode
 import play.api.mvc.Call
-import utils.{Navigator, UserAnswers}
+import utils.Navigator
+import utils.UserAnswers
 
 @Singleton
 class AuthorisePspNavigator @Inject() extends Navigator {

@@ -20,11 +20,13 @@ import java.time.LocalDate
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import models.PsaToBeRemovedFromScheme
-import org.scalatest.{AsyncFlatSpec, Matchers}
+import org.scalatest.AsyncFlatSpec
+import org.scalatest.Matchers
 import org.scalatestplus.scalacheck.Checkers
 import play.api.http.Status
 import play.api.libs.json.Json
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
+import uk.gov.hmrc.http.BadRequestException
+import uk.gov.hmrc.http.HeaderCarrier
 import utils.WireMockHelper
 
 class PsaRemovalConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper with Checkers {

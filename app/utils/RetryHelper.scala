@@ -26,7 +26,8 @@ import uk.gov.hmrc.http.HttpErrorFunctions.is5xx
 import uk.gov.hmrc.http.UpstreamErrorResponse
 
 import scala.concurrent.duration._
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 trait RetryHelper {
 

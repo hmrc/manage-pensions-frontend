@@ -18,13 +18,15 @@ package utils.navigators
 
 import base.SpecBase
 import identifiers.invitations._
-import identifiers.{Identifier, SchemeSrnId}
+import identifiers.Identifier
+import identifiers.SchemeSrnId
 import models.NormalMode
 import org.scalatest.OptionValues
 import org.scalatest.prop.TableFor4
 import play.api.libs.json.Json
 import play.api.mvc.Call
-import utils.{NavigatorBehaviour, UserAnswers}
+import utils.NavigatorBehaviour
+import utils.UserAnswers
 
 class AcceptInvitationNavigatorSpec extends SpecBase with NavigatorBehaviour {
 

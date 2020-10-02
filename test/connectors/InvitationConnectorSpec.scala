@@ -19,13 +19,17 @@ package connectors
 import java.time.LocalDate
 
 import com.github.tomakehurst.wiremock.client.WireMock._
-import models.{AcceptedInvitation, Invitation, SchemeReferenceNumber}
+import models.AcceptedInvitation
+import models.Invitation
+import models.SchemeReferenceNumber
 import org.scalatestplus.scalacheck.Checkers
-import org.scalatest.{AsyncFlatSpec, Matchers}
+import org.scalatest.AsyncFlatSpec
+import org.scalatest.Matchers
 import play.api.http.Status
 import play.api.libs.json.Json
 import uk.gov.hmrc.domain.PsaId
-import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.NotFoundException
 import utils.WireMockHelper
 
 class InvitationConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper with Checkers {

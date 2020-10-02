@@ -17,7 +17,8 @@
 package utils
 
 import java.time.format.DateTimeFormatter
-import java.time.{LocalDate, LocalDateTime}
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.concurrent.atomic.AtomicReference
 
 object DateHelper {

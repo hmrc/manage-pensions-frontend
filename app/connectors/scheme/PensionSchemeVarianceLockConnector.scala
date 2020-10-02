@@ -18,16 +18,26 @@ package connectors.scheme
 
 import com.google.inject.ImplementedBy
 import config.FrontendAppConfig
-import javax.inject.{Inject, Singleton}
-import models.{Lock, SchemeVariance}
+import javax.inject.Inject
+import javax.inject.Singleton
+import models.Lock
+import models.SchemeVariance
 import play.api.Logger
 import play.api.http.Status._
-import play.api.libs.json.{JsError, JsResultException, JsSuccess, Json}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpException, HttpReads, HttpResponse}
+import play.api.libs.json.JsError
+import play.api.libs.json.JsResultException
+import play.api.libs.json.JsSuccess
+import play.api.libs.json.Json
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.HttpException
+import uk.gov.hmrc.http.HttpReads
+import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
-import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Try}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
+import scala.util.Failure
+import scala.util.Try
 
 @ImplementedBy(classOf[PensionSchemeVarianceLockConnectorImpl])
 trait PensionSchemeVarianceLockConnector {

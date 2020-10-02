@@ -18,27 +18,38 @@ package controllers.remove
 
 import java.time.LocalDate
 
-import com.google.inject.{Inject, Singleton}
+import com.google.inject.Inject
+import com.google.inject.Singleton
 import config.FrontendAppConfig
 import connectors.admin.MinimalPsaConnector
 import connectors.UserAnswersCacheConnector
 import connectors.scheme.SchemeDetailsConnector
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import controllers.actions.AuthAction
+import controllers.actions.DataRequiredAction
+import controllers.actions.DataRetrievalAction
 import identifiers.invitations.PSTRId
-import identifiers.{AssociatedDateId, PSANameId, SchemeNameId, SchemeSrnId}
-import models.{MinimalPSAPSP, PsaAssociatedDate}
+import identifiers.AssociatedDateId
+import identifiers.PSANameId
+import identifiers.SchemeNameId
+import identifiers.SchemeSrnId
 import models.requests.DataRequest
-import models.{MinimalPSAPSP, PsaAssociatedDate}
+import models.MinimalPSAPSP
+import models.PsaAssociatedDate
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
-import play.api.libs.json.{JsArray, JsPath, __}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.api.libs.json.JsArray
+import play.api.libs.json.JsPath
+import play.api.libs.json.__
+import play.api.mvc.Action
+import play.api.mvc.AnyContent
+import play.api.mvc.MessagesControllerComponents
+import play.api.mvc.Result
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
-import utils.DateHelper
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 @Singleton
 class RemovePsaController @Inject()(authenticate: AuthAction,
@@ -66,7 +77,8 @@ class RemovePsaController @Inject()(authenticate: AuthAction,
   }
 
   private def renderPage(request: DataRequest[AnyContent], srn: String, minimalPsaDetails: MinimalPSAPSP)(implicit hd: HeaderCarrier): Future[Result] = {
-    import identifiers.invitations.{PSTRId, SchemeNameId}
+    import identifiers.invitations.PSTRId
+    import identifiers.invitations.SchemeNameId
     for {
       scheme <- getSchemeNameAndPstr(srn, request)
       _ <- userAnswersCacheConnector.save(request.externalId, PSANameId, getPsaName(minimalPsaDetails))

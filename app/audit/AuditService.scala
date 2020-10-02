@@ -16,16 +16,19 @@
 
 package audit
 
-import com.google.inject.{ImplementedBy, Inject}
+import com.google.inject.ImplementedBy
+import com.google.inject.Inject
 import config.FrontendAppConfig
 import play.api.Logger
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.play.HeaderCarrierConverter
 import uk.gov.hmrc.play.audit.AuditExtensions._
-import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import uk.gov.hmrc.play.audit.model.DataEvent
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 import scala.language.implicitConversions
 
 @ImplementedBy(classOf[AuditServiceImpl])

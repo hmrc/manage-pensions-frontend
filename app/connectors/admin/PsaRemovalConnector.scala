@@ -16,16 +16,19 @@
 
 package connectors.admin
 
-import com.google.inject.{ImplementedBy, Inject}
+import com.google.inject.ImplementedBy
+import com.google.inject.Inject
 import config.FrontendAppConfig
 import models.PsaToBeRemovedFromScheme
 import play.api.Logger
 import play.api.http.Status._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import utils.HttpResponseHelper
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 import scala.util.Failure
 
 @ImplementedBy(classOf[PsaRemovalConnectorImpl])

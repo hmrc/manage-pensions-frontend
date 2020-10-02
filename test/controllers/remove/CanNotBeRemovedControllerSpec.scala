@@ -17,10 +17,15 @@
 package controllers.remove
 
 import connectors.FakeUserAnswersCacheConnector
-import controllers.actions.{AuthAction, FakeAuthAction, FakeUnAuthorisedAction}
+import controllers.actions.AuthAction
+import controllers.actions.FakeAuthAction
+import controllers.actions.FakeUnAuthorisedAction
 import controllers.behaviours.ControllerWithNormalPageBehaviours
-import models.{Individual, Organization, OtherUser}
-import play.api.test.Helpers.{status, _}
+import models.Individual
+import models.Organization
+import models.OtherUser
+import play.api.test.Helpers.status
+import play.api.test.Helpers._
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import viewmodels.RemovalViewModel
 import views.html.remove.cannot_be_removed

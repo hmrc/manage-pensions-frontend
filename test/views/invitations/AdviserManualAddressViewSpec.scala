@@ -18,7 +18,8 @@ package views.invitations
 
 import controllers.invitations.routes._
 import forms.invitations.AdviserManualAddressFormProvider
-import models.{Address, NormalMode}
+import models.Address
+import models.NormalMode
 import org.jsoup.Jsoup
 import play.api.data.Form
 import utils.FakeCountryOptions

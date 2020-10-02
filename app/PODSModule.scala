@@ -33,7 +33,8 @@
 import com.google.inject.AbstractModule
 import utils.Navigator
 import utils.annotations._
-import utils.countryOptions.{CountryOptions, CountryOptionsEUAndEEA}
+import utils.countryOptions.CountryOptions
+import utils.countryOptions.CountryOptionsEUAndEEA
 import utils.navigators._
 
 class PODSModule extends AbstractModule {

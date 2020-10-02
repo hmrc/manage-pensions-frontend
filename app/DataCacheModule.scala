@@ -15,8 +15,10 @@
  */
 
 import connectors._
-import play.api.inject.{Binding, Module}
-import play.api.{Configuration, Environment}
+import play.api.inject.Binding
+import play.api.inject.Module
+import play.api.Configuration
+import play.api.Environment
 import utils.annotations.PensionAdminCache
 
 class DataCacheModule extends Module {

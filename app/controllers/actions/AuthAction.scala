@@ -16,14 +16,17 @@
 
 package controllers.actions
 
-import com.google.inject.{ImplementedBy, Inject}
+import com.google.inject.ImplementedBy
+import com.google.inject.Inject
 import config.FrontendAppConfig
 import controllers.routes
 import models.requests.AuthenticatedRequest
-import models.{OtherUser, UserType}
+import models.OtherUser
+import models.UserType
 import play.api.mvc.Results._
 import play.api.mvc._
-import uk.gov.hmrc.auth.core.AffinityGroup.{Individual, Organisation}
+import uk.gov.hmrc.auth.core.AffinityGroup.Individual
+import uk.gov.hmrc.auth.core.AffinityGroup.Organisation
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
@@ -31,7 +34,8 @@ import uk.gov.hmrc.domain.PsaId
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.HeaderCarrierConverter
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 class AuthActionImpl @Inject()(override val authConnector: AuthConnector, config: FrontendAppConfig, val parser: BodyParsers.Default)
                               (implicit val executionContext: ExecutionContext) extends AuthAction with AuthorisedFunctions {

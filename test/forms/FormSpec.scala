@@ -17,10 +17,13 @@
 package forms
 
 import config.FrontendAppConfig
-import org.scalatest.{Matchers, OptionValues, WordSpec}
+import org.scalatest.Matchers
+import org.scalatest.OptionValues
+import org.scalatest.WordSpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.Environment
-import play.api.data.{Form, FormError}
+import play.api.data.Form
+import play.api.data.FormError
 import play.api.inject.Injector
 import play.api.inject.guice.GuiceApplicationBuilder
 

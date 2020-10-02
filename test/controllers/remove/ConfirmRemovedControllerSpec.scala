@@ -19,9 +19,11 @@ package controllers.remove
 import base.SpecBase
 import connectors.FakeUserAnswersCacheConnector
 import controllers.ControllerSpecBase
-import controllers.actions.{AuthAction, DataRetrievalAction}
+import controllers.actions.AuthAction
+import controllers.actions.DataRetrievalAction
 import controllers.behaviours.ControllerWithNormalPageBehaviours
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.Action
+import play.api.mvc.AnyContent
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.UserAnswers
 import views.html.remove.confirmRemoved

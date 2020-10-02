@@ -17,7 +17,8 @@
 package views.invitations
 
 import forms.invitations.AdviserDetailsFormProvider
-import models.{CheckMode, NormalMode}
+import models.CheckMode
+import models.NormalMode
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import views.behaviours.QuestionViewBehaviours

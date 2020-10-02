@@ -19,7 +19,8 @@ package controllers
 import identifiers.TypedIdentifier
 import models.requests.DataRequest
 import play.api.libs.json.Reads
-import play.api.mvc.{AnyContent, Result}
+import play.api.mvc.AnyContent
+import play.api.mvc.Result
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 
 import scala.concurrent.Future

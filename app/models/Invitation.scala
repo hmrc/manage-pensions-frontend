@@ -18,7 +18,8 @@ package models
 
 import java.time.LocalDateTime
 
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.Format
+import play.api.libs.json.Json
 import uk.gov.hmrc.domain.PsaId
 
 case class Invitation(srn: SchemeReferenceNumber,

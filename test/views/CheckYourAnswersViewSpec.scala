@@ -19,7 +19,8 @@ package views
 import controllers.routes
 import play.twirl.api.HtmlFormat
 import viewmodels.Section
-import views.behaviours.{CheckYourAnswersBehaviours, ViewBehaviours}
+import views.behaviours.CheckYourAnswersBehaviours
+import views.behaviours.ViewBehaviours
 import views.html.check_your_answers
 
 class CheckYourAnswersViewSpec extends CheckYourAnswersBehaviours with ViewBehaviours {

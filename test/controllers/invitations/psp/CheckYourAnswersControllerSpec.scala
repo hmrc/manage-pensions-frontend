@@ -19,11 +19,15 @@ package controllers.invitations.psp
 import base.JsonFileReader
 import connectors.admin.MinimalPsaConnector
 import controllers.ControllerSpecBase
-import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction}
+import controllers.actions.DataRequiredActionImpl
+import controllers.actions.DataRetrievalAction
+import controllers.actions.FakeAuthAction
 import controllers.behaviours.ControllerWithNormalPageBehaviours
 import controllers.invitations.psp.routes._
 import identifiers.SchemeNameId
-import identifiers.invitations.psp.{PspClientReferenceId, PspId, PspNameId}
+import identifiers.invitations.psp.PspClientReferenceId
+import identifiers.invitations.psp.PspId
+import identifiers.invitations.psp.PspNameId
 import models.CheckMode
 import models.invitations.psp.ClientReference.HaveClientReference
 import org.mockito.Matchers._
@@ -33,8 +37,10 @@ import play.api.mvc.Call
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.countryOptions.CountryOptions
-import utils.{CheckYourAnswersFactory, UserAnswers}
-import viewmodels.{AnswerRow, AnswerSection}
+import utils.CheckYourAnswersFactory
+import utils.UserAnswers
+import viewmodels.AnswerRow
+import viewmodels.AnswerSection
 import views.html.check_your_answers
 
 import scala.concurrent.Future

@@ -17,7 +17,8 @@
 package forms.mappings
 
 import forms.behaviours.EmailBehaviours
-import play.api.data.{Form, Mapping}
+import play.api.data.Form
+import play.api.data.Mapping
 
 class EmailMappingSpec extends EmailBehaviours {
 

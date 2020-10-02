@@ -19,7 +19,8 @@ package views.behaviours
 import java.time.LocalDate
 
 import org.jsoup.Jsoup
-import play.api.data.{Form, FormError}
+import play.api.data.Form
+import play.api.data.FormError
 import play.api.i18n.Lang
 import play.twirl.api.HtmlFormat
 import views.ViewSpecBase

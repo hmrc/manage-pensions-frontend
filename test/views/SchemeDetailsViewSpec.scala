@@ -17,7 +17,8 @@
 package views
 
 import org.jsoup.Jsoup
-import play.twirl.api.{Html, HtmlFormat}
+import play.twirl.api.Html
+import play.twirl.api.HtmlFormat
 import viewmodels.AssociatedPsa
 import views.behaviours.ViewBehaviours
 import views.html.schemeDetails

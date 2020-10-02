@@ -17,7 +17,8 @@
 package models.triage
 
 import models.WithName
-import utils.{Enumerable, InputOption}
+import utils.Enumerable
+import utils.InputOption
 
 sealed trait DoesPSAStartWithATwo
 

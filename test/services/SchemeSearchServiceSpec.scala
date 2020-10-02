@@ -18,7 +18,9 @@ package services
 
 import base.SpecBase
 import connectors.scheme.ListOfSchemesConnector
-import models.{ListOfSchemes, SchemeDetails, SchemeStatus}
+import models.ListOfSchemes
+import models.SchemeDetails
+import models.SchemeStatus
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when

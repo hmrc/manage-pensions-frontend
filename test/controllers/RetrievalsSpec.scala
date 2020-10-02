@@ -18,11 +18,15 @@ package controllers
 
 import identifiers.TypedIdentifier
 import models.requests.DataRequest
-import org.scalatest.{EitherValues, WordSpec}
+import org.scalatest.EitherValues
+import org.scalatest.WordSpec
 import org.scalatest.MustMatchers._
 import org.scalatest.concurrent.ScalaFutures
-import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{AnyContent, MessagesControllerComponents, Result}
+import play.api.libs.json.JsValue
+import play.api.libs.json.Json
+import play.api.mvc.AnyContent
+import play.api.mvc.MessagesControllerComponents
+import play.api.mvc.Result
 import play.api.test.FakeRequest
 import uk.gov.hmrc.domain.PsaId
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
