@@ -20,20 +20,27 @@ import com.google.inject.Inject
 import connectors.scheme.ListOfSchemesConnector
 import connectors.{ActiveRelationshipExistsException, PspConnector}
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import controllers.actions.AuthAction
+import controllers.actions.DataRequiredAction
+import controllers.actions.DataRetrievalAction
 import forms.invitations.psp.DeclarationFormProvider
 import identifiers.SchemeSrnId
 import identifiers.invitations.psp.{PspClientReferenceId, PspId, PspNameId}
 import models.invitations.psp.ClientReference
 import models.requests.DataRequest
 import play.api.data.Form
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.SchemeDetailsService
+import play.api.i18n.I18nSupport
+import play.api.i18n.MessagesApi
+import play.api.mvc.Action
+import play.api.mvc.AnyContent
+import play.api.mvc.MessagesControllerComponents
+import play.api.mvc.Result
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import views.html.invitations.psp.declaration
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 class DeclarationController @Inject()( override val messagesApi: MessagesApi,
                                        formProvider: DeclarationFormProvider,

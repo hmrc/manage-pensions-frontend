@@ -22,8 +22,10 @@ import connectors.FrontendConnector
 import connectors.admin.MinimalPsaConnector
 import connectors.scheme.PensionSchemeVarianceLockConnector
 import identifiers.invitations.PSTRId
-import identifiers.{SchemeNameId, SchemeStatusId}
-import models.SchemeStatus.{Open, Rejected}
+import identifiers.SchemeNameId
+import identifiers.SchemeStatusId
+import models.SchemeStatus.Open
+import models.SchemeStatus.Rejected
 import models._
 import models.requests.AuthenticatedRequest
 import org.mockito.Matchers
@@ -32,7 +34,8 @@ import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.libs.json.{JsArray, Json}
+import play.api.libs.json.JsArray
+import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import play.twirl.api.Html
 import uk.gov.hmrc.domain.PsaId

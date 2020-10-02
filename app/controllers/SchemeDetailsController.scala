@@ -18,21 +18,29 @@ package controllers
 
 import config.FrontendAppConfig
 import connectors._
-import connectors.scheme.{ListOfSchemesConnector, PensionSchemeVarianceLockConnector, SchemeDetailsConnector}
+import connectors.scheme.ListOfSchemesConnector
+import connectors.scheme.PensionSchemeVarianceLockConnector
+import connectors.scheme.SchemeDetailsConnector
 import controllers.actions._
 import handlers.ErrorHandler
-import identifiers.{SchemeNameId, SchemeSrnId, SchemeStatusId}
+import identifiers.SchemeNameId
+import identifiers.SchemeSrnId
+import identifiers.SchemeStatusId
 import javax.inject.Inject
 import models._
 import models.requests.AuthenticatedRequest
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.i18n.I18nSupport
+import play.api.i18n.MessagesApi
+import play.api.mvc.Action
+import play.api.mvc.AnyContent
+import play.api.mvc.MessagesControllerComponents
 import services.SchemeDetailsService
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.UserAnswers
 import views.html.schemeDetails
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                                         override val messagesApi: MessagesApi,

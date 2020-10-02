@@ -17,25 +17,32 @@
 package controllers.invitations
 
 import config.FrontendAppConfig
-import connectors.{AddressLookupConnector, UserAnswersCacheConnector}
+import connectors.AddressLookupConnector
+import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import controllers.actions.AuthAction
+import controllers.actions.DataRequiredAction
+import controllers.actions.DataRetrievalAction
 import forms.invitations.AdviserAddressPostcodeLookupFormProvider
 import identifiers.TypedIdentifier
-import identifiers.invitations.{AdviserAddressPostCodeLookupId, AdviserNameId}
+import identifiers.invitations.AdviserAddressPostCodeLookupId
+import identifiers.invitations.AdviserNameId
 import javax.inject.Inject
 import models.requests.DataRequest
-import models.{NormalMode, TolerantAddress}
+import models.NormalMode
+import models.TolerantAddress
 import play.api.data.Form
 import play.api.i18n._
 import play.api.mvc._
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.annotations.AcceptInvitation
-import utils.{Navigator, UserAnswers}
+import utils.Navigator
+import utils.UserAnswers
 import viewmodels.Message
 import views.html.invitations.adviserPostcode
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 class AdviserAddressPostcodeLookupController @Inject()(val appConfig: FrontendAppConfig,
                                                        override val messagesApi: MessagesApi,

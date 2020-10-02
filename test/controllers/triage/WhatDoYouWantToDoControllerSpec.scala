@@ -29,7 +29,8 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import utils.annotations.Triage
-import utils.{FakeNavigator, Navigator}
+import utils.FakeNavigator
+import utils.Navigator
 import views.html.triage.whatDoYouWantToDo
 import play.api.test.CSRFTokenHelper.addCSRFToken
 

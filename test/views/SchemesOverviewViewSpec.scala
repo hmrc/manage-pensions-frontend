@@ -21,8 +21,10 @@ import java.time.LocalDate
 import controllers.routes.ListSchemesController
 import models.Link
 import org.jsoup.Jsoup
-import play.twirl.api.{Html, HtmlFormat}
-import viewmodels.{CardViewModel, Message}
+import play.twirl.api.Html
+import play.twirl.api.HtmlFormat
+import viewmodels.CardViewModel
+import viewmodels.Message
 import views.behaviours.ViewBehaviours
 import views.html.schemesOverview
 

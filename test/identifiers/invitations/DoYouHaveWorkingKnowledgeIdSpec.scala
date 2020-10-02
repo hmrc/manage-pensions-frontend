@@ -16,8 +16,11 @@
 
 package identifiers.invitations
 
-import models.{Address, TolerantAddress}
-import org.scalatest.{MustMatchers, OptionValues, WordSpec}
+import models.Address
+import models.TolerantAddress
+import org.scalatest.MustMatchers
+import org.scalatest.OptionValues
+import org.scalatest.WordSpec
 import utils.UserAnswers
 
 class DoYouHaveWorkingKnowledgeIdSpec extends WordSpec with MustMatchers with OptionValues {

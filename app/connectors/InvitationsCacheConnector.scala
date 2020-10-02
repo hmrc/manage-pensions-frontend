@@ -21,11 +21,14 @@ import config.FrontendAppConfig
 import models.Invitation
 import play.api.http.Status._
 import play.api.libs.json._
-import play.api.libs.ws.{WSClient, WSRequest}
+import play.api.libs.ws.WSClient
+import play.api.libs.ws.WSRequest
 import uk.gov.hmrc.domain.PsaId
-import uk.gov.hmrc.http.{HeaderCarrier, HttpException}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.HttpException
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 trait InvitationsCacheConnector {
   def add(invitation: Invitation)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[Unit]

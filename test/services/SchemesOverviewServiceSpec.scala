@@ -17,7 +17,8 @@
 package services
 
 import java.time.format.DateTimeFormatter
-import java.time.{LocalDate, ZoneOffset}
+import java.time.LocalDate
+import java.time.ZoneOffset
 
 import base.SpecBase
 import connectors._
@@ -25,20 +26,24 @@ import connectors.admin.MinimalPsaConnector
 import controllers.routes.ListSchemesController
 import models._
 import models.requests.OptionalDataRequest
-import org.mockito.Matchers.{any, eq => eqTo}
+import org.mockito.Matchers.any
+import org.mockito.Matchers.{eq => eqTo}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.JsObject
+import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
 import play.twirl.api.Html
-import testhelpers.InvitationBuilder.{invitation1, invitationList}
+import testhelpers.InvitationBuilder.invitation1
+import testhelpers.InvitationBuilder.invitationList
 import uk.gov.hmrc.domain.PsaId
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.UserAnswers
-import viewmodels.{CardViewModel, Message}
+import viewmodels.CardViewModel
+import viewmodels.Message
 
 import scala.concurrent.Future
 import scala.language.postfixOps

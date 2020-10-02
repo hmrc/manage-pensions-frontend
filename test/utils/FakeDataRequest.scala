@@ -17,7 +17,9 @@
 package utils
 
 import models.requests.DataRequest
-import play.api.mvc.{AnyContent, AnyContentAsEmpty, Request}
+import play.api.mvc.AnyContent
+import play.api.mvc.AnyContentAsEmpty
+import play.api.mvc.Request
 import play.api.test.FakeRequest
 import uk.gov.hmrc.domain.PsaId
 

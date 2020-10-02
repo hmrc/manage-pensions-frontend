@@ -18,7 +18,8 @@ package utils.countryOptions
 
 import com.typesafe.config.ConfigException
 import config.FrontendAppConfig
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
+import javax.inject.Singleton
 import play.api.Environment
 import play.api.libs.json.Json
 import utils.InputOption

@@ -17,7 +17,7 @@
 package controllers.invitations.psp
 
 import base.JsonFileReader
-import connectors.{ActiveRelationshipExistsException, PspConnector}
+import connectors.PspConnector
 import connectors.scheme.ListOfSchemesConnector
 import controllers.ControllerSpecBase
 import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}

@@ -16,7 +16,8 @@
 
 package models
 
-import play.api.libs.json.{Json, Format}
+import play.api.libs.json.Format
+import play.api.libs.json.Json
 
 case class PreviousAddressDetails(isPreviousAddressLast12Month: Boolean, previousAddress: Option[Address])
 

@@ -16,9 +16,11 @@
 
 package config
 
-import com.google.inject.{Inject, Singleton}
+import com.google.inject.Inject
+import com.google.inject.Singleton
 import play.api.Mode
-import play.api.{Configuration, Environment}
+import play.api.Configuration
+import play.api.Environment
 
 import scala.collection.mutable.ArrayBuffer
 

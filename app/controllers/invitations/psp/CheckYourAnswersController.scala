@@ -17,19 +17,25 @@
 package controllers.invitations.psp
 
 import com.google.inject.Inject
-import connectors.admin.{MinimalPsaConnector, NoMatchFoundException}
+import connectors.admin.MinimalPsaConnector
+import connectors.admin.NoMatchFoundException
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import controllers.actions.AuthAction
+import controllers.actions.DataRequiredAction
+import controllers.actions.DataRetrievalAction
 import identifiers.SchemeNameId
-import identifiers.invitations.psp.{PspId, PspNameId}
-import play.api.i18n.{I18nSupport, MessagesApi}
+import identifiers.invitations.psp.PspId
+import identifiers.invitations.psp.PspNameId
+import play.api.i18n.I18nSupport
+import play.api.i18n.MessagesApi
 import play.api.mvc._
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.CheckYourAnswersFactory
 import viewmodels.AnswerSection
 import views.html.check_your_answers
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 class CheckYourAnswersController @Inject()(override val messagesApi: MessagesApi,
                                            authenticate: AuthAction,

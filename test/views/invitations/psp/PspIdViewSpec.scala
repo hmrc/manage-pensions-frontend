@@ -17,7 +17,8 @@
 package views.invitations.psp
 
 import forms.invitations.psp.PspIdFormProvider
-import models.{NormalMode, SchemeReferenceNumber}
+import models.NormalMode
+import models.SchemeReferenceNumber
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import views.behaviours.QuestionViewBehaviours

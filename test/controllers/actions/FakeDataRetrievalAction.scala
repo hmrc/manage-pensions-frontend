@@ -16,15 +16,17 @@
 
 package controllers.actions
 
-import models.requests.{AuthenticatedRequest, OptionalDataRequest}
+import models.requests.AuthenticatedRequest
+import models.requests.OptionalDataRequest
 import play.api.libs.json.JsValue
 import uk.gov.hmrc.domain.PsaId
 import utils.UserAnswers
 
-import scala.concurrent.{ExecutionContextExecutor, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 class FakeDataRetrievalAction(json: Option[JsValue], psaId: String = "A0000000") extends DataRetrievalAction {
-  implicit val executionContext: ExecutionContextExecutor = scala.concurrent.ExecutionContext.Implicits.global
+  implicit val executionContext: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
 
   override protected def transform[A](request: AuthenticatedRequest[A]): Future[OptionalDataRequest[A]] = json match {
     case None =>

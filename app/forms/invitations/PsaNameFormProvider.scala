@@ -17,7 +17,8 @@
 package forms.invitations
 
 import javax.inject.Inject
-import forms.mappings.{Mappings, Transforms}
+import forms.mappings.Mappings
+import forms.mappings.Transforms
 import play.api.data.Form
 
 class PsaNameFormProvider @Inject() extends Mappings with Transforms {

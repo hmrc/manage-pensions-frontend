@@ -19,26 +19,42 @@ package controllers.invitations
 import java.time.LocalDateTime
 
 import com.google.inject.Inject
-import config.{FeatureSwitchManagementService, FrontendAppConfig}
+import config.FeatureSwitchManagementService
+import config.FrontendAppConfig
 import connectors.scheme.SchemeDetailsConnector
-import connectors.{InvitationConnector, NameMatchingFailedException, PsaAlreadyInvitedException}
+import connectors.InvitationConnector
+import connectors.NameMatchingFailedException
+import connectors.PsaAlreadyInvitedException
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import controllers.actions.AuthAction
+import controllers.actions.DataRequiredAction
+import controllers.actions.DataRetrievalAction
 import identifiers.MinimalSchemeDetailId
-import identifiers.invitations.{CheckYourAnswersId, InviteeNameId, InviteePSAId}
+import identifiers.invitations.CheckYourAnswersId
+import identifiers.invitations.InviteeNameId
+import identifiers.invitations.InviteePSAId
 import models.requests.DataRequest
-import models.{MinimalSchemeDetail, NormalMode, PsaDetails, SchemeReferenceNumber, Invitation => Invite}
-import play.api.i18n.{I18nSupport, MessagesApi}
+import models.MinimalSchemeDetail
+import models.NormalMode
+import models.PsaDetails
+import models.SchemeReferenceNumber
+import models.{Invitation => Invite}
+import play.api.i18n.I18nSupport
+import play.api.i18n.MessagesApi
 import play.api.mvc._
 import uk.gov.hmrc.domain.PsaId
-import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
-import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.NotFoundException
+import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.annotations.Invitation
-import utils.{CheckYourAnswersFactory, DateHelper, Navigator}
+import utils.CheckYourAnswersFactory
+import utils.DateHelper
+import utils.Navigator
 import viewmodels.AnswerSection
 import views.html.check_your_answers
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
                                            override val messagesApi: MessagesApi,

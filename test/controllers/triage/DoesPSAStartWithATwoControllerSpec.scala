@@ -18,7 +18,6 @@ package controllers.triage
 
 import controllers.ControllerSpecBase
 import forms.triage.DoesPSAStartWithATwoFormProvider
-import identifiers.triage.DoesPSAStartWithATwoId
 import models.triage.DoesPSAStartWithATwo
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar

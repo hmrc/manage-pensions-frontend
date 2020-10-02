@@ -19,13 +19,24 @@ package controllers.invitations
 import base.JsonFileReader
 import config.FeatureSwitchManagementServiceTestImpl
 import connectors.scheme.SchemeDetailsConnector
-import connectors.{FakeUserAnswersCacheConnector, InvitationConnector, InvitationsCacheConnector}
+import connectors.FakeUserAnswersCacheConnector
+import connectors.InvitationConnector
+import connectors.InvitationsCacheConnector
 import controllers.ControllerSpecBase
-import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
+import controllers.actions.DataRequiredActionImpl
+import controllers.actions.DataRetrievalAction
+import controllers.actions.FakeAuthAction
+import controllers.actions.FakeDataRetrievalAction
 import forms.invitations.DeclarationFormProvider
-import identifiers.invitations.{IsMasterTrustId, PSTRId, SchemeNameId}
-import org.mockito.Matchers.{eq => eqTo, _}
-import org.mockito.Mockito.{reset, times, verify, when}
+import identifiers.invitations.IsMasterTrustId
+import identifiers.invitations.PSTRId
+import identifiers.invitations.SchemeNameId
+import org.mockito.Matchers.{eq => eqTo}
+import org.mockito.Matchers._
+import org.mockito.Mockito.reset
+import org.mockito.Mockito.times
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.Configuration

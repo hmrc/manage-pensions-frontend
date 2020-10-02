@@ -19,11 +19,13 @@ package connectors
 import identifiers.TypedIdentifier
 import models.requests.DataRequest
 import play.api.libs.json._
-import play.api.mvc.{AnyContent, Result}
+import play.api.mvc.AnyContent
+import play.api.mvc.Result
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.UserAnswers
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 trait UserAnswersCacheConnector {
 

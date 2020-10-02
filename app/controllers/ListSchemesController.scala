@@ -20,20 +20,28 @@ import com.google.inject.Inject
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import connectors.admin.MinimalPsaConnector
-import controllers.actions.{AuthAction, DataRetrievalAction}
+import controllers.actions.AuthAction
+import controllers.actions.DataRetrievalAction
 import forms.ListSchemesFormProvider
 import identifiers.PSANameId
 import models.requests.OptionalDataRequest
-import models.{Index, SchemeDetails}
+import models.Index
+import models.SchemeDetails
 import play.api.data.Form
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.{PaginationService, SchemeSearchService}
+import play.api.i18n.I18nSupport
+import play.api.i18n.MessagesApi
+import play.api.mvc.Action
+import play.api.mvc.AnyContent
+import play.api.mvc.MessagesControllerComponents
+import play.api.mvc.Result
+import services.PaginationService
+import services.SchemeSearchService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import views.html.list_schemes
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 class ListSchemesController @Inject()(
                                        val appConfig: FrontendAppConfig,

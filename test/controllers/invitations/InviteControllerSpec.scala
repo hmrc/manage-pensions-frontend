@@ -16,12 +16,15 @@
 
 package controllers.invitations
 
-import base.{JsonFileReader, SpecBase}
-import config.{FeatureSwitchManagementService, FeatureSwitchManagementServiceTestImpl}
+import base.JsonFileReader
+import base.SpecBase
+import config.FeatureSwitchManagementService
+import config.FeatureSwitchManagementServiceTestImpl
 import connectors.admin.MinimalPsaConnector
 import connectors.FakeUserAnswersCacheConnector
 import connectors.scheme.SchemeDetailsConnector
-import controllers.actions.{FakeAuthAction, FakeUnAuthorisedAction}
+import controllers.actions.FakeAuthAction
+import controllers.actions.FakeUnAuthorisedAction
 import identifiers.MinimalSchemeDetailId
 import models._
 import play.api.Configuration
@@ -30,7 +33,8 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.UserAnswers
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 class InviteControllerSpec extends SpecBase {
 

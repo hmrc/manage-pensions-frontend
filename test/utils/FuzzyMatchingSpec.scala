@@ -16,7 +16,8 @@
 
 package utils
 
-import org.scalatest.{FreeSpec, MustMatchers}
+import org.scalatest.FreeSpec
+import org.scalatest.MustMatchers
 
 class FuzzyMatchingSpec extends FreeSpec with MustMatchers {
 

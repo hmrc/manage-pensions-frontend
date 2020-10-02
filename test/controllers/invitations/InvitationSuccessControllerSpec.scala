@@ -23,15 +23,18 @@ import connectors.FakeUserAnswersCacheConnector
 import connectors.admin.MinimalPsaConnector
 import controllers.actions._
 import controllers.behaviours.ControllerWithNormalPageBehaviours
-import models.{MinimalPSAPSP, MinimalSchemeDetail}
+import models.MinimalPSAPSP
+import models.MinimalSchemeDetail
 import play.api.mvc.Call
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
-import utils.{DateHelper, UserAnswers}
+import utils.DateHelper
+import utils.UserAnswers
 import views.html.invitations.invitation_success
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 class InvitationSuccessControllerSpec extends ControllerWithNormalPageBehaviours {
 

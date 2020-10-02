@@ -17,11 +17,13 @@
 package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
-import org.scalatest.{AsyncWordSpec, MustMatchers, OptionValues}
+import org.scalatest.AsyncWordSpec
+import org.scalatest.MustMatchers
+import org.scalatest.OptionValues
 import play.api.http.Status
 import play.api.test.FakeRequest
 import play.twirl.api.Html
-import uk.gov.hmrc.http.{HeaderCarrier, _}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.partials.HeaderCarrierForPartials
 import utils.WireMockHelper
 

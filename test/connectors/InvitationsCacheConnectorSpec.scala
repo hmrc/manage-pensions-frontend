@@ -18,14 +18,15 @@ package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import identifiers.TypedIdentifier
-import org.scalatest.{AsyncWordSpec, MustMatchers, OptionValues}
+import org.scalatest.AsyncWordSpec
+import org.scalatest.MustMatchers
+import org.scalatest.OptionValues
 import play.api.http.Status
 import play.api.libs.json.Json
-import uk.gov.hmrc.http.{HeaderCarrier, HttpException}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.HttpException
 import utils.WireMockHelper
 import testhelpers.InvitationBuilder._
-
-import scala.concurrent.ExecutionContext.Implicits.global
 
 class InvitationsCacheConnectorSpec extends AsyncWordSpec with MustMatchers with WireMockHelper with OptionValues {
 

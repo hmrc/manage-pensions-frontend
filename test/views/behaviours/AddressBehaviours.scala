@@ -17,9 +17,11 @@
 package views.behaviours
 
 import forms.FormSpec
-import forms.mappings.{AddressMapping, Constraints}
+import forms.mappings.AddressMapping
+import forms.mappings.Constraints
 import org.scalacheck.Gen
-import play.api.data.{Form, FormError}
+import play.api.data.Form
+import play.api.data.FormError
 import utils.countryOptions.CountryOptions
 import wolfendale.scalacheck.regexp.RegexpGen
 

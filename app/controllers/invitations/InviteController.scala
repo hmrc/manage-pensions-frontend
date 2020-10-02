@@ -16,20 +16,26 @@
 
 package controllers.invitations
 
-import com.google.inject.{Inject, Singleton}
+import com.google.inject.Inject
+import com.google.inject.Singleton
 import config.FeatureSwitchManagementService
 import connectors.admin.MinimalPsaConnector
 import connectors.UserAnswersCacheConnector
 import connectors.scheme.SchemeDetailsConnector
 import controllers.actions.AuthAction
 import identifiers.invitations.PSTRId
-import identifiers.{MinimalSchemeDetailId, SchemeNameId}
+import identifiers.MinimalSchemeDetailId
+import identifiers.SchemeNameId
 import models.requests.AuthenticatedRequest
-import models.{MinimalSchemeDetail, SchemeReferenceNumber}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
+import models.MinimalSchemeDetail
+import models.SchemeReferenceNumber
+import play.api.mvc.Action
+import play.api.mvc.AnyContent
+import play.api.mvc.MessagesControllerComponents
+import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 @Singleton
 class InviteController @Inject()(authenticate: AuthAction,

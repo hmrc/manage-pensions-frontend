@@ -21,7 +21,10 @@ import config.FeatureSwitchManagementService
 import connectors.admin.PensionAdministratorFeatureSwitchConnectorImpl
 import connectors.scheme.PensionsSchemeFeatureSwitchConnectorImpl
 import play.api.Logger
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
+import play.api.mvc.Action
+import play.api.mvc.AnyContent
+import play.api.mvc.MessagesControllerComponents
+import play.api.mvc.Request
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import views.html.testOnly.testFeatureSwitchManagerSuccess
 

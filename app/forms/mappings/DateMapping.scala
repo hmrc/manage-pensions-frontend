@@ -16,13 +16,19 @@
 
 package forms.mappings
 
-import java.time.{DateTimeException, LocalDate}
+import java.time.DateTimeException
+import java.time.LocalDate
 
-import play.api.data.Forms.{text, tuple}
+import play.api.data.Forms.text
+import play.api.data.Forms.tuple
 import play.api.data.Mapping
-import play.api.data.validation.{Constraint, Invalid, Valid}
+import play.api.data.validation.Constraint
+import play.api.data.validation.Invalid
+import play.api.data.validation.Valid
 
-import scala.util.{Failure, Success, Try}
+import scala.util.Failure
+import scala.util.Success
+import scala.util.Try
 
 trait DateMapping extends Constraints {
 

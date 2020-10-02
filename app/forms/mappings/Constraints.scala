@@ -18,7 +18,9 @@ package forms.mappings
 
 import java.time.LocalDate
 
-import play.api.data.validation.{Constraint, Invalid, Valid}
+import play.api.data.validation.Constraint
+import play.api.data.validation.Invalid
+import play.api.data.validation.Valid
 import utils.countryOptions.CountryOptions
 
 import scala.language.implicitConversions

@@ -18,10 +18,12 @@ package connectors.scheme
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import play.api.http.Status._
 

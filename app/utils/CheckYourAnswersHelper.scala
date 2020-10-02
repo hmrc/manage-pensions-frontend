@@ -17,9 +17,12 @@
 package utils
 
 import identifiers.invitations._
-import identifiers.invitations.psp.{PspClientReferenceId, PspId, PspNameId}
+import identifiers.invitations.psp.PspClientReferenceId
+import identifiers.invitations.psp.PspId
+import identifiers.invitations.psp.PspNameId
 import models.invitations.psp.ClientReference
-import models.{Address, CheckMode}
+import models.Address
+import models.CheckMode
 import utils.countryOptions.CountryOptions
 import viewmodels.AnswerRow
 

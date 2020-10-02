@@ -17,10 +17,8 @@
 package controllers.triage
 
 import controllers.ControllerSpecBase
-import forms.triage.{WhatDoYouWantToDoFormProvider, DoesPSTRStartWithTwoFormProvider}
+import forms.triage.DoesPSTRStartWithTwoFormProvider
 import models.triage.DoesPSTRStartWithATwo
-import models.triage.WhatDoYouWantToDo
-import models.triage.WhatDoYouWantToDo.ManageExistingScheme
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.data.Form
@@ -31,7 +29,8 @@ import play.api.test.CSRFTokenHelper.addCSRFToken
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import utils.annotations.Triage
-import utils.{FakeNavigator, Navigator}
+import utils.FakeNavigator
+import utils.Navigator
 import views.html.triage.doesPSTRStartWithTwo
 
 class DoesPSTRStartWithTwoControllerSpec extends ControllerSpecBase with ScalaFutures with MockitoSugar {

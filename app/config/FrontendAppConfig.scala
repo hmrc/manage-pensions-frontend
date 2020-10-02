@@ -18,12 +18,14 @@ package config
 
 import java.time.LocalDate
 
-import com.google.inject.{Inject, Singleton}
+import com.google.inject.Inject
+import com.google.inject.Singleton
 import controllers.routes
 import play.api.Mode
 import play.api.i18n.Lang
 import play.api.mvc.Call
-import play.api.{Configuration, Environment}
+import play.api.Configuration
+import play.api.Environment
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 @Singleton
