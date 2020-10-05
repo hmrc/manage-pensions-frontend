@@ -20,6 +20,10 @@ import connectors.FakeUserAnswersCacheConnector
 import controllers.ControllerSpecBase
 import controllers.actions._
 import forms.invitations.psp.PspClientReferenceFormProvider
+import identifiers.{SchemeNameId, SchemeSrnId}
+import identifiers.invitations.psp.{PspClientReferenceId, PspNameId}
+import models.invitations.psp.ClientReference
+import models.{NormalMode, SchemeReferenceNumber}
 import identifiers.SchemeNameId
 import identifiers.SchemeSrnId
 import identifiers.invitations.psp.PspClientReferenceId
@@ -41,7 +45,7 @@ import views.html.invitations.psp.pspClientReference
 
 class PspClientReferenceControllerSpec extends ControllerSpecBase {
   val formProvider = new PspClientReferenceFormProvider()
-  val form = formProvider()
+  val form: Form[ClientReference] = formProvider()
 
   def onwardRoute: Call = Call("GET", "/foo")
   private val schemeName = "Test Scheme"
@@ -59,7 +63,7 @@ class PspClientReferenceControllerSpec extends ControllerSpecBase {
   private val view = injector.instanceOf[pspClientReference]
 
   def controller(dataRetrievalAction: DataRetrievalAction = minimalData) = new PspClientReferenceController(
-    frontendAppConfig, messagesApi, FakeAuthAction(), new FakeNavigator(onwardRoute), FakeUserAnswersCacheConnector,
+    messagesApi, FakeAuthAction(), new FakeNavigator(onwardRoute), FakeUserAnswersCacheConnector,
     dataRetrievalAction, new DataRequiredActionImpl, formProvider, stubMessagesControllerComponents(), view
   )
 
@@ -93,7 +97,7 @@ class PspClientReferenceControllerSpec extends ControllerSpecBase {
 
     "on a POST" must {
       "save the data and redirect to the next page if valid data is submitted" in {
-        val postRequest = fakeRequest.withFormUrlEncodedBody(("value.yesNo", "true"), ("value.reference", "A0000000"))
+        val postRequest = fakeRequest.withFormUrlEncodedBody(("value.hasReference", "true"), ("value.reference", "A0000000"))
 
         val result = controller().onSubmit(NormalMode)(postRequest)
 

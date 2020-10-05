@@ -53,18 +53,18 @@ class PspClientReferenceViewSpec extends ViewBehaviours {
     "contain radio buttons for the value" in {
       val doc = asDocument(createViewUsingForm(form))
       for (option <- ClientReference.options) {
-        assertContainsRadioButton(doc, s"value_yesNo-${option.value}", "value.yesNo", option.value, isChecked = false)
+        assertContainsRadioButton(doc, s"value_hasReference-${option.value}", "value.hasReference", option.value, isChecked = false)
       }
     }
 
     for (option <- ClientReference.options) {
       s"rendered with a value of '${option.value}'" must {
         s"have the '${option.value}' radio button selected" in {
-          val doc = asDocument(createViewUsingForm(form.bind(Map("value.yesNo" -> s"${option.value}"))))
-          assertContainsRadioButton(doc, s"value_yesNo-${option.value}", "value.yesNo", option.value, isChecked = true)
+          val doc = asDocument(createViewUsingForm(form.bind(Map("value.hasReference" -> s"${option.value}"))))
+          assertContainsRadioButton(doc, s"value_hasReference-${option.value}", "value.hasReference", option.value, isChecked = true)
 
           for (unselectedOption <- ClientReference.options.filterNot(o => o == option)) {
-            assertContainsRadioButton(doc, s"value_yesNo-${unselectedOption.value}", "value.yesNo", unselectedOption.value, isChecked = false)
+            assertContainsRadioButton(doc, s"value_hasReference-${unselectedOption.value}", "value.hasReference", unselectedOption.value, isChecked = false)
           }
         }
       }

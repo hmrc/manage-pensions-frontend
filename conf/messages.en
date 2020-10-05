@@ -453,7 +453,7 @@ messages__error__psp_declaration__required = Select the agree box to confirm you
 messages__pspConfirmation__title = Practitioner is now authorised
 messages__pspConfirmation__heading = {0} is now authorised as a pension scheme practitioner for {1}
 messages__pspConfirmation__whatHappensNext = What happens next
-messages__pspConfirmation__p1 = A letter will be sent to to confirm they have been authorised as a pension scheme practitioner for {0}.
+messages__pspConfirmation__p1 = A letter will be sent to confirm they have been authorised as a pension scheme practitioner for {0}.
 messages__pspConfirmation__p2 = The practitioner can create and submit Accounting for Tax returns for {0} by signing in to Managing Pension Schemes on GOV.UK.
 
 messages__pspDoesNotMatch__title = The name and practitioner ID do not match our records

@@ -22,13 +22,13 @@ import views.behaviours.StringFieldBehaviours
 
 class PspClientReferenceFormProviderSpec extends StringFieldBehaviours with Constraints {
   val validData: Map[String, String] = Map(
-    "value.yesNo" -> "true",
+    "value.hasReference" -> "true",
     "value.reference" -> "some value")
   val validMaxLength = 160
   val form = new PspClientReferenceFormProvider()()
 
-  ".value.yesNo" must {
-    val fieldName = "value.yesNo"
+  ".value.hasReference" must {
+    val fieldName = "value.hasReference"
     val requiredKey = "messages__clientReference_yes_no_required"
 
     behave like fieldThatBindsValidData(
