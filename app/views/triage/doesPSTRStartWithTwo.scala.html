@@ -14,8 +14,6 @@
  * limitations under the License.
  *@
 
-@import config.FrontendAppConfig
-@import uk.gov.hmrc.play.views.html._
 @import views.html._
 @import play.api.mvc.Call
 @import views.html._
@@ -29,16 +27,8 @@
 
 @(form: Form[_], postCall: Call, noRadioHint: Option[String] = None)(implicit request: Request[_], messages: Messages)
 
-@radioClass=@{
-    if (noRadioHint.nonEmpty) {
-        Some("bold")
-    } else {
-        None
-    }
-}
-
 @main_template(
-title = titleWithErrors(form, messages("messages__doesPSTRStartWithTwo__title"))
+    title = titleWithErrors(form, messages("messages__doesPSTRStartWithTwo__title"))
 ) {
 
     @formHelper(action = postCall, 'autoComplete -> "off") {
@@ -52,7 +42,7 @@ title = titleWithErrors(form, messages("messages__doesPSTRStartWithTwo__title"))
                 legend = messages("messages__doesPSTRStartWithTwo__title"),
                 legendClass = Some("visually-hidden"),
                 inputs = DoesPSTRStartWithATwo.options(noRadioHint),
-                headingIsLegend=true
+                headingIsLegend = true
             )
 
 

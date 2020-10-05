@@ -68,7 +68,6 @@ object AcceptInvitationNavigatorSpec extends OptionValues {
   private lazy val adviserManualAddress = controllers.invitations.routes.AdviserManualAddressController.onPageLoad(NormalMode, prepopulated = true)
   private lazy val checkYourAnswers = controllers.invitations.routes.CheckPensionAdviserAnswersController.onPageLoad()
   private lazy val inviteAccepted = controllers.invitations.routes.InvitationAcceptedController.onPageLoad()
-  private lazy val index: Call = controllers.routes.IndexController.onPageLoad()
 
   private def dataDescriber(answers: UserAnswers): String = answers.toString
 }

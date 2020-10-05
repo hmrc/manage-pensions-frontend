@@ -19,24 +19,14 @@ package utils.navigators
 import base.SpecBase
 import identifiers.Identifier
 import identifiers.triage._
-import models.triage.DoesPSAStartWithATwo.No
-import models.triage.DoesPSAStartWithATwo.Yes
-import models.triage.DoesPSTRStartWithATwo
-import models.triage.DoesPSAStartWithATwo
-import models.triage.WhatDoYouWantToDo
-import models.triage.WhatDoYouWantToDo.BecomeAnAdmin
-import models.triage.WhatDoYouWantToDo.ChangeAdminDetails
-import models.triage.WhatDoYouWantToDo.CheckTheSchemeStatus
-import models.triage.WhatDoYouWantToDo.Invite
-import models.triage.WhatDoYouWantToDo.ManageExistingScheme
-import models.triage.WhatDoYouWantToDo.UpdateSchemeInformation
+import models.triage.DoesPSAStartWithATwo.{No, Yes}
+import models.triage.{DoesPSAStartWithATwo, DoesPSTRStartWithATwo, WhatDoYouWantToDo}
+import models.triage.WhatDoYouWantToDo.{BecomeAnAdmin, ChangeAdminDetails, CheckTheSchemeStatus, Invite, ManageExistingScheme, UpdateSchemeInformation}
 import org.scalatest.OptionValues
 import org.scalatest.prop.TableFor4
 import play.api.libs.json.Json
 import play.api.mvc.Call
-import utils.Enumerable
-import utils.NavigatorBehaviour
-import utils.UserAnswers
+import utils.{Enumerable, NavigatorBehaviour, UserAnswers}
 
 class TriageNavigatorSpec extends SpecBase with NavigatorBehaviour {
 
@@ -49,8 +39,6 @@ class TriageNavigatorSpec extends SpecBase with NavigatorBehaviour {
   private def loginToChangePsaDetailsPage: Call = Call("GET", s"${frontendAppConfig.loginUrl}?continue=${frontendAppConfig.registeredPsaDetailsUrl}")
 
   private def tpssWelcomePage: Call = Call("GET", frontendAppConfig.tpssWelcomeUrl)
-
-  private def tpssInitialQuestionsPage: Call = Call("GET", frontendAppConfig.tpssInitialQuestionsUrl)
 
   private def pensionSchemesInvitationGuideGovUkPage: Call = Call("GET", frontendAppConfig.pensionSchemesInvitationGuideGovUkLink)
 
@@ -88,7 +76,7 @@ class TriageNavigatorSpec extends SpecBase with NavigatorBehaviour {
 
 object TriageNavigatorSpec extends OptionValues with Enumerable.Implicits {
 
-  lazy val emptyAnswers = UserAnswers(Json.obj())
+  lazy val emptyAnswers: UserAnswers = UserAnswers(Json.obj())
 
   private def whatDoYouWantToDoAnswers(answer: WhatDoYouWantToDo): UserAnswers = UserAnswers().set(WhatDoYouWantToDoId)(answer).asOpt.value
 

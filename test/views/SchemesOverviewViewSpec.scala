@@ -38,7 +38,6 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
   val lastDate: String = LocalDate.now.toString
   val deleteDate: String = LocalDate.now.plusDays(frontendAppConfig.daysDataSaved).toString
   private val psaId = "A0000000"
-  private val srn = "123"
   val html: Html = Html("test-html")
 
   private val adminCard = CardViewModel(
