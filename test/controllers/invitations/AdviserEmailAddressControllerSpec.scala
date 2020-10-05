@@ -20,7 +20,8 @@ import connectors.FakeUserAnswersCacheConnector
 import controllers.ControllerSpecBase
 import controllers.actions._
 import forms.invitations.AdviserEmailFormProvider
-import identifiers.invitations.{AdviserEmailId, AdviserNameId}
+import identifiers.invitations.AdviserEmailId
+import identifiers.invitations.AdviserNameId
 import models.NormalMode
 import play.api.data.Form
 import play.api.libs.json.Json

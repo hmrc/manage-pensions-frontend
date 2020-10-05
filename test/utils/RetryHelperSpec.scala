@@ -21,11 +21,13 @@ import java.time.temporal.ChronoUnit
 
 import base.SpecBase
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.time.{Seconds, Span}
+import org.scalatest.time.Seconds
+import org.scalatest.time.Span
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.{HttpException, UpstreamErrorResponse}
+import uk.gov.hmrc.http.HttpException
+import uk.gov.hmrc.http.UpstreamErrorResponse
 
 import scala.annotation.tailrec
 import scala.concurrent.Future

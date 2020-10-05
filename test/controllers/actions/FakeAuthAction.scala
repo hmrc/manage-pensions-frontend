@@ -17,12 +17,17 @@
 package controllers.actions
 
 import models.requests.AuthenticatedRequest
-import models.{Individual, UserType}
-import play.api.mvc.{AnyContent, BodyParser, Request, Result}
+import models.Individual
+import models.UserType
+import play.api.mvc.AnyContent
+import play.api.mvc.BodyParser
+import play.api.mvc.Request
+import play.api.mvc.Result
 import uk.gov.hmrc.domain.PsaId
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 
-import scala.concurrent.{ExecutionContextExecutor, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 object FakeAuthAction {
   private val externalId: String = "id"
@@ -31,7 +36,7 @@ object FakeAuthAction {
   def apply(): AuthAction = {
     new AuthAction {
       val parser: BodyParser[AnyContent] = stubMessagesControllerComponents().parsers.defaultBodyParser
-      implicit val executionContext: ExecutionContextExecutor = scala.concurrent.ExecutionContext.Implicits.global
+      implicit val executionContext: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
       override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] =
         block(AuthenticatedRequest(request, externalId, PsaId(defaultPsaId), Individual))
     }
@@ -40,7 +45,7 @@ object FakeAuthAction {
   def createWithPsaId(psaId:String): AuthAction = {
     new AuthAction {
       val parser: BodyParser[AnyContent] = stubMessagesControllerComponents().parsers.defaultBodyParser
-      implicit val executionContext: ExecutionContextExecutor = scala.concurrent.ExecutionContext.Implicits.global
+      implicit val executionContext: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
       override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] =
         block(AuthenticatedRequest(request, externalId, PsaId(psaId), Individual))
     }
@@ -49,7 +54,7 @@ object FakeAuthAction {
   def createUserType(userType:UserType): AuthAction = {
     new AuthAction {
       val parser: BodyParser[AnyContent] = stubMessagesControllerComponents().parsers.defaultBodyParser
-      implicit val executionContext: ExecutionContextExecutor = scala.concurrent.ExecutionContext.Implicits.global
+      implicit val executionContext: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
       override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] =
         block(AuthenticatedRequest(request, externalId, PsaId(defaultPsaId), userType))
     }

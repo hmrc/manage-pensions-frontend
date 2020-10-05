@@ -16,7 +16,8 @@
 
 package forms.invitations.psp
 
-import forms.mappings.{Mappings, Transforms}
+import forms.mappings.Mappings
+import forms.mappings.Transforms
 import javax.inject.Inject
 import play.api.data.Form
 

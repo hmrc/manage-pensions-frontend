@@ -18,7 +18,8 @@ package utils
 
 import identifiers.TypedIdentifier
 import play.api.Logger
-import play.api.libs.json.{JsResult, _}
+import play.api.libs.json.JsResult
+import play.api.libs.json._
 import play.api.mvc.Result
 import play.api.mvc.Results._
 

@@ -17,8 +17,9 @@
 package utils
 
 import base.SpecBase
-import models.{Address, CheckMode}
-import org.scalatest.{MustMatchers, WordSpec}
+import models.Address
+import models.CheckMode
+import org.scalatest.MustMatchers
 import utils.countryOptions.CountryOptions
 import viewmodels.AnswerRow
 

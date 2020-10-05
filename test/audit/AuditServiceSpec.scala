@@ -17,18 +17,22 @@
 package audit
 
 import akka.stream.Materializer
-import org.scalatest.{AsyncFlatSpec, Inside, Matchers}
-import play.api.inject.{ApplicationLifecycle, bind}
+import org.scalatest.AsyncFlatSpec
+import org.scalatest.Inside
+import org.scalatest.Matchers
+import play.api.inject.ApplicationLifecycle
+import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.config.AuditingConfig
-import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import uk.gov.hmrc.play.audit.model.DataEvent
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 class AuditServiceSpec extends AsyncFlatSpec with Matchers with Inside {
 

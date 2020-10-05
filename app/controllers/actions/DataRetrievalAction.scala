@@ -17,15 +17,17 @@
 package controllers.actions
 
 
-import com.google.inject.{ImplementedBy, Inject}
+import com.google.inject.ImplementedBy
+import com.google.inject.Inject
 import connectors.UserAnswersCacheConnector
-import models.requests.{AuthenticatedRequest, OptionalDataRequest}
+import models.requests.AuthenticatedRequest
+import models.requests.OptionalDataRequest
 import play.api.mvc.ActionTransformer
 import uk.gov.hmrc.play.HeaderCarrierConverter
 import utils.UserAnswers
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 class DataRetrievalActionImpl @Inject()(val dataCacheConnector: UserAnswersCacheConnector)
                                        (implicit val executionContext: ExecutionContext) extends DataRetrievalAction {

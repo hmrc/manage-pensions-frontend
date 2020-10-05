@@ -17,8 +17,10 @@
 package forms.behaviours
 
 import forms.mappings.AddressMapping
-import org.scalatest.{Matchers, WordSpec}
-import play.api.data.{Form, FormError}
+import org.scalatest.Matchers
+import org.scalatest.WordSpec
+import play.api.data.Form
+import play.api.data.FormError
 import wolfendale.scalacheck.regexp.RegexpGen
 
 trait AddressBehaviours extends WordSpec with Matchers with FieldBehaviours {

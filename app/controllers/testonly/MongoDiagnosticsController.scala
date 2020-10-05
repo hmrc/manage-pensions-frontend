@@ -19,7 +19,9 @@ package controllers.testonly
 import com.google.inject.Inject
 import connectors.MongoDiagnosticsConnector
 import controllers.actions.AuthAction
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.Action
+import play.api.mvc.AnyContent
+import play.api.mvc.MessagesControllerComponents
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 
 import scala.concurrent.ExecutionContext

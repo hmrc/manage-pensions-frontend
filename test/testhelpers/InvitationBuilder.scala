@@ -16,7 +16,7 @@
 
 package testhelpers
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.LocalDate
 
 import models._
 import uk.gov.hmrc.domain.PsaId

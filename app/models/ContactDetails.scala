@@ -16,7 +16,8 @@
 
 package models
 
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.Format
+import play.api.libs.json.Json
 
 case class ContactDetails(telephone: String, mobileNumber: Option[String], fax: Option[String], email: String)
 

@@ -18,7 +18,9 @@ package forms.triage
 
 import forms.behaviours.FormBehaviours
 import models.triage.WhatDoYouWantToDo
-import models.{Field, Invalid, Required}
+import models.Field
+import models.Invalid
+import models.Required
 
 class WhatDoYouWantToDoFormProviderSpec extends FormBehaviours {
 

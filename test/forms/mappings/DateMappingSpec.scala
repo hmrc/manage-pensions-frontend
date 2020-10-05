@@ -17,9 +17,13 @@
 package forms.mappings
 
 import java.time.LocalDate
-import org.scalatest.{MustMatchers, OptionValues, WordSpec}
+
+import org.scalatest.MustMatchers
+import org.scalatest.OptionValues
+import org.scalatest.WordSpec
 import play.api.data.Forms._
-import play.api.data.{Form, FormError}
+import play.api.data.Form
+import play.api.data.FormError
 
 class DateMappingSpec extends WordSpec with DateMapping with MustMatchers with OptionValues {
 

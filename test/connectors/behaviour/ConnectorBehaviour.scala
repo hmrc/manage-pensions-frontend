@@ -19,12 +19,15 @@ package connectors.behaviour
 import com.github.tomakehurst.wiremock.client.WireMock._
 import connectors.UserAnswersCacheConnector
 import identifiers.TypedIdentifier
-import org.scalatest.{AsyncWordSpec, MustMatchers, OptionValues}
+import org.scalatest.AsyncWordSpec
+import org.scalatest.MustMatchers
+import org.scalatest.OptionValues
 import play.api.http.Status
 import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.mvc.Results._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpException}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.HttpException
 import utils.WireMockHelper
 
 import scala.reflect.ClassTag

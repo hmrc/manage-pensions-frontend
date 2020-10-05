@@ -16,10 +16,13 @@
 
 package utils
 
-import identifiers.{Identifier, TypedIdentifier}
+import identifiers.Identifier
+import identifiers.TypedIdentifier
 import models.requests.IdentifiedRequest
-import models.{CheckMode, NormalMode}
-import org.scalatest.{MustMatchers, WordSpec}
+import models.CheckMode
+import models.NormalMode
+import org.scalatest.MustMatchers
+import org.scalatest.WordSpec
 import play.api.mvc.Call
 import uk.gov.hmrc.http.HeaderCarrier
 

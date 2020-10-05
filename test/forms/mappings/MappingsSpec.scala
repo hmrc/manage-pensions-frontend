@@ -16,9 +16,12 @@
 
 package forms.mappings
 
-import org.scalatest.{MustMatchers, OptionValues, WordSpec}
+import org.scalatest.MustMatchers
+import org.scalatest.OptionValues
+import org.scalatest.WordSpec
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
-import play.api.data.{Form, FormError}
+import play.api.data.Form
+import play.api.data.FormError
 
 class MappingsSpec extends WordSpec with MustMatchers with OptionValues with Mappings with ScalaCheckDrivenPropertyChecks {
 

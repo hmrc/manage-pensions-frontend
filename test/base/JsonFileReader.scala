@@ -16,7 +16,8 @@
 
 package base
 
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.JsValue
+import play.api.libs.json.Json
 
 import scala.io.Source
 

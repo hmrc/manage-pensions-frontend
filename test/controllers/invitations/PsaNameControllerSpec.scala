@@ -22,9 +22,11 @@ import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.invitations.PsaNameFormProvider
 import models.NormalMode
 import play.api.data.Form
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.Action
+import play.api.mvc.AnyContent
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
-import utils.{UserAnswers, _}
+import utils.UserAnswers
+import utils._
 import views.html.invitations.psaName
 
 class PsaNameControllerSpec extends ControllerWithQuestionPageBehaviours {

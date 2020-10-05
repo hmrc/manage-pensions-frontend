@@ -17,7 +17,8 @@
 package utils
 
 import org.scalacheck.Gen
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.FlatSpec
+import org.scalatest.Matchers
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import play.api.http.Status._
 import uk.gov.hmrc.http._

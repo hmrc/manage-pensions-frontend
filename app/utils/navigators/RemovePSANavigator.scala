@@ -18,11 +18,15 @@ package utils.navigators
 
 import connectors.UserAnswersCacheConnector
 import controllers.routes._
-import identifiers.remove.{ConfirmRemovePsaId, RemovalDateId}
-import identifiers.{Identifier, SchemeSrnId}
-import javax.inject.{Inject, Singleton}
+import identifiers.remove.ConfirmRemovePsaId
+import identifiers.remove.RemovalDateId
+import identifiers.Identifier
+import identifiers.SchemeSrnId
+import javax.inject.Inject
+import javax.inject.Singleton
 import play.api.mvc.Call
-import utils.{Navigator, UserAnswers}
+import utils.Navigator
+import utils.UserAnswers
 
 @Singleton
 class RemovePSANavigator @Inject()(val dataCacheConnector: UserAnswersCacheConnector) extends Navigator {

@@ -24,12 +24,22 @@ import identifiers.{SchemeNameId, SchemeSrnId}
 import identifiers.invitations.psp.{PspClientReferenceId, PspNameId}
 import models.invitations.psp.ClientReference
 import models.{NormalMode, SchemeReferenceNumber}
+import identifiers.SchemeNameId
+import identifiers.SchemeSrnId
+import identifiers.invitations.psp.PspClientReferenceId
+import identifiers.invitations.psp.PspNameId
+import models.NormalMode
+import models.SchemeReferenceNumber
 import models.invitations.psp.ClientReference._
 import play.api.data.Form
 import play.api.mvc.Call
-import play.api.test.Helpers.{contentAsString, redirectLocation, status, _}
+import play.api.test.Helpers.contentAsString
+import play.api.test.Helpers.redirectLocation
+import play.api.test.Helpers.status
+import play.api.test.Helpers._
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
-import utils.{FakeNavigator, UserAnswers}
+import utils.FakeNavigator
+import utils.UserAnswers
 import views.html.invitations.psp.pspClientReference
 
 

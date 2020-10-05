@@ -16,7 +16,8 @@
 
 package forms.mappings
 
-import play.api.data.{Form, Mapping}
+import play.api.data.Form
+import play.api.data.Mapping
 import utils.FakeCountryOptions
 import views.behaviours.AddressBehaviours
 
@@ -95,7 +96,7 @@ class AddressMappingSpec extends AddressBehaviours {
 
     val keyRequired = "error.required"
     val keyInvalid = "error.invalid"
-    
+
     val countryOptions = new FakeCountryOptions(environment, frontendAppConfig)
 
     val form = Form("country" -> countryMapping(countryOptions, keyRequired, keyInvalid))

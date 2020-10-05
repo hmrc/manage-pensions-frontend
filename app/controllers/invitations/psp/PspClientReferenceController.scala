@@ -24,19 +24,28 @@ import forms.invitations.psp.PspClientReferenceFormProvider
 import identifiers.invitations.psp.{PspClientReferenceId, PspNameId}
 import models.Mode
 import forms.invitations.psp.PspClientReferenceFormProvider
-import identifiers.invitations.psp.{PspClientReferenceId, PspNameId}
-import identifiers.{SchemeNameId, SchemeSrnId}
+import identifiers.invitations.psp.PspClientReferenceId
+import identifiers.invitations.psp.PspNameId
+import identifiers.SchemeNameId
+import identifiers.SchemeSrnId
 import models.invitations.psp.ClientReference
-import models.{Mode, SchemeReferenceNumber}
+import models.Mode
+import models.SchemeReferenceNumber
 import play.api.data.Form
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
+import play.api.i18n.I18nSupport
+import play.api.i18n.MessagesApi
+import play.api.mvc.Action
+import play.api.mvc.AnyContent
+import play.api.mvc.Call
+import play.api.mvc.MessagesControllerComponents
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.annotations.AuthorisePsp
-import utils.{Navigator, UserAnswers}
+import utils.Navigator
+import utils.UserAnswers
 import views.html.invitations.psp.pspClientReference
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 
 class PspClientReferenceController @Inject()(override val messagesApi: MessagesApi,

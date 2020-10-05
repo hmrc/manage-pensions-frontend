@@ -16,16 +16,24 @@
 
 package controllers.invitations
 
-import connectors.{AddressLookupConnector, FakeUserAnswersCacheConnector, UserAnswersCacheConnector}
+import connectors.AddressLookupConnector
+import connectors.FakeUserAnswersCacheConnector
+import connectors.UserAnswersCacheConnector
 import controllers.ControllerSpecBase
-import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
+import controllers.actions.AuthAction
+import controllers.actions.DataRetrievalAction
+import controllers.actions.FakeAuthAction
+import controllers.actions.FakeDataRetrievalAction
 import forms.invitations.AdviserAddressPostcodeLookupFormProvider
 import identifiers.invitations.AdviserNameId
 import models.TolerantAddress
-import org.mockito.Matchers.{eq => eqTo, _}
+import org.mockito.Matchers.{eq => eqTo}
+import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.{MustMatchers, OptionValues, WordSpec}
+import org.scalatest.MustMatchers
+import org.scalatest.OptionValues
+import org.scalatest.WordSpec
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.Application
 import play.api.data.Form
@@ -36,7 +44,8 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.HttpException
 import utils.annotations.AcceptInvitation
-import utils.{FakeNavigator, Navigator}
+import utils.FakeNavigator
+import utils.Navigator
 import views.html.invitations.adviserPostcode
 
 import scala.concurrent.Future

@@ -24,15 +24,22 @@ import javax.inject.Inject
 import models.NormalMode
 import models.triage.DoesPSTRStartWithATwo
 import play.api.data.Form
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
-import play.api.mvc.{Call, AnyContent, MessagesControllerComponents, Action}
+import play.api.i18n.I18nSupport
+import play.api.i18n.Messages
+import play.api.i18n.MessagesApi
+import play.api.mvc.Action
+import play.api.mvc.AnyContent
+import play.api.mvc.Call
+import play.api.mvc.MessagesControllerComponents
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.Enumerable
 import utils.annotations.Triage
-import utils.{Navigator, UserAnswers}
+import utils.Navigator
+import utils.UserAnswers
 import views.html.triage.doesPSTRStartWithTwo
 
-import scala.concurrent.{Future, ExecutionContext}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 class DoesPSTRStartWithTwoInviteController @Inject()(
                                                       appConfig: FrontendAppConfig,

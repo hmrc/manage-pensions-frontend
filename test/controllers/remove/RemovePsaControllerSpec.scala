@@ -22,9 +22,13 @@ import base.SpecBase
 import connectors.admin.MinimalPsaConnector
 import connectors.FakeUserAnswersCacheConnector
 import connectors.scheme.SchemeDetailsConnector
-import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction, FakeUnAuthorisedAction}
+import controllers.actions.DataRequiredActionImpl
+import controllers.actions.DataRetrievalAction
+import controllers.actions.FakeAuthAction
+import controllers.actions.FakeUnAuthorisedAction
 import identifiers.AssociatedDateId
-import identifiers.invitations.{PSTRId, SchemeNameId}
+import identifiers.invitations.PSTRId
+import identifiers.invitations.SchemeNameId
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -36,7 +40,8 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.UserAnswers
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
 
@@ -117,7 +122,7 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
                                     idNumber: String)(implicit hc: HeaderCarrier,
                                                                 ec: ExecutionContext): Future[UserAnswers] = {
 
-        Future(UserAnswers(Json.parse(json)))
+        Future.apply(UserAnswers(Json.parse(json)))(ec)
       }
     }
 

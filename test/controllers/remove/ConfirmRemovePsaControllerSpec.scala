@@ -16,7 +16,8 @@
 
 package controllers.remove
 
-import connectors.{FakeUserAnswersCacheConnector, UserAnswersCacheConnector}
+import connectors.FakeUserAnswersCacheConnector
+import connectors.UserAnswersCacheConnector
 import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.remove.ConfirmRemovePsaFormProvider
@@ -25,7 +26,8 @@ import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
-import utils.{UserAnswerOps, UserAnswers}
+import utils.UserAnswerOps
+import utils.UserAnswers
 import views.html.remove.confirmRemovePsa
 
 class ConfirmRemovePsaControllerSpec extends ControllerWithQuestionPageBehaviours {

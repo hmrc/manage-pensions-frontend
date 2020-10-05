@@ -18,7 +18,8 @@ package connectors.scheme
 
 import connectors.MicroserviceCacheConnector
 import connectors.behaviour.ConnectorBehaviour
-import org.scalatest.{AsyncWordSpec, MustMatchers}
+import org.scalatest.AsyncWordSpec
+import org.scalatest.MustMatchers
 
 class PensionSchemeCacheConnectorSpec extends AsyncWordSpec with MustMatchers with ConnectorBehaviour {
 

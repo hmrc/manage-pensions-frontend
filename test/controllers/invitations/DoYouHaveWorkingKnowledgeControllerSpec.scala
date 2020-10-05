@@ -24,7 +24,9 @@ import models.NormalMode
 import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import utils.{FakeNavigator, UserAnswerOps, UserAnswers}
+import utils.FakeNavigator
+import utils.UserAnswerOps
+import utils.UserAnswers
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import views.html.invitations.doYouHaveWorkingKnowledge
 

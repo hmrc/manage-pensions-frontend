@@ -16,11 +16,13 @@
 
 package controllers.actions
 
-import com.google.inject.{ImplementedBy, Inject}
+import com.google.inject.ImplementedBy
+import com.google.inject.Inject
 import models.requests.TriageRequest
 import play.api.mvc._
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 class TriageActionImpl @Inject()(val parser: BodyParsers.Default)(implicit val executionContext: ExecutionContext) extends TriageAction {
   override def invokeBlock[A](request: Request[A], block: TriageRequest[A] => Future[Result]): Future[Result] = {

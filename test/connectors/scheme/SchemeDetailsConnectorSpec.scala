@@ -18,11 +18,14 @@ package connectors.scheme
 
 import base.JsonFileReader
 import com.github.tomakehurst.wiremock.client.WireMock._
-import org.scalatest.{AsyncFlatSpec, Matchers}
+import org.scalatest.AsyncFlatSpec
+import org.scalatest.Matchers
 import play.api.http.Status
 import play.api.libs.json.Json
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
-import utils.{UserAnswers, WireMockHelper}
+import uk.gov.hmrc.http.BadRequestException
+import uk.gov.hmrc.http.HeaderCarrier
+import utils.UserAnswers
+import utils.WireMockHelper
 
 class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper {
 
@@ -136,8 +139,6 @@ object SchemeDetailsConnectorSpec extends JsonFileReader {
   private val schemeDetailsUrl = s"/pensions-scheme/scheme"
 
   private implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
-
-  private val validSchemeDetailsResponse = readJsonFromFile("/data/validSchemeDetailsResponse.json").toString()
 
   def errorResponse(code: String): String = {
     Json.stringify(

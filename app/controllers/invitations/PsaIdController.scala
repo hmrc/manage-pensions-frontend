@@ -22,17 +22,23 @@ import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
 import controllers.actions._
 import forms.invitations.PsaIdFormProvider
-import identifiers.invitations.{InviteeNameId, InviteePSAId}
+import identifiers.invitations.InviteeNameId
+import identifiers.invitations.InviteePSAId
 import models.Mode
 import play.api.data.Form
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.play.bootstrap.controller.{FrontendBaseController, FrontendController}
+import play.api.i18n.I18nSupport
+import play.api.i18n.MessagesApi
+import play.api.mvc.Action
+import play.api.mvc.AnyContent
+import play.api.mvc.MessagesControllerComponents
+import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.annotations.Invitation
-import utils.{Navigator, UserAnswers}
+import utils.Navigator
+import utils.UserAnswers
 import views.html.invitations.psaId
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 
 class PsaIdController @Inject()(appConfig: FrontendAppConfig,

@@ -17,10 +17,9 @@
 package views.invitations.psp
 
 import forms.invitations.psp.PspClientReferenceFormProvider
-import forms.triage.DoesPSTRStartWithTwoFormProvider
-import models.{NormalMode, SchemeReferenceNumber}
+import models.NormalMode
+import models.SchemeReferenceNumber
 import models.invitations.psp.ClientReference
-import models.triage.DoesPSTRStartWithATwo
 import play.api.data.Form
 import views.behaviours.ViewBehaviours
 import views.html.invitations.psp.pspClientReference
@@ -29,13 +28,10 @@ class PspClientReferenceViewSpec extends ViewBehaviours {
 
   private val messageKeyPrefix = "psp_client_ref"
   private val pspName = "PSP Name"
-  private val postCall = controllers.invitations.psp.routes.PspClientReferenceController.onSubmit(NormalMode)
 
   private val schemeName = "Test Scheme"
 
   private val returnCall = controllers.routes.SchemeDetailsController.onPageLoad(SchemeReferenceNumber("srn"))
-
-  private val hint = Some("opt1")
 
   val formProvider = new PspClientReferenceFormProvider
   val form: Form[ClientReference] = formProvider()

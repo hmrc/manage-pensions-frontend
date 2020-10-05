@@ -24,12 +24,15 @@ import javax.inject.Inject
 import models.Link
 import models.requests.OptionalDataRequest
 import play.api.i18n.Messages
-import play.api.mvc.{AnyContent, Request}
+import play.api.mvc.AnyContent
+import play.api.mvc.Request
 import play.twirl.api.Html
 import uk.gov.hmrc.http.HeaderCarrier
-import viewmodels.{CardViewModel, Message}
+import viewmodels.CardViewModel
+import viewmodels.Message
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
                                        minimalPsaConnector: MinimalPsaConnector,

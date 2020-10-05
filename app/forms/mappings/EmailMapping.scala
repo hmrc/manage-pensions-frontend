@@ -17,7 +17,9 @@
 package forms.mappings
 
 import play.api.data.Mapping
-import play.api.data.validation.{Constraint, Invalid, Valid}
+import play.api.data.validation.Constraint
+import play.api.data.validation.Invalid
+import play.api.data.validation.Valid
 
 trait EmailMapping extends Mappings with Transforms {
 

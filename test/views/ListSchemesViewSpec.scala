@@ -17,12 +17,9 @@
 package views
 
 import config.FrontendAppConfig
-import controllers.ListSchemesControllerSpec.mockAppConfig
-import controllers.actions.DataRetrievalAction
 import forms.ListSchemesFormProvider
 import models.SchemeDetails
 import models.SchemeStatus
-import org.jsoup.nodes.Document
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.i18n.Messages
 import play.api.inject.bind
@@ -33,10 +30,7 @@ import play.twirl.api.HtmlFormat
 import services.PaginationService
 import views.behaviours.ViewBehaviours
 import views.html.list_schemes
-import org.mockito.Matchers
-import org.mockito.Matchers.any
 import org.mockito.Mockito._
-import org.scalatest.Assertion
 import org.scalatest.BeforeAndAfterEach
 
 class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours with MockitoSugar with BeforeAndAfterEach{

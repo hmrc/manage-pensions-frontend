@@ -16,7 +16,8 @@
 
 package models
 
-import org.scalatest.{MustMatchers, WordSpec}
+import org.scalatest.MustMatchers
+import org.scalatest.WordSpec
 
 class SchemeReferenceNumberSpec extends WordSpec with MustMatchers {
 

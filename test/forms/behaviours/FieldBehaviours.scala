@@ -18,9 +18,11 @@ package forms.behaviours
 
 import generators.Generators
 import org.scalacheck.Gen
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.Matchers
+import org.scalatest.WordSpec
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
-import play.api.data.{Form, FormError}
+import play.api.data.Form
+import play.api.data.FormError
 
 trait FieldBehaviours extends WordSpec with Matchers with ScalaCheckDrivenPropertyChecks with Generators {
 

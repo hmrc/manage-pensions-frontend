@@ -18,7 +18,8 @@ package forms.behaviours
 
 import org.scalatest.OptionValues
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
-import play.api.data.{Form, FormError}
+import play.api.data.Form
+import play.api.data.FormError
 
 trait BooleanFieldBehaviours extends FieldBehaviours with OptionValues with ScalaCheckDrivenPropertyChecks {
 

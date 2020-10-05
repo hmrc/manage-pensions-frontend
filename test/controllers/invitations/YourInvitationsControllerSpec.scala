@@ -16,7 +16,8 @@
 
 package controllers.invitations
 
-import connectors.{FakeUserAnswersCacheConnector, InvitationsCacheConnector}
+import connectors.FakeUserAnswersCacheConnector
+import connectors.InvitationsCacheConnector
 import controllers.ControllerSpecBase
 import controllers.actions._
 import identifiers.SchemeSrnId
