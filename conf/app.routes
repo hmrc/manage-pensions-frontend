@@ -17,6 +17,8 @@ GET         /this-service-has-been-reset                  controllers.SessionExp
 
 GET         /unauthorised                                 controllers.UnauthorisedController.onPageLoad
 
+GET         /already-associated                           controllers.AlreadyAssociatedWithSchemeController.onPageLoad
+
 GET         /logout                                       controllers.LogoutController.onPageLoad
 
 GET         /you-need-to-register                         controllers.YouNeedToRegisterController.onPageLoad()
