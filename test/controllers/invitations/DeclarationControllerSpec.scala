@@ -136,6 +136,15 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
         redirectLocation(result).value mustBe sessionExpired
       }
 
+      "redirect to AlreadyAssociatedWithScheme page when scheme already associated" in {
+        when(fakeInvitationCacheConnector.get(eqTo(pstr), any())(any(), any())).thenReturn(Future.successful(InvitationBuilder.invitationList))
+        when(fakeInvitationCacheConnector.remove(eqTo(pstr), any())(any(), any())).thenReturn(Future.successful(()))
+        when(fakeInvitationConnector.acceptInvite(eqTo(InvitationBuilder.acceptedInvitation))(any(), any())).thenReturn(Future.successful(()))
+
+        val result = controller(data).onSubmit()(fakeRequest.withFormUrlEncodedBody("agree" -> "agreed"))
+        status(result) mustBe FORBIDDEN
+      }
+
       "return Bad Request if invalid data is submitted" in {
         val formWithErrors = form.withError("agree", messages("messages__error__declaration__required"))
         val result = controller(data).onSubmit()(fakeRequest)

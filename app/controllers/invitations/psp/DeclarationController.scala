@@ -75,7 +75,8 @@ class DeclarationController @Inject()( override val messagesApi: MessagesApi,
       case srn ~ pspName ~ pspId ~ pspCR =>
         getPstr(srn).flatMap {
           case Some(pstr) =>
-            pspConnector.authorisePsp(pstr, pspName, pspId, getClientReference(pspCR)).map { _ =>
+            pspConnector.authorisePsp(pstr, pspName, pspId, getClientReference(pspCR)).map { x =>
+              x
               Redirect(routes.ConfirmationController.onPageLoad())
             }
           case _ => sessionExpired
