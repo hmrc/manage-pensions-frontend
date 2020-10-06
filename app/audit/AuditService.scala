@@ -26,7 +26,7 @@ import uk.gov.hmrc.play.audit.AuditExtensions._
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import uk.gov.hmrc.play.audit.model.DataEvent
-
+import scala.util.{Success, Failure}
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 import scala.language.implicitConversions
@@ -68,16 +68,12 @@ class AuditServiceImpl @Inject()(
       )
     )
 
-    result.onSuccess {
-      case _ =>
+    result onComplete {
+      case Success(_) =>
         Logger.debug(s"[AuditService][sendEvent] successfully sent ${event.auditType}")
-    }
-
-    result.onFailure {
-      case e =>
+      case Failure(e) =>
         Logger.error(s"[AuditService][sendEvent] failed to send event ${event.auditType}", e)
     }
-
   }
 
 }

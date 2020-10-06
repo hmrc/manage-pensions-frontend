@@ -19,14 +19,13 @@ package views.behaviours
 import java.time.LocalDate
 
 import org.jsoup.Jsoup
-import play.api.data.Form
-import play.api.data.FormError
+import play.api.data.{Form, FormError}
 import play.api.i18n.Lang
 import play.twirl.api.HtmlFormat
 import views.ViewSpecBase
 
 trait ViewBehaviours extends ViewSpecBase {
- implicit val lang = Lang("en")
+ implicit val lang: Lang = Lang("en")
   def normalPageWithTitle(view: () => HtmlFormat.Appendable,
                           messageKeyPrefix: String,
                           title: String,
@@ -152,12 +151,11 @@ trait ViewBehaviours extends ViewSpecBase {
     val day = LocalDate.now().getDayOfMonth
     val year = LocalDate.now().getYear
     val month = LocalDate.now().getMonthValue
-    val error = "error"
 
     val validData: Map[String, String] = Map(
-      s"${idkey}.day" -> s"$day",
-      s"${idkey}.month" -> s"$month",
-      s"${idkey}.year" -> s"$year"
+      s"$idkey.day" -> s"$day",
+      s"$idkey.month" -> s"$month",
+      s"$idkey.year" -> s"$year"
     )
 
     "display an input text box with the correct label and value for day" in {
@@ -180,30 +178,27 @@ trait ViewBehaviours extends ViewSpecBase {
 
     "display error for day field on error summary" in {
       val error = "error"
-      val doc = asDocument(view(form.withError(FormError(s"${idkey}.day", error))))
+      val doc = asDocument(view(form.withError(FormError(s"$idkey.day", error))))
       doc must haveErrorOnSummary(s"${idkey}_day", error)
     }
 
     "display error for month field on error summary" in {
       val error = "error"
-      val doc = asDocument(view(form.withError(FormError(s"${idkey}.month", error))))
+      val doc = asDocument(view(form.withError(FormError(s"$idkey.month", error))))
       doc must haveErrorOnSummary(s"${idkey}_month", error)
     }
 
     "display error for year field on error summary" in {
       val error = "error"
-      val doc = asDocument(view(form.withError(FormError(s"${idkey}.year", error))))
+      val doc = asDocument(view(form.withError(FormError(s"$idkey.year", error))))
       doc must haveErrorOnSummary(s"${idkey}_year", error)
     }
 
     "display only one date error when all the date fields are missing" in {
       val expectedError = messages(s"messages__${msgKey}_error__all_blank")
-      val invalidData: Map[String, String] = Map(
-        "firstName" -> "testFirstName",
-        "lastName" -> "testLastName"
-      )
-      val doc = asDocument(view(form.withError(FormError(s"${idkey}", expectedError))))
-      doc must haveErrorOnSummary(s"${idkey}", expectedError)
+
+      val doc = asDocument(view(form.withError(FormError(s"$idkey", expectedError))))
+      doc must haveErrorOnSummary(s"$idkey", expectedError)
     }
 
   }
