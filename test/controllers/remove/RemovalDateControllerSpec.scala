@@ -64,8 +64,7 @@ class RemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours wit
   private val view = app.injector.instanceOf[removalDate]
 
   def controller(dataRetrievalAction: DataRetrievalAction = data, fakeAuth: AuthAction = FakeAuthAction(),
-                 userAnswersCacheConnector: UserAnswersCacheConnector = FakeUserAnswersCacheConnector,
-                 variationsToggle: Boolean = false) = new RemovalDateController(
+                 userAnswersCacheConnector: UserAnswersCacheConnector = FakeUserAnswersCacheConnector) = new RemovalDateController(
     frontendAppConfig, messagesApi, userAnswersCacheConnector, navigator, fakeAuth, dataRetrievalAction,
     requiredDataAction, formProvider, fakePsaRemovalConnector,
     mockedUpdateSchemeCacheConnector, mockedPensionSchemeVarianceLockConnector, stubMessagesControllerComponents(), view)

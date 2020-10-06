@@ -21,16 +21,14 @@ import forms.triage.DoesPSAStartWithATwoFormProvider
 import models.triage.DoesPSAStartWithATwo
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.data.Form
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
 import play.api.mvc.Call
 import play.api.test.CSRFTokenHelper.addCSRFToken
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import utils.{FakeNavigator, Navigator}
 import utils.annotations.Triage
-import utils.FakeNavigator
-import utils.Navigator
 import views.html.triage.doesPSAStartWithATwo
 
 class DoesPSAStartWithATwoControllerSpec extends ControllerSpecBase with ScalaFutures with MockitoSugar {
@@ -41,7 +39,6 @@ class DoesPSAStartWithATwoControllerSpec extends ControllerSpecBase with ScalaFu
 
   private val view = injector.instanceOf[doesPSAStartWithATwo]
   private val formProvider = new DoesPSAStartWithATwoFormProvider()
-  private def viewAsString(form: Form[DoesPSAStartWithATwo] = formProvider()): String = view(form)(fakeRequest, messages).toString
 
   "DoesPSAStartWithATwoController" must {
 

@@ -43,18 +43,13 @@ appConfig: FrontendAppConfig
         @components.error_summary(form.errors)
 
         @components.input_radio(
-            field = form("value.yesNo"),
+            field = form("value.hasReference"),
+            hiddenFieldAndLabel = Some(form("value.reference"), messages("messages__psp_client_ref__label")),
             legend = messages("messages__psp_client_ref__heading", pspName),
             legendClass = Some("visually-hidden"),
             inputs = ClientReference.options,
             labelClass = Some("form-label-bold"),
-            headingIsLegend=true
-        )
-
-        @components.input_text(
-            field = form("value.reference"),
-            label = messages("messages__psp_client_ref__label"),
-            groupClass = Some("js-hidden panel panel-border-narrow")
+            headingIsLegend = true
         )
 
         @components.submit_button()

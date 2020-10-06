@@ -17,6 +17,7 @@
 package utils.navigators
 
 import base.SpecBase
+import controllers.invitations.psp.routes._
 import identifiers.Identifier
 import identifiers.invitations.psp._
 import models.NormalMode
@@ -26,9 +27,7 @@ import org.scalatest.prop.TableFor4
 import play.api.libs.json.Json
 import play.api.mvc.Call
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.NavigatorBehaviour
-import utils.UserAnswers
-import controllers.invitations.psp.routes._
+import utils.{NavigatorBehaviour, UserAnswers}
 
 class AuthorisePspNavigatorSpec extends SpecBase with NavigatorBehaviour {
 
@@ -51,8 +50,7 @@ class AuthorisePspNavigatorSpec extends SpecBase with NavigatorBehaviour {
 }
 
 object AuthorisePspNavigatorSpec extends OptionValues {
-  private val testSrn = "test-srn"
-  lazy val emptyAnswers = UserAnswers(Json.obj())
+  lazy val emptyAnswers: UserAnswers = UserAnswers(Json.obj())
   lazy val checkYourAnswer: Call = CheckYourAnswersController.onPageLoad()
   lazy val pspIdPage: Call = PspIdController.onPageLoad(NormalMode)
   lazy val pspClientRefPage: Call = PspClientReferenceController.onPageLoad(NormalMode)

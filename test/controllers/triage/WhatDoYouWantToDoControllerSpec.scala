@@ -18,21 +18,18 @@ package controllers.triage
 
 import controllers.ControllerSpecBase
 import forms.triage.WhatDoYouWantToDoFormProvider
-import models.triage.WhatDoYouWantToDo
 import models.triage.WhatDoYouWantToDo.ManageExistingScheme
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.data.Form
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
 import play.api.mvc.Call
+import play.api.test.CSRFTokenHelper.addCSRFToken
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import utils.{FakeNavigator, Navigator}
 import utils.annotations.Triage
-import utils.FakeNavigator
-import utils.Navigator
 import views.html.triage.whatDoYouWantToDo
-import play.api.test.CSRFTokenHelper.addCSRFToken
 
 class WhatDoYouWantToDoControllerSpec extends ControllerSpecBase with ScalaFutures with MockitoSugar {
 
@@ -42,7 +39,6 @@ class WhatDoYouWantToDoControllerSpec extends ControllerSpecBase with ScalaFutur
 
   private val view = injector.instanceOf[whatDoYouWantToDo]
   private val formProvider = new WhatDoYouWantToDoFormProvider()
-  private def viewAsString(form: Form[WhatDoYouWantToDo] = formProvider()): String = view(form)(fakeRequest, messages).toString
 
   "WhatDoYouWantToDoController" must {
 

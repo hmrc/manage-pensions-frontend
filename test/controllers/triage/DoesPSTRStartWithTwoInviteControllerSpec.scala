@@ -18,19 +18,16 @@ package controllers.triage
 
 import controllers.ControllerSpecBase
 import forms.triage.DoesPSTRStartWithTwoFormProvider
-import models.triage.DoesPSTRStartWithATwo
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.data.Form
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
 import play.api.mvc.Call
 import play.api.test.CSRFTokenHelper.addCSRFToken
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import utils.{FakeNavigator, Navigator}
 import utils.annotations.Triage
-import utils.FakeNavigator
-import utils.Navigator
 import views.html.triage.doesPSTRStartWithTwo
 
 class DoesPSTRStartWithTwoInviteControllerSpec extends ControllerSpecBase with ScalaFutures with MockitoSugar {
@@ -44,8 +41,6 @@ class DoesPSTRStartWithTwoInviteControllerSpec extends ControllerSpecBase with S
   private val hint = Some(messages("messages__doesPSTRStartWithTwo_invite__hint"))
   private val view = injector.instanceOf[doesPSTRStartWithTwo]
   private val formProvider = new DoesPSTRStartWithTwoFormProvider()
-
-  private def viewAsString(form: Form[DoesPSTRStartWithATwo] = formProvider()): String = view(form, postCall, hint)(fakeRequest, messages).toString
 
   "WhatDoYouWantToDoController" must {
 
