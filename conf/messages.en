@@ -460,3 +460,7 @@ messages__pspDoesNotMatch__title = The name and practitioner ID do not match our
 messages__pspDoesNotMatch__psp = You should check these details with {0}.
 messages__pspDoesNotMatch__p1 = Their name should be entered exactly as their registered scheme practitioner name.
 messages__pspDoesNotMatch__p2 = If {0} has not registered as a scheme practitioner using this service, they need to do this before you can add them to this scheme.
+
+messages_alreadyAssociatedWithScheme_title = {0} is already associated with this scheme
+messages_alreadyAssociatedWithScheme_heading = {0} is already associated with this scheme
+messages_alreadyAssociatedWithScheme_p1 = {0} has already been authorised as a practitioner to {1}
