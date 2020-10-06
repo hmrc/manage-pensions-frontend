@@ -17,14 +17,19 @@
 package controllers.invitations.psp
 
 import com.google.inject.Inject
-import config.FrontendAppConfig
+import connectors.scheme.ListOfSchemesConnector
+import connectors.{ActiveRelationshipExistsException, PspConnector}
 import controllers.Retrievals
 import controllers.actions.AuthAction
 import controllers.actions.DataRequiredAction
 import controllers.actions.DataRetrievalAction
 import forms.invitations.psp.DeclarationFormProvider
+import identifiers.SchemeSrnId
+import identifiers.invitations.psp.{PspClientReferenceId, PspId, PspNameId}
+import models.invitations.psp.ClientReference
 import models.requests.DataRequest
 import play.api.data.Form
+import services.SchemeDetailsService
 import play.api.i18n.I18nSupport
 import play.api.i18n.MessagesApi
 import play.api.mvc.Action
@@ -37,17 +42,19 @@ import views.html.invitations.psp.declaration
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
-class DeclarationController @Inject()(
-                                       appConfig: FrontendAppConfig,
-                                       override val messagesApi: MessagesApi,
+class DeclarationController @Inject()( override val messagesApi: MessagesApi,
                                        formProvider: DeclarationFormProvider,
                                        auth: AuthAction,
                                        getData: DataRetrievalAction,
                                        requireData: DataRequiredAction,
+                                       pspConnector: PspConnector,
+                                       listOfSchemesConnector: ListOfSchemesConnector,
+                                       schemeDetailsService: SchemeDetailsService,
                                        val controllerComponents: MessagesControllerComponents,
                                        view: declaration
                                      )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
   val form: Form[Boolean] = formProvider()
+  val sessionExpired: Future[Result] = Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
 
   def onPageLoad(): Action[AnyContent] = (auth andThen getData andThen requireData) {
     implicit request =>
@@ -56,18 +63,34 @@ class DeclarationController @Inject()(
 
   def onSubmit(): Action[AnyContent] = (auth andThen getData andThen requireData).async {
     implicit request =>
-
       form.bindFromRequest().fold(
         (formWithErrors: Form[Boolean]) =>
           Future.successful(BadRequest(view(formWithErrors))),
-        _ =>
-          inviteAndRedirect()
+        _ => inviteAndRedirect()
       )
    }
 
-  private def inviteAndRedirect()(implicit request: DataRequest[AnyContent]): Future[Result] = {
+  private def inviteAndRedirect()(implicit request: DataRequest[AnyContent]): Future[Result] =
+    (SchemeSrnId and PspNameId and PspId and PspClientReferenceId).retrieve.right.map {
+      case srn ~ pspName ~ pspId ~ pspCR =>
+        getPstr(srn).flatMap {
+          case Some(pstr) =>
+            pspConnector.authorisePsp(pstr, pspName, pspId, getClientReference(pspCR)).map { _ =>
+              Redirect(routes.ConfirmationController.onPageLoad())
+            }
+          case _ => sessionExpired
+        }
+    }.left.map(_ => sessionExpired)
 
-    Future.successful(Redirect(routes.ConfirmationController.onPageLoad()))
 
+  private def getPstr(srn: String)(implicit request: DataRequest[AnyContent]): Future[Option[String]] =
+    listOfSchemesConnector.getListOfSchemes(request.psaId.id).map {
+      case Right(list) => schemeDetailsService.pstr(srn, list)
+      case _ => None
+    }
+
+  private def getClientReference(answer: ClientReference): Option[String] = answer match {
+    case ClientReference.HaveClientReference(reference) => Some(reference)
+    case ClientReference.NoClientReference => None
   }
 }
