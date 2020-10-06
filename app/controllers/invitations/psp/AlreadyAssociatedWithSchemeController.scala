@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.invitations.psp
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
+import controllers.Retrievals
 import controllers.actions._
-import identifiers.{SchemeNameId, SchemeSrnId}
-import identifiers.invitations.psp.{PspClientReferenceId, PspNameId}
-import models.SchemeReferenceNumber
-import play.api.Mode
+import identifiers.SchemeNameId
+import identifiers.invitations.psp.PspNameId
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
-import views.html.alreadyAssociatedWithScheme
+import views.html.invitations.psp.alreadyAssociatedWithScheme
 
 import scala.concurrent.{ExecutionContext, Future}
 

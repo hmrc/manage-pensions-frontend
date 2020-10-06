@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.invitations.psp
 
 import config.FrontendAppConfig
-import connectors.FakeUserAnswersCacheConnector
+import controllers.ControllerSpecBase
 import controllers.actions._
 import identifiers.SchemeNameId
 import identifiers.invitations.psp.PspNameId
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.UserAnswers
-import views.html.alreadyAssociatedWithScheme
+import views.html.invitations.psp.alreadyAssociatedWithScheme
 
 
 class AlreadyAssociatedWithSchemeControllerSpec extends ControllerSpecBase {

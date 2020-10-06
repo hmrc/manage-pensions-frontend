@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package views
+package views.invitations.psp
 
 import org.jsoup.Jsoup
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
-import views.html.alreadyAssociatedWithScheme
+import views.html.invitations.psp.alreadyAssociatedWithScheme
 
 class AlreadyAssociatedWithSchemeViewSpec extends ViewBehaviours {
 
