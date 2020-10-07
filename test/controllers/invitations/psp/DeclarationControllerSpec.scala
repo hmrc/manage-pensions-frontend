@@ -17,19 +17,20 @@
 package controllers.invitations.psp
 
 import base.JsonFileReader
+import connectors.ActiveRelationshipExistsException
 import connectors.PspConnector
 import connectors.scheme.ListOfSchemesConnector
 import controllers.ControllerSpecBase
-import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
+import controllers.actions.{DataRequiredActionImpl, FakeDataRetrievalAction, FakeAuthAction, DataRetrievalAction}
 import forms.invitations.psp.DeclarationFormProvider
 import identifiers.SchemeSrnId
-import identifiers.invitations.psp.{PspClientReferenceId, PspId, PspNameId}
+import identifiers.invitations.psp.{PspId, PspClientReferenceId, PspNameId}
 import models.ListOfSchemes
 import models.invitations.psp.ClientReference
 import models.invitations.psp.ClientReference.HaveClientReference
 import org.mockito.Matchers._
 import org.mockito.Mockito._
-import org.scalatest.{BeforeAndAfterEach, RecoverMethods}
+import org.scalatest.{RecoverMethods, BeforeAndAfterEach}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.Configuration
 import play.api.data.Form
@@ -132,6 +133,17 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
         status(result) mustBe SEE_OTHER
         redirectLocation(result).value mustBe sessionExpired
       }
+
+      "redirect to already associated page if already associated" in {
+        when(mockListOfSchemesConnector.getListOfSchemes(any())(any(), any())).thenReturn(listOfSchemesResponse)
+        when(mockSchemeDetailsService.pstr(any(), any())).thenReturn(Some(pstr))
+        when(mockPspConnector.authorisePsp(any(), any(), any(), any())(any(), any())).thenReturn(Future.failed(new ActiveRelationshipExistsException))
+
+        val result = controller(data).onSubmit()(fakeRequest.withFormUrlEncodedBody("agree" -> "agreed"))
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).value mustBe controllers.invitations.psp.routes.AlreadyAssociatedWithSchemeController.onPageLoad().url
+      }
+
     }
   }
 }

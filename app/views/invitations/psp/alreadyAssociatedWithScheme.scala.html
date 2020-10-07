@@ -1,0 +1,42 @@
+@*
+ * Copyright 2020 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.FrontendAppConfig
+@import uk.gov.hmrc.play.views.html._
+@import views.html._
+@import controllers.routes._
+@import models.Mode
+@import viewmodels.Message
+
+@this(
+main_template: main_template,
+appConfig: FrontendAppConfig
+)
+
+@(pspName: String, schemeName:String)(implicit request: Request[_], messages: Messages)
+
+@main_template(
+    title = messages("messages__alreadyAssociatedWithScheme__title", pspName),
+
+    bodyClasses = None) {
+    @components.back_link()
+    @components.heading(messages("messages__alreadyAssociatedWithScheme__heading", pspName))
+
+    <p>@messages("messages__alreadyAssociatedWithScheme__p1", pspName, schemeName)</p>
+
+    <p><a id="return-to-schemes" href="@controllers.routes.ListSchemesController.onPageLoad()">@messages("messages__youCannotSendAnInvite__returnToSchemes__link")</a></p>
+
+}

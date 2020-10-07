@@ -31,6 +31,7 @@ import scala.util.Failure
 @ImplementedBy(classOf[PspConnectorImpl])
 trait PspConnector {
 
+  @throws(classOf[ActiveRelationshipExistsException])
   def authorisePsp(pstr: String, pspName: String, pspId: String, clientReference: Option[String])
                   (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit]
 

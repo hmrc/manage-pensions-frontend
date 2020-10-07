@@ -77,6 +77,9 @@ class DeclarationController @Inject()( override val messagesApi: MessagesApi,
           case Some(pstr) =>
             pspConnector.authorisePsp(pstr, pspName, pspId, getClientReference(pspCR)).map { _ =>
               Redirect(routes.ConfirmationController.onPageLoad())
+            } recoverWith {
+              case _: ActiveRelationshipExistsException =>
+                Future.successful(Redirect(controllers.invitations.psp.routes.AlreadyAssociatedWithSchemeController.onPageLoad()))
             }
           case _ => sessionExpired
         }
