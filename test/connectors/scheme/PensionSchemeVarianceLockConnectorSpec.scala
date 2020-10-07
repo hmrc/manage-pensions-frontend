@@ -321,7 +321,6 @@ object PensionSchemeVarianceLockConnectorSpec {
   private val psaId = "A2100005"
   private val srn = "00000000AA"
 
-  private val lockUrl = s"/pensions-scheme/update-scheme/lock"
   private val getLockUrl = s"/pensions-scheme/update-scheme/get-lock"
   private val getLockByPsaUrl = s"/pensions-scheme/update-scheme/get-lock-by-psa"
   private val getLockBySchemeUrl = s"/pensions-scheme/update-scheme/get-lock-by-scheme"
