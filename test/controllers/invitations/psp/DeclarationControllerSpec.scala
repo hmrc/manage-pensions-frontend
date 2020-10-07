@@ -137,7 +137,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
       "redirect to already associated page if already associated" in {
         when(mockListOfSchemesConnector.getListOfSchemes(any())(any(), any())).thenReturn(listOfSchemesResponse)
         when(mockSchemeDetailsService.pstr(any(), any())).thenReturn(Some(pstr))
-        when(mockPspConnector.authorisePsp(any(), any(), any(), any())(any(), any())).thenThrow(new ActiveRelationshipExistsException)
+        when(mockPspConnector.authorisePsp(any(), any(), any(), any())(any(), any())).thenReturn(Future.failed(new ActiveRelationshipExistsException))
 
         val result = controller(data).onSubmit()(fakeRequest.withFormUrlEncodedBody("agree" -> "agreed"))
         status(result) mustBe SEE_OTHER
