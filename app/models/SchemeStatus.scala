@@ -55,7 +55,7 @@ object SchemeStatus {
 
   case object Open extends AbstractSchemeStatus(value = "Open", canRemovePsa = true, pending = false, rejected = false)
 
-  case object Deregistered extends AbstractSchemeStatus(value = "Deregistered", canRemovePsa = false, pending = false, rejected = false)
+  case object Deregistered extends AbstractSchemeStatus(value = "Deregistered", canRemovePsa = true, pending = false, rejected = false)
 
   case object WoundUp extends AbstractSchemeStatus(value = "Wound-up", canRemovePsa = true, pending = false, rejected = false)
 

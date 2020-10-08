@@ -16,6 +16,8 @@
 
 package models
 
+import models.SchemeStatus.Deregistered
+import models.SchemeStatus.Rejected
 import models.SchemeStatus.WoundUp
 import org.joda.time.LocalDate
 import play.api.libs.json.Json
@@ -50,6 +52,7 @@ object PsaSchemeDetails {
 
   implicit val formats: OFormat[PsaSchemeDetails] = Json.format[PsaSchemeDetails]
 
+  private val statusesWhereSoleOwnerCanBeRemoved = Set[SchemeStatus](WoundUp, Rejected, Deregistered)
 
   def canRemovePsaVariations(psaId: String, schemeAdmins:Seq[PsaDetails], schemeStatus:String): Boolean = {
     val status = SchemeStatus.forValue(schemeStatus)
@@ -57,7 +60,7 @@ object PsaSchemeDetails {
   }
 
   private def hasMinimumAttachedPSAs(psaId: String, psaDetails: Seq[PsaDetails], status: SchemeStatus): Boolean =
-    if(status == WoundUp) {true} else { psaDetails.exists(_.id != psaId) }
+    statusesWhereSoleOwnerCanBeRemoved.contains(status) || psaDetails.exists(_.id != psaId)
 
   private def psaNotRemovingOnSameDay(psaId: String, psaDetails: Seq[PsaDetails]): Boolean = {
     !psaDetails.exists(details => details.id == psaId && details.relationshipDate.exists(new LocalDate(_).isEqual(LocalDate.now())))
