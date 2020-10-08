@@ -18,6 +18,8 @@ package models
 
 import java.time.LocalDate
 
+import models.SchemeStatus.Deregistered
+import models.SchemeStatus.Rejected
 import models.SchemeStatus.WoundUp
 import org.scalacheck.Gen
 import org.scalatest.MustMatchers
@@ -31,8 +33,10 @@ class PsaSchemeDetailsSpec extends WordSpec with MustMatchers with ScalaCheckDri
   "SchemeDetailsController.canRemovePsaVariations" must {
 
     "return false " when {
-      "there are no other PSAs for all values of status except for WoundUp" in {
-        val statuses = Gen.oneOf(SchemeStatus.statuses.filterNot(_ == WoundUp))
+      "there are NO other PSAs administering the scheme and the scheme status is NOT WoundUp, Rejected or Deregistered" in {
+        val statusesWhereSoleOwnerCanBeRemoved = Set[SchemeStatus](WoundUp, Rejected, Deregistered)
+
+        val statuses = Gen.oneOf(SchemeStatus.statuses.filterNot(s => statusesWhereSoleOwnerCanBeRemoved.contains(s)))
 
         forAll(statuses) {
           status =>
@@ -61,10 +65,6 @@ class PsaSchemeDetailsSpec extends WordSpec with MustMatchers with ScalaCheckDri
           SchemeStatus.Rejected.value) mustBe true
       }
 
-      "there are other PSAs and the scheme has a status of De-Registered" in {
-        PsaSchemeDetails.canRemovePsaVariations(testPsaId1, Seq(testPsa1(), testPsa2), SchemeStatus.Deregistered.value) mustBe false
-      }
-
       "there are other PSAs with correct scheme status of Open but the PSA is removing on the same day as association" in {
         val currentDate = LocalDate.now().toString
         PsaSchemeDetails.canRemovePsaVariations(testPsaId1, Seq(testPsa1(currentDate), testPsa2), SchemeStatus.Open.value) mustBe false
@@ -78,6 +78,14 @@ class PsaSchemeDetailsSpec extends WordSpec with MustMatchers with ScalaCheckDri
 
       "there are no other PSAs and the scheme has a status of Wound-Up and not removing on the same day as association" in {
         PsaSchemeDetails.canRemovePsaVariations(testPsaId1, Seq(testPsa1()), SchemeStatus.WoundUp.value) mustBe true
+      }
+
+      "there are no other PSAs and the scheme has a status of Rejected and not removing on the same day as association" in {
+        PsaSchemeDetails.canRemovePsaVariations(testPsaId1, Seq(testPsa1()), SchemeStatus.Rejected.value) mustBe true
+      }
+
+      "there are no other PSAs and the scheme has a status of Deregistered and not removing on the same day as association" in {
+        PsaSchemeDetails.canRemovePsaVariations(testPsaId1, Seq(testPsa1()), SchemeStatus.Deregistered.value) mustBe true
       }
     }
   }

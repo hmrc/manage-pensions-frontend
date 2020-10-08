@@ -74,7 +74,7 @@ class SchemeStatusSpec extends FlatSpec with Matchers with ScalaCheckDrivenPrope
 
     SchemeStatus.Deregistered.value shouldBe "Deregistered"
 
-    SchemeStatus.Deregistered.canRemovePsa shouldBe false
+    SchemeStatus.Deregistered.canRemovePsa shouldBe true
     SchemeStatus.Deregistered.pending shouldBe false
     SchemeStatus.Deregistered.rejected shouldBe false
 
