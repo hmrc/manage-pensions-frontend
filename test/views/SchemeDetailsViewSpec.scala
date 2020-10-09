@@ -25,7 +25,7 @@ import views.behaviours.ViewBehaviours
 import views.html.schemeDetails
 
 class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
-  private val pspAuthoriseCall = Some(Call("GET", "dummy"))
+  private val pspAuthoriseCall = Call("GET", "/dummy-authorise-url")
   private val messageKeyPrefix = "schemeDetails"
   private val schemeName = "Test Scheme Name"
   private val openedDate = "29 February 2017"
@@ -54,7 +54,7 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
       lockingPsa,
       aftHtml,
       paymetsAndChargesHtml,
-      pspAuthoriseCall
+      Some(pspAuthoriseCall)
     )(fakeRequest, messages)
 
   "SchemesDetails view" must {
@@ -119,6 +119,11 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
       Jsoup.parse(createView()().toString()).select("a[id=invite]") must
         haveLink(controllers.invitations.routes.InviteController.onPageLoad(srn).url)
 
+    }
+
+    "have link to authorise page" in {
+      Jsoup.parse(createView()().toString()).select("a[id=authorise]") must
+        haveLink(pspAuthoriseCall.url)
     }
 
     "have the invite paragraph of content" in {
