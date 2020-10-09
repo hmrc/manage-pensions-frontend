@@ -15,7 +15,7 @@ site.error = Error:
 checkYourAnswers.title = Check your answers
 checkYourAnswers.heading = Check your answers
 
-error.summary.title = There was a problem with the page
+error.summary.title = There is problem
 
 messages__manage_pension_schemes__title = Managing pension schemes - GOV.UK
 
