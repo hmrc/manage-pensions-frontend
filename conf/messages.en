@@ -290,6 +290,7 @@ messages__schemeDetails__invite_p1 = To add a pension administrator they must be
 messages__schemeDetails__return_link = Return to your pension schemes
 messages__schemeDetails__remove = Remove
 messages__schemeDetails__visuallyhidden_remove = Cannot remove {0}
+messages__schemeDetails__pspAuthoriseHeading = Pension scheme practitioners
 
 messages__check__your__answer__main__containt__label = You are adding this scheme administrator to {0}.
 messages__check__your__answer__adviser__name__label = Who has working knowledge of pensions and pensions tax legislation?
@@ -422,6 +423,8 @@ messages__pspWhatYouWillNeed__list_heading = You will need to tell us:
 messages__pspWhatYouWillNeed__item1 = the practitioner's name
 messages__pspWhatYouWillNeed__item2 = the practitioner's ID
 messages__pspWhatYouWillNeed__item3 = the client reference you have agreed with the practitioner (optional)
+
+messages__pspAuthorise__link = Authorise a scheme practitioner
 
 messages__pspId__title = What is their practitioner ID?
 messages__pspId__heading = What is the practitioner ID for {0}?

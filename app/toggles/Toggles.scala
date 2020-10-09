@@ -18,4 +18,5 @@ package toggles
 
 object Toggles {
   val listOfSchemesIFEnabled: String = "list-of-schemes-IF-enabled"
+  val pspAuthorisationEnabled: String = "psp-authorisation-enabled"
 }

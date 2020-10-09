@@ -21,6 +21,7 @@ import connectors.scheme.ListOfSchemesConnector
 import connectors.scheme.PensionSchemeVarianceLockConnector
 import connectors.scheme.SchemeDetailsConnector
 import controllers.actions._
+import _root_.config.FeatureSwitchManagementService
 import handlers.ErrorHandler
 import identifiers.SchemeNameId
 import identifiers.invitations.PSTRId
@@ -55,6 +56,8 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
   val errorHandlerView: error_template = app.injector.instanceOf[error_template]
   val errorHandlerNotFoundView: error_template_page_not_found = app.injector.instanceOf[error_template_page_not_found]
   val errorHandler = new ErrorHandler(frontendAppConfig, messagesApi, errorHandlerView, errorHandlerNotFoundView)
+  val pspAuthoriseCall = Some(controllers.invitations.psp.routes.WhatYouWillNeedController.onPageLoad())
+  val featureSwitch: FeatureSwitchManagementService = mock[FeatureSwitchManagementService]
 
   def controller(): SchemeDetailsController = {
     new SchemeDetailsController(
@@ -68,7 +71,8 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
       errorHandler,
       stubMessagesControllerComponents(),
       schemeDetailsService,
-      schemeDetailsView
+      schemeDetailsView,
+      featureSwitch
     )
   }
 
@@ -77,11 +81,12 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
     reset(fakeSchemeDetailsConnector, fakeListOfSchemesConnector, fakeSchemeLockConnector, schemeDetailsService)
     when(fakeSchemeLockConnector.isLockByPsaIdOrSchemeId(eqTo("A0000000"), any())(any(), any()))
       .thenReturn(Future.successful(Some(VarianceLock)))
+    when(featureSwitch.get(any())).thenReturn(false)
   }
 
   "SchemeDetailsController" must {
 
-    "return OK and the correct view for a GET" in {
+    "return OK and the correct view for a GET and no authorise link if toggled off" in {
       when(fakeSchemeDetailsConnector.getSchemeDetails(eqTo("A0000000"), any(), any())(any(), any()))
         .thenReturn(Future.successful(desUserAnswers))
       when(fakeListOfSchemesConnector.getListOfSchemes(any())(any(), any()))
@@ -98,7 +103,28 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
       status(result) mustBe OK
       contentAsString(result) mustBe schemeDetailsView(schemeName, pstr, openDate, administrators, srn, isSchemeOpen = true,
         displayChangeLink = false, lockingPsa = Some("test-psa"), aftHtml = aftHtml,
-        paymentsAndChargesHtml = paymentsAndChargesHtml)(fakeRequest, messages).toString()
+        paymentsAndChargesHtml = paymentsAndChargesHtml, None)(fakeRequest, messages).toString()
+    }
+
+    "return OK and the correct view for a GET and authorise link if toggled on" in {
+      when(fakeSchemeDetailsConnector.getSchemeDetails(eqTo("A0000000"), any(), any())(any(), any()))
+        .thenReturn(Future.successful(desUserAnswers))
+      when(fakeListOfSchemesConnector.getListOfSchemes(any())(any(), any()))
+        .thenReturn(Future.successful(Right(listOfSchemesResponse)))
+      when(schemeDetailsService.displayChangeLink(any(), any())).thenReturn(false)
+      when(schemeDetailsService.pstr(any(), any())).thenReturn(pstr)
+      when(schemeDetailsService.openedDate(any(), any(), any())).thenReturn(openDate)
+      when(schemeDetailsService.administratorsVariations(any(), any(), any())).thenReturn(administrators)
+      when(schemeDetailsService.lockingPsa(any(), any())(any(), any())).thenReturn(Future.successful(Some("test-psa")))
+      when(schemeDetailsService.retrieveAftHtml(any(), any())(any())).thenReturn(Future(Html("test-aft-html")))
+      when(schemeDetailsService.retrievePaymentsAndChargesHtml(any())(any())).thenReturn(Future(Html("test-payments-and-charges-html")))
+      when(featureSwitch.get(any())).thenReturn(true)
+
+      val result = controller().onPageLoad(srn)(fakeRequest)
+      status(result) mustBe OK
+      contentAsString(result) mustBe schemeDetailsView(schemeName, pstr, openDate, administrators, srn, isSchemeOpen = true,
+        displayChangeLink = false, lockingPsa = Some("test-psa"), aftHtml = aftHtml,
+        paymentsAndChargesHtml = paymentsAndChargesHtml, pspAuthoriseCall)(fakeRequest, messages).toString()
     }
 
     "return NOT_FOUND when PSA data is not returned by API (as we don't know who administers the scheme)" in {
