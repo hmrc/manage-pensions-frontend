@@ -37,7 +37,7 @@ class PspClientReferenceFormProvider @Inject() extends Mappings with Transforms 
 
 
   protected def clientReferenceMapping: Mapping[ClientReference] = {
-    val clientRefMaxLength = 160
+    val clientRefMaxLength = 11
 
     def fromClientReference(clientReference: ClientReference): (Boolean, Option[String]) = {
       clientReference match {
@@ -56,7 +56,9 @@ class PspClientReferenceFormProvider @Inject() extends Mappings with Transforms 
       "hasReference" -> boolean("messages__clientReference_yes_no_required"),
       "reference" -> mandatoryIfTrue("value.hasReference", text("messages__clientReference_required")
         .verifying(firstError(
-          maxLength(clientRefMaxLength, "messages__clientReference_maxLength"))
+          maxLength(clientRefMaxLength, "messages__clientReference_maxLength"),
+          clientRef("messages__clientReference_invalid")
+        )
         ))
     ).transform(toClientReference, fromClientReference)
   }

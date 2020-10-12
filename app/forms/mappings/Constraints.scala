@@ -80,6 +80,14 @@ trait Constraints {
         Invalid(errorKey, maximum)
     }
 
+  protected def exactLength(length: Int, errorKey: String): Constraint[String] =
+    Constraint {
+      case str if str.length == length =>
+        Valid
+      case _ =>
+        Invalid(errorKey, length)
+    }
+
   def returnOnFirstFailure[T](constraints: Constraint[T]*): Constraint[T] =
     Constraint {
       field =>
@@ -100,6 +108,8 @@ trait Constraints {
   protected def psaName(errorKey: String): Constraint[String] = regexp(psaNameRegex, errorKey)
 
   protected def psaPspId(errorKey: String): Constraint[String] = regexp(psaIdRegx, errorKey)
+
+  protected def clientRef(errorKey: String): Constraint[String] = regexp(clientRefRegx, errorKey)
 
   protected def addressLine(errorKey: String): Constraint[String] = regexp(addressLineRegex, errorKey)
 
@@ -130,7 +140,8 @@ trait Constraints {
 }
 
 object Constraints {
-  val psaIdRegx = """^A[0-9]{7}$"""
+  val psaIdRegx = """^[0-9]{8}$"""
+  val clientRefRegx = """^[a-zA-Z0-9\\\/\-]{1,11}$"""
   val adviserNameRegex = """^[a-zA-Z\u00C0-\u00FF '‘’\u2014\u2013\u2010\u002d]{1,107}$"""
   val psaNameRegex = """^[a-zA-Z0-9-\u00C0-\u00FF '&\\/‘’\u2014\u2013\u2010\u002d]{1,107}$"""
   val addressLineRegex = """^[A-Za-z0-9 &!'‘’\"“”(),./\u2014\u2013\u2010\u002d]{1,35}$"""

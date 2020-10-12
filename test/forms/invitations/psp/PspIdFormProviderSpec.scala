@@ -30,7 +30,7 @@ class PspIdFormProviderSpec extends StringFieldBehaviours with Constraints{
 
     val fieldName = "pspId"
     val requiredKey = "messages__error__pspId__required"
-    val lengthKey = "messages__error__pspId__invalid"
+    val lengthKey = "messages__error__pspId__length"
     val invalidKey = "messages__error__pspId__invalid"
     val maxLength = PspIdFormProvider.pspIdLength
 
@@ -60,10 +60,10 @@ class PspIdFormProviderSpec extends StringFieldBehaviours with Constraints{
       FormError(fieldName, invalidKey, Seq(Constraints.psaIdRegx))
     )
 
-    "convert lower case input to upper case and remove spaces" in {
-      val result = form.bind(Map(fieldName -> " a21 000 51 "))
+    "remove spaces" in {
+      val result = form.bind(Map(fieldName -> " 621 000 51 "))
       result.errors shouldBe empty
-      result.value shouldBe Some("A2100051")
+      result.value shouldBe Some("62100051")
     }
   }
 }

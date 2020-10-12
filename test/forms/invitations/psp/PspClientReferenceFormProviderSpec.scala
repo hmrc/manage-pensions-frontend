@@ -21,15 +21,13 @@ import play.api.data.FormError
 import views.behaviours.StringFieldBehaviours
 
 class PspClientReferenceFormProviderSpec extends StringFieldBehaviours with Constraints {
-  val validData: Map[String, String] = Map(
-    "value.hasReference" -> "true",
-    "value.reference" -> "some value")
-  val validMaxLength = 160
+  val validMaxLength = 11
   val form = new PspClientReferenceFormProvider()()
 
   ".value.hasReference" must {
     val fieldName = "value.hasReference"
     val requiredKey = "messages__clientReference_yes_no_required"
+    val invalidKey = "messages__clientReference_invalid"
 
     behave like fieldThatBindsValidData(
       form,
@@ -42,5 +40,10 @@ class PspClientReferenceFormProviderSpec extends StringFieldBehaviours with Cons
       fieldName,
       requiredError = FormError(fieldName, requiredKey)
     )
+
+    "not bind string invalidated by regex" in {
+      val result = form.bind(Map("value.hasReference" -> "true", "value.reference" -> "$&^"))
+      result.errors shouldEqual Seq(FormError("value.reference", invalidKey, Seq(Constraints.clientRefRegx)))
+    }
   }
 }
