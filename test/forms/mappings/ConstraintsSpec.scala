@@ -188,7 +188,7 @@ class ConstraintsSpec extends WordSpec with Matchers with Constraints with Regex
 
     val invalidMsg = "Invalid PSA Id"
 
-    behave like regexWithValidAndInvalidExamples(psaPspId, validText, invalidText, invalidMsg, psaIdRegx)
+    behave like regexWithValidAndInvalidExamples(psaId, validText, invalidText, invalidMsg, psaIdRegx)
   }
 
 }

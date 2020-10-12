@@ -29,12 +29,9 @@ import uk.gov.voa.play.form.ConditionalMappings.mandatoryIfTrue
 
 class PspClientReferenceFormProvider @Inject() extends Mappings with Transforms {
 
-
   def apply(): Form[ClientReference] = Form(
     "value" -> clientReferenceMapping
   )
-
-
 
   protected def clientReferenceMapping: Mapping[ClientReference] = {
     val clientRefMaxLength = 11

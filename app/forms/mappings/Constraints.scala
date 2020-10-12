@@ -107,7 +107,9 @@ trait Constraints {
 
   protected def psaName(errorKey: String): Constraint[String] = regexp(psaNameRegex, errorKey)
 
-  protected def psaPspId(errorKey: String): Constraint[String] = regexp(psaIdRegx, errorKey)
+  protected def pspId(errorKey: String): Constraint[String] = regexp(pspIdRegx, errorKey)
+
+  protected def psaId(errorKey: String): Constraint[String] = regexp(psaIdRegx, errorKey)
 
   protected def clientRef(errorKey: String): Constraint[String] = regexp(clientRefRegx, errorKey)
 
@@ -140,7 +142,8 @@ trait Constraints {
 }
 
 object Constraints {
-  val psaIdRegx = """^[0-9]{8}$"""
+  val psaIdRegx = """^A[0-9]{7}$"""
+  val pspIdRegx = """^[0-9]{8}$"""
   val clientRefRegx = """^[a-zA-Z0-9\\\/\-]{1,11}$"""
   val adviserNameRegex = """^[a-zA-Z\u00C0-\u00FF '‘’\u2014\u2013\u2010\u002d]{1,107}$"""
   val psaNameRegex = """^[a-zA-Z0-9-\u00C0-\u00FF '&\\/‘’\u2014\u2013\u2010\u002d]{1,107}$"""

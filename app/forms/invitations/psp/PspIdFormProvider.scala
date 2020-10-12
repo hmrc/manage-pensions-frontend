@@ -27,7 +27,7 @@ class PspIdFormProvider @Inject() extends Mappings with Transforms {
       transform(noSpaceWithUpperCaseTransform, noTransform).
       verifying(firstError(
         exactLength(PspIdFormProvider.pspIdLength, "messages__error__pspId__length"),
-        psaPspId("messages__error__pspId__invalid")))
+        pspId("messages__error__pspId__invalid")))
   )
 }
 

@@ -19,7 +19,6 @@ package forms.invitations.psp
 import forms.mappings.Constraints
 import play.api.data.FormError
 import views.behaviours.StringFieldBehaviours
-import models.invitations.psp.ClientReference
 import models.invitations.psp.ClientReference.HaveClientReference
 
 class PspClientReferenceFormProviderSpec extends StringFieldBehaviours with Constraints {
