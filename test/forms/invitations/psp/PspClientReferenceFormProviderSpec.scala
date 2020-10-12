@@ -19,6 +19,8 @@ package forms.invitations.psp
 import forms.mappings.Constraints
 import play.api.data.FormError
 import views.behaviours.StringFieldBehaviours
+import models.invitations.psp.ClientReference
+import models.invitations.psp.ClientReference.HaveClientReference
 
 class PspClientReferenceFormProviderSpec extends StringFieldBehaviours with Constraints {
   val validMaxLength = 11
@@ -44,6 +46,12 @@ class PspClientReferenceFormProviderSpec extends StringFieldBehaviours with Cons
     "not bind string invalidated by regex" in {
       val result = form.bind(Map("value.hasReference" -> "true", "value.reference" -> "$&^"))
       result.errors shouldEqual Seq(FormError("value.reference", invalidKey, Seq(Constraints.clientRefRegx)))
+    }
+
+    "bind string with spaces, removing the spaces" in {
+      val result = form.bind(Map("value.hasReference" -> "true", "value.reference" -> "A B C"))
+      result.errors shouldBe empty
+      result.value shouldBe Some(HaveClientReference("ABC"))
     }
   }
 }
