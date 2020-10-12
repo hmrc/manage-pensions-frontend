@@ -57,14 +57,14 @@
     }
     <div class="form-control-wrapper">
         <input
-        class="form-control @inputClass"
+        class="form-control govuk-margin-bottom-3 @inputClass"
         type="text"
         id="@{field.id}"
         name="@{field.name}"
         value="@{field.value}"
         @if(field.hasErrors || hint.nonEmpty){aria-describedby="@{ariaDescribedBy}"}
         />
-        <button id="searchsubmit" class="button btn--inline-textbox" @if(disableSubmission) {disabled}>@messages(messageKey)</button>
+        <button id="searchsubmit" class="button btn--inline-textbox govuk-margin-bottom-3" @if(disableSubmission) {disabled}>@messages(messageKey)</button>
     </div>
 </fieldset>
 
