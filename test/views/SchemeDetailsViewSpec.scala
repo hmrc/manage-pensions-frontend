@@ -17,6 +17,7 @@
 package views
 
 import org.jsoup.Jsoup
+import play.api.mvc.Call
 import play.twirl.api.Html
 import play.twirl.api.HtmlFormat
 import viewmodels.AssociatedPsa
@@ -24,14 +25,14 @@ import views.behaviours.ViewBehaviours
 import views.html.schemeDetails
 
 class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
-
-  val messageKeyPrefix = "schemeDetails"
-  val schemeName = "Test Scheme Name"
-  val openedDate = "29 February 2017"
-  val administrators = Seq(AssociatedPsa("First Psa", canRemove = true), AssociatedPsa("Second User", canRemove = false))
-  val administratorsNoRemove = Seq(AssociatedPsa("First Psa", canRemove = false), AssociatedPsa("Second User", canRemove = false))
-  val srn = "P12345678"
-  val pstr: Option[String] = Some("87654321XX")
+  private val pspAuthoriseCall = Call("GET", "/dummy-authorise-url")
+  private val messageKeyPrefix = "schemeDetails"
+  private val schemeName = "Test Scheme Name"
+  private val openedDate = "29 February 2017"
+  private val administrators = Seq(AssociatedPsa("First Psa", canRemove = true), AssociatedPsa("Second User", canRemove = false))
+  private val administratorsNoRemove = Seq(AssociatedPsa("First Psa", canRemove = false), AssociatedPsa("Second User", canRemove = false))
+  private val srn = "P12345678"
+  private val pstr: Option[String] = Some("87654321XX")
   private val schemeDetailsView = injector.instanceOf[schemeDetails]
 
   def createView(date: Option[String] = Some(openedDate),
@@ -52,7 +53,8 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
       displayChangeLink,
       lockingPsa,
       aftHtml,
-      paymetsAndChargesHtml
+      paymetsAndChargesHtml,
+      Some(pspAuthoriseCall)
     )(fakeRequest, messages)
 
   "SchemesDetails view" must {
@@ -117,6 +119,11 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
       Jsoup.parse(createView()().toString()).select("a[id=invite]") must
         haveLink(controllers.invitations.routes.InviteController.onPageLoad(srn).url)
 
+    }
+
+    "have link to authorise page" in {
+      Jsoup.parse(createView()().toString()).select("a[id=authorise]") must
+        haveLink(pspAuthoriseCall.url)
     }
 
     "have the invite paragraph of content" in {

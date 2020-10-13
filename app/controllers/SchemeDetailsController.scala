@@ -16,6 +16,7 @@
 
 package controllers
 
+import config.FeatureSwitchManagementService
 import config.FrontendAppConfig
 import connectors._
 import connectors.scheme.ListOfSchemesConnector
@@ -33,8 +34,10 @@ import play.api.i18n.I18nSupport
 import play.api.i18n.MessagesApi
 import play.api.mvc.Action
 import play.api.mvc.AnyContent
+import play.api.mvc.Call
 import play.api.mvc.MessagesControllerComponents
 import services.SchemeDetailsService
+import toggles.Toggles
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.UserAnswers
 import views.html.schemeDetails
@@ -52,7 +55,8 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                                         errorHandler: ErrorHandler,
                                         val controllerComponents: MessagesControllerComponents,
                                         schemeDetailsService: SchemeDetailsService,
-                                        view: schemeDetails
+                                        view: schemeDetails,
+                                        fs: FeatureSwitchManagementService
                                        )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate.async {
@@ -75,6 +79,8 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
               _ <- userAnswersCacheConnector.upsert(request.externalId, updatedUa.json)
               lockingPsa <- schemeDetailsService.lockingPsa(lock, srn)
             } yield {
+              val pspAuthorisationCall =
+                if (fs.get(Toggles.pspAuthorisationEnabled)) Some(controllers.invitations.psp.routes.WhatYouWillNeedController.onPageLoad()) else None
               listOfSchemes match {
                 case Right(list) =>
                   Ok(view(
@@ -87,7 +93,8 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                     displayChangeLink,
                     lockingPsa,
                     aftHtml,
-                    paymentsAndChargesHtml
+                    paymentsAndChargesHtml,
+                    pspAuthorisationCall
                   ))
                 case _ => NotFound(errorHandler.notFoundTemplate)
               }
