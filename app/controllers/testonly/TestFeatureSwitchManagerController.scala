@@ -47,7 +47,7 @@ class TestFeatureSwitchManagerController @Inject()(
                        frontendState: Option[Boolean],
                        schemeState:Option[Boolean],
                        adminState:Option[Boolean]):Map[String,String] = Map(
-    "pensions-scheme-frontend" -> onOrOff(frontendState),
+    "manage-pensions-frontend" -> onOrOff(frontendState),
     "pensions-scheme" -> onOrOff(schemeState),
     "pension-administrator" -> onOrOff(adminState)
   )
