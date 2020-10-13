@@ -21,6 +21,7 @@
 @import models.Mode
 @import viewmodels.{AssociatedPsa, Message}
 @import models.Link
+@import play.api.mvc.Call
 
 @this(
     main_template: main_template,
@@ -37,7 +38,8 @@
     displayChangeLink: Boolean,
     lockingPsa: Option[String],
     aftHtml: Html,
-    paymentsAndChargesHtml: Html
+    paymentsAndChargesHtml: Html,
+    pspAuthorisationCall: Option[Call]
 )(implicit request: Request[_], messages: Messages)
 
     @main_template(schemeName, None) {
@@ -71,29 +73,28 @@
             <h2>@messages("messages__schemeDetails__psa_list_head")</h2>
 
             <div id="admins-list" class="dl--margin-bottom">
+                <dl class="dl--label-value">
+                    @for(psa <- admins){
+                    <div class="row-group">
+                                <dt>
+                                    @psa.name
+                                </dt>
+                                @if(psa.canRemove){
+                                <dd>
+                                    <a id="remove-link" href="@controllers.remove.routes.RemovePsaController.onPageLoad()">
+                                        <span aria-hidden="true">@messages("messages__schemeDetails__remove")</span>
+                                        <span class="visually-hidden">@messages("messages__schemeDetails__remove") @psa.name</span>
+                                    </a>
+                                </dd>
+                                } else {
+                                <dd>
+                                    <span class="visually-hidden">@messages("messages__schemeDetails__visuallyhidden_remove",psa.name)</span>
+                                </dd>
+                                }
 
-            <dl class="dl--label-value">
-                @for(psa <- admins){
-                <div class="row-group">
-                            <dt>
-                                @psa.name
-                            </dt>
-                            @if(psa.canRemove){
-                            <dd>
-                                <a id="remove-link" href="@controllers.remove.routes.RemovePsaController.onPageLoad()">
-                                    <span aria-hidden="true">@messages("messages__schemeDetails__remove")</span>
-                                    <span class="visually-hidden">@messages("messages__schemeDetails__remove") @psa.name</span>
-                                </a>
-                            </dd>
-                            } else {
-                            <dd>
-                                <span class="visually-hidden">@messages("messages__schemeDetails__visuallyhidden_remove",psa.name)</span>
-                            </dd>
-                            }
-
-                </div>
-                }
-            </dl>
+                    </div>
+                    }
+                </dl>
             </div>
         }
 
@@ -102,6 +103,11 @@
             <p>@messages("messages__schemeDetails__invite_p1")</p>
         }
 
-        <p><a id="return" href="@routes.ListSchemesController.onPageLoad()">@messages("messages__schemeDetails__return_link")</a></p>
+        @pspAuthorisationCall.map{call =>
+            <h2>@messages("messages__schemeDetails__pspAuthoriseHeading")</h2>
+            <p><a id="authorise" href="@call">@messages("messages__pspAuthorise__link")</a></p>
+        }
+
+        <p class="govuk-margin-top-8"><a id="return" href="@routes.ListSchemesController.onPageLoad()">@messages("messages__schemeDetails__return_link")</a></p>
 
     }
