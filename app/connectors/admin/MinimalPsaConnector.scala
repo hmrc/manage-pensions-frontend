@@ -26,6 +26,7 @@ import play.api.libs.json.JsError
 import play.api.libs.json.JsResultException
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.Json
+import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import utils.HttpResponseHelper
@@ -75,9 +76,15 @@ class MinimalPsaConnectorImpl @Inject()(http: HttpClient, config: FrontendAppCon
   override def getPsaNameFromPsaID(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] =
     getMinimalPsaDetails(psaId).map(getNameFromId)
 
-
-  override def getNameFromPspID(pspId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] =
-    getMinimalPspDetails(pspId).map(getNameFromId)
+  override def getNameFromPspID(pspId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = {
+    val recoveredMinDetails = getMinimalPspDetails(pspId).map(Some(_)) recoverWith {
+      case _: NotFoundException => Future.successful(None)
+    }
+    recoveredMinDetails map {
+      case None => None
+      case Some(minDetails) => getNameFromId(minDetails)
+    }
+  }
 
   private def getNameFromId(minDetails: MinimalPSAPSP): Option[String] =
     (minDetails.individualDetails, minDetails.organisationName) match {

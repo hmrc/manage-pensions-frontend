@@ -413,7 +413,7 @@ messages__updateBoth__pensionSchemesOnlineService__link = Pension Schemes Online
 messages__pspName__title = What is the name of the scheme practitioner you want to authorise?
 messages__pspName__p1 = This must match the name they used when they registered as a scheme practitioner.
 messages__error__pspName__required = Enter the name of the pension scheme practitioner
-messages__error__pspName__length = Enter a name using less than 108 characters
+messages__error__pspName__length = Enter a name that is 106 characters or fewer
 messages__error__pspName__invalid = Enter a name using only letters
 
 messages__pspWhatYouWillNeed__title = What you will need

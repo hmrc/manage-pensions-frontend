@@ -59,7 +59,7 @@ trait Formatters {
 
       private val baseFormatter = stringFormatter(requiredKey)
 
-      override def bind(key: String, data: Map[String, String]) = {
+      override def bind(key: String, data: Map[String, String]) =
         baseFormatter
           .bind(key, data)
           .right.flatMap {
@@ -67,7 +67,6 @@ trait Formatters {
           case "false" => Right(false)
           case _ => Left(Seq(FormError(key, invalidKey)))
         }
-      }
 
       def unbind(key: String, value: Boolean) = Map(key -> value.toString)
     }
