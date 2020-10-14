@@ -18,7 +18,6 @@ package views
 
 import models.Link
 import org.jsoup.Jsoup
-import play.api.mvc.Call
 import play.twirl.api.{Html, HtmlFormat}
 import viewmodels.{AssociatedPsa, Message}
 import views.behaviours.ViewBehaviours
@@ -26,7 +25,9 @@ import views.html.schemeDetails
 
 class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
   //TODO fix tests
-  private val pspLinks = Seq(Link("view-practitioners", controllers.psp.routes.ViewPractitionersController.onPageLoad().url, Message("messages__pspViewOrDeauthorise__link")))
+  private val pspLinks = Seq(
+    Link("view-practitioners", controllers.psp.routes.ViewPractitionersController.onPageLoad().url, Message("messages__pspViewOrDeauthorise__link")),
+    Link("authorise", controllers.invitations.psp.routes.WhatYouWillNeedController.onPageLoad().url, Message("messages__pspAuthorise__link")))
 
 
   private val messageKeyPrefix = "schemeDetails"
@@ -124,10 +125,16 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
 
     }
 
-//    "have link to authorise page" in {
-//      Jsoup.parse(createView()().toString()).select("a[id=authorise]") must
-//        haveLink(pspLinks.url)
-//    }
+    "have link to authorise page" in {
+      Jsoup.parse(createView()().toString()).select("a[id=authorise]") must
+        haveLink(pspLinks.map(_.url).last)
+    }
+
+    "have link to view and deauthorise page" in {
+      Jsoup.parse(createView()().toString()).select("a[id=view-practitioners]") must
+        haveLink(pspLinks.map(_.url).head)
+    }
+
 
     "have the invite paragraph of content" in {
       Jsoup.parse(createView()().toString()) must

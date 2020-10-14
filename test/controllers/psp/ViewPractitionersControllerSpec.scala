@@ -20,13 +20,13 @@ import connectors.FakeUserAnswersCacheConnector
 import controllers.ControllerSpecBase
 import controllers.actions._
 import identifiers.{SchemeNameId, SchemeSrnId}
-import models.{NormalMode, SchemeReferenceNumber}
+import models.SchemeReferenceNumber
 import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.FakeNavigator
-import views.html.invitations.whatYouWillNeed
+import viewmodels.AuthorisedPractitioner
 import views.html.psp.viewPractitioners
 
 class ViewPractitionersControllerSpec extends ControllerSpecBase {
@@ -34,6 +34,7 @@ class ViewPractitionersControllerSpec extends ControllerSpecBase {
   val schemeName  = "Test Scheme name"
   val schemeSrn  = "12345"
   val returnCall: Call  = controllers.routes.SchemeDetailsController.onPageLoad(SchemeReferenceNumber(schemeSrn))
+  val practitioners = Seq(AuthorisedPractitioner("Joe Bloggs", "Ann Bloggs", "02-01-2020"))
 
   val validData = new FakeDataRetrievalAction(Some(Json.obj(
     SchemeSrnId.toString -> schemeSrn,
@@ -55,7 +56,7 @@ class ViewPractitionersControllerSpec extends ControllerSpecBase {
       viewPractitionersView
     )
 
-  private def viewAsString() = viewPractitionersView(schemeName, returnCall)(fakeRequest, messages).toString
+  private def viewAsString() = viewPractitionersView(schemeName, returnCall, practitioners)(fakeRequest, messages).toString
 
   "ViewPractitionersController" must {
     "return OK and the correct view for a GET" in {

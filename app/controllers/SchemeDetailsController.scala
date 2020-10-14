@@ -53,6 +53,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate.async {
     implicit request =>
+
       withSchemeAndLock(srn).flatMap {
         case (userAnswers, lock) =>
           val admins = (userAnswers.json \ "psaDetails").as[Seq[PsaDetails]].map(_.id)

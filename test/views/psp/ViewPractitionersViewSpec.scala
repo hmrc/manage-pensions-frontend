@@ -20,8 +20,8 @@ import models.SchemeReferenceNumber
 import org.jsoup.Jsoup
 import play.api.mvc.Call
 import play.twirl.api.HtmlFormat
+import viewmodels.AuthorisedPractitioner
 import views.behaviours.ViewBehaviours
-import views.html.invitations.psp.whatYouWillNeed
 import views.html.psp.viewPractitioners
 
 class ViewPractitionersViewSpec extends ViewBehaviours {
@@ -30,10 +30,12 @@ class ViewPractitionersViewSpec extends ViewBehaviours {
   val schemeName  = "Test Scheme name"
   val schemeSrn  = "12345"
   val returnCall: Call  = controllers.routes.SchemeDetailsController.onPageLoad(SchemeReferenceNumber(schemeSrn))
+  val practitioners = Seq(AuthorisedPractitioner("Joe Bloggs", "Ann Bloggs", "02-01-2020"))
   private val viewPractitionersView = injector.instanceOf[viewPractitioners]
 
+
   def createView: (() => HtmlFormat.Appendable) = () =>
-    viewPractitionersView(schemeName, returnCall)(fakeRequest, messages)
+    viewPractitionersView(schemeName, returnCall, practitioners)(fakeRequest, messages)
 
   "ViewPractitioners page" must {
     behave like normalPage(
@@ -51,5 +53,6 @@ class ViewPractitionersViewSpec extends ViewBehaviours {
       Jsoup.parse(createView().toString()).select("a[id=authorise]") must
         haveLink(controllers.invitations.psp.routes.WhatYouWillNeedController.onPageLoad().url)
     }
+
   }
 }
