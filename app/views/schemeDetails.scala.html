@@ -39,7 +39,7 @@
     lockingPsa: Option[String],
     aftHtml: Html,
     paymentsAndChargesHtml: Html,
-    pspAuthorisationCall: Option[Call]
+    pspLinks: Seq[Link]
 )(implicit request: Request[_], messages: Messages)
 
     @main_template(schemeName, None) {
@@ -103,9 +103,11 @@
             <p>@messages("messages__schemeDetails__invite_p1")</p>
         }
 
-        @pspAuthorisationCall.map{call =>
+        @if(pspLinks.nonEmpty) {
             <h2>@messages("messages__schemeDetails__pspAuthoriseHeading")</h2>
-            <p><a id="authorise" href="@call">@messages("messages__pspAuthorise__link")</a></p>
+            @pspLinks.map { link =>
+                <p><a id= "@link.id" href="@link.url">@link.linkText.resolve</a></p>
+            }
         }
 
         <p class="govuk-margin-top-8"><a id="return" href="@routes.ListSchemesController.onPageLoad()">@messages("messages__schemeDetails__return_link")</a></p>

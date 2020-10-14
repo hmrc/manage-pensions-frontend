@@ -31,3 +31,5 @@ GET         /overview                                     controllers.SchemesOve
 
 GET         /pension-scheme-summary/:srn                  controllers.SchemeDetailsController.onPageLoad(srn: SchemeReferenceNumber)
 
+GET         /view-practitioners                           controllers.psp.ViewPractitionersController.onPageLoad()
+
