@@ -41,7 +41,7 @@ import services.SchemeDetailsService
 import testhelpers.CommonBuilders._
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.UserAnswers
-import viewmodels.AssociatedPsa
+import viewmodels.{AssociatedPsa, Message}
 import views.html.error_template
 import views.html.error_template_page_not_found
 import views.html.schemeDetails
@@ -51,12 +51,14 @@ import scala.concurrent.Future
 class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfterEach {
 
   import SchemeDetailsControllerSpec._
+  
+  //TODO fix tests
 
   val schemeDetailsView: schemeDetails = app.injector.instanceOf[schemeDetails]
   val errorHandlerView: error_template = app.injector.instanceOf[error_template]
   val errorHandlerNotFoundView: error_template_page_not_found = app.injector.instanceOf[error_template_page_not_found]
   val errorHandler = new ErrorHandler(frontendAppConfig, messagesApi, errorHandlerView, errorHandlerNotFoundView)
-  val pspAuthoriseCall = Some(controllers.invitations.psp.routes.WhatYouWillNeedController.onPageLoad())
+  val pspLinks = Seq(Link("view-practitioners", controllers.psp.routes.ViewPractitionersController.onPageLoad().url, Message("messages__pspViewOrDeauthorise__link")))
   val featureSwitch: FeatureSwitchManagementService = mock[FeatureSwitchManagementService]
 
   def controller(): SchemeDetailsController = {
@@ -103,7 +105,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
       status(result) mustBe OK
       contentAsString(result) mustBe schemeDetailsView(schemeName, pstr, openDate, administrators, srn, isSchemeOpen = true,
         displayChangeLink = false, lockingPsa = Some("test-psa"), aftHtml = aftHtml,
-        paymentsAndChargesHtml = paymentsAndChargesHtml, None)(fakeRequest, messages).toString()
+        paymentsAndChargesHtml = paymentsAndChargesHtml, Nil)(fakeRequest, messages).toString()
     }
 
     "return OK and the correct view for a GET and authorise link if toggled on" in {
@@ -124,7 +126,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
       status(result) mustBe OK
       contentAsString(result) mustBe schemeDetailsView(schemeName, pstr, openDate, administrators, srn, isSchemeOpen = true,
         displayChangeLink = false, lockingPsa = Some("test-psa"), aftHtml = aftHtml,
-        paymentsAndChargesHtml = paymentsAndChargesHtml, pspAuthoriseCall)(fakeRequest, messages).toString()
+        paymentsAndChargesHtml = paymentsAndChargesHtml, pspLinks)(fakeRequest, messages).toString()
     }
 
     "return NOT_FOUND when PSA data is not returned by API (as we don't know who administers the scheme)" in {
