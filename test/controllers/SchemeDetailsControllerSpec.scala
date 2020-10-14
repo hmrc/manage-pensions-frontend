@@ -32,8 +32,7 @@ import org.mockito.Mockito.reset
 import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.libs.json.JsArray
-import play.api.libs.json.Json
+import play.api.libs.json.{JsArray, JsString, Json}
 import play.api.test.Helpers.contentAsString
 import play.api.test.Helpers._
 import play.twirl.api.Html
@@ -51,14 +50,17 @@ import scala.concurrent.Future
 class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfterEach {
 
   import SchemeDetailsControllerSpec._
-  
+
   //TODO fix tests
 
   val schemeDetailsView: schemeDetails = app.injector.instanceOf[schemeDetails]
   val errorHandlerView: error_template = app.injector.instanceOf[error_template]
   val errorHandlerNotFoundView: error_template_page_not_found = app.injector.instanceOf[error_template_page_not_found]
   val errorHandler = new ErrorHandler(frontendAppConfig, messagesApi, errorHandlerView, errorHandlerNotFoundView)
-  val pspLinks = Seq(Link("view-practitioners", controllers.psp.routes.ViewPractitionersController.onPageLoad().url, Message("messages__pspViewOrDeauthorise__link")))
+  val pspLinks = Seq(
+    Link("authorise", controllers.invitations.psp.routes.WhatYouWillNeedController.onPageLoad().url, Message("messages__pspAuthorise__link")),
+    Link("view-practitioners", controllers.psp.routes.ViewPractitionersController.onPageLoad().url, Message("messages__pspViewOrDeauthorise__link"))
+  )
   val featureSwitch: FeatureSwitchManagementService = mock[FeatureSwitchManagementService]
 
   def controller(): SchemeDetailsController = {
@@ -181,6 +183,9 @@ private object SchemeDetailsControllerSpec extends MockitoSugar {
     PSTRId.toString -> pstr.get,
     "schemeStatus" -> "Open",
     SchemeNameId.toString -> schemeName,
+    "pspDetails" -> JsArray(
+      Seq(JsString("id"))
+    ),
     "psaDetails" -> JsArray(
       Seq(
         Json.obj(

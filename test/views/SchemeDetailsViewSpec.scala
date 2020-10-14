@@ -16,16 +16,17 @@
 
 package views
 
+import models.Link
 import org.jsoup.Jsoup
 import play.api.mvc.Call
 import play.twirl.api.{Html, HtmlFormat}
-import viewmodels.AssociatedPsa
+import viewmodels.{AssociatedPsa, Message}
 import views.behaviours.ViewBehaviours
 import views.html.schemeDetails
 
 class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
   //TODO fix tests
-  private val pspLinks = Call("GET", "/dummy-authorise-url")
+  private val pspLinks = Seq(Link("view-practitioners", controllers.psp.routes.ViewPractitionersController.onPageLoad().url, Message("messages__pspViewOrDeauthorise__link")))
 
 
   private val messageKeyPrefix = "schemeDetails"

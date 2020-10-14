@@ -56,7 +56,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
       withSchemeAndLock(srn).flatMap {
         case (userAnswers, lock) =>
           val admins = (userAnswers.json \ "psaDetails").as[Seq[PsaDetails]].map(_.id)
-          val anyPSPs = (userAnswers.json \ "pspDetails").as[JsArray].value.nonEmpty
+          val anyPSPs = (userAnswers.json \ "pspDetails").asOpt[JsArray].map(_.value.nonEmpty).getOrElse(false)
 
           if (admins.contains(request.psaId.id)) {
             val schemeName = userAnswers.get(SchemeNameId).getOrElse("")
