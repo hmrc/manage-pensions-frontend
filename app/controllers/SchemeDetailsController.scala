@@ -54,7 +54,11 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
     implicit request =>
       withSchemeAndLock(srn).flatMap {
         case (userAnswers, lock) =>
+          println(s"\n\n\n\n\n\n\n\n psp details = \n\n\n ${userAnswers}")
+
           val admins = (userAnswers.json \ "psaDetails").as[Seq[PsaDetails]].map(_.id)
+          val pspAdmins = (userAnswers.json \ "pspDetails").as[Seq[PSPDetails]].map(_.pspid)
+
 
           if (admins.contains(request.psaId.id)) {
 
