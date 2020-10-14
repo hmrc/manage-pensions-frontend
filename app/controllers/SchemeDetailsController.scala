@@ -18,15 +18,16 @@ package controllers
 
 import config.{FeatureSwitchManagementService, FrontendAppConfig}
 import connectors._
-import connectors.scheme.{ListOfSchemesConnector, PensionSchemeVarianceLockConnector, SchemeDetailsConnector}
+import connectors.scheme.{PensionSchemeVarianceLockConnector, SchemeDetailsConnector, ListOfSchemesConnector}
 import controllers.actions._
 import handlers.ErrorHandler
-import identifiers.{SchemeNameId, SchemeSrnId, SchemeStatusId}
+import identifiers.{SchemeNameId, SchemeStatusId, SchemeSrnId}
 import javax.inject.Inject
 import models._
 import models.requests.AuthenticatedRequest
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.libs.json.JsArray
+import play.api.mvc.{AnyContent, MessagesControllerComponents, Action}
 import services.SchemeDetailsService
 import toggles.Toggles
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
@@ -34,7 +35,7 @@ import utils.UserAnswers
 import viewmodels.Message
 import views.html.schemeDetails
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{Future, ExecutionContext}
 
 class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                                         override val messagesApi: MessagesApi,
@@ -54,14 +55,10 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
     implicit request =>
       withSchemeAndLock(srn).flatMap {
         case (userAnswers, lock) =>
-          println(s"\n\n\n\n\n\n\n\n psp details = \n\n\n ${userAnswers}")
-
           val admins = (userAnswers.json \ "psaDetails").as[Seq[PsaDetails]].map(_.id)
-          val pspAdmins = (userAnswers.json \ "pspDetails").as[Seq[PSPDetails]].map(_.pspid)
-
+          val anyPSPs = (userAnswers.json \ "pspDetails").as[JsArray].value.nonEmpty
 
           if (admins.contains(request.psaId.id)) {
-
             val schemeName = userAnswers.get(SchemeNameId).getOrElse("")
             val schemeStatus = userAnswers.get(SchemeStatusId).getOrElse("")
             val isSchemeOpen = schemeStatus.equalsIgnoreCase("open")
@@ -76,8 +73,14 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
             } yield {
               val pspLinks =
                 if (fs.get(Toggles.pspAuthorisationEnabled)) {
-                  Seq(Link("authorise", controllers.invitations.psp.routes.WhatYouWillNeedController.onPageLoad().url, Message("messages__pspAuthorise__link")),
-                    Link("view-practitioners", controllers.psp.routes.ViewPractitionersController.onPageLoad().url, Message("messages__pspViewOrDeauthorise__link")))
+                  val pspLink = if (anyPSPs) {
+                    Seq(Link("view-practitioners", controllers.psp.routes.ViewPractitionersController.onPageLoad().url, Message("messages__pspViewOrDeauthorise__link")))
+                  } else {
+                    Nil
+                  }
+                  Seq(
+                    Link("authorise", controllers.invitations.psp.routes.WhatYouWillNeedController.onPageLoad().url, Message("messages__pspAuthorise__link"))
+                  ) ++ pspLink
                 } else {
                   Nil
                 }
