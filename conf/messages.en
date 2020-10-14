@@ -471,3 +471,6 @@ messages__alreadyAssociatedWithScheme__p1 = {0} has already been authorised as a
 
 messages__viewPractitioners__heading = Pension scheme practitioners
 messages__viewPractitioners__title = Pension scheme practitioners
+messages__viewPractitioners__practitionerNameHeader = Practitioner
+messages__viewPractitioners__authorisedByHeader = Authorised by
+messages__viewPractitioners__dateAuthorisedHeader = Date authorised

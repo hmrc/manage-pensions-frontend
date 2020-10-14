@@ -29,6 +29,7 @@ import toggles.Toggles
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.Navigator
 import utils.annotations.Invitation
+import viewmodels.AuthorisedPractitioner
 import views.html.invitations.whatYouWillNeed
 import views.html.psp.viewPractitioners
 
@@ -50,7 +51,9 @@ class ViewPractitionersController @Inject()(appConfig: FrontendAppConfig,
       (SchemeSrnId and SchemeNameId).retrieve.right.map {
         case srn ~ schemeName =>
         val returnCall = controllers.routes.SchemeDetailsController.onPageLoad(SchemeReferenceNumber(srn))
-        Future.successful(Ok(view(schemeName, returnCall)))
+        val practitioners = Seq(AuthorisedPractitioner("Joe Bloggs", "Ann Bloggs", "01-04-2020"))
+
+        Future.successful(Ok(view(schemeName, returnCall, practitioners)))
       }
   }
 

@@ -18,6 +18,7 @@
 @import uk.gov.hmrc.play.views.html._
 @import views.html._
 @import play.api.mvc.Call
+@import viewmodels.AuthorisedPractitioner
 
 @this(
 main_template: main_template,
@@ -25,7 +26,8 @@ formHelper: FormWithCSRF,
 appConfig: FrontendAppConfig
 )
 
-@(schemeName: String, returnCall: Call)(implicit request: Request[_], messages: Messages)
+
+@(schemeName: String, returnCall: Call, practitioners: Seq[AuthorisedPractitioner])(implicit request: Request[_], messages: Messages)
 
 @main_template(
     title = s"${messages("messages__viewPractitioners__title")}",
@@ -34,9 +36,42 @@ appConfig: FrontendAppConfig
 
         @components.back_link()
 
-        <span></span>
+
         @components.heading(messages("messages__viewPractitioners__heading"))
 
+    <table id="practitioner-authorisation-table" class="hmrc-responsive-table" role="table">
+        <thead role="rowgroup">
+            <tr role="row">
+                <th class="govuk-table__header" scope="col">
+                    <span id="practitioner-name-header" class="heading-small">@messages("messages__viewPractitioners__practitionerNameHeader")</span>
+                </th>
+                <th class="govuk-table__header" scope="col">
+                    <span id="authorised-by-header" class="heading-small">@messages("messages__viewPractitioners__authorisedByHeader")</span>
+                </th>
+
+                <th class="govuk-table__header" scope="col">
+                    <span id="date-authorised-header" class="heading-small">@messages("messages__viewPractitioners__dateAuthorisedHeader")</span>
+                </th>
+            </tr>
+        </thead>
+
+        <tbody>
+        @for((practitioner, index) <- practitioners.zipWithIndex) {
+
+            <tr class="member-details" role="row">
+                <td class="govuk-table__cell" role="cell" id="pspName-@index">
+                    @{practitioner.pspName}
+                </td>
+                <td class="govuk-table__cell" role="cell" id="authorisedBy-@index">
+                    @{practitioner.authorisedBy}
+                </td>
+                <td class="govuk-table__cell" role="cell" id="dateAuthorised-@index">
+                    @{practitioner.dateAuthorised}
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
 
         <h2>@messages("messages__schemeDetails__pspAuthoriseHeading")</h2>
         <p><a id="authorise" href="@controllers.invitations.psp.routes.WhatYouWillNeedController.onPageLoad()">@messages("messages__pspAuthorise__link")</a></p>
