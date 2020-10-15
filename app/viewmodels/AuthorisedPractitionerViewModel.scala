@@ -16,4 +16,5 @@
 
 package viewmodels
 
-case class AuthorisedPractitioner(pspName: String, authorisedBy: String, dateAuthorised: String)
+case class AuthorisedPractitionerViewModel(pspName: String, authorisedBy: String, dateAuthorised: String)
+

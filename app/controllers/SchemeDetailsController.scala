@@ -53,12 +53,9 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate.async {
     implicit request =>
-
-      withSchemeAndLock(srn).flatMap {
-        case (userAnswers, lock) =>
+      withSchemeAndLock(srn).flatMap { case (userAnswers, lock) =>
           val admins = (userAnswers.json \ "psaDetails").as[Seq[PsaDetails]].map(_.id)
-          val anyPSPs = (userAnswers.json \ "pspDetails").asOpt[JsArray].map(_.value.nonEmpty).getOrElse(false)
-
+          val anyPSPs = (userAnswers.json \ "pspDetails").asOpt[JsArray].exists(_.value.nonEmpty)
           if (admins.contains(request.psaId.id)) {
             val schemeName = userAnswers.get(SchemeNameId).getOrElse("")
             val schemeStatus = userAnswers.get(SchemeStatusId).getOrElse("")
@@ -72,19 +69,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
               _ <- userAnswersCacheConnector.upsert(request.externalId, updatedUa.json)
               lockingPsa <- schemeDetailsService.lockingPsa(lock, srn)
             } yield {
-              val pspLinks =
-                if (fs.get(Toggles.pspAuthorisationEnabled)) {
-                  val pspLink = if (anyPSPs) {
-                    Seq(Link("view-practitioners", controllers.psp.routes.ViewPractitionersController.onPageLoad().url, Message("messages__pspViewOrDeauthorise__link")))
-                  } else {
-                    Nil
-                  }
-                  Seq(
-                    Link("authorise", controllers.invitations.psp.routes.WhatYouWillNeedController.onPageLoad().url, Message("messages__pspAuthorise__link"))
-                  ) ++ pspLink
-                } else {
-                  Nil
-                }
+              val pspLinks = getLinks(anyPSPs)
               listOfSchemes match {
                 case Right(list) =>
                   Ok(view(
@@ -107,6 +92,21 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
             Future.successful(NotFound(errorHandler.notFoundTemplate))
           }
       }
+  }
+
+  private def getLinks(anyPSPs:Boolean) = {
+    if (fs.get(Toggles.pspAuthorisationEnabled)) {
+      val pspLink = if (anyPSPs) {
+        Seq(Link("view-practitioners", controllers.psp.routes.ViewPractitionersController.onPageLoad().url, Message("messages__pspViewOrDeauthorise__link")))
+      } else {
+        Nil
+      }
+      Seq(
+        Link("authorise", controllers.invitations.psp.routes.WhatYouWillNeedController.onPageLoad().url, Message("messages__pspAuthorise__link"))
+      ) ++ pspLink
+    } else {
+      Nil
+    }
   }
 
 

@@ -20,17 +20,23 @@ import com.google.inject.Inject
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
-import identifiers.{SchemeNameId, SchemeSrnId}
-import models.{NormalMode, SchemeReferenceNumber}
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import toggles.Toggles
+import controllers.actions.AuthAction
+import controllers.actions.DataRequiredAction
+import controllers.actions.DataRetrievalAction
+import identifiers.SeqAuthorisedPractitionerId
+import identifiers.SchemeNameId
+import identifiers.SchemeSrnId
+import models.SchemeReferenceNumber
+import play.api.i18n.I18nSupport
+import play.api.i18n.MessagesApi
+import play.api.mvc.Action
+import play.api.mvc.AnyContent
+import play.api.mvc.MessagesControllerComponents
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
+import utils.DateHelper
 import utils.Navigator
 import utils.annotations.Invitation
-import viewmodels.AuthorisedPractitioner
-import views.html.invitations.whatYouWillNeed
+import viewmodels.AuthorisedPractitionerViewModel
 import views.html.psp.viewPractitioners
 
 import scala.concurrent.Future
@@ -48,12 +54,14 @@ class ViewPractitionersController @Inject()(appConfig: FrontendAppConfig,
 
   def onPageLoad(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
     implicit request =>
-      (SchemeSrnId and SchemeNameId).retrieve.right.map {
-        case srn ~ schemeName =>
-        val returnCall = controllers.routes.SchemeDetailsController.onPageLoad(SchemeReferenceNumber(srn))
-        val practitioners = Seq(AuthorisedPractitioner("Joe Bloggs", "Ann Bloggs", "01-04-2020"))
+      (SchemeSrnId and SchemeNameId and SeqAuthorisedPractitionerId).retrieve.right.map {
+        case srn ~ schemeName ~ authorisedPractitioners =>
+          val authorisedPractitionerViewModelSeq = authorisedPractitioners.map{ p =>
 
-        Future.successful(Ok(view(schemeName, returnCall, practitioners)))
+            AuthorisedPractitionerViewModel(p.name, p.authorisingPSA.name, DateHelper.formatDate(p.relationshipStartDate))
+      }
+        val returnCall = controllers.routes.SchemeDetailsController.onPageLoad(SchemeReferenceNumber(srn))
+        Future.successful(Ok(view(schemeName, returnCall, authorisedPractitionerViewModelSeq)))
       }
   }
 
