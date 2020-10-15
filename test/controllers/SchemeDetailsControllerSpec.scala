@@ -51,8 +51,6 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
 
   import SchemeDetailsControllerSpec._
 
-  //TODO fix tests
-
   val schemeDetailsView: schemeDetails = app.injector.instanceOf[schemeDetails]
   val errorHandlerView: error_template = app.injector.instanceOf[error_template]
   val errorHandlerNotFoundView: error_template_page_not_found = app.injector.instanceOf[error_template_page_not_found]
