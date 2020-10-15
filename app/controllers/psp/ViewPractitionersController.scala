@@ -56,10 +56,9 @@ class ViewPractitionersController @Inject()(appConfig: FrontendAppConfig,
     implicit request =>
       (SchemeSrnId and SchemeNameId and SeqAuthorisedPractitionerId).retrieve.right.map {
         case srn ~ schemeName ~ authorisedPractitioners =>
-          val authorisedPractitionerViewModelSeq = authorisedPractitioners.map{ p =>
-
+          val authorisedPractitionerViewModelSeq = authorisedPractitioners.map( p =>
             AuthorisedPractitionerViewModel(p.name, p.authorisingPSA.name, DateHelper.formatDate(p.relationshipStartDate))
-      }
+          )
         val returnCall = controllers.routes.SchemeDetailsController.onPageLoad(SchemeReferenceNumber(srn))
         Future.successful(Ok(view(schemeName, returnCall, authorisedPractitionerViewModelSeq)))
       }
