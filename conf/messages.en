@@ -430,8 +430,9 @@ messages__pspId__title = What is their practitioner ID?
 messages__pspId__heading = What is the practitioner ID for {0}?
 
 messages__error__pspId__required = Enter the practitioner ID
+messages__error__pspId__nonNumeric = Practitioner ID must only include numbers
 messages__error__pspId__length = Practitioner ID must be exactly 8 digits long
-messages__error__pspId__invalid = Practitioner ID must only include numbers
+messages__error__pspId__invalid = Practitioner ID must begin with a 0, 1 or 2
 
 messages__psp_client_ref__title = Do you have a client reference agreed with the pension scheme practitioner?
 messages__psp_client_ref__heading = Do you have a client reference agreed with {0}?

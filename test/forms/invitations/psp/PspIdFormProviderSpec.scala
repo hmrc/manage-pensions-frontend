@@ -19,7 +19,6 @@ package forms.invitations.psp
 import forms.mappings.Constraints
 import play.api.data.FormError
 import views.behaviours.StringFieldBehaviours
-import wolfendale.scalacheck.regexp.RegexpGen
 
 class PspIdFormProviderSpec extends StringFieldBehaviours with Constraints{
 
@@ -30,22 +29,20 @@ class PspIdFormProviderSpec extends StringFieldBehaviours with Constraints{
 
     val fieldName = "pspId"
     val requiredKey = "messages__error__pspId__required"
+    val nonNumericKey = "messages__error__pspId__nonNumeric"
     val lengthKey = "messages__error__pspId__length"
     val invalidKey = "messages__error__pspId__invalid"
     val maxLength = PspIdFormProvider.pspIdLength
 
-    behave like fieldThatBindsValidData(
-      form,
-      fieldName,
-      RegexpGen.from(Constraints.pspIdRegx)
-    )
+    "bind valid data" in {
+        val result = form.bind(Map(fieldName -> "01234567")).apply(fieldName)
+        result.errors shouldBe empty
+    }
 
-    behave like fieldWithMaxLength(
-      form,
-      fieldName,
-      maxLength = maxLength,
-      lengthError = FormError(fieldName, lengthKey, Seq(maxLength))
-    )
+    s"not bind string longer than 8 characters" in {
+        val result = form.bind(Map(fieldName -> "0123456789")).apply(fieldName)
+        result.errors shouldEqual Seq(FormError(fieldName, lengthKey, Seq(maxLength)))
+    }
 
     behave like mandatoryField(
       form,
@@ -57,13 +54,18 @@ class PspIdFormProviderSpec extends StringFieldBehaviours with Constraints{
       form,
       fieldName,
       "B1234567",
-      FormError(fieldName, invalidKey, Seq(Constraints.pspIdRegx))
+      FormError(fieldName, nonNumericKey, Seq("""^[0-9]*$"""))
     )
 
+    "not bind string not starting with 0, 1, or 2" in {
+      val result = form.bind(Map(fieldName -> "31234567")).apply(fieldName)
+      result.errors shouldEqual Seq(FormError(fieldName, invalidKey, Seq(Constraints.pspIdRegx)))
+    }
+
     "remove spaces" in {
-      val result = form.bind(Map(fieldName -> " 621 000 51 "))
+      val result = form.bind(Map(fieldName -> " 021 000 51 "))
       result.errors shouldBe empty
-      result.value shouldBe Some("62100051")
+      result.value shouldBe Some("02100051")
     }
   }
 }

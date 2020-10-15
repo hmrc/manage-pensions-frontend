@@ -64,6 +64,16 @@ trait Constraints {
         }
     }
 
+  protected def numeric(errorKey: String): Constraint[String] = {
+    val regex = """^[0-9]*$"""
+    Constraint {
+      case str if str.matches(regex) =>
+        Valid
+      case _ =>
+        Invalid(errorKey, regex)
+    }
+  }
+
   protected def regexp(regex: String, errorKey: String): Constraint[String] =
     Constraint {
       case str if str.matches(regex) =>
@@ -143,7 +153,7 @@ trait Constraints {
 
 object Constraints {
   val psaIdRegx = """^A[0-9]{7}$"""
-  val pspIdRegx = """^[0-9]{8}$"""
+  val pspIdRegx = """^[0|1|2]{1}[0-9]{7}$"""
   val clientRefRegx = """^[a-zA-Z0-9\\\/\-]{1,11}$"""
   val adviserNameRegex = """^[a-zA-Z\u00C0-\u00FF '‘’\u2014\u2013\u2010\u002d]{1,107}$"""
   val psaNameRegex = """^[a-zA-Z0-9-\u00C0-\u00FF '&\\/‘’\u2014\u2013\u2010\u002d]{1,107}$"""
