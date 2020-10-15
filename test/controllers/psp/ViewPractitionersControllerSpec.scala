@@ -19,31 +19,66 @@ package controllers.psp
 import connectors.FakeUserAnswersCacheConnector
 import controllers.ControllerSpecBase
 import controllers.actions._
-import identifiers.{SchemeNameId, SchemeSrnId}
+import identifiers.SchemeNameId
+import identifiers.SchemeSrnId
+import identifiers.SeqAuthorisedPractitionerId
 import models.SchemeReferenceNumber
+import play.api.libs.json.JsArray
 import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.FakeNavigator
-import viewmodels.AuthorisedPractitioner
+import viewmodels.AuthorisedPractitionerViewModel
 import views.html.psp.viewPractitioners
 
 class ViewPractitionersControllerSpec extends ControllerSpecBase {
 
-  val schemeName  = "Test Scheme name"
-  val schemeSrn  = "12345"
-  val returnCall: Call  = controllers.routes.SchemeDetailsController.onPageLoad(SchemeReferenceNumber(schemeSrn))
-  val practitioners = Seq(AuthorisedPractitioner("Joe Bloggs", "Ann Bloggs", "02-01-2020"))
+  private val schemeName  = "Test Scheme name"
+  private val schemeSrn  = "12345"
+  private def returnCall: Call  = controllers.routes.SchemeDetailsController.onPageLoad(SchemeReferenceNumber(schemeSrn))
+  private val practitionersViewModel = Seq(
+    AuthorisedPractitionerViewModel("PSP Limited Company 1", "Nigel Robert Smith", "1 April 2021"),
+    AuthorisedPractitionerViewModel("PSP Individual Second", "Acme Ltd", "1 April 2021")
+  )
 
-  val validData = new FakeDataRetrievalAction(Some(Json.obj(
+  private val practitioners = JsArray(
+    Seq(
+      Json.obj(
+          "authorisingPSAID" -> "A2100005",
+          "authorisingPSA" -> Json.obj(
+            "firstName" -> "Nigel",
+            "lastName" -> "Smith",
+            "middleName" -> "Robert"
+          ),
+          "relationshipStartDate" -> "2021-04-01",
+          "id" -> "A2200005",
+          "organisationOrPartnershipName" -> "PSP Limited Company 1"
+      ),
+      Json.obj(
+        "authorisingPSAID" -> "A2100007",
+        "authorisingPSA" -> Json.obj(
+          "organisationOrPartnershipName" -> "Acme Ltd"
+        ),
+        "relationshipStartDate" -> "2021-04-01",
+        "id" -> "A2200007",
+        "individual" -> Json.obj(
+          "firstName" -> "PSP Individual",
+          "lastName" -> "Second"
+        )
+      )
+    )
+  )
+
+  private val validData = new FakeDataRetrievalAction(Some(Json.obj(
     SchemeSrnId.toString -> schemeSrn,
-    SchemeNameId.toString -> schemeName
+    SchemeNameId.toString -> schemeName,
+    SeqAuthorisedPractitionerId.toString -> practitioners
   )))
 
   private val viewPractitionersView = injector.instanceOf[viewPractitioners]
 
-  def controller(dataRetrievalAction: DataRetrievalAction = validData): ViewPractitionersController =
+  private def controller(dataRetrievalAction: DataRetrievalAction = validData): ViewPractitionersController =
     new ViewPractitionersController(
       frontendAppConfig,
       messagesApi,
@@ -56,7 +91,7 @@ class ViewPractitionersControllerSpec extends ControllerSpecBase {
       viewPractitionersView
     )
 
-  private def viewAsString() = viewPractitionersView(schemeName, returnCall, practitioners)(fakeRequest, messages).toString
+  private def viewAsString() = viewPractitionersView(schemeName, returnCall, practitionersViewModel)(fakeRequest, messages).toString
 
   "ViewPractitionersController" must {
     "return OK and the correct view for a GET" in {

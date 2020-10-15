@@ -20,7 +20,7 @@ import models.SchemeReferenceNumber
 import org.jsoup.Jsoup
 import play.api.mvc.Call
 import play.twirl.api.HtmlFormat
-import viewmodels.AuthorisedPractitioner
+import viewmodels.AuthorisedPractitionerViewModel
 import views.behaviours.ViewBehaviours
 import views.html.psp.viewPractitioners
 
@@ -30,7 +30,7 @@ class ViewPractitionersViewSpec extends ViewBehaviours {
   val schemeName  = "Test Scheme name"
   val schemeSrn  = "12345"
   val returnCall: Call  = controllers.routes.SchemeDetailsController.onPageLoad(SchemeReferenceNumber(schemeSrn))
-  val practitioners = Seq(AuthorisedPractitioner("Joe Bloggs", "Ann Bloggs", "02-01-2020"))
+  val practitioners = Seq(AuthorisedPractitionerViewModel("Joe Bloggs", "Ann Bloggs", "02-01-2020"))
   private val viewPractitionersView = injector.instanceOf[viewPractitioners]
 
 

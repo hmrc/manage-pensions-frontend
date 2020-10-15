@@ -22,9 +22,9 @@ import play.api.libs.json.Json
 import play.api.libs.json.OFormat
 
 case class AuthorisingPSA(firstName: Option[String], lastName: Option[String], middleName: Option[String], organisationOrPartnershipName: Option[String]) {
-  def name: String = (organisationOrPartnershipName, firstName, lastName) match {
-    case (Some(v), _, _) => v
-    case (_, Some(f), Some(l)) => s"$f $l"
+  def name: String = (organisationOrPartnershipName, firstName, middleName, lastName) match {
+    case (Some(v), _, _, _) => v
+    case (_, Some(f), Some(m), Some(l)) => (s"$f $m $l").replace("  ", " ")
     case _ => throw new RuntimeException("No authorising psa name")
   }
 }
@@ -59,32 +59,3 @@ object AuthorisedPractitioner {
 
   implicit val formats: OFormat[AuthorisedPractitioner] = Json.format[AuthorisedPractitioner]
 }
-
-
-/*
-   "pspDetails":[
-      {
-         "authorisingPSAID":"A2100005",
-         "authorisingPSA":{
-            "firstName":"Nigel",
-            "lastName":"Smith",
-            "middleName":"Robert"
-         },
-         "relationshipStartDate":"2021-04-01",
-         "id":"A2200005",
-         "organisationOrPartnershipName":"PSP Limited Company 1"
-      },
-      {
-         "authorisingPSAID":"A2100007",
-         "individual":{
-            "firstName":"PSP Individual",
-            "lastName":"Second"
-         },
-         "authorisingPSA":{
-            "organisationOrPartnershipName":"Acme Ltd"
-         },
-         "relationshipStartDate":"2021-04-01",
-         "id":"A2200007"
-      }
-   ],
- */
