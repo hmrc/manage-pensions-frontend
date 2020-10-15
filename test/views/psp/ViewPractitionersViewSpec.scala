@@ -41,7 +41,7 @@ class ViewPractitionersViewSpec extends ViewBehaviours {
     behave like normalPage(
       createView,
       messageKeyPrefix,
-      messages(s"messages__${messageKeyPrefix}__title")
+      schemeName + " " + messages(s"messages__${messageKeyPrefix}__title")
     )
 
     "have link to return to your scheme details" in {
