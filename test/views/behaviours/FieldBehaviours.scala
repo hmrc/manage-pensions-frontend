@@ -37,7 +37,6 @@ trait FieldBehaviours extends FormSpec with ScalaCheckDrivenPropertyChecks with 
 
       forAll(validDataGenerator.retryUntil(!_.matches("""^\s+$""")) -> "validDataItem") {
         dataItem: String =>
-          println( "\n>>" + dataItem)
           val result = form.bind(Map(fieldName -> dataItem)).apply(fieldName)
           result.errors shouldBe empty
       }

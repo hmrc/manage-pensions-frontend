@@ -415,7 +415,7 @@ messages__pspName__title = What is the name of the scheme practitioner you want 
 messages__pspName__p1 = This must match the name they used when they registered as a scheme practitioner.
 messages__error__pspName__required = Enter the name of the pension scheme practitioner
 messages__error__pspName__length = Enter a name that is 105 characters or fewer
-messages__error__pspName__invalid = Enter a name using only letters
+messages__error__pspName__invalid = Pension scheme practitioner name must not include special characters
 
 messages__pspWhatYouWillNeed__title = What you will need
 messages__pspWhatYouWillNeed__lede = To authorise a practitioner to this pension scheme they must have already used this service to register as a practitioner.

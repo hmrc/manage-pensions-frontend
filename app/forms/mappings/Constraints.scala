@@ -156,7 +156,7 @@ object Constraints {
   val pspIdRegx = """^[0|1|2]{1}[0-9]{7}$"""
   val clientRefRegx = """^[a-zA-Z0-9\\\/\-]{1,11}$"""
   val adviserNameRegex = """^[a-zA-Z\u00C0-\u00FF '‘’\u2014\u2013\u2010\u002d]{1,107}$"""
-  val psaNameRegex = """^[a-zA-Z0-9-\u00C0-\u00FF '&\\/‘’\u2014\u2013\u2010\u002d]{1,107}$"""
+  val psaNameRegex = """^[a-zA-Z0-9-\u00C0-\u00FF '&\\/‘’\u2014\u2013\u2010\u002d]{1,105}$"""
   val addressLineRegex = """^[A-Za-z0-9 &!'‘’\"“”(),./\u2014\u2013\u2010\u002d]{1,35}$"""
   val postCodeRegex = """^[A-Za-z]{1,2}[0-9][0-9A-Za-z]?[ ]?[0-9][A-Za-z]{2}$"""
   val emailRegex = "^(?:[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"" +
