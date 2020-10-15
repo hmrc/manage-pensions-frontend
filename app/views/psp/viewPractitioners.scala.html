@@ -31,13 +31,11 @@ appConfig: FrontendAppConfig
 
 @main_template(
     title = s"${messages("messages__viewPractitioners__title")}",
-
     bodyClasses = None) {
 
-        @components.back_link()
+    @components.back_link()
 
-
-        @components.heading(messages("messages__viewPractitioners__heading"))
+    @components.heading(messages("messages__viewPractitioners__heading"))
 
     <table id="practitioner-authorisation-table" class="hmrc-responsive-table" role="table">
         <thead role="rowgroup">
