@@ -24,7 +24,6 @@ import views.behaviours.ViewBehaviours
 import views.html.schemeDetails
 
 class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
-  //TODO fix tests
   private val pspLinks = Seq(
     Link("view-practitioners", controllers.psp.routes.ViewPractitionersController.onPageLoad().url, Message("messages__pspViewOrDeauthorise__link")),
     Link("authorise", controllers.invitations.psp.routes.WhatYouWillNeedController.onPageLoad().url, Message("messages__pspAuthorise__link")))
