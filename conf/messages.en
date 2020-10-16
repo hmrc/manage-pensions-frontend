@@ -414,8 +414,8 @@ messages__updateBoth__pensionSchemesOnlineService__link = Pension Schemes Online
 messages__pspName__title = What is the name of the scheme practitioner you want to authorise?
 messages__pspName__p1 = This must match the name they used when they registered as a scheme practitioner.
 messages__error__pspName__required = Enter the name of the pension scheme practitioner
-messages__error__pspName__length = Enter a name using less than 108 characters
-messages__error__pspName__invalid = Enter a name using only letters
+messages__error__pspName__length = Enter a name that is 105 characters or fewer
+messages__error__pspName__invalid = Pension scheme practitioner name must not include special characters
 
 messages__pspWhatYouWillNeed__title = What you will need
 messages__pspWhatYouWillNeed__lede = To authorise a practitioner to this pension scheme they must have already used this service to register as a practitioner.
@@ -430,14 +430,17 @@ messages__pspId__title = What is their practitioner ID?
 messages__pspId__heading = What is the practitioner ID for {0}?
 
 messages__error__pspId__required = Enter the practitioner ID
-messages__error__pspId__invalid = Enter a PSP ID using the letter A followed by 7 numbers
+messages__error__pspId__nonNumeric = Practitioner ID must only include numbers
+messages__error__pspId__length = Practitioner ID must be exactly 8 digits long
+messages__error__pspId__invalid = Practitioner ID must begin with a 0, 1 or 2
 
 messages__psp_client_ref__title = Do you have a client reference agreed with the pension scheme practitioner?
 messages__psp_client_ref__heading = Do you have a client reference agreed with {0}?
 messages__psp_client_ref__label = Client reference
 messages__clientReference_yes_no_required = Select yes if you have a client reference
-messages__clientReference_required = Enter the client reference
-messages__clientReference_maxLength = Enter a client reference using less than 160 characters
+messages__clientReference_required = Enter a client reference
+messages__clientReference_maxLength = Enter a client reference that is 11 characters or fewer
+messages__clientReference_invalid = Client reference must only include letters, numbers, dashes or slashes
 
 messages__check__your__answer__psp__label = You are authorising this scheme practitioner for {0}.
 messages__check__your__answer__psp__name__label = Scheme practitioner’s name

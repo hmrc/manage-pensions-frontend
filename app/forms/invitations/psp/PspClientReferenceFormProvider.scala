@@ -29,15 +29,12 @@ import uk.gov.voa.play.form.ConditionalMappings.mandatoryIfTrue
 
 class PspClientReferenceFormProvider @Inject() extends Mappings with Transforms {
 
-
   def apply(): Form[ClientReference] = Form(
     "value" -> clientReferenceMapping
   )
 
-
-
   protected def clientReferenceMapping: Mapping[ClientReference] = {
-    val clientRefMaxLength = 160
+    val clientRefMaxLength = 11
 
     def fromClientReference(clientReference: ClientReference): (Boolean, Option[String]) = {
       clientReference match {
@@ -55,13 +52,12 @@ class PspClientReferenceFormProvider @Inject() extends Mappings with Transforms 
     tuple(
       "hasReference" -> boolean("messages__clientReference_yes_no_required"),
       "reference" -> mandatoryIfTrue("value.hasReference", text("messages__clientReference_required")
+        .transform(strip, noTransform)
         .verifying(firstError(
-          maxLength(clientRefMaxLength, "messages__clientReference_maxLength"))
+          maxLength(clientRefMaxLength, "messages__clientReference_maxLength"),
+          clientRef("messages__clientReference_invalid")
+        )
         ))
     ).transform(toClientReference, fromClientReference)
   }
 }
-
-
-
-

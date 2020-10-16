@@ -32,5 +32,5 @@ class PspNameFormProvider @Inject() extends Mappings with Transforms {
 }
 
 object PspNameFormProvider {
-  val pspNameLength = 107
+  val pspNameLength = 105
 }

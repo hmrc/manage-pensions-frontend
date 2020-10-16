@@ -42,7 +42,7 @@ class PspIdControllerSpec extends ControllerWithQuestionPageBehaviours {
     .set(PspNameId)("xyz").asOpt.value
     .set(SchemeNameId)(schemeName).asOpt.value
     .set(SchemeSrnId)(srn).asOpt.value
-  val userAnswerWithPspId: UserAnswers = userAnswer.set(PspId)("A0000000").asOpt.value
+  val userAnswerWithPspId: UserAnswers = userAnswer.set(PspId)("00000000").asOpt.value
   private val postRequest = FakeRequest().withJsonBody(userAnswerWithPspId.json)
   private val view = injector.instanceOf[pspId]
 
@@ -67,7 +67,7 @@ class PspIdControllerSpec extends ControllerWithQuestionPageBehaviours {
 
 
   behave like controllerWithOnPageLoadMethod(onPageLoadAction, userAnswer.dataRetrievalAction,
-    userAnswerWithPspId.dataRetrievalAction, form, form.fill("A0000000"), viewAsString)
+    userAnswerWithPspId.dataRetrievalAction, form, form.fill("00000000"), viewAsString)
 
   behave like controllerWithOnSubmitMethod(onSubmitAction, userAnswerWithPspId.dataRetrievalAction, form.bind(Map("pspId" -> "")), viewAsString, postRequest)
 
