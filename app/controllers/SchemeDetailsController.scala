@@ -16,34 +16,26 @@
 
 package controllers
 
-import config.FeatureSwitchManagementService
-import config.FrontendAppConfig
+import config.{FeatureSwitchManagementService, FrontendAppConfig}
 import connectors._
-import connectors.scheme.ListOfSchemesConnector
-import connectors.scheme.PensionSchemeVarianceLockConnector
-import connectors.scheme.SchemeDetailsConnector
+import connectors.scheme.{PensionSchemeVarianceLockConnector, SchemeDetailsConnector, ListOfSchemesConnector}
 import controllers.actions._
 import handlers.ErrorHandler
-import identifiers.SchemeNameId
-import identifiers.SchemeSrnId
-import identifiers.SchemeStatusId
+import identifiers.{SchemeNameId, SchemeStatusId, SchemeSrnId}
 import javax.inject.Inject
 import models._
 import models.requests.AuthenticatedRequest
-import play.api.i18n.I18nSupport
-import play.api.i18n.MessagesApi
-import play.api.mvc.Action
-import play.api.mvc.AnyContent
-import play.api.mvc.Call
-import play.api.mvc.MessagesControllerComponents
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.libs.json.JsArray
+import play.api.mvc.{AnyContent, MessagesControllerComponents, Action}
 import services.SchemeDetailsService
 import toggles.Toggles
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.UserAnswers
+import viewmodels.Message
 import views.html.schemeDetails
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import scala.concurrent.{Future, ExecutionContext}
 
 class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                                         override val messagesApi: MessagesApi,
@@ -61,12 +53,10 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate.async {
     implicit request =>
-      withSchemeAndLock(srn).flatMap {
-        case (userAnswers, lock) =>
+      withSchemeAndLock(srn).flatMap { case (userAnswers, lock) =>
           val admins = (userAnswers.json \ "psaDetails").as[Seq[PsaDetails]].map(_.id)
-
+          val anyPSPs = (userAnswers.json \ "pspDetails").asOpt[JsArray].exists(_.value.nonEmpty)
           if (admins.contains(request.psaId.id)) {
-
             val schemeName = userAnswers.get(SchemeNameId).getOrElse("")
             val schemeStatus = userAnswers.get(SchemeStatusId).getOrElse("")
             val isSchemeOpen = schemeStatus.equalsIgnoreCase("open")
@@ -79,8 +69,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
               _ <- userAnswersCacheConnector.upsert(request.externalId, updatedUa.json)
               lockingPsa <- schemeDetailsService.lockingPsa(lock, srn)
             } yield {
-              val pspAuthorisationCall =
-                if (fs.get(Toggles.pspAuthorisationEnabled)) Some(controllers.invitations.psp.routes.WhatYouWillNeedController.onPageLoad()) else None
+              val pspLinks = getPspLinks(anyPSPs)
               listOfSchemes match {
                 case Right(list) =>
                   Ok(view(
@@ -94,7 +83,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                     lockingPsa,
                     aftHtml,
                     paymentsAndChargesHtml,
-                    pspAuthorisationCall
+                    pspLinks
                   ))
                 case _ => NotFound(errorHandler.notFoundTemplate)
               }
@@ -105,6 +94,20 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
       }
   }
 
+  private def getPspLinks(anyPSPs:Boolean) = {
+    if (fs.get(Toggles.pspAuthorisationEnabled)) {
+      val viewPspLink = if (anyPSPs) {
+        Seq(Link("view-practitioners", controllers.psp.routes.ViewPractitionersController.onPageLoad().url, Message("messages__pspViewOrDeauthorise__link")))
+      } else {
+        Nil
+      }
+      Seq(
+        Link("authorise", controllers.invitations.psp.routes.WhatYouWillNeedController.onPageLoad().url, Message("messages__pspAuthorise__link"))
+      ) ++ viewPspLink
+    } else {
+      Nil
+    }
+  }
 
   private def withSchemeAndLock(srn: SchemeReferenceNumber)(implicit request: AuthenticatedRequest[AnyContent]): Future[(UserAnswers, Option[Lock])] = {
     for {

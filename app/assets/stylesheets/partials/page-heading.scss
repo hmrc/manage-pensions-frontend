@@ -51,18 +51,33 @@
   display: table-header-group;
 }
 
+.page-header .heading-caption {
+  font-family: "nta", Arial, sans-serif;
+  font-weight: 400;
+  text-transform: none;
+  font-size: 20px;
+  line-height: 1.11111;
+  padding-top: 8px;
+  padding-bottom: 7px;
+  color: #6f777b;
+  display: block;
+}
+
+
 @media (min-width: 641px) {
   .page-header .heading-secondary {
     font-size: 27px;
     line-height: 1.11111;
-  }
-}
-
-@media (min-width: 641px) {
-  .page-header .heading-secondary {
     padding-top: 4px;
     padding-bottom: 6px;
   }
+
+  .page-header .heading-caption {
+      font-size: 27px;
+      line-height: 1.11111;
+      padding-top: 4px;
+      padding-bottom: 6px;
+    }
 }
 
 .autocomplete__option > strong {

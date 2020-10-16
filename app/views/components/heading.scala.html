@@ -14,10 +14,17 @@
  * limitations under the License.
  *@
 
-@(headingKey: String, headingSize: String = "heading-xlarge", secondaryHeaderKey: Option[String] = None, subSecHeader: Option[String] = None)(implicit messages: Messages)
+@(headingKey: String, headingSize: String = "heading-xlarge", secondaryHeaderKey: Option[String] = None, subSecHeader: Option[String] = None, sectionHeader:Option[String] = None)(implicit messages: Messages)
 
 <header class="page-header">
-    <h1 class="@headingSize">@Html(headingKey)</h1>
+    <h1 class="@headingSize">
+        @sectionHeader.map{sh=>
+            <span class="heading-caption govuk-margin-bottom-3">
+                @sh
+            </span>
+        }
+        @Html(headingKey)
+    </h1>
     @secondaryHeaderKey.map { secHeader =>
     <p class="heading-secondary"><span class="visuallyhidden">This section is: </span>@Html(secHeader)
         @subSecHeader.map { subSecHeader =>

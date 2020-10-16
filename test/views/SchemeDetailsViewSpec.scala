@@ -16,16 +16,19 @@
 
 package views
 
+import models.Link
 import org.jsoup.Jsoup
-import play.api.mvc.Call
-import play.twirl.api.Html
-import play.twirl.api.HtmlFormat
-import viewmodels.AssociatedPsa
+import play.twirl.api.{Html, HtmlFormat}
+import viewmodels.{AssociatedPsa, Message}
 import views.behaviours.ViewBehaviours
 import views.html.schemeDetails
 
 class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
-  private val pspAuthoriseCall = Call("GET", "/dummy-authorise-url")
+  private val pspLinks = Seq(
+    Link("view-practitioners", controllers.psp.routes.ViewPractitionersController.onPageLoad().url, Message("messages__pspViewOrDeauthorise__link")),
+    Link("authorise", controllers.invitations.psp.routes.WhatYouWillNeedController.onPageLoad().url, Message("messages__pspAuthorise__link")))
+
+
   private val messageKeyPrefix = "schemeDetails"
   private val schemeName = "Test Scheme Name"
   private val openedDate = "29 February 2017"
@@ -54,7 +57,7 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
       lockingPsa,
       aftHtml,
       paymetsAndChargesHtml,
-      Some(pspAuthoriseCall)
+      pspLinks
     )(fakeRequest, messages)
 
   "SchemesDetails view" must {
@@ -123,8 +126,14 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
 
     "have link to authorise page" in {
       Jsoup.parse(createView()().toString()).select("a[id=authorise]") must
-        haveLink(pspAuthoriseCall.url)
+        haveLink(pspLinks.map(_.url).last)
     }
+
+    "have link to view and deauthorise page" in {
+      Jsoup.parse(createView()().toString()).select("a[id=view-practitioners]") must
+        haveLink(pspLinks.map(_.url).head)
+    }
+
 
     "have the invite paragraph of content" in {
       Jsoup.parse(createView()().toString()) must

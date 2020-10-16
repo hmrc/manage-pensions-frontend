@@ -32,8 +32,7 @@ import org.mockito.Mockito.reset
 import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.libs.json.JsArray
-import play.api.libs.json.Json
+import play.api.libs.json.{JsArray, JsString, Json}
 import play.api.test.Helpers.contentAsString
 import play.api.test.Helpers._
 import play.twirl.api.Html
@@ -41,7 +40,7 @@ import services.SchemeDetailsService
 import testhelpers.CommonBuilders._
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.UserAnswers
-import viewmodels.AssociatedPsa
+import viewmodels.{AssociatedPsa, Message}
 import views.html.error_template
 import views.html.error_template_page_not_found
 import views.html.schemeDetails
@@ -56,7 +55,10 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
   val errorHandlerView: error_template = app.injector.instanceOf[error_template]
   val errorHandlerNotFoundView: error_template_page_not_found = app.injector.instanceOf[error_template_page_not_found]
   val errorHandler = new ErrorHandler(frontendAppConfig, messagesApi, errorHandlerView, errorHandlerNotFoundView)
-  val pspAuthoriseCall = Some(controllers.invitations.psp.routes.WhatYouWillNeedController.onPageLoad())
+  val pspLinks = Seq(
+    Link("authorise", controllers.invitations.psp.routes.WhatYouWillNeedController.onPageLoad().url, Message("messages__pspAuthorise__link")),
+    Link("view-practitioners", controllers.psp.routes.ViewPractitionersController.onPageLoad().url, Message("messages__pspViewOrDeauthorise__link"))
+  )
   val featureSwitch: FeatureSwitchManagementService = mock[FeatureSwitchManagementService]
 
   def controller(): SchemeDetailsController = {
@@ -103,7 +105,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
       status(result) mustBe OK
       contentAsString(result) mustBe schemeDetailsView(schemeName, pstr, openDate, administrators, srn, isSchemeOpen = true,
         displayChangeLink = false, lockingPsa = Some("test-psa"), aftHtml = aftHtml,
-        paymentsAndChargesHtml = paymentsAndChargesHtml, None)(fakeRequest, messages).toString()
+        paymentsAndChargesHtml = paymentsAndChargesHtml, Nil)(fakeRequest, messages).toString()
     }
 
     "return OK and the correct view for a GET and authorise link if toggled on" in {
@@ -124,7 +126,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
       status(result) mustBe OK
       contentAsString(result) mustBe schemeDetailsView(schemeName, pstr, openDate, administrators, srn, isSchemeOpen = true,
         displayChangeLink = false, lockingPsa = Some("test-psa"), aftHtml = aftHtml,
-        paymentsAndChargesHtml = paymentsAndChargesHtml, pspAuthoriseCall)(fakeRequest, messages).toString()
+        paymentsAndChargesHtml = paymentsAndChargesHtml, pspLinks)(fakeRequest, messages).toString()
     }
 
     "return NOT_FOUND when PSA data is not returned by API (as we don't know who administers the scheme)" in {
@@ -179,6 +181,9 @@ private object SchemeDetailsControllerSpec extends MockitoSugar {
     PSTRId.toString -> pstr.get,
     "schemeStatus" -> "Open",
     SchemeNameId.toString -> schemeName,
+    "pspDetails" -> JsArray(
+      Seq(JsString("id"))
+    ),
     "psaDetails" -> JsArray(
       Seq(
         Json.obj(
