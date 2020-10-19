@@ -80,7 +80,7 @@
                                     @psa.name
                                 </dt>
                                 @if(psa.canRemove){
-                                <dd>
+                                <dd class="dd-remove-link">
                                     <a id="remove-link" href="@controllers.remove.routes.RemovePsaController.onPageLoad()">
                                         <span aria-hidden="true">@messages("messages__schemeDetails__remove")</span>
                                         <span class="visually-hidden">@messages("messages__schemeDetails__remove") @psa.name</span>
