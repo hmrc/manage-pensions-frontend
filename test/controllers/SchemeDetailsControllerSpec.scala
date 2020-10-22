@@ -32,7 +32,8 @@ import org.mockito.Mockito.reset
 import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.libs.json.{JsArray, JsString, Json}
+import play.api.libs.json.JsObject
+import play.api.libs.json.{JsString, JsArray, Json}
 import play.api.test.Helpers.contentAsString
 import play.api.test.Helpers._
 import play.twirl.api.Html
@@ -40,7 +41,7 @@ import services.SchemeDetailsService
 import testhelpers.CommonBuilders._
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.UserAnswers
-import viewmodels.{AssociatedPsa, Message}
+import viewmodels.{Message, AssociatedPsa}
 import views.html.error_template
 import views.html.error_template_page_not_found
 import views.html.schemeDetails
@@ -86,7 +87,31 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
     when(featureSwitch.get(any())).thenReturn(false)
   }
 
-  "SchemeDetailsController" must {
+   "SchemeDetailsController" must {
+    "return OK and the correct view for a GET and NO financial info html if status is NOT open" in {
+      val desAnswers = UserAnswers(desUserAnswers.json.as[JsObject] ++ Json.obj(
+        "schemeStatus" -> "Rejected")
+      )
+      when(fakeSchemeDetailsConnector.getSchemeDetails(eqTo("A0000000"), any(), any())(any(), any()))
+        .thenReturn(Future.successful(desAnswers))
+      when(fakeListOfSchemesConnector.getListOfSchemes(any())(any(), any()))
+        .thenReturn(Future.successful(Right(listOfSchemesResponse)))
+      when(schemeDetailsService.displayChangeLink(any(), any())).thenReturn(false)
+      when(schemeDetailsService.pstr(any(), any())).thenReturn(pstr)
+      when(schemeDetailsService.openedDate(any(), any(), any())).thenReturn(openDate)
+      when(schemeDetailsService.administratorsVariations(any(), any(), any())).thenReturn(administrators)
+      when(schemeDetailsService.lockingPsa(any(), any())(any(), any())).thenReturn(Future.successful(Some("test-psa")))
+      when(schemeDetailsService.retrieveAftHtml(any(), any())(any())).thenReturn(Future(Html("test-aft-html")))
+      when(schemeDetailsService.retrievePaymentsAndChargesHtml(any())(any())).thenReturn(Future(Html("test-payments-and-charges-html")))
+
+      val result = controller().onPageLoad(srn)(fakeRequest)
+      status(result) mustBe OK
+
+      val expected = schemeDetailsView(schemeName, pstr, openDate, administrators, srn, isSchemeOpen = false,
+        displayChangeLink = false, lockingPsa = Some("test-psa"), aftHtml = aftHtml,
+        paymentsAndChargesHtml = Html(""), Nil)(fakeRequest, messages).toString()
+      contentAsString(result) mustBe expected
+    }
 
     "return OK and the correct view for a GET and no authorise link if toggled off" in {
       when(fakeSchemeDetailsConnector.getSchemeDetails(eqTo("A0000000"), any(), any())(any(), any()))
