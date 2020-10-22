@@ -28,6 +28,7 @@ import models.requests.AuthenticatedRequest
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.JsArray
 import play.api.mvc.{AnyContent, MessagesControllerComponents, Action}
+import play.twirl.api.Html
 import services.SchemeDetailsService
 import toggles.Toggles
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
@@ -64,7 +65,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
             val displayChangeLink = schemeDetailsService.displayChangeLink(isSchemeOpen, lock)
             for {
               aftHtml <- schemeDetailsService.retrieveAftHtml(userAnswers, srn.id)
-              paymentsAndChargesHtml <- schemeDetailsService.retrievePaymentsAndChargesHtml(srn.id)
+              paymentsAndChargesHtml <- retrievePaymentsAndChargesHtml(srn.id, isSchemeOpen)
               listOfSchemes <- listSchemesConnector.getListOfSchemes(request.psaId.id)
               _ <- userAnswersCacheConnector.upsert(request.externalId, updatedUa.json)
               lockingPsa <- schemeDetailsService.lockingPsa(lock, srn)
@@ -92,6 +93,16 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
             Future.successful(NotFound(errorHandler.notFoundTemplate))
           }
       }
+  }
+
+  private def retrievePaymentsAndChargesHtml(
+    srn:String,
+    isSchemeOpen:Boolean)(implicit request: AuthenticatedRequest[AnyContent]):Future[Html] = {
+    if (isSchemeOpen) {
+      schemeDetailsService.retrievePaymentsAndChargesHtml(srn)
+    } else {
+      Future.successful(Html(""))
+    }
   }
 
   private def getPspLinks(anyPSPs:Boolean) = {
