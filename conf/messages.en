@@ -103,6 +103,13 @@ messages__listSchemes__search_submit = Search
 messages__listSchemes__search_again = Search again
 messages__listSchemes__search_required = Enter an SRN or a PSTR
 
+messages__listSchemesPsp__searchText_label = Enter a Pension Scheme Tax Reference
+messages__listSchemesPsp__title = Search for a pension scheme
+messages__listSchemesPsp__heading = Search for a pension scheme
+messages__listSchemesPsp__lede = Only schemes you have been authorised to by a pension scheme administrator will show in the search results.
+
+
+
 messages__schemesOverview__title = Pension scheme administrator overview
 messages__schemesOverview__heading = Managing pension schemes
 messages__schemesOverview__manage__text = You can only view pension schemes that you have registered through this service.
