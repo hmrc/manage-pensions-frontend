@@ -111,7 +111,6 @@
 
                 <p>@messages("messages__listSchemesPsp__lede")</p>
 
-                @if(schemes.size>=appConfig.minimumSchemeSearchResults || form("searchText").value.isDefined){
 
                     @components.input_search(
                         field = form("searchText"),
@@ -121,7 +120,6 @@
                         messageKey = messages(button_content)
                     )
 
-                }
 
                 @if(form("searchText").value.exists(_.length > 0)) {
                     <p>

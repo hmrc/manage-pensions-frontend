@@ -58,4 +58,18 @@ class SchemeSearchService @Inject()(listSchemesConnector: ListOfSchemesConnector
         case _ => List.empty[SchemeDetails]
       }
   }: Future[List[SchemeDetails]]
+
+  def searchPsp(pspId: String, searchText: Option[String])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[List[SchemeDetails]] = {
+    listSchemesConnector.getListOfSchemesForPsp("22000005")
+      .map {
+        case Right(listOfSchemes) =>
+          val filterSearchResults =
+            searchText.fold[List[SchemeDetails] => List[SchemeDetails]](identity)(
+              st => filterSchemesBySrnOrPstrOrSchemeName(st, _: List[SchemeDetails])
+            )
+
+          filterSearchResults(listOfSchemes.schemeDetails.getOrElse(List.empty[SchemeDetails]))
+        case _ => List.empty[SchemeDetails]
+      }
+  }: Future[List[SchemeDetails]]
 }

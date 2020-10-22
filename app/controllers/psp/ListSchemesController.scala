@@ -103,8 +103,9 @@ class ListSchemesController @Inject()(
                                    pageNumber: Int,
                                    searchText: Option[String]
                                  )(implicit request: OptionalDataRequest[AnyContent]): Future[Result] = {
-    schemeSearchService.search(request.psaId.id, searchText).flatMap { searchResult =>
+    schemeSearchService.searchPsp(request.psaId.id, searchText).flatMap { searchResult =>
 
+      println(s"\n\n\n\n\n\n\n search result= $searchResult")
       val noResultsMessageKey =
         (searchText.isDefined, searchResult.isEmpty) match {
           case (true, true) =>
@@ -136,6 +137,22 @@ class ListSchemesController @Inject()(
     }
   }
 
+  private def renderPspView(
+                                   form: Form[_],
+                                   pageNumber: Int,
+                                   searchText: Option[String]
+                                 )(implicit request: OptionalDataRequest[AnyContent]): Future[Result] = {
+
+          renderView(
+            schemeDetails = Nil,
+            numberOfSchemes = 0,
+            pageNumber = pageNumber,
+            numberOfPages = 1,
+            noResultsMessageKey = None,
+            form = form
+          )
+  }
+
   private def selectPageOfResults(
                                    searchResult: List[SchemeDetails],
                                    pageNumber: Int,
@@ -157,7 +174,7 @@ class ListSchemesController @Inject()(
 
   def onPageLoad: Action[AnyContent] = (authenticate andThen getData).async {
     implicit request =>
-      searchAndRenderView(searchText = None, pageNumber = 1, form = form)
+      renderPspView(searchText = None, pageNumber = 1, form = form)
   }
 
   def onPageLoadWithPageNumber(pageNumber: Index): Action[AnyContent] =

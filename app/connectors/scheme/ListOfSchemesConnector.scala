@@ -42,6 +42,8 @@ trait ListOfSchemesConnector {
 
   def getListOfSchemes(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]]
 
+  def getListOfSchemesForPsp(pspId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]]
+
 }
 
 @Singleton
@@ -68,6 +70,7 @@ class ListOfSchemesConnectorImpl @Inject()(http: HttpClient, config: FrontendApp
     http.GET[HttpResponse](url).map { response =>
       response.status match {
         case OK => val json = Json.parse(response.body)
+          println(s"\n\n\n\n JSON IS HERE \n\n $json")
           json.validate[ListOfSchemes] match {
             case JsSuccess(value, _) => Right(value)
             case JsError(errors) => throw JsResultException(errors)
