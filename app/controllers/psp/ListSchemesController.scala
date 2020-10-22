@@ -105,7 +105,6 @@ class ListSchemesController @Inject()(
                                  )(implicit request: OptionalDataRequest[AnyContent]): Future[Result] = {
     schemeSearchService.searchPsp(request.psaId.id, searchText).flatMap { searchResult =>
 
-      println(s"\n\n\n\n\n\n\n search result= $searchResult")
       val noResultsMessageKey =
         (searchText.isDefined, searchResult.isEmpty) match {
           case (true, true) =>
