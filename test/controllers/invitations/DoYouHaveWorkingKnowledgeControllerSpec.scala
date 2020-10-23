@@ -43,7 +43,7 @@ class DoYouHaveWorkingKnowledgeControllerSpec extends ControllerWithQuestionPage
 
   val controller = new DoYouHaveWorkingKnowledgeController(
     frontendAppConfig,
-    FakeAuthAction(),
+    FakeAuthAction,
     messagesApi,
     FakeNavigator,
     formProvider,

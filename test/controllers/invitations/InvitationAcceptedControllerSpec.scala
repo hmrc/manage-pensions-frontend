@@ -30,7 +30,7 @@ class InvitationAcceptedControllerSpec extends ControllerSpecBase {
   val getRelevantData: DataRetrievalAction = UserAnswers().schemeName(testSchemeName).dataRetrievalAction
   private val view = injector.instanceOf[invitationAccepted]
 
-  def controller(authAction: AuthAction = FakeAuthAction(), dataRetrievalAction: DataRetrievalAction = getRelevantData):
+  def controller(authAction: AuthAction = FakeAuthAction, dataRetrievalAction: DataRetrievalAction = getRelevantData):
   InvitationAcceptedController =
     new InvitationAcceptedController(
       frontendAppConfig,

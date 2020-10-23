@@ -63,7 +63,7 @@ class RemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours wit
 
   private val view = app.injector.instanceOf[removalDate]
 
-  def controller(dataRetrievalAction: DataRetrievalAction = data, fakeAuth: AuthAction = FakeAuthAction(),
+  def controller(dataRetrievalAction: DataRetrievalAction = data, fakeAuth: AuthAction = FakeAuthAction,
                  userAnswersCacheConnector: UserAnswersCacheConnector = FakeUserAnswersCacheConnector) = new RemovalDateController(
     frontendAppConfig, messagesApi, userAnswersCacheConnector, navigator, fakeAuth, dataRetrievalAction,
     requiredDataAction, formProvider, fakePsaRemovalConnector,
@@ -108,7 +108,7 @@ class RemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours wit
       when(mockedPensionSchemeVarianceLockConnector.releaseLock(Matchers.eq("A0000000"), Matchers.eq(srn))(any(),any())).thenReturn(Future.successful(()))
       when(mockedUpdateSchemeCacheConnector.removeAll(Matchers.eq(srn))(any(),any())).thenReturn(Future.successful(Ok("")))
 
-      val result = onSubmitAction(data, FakeAuthAction())(postRequest)
+      val result = onSubmitAction(data, FakeAuthAction)(postRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(onwardRoute.url)
@@ -123,7 +123,7 @@ class RemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours wit
 
       when(mockedPensionSchemeVarianceLockConnector.getLockByPsa(Matchers.eq("A0000000"))(any(),any())).thenReturn(Future.successful(Some(sv)))
 
-      val result = onSubmitAction(data, FakeAuthAction())(postRequest)
+      val result = onSubmitAction(data, FakeAuthAction)(postRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(onwardRoute.url)

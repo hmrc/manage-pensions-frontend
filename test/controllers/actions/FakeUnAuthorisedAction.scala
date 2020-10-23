@@ -17,6 +17,8 @@
 package controllers.actions
 
 import controllers.routes
+import models.AuthEntity
+import models.AuthEntity.PSA
 import models.requests.AuthenticatedRequest
 import play.api.mvc.Results._
 import play.api.mvc.AnyContent
@@ -28,15 +30,29 @@ import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
-object FakeUnAuthorisedAction {
-  def apply(): AuthAction = {
-    new AuthAction {
-      val parser: BodyParser[AnyContent] = stubMessagesControllerComponents().parsers.defaultBodyParser
-      implicit val executionContext: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
-
+object FakeUnAuthorisedAction extends AuthAction {
+  def apply(authEntity: AuthEntity = PSA): Auth = {
+    new Auth {
       override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] =
         Future.successful(Redirect(routes.UnauthorisedController.onPageLoad()))
+
+      val parser: BodyParser[AnyContent] = stubMessagesControllerComponents().parsers.defaultBodyParser
+
+      override protected def executionContext: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
+
     }
   }
 }
+
+//object FakeUnAuthorisedAction {
+//  def apply(): AuthAction = {
+//    new AuthAction {
+//      val parser: BodyParser[AnyContent] = stubMessagesControllerComponents().parsers.defaultBodyParser
+//      implicit val executionContext: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
+//
+//      override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] =
+//        Future.successful(Redirect(routes.UnauthorisedController.onPageLoad()))
+//    }
+//  }
+//}
 

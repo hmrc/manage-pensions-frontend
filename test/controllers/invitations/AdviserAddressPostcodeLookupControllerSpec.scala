@@ -64,7 +64,7 @@ class AdviserAddressPostcodeLookupControllerSpec extends WordSpec with MustMatch
       running(_.overrides(
         bind[Navigator].toInstance(FakeNavigator),
         bind[DataRetrievalAction].toInstance(dataRetrievalAction),
-        bind[AuthAction].toInstance(FakeAuthAction())
+        bind[AuthAction].toInstance(FakeAuthAction)
       )) {
         implicit app =>
 
@@ -93,7 +93,7 @@ class AdviserAddressPostcodeLookupControllerSpec extends WordSpec with MustMatch
         bind[UserAnswersCacheConnector].toInstance(cacheConnector),
         bind[AddressLookupConnector].toInstance(addressConnector),
         bind[DataRetrievalAction].toInstance(dataRetrievalAction),
-        bind[AuthAction].toInstance(FakeAuthAction())
+        bind[AuthAction].toInstance(FakeAuthAction)
       )) {
         app =>
 
@@ -118,7 +118,7 @@ class AdviserAddressPostcodeLookupControllerSpec extends WordSpec with MustMatch
           bind[UserAnswersCacheConnector].toInstance(FakeUserAnswersCacheConnector),
           bind[AddressLookupConnector].toInstance(addressConnector),
           bind[DataRetrievalAction].toInstance(dataRetrievalAction),
-          bind[AuthAction].toInstance(FakeAuthAction())
+          bind[AuthAction].toInstance(FakeAuthAction)
         )) {
           implicit app =>
 
@@ -143,7 +143,7 @@ class AdviserAddressPostcodeLookupControllerSpec extends WordSpec with MustMatch
           bind[UserAnswersCacheConnector].toInstance(FakeUserAnswersCacheConnector),
           bind[AddressLookupConnector].toInstance(addressConnector),
           bind[DataRetrievalAction].toInstance(dataRetrievalAction),
-          bind[AuthAction].toInstance(FakeAuthAction())
+          bind[AuthAction].toInstance(FakeAuthAction)
         )) {
           implicit app =>
 
@@ -169,7 +169,7 @@ class AdviserAddressPostcodeLookupControllerSpec extends WordSpec with MustMatch
         bind[UserAnswersCacheConnector].toInstance(FakeUserAnswersCacheConnector),
         bind[AddressLookupConnector].toInstance(addressConnector),
         bind[DataRetrievalAction].toInstance(dataRetrievalAction),
-        bind[AuthAction].toInstance(FakeAuthAction())
+        bind[AuthAction].toInstance(FakeAuthAction)
       )) {
         implicit app =>
 

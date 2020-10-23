@@ -60,7 +60,7 @@ class ConfirmationControllerSpec extends ControllerWithNormalPageBehaviours {
   "ConfirmationController" when {
     "on PageLoad" must {
       "remove all the data from the cache" in {
-        onPageLoadAction(userAnswer, FakeAuthAction())(fakeRequest)
+        onPageLoadAction(userAnswer, FakeAuthAction)(fakeRequest)
 
         FakeUserAnswersCacheConnector.verifyAllDataRemoved()
       }

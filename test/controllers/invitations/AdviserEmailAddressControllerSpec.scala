@@ -45,7 +45,7 @@ class AdviserEmailAddressControllerSpec extends ControllerSpecBase {
   private val view = injector.instanceOf[adviserEmailAddress]
 
   def controller(dataRetrievalAction: DataRetrievalAction = minimalAdviserData) = new AdviserEmailAddressController(
-    frontendAppConfig, messagesApi, FakeAuthAction(), new FakeNavigator(onwardRoute), dataRetrievalAction, new DataRequiredActionImpl, formProvider,
+    frontendAppConfig, messagesApi, FakeAuthAction, new FakeNavigator(onwardRoute), dataRetrievalAction, new DataRequiredActionImpl, formProvider,
     FakeUserAnswersCacheConnector, stubMessagesControllerComponents(), view
   )
 

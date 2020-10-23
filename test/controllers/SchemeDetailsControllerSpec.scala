@@ -69,7 +69,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
       fakeSchemeDetailsConnector,
       fakeListOfSchemesConnector,
       fakeSchemeLockConnector,
-      FakeAuthAction(),
+      FakeAuthAction,
       FakeUserAnswersCacheConnector,
       errorHandler,
       stubMessagesControllerComponents(),

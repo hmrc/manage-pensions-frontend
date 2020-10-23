@@ -28,7 +28,7 @@ class YouNeedToRegisterControllerSpec extends ControllerSpecBase {
 
 
   def controller(dataRetrievalAction: DataRetrievalAction = getEmptyData): YouNeedToRegisterController =
-    new YouNeedToRegisterController(frontendAppConfig, messagesApi, FakeAuthAction(),
+    new YouNeedToRegisterController(frontendAppConfig, messagesApi, FakeAuthAction,
       dataRetrievalAction, new DataRequiredActionImpl, stubMessagesControllerComponents(),
       view)
 

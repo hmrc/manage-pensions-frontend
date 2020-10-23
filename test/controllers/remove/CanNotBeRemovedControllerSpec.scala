@@ -47,7 +47,7 @@ class CanNotBeRemovedControllerSpec extends ControllerWithNormalPageBehaviours {
   "if reason is suspended and affinity group Individual" must {
 
     "return OK and the correct view for a GET" in {
-      val result = fakeControllerAction(FakeAuthAction.createUserType(Individual)).onPageLoadWhereSuspended()(fakeRequest)
+      val result = fakeControllerAction(FakeAuthAction.createWithUserType(Individual)).onPageLoadWhereSuspended()(fakeRequest)
 
       status(result) mustBe OK
       contentAsString(result) mustBe individualViewAsString()
@@ -57,7 +57,7 @@ class CanNotBeRemovedControllerSpec extends ControllerWithNormalPageBehaviours {
   "if reason is suspended and affinity group Organization" must {
 
     "return OK and the correct view for a GET" in {
-      val result = fakeControllerAction(FakeAuthAction.createUserType(Organization)).onPageLoadWhereSuspended()(fakeRequest)
+      val result = fakeControllerAction(FakeAuthAction.createWithUserType(Organization)).onPageLoadWhereSuspended()(fakeRequest)
 
       status(result) mustBe OK
       contentAsString(result) mustBe organisationViewAsString()
@@ -67,7 +67,7 @@ class CanNotBeRemovedControllerSpec extends ControllerWithNormalPageBehaviours {
   "if reason is suspended and affinity group is not Individual or Organization" must {
 
     "redirect to session expired" in {
-      val result = fakeControllerAction(FakeAuthAction.createUserType(OtherUser)).onPageLoadWhereSuspended()(fakeRequest)
+      val result = fakeControllerAction(FakeAuthAction.createWithUserType(OtherUser)).onPageLoadWhereSuspended()(fakeRequest)
 
       status(result) mustBe SEE_OTHER
     }
@@ -83,7 +83,7 @@ class CanNotBeRemovedControllerSpec extends ControllerWithNormalPageBehaviours {
 
   "if reason is removal delay" must {
     "return OK and the correct view for a GET" in {
-      val result = fakeControllerAction(FakeAuthAction.createUserType(Individual)).onPageLoadWhereRemovalDelay()(fakeRequest)
+      val result = fakeControllerAction(FakeAuthAction.createWithUserType(Individual)).onPageLoadWhereRemovalDelay()(fakeRequest)
 
       status(result) mustBe OK
       contentAsString(result) mustBe removalDelayViewAsString()

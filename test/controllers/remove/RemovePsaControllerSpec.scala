@@ -129,7 +129,7 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
   def controller(dataRetrievalAction: DataRetrievalAction = data,
                  psaMinimalDetails: MinimalPSAPSP = psaMinimalSubscription,
                  schemeDetailsConnector:SchemeDetailsConnector) =
-    new RemovePsaController(FakeAuthAction(), dataRetrievalAction,
+    new RemovePsaController(FakeAuthAction, dataRetrievalAction,
       new DataRequiredActionImpl,
       schemeDetailsConnector,
       FakeUserAnswersCacheConnector,

@@ -76,7 +76,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
   def controller(dataRetrievalAction: DataRetrievalAction = getEmptyData) = new DeclarationController(
     messagesApi,
     formProvider,
-    FakeAuthAction(),
+    FakeAuthAction,
     dataRetrievalAction,
     new DataRequiredActionImpl,
     mockPspConnector,

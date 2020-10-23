@@ -51,7 +51,7 @@ class YourInvitationsControllerSpec extends ControllerSpecBase with MockitoSugar
 
   private val yourInvitationsView = injector.instanceOf[yourInvitations]
 
-  private def controller(authAction: AuthAction = FakeAuthAction()): YourInvitationsController = {
+  private def controller(authAction: AuthAction = FakeAuthAction): YourInvitationsController = {
 
     new YourInvitationsController(
       frontendAppConfig,

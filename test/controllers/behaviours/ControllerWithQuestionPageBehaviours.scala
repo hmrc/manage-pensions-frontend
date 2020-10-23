@@ -45,7 +45,7 @@ class ControllerWithQuestionPageBehaviours extends ControllerSpecBase {
 
       "return OK and the correct view for a GET" in {
 
-        val result = onPageLoadAction(emptyData, FakeAuthAction())(fakeRequest)
+        val result = onPageLoadAction(emptyData, FakeAuthAction)(fakeRequest)
 
         status(result) mustBe OK
         contentAsString(result) mustBe validView(emptyForm)
@@ -76,7 +76,7 @@ class ControllerWithQuestionPageBehaviours extends ControllerSpecBase {
 
       "populate the view correctly on a GET when the question has previously been answered" in {
 
-        val result = onPageLoadAction(validData, FakeAuthAction())(fakeRequest)
+        val result = onPageLoadAction(validData, FakeAuthAction)(fakeRequest)
 
         contentAsString(result) mustBe validView(preparedForm)
       }
@@ -94,7 +94,7 @@ class ControllerWithQuestionPageBehaviours extends ControllerSpecBase {
     "calling onSubmit" must {
 
       "redirect to the next page when valid data is submitted" in {
-        val result = onSubmitAction(validData, FakeAuthAction())(postRequest)
+        val result = onSubmitAction(validData, FakeAuthAction)(postRequest)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(onwardRoute.url)
@@ -103,7 +103,7 @@ class ControllerWithQuestionPageBehaviours extends ControllerSpecBase {
       "return a Bad Request and errors when invalid data is submitted" in {
         val request = emptyPostRequest.getOrElse(fakeRequest)
 
-        val result = onSubmitAction(validData, FakeAuthAction())(request)
+        val result = onSubmitAction(validData, FakeAuthAction)(request)
 
         status(result) mustBe BAD_REQUEST
         contentAsString(result) mustBe errorView(form)
@@ -118,7 +118,7 @@ class ControllerWithQuestionPageBehaviours extends ControllerSpecBase {
 
       "onPageLoad redirect to Session Expired if no existing data is found" in {
 
-        val result = onPageLoadAction(validData, FakeAuthAction())(fakeRequest)
+        val result = onPageLoadAction(validData, FakeAuthAction)(fakeRequest)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)
@@ -134,7 +134,7 @@ class ControllerWithQuestionPageBehaviours extends ControllerSpecBase {
 
       "onSubmit redirect to Session Expired if no existing data is found" in {
 
-        val result = onSubmitAction(validDate, FakeAuthAction())(fakeRequest)
+        val result = onSubmitAction(validDate, FakeAuthAction)(fakeRequest)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)
