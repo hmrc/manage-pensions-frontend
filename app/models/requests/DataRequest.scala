@@ -23,12 +23,6 @@ import uk.gov.hmrc.domain.PsaId
 import uk.gov.hmrc.domain.PspId
 import utils.UserAnswers
 
-//case class OptionalDataRequest[A](request: Request[A], externalId: String, userAnswers: Option[UserAnswers], psaId: PsaId)
-//  extends WrappedRequest[A](request) with IdentifiedRequest
-//
-//case class DataRequest[A](request: Request[A], externalId: String, userAnswers: UserAnswers, psaId: PsaId)
-//  extends WrappedRequest[A](request) with IdentifiedRequest
-
 case class OptionalDataRequest[A](request: Request[A], externalId: String, userAnswers: Option[UserAnswers],
   psaId: Option[PsaId], pspId: Option[PspId] = None)
   extends WrappedRequest[A](request) with IdentifiedRequest {
