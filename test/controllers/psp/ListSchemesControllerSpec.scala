@@ -97,66 +97,6 @@ import ListSchemesControllerSpec._
         formValue = None
       )
     }
-
-    "return OK and the correct view when there are schemes with pagination" in {
-      when(mockSchemeSearchService.search(any(), any())(any(), any())).thenReturn(Future.successful(fullSchemes))
-      val pageNumber: Int = 1
-
-      val pagination: Int = 1
-
-      val numberOfSchemes: Int = fullSchemes.length
-
-      val numberOfPages = paginationService.divide(numberOfSchemes, pagination)
-
-      when(mockAppConfig.listSchemePagination) thenReturn pagination
-
-      val fixture = testFixture(psaIdWithSchemes)
-
-      val result = fixture.controller.onPageLoad(fakeRequest)
-
-      status(result) mustBe OK
-
-      contentAsString(result) mustBe viewAsString(
-        schemes = fullSchemes.take(pagination),
-        numberOfSchemes = numberOfSchemes,
-        pagination = pagination,
-        pageNumber = 1,
-        pageNumberLinks = paginationService.pageNumberLinks(pageNumber, numberOfSchemes, pagination, numberOfPages),
-        numberOfPages = numberOfPages,
-        noResultsMessageKey = None,
-        formValue = None
-      )
-    }
-
-    "return OK and the correct view when using page number" in {
-      when(mockSchemeSearchService.search(any(), any())(any(), any())).thenReturn(Future.successful(fullSchemes))
-      val pageNumber: Int = 2
-
-      val pagination: Int = 1
-
-      val numberOfSchemes: Int = fullSchemes.length
-
-      val numberOfPages = paginationService.divide(numberOfSchemes, pagination)
-
-      when(mockAppConfig.listSchemePagination) thenReturn pagination
-
-      val fixture: TestFixture = testFixture(psaIdWithSchemes)
-
-      val result = fixture.controller.onPageLoadWithPageNumber(pageNumber = pageNumber)(fakeRequest)
-
-      status(result) mustBe OK
-
-      contentAsString(result) mustBe viewAsString(
-        schemes = fullSchemes.slice((pageNumber * pagination) - pagination, pageNumber * pagination),
-        numberOfSchemes = numberOfSchemes,
-        pagination = pagination,
-        pageNumber = pageNumber,
-        pageNumberLinks = paginationService.pageNumberLinks(pageNumber, numberOfSchemes, pagination, numberOfPages),
-        numberOfPages = numberOfPages,
-        noResultsMessageKey = None,
-        formValue = None
-      )
-    }
   }
 
   "onSearch" when {
@@ -391,8 +331,7 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
       pagination = pagination,
       pageNumber = pageNumber,
       pageNumberLinks = pageNumberLinks,
-      numberOfPages = numberOfPages,
-      noResultsMessageKey = noResultsMessageKey
+      numberOfPages = numberOfPages
     )(fakeRequest, messages).toString()
   }
 }

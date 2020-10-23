@@ -20,20 +20,27 @@ import com.google.inject.Inject
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import connectors.admin.MinimalPsaConnector
-import controllers.actions.{AuthAction, DataRetrievalAction}
+import controllers.actions.AuthAction
+import controllers.actions.DataRetrievalAction
 import forms.psp.ListSchemesFormProvider
 import identifiers.PSANameId
-import models.{Index, SchemeDetails}
+import models.SchemeDetails
 import models.requests.OptionalDataRequest
 import play.api.data.Form
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import services.{PaginationService, SchemeSearchService}
+import play.api.i18n.I18nSupport
+import play.api.i18n.MessagesApi
+import play.api.mvc.Action
+import play.api.mvc.AnyContent
+import play.api.mvc.MessagesControllerComponents
+import play.api.mvc.Result
+import services.PaginationService
+import services.SchemeSearchService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import views.html.psp.list_schemes
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 class ListSchemesController @Inject()(
                                        val appConfig: FrontendAppConfig,
@@ -51,16 +58,11 @@ class ListSchemesController @Inject()(
   extends FrontendBaseController
     with I18nSupport {
 
-  private val pagination: Int = appConfig.listSchemePagination
-
   private val form: Form[String] = formProvider()
 
   private def renderView(
                           schemeDetails: List[SchemeDetails],
                           numberOfSchemes: Int,
-                          pageNumber: Int,
-                          numberOfPages: Int,
-                          noResultsMessageKey: Option[String],
                           form: Form[_]
                         )(implicit hc: HeaderCarrier,
                           request: OptionalDataRequest[AnyContent]): Future[Result] = {
@@ -78,15 +80,6 @@ class ListSchemesController @Inject()(
                   schemes = schemeDetails,
                   psaName = name,
                   numberOfSchemes = numberOfSchemes,
-                  pagination = pagination,
-                  pageNumber = pageNumber,
-                  pageNumberLinks = paginationService.pageNumberLinks(
-                    pageNumber,
-                    numberOfSchemes,
-                    pagination,
-                    numberOfPages
-                  ),
-                  numberOfPages = numberOfPages
                 )
               )
             }
@@ -103,79 +96,23 @@ class ListSchemesController @Inject()(
                                    searchText: Option[String]
                                  )(implicit request: OptionalDataRequest[AnyContent]): Future[Result] = {
     schemeSearchService.searchPsp(request.psaIdOrException.id, searchText).flatMap { searchResult =>
-
-
-      val numberOfSchemes: Int = searchResult.length
-
-      val numberOfPages: Int =
-        paginationService.divide(numberOfSchemes, pagination)
-
-      selectPageOfResults(searchResult, pageNumber, numberOfPages) match {
-        case Some(searchResultToRender) =>
           renderView(
-            schemeDetails = searchResultToRender,
-            numberOfSchemes = numberOfSchemes,
-            pageNumber = pageNumber,
-            numberOfPages = numberOfPages,
-            noResultsMessageKey = None,
+            schemeDetails = searchResult,
+            numberOfSchemes = searchResult.length,
             form = form
           )
-        case _ =>
-          Future.successful(
-            Redirect(controllers.routes.SessionExpiredController.onPageLoad())
-          )
-      }
-    }
-  }
-
-  private def renderPspView(
-                                   form: Form[_],
-                                   pageNumber: Int,
-                                   searchText: Option[String]
-                                 )(implicit request: OptionalDataRequest[AnyContent]): Future[Result] = {
-
-          renderView(
-            schemeDetails = Nil,
-            numberOfSchemes = 0,
-            pageNumber = pageNumber,
-            numberOfPages = 1,
-            noResultsMessageKey = None,
-            form = form
-          )
-  }
-
-  private def selectPageOfResults(
-                                   searchResult: List[SchemeDetails],
-                                   pageNumber: Int,
-                                   numberOfPages: Int
-                                 ): Option[List[SchemeDetails]] = {
-    pageNumber match {
-      case 1 => Some(searchResult.take(pagination))
-      case p if p <= numberOfPages =>
-        Some(
-          searchResult.slice(
-            (pageNumber * pagination) - pagination,
-            pageNumber * pagination
-          )
-        )
-      case _ =>
-        None
     }
   }
 
   def onPageLoad: Action[AnyContent] = (authenticate() andThen getData).async {
     implicit request =>
-      renderPspView(searchText = None, pageNumber = 1, form = form)
-  }
-
-  def onPageLoadWithPageNumber(pageNumber: Index): Action[AnyContent] =
-    (authenticate() andThen getData).async { implicit request =>
-      searchAndRenderView(
-        searchText = None,
-        pageNumber = pageNumber,
+      renderView(
+        schemeDetails = Nil,
+        numberOfSchemes = 0,
         form = form
       )
-    }
+
+  }
 
   def onSearch: Action[AnyContent] = (authenticate() andThen getData).async {
     implicit request =>

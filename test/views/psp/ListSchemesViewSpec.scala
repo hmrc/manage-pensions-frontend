@@ -146,7 +146,7 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours with MockitoS
           paginationService.divide(numberOfSchemes = emptyList.length, pagination = pagination)
       ),
       messageKeyPrefix = "listSchemes",
-      pageHeader = messages("messages__listSchemes__title")
+      pageHeader = messages("messages__listSchemesPsp__title")
     )
 
     "have link to redirect to Pension Schemes Online service" in {
@@ -200,7 +200,7 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours with MockitoS
         pageNumberLinks = Seq.empty,
         numberOfPages =
           paginationService.divide(numberOfSchemes = emptyList.length, pagination = pagination)
-      ) must haveElementWithText("noSchemes", messages("messages__listSchemes__noSchemes"))
+      ) must haveElementWithText("noSchemes", messages("messages__listSchemesPsp__noMatchesRight"))
     }
 
     "display the correct column headers when there are schemes to display" in {
@@ -482,7 +482,6 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours with MockitoS
       pagination = pagination,
       pageNumber = pageNumber,
       pageNumberLinks = pageNumberLinks,
-      numberOfPages = numberOfPages,
-      noResultsMessageKey = Some("messages__listSchemes__noSchemes")
+      numberOfPages = numberOfPages
     )
 }

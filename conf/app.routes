@@ -23,8 +23,6 @@ GET         /you-need-to-register                         controllers.YouNeedToR
 
 GET         /list-psp                                     controllers.psp.ListSchemesController.onPageLoad
 
-GET         /list-psp/page/:pageNumber                    controllers.psp.ListSchemesController.onPageLoadWithPageNumber(pageNumber: Int)
-
 POST        /list-psp                                     controllers.psp.ListSchemesController.onSearch
 
 GET         /your-pension-schemes                         controllers.ListSchemesController.onPageLoad
