@@ -68,70 +68,17 @@ case _ => status
         <caption class="govuk-table__caption"></caption>
         <tbody class="govuk-table__body">
             <tr class="govuk-table__row">
-                <th scope="row" class="govuk-table__header" id="@schemeNameHeaderID">@messages("messages__listSchemesPsp__column__schemeName")</th>
+                <th scope="row" class="govuk-table__header" id="@schemeNameHeaderID"> <span class="bold">@messages("messages__listSchemesPsp__column__schemeName")</span></th>
                 <td class="govuk-table__cell" id="@{schemeNameId(index)}"> @{scheme.name}</td>
             </tr>
             <tr class="govuk-table__row">
-                <th scope="row" class="govuk-table__header" id="@pstrHeaderID">@messages("messages__listSchemesPsp__column__pstr")</th>
+                <th scope="row" class="govuk-table__header" id="@pstrHeaderID"><span class="bold">@messages("messages__listSchemesPsp__column__pstr")</span></th>
                 <td class="govuk-table__cell" id="@{pstrId(index)}">@pstrValue(scheme.pstr)</td>
             </tr>
             <tr class="govuk-table__row">
-                <th scope="row" class="govuk-table__header" id="@statusHeaderID">@messages("messages__listSchemesPsp__column__status")</th>
+                <th scope="row" class="govuk-table__header" id="@statusHeaderID"> <span class="bold">@messages("messages__listSchemesPsp__column__status")</span></th>
                 <td class="govuk-table__cell" id="@{statusId(index)}">@statusValue(scheme.schemeStatus)</td>
             </tr>
         </tbody>
     </table>
 }
-
-
-
-@*<table id="schemeList" class="hmrc-responsive-table" role="table">*@
-@*    <thead role="rowgroup">*@
-@*    <tr role="row">*@
-@*        <th class="govuk-table__header" scope="col">*@
-@*            <span id="@schemeNameHeaderID" class="heading-small">@messages("messages__listSchemes__column_schemeName")</span>*@
-@*        </th>*@
-@*        <th class="govuk-table__header" scope="col">*@
-@*            <span id="@srnHeaderID" class="heading-small">@messages("messages__listSchemes__column_srn")</span>*@
-@*        </th>*@
-
-@*        <th class="govuk-table__header" scope="col">*@
-@*            <span id="@pstrHeaderID" class="heading-small">@messages("messages__listSchemes__column_pstr")</span>*@
-@*        </th>*@
-
-@*        <th class="govuk-table__header" scope="col">*@
-@*            <span id="@statusHeaderID" class="heading-small">@messages("messages__listSchemes__column_status")</span>*@
-@*        </th>*@
-@*    </tr>*@
-@*    </thead>*@
-
-@*    <tbody>*@
-@*    @for((scheme, index) <- schemes.zipWithIndex) {*@
-
-@*    <tr class="member-details" role="row">*@
-@*        <td class="govuk-table__cell" role="cell">*@
-@*            <span class="hmrc-responsive-table__heading" aria-hidden="true">@messages("messages__listSchemes__column_schemeName")</span>*@
-@*            <a id="@{schemeNameId(index)}" href="@{controllers.routes.SchemeDetailsController.onPageLoad(scheme.referenceNumber).url}" target="_self" data-sso="false">*@
-@*                @{scheme.name}*@
-@*            </a>*@
-@*        </td>*@
-@*        <td class="govuk-table__cell" role="cell" id="@{srnId(index)}">*@
-@*            <span class="hmrc-responsive-table__heading" aria-hidden="true">@messages("messages__listSchemes__column_srn")</span>*@
-@*            @{scheme.referenceNumber}*@
-@*        </td>*@
-@*        <td class="govuk-table__cell" role="cell" id="@{pstrId(index)}">*@
-@*            <span class="hmrc-responsive-table__heading" aria-hidden="true">@messages("messages__listSchemes__column_pstr")</span>*@
-@*            @if(scheme.pstr.nonEmpty) {*@
-@*            @pstrValue(scheme.pstr)*@
-@*            } else {*@
-@*            @messages("messages__listSchemes__pstr_not_assigned")*@
-@*            }*@
-@*        </td>*@
-@*        <td class="govuk-table__cell" role="cell" id="@{statusId(index)}">*@
-@*            <span class="hmrc-responsive-table__heading" aria-hidden="true">@messages("messages__listSchemes__column_status")</span>*@
-@*            @statusValue(scheme.schemeStatus)*@
-@*        </td>*@
-@*    </tr>*@
-@*    }*@
-@*    </tbody>*@
-@*</table>*@

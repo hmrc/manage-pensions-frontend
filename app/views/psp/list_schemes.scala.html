@@ -32,8 +32,7 @@
     pagination: Int,
     pageNumber: Int,
     pageNumberLinks: Seq[Int],
-    numberOfPages: Int,
-    noResultsMessageKey: Option[String]
+    numberOfPages: Int
 )(implicit
     request: Request[_],
     messages: Messages
@@ -130,22 +129,17 @@
             </div>
         </div>
 
-        @if(form("searchText").value.exists(_.length > 0)){
-            @if(schemes.size>0){
+
+
+        @if(form("searchText").value.isDefined && schemes.isEmpty) {
+            @form("searchText").value.map{ searchText =>
                 <div class="grid-row">
                     <div class="column-two-thirds">
-                        <p class="govuk-margin-top-5 govuk-margin-bottom-0">@{schemes.size} results</p>
+                        <p id="noSchemes">@messages("messages__listSchemesPsp__noMatchesLeft") <span class="bold">@searchText</span> @messages("messages__listSchemesPsp__noMatchesRight")</p>
+                        <p id="noSchemes">@messages("messages__listSchemesPsp__noMatchesCheck")</p>
                     </div>
                 </div>
             }
-        }
-
-        @noResultsMessageKey.map{ text =>
-            <div class="grid-row">
-                <div class="column-two-thirds">
-                    <p id="noSchemes">@messages(text)</p>
-                </div>
-            </div>
         }
 
         @if(schemes.nonEmpty && (form("searchText").value.exists(_.length > 0))) {
