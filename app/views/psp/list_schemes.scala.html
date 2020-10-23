@@ -149,7 +149,7 @@
         }
 
         @if(schemes.nonEmpty && (form("searchText").value.exists(_.length > 0))) {
-            @components.scheme_list(schemes, appConfig)
+            @components.scheme_list_psp(schemes, appConfig)
         }
 
         @if(numberOfSchemes > pagination) {

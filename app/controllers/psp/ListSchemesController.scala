@@ -108,7 +108,7 @@ class ListSchemesController @Inject()(
       val noResultsMessageKey =
         (searchText.isDefined, searchResult.isEmpty) match {
           case (true, true) =>
-            Some("messages__listSchemes__search_noMatches")
+            Some("messages__listSchemesPsp__noMatches")
           case (false, true) => Some("messages__listSchemes__noSchemes")
           case _ => None
         }

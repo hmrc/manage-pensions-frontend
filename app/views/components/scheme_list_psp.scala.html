@@ -1,0 +1,137 @@
+@*
+ * Copyright 2020 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import uk.gov.hmrc.urls.Link
+@import config.FrontendAppConfig
+@import models.SchemeStatus
+
+@(schemes: List[SchemeDetails], appConfig: FrontendAppConfig)(implicit messages: Messages)
+
+@schemeNameHeaderID = @{
+s"schemeNameHeader"
+}
+
+@pstrHeaderID = @{
+s"pstrHeader"
+}
+
+@statusHeaderID = @{
+s"statusHeader"
+}
+
+@schemeNameId(index: Int) = @{
+s"schemeName-$index"
+}
+
+
+@pstrId(index: Int) = @{
+s"pstr-$index"
+}
+
+@statusId(index: Int) = @{
+s"schemeStatus-$index"
+}
+
+@pstrValue(pstr: Option[String]) = @{
+pstr.getOrElse(messages("messages__listSchemes__pstr_not_assigned"))
+}
+
+@statusValue(status: String) = @{
+status match {
+case SchemeStatus.Pending.value             => messages("messages__listSchemes__status_pending")
+case SchemeStatus.PendingInfoRequired.value => messages("messages__listSchemes__status_pending_req")
+case SchemeStatus.PendingInfoReceived.value => messages("messages__listSchemes__status_pending_rec")
+case SchemeStatus.Rejected.value            => messages("messages__listSchemes__status_rejected")
+case SchemeStatus.Open.value                => messages("messages__listSchemes__status_open")
+case SchemeStatus.Deregistered.value        => messages("messages__listSchemes__status_deregistered")
+case SchemeStatus.WoundUp.value             => messages("messages__listSchemes__status_wound_up")
+case SchemeStatus.RejectedUnderAppeal.value => messages("messages__listSchemes__status_rejected_appeal")
+case _ => status
+}
+}
+
+@for((scheme, index) <- schemes.zipWithIndex) {
+    <table class="govuk-table" id="scheme-list">
+        <caption class="govuk-table__caption"></caption>
+        <tbody class="govuk-table__body">
+            <tr class="govuk-table__row">
+                <th scope="row" class="govuk-table__header" id="@schemeNameHeaderID">@messages("messages__listSchemesPsp__column__schemeName")</th>
+                <td class="govuk-table__cell" id="@{schemeNameId(index)}"> @{scheme.name}</td>
+            </tr>
+            <tr class="govuk-table__row">
+                <th scope="row" class="govuk-table__header" id="@pstrHeaderID">@messages("messages__listSchemesPsp__column__pstr")</th>
+                <td class="govuk-table__cell" id="@{pstrId(index)}">@pstrValue(scheme.pstr)</td>
+            </tr>
+            <tr class="govuk-table__row">
+                <th scope="row" class="govuk-table__header" id="@statusHeaderID">@messages("messages__listSchemesPsp__column__status")</th>
+                <td class="govuk-table__cell" id="@{statusId(index)}">@statusValue(scheme.schemeStatus)</td>
+            </tr>
+        </tbody>
+    </table>
+}
+
+
+
+@*<table id="schemeList" class="hmrc-responsive-table" role="table">*@
+@*    <thead role="rowgroup">*@
+@*    <tr role="row">*@
+@*        <th class="govuk-table__header" scope="col">*@
+@*            <span id="@schemeNameHeaderID" class="heading-small">@messages("messages__listSchemes__column_schemeName")</span>*@
+@*        </th>*@
+@*        <th class="govuk-table__header" scope="col">*@
+@*            <span id="@srnHeaderID" class="heading-small">@messages("messages__listSchemes__column_srn")</span>*@
+@*        </th>*@
+
+@*        <th class="govuk-table__header" scope="col">*@
+@*            <span id="@pstrHeaderID" class="heading-small">@messages("messages__listSchemes__column_pstr")</span>*@
+@*        </th>*@
+
+@*        <th class="govuk-table__header" scope="col">*@
+@*            <span id="@statusHeaderID" class="heading-small">@messages("messages__listSchemes__column_status")</span>*@
+@*        </th>*@
+@*    </tr>*@
+@*    </thead>*@
+
+@*    <tbody>*@
+@*    @for((scheme, index) <- schemes.zipWithIndex) {*@
+
+@*    <tr class="member-details" role="row">*@
+@*        <td class="govuk-table__cell" role="cell">*@
+@*            <span class="hmrc-responsive-table__heading" aria-hidden="true">@messages("messages__listSchemes__column_schemeName")</span>*@
+@*            <a id="@{schemeNameId(index)}" href="@{controllers.routes.SchemeDetailsController.onPageLoad(scheme.referenceNumber).url}" target="_self" data-sso="false">*@
+@*                @{scheme.name}*@
+@*            </a>*@
+@*        </td>*@
+@*        <td class="govuk-table__cell" role="cell" id="@{srnId(index)}">*@
+@*            <span class="hmrc-responsive-table__heading" aria-hidden="true">@messages("messages__listSchemes__column_srn")</span>*@
+@*            @{scheme.referenceNumber}*@
+@*        </td>*@
+@*        <td class="govuk-table__cell" role="cell" id="@{pstrId(index)}">*@
+@*            <span class="hmrc-responsive-table__heading" aria-hidden="true">@messages("messages__listSchemes__column_pstr")</span>*@
+@*            @if(scheme.pstr.nonEmpty) {*@
+@*            @pstrValue(scheme.pstr)*@
+@*            } else {*@
+@*            @messages("messages__listSchemes__pstr_not_assigned")*@
+@*            }*@
+@*        </td>*@
+@*        <td class="govuk-table__cell" role="cell" id="@{statusId(index)}">*@
+@*            <span class="hmrc-responsive-table__heading" aria-hidden="true">@messages("messages__listSchemes__column_status")</span>*@
+@*            @statusValue(scheme.schemeStatus)*@
+@*        </td>*@
+@*    </tr>*@
+@*    }*@
+@*    </tbody>*@
+@*</table>*@
