@@ -54,7 +54,7 @@ class PsaIdController @Inject()(appConfig: FrontendAppConfig,
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
 
       InviteeNameId.retrieve.right.map {
@@ -66,7 +66,7 @@ class PsaIdController @Inject()(appConfig: FrontendAppConfig,
       }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
           form.bindFromRequest().fold(
             (formWithErrors: Form[_]) =>

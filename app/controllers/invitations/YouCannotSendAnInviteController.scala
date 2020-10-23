@@ -38,7 +38,7 @@ class YouCannotSendAnInviteController @Inject()(appConfig: FrontendAppConfig,
                                                 view: youCannotSendAnInvite)(implicit val ec: ExecutionContext) extends
   FrontendBaseController with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = authenticate {
+  def onPageLoad: Action[AnyContent] = authenticate() {
     implicit request =>
       Ok(view())
   }

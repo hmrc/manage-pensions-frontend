@@ -55,7 +55,7 @@ class AdviserDetailsController @Inject()(
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authenticate andThen getData andThen requiredData).async {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authenticate() andThen getData andThen requiredData).async {
     implicit request =>
       val preparedForm = request.userAnswers.get(AdviserNameId) match {
         case None => form
@@ -65,7 +65,7 @@ class AdviserDetailsController @Inject()(
       Future.successful(Ok(view(preparedForm, mode)))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authenticate andThen getData andThen requiredData).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = (authenticate() andThen getData andThen requiredData).async {
     implicit request =>
 
       form.bindFromRequest().fold(

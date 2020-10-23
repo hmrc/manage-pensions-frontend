@@ -50,7 +50,7 @@ class WhatYouWillNeedController @Inject()(appConfig: FrontendAppConfig,
                                           view: whatYouWillNeed
                                          ) extends FrontendBaseController with I18nSupport with Retrievals {
 
-  def onPageLoad(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
+  def onPageLoad(): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
       (SchemeSrnId and SchemeNameId).retrieve.right.map {
         case srn ~ schemeName =>
@@ -59,7 +59,7 @@ class WhatYouWillNeedController @Inject()(appConfig: FrontendAppConfig,
       }
   }
 
-  def onSubmit(): Action[AnyContent] = authenticate.async {
+  def onSubmit(): Action[AnyContent] = authenticate().async {
     Future.successful(Redirect(controllers.invitations.routes.PsaNameController.onPageLoad(NormalMode)))
   }
 

@@ -46,7 +46,7 @@ class ConfirmationController @Inject()(
                                              view: confirmation
                                            )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
 
-  def onPageLoad: Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
+  def onPageLoad: Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
       (SchemeNameId and PspNameId).retrieve.right.map {
         case schemeName ~ pspName =>

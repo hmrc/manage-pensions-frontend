@@ -45,9 +45,9 @@ class InviteController @Inject()(authenticate: AuthAction,
                                  minimalPsaConnector: MinimalPsaConnector,
                                  val controllerComponents: MessagesControllerComponents)(implicit val ec: ExecutionContext) extends FrontendBaseController {
 
-  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate.async {
+  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate().async {
     implicit request =>
-      minimalPsaConnector.getMinimalPsaDetails(request.psaId.id).flatMap { minimalPsaDetails =>
+      minimalPsaConnector.getMinimalPsaDetails(request.psaIdOrException.id).flatMap { minimalPsaDetails =>
         if (minimalPsaDetails.isPsaSuspended) {
           Future.successful(Redirect(controllers.invitations.routes.YouCannotSendAnInviteController.onPageLoad()))
         } else {
@@ -64,7 +64,7 @@ class InviteController @Inject()(authenticate: AuthAction,
   }
 
   private def getSchemeDetails(srn: SchemeReferenceNumber)(implicit request: AuthenticatedRequest[_]): Future[Option[SchemeDetails]] =
-      schemeDetailsConnector.getSchemeDetails(request.psaId.id, "srn", srn).map { scheme =>
+      schemeDetailsConnector.getSchemeDetails(request.psaIdOrException.id, "srn", srn).map { scheme =>
         scheme.get(SchemeNameId).flatMap { name =>
           Some(SchemeDetails(name, scheme.get(PSTRId)))
         }

@@ -61,7 +61,7 @@ class PspClientReferenceController @Inject()(override val messagesApi: MessagesA
 
   val form: Form[ClientReference] = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
       (SchemeNameId and PspNameId and SchemeSrnId).retrieve.right.map {
         case schemeName ~ pspName ~ srn =>
@@ -72,7 +72,7 @@ class PspClientReferenceController @Inject()(override val messagesApi: MessagesA
       }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
           form.bindFromRequest().fold(
             (formWithErrors: Form[_]) => {

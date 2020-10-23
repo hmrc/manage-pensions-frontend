@@ -55,7 +55,7 @@ class DoYouHaveWorkingKnowledgeController @Inject()(
 
   val form: Form[Boolean] = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (auth andThen getData andThen requireData) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (auth() andThen getData andThen requireData) {
     implicit request =>
 
       val preparedForm = request.userAnswers.get(DoYouHaveWorkingKnowledgeId) match {
@@ -67,7 +67,7 @@ class DoYouHaveWorkingKnowledgeController @Inject()(
 
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = auth.async {
+  def onSubmit(mode: Mode): Action[AnyContent] = auth().async {
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[Boolean]) =>

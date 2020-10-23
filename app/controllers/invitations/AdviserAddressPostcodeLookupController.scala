@@ -60,14 +60,14 @@ class AdviserAddressPostcodeLookupController @Inject()(val appConfig: FrontendAp
 
   val form: Form[String] = formProvider()
 
-  def onPageLoad: Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
+  def onPageLoad: Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
       AdviserNameId.retrieve.right.map{ name =>
         Future.successful(Ok(view(formProvider(), name)))
       }
   }
 
-  def onSubmit: Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
+  def onSubmit: Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
       form.bindFromRequest().fold( formWithErrors =>
         AdviserNameId.retrieve.right.map { name =>
