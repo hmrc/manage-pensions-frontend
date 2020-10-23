@@ -52,7 +52,7 @@ class PsaNameController @Inject()(appConfig: FrontendAppConfig,
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode) = (authenticate andThen getData).async {
+  def onPageLoad(mode: Mode) = (authenticate() andThen getData).async {
     implicit request =>
 
       val value = request.userAnswers.flatMap(_.get(InviteeNameId))
@@ -61,7 +61,7 @@ class PsaNameController @Inject()(appConfig: FrontendAppConfig,
       Future.successful(Ok(view(preparedForm, mode)))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authenticate andThen getData).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = (authenticate() andThen getData).async {
     implicit request =>
 
       form.bindFromRequest().fold(

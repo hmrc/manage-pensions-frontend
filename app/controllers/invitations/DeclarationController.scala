@@ -68,11 +68,11 @@ class DeclarationController @Inject()(
                                      )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
   val form: Form[Boolean] = formProvider()
 
-  def onPageLoad(): Action[AnyContent] = (auth andThen getData andThen requireData).async {
+  def onPageLoad(): Action[AnyContent] = (auth() andThen getData andThen requireData).async {
     implicit request =>
       (DoYouHaveWorkingKnowledgeId and SchemeSrnId).retrieve.right.map {
         case haveWorkingKnowledge ~ srn =>
-            schemeDetailsConnector.getSchemeDetails(request.psaId.id, "srn", srn).flatMap { details =>
+            schemeDetailsConnector.getSchemeDetails(request.psaIdOrException.id, "srn", srn).flatMap { details =>
               (details.get(GetSchemeNameId), details.get(SchemeTypeId)) match {
                 case (Some(name), Some(schemeType)) =>
                   val isMasterTrust = schemeType.equals(MasterTrust)
@@ -93,7 +93,7 @@ class DeclarationController @Inject()(
       }
   }
 
-  def onSubmit(): Action[AnyContent] = (auth andThen getData andThen requireData).async {
+  def onSubmit(): Action[AnyContent] = (auth() andThen getData andThen requireData).async {
     implicit request =>
 
       form.bindFromRequest().fold(
@@ -115,14 +115,14 @@ class DeclarationController @Inject()(
                                      (implicit request: DataRequest[AnyContent]): Future[Result] = {
     val userAnswers = request.userAnswers
 
-    invitationsCacheConnector.get(pstr, request.psaId).flatMap { invitations =>
+    invitationsCacheConnector.get(pstr, request.psaIdOrException).flatMap { invitations =>
       invitations.headOption match {
         case Some(invitation) =>
-          val acceptedInvitation = AcceptedInvitation(invitation.pstr, request.psaId, invitation.inviterPsaId, declaration,
+          val acceptedInvitation = AcceptedInvitation(invitation.pstr, request.psaIdOrException, invitation.inviterPsaId, declaration,
             haveWorkingKnowledge, userAnswers.json.validate[PensionAdviserDetails](PensionAdviserDetails.userAnswerReads).asOpt)
 
           invitationConnector.acceptInvite(acceptedInvitation).flatMap { _ =>
-            invitationsCacheConnector.remove(invitation.pstr, request.psaId).map { _ =>
+            invitationsCacheConnector.remove(invitation.pstr, request.psaIdOrException).map { _ =>
               Redirect(navigator.nextPage(DeclarationId, NormalMode, userAnswers))
             }
           }

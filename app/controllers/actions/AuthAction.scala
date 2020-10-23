@@ -20,6 +20,8 @@ import com.google.inject.ImplementedBy
 import com.google.inject.Inject
 import config.FrontendAppConfig
 import controllers.routes
+import models.AuthEntity
+import models.AuthEntity.PSA
 import models.requests.AuthenticatedRequest
 import models.OtherUser
 import models.UserType
@@ -31,14 +33,19 @@ import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.domain.PsaId
+import uk.gov.hmrc.domain.PspId
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.HeaderCarrierConverter
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
-class AuthActionImpl @Inject()(override val authConnector: AuthConnector, config: FrontendAppConfig, val parser: BodyParsers.Default)
-                              (implicit val executionContext: ExecutionContext) extends AuthAction with AuthorisedFunctions {
+class AuthImpl(override val authConnector: AuthConnector,
+  config: FrontendAppConfig,
+  val parser: BodyParsers.Default,
+  authEntity: AuthEntity)
+  (implicit val executionContext: ExecutionContext) extends Auth with
+  AuthorisedFunctions {
 
   override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
@@ -46,7 +53,7 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector, config
     authorised().retrieve(Retrievals.externalId and
       Retrievals.allEnrolments and Retrievals.affinityGroup) {
       case Some(id) ~ enrolments ~ Some(affinityGroup) =>
-        block(AuthenticatedRequest(request, id.toString, PsaId(getPsaId(enrolments)), userType(affinityGroup)))
+        createAuthRequest(id, enrolments, affinityGroup, request, block)
       case _ =>
         Future.successful(Redirect(routes.UnauthorisedController.onPageLoad()))
     } recover {
@@ -67,8 +74,22 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector, config
     }
   }
 
-  private def getPsaId(enrolments: Enrolments) =
-    enrolments.getEnrolment("HMRC-PODS-ORG").flatMap(_.getIdentifier("PSAID")).map(_.value).getOrElse(throw new PsaIdNotFound)
+  private def createAuthRequest[A](id: String, enrolments: Enrolments, affinityGroup: AffinityGroup, request: Request[A],
+    block: AuthenticatedRequest[A] => Future[Result]): Future[Result] =
+    if(authEntity == PSA) {
+      block(AuthenticatedRequest(request, id, Some(PsaId(getPsaId(enrolments))), None, userType(affinityGroup)))
+    } else {
+      block(AuthenticatedRequest(request, id, None, Some(PspId(getPspId(enrolments))), userType(affinityGroup)))
+    }
+
+
+  private def getPsaId(enrolments: Enrolments): String =
+    enrolments.getEnrolment("HMRC-PODS-ORG").flatMap(_.getIdentifier("PSAID")).map(_.value)
+      .getOrElse(throw new PsaIdNotFound)
+
+  private def getPspId(enrolments: Enrolments): String =
+    enrolments.getEnrolment("HMRC-PODS-ORG").flatMap(_.getIdentifier("PSPID")).map(_.value)
+      .getOrElse(throw IdNotFound("PspIdNotFound"))
 
   private def userType(affinityGroup: AffinityGroup): UserType = {
     affinityGroup match {
@@ -80,8 +101,22 @@ class AuthActionImpl @Inject()(override val authConnector: AuthConnector, config
 
 }
 
-@ImplementedBy(classOf[AuthActionImpl])
-trait AuthAction extends ActionBuilder[AuthenticatedRequest, AnyContent] with ActionFunction[Request, AuthenticatedRequest]
+@ImplementedBy(classOf[AuthImpl])
+trait Auth extends ActionBuilder[AuthenticatedRequest, AnyContent] with ActionFunction[Request,
+  AuthenticatedRequest]
 
 case class PsaIdNotFound(msg: String = "PsaIdNotFound") extends AuthorisationException(msg)
+case class IdNotFound(msg: String = "PsaIdNotFound") extends AuthorisationException(msg)
 
+class AuthActionImpl @Inject()(authConnector: AuthConnector,
+  config: FrontendAppConfig,
+  val parser: BodyParsers.Default)
+  (implicit ec: ExecutionContext) extends AuthAction {
+
+  override def apply(authEntity: AuthEntity): Auth = new AuthImpl(authConnector, config, parser, authEntity)
+}
+
+@ImplementedBy(classOf[AuthActionImpl])
+trait AuthAction {
+  def apply(authEntity: AuthEntity = PSA): Auth
+}

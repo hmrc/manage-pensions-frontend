@@ -39,7 +39,7 @@ class RetrievalsSpec extends WordSpec with FrontendBaseController with Retrieval
 
   val controllerComponents: MessagesControllerComponents = stubMessagesControllerComponents()
 
-  def dataRequest(data: JsValue): DataRequest[AnyContent] = DataRequest(FakeRequest("", ""), "cacheId", UserAnswers(data), PsaId("A0000000"))
+  def dataRequest(data: JsValue): DataRequest[AnyContent] = DataRequest(FakeRequest("", ""), "cacheId", UserAnswers(data), Some(PsaId("A0000000")))
 
   val success: String => Future[Result] = { _: String =>
     Future.successful(Ok("Success"))

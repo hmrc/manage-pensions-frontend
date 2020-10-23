@@ -89,7 +89,7 @@ class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
     )
 
   private def invitationsLink(implicit request: OptionalDataRequest[AnyContent], hc: HeaderCarrier): Future[Seq[Link]] =
-    invitationsCacheConnector.getForInvitee(request.psaId).map { invitationsList =>
+    invitationsCacheConnector.getForInvitee(request.psaIdOrException).map { invitationsList =>
       val linkText = invitationsList match {
         case Nil => Message("messages__schemeOverview__psa_view_no_invitation")
         case invitations if invitations.size == 1 => Message("messages__schemeOverview__psa_view_one_invitation")

@@ -59,13 +59,13 @@ class PensionAdviserAddressListController @Inject()(
 
   def form(addresses: Seq[TolerantAddress]): Form[Int] = formProvider(addresses)
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request => AdviserAddressPostCodeLookupId.retrieve.right.map { addresses =>
         Future.successful(Ok(view(form(addresses), addresses, mode)))
       }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
       AdviserAddressPostCodeLookupId.retrieve.right.map { addresses =>
         formProvider(addresses).bindFromRequest().fold(

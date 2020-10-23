@@ -107,7 +107,7 @@ class SchemesOverviewServiceSpec extends SpecBase with MockitoSugar with BeforeA
 object SchemesOverviewServiceSpec extends SpecBase with MockitoSugar  {
 
   implicit val request: OptionalDataRequest[AnyContent] =
-    OptionalDataRequest(FakeRequest("", ""), "id", Some(UserAnswers()), PsaId("A0000000"))
+    OptionalDataRequest(FakeRequest("", ""), "id", Some(UserAnswers()), Some(PsaId("A0000000")))
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
 

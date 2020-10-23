@@ -42,7 +42,7 @@ class AlreadyAssociatedWithSchemeControllerSpec extends ControllerSpecBase {
   def controller(dataRetrievalAction: DataRetrievalAction = minimalData) = new AlreadyAssociatedWithSchemeController(
     config,
     messagesApi,
-    FakeAuthAction(),
+    FakeAuthAction,
     dataRetrievalAction,
     new DataRequiredActionImpl,
     stubMessagesControllerComponents(),

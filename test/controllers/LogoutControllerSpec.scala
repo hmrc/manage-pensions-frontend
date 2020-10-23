@@ -31,7 +31,7 @@ class LogoutControllerSpec extends ControllerSpecBase with MockitoSugar {
 
   private val mockAftCacheConnector = mock[AftCacheConnector]
 
-  private def logoutController = new LogoutController(frontendAppConfig, mockAftCacheConnector, FakeAuthAction(),
+  private def logoutController = new LogoutController(frontendAppConfig, mockAftCacheConnector, FakeAuthAction,
     stubMessagesControllerComponents())
 
   "Logout Controller" must {

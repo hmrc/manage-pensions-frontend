@@ -98,7 +98,7 @@ class InvitationSuccessControllerSpec extends ControllerWithNormalPageBehaviours
   "InvitationSuccessController" when {
     "on PageLoad" must {
       "remove all the data from the cache" in {
-        onPageLoadAction(userAnswer, FakeAuthAction())(fakeRequest)
+        onPageLoadAction(userAnswer, FakeAuthAction)(fakeRequest)
 
         FakeUserAnswersCacheConnector.verifyAllDataRemoved
       }
@@ -109,7 +109,7 @@ class InvitationSuccessControllerSpec extends ControllerWithNormalPageBehaviours
 
     val expected = DateHelper.formatDate(testExpiryDate(frontendAppConfig))
 
-    val result = onPageLoadAction(userAnswer, FakeAuthAction())(fakeRequest)
+    val result = onPageLoadAction(userAnswer, FakeAuthAction)(fakeRequest)
 
     contentAsString(result) must include(expected)
   }

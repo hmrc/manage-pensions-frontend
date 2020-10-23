@@ -84,9 +84,9 @@ object PsaAlreadyAssociatedControllerSpec extends ControllerSpecBase {
 
     val authAction =
       if (authorised) {
-        FakeAuthAction()
+        FakeAuthAction
       } else {
-        FakeUnAuthorisedAction()
+        FakeUnAuthorisedAction
       }
 
     val dataRetrievalAction =

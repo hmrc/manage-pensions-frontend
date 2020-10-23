@@ -51,16 +51,16 @@ class YourInvitationsController @Inject()(appConfig: FrontendAppConfig,
                                          )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
 
-  def onPageLoad(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
+  def onPageLoad(): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
-      invitationsCacheConnector.getForInvitee(request.psaId).map { invitationsList =>
+      invitationsCacheConnector.getForInvitee(request.psaIdOrException).map { invitationsList =>
         request.userAnswers.get(PSANameId).map { name =>
           Ok(view(invitationsList, name))
         }.getOrElse(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
       }
   }
 
-  def onSelect(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate.async {
+  def onSelect(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate().async {
     implicit request =>
       userAnswersCacheConnector.removeAll(request.externalId).flatMap { _ =>
         userAnswersCacheConnector.save(request.externalId, SchemeSrnId, srn.id).map { cacheMap =>
