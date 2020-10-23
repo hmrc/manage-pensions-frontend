@@ -35,7 +35,7 @@ class CanNotBeRemovedControllerSpec extends ControllerWithNormalPageBehaviours {
   import CanNotBeRemovedControllerSpec._
   private val view = injector.instanceOf[cannot_be_removed]
 
-  def fakeControllerAction(authAction: AuthAction = FakeUnAuthorisedAction()) = new CanNotBeRemovedController(
+  def fakeControllerAction(authAction: AuthAction = FakeUnAuthorisedAction) = new CanNotBeRemovedController(
     frontendAppConfig, messagesApi, authAction, FakeUserAnswersCacheConnector, stubMessagesControllerComponents(), view)
 
   def individualViewAsString(): String = view(viewModelIndividual)(fakeRequest, messages).toString

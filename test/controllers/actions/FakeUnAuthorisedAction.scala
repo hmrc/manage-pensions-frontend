@@ -43,16 +43,3 @@ object FakeUnAuthorisedAction extends AuthAction {
     }
   }
 }
-
-//object FakeUnAuthorisedAction {
-//  def apply(): AuthAction = {
-//    new AuthAction {
-//      val parser: BodyParser[AnyContent] = stubMessagesControllerComponents().parsers.defaultBodyParser
-//      implicit val executionContext: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
-//
-//      override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] =
-//        Future.successful(Redirect(routes.UnauthorisedController.onPageLoad()))
-//    }
-//  }
-//}
-

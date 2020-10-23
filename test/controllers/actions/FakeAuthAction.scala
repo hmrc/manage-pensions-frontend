@@ -39,7 +39,7 @@ object FakeAuthAction extends AuthAction {
     override def apply(authEntity: AuthEntity = PSA): Auth = new FakeAuth(authEntity = PSA, psaId = Some(PsaId(psaId)), pspId = None)
   }
   def createWithUserType(userType:UserType): AuthAction = new AuthAction {
-    override def apply(authEntity: AuthEntity = PSA): Auth = new FakeAuth(authEntity = PSA, pspId = None)
+    override def apply(authEntity: AuthEntity = PSA): Auth = new FakeAuth(authEntity = PSA, pspId = None, userType = userType)
   }
   def createWithPspId(pspId:String): AuthAction = new AuthAction {
     override def apply(authEntity: AuthEntity = PSA): Auth = new FakeAuth(authEntity = PSP, pspId = Some(PspId(pspId)), psaId = None)
@@ -48,9 +48,12 @@ object FakeAuthAction extends AuthAction {
 }
 
 class FakeAuth(authEntity: AuthEntity,
-  psaId:Option[PsaId] = Some(PsaId("A0000000")), pspId:Option[PspId] = Some(PspId("00000000"))) extends Auth {
+  psaId:Option[PsaId] = Some(PsaId("A0000000")),
+  pspId:Option[PspId] = Some(PspId("00000000")),
+  userType: UserType = Individual
+) extends Auth {
   override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] =
-    block(AuthenticatedRequest(request, "id", psaId, pspId, Individual, authEntity))
+    block(AuthenticatedRequest(request, "id", psaId, pspId, userType, authEntity))
 
   val parser: BodyParser[AnyContent] = stubMessagesControllerComponents().parsers.defaultBodyParser
 

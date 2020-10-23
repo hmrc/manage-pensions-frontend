@@ -53,7 +53,7 @@ class ControllerWithQuestionPageBehaviours extends ControllerSpecBase {
 
       "return 303 if user action is not authenticated" in {
 
-        val result = onPageLoadAction(emptyData, FakeUnAuthorisedAction())(fakeRequest)
+        val result = onPageLoadAction(emptyData, FakeUnAuthorisedAction)(fakeRequest)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)

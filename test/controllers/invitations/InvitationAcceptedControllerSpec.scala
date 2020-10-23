@@ -63,7 +63,7 @@ class InvitationAcceptedControllerSpec extends ControllerSpecBase {
 
     "redirect to unauthorised if user action is not authenticated" in {
 
-      val result = controller(authAction = FakeUnAuthorisedAction()).onPageLoad(fakeRequest)
+      val result = controller(authAction = FakeUnAuthorisedAction).onPageLoad(fakeRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)

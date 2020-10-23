@@ -215,7 +215,7 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
 
     "redirect to unauthorised page if user is not authenticated" in {
 
-      val controller = new RemovePsaController(FakeUnAuthorisedAction(), data, new DataRequiredActionImpl,
+      val controller = new RemovePsaController(FakeUnAuthorisedAction, data, new DataRequiredActionImpl,
         fakeSchemeDetailsConnector(), FakeUserAnswersCacheConnector,
         fakeMinimalPsaConnector(psaMinimalSubscription.copy(isPsaSuspended = false)), frontendAppConfig,
         stubMessagesControllerComponents()

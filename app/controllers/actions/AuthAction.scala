@@ -85,7 +85,7 @@ class AuthImpl(override val authConnector: AuthConnector,
 
   private def getPsaId(enrolments: Enrolments): String =
     enrolments.getEnrolment("HMRC-PODS-ORG").flatMap(_.getIdentifier("PSAID")).map(_.value)
-      .getOrElse(throw new IdNotFound)
+      .getOrElse(throw new PsaIdNotFound)
 
   private def getPspId(enrolments: Enrolments): String =
     enrolments.getEnrolment("HMRC-PODS-ORG").flatMap(_.getIdentifier("PSPID")).map(_.value)

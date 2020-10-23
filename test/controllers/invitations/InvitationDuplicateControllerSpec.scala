@@ -86,7 +86,7 @@ object InvitationDuplicateControllerSpec extends ControllerSpecBase {
       if (authorised) {
         FakeAuthAction
       } else {
-        FakeUnAuthorisedAction()
+        FakeUnAuthorisedAction
       }
 
     val dataRetrievalAction =

@@ -85,7 +85,7 @@ class YourInvitationsControllerSpec extends ControllerSpecBase with MockitoSugar
 
     "redirect to Unauthorised when not authenticated on GET" in {
 
-      val result = controller(FakeUnAuthorisedAction()).onPageLoad()(fakeRequest)
+      val result = controller(FakeUnAuthorisedAction).onPageLoad()(fakeRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)

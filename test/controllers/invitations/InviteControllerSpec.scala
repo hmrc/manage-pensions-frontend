@@ -65,7 +65,7 @@ class InviteControllerSpec extends SpecBase {
 
     "redirect to unauthorised page if user is not authenticated" in {
 
-      val controller = new InviteController(FakeUnAuthorisedAction(), fakeSchemeDetailsConnector,
+      val controller = new InviteController(FakeUnAuthorisedAction, fakeSchemeDetailsConnector,
         FakeUserAnswersCacheConnector, featureSwitch, fakeMinimalPsaConnector(isSuspended = false), stubMessagesControllerComponents())
 
       val result = controller.onPageLoad(srn)(fakeRequest)
