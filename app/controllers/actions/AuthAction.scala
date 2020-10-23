@@ -54,7 +54,6 @@ class AuthImpl(override val authConnector: AuthConnector,
       Retrievals.allEnrolments and Retrievals.affinityGroup) {
       case Some(id) ~ enrolments ~ Some(affinityGroup) =>
         createAuthRequest(id, enrolments, affinityGroup, request, block)
-        //block(AuthenticatedRequest(request, id.toString, PsaId(getPsaId(enrolments)), userType(affinityGroup)))
       case _ =>
         Future.successful(Redirect(routes.UnauthorisedController.onPageLoad()))
     } recover {
@@ -92,13 +91,6 @@ class AuthImpl(override val authConnector: AuthConnector,
     enrolments.getEnrolment("HMRC-PODS-ORG").flatMap(_.getIdentifier("PSPID")).map(_.value)
       .getOrElse(throw IdNotFound("PspIdNotFound"))
 
-  //
-  //private def getPspId(enrolments: Enrolments): String =
-  //  enrolments.getEnrolment("HMRC-PODS-ORG").flatMap(_.getIdentifier("PSPID")).map(_.value)
-  //
-  //private def getPsaId(enrolments: Enrolments) =
-  //  enrolments.getEnrolment("HMRC-PODS-ORG").flatMap(_.getIdentifier("PSAID")).map(_.value).getOrElse(throw new PsaIdNotFound)
-
   private def userType(affinityGroup: AffinityGroup): UserType = {
     affinityGroup match {
       case Individual => models.Individual
@@ -128,9 +120,3 @@ class AuthActionImpl @Inject()(authConnector: AuthConnector,
 trait AuthAction {
   def apply(authEntity: AuthEntity = PSA): Auth
 }
-
-//@ImplementedBy(classOf[AuthActionImpl])
-//trait AuthAction extends ActionBuilder[AuthenticatedRequest, AnyContent] with ActionFunction[Request, AuthenticatedRequest]
-//
-//case class PsaIdNotFound(msg: String = "PsaIdNotFound") extends AuthorisationException(msg)
-

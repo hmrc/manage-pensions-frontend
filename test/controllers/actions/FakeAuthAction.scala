@@ -16,6 +16,8 @@
 
 package controllers.actions
 
+import models.AuthEntity
+import models.AuthEntity.PSA
 import models.requests.AuthenticatedRequest
 import models.Individual
 import models.UserType
@@ -24,10 +26,47 @@ import play.api.mvc.BodyParser
 import play.api.mvc.Request
 import play.api.mvc.Result
 import uk.gov.hmrc.domain.PsaId
+import uk.gov.hmrc.domain.PspId
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
+
+
+//object FakeAuthAction extends AuthAction {
+//  protected val externalId: String = "id"
+//  override def apply(authEntity: AuthEntity = PSA): Auth = new FakeAuth(authEntity)
+//  //def createWithPsaId(psaId:String): AuthAction = {
+//  //  new AuthAction {
+//  //    val parser: BodyParser[AnyContent] = stubMessagesControllerComponents().parsers.defaultBodyParser
+//  //    implicit val executionContext: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
+//  //    override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] =
+//  //      block(AuthenticatedRequest(request, externalId, Some(PsaId(psaId)), None, Individual))
+//  //  }
+//  //}
+//  //
+//  //def createUserType(userType:UserType): AuthAction = {
+//  //  new AuthAction {
+//  //    val parser: BodyParser[AnyContent] = stubMessagesControllerComponents().parsers.defaultBodyParser
+//  //    implicit val executionContext: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
+//  //    override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] =
+//  //      block(AuthenticatedRequest(request, externalId, Some(PsaId(defaultPsaId)), None, userType))
+//  //  }
+//  //}
+//}
+
+//class FakeAuth(authEntity: AuthEntity) extends Auth {
+//
+//  protected val defaultPsaId: String = "A0000000"
+//  protected val defaultPspaId: String = "00000000"
+//  override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] =
+//    block(AuthenticatedRequest(request, "id", Some(PsaId(defaultPsaId)), Some(PspId(defaultPspaId)), Individual, authEntity))
+//
+//  val parser: BodyParser[AnyContent] = stubMessagesControllerComponents().parsers.defaultBodyParser
+//
+//  override protected def executionContext: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
+//}
+
 
 object FakeAuthAction {
   private val externalId: String = "id"
@@ -38,7 +77,7 @@ object FakeAuthAction {
       val parser: BodyParser[AnyContent] = stubMessagesControllerComponents().parsers.defaultBodyParser
       implicit val executionContext: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
       override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] =
-        block(AuthenticatedRequest(request, externalId, PsaId(defaultPsaId), Individual))
+        block(AuthenticatedRequest(request, externalId, Some(PsaId(defaultPsaId)), None, Individual))
     }
   }
 
@@ -47,7 +86,7 @@ object FakeAuthAction {
       val parser: BodyParser[AnyContent] = stubMessagesControllerComponents().parsers.defaultBodyParser
       implicit val executionContext: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
       override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] =
-        block(AuthenticatedRequest(request, externalId, PsaId(psaId), Individual))
+        block(AuthenticatedRequest(request, externalId, Some(PsaId(psaId)), None, Individual))
     }
   }
 
@@ -56,8 +95,11 @@ object FakeAuthAction {
       val parser: BodyParser[AnyContent] = stubMessagesControllerComponents().parsers.defaultBodyParser
       implicit val executionContext: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
       override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] =
-        block(AuthenticatedRequest(request, externalId, PsaId(defaultPsaId), userType))
+        block(AuthenticatedRequest(request, externalId, Some(PsaId(defaultPsaId)), None, userType))
     }
   }
 }
+
+
+
 
