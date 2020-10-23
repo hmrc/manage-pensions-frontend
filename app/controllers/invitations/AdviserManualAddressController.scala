@@ -62,7 +62,7 @@ class AdviserManualAddressController @Inject()(
 
   val form: Form[Address] = formProvider()
 
-  def onPageLoad(mode: Mode, prepopulated: Boolean): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
+  def onPageLoad(mode: Mode, prepopulated: Boolean): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
 
       AdviserNameId.retrieve.right.map { name =>
@@ -84,7 +84,7 @@ class AdviserManualAddressController @Inject()(
 
   }
 
-  def onSubmit(mode: Mode, prepopulated: Boolean): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
+  def onSubmit(mode: Mode, prepopulated: Boolean): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
 
       val prefix = if (prepopulated) {

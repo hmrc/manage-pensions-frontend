@@ -58,7 +58,7 @@ class PspIdController @Inject()(appConfig: FrontendAppConfig,
 
   val form: Form[String] = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
 
       (SchemeNameId and PspNameId and SchemeSrnId).retrieve.right.map {
@@ -70,7 +70,7 @@ class PspIdController @Inject()(appConfig: FrontendAppConfig,
       }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
           form.bindFromRequest().fold(
             (formWithErrors: Form[_]) =>

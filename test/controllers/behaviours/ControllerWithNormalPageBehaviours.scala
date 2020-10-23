@@ -42,7 +42,7 @@ class ControllerWithNormalPageBehaviours extends ControllerSpecBase {
 
         "return OK and the correct view for a GET" in {
 
-          val result = onPageLoadAction(validData.getOrElse(emptyData), FakeAuthAction())(fakeRequest)
+          val result = onPageLoadAction(validData.getOrElse(emptyData), FakeAuthAction)(fakeRequest)
 
           status(result) mustBe OK
           contentAsString(result) mustBe validView()
@@ -50,14 +50,14 @@ class ControllerWithNormalPageBehaviours extends ControllerSpecBase {
 
         "populate the view correctly on a GET when the required data to render page is present" in {
 
-          val result = onPageLoadAction(validData.getOrElse(getEmptyData), FakeAuthAction())(fakeRequest)
+          val result = onPageLoadAction(validData.getOrElse(getEmptyData), FakeAuthAction)(fakeRequest)
 
           contentAsString(result) mustBe validView()
         }
 
         "onPageLoad redirect to Session Expired if no existing data is found" in {
 
-          val result = onPageLoadAction(emptyData, FakeAuthAction())(fakeRequest)
+          val result = onPageLoadAction(emptyData, FakeAuthAction)(fakeRequest)
 
           status(result) mustBe SEE_OTHER
           redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)
@@ -67,7 +67,7 @@ class ControllerWithNormalPageBehaviours extends ControllerSpecBase {
 
         "return OK and the correct view for a GET" in {
 
-          val result = onPageLoadAction(emptyData, FakeAuthAction())(fakeRequest)
+          val result = onPageLoadAction(emptyData, FakeAuthAction)(fakeRequest)
 
           status(result) mustBe OK
           contentAsString(result) mustBe validView()
@@ -76,7 +76,7 @@ class ControllerWithNormalPageBehaviours extends ControllerSpecBase {
 
       "return 303 if user action is not authenticated" in {
 
-        val result = onPageLoadAction(emptyData, FakeUnAuthorisedAction())(fakeRequest)
+        val result = onPageLoadAction(emptyData, FakeUnAuthorisedAction)(fakeRequest)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad.url)
@@ -94,7 +94,7 @@ class ControllerWithNormalPageBehaviours extends ControllerSpecBase {
 
       "redirect to the next page when valid data is present" in {
 
-        val result = onSubmitAction(validData.getOrElse(emptyData), FakeAuthAction())(FakeRequest())
+        val result = onSubmitAction(validData.getOrElse(emptyData), FakeAuthAction)(FakeRequest())
 
         status(result) mustBe SEE_OTHER
         redirectionUrl match {
@@ -107,7 +107,7 @@ class ControllerWithNormalPageBehaviours extends ControllerSpecBase {
 
         "redirect to Session Expired if no existing data is found" in {
 
-          val result = onSubmitAction(emptyData, FakeAuthAction())(fakeRequest)
+          val result = onSubmitAction(emptyData, FakeAuthAction)(fakeRequest)
 
           status(result) mustBe SEE_OTHER
           redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)

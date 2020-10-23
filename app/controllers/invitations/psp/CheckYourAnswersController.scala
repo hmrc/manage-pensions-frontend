@@ -47,7 +47,7 @@ class CheckYourAnswersController @Inject()(override val messagesApi: MessagesApi
                                            view: check_your_answers
                                           )(implicit val ec: ExecutionContext) extends FrontendBaseController with Retrievals with I18nSupport {
 
-    def onPageLoad(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
+    def onPageLoad(): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
         implicit request =>
 
             SchemeNameId.retrieve.right.map { schemeName =>
@@ -60,7 +60,7 @@ class CheckYourAnswersController @Inject()(override val messagesApi: MessagesApi
             }
     }
 
-    def onSubmit(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
+    def onSubmit(): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
         implicit request =>
             (PspNameId and PspId).retrieve.right.map {
                 case pspName ~ pspId =>

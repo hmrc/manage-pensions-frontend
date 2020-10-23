@@ -45,10 +45,10 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
                                          (implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
 
-  def onPageLoad: Action[AnyContent] = (authenticate andThen getData).async {
+  def onPageLoad: Action[AnyContent] = (authenticate() andThen getData).async {
     implicit request =>
 
-      val psaId = request.psaId.id
+      val psaId = request.psaIdOrException.id
 
       service.getPsaName(psaId).flatMap {
 

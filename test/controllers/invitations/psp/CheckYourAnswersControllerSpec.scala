@@ -51,7 +51,7 @@ class CheckYourAnswersControllerSpec extends ControllerSpecBase with MockitoSuga
 
     private val mockMinConnector = mock[MinimalPsaConnector]
     def controller(dataRetrievalAction: DataRetrievalAction = data) = new CheckYourAnswersController(
-        messagesApi, FakeAuthAction(), dataRetrievalAction, new DataRequiredActionImpl,
+        messagesApi, FakeAuthAction, dataRetrievalAction, new DataRequiredActionImpl,
         checkYourAnswersFactory, mockMinConnector, stubMessagesControllerComponents(), view
     )
 

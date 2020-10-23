@@ -35,7 +35,7 @@ class IndexController @Inject()(val appConfig: FrontendAppConfig,
                                 val controllerComponents: MessagesControllerComponents,
                                 view: index)(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = authenticate { implicit request =>
+  def onPageLoad: Action[AnyContent] = authenticate() { implicit request =>
     Ok(view())
   }
 }

@@ -30,8 +30,8 @@ class FakeDataRetrievalAction(json: Option[JsValue], psaId: String = "A0000000")
 
   override protected def transform[A](request: AuthenticatedRequest[A]): Future[OptionalDataRequest[A]] = json match {
     case None =>
-      Future.successful(OptionalDataRequest(request.request, request.externalId, None, PsaId(psaId)))
+      Future.successful(OptionalDataRequest(request.request, request.externalId, None, Some(PsaId(psaId))))
     case Some(cacheMap) =>
-      Future.successful(OptionalDataRequest(request.request, request.externalId, Some(UserAnswers(cacheMap)), PsaId(psaId)))
+      Future.successful(OptionalDataRequest(request.request, request.externalId, Some(UserAnswers(cacheMap)), Some(PsaId(psaId))))
   }
 }

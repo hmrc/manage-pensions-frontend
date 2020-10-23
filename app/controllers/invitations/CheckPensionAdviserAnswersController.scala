@@ -52,7 +52,7 @@ class CheckPensionAdviserAnswersController @Inject()(appConfig: FrontendAppConfi
                                                      view: check_your_answers
                                                     )(implicit val ec: ExecutionContext) extends FrontendBaseController with Retrievals with I18nSupport {
 
-  def onPageLoad(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
+  def onPageLoad(): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
       val checkYourAnswersHelper = checkYourAnswersFactory.checkYourAnswersHelper(request.userAnswers)
       AdviserNameId.retrieve.right.map { name =>
@@ -70,7 +70,7 @@ class CheckPensionAdviserAnswersController @Inject()(appConfig: FrontendAppConfi
       }
   }
 
-  def onSubmit(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
+  def onSubmit(): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
       Future.successful(Redirect(navigator.nextPage(CheckPensionAdviserAnswersId, NormalMode, request.userAnswers)))
   }

@@ -16,14 +16,26 @@
 
 package models.requests
 
+import controllers.actions.IdNotFound
+import models.AuthEntity
+import models.AuthEntity.PSA
 import models.UserType
 import play.api.mvc.Request
 import play.api.mvc.WrappedRequest
 import uk.gov.hmrc.domain.PsaId
+import uk.gov.hmrc.domain.PspId
 
 trait IdentifiedRequest {
   def externalId: String
 }
 
-case class AuthenticatedRequest[A](request: Request[A], externalId: String, psaId: PsaId, userType : UserType)
-  extends WrappedRequest[A](request) with IdentifiedRequest
+case class AuthenticatedRequest[A](request: Request[A],
+  externalId: String,
+  psaId: Option[PsaId],
+  pspId: Option[PspId] = None,
+  userType : UserType,
+  authEntity: AuthEntity = PSA)
+  extends WrappedRequest[A](request) with IdentifiedRequest {
+  def psaIdOrException:PsaId = psaId.getOrElse(throw new IdNotFound)
+  def pspIdOrException:PspId = pspId.getOrElse(throw new IdNotFound)
+}

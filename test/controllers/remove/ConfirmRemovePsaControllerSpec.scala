@@ -35,7 +35,7 @@ class ConfirmRemovePsaControllerSpec extends ControllerWithQuestionPageBehaviour
   import ConfirmRemovePsaControllerSpec._
   val view = injector.instanceOf[confirmRemovePsa]
 
-  def controller(dataRetrievalAction: DataRetrievalAction = data, fakeAuth: AuthAction = FakeAuthAction(),
+  def controller(dataRetrievalAction: DataRetrievalAction = data, fakeAuth: AuthAction = FakeAuthAction,
                  userAnswersCacheConnector: UserAnswersCacheConnector = FakeUserAnswersCacheConnector) = new ConfirmRemovePsaController(
     frontendAppConfig, fakeAuth, messagesApi, navigator, formProvider,
     userAnswersCacheConnector, dataRetrievalAction, requiredDataAction, stubMessagesControllerComponents(), view)

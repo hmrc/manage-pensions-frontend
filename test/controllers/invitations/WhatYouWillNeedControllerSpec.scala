@@ -48,7 +48,7 @@ class WhatYouWillNeedControllerSpec extends ControllerSpecBase {
       frontendAppConfig,
       messagesApi,
       FakeNavigator,
-      FakeAuthAction(),
+      FakeAuthAction,
       dataRetrievalAction,
       new DataRequiredActionImpl,
       FakeUserAnswersCacheConnector,

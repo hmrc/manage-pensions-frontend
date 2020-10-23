@@ -63,7 +63,7 @@ class PspClientReferenceControllerSpec extends ControllerSpecBase {
   private val view = injector.instanceOf[pspClientReference]
 
   def controller(dataRetrievalAction: DataRetrievalAction = minimalData) = new PspClientReferenceController(
-    messagesApi, FakeAuthAction(), new FakeNavigator(onwardRoute), FakeUserAnswersCacheConnector,
+    messagesApi, FakeAuthAction, new FakeNavigator(onwardRoute), FakeUserAnswersCacheConnector,
     dataRetrievalAction, new DataRequiredActionImpl, formProvider, stubMessagesControllerComponents(), view
   )
 
