@@ -16,18 +16,6 @@
 
 package utils
 
-import models.requests.DataRequest
-import play.api.mvc.AnyContent
-import play.api.mvc.AnyContentAsEmpty
-import play.api.mvc.Request
-import play.api.test.FakeRequest
-import uk.gov.hmrc.domain.PsaId
-
-class FakeDataRequest(request: Request[AnyContentAsEmpty.type], externalId: String, answers: UserAnswers, psaId: PsaId)
-  extends DataRequest[AnyContent](request, externalId, answers, Some(psaId))
-
-object FakeDataRequest {
-  def apply(answers: UserAnswers): FakeDataRequest = {
-    new FakeDataRequest(FakeRequest("", ""), "test-external-id", answers, PsaId("A0000000"))
-  }
+abstract class WithName(string: String) {
+  override val toString: String = string
 }

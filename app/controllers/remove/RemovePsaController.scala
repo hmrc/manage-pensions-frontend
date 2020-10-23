@@ -63,10 +63,10 @@ class RemovePsaController @Inject()(authenticate: AuthAction,
                                    )(
                                      implicit val ec: ExecutionContext) extends FrontendBaseController with Retrievals {
 
-  def onPageLoad: Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
+  def onPageLoad: Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
       SchemeSrnId.retrieve.right.map { srn =>
-        minimalPsaConnector.getMinimalPsaDetails(request.psaId.id).flatMap { minimalPsaDetails =>
+        minimalPsaConnector.getMinimalPsaDetails(request.psaIdOrException.id).flatMap { minimalPsaDetails =>
           if (minimalPsaDetails.isPsaSuspended) {
             Future.successful(Redirect(controllers.remove.routes.CanNotBeRemovedController.onPageLoadWhereSuspended()))
           } else {
@@ -102,7 +102,7 @@ class RemovePsaController @Inject()(authenticate: AuthAction,
     pstr.getOrElse(throw new IllegalArgumentException("PSTR missing while removing PSA"))
 
   private def getSchemeNameAndPstr(srn: String, request: DataRequest[AnyContent])(implicit hd: HeaderCarrier): Future[SchemeInfo] = {
-      schemeDetailsConnector.getSchemeDetails(request.psaId.id, "srn", srn).map{ userAnswers =>
+      schemeDetailsConnector.getSchemeDetails(request.psaIdOrException.id, "srn", srn).map{ userAnswers =>
 
         val admins = userAnswers.json.transform((JsPath \ 'psaDetails).json.pick)
           .asOpt.map(_.as[JsArray].value).toSeq.flatten
@@ -111,7 +111,7 @@ class RemovePsaController @Inject()(authenticate: AuthAction,
               (__ \ 'relationshipDate).json.copyFrom((JsPath \ 'relationshipDate).json.pick)
             ).reduce).asOpt.flatMap(_.validate[PsaAssociatedDate].asOpt))
 
-        val psa = admins.filter(_.psaId.contains(request.psaId.id))
+        val psa = admins.filter(_.psaId.contains(request.psaIdOrException.id))
 
         val associatedDate = if (psa.nonEmpty) {
           psa.head.relationshipDate.map(LocalDate.parse(_))

@@ -34,7 +34,7 @@ class MongoDiagnosticsController @Inject()(connector: MongoDiagnosticsConnector,
   private val banner = Seq.fill(50)("-").mkString
   // scalastyle:on magic.number
 
-  def mongoDiagnostics(): Action[AnyContent] = authenticate.async {
+  def mongoDiagnostics(): Action[AnyContent] = authenticate().async {
     implicit request =>
 
       connector.fetchDiagnostics().map {

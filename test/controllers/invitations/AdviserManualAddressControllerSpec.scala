@@ -69,7 +69,7 @@ class AdviserManualAddressControllerSpec extends WordSpec with MustMatchers with
           bind[CountryOptions].to[FakeCountryOptions],
           bind[Navigator].qualifiedWith(classOf[AcceptInvitation]).to(FakeNavigator),
           bind[DataRetrievalAction].toInstance(dataRetrieval()),
-          bind[AuthAction].toInstance(FakeAuthAction())
+          bind[AuthAction].toInstance(FakeAuthAction)
         )) {
           implicit app =>
 
@@ -89,7 +89,7 @@ class AdviserManualAddressControllerSpec extends WordSpec with MustMatchers with
           bind[CountryOptions].to[FakeCountryOptions],
           bind[Navigator].qualifiedWith(classOf[AcceptInvitation]).to(FakeNavigator),
           bind[DataRetrievalAction].toInstance(dataRetrieval(Some(Json.obj(AdviserAddressId.toString -> address)))),
-          bind[AuthAction].toInstance(FakeAuthAction())
+          bind[AuthAction].toInstance(FakeAuthAction)
         )) {
           implicit app =>
 
@@ -109,7 +109,7 @@ class AdviserManualAddressControllerSpec extends WordSpec with MustMatchers with
           bind[CountryOptions].to[FakeCountryOptions],
           bind[Navigator].qualifiedWith(classOf[AcceptInvitation]).to(FakeNavigator),
           bind[DataRetrievalAction].toInstance(dataRetrieval(Some(Json.obj(AdviserAddressListId.toString -> tolerantAddress)))),
-          bind[AuthAction].toInstance(FakeAuthAction())
+          bind[AuthAction].toInstance(FakeAuthAction)
         )) {
           implicit app =>
 
@@ -136,7 +136,7 @@ class AdviserManualAddressControllerSpec extends WordSpec with MustMatchers with
           bind[UserAnswersCacheConnector].to(FakeUserAnswersCacheConnector),
           bind[Navigator].qualifiedWith(classOf[AcceptInvitation]).to(FakeNavigator),
           bind[DataRetrievalAction].toInstance(dataRetrieval()),
-          bind[AuthAction].toInstance(FakeAuthAction())
+          bind[AuthAction].toInstance(FakeAuthAction)
         )) {
           app =>
 
@@ -165,7 +165,7 @@ class AdviserManualAddressControllerSpec extends WordSpec with MustMatchers with
         bind[CountryOptions].to[FakeCountryOptions],
         bind[Navigator].qualifiedWith(classOf[AcceptInvitation]).to(FakeNavigator),
         bind[DataRetrievalAction].toInstance(dataRetrieval()),
-        bind[AuthAction].toInstance(FakeAuthAction())
+        bind[AuthAction].toInstance(FakeAuthAction)
       )) {
         implicit app =>
 

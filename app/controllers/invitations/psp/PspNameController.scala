@@ -57,7 +57,7 @@ class PspNameController @Inject()(appConfig: FrontendAppConfig,
 
   val form: Form[String] = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
       (SchemeNameId and SchemeSrnId).retrieve.right.map {
         case schemeName ~ srn =>
@@ -70,7 +70,7 @@ class PspNameController @Inject()(appConfig: FrontendAppConfig,
       }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
 
       form.bindFromRequest().fold(

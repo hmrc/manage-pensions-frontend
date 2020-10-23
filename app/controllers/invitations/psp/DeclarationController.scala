@@ -56,12 +56,12 @@ class DeclarationController @Inject()( override val messagesApi: MessagesApi,
   val form: Form[Boolean] = formProvider()
   val sessionExpired: Future[Result] = Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
 
-  def onPageLoad(): Action[AnyContent] = (auth andThen getData andThen requireData) {
+  def onPageLoad(): Action[AnyContent] = (auth() andThen getData andThen requireData) {
     implicit request =>
           Ok(view(form))
   }
 
-  def onSubmit(): Action[AnyContent] = (auth andThen getData andThen requireData).async {
+  def onSubmit(): Action[AnyContent] = (auth() andThen getData andThen requireData).async {
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[Boolean]) =>
@@ -87,7 +87,7 @@ class DeclarationController @Inject()( override val messagesApi: MessagesApi,
 
 
   private def getPstr(srn: String)(implicit request: DataRequest[AnyContent]): Future[Option[String]] =
-    listOfSchemesConnector.getListOfSchemes(request.psaId.id).map {
+    listOfSchemesConnector.getListOfSchemes(request.psaIdOrException.id).map {
       case Right(list) => schemeDetailsService.pstr(srn, list)
       case _ => None
     }

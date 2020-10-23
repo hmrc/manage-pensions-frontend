@@ -52,7 +52,7 @@ class ViewPractitionersController @Inject()(appConfig: FrontendAppConfig,
                                             view: viewPractitioners
                                          ) extends FrontendBaseController with I18nSupport with Retrievals {
 
-  def onPageLoad(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
+  def onPageLoad(): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
       (SchemeSrnId and SchemeNameId and SeqAuthorisedPractitionerId).retrieve.right.map {
         case srn ~ schemeName ~ authorisedPractitioners =>

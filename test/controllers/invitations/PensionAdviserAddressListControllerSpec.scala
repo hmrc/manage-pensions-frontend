@@ -61,7 +61,7 @@ class PensionAdviserAddressListControllerSpec extends WordSpec with Matchers wit
 
       running(_.overrides(
         bind[Navigator].toInstance(navigator),
-        bind[AuthAction].toInstance(FakeAuthAction()),
+        bind[AuthAction].toInstance(FakeAuthAction),
         bind[DataRetrievalAction].toInstance(dataRetrievalAction)
       )) { app =>
         val controller = app.injector.instanceOf[PensionAdviserAddressListController]
@@ -77,7 +77,7 @@ class PensionAdviserAddressListControllerSpec extends WordSpec with Matchers wit
 
       running(_.overrides(
         bind[Navigator].toInstance(navigator),
-        bind[AuthAction].toInstance(FakeAuthAction()),
+        bind[AuthAction].toInstance(FakeAuthAction),
         bind[DataRetrievalAction].toInstance(dataRetrievalAction)
       )) { app =>
         val controller = app.injector.instanceOf[PensionAdviserAddressListController]
@@ -97,7 +97,7 @@ class PensionAdviserAddressListControllerSpec extends WordSpec with Matchers wit
       val onwardRoute = controllers.routes.IndexController.onPageLoad()
       running(_.overrides(
         bind[Navigator].qualifiedWith(classOf[AcceptInvitation]).toInstance(new FakeNavigator(onwardRoute)),
-        bind[AuthAction].toInstance(FakeAuthAction()),
+        bind[AuthAction].toInstance(FakeAuthAction),
         bind[DataRetrievalAction].toInstance(dataRetrievalAction),
         bind[UserAnswersCacheConnector].toInstance(FakeUserAnswersCacheConnector)
       )) { app =>
@@ -114,7 +114,7 @@ class PensionAdviserAddressListControllerSpec extends WordSpec with Matchers wit
 
       running(_.overrides(
         bind[Navigator].toInstance(navigator),
-        bind[AuthAction].toInstance(FakeAuthAction()),
+        bind[AuthAction].toInstance(FakeAuthAction),
         bind[DataRetrievalAction].toInstance(dataRetrievalAction),
         bind[UserAnswersCacheConnector].toInstance(FakeUserAnswersCacheConnector)
       )) { app =>
@@ -131,7 +131,7 @@ class PensionAdviserAddressListControllerSpec extends WordSpec with Matchers wit
 
       running(_.overrides(
         bind[Navigator].toInstance(navigator),
-        bind[AuthAction].toInstance(FakeAuthAction()),
+        bind[AuthAction].toInstance(FakeAuthAction),
         bind[DataRetrievalAction].toInstance(dataRetrievalAction),
         bind[UserAnswersCacheConnector].toInstance(FakeUserAnswersCacheConnector)
       )) { app =>
@@ -148,7 +148,7 @@ class PensionAdviserAddressListControllerSpec extends WordSpec with Matchers wit
 
       running(_.overrides(
         bind[Navigator].toInstance(navigator),
-        bind[AuthAction].toInstance(FakeAuthAction()),
+        bind[AuthAction].toInstance(FakeAuthAction),
         bind[DataRetrievalAction].toInstance(dataRetrievalAction),
         bind[UserAnswersCacheConnector].toInstance(FakeUserAnswersCacheConnector)
       )) { app =>

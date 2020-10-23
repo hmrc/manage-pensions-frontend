@@ -28,6 +28,7 @@ import models.requests.AuthenticatedRequest
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.JsArray
 import play.api.mvc.{AnyContent, MessagesControllerComponents, Action}
+import play.twirl.api.Html
 import services.SchemeDetailsService
 import toggles.Toggles
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
@@ -51,12 +52,12 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                                         fs: FeatureSwitchManagementService
                                        )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
-  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate.async {
+  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate().async {
     implicit request =>
       withSchemeAndLock(srn).flatMap { case (userAnswers, lock) =>
           val admins = (userAnswers.json \ "psaDetails").as[Seq[PsaDetails]].map(_.id)
           val anyPSPs = (userAnswers.json \ "pspDetails").asOpt[JsArray].exists(_.value.nonEmpty)
-          if (admins.contains(request.psaId.id)) {
+          if (admins.contains(request.psaIdOrException.id)) {
             val schemeName = userAnswers.get(SchemeNameId).getOrElse("")
             val schemeStatus = userAnswers.get(SchemeStatusId).getOrElse("")
             val isSchemeOpen = schemeStatus.equalsIgnoreCase("open")
@@ -64,8 +65,8 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
             val displayChangeLink = schemeDetailsService.displayChangeLink(isSchemeOpen, lock)
             for {
               aftHtml <- schemeDetailsService.retrieveAftHtml(userAnswers, srn.id)
-              paymentsAndChargesHtml <- schemeDetailsService.retrievePaymentsAndChargesHtml(srn.id)
-              listOfSchemes <- listSchemesConnector.getListOfSchemes(request.psaId.id)
+              paymentsAndChargesHtml <- retrievePaymentsAndChargesHtml(srn.id, isSchemeOpen)
+              listOfSchemes <- listSchemesConnector.getListOfSchemes(request.psaIdOrException.id)
               _ <- userAnswersCacheConnector.upsert(request.externalId, updatedUa.json)
               lockingPsa <- schemeDetailsService.lockingPsa(lock, srn)
             } yield {
@@ -76,7 +77,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                     schemeName,
                     schemeDetailsService.pstr(srn.id, list),
                     schemeDetailsService.openedDate(srn.id, list, isSchemeOpen),
-                    schemeDetailsService.administratorsVariations(request.psaId.id, userAnswers, schemeStatus),
+                    schemeDetailsService.administratorsVariations(request.psaIdOrException.id, userAnswers, schemeStatus),
                     srn.id,
                     isSchemeOpen,
                     displayChangeLink,
@@ -92,6 +93,16 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
             Future.successful(NotFound(errorHandler.notFoundTemplate))
           }
       }
+  }
+
+  private def retrievePaymentsAndChargesHtml(
+    srn:String,
+    isSchemeOpen:Boolean)(implicit request: AuthenticatedRequest[AnyContent]):Future[Html] = {
+    if (isSchemeOpen) {
+      schemeDetailsService.retrievePaymentsAndChargesHtml(srn)
+    } else {
+      Future.successful(Html(""))
+    }
   }
 
   private def getPspLinks(anyPSPs:Boolean) = {
@@ -112,8 +123,8 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
   private def withSchemeAndLock(srn: SchemeReferenceNumber)(implicit request: AuthenticatedRequest[AnyContent]): Future[(UserAnswers, Option[Lock])] = {
     for {
       _ <- userAnswersCacheConnector.removeAll(request.externalId)
-      scheme <- schemeDetailsConnector.getSchemeDetails(request.psaId.id, "srn", srn)
-      lock <- schemeVarianceLockConnector.isLockByPsaIdOrSchemeId(request.psaId.id, srn.id)
+      scheme <- schemeDetailsConnector.getSchemeDetails(request.psaIdOrException.id, "srn", srn)
+      lock <- schemeVarianceLockConnector.isLockByPsaIdOrSchemeId(request.psaIdOrException.id, srn.id)
     } yield {
       (scheme, lock)
     }

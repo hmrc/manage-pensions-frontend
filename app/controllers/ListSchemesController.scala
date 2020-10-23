@@ -74,7 +74,7 @@ class ListSchemesController @Inject()(
                           request: OptionalDataRequest[AnyContent]): Future[Result] = {
     val status = if (form.hasErrors) BadRequest else Ok
     minimalPsaConnector
-      .getPsaNameFromPsaID(request.psaId.id)
+      .getPsaNameFromPsaID(request.psaIdOrException.id)
       .flatMap(_.map {
         name =>
           userAnswersCacheConnector
@@ -111,7 +111,7 @@ class ListSchemesController @Inject()(
                                    pageNumber: Int,
                                    searchText: Option[String]
                                  )(implicit request: OptionalDataRequest[AnyContent]): Future[Result] = {
-    schemeSearchService.search(request.psaId.id, searchText).flatMap { searchResult =>
+    schemeSearchService.search(request.psaIdOrException.id, searchText).flatMap { searchResult =>
 
       val noResultsMessageKey =
         (searchText.isDefined, searchResult.isEmpty) match {
@@ -163,13 +163,13 @@ class ListSchemesController @Inject()(
     }
   }
 
-  def onPageLoad: Action[AnyContent] = (authenticate andThen getData).async {
+  def onPageLoad: Action[AnyContent] = (authenticate() andThen getData).async {
     implicit request =>
       searchAndRenderView(searchText = None, pageNumber = 1, form = form)
   }
 
   def onPageLoadWithPageNumber(pageNumber: Index): Action[AnyContent] =
-    (authenticate andThen getData).async { implicit request =>
+    (authenticate() andThen getData).async { implicit request =>
       searchAndRenderView(
         searchText = None,
         pageNumber = pageNumber,
@@ -177,7 +177,7 @@ class ListSchemesController @Inject()(
       )
     }
 
-  def onSearch: Action[AnyContent] = (authenticate andThen getData).async {
+  def onSearch: Action[AnyContent] = (authenticate() andThen getData).async {
     implicit request =>
       form
         .bindFromRequest()

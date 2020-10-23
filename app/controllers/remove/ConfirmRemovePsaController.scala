@@ -59,7 +59,7 @@ class ConfirmRemovePsaController @Inject()(
 
   val form: Form[Boolean] = formProvider()
 
-  def onPageLoad: Action[AnyContent] = (auth andThen getData andThen requireData).async {
+  def onPageLoad: Action[AnyContent] = (auth() andThen getData andThen requireData).async {
     implicit request =>
       (SchemeSrnId and SchemeNameId and PSANameId).retrieve.right.map {
         case srn ~ schemeName ~ psaName =>
@@ -68,7 +68,7 @@ class ConfirmRemovePsaController @Inject()(
       }
   }
 
-  def onSubmit: Action[AnyContent] = (auth andThen getData andThen requireData).async {
+  def onSubmit: Action[AnyContent] = (auth() andThen getData andThen requireData).async {
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[Boolean]) =>

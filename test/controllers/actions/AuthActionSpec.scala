@@ -135,7 +135,7 @@ object AuthActionSpec {
     Future.successful(new ~(new ~(Some("id"), Enrolments(Set())), Some(AffinityGroup.Individual)))
 
   class Harness(authAction: AuthAction, val controllerComponents: MessagesControllerComponents = stubMessagesControllerComponents()) extends BaseController {
-    def onPageLoad(): Action[AnyContent] = authAction { _ => Ok }
+    def onPageLoad(): Action[AnyContent] = authAction.apply() { _ => Ok }
   }
 
 }

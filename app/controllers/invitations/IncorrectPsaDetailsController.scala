@@ -44,7 +44,7 @@ class IncorrectPsaDetailsController @Inject()(val appConfig: FrontendAppConfig,
                                               view: incorrectPsaDetails
                                              )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
 
-  def onPageLoad(): Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
+  def onPageLoad(): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
 
       (InviteeNameId and MinimalSchemeDetailId).retrieve.right.map {

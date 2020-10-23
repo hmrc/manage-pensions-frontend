@@ -65,7 +65,7 @@ class InviteControllerSpec extends SpecBase {
 
     "redirect to unauthorised page if user is not authenticated" in {
 
-      val controller = new InviteController(FakeUnAuthorisedAction(), fakeSchemeDetailsConnector,
+      val controller = new InviteController(FakeUnAuthorisedAction, fakeSchemeDetailsConnector,
         FakeUserAnswersCacheConnector, featureSwitch, fakeMinimalPsaConnector(isSuspended = false), stubMessagesControllerComponents())
 
       val result = controller.onPageLoad(srn)(fakeRequest)
@@ -83,7 +83,7 @@ object InviteControllerSpec extends SpecBase with JsonFileReader {
   val schemeName = "Open Single Trust Scheme with Indiv Establisher and Trustees"
 
   private val psaMinimalSubscription = MinimalPSAPSP(email, false, None, Some(IndividualDetails("First", Some("Middle"), "Last")))
-  private val mockAuthAction = FakeAuthAction()
+  private val mockAuthAction = FakeAuthAction
 
 
   val config = injector.instanceOf[Configuration]

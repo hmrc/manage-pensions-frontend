@@ -119,7 +119,7 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
                 (implicit request: AuthenticatedRequest[AnyContent], hc: HeaderCarrier): Future[Option[String]] =
     lock match {
       case Some(SchemeLock) => schemeVarianceLockConnector.getLockByScheme(srn) flatMap {
-        case Some(schemeVariance) if !(schemeVariance.psaId == request.psaId.id) =>
+        case Some(schemeVariance) if !(schemeVariance.psaId == request.psaIdOrException.id) =>
           minimalPsaConnector.getPsaNameFromPsaID(schemeVariance.psaId).map(identity)
         case _ => Future.successful(None)
       }

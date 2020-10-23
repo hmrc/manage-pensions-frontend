@@ -35,7 +35,7 @@ class LogoutController @Inject()(
                                   val controllerComponents: MessagesControllerComponents
                                 )(implicit ec : ExecutionContext) extends FrontendBaseController with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = authenticate.async {
+  def onPageLoad: Action[AnyContent] = authenticate().async {
     implicit request =>
       aftCacheConnector.removeLock.map {_ =>
         Redirect(appConfig.serviceSignOut).withNewSession

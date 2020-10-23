@@ -69,7 +69,7 @@ class RemovalDateController @Inject()(appConfig: FrontendAppConfig,
 
   private def form(schemeOpenDate: LocalDate) = formProvider(schemeOpenDate, appConfig.earliestDatePsaRemoval)
 
-  def onPageLoad: Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
+  def onPageLoad: Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
       (SchemeNameId and PSANameId and SchemeSrnId and AssociatedDateId).retrieve.right.map {
 
@@ -81,7 +81,7 @@ class RemovalDateController @Inject()(appConfig: FrontendAppConfig,
       }
   }
 
-  def onSubmit: Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
+  def onSubmit: Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
       (SchemeNameId and PSANameId and SchemeSrnId and PSTRId and AssociatedDateId).retrieve.right.map {
         case schemeName ~ psaName ~ srn ~ pstr ~ associationDate =>
@@ -90,10 +90,10 @@ class RemovalDateController @Inject()(appConfig: FrontendAppConfig,
               Future.successful(BadRequest(view(formWithErrors, psaName, schemeName, srn, formatDate(associationDate)))),
             value =>
               dataCacheConnector.save(request.externalId, RemovalDateId, value).flatMap { cacheMap =>
-                psaRemovalConnector.remove(PsaToBeRemovedFromScheme(request.psaId.id, pstr, value)).flatMap { _ =>
-                  val updateDataAndlockRemovalResult = lockConnector.getLockByPsa(request.psaId.id).map {
+                psaRemovalConnector.remove(PsaToBeRemovedFromScheme(request.psaIdOrException.id, pstr, value)).flatMap { _ =>
+                  val updateDataAndlockRemovalResult = lockConnector.getLockByPsa(request.psaIdOrException.id).map {
                     case Some(lockedSchemeVariance) if lockedSchemeVariance.srn == srn =>
-                        updateConnector.removeAll(srn).map(_ => lockConnector.releaseLock(request.psaId.id, srn))
+                        updateConnector.removeAll(srn).map(_ => lockConnector.releaseLock(request.psaIdOrException.id, srn))
                     case _ => Future.successful(())
                   }
                   updateDataAndlockRemovalResult.map { _ =>

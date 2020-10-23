@@ -38,7 +38,7 @@ class AlreadyAssociatedWithSchemeController @Inject()(appConfig: FrontendAppConf
                                             view: alreadyAssociatedWithScheme)(implicit val ec: ExecutionContext) extends FrontendBaseController with Retrievals with I18nSupport {
 
 
-  def onPageLoad: Action[AnyContent] = (authenticate andThen getData andThen requireData).async {
+  def onPageLoad: Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
       (SchemeNameId and PspNameId).retrieve.right.map {
         case schemeName ~ pspName =>
