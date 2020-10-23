@@ -18,6 +18,7 @@ package connectors
 
 import com.google.inject.{ImplementedBy, Inject}
 import config.FrontendAppConfig
+import models.invitations.psp.DeAuthorise
 import play.api.Logger
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
@@ -34,6 +35,9 @@ trait PspConnector {
   @throws(classOf[ActiveRelationshipExistsException])
   def authorisePsp(pstr: String, pspName: String, pspId: String, clientReference: Option[String])
                   (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit]
+
+  def deAuthorise(pstr: String, deAuthorise: DeAuthorise)
+                 (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse]
 
 }
 
@@ -67,4 +71,23 @@ class PspConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) ex
     }
   }
 
+  override def deAuthorise(pstr: String, deAuthorise: DeAuthorise)
+                          (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
+
+    val headerCarrier = hc.withExtraHeaders("pstr" -> pstr)
+
+    http.POST[JsValue, HttpResponse](
+      config.deAuthorisePspUrl, Json.toJson(deAuthorise)
+    )(
+      implicitly, implicitly, headerCarrier, implicitly
+    ) map {
+      response =>
+        response.status match {
+          case OK => response
+          case _ => handleErrorResponse("POST", config.deAuthorisePspUrl)(response)
+        }
+    } andThen {
+      case Failure(t: Throwable) => Logger.warn("Unable to de-authorise psp", t)
+    }
+  }
 }
