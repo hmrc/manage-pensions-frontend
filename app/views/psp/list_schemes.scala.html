@@ -75,31 +75,27 @@
 
 
                 @if(form("searchText").value.exists(_.length > 0)) {
-                    <p>
+                    <p class="govuk-margin-bottom-3">
                         <a id="clear-search-link" href="@ListSchemesController.onPageLoad"> @messages("messages__listSchemes__searchText_clearlink")</a>
                     </p>
                 }
+                @if(form("searchText").value.isDefined && schemes.isEmpty) {
+                @form("searchText").value.map{ searchText =>
 
+                    <p id="noSchemes">@messages("messages__listSchemesPsp__noMatchesLeft") <span class="bold">@searchText</span>
+                        @messages("messages__listSchemesPsp__noMatchesRight")</p>
+                    <p id="noMatchesCheck">@messages("messages__listSchemesPsp__noMatchesCheck")</p>
+                }
+                }
+
+                @if(schemes.nonEmpty && (form("searchText").value.exists(_.length > 0))) {
+                <legend>schemes.length </legend>
+                    @components.scheme_list_psp(schemes, appConfig)
+                }
+                @components.return_link(controllers.routes.SchemesOverviewController.onPageLoad(), Some(psaName))
             </div>
         </div>
 
 
-
-        @if(form("searchText").value.isDefined && schemes.isEmpty) {
-            @form("searchText").value.map{ searchText =>
-                <div class="grid-row">
-                    <div class="column-two-thirds">
-                        <p id="noSchemes">@messages("messages__listSchemesPsp__noMatchesLeft") <span class="bold">@searchText</span> @messages("messages__listSchemesPsp__noMatchesRight")</p>
-                        <p id="noSchemes">@messages("messages__listSchemesPsp__noMatchesCheck")</p>
-                    </div>
-                </div>
-            }
-        }
-
-        @if(schemes.nonEmpty && (form("searchText").value.exists(_.length > 0))) {
-            @components.scheme_list_psp(schemes, appConfig)
-        }
-
-        @components.return_link(controllers.routes.SchemesOverviewController.onPageLoad(), Some(psaName))
     }
 }

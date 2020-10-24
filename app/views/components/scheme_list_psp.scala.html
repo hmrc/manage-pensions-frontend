@@ -20,31 +20,6 @@
 
 @(schemes: List[SchemeDetails], appConfig: FrontendAppConfig)(implicit messages: Messages)
 
-@schemeNameHeaderID = @{
-s"schemeNameHeader"
-}
-
-@pstrHeaderID = @{
-s"pstrHeader"
-}
-
-@statusHeaderID = @{
-s"statusHeader"
-}
-
-@schemeNameId(index: Int) = @{
-s"schemeName-$index"
-}
-
-
-@pstrId(index: Int) = @{
-s"pstr-$index"
-}
-
-@statusId(index: Int) = @{
-s"schemeStatus-$index"
-}
-
 @pstrValue(pstr: Option[String]) = @{
 pstr.getOrElse(messages("messages__listSchemes__pstr_not_assigned"))
 }
@@ -63,22 +38,37 @@ case _ => status
 }
 }
 
-@for((scheme, index) <- schemes.zipWithIndex) {
-    <table class="govuk-table" id="scheme-list">
-        <caption class="govuk-table__caption"></caption>
-        <tbody class="govuk-table__body">
-            <tr class="govuk-table__row">
-                <th scope="row" class="govuk-table__header" id="@schemeNameHeaderID"> <span class="bold">@messages("messages__listSchemesPsp__column__schemeName")</span></th>
-                <td class="govuk-table__cell" id="@{schemeNameId(index)}"> @{scheme.name}</td>
-            </tr>
-            <tr class="govuk-table__row">
-                <th scope="row" class="govuk-table__header" id="@pstrHeaderID"><span class="bold">@messages("messages__listSchemesPsp__column__pstr")</span></th>
-                <td class="govuk-table__cell" id="@{pstrId(index)}">@pstrValue(scheme.pstr)</td>
-            </tr>
-            <tr class="govuk-table__row">
-                <th scope="row" class="govuk-table__header" id="@statusHeaderID"> <span class="bold">@messages("messages__listSchemesPsp__column__status")</span></th>
-                <td class="govuk-table__cell" id="@{statusId(index)}">@statusValue(scheme.schemeStatus)</td>
-            </tr>
-        </tbody>
-    </table>
-}
+<div id="scheme-list1" class="dl--margin-bottom">
+    @for((scheme, index) <- schemes.zipWithIndex){
+    <dl class="dl--label-value">
+        <div class="row-group">
+            <dt class="bold">
+                @messages("messages__listSchemesPsp__column__schemeName")
+            </dt>
+            <dd class="dl--label-left">
+                @{scheme.name}
+            </dd>
+
+        </div>
+        <div class="row-group">
+            <dt class="bold">
+                @messages("messages__listSchemesPsp__column__pstr")
+            </dt>
+            <dd class="dl--label-left">
+                @pstrValue(scheme.pstr)
+            </dd>
+
+        </div>
+        <div class="row-group">
+            <dt class="bold">
+                @messages("messages__listSchemesPsp__column__status")
+            </dt>
+            <dd class="dl--label-left">
+                @statusValue(scheme.schemeStatus)
+            </dd>
+
+        </div>
+
+    </dl>
+    }
+</div>
