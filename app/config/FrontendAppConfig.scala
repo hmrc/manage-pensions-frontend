@@ -128,6 +128,9 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val authorisePspUrl = s"${servicesConfig.baseUrl("pension-practitioner")}${runModeConfiguration.underlying
     .getString("urls.authorisePsp")}"
 
+  lazy val pspDetailsUrl: String = loadConfig("urls.pspDetails")
+  lazy val pspDeregisterUrl: String = loadConfig("urls.pspDeregister")
+
 
   def languageMap: Map[String, Lang] = Map(
     "english" -> Lang("en"),

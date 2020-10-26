@@ -477,3 +477,12 @@ messages__viewPractitioners__title = Pension scheme practitioners
 messages__viewPractitioners__practitionerNameHeader = Practitioner
 messages__viewPractitioners__authorisedByHeader = Authorised by
 messages__viewPractitioners__dateAuthorisedHeader = Date authorised
+
+messages__pspDashboard__sub_heading = Practitioner
+messages__pspDashboard__details_heading = Practitioner details
+messages__pspDashboard__psp_id = Practitioner ID:
+messages__pspDashboard__psp_change = Change your pension scheme practitioner details
+messages__pspDashboard__psp_deregister = Stop being a pension scheme practitioner
+messages__pspDashboard__scheme_heading = Pension schemes
+messages__pspDashboard__search_scheme = Search for a pension scheme
+messages__pspDashboard__switch_psa = Switch to PSA view

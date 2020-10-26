@@ -19,7 +19,7 @@ package controllers
 import com.google.inject.Inject
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
-import connectors.admin.MinimalPsaConnector
+import connectors.admin.MinimalConnector
 import controllers.actions.AuthAction
 import controllers.actions.DataRetrievalAction
 import forms.ListSchemesFormProvider
@@ -48,7 +48,7 @@ class ListSchemesController @Inject()(
                                        override val messagesApi: MessagesApi,
                                        authenticate: AuthAction,
                                        getData: DataRetrievalAction,
-                                       minimalPsaConnector: MinimalPsaConnector,
+                                       minimalPsaConnector: MinimalConnector,
                                        userAnswersCacheConnector: UserAnswersCacheConnector,
                                        val controllerComponents: MessagesControllerComponents,
                                        view: list_schemes,

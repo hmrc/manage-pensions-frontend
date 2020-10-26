@@ -20,7 +20,7 @@ import java.time.LocalDate
 import com.google.inject.Inject
 import config.FrontendAppConfig
 import connectors.FrontendConnector
-import connectors.admin.MinimalPsaConnector
+import connectors.admin.MinimalConnector
 import connectors.scheme.PensionSchemeVarianceLockConnector
 import identifiers.ListOfPSADetailsId
 import identifiers.SchemeStatusId
@@ -43,7 +43,7 @@ import scala.concurrent.Future
 class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
                                      frontendConnector: FrontendConnector,
                                      schemeVarianceLockConnector: PensionSchemeVarianceLockConnector,
-                                     minimalPsaConnector: MinimalPsaConnector
+                                     minimalPsaConnector: MinimalConnector
                                     )(implicit ec: ExecutionContext) {
 
   def retrieveAftHtml[A](userAnswers: UserAnswers, srn: String)(implicit request: Request[A]): Future[Html] = {

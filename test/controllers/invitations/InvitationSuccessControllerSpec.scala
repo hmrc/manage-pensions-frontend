@@ -20,7 +20,7 @@ import java.time.LocalDate
 
 import config.FrontendAppConfig
 import connectors.FakeUserAnswersCacheConnector
-import connectors.admin.MinimalPsaConnector
+import connectors.admin.MinimalConnector
 import controllers.actions._
 import controllers.behaviours.ControllerWithNormalPageBehaviours
 import models.MinimalPSAPSP
@@ -62,7 +62,7 @@ class InvitationSuccessControllerSpec extends ControllerWithNormalPageBehaviours
     testExpiryDate(frontendAppConfig),
     continue)(fakeRequest, messages).toString
 
-  private def fakeMinimalPsaConnector = new MinimalPsaConnector {
+  private def fakeMinimalPsaConnector = new MinimalConnector {
     override def getMinimalPsaDetails(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP] =
       Future.successful(MinimalPSAPSP(testEmail, false, Some(testInviteeName), None))
 

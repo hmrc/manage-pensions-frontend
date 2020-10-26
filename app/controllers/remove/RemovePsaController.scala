@@ -21,7 +21,7 @@ import java.time.LocalDate
 import com.google.inject.Inject
 import com.google.inject.Singleton
 import config.FrontendAppConfig
-import connectors.admin.MinimalPsaConnector
+import connectors.admin.MinimalConnector
 import connectors.UserAnswersCacheConnector
 import connectors.scheme.SchemeDetailsConnector
 import controllers.Retrievals
@@ -57,7 +57,7 @@ class RemovePsaController @Inject()(authenticate: AuthAction,
                                     val requireData: DataRequiredAction,
                                     schemeDetailsConnector: SchemeDetailsConnector,
                                     userAnswersCacheConnector: UserAnswersCacheConnector,
-                                    minimalPsaConnector: MinimalPsaConnector,
+                                    minimalPsaConnector: MinimalConnector,
                                     appConfig: FrontendAppConfig,
                                     val controllerComponents: MessagesControllerComponents
                                    )(

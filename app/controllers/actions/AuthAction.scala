@@ -69,7 +69,7 @@ class AuthImpl(override val authConnector: AuthConnector,
         Redirect(routes.UnauthorisedController.onPageLoad())
       case _: UnsupportedCredentialRole =>
         Redirect(routes.UnauthorisedController.onPageLoad())
-      case _: PsaIdNotFound =>
+      case _: IdNotFound =>
         Redirect(controllers.routes.YouNeedToRegisterController.onPageLoad())
     }
   }
@@ -85,7 +85,7 @@ class AuthImpl(override val authConnector: AuthConnector,
 
   private def getPsaId(enrolments: Enrolments): String =
     enrolments.getEnrolment("HMRC-PODS-ORG").flatMap(_.getIdentifier("PSAID")).map(_.value)
-      .getOrElse(throw new PsaIdNotFound)
+      .getOrElse(throw new IdNotFound)
 
   private def getPspId(enrolments: Enrolments): String =
     enrolments.getEnrolment("HMRC-PODS-ORG").flatMap(_.getIdentifier("PSPID")).map(_.value)
@@ -105,7 +105,6 @@ class AuthImpl(override val authConnector: AuthConnector,
 trait Auth extends ActionBuilder[AuthenticatedRequest, AnyContent] with ActionFunction[Request,
   AuthenticatedRequest]
 
-case class PsaIdNotFound(msg: String = "PsaIdNotFound") extends AuthorisationException(msg)
 case class IdNotFound(msg: String = "PsaIdNotFound") extends AuthorisationException(msg)
 
 class AuthActionImpl @Inject()(authConnector: AuthConnector,
