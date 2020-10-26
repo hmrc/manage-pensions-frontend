@@ -24,7 +24,7 @@ import org.scalatest.{AsyncFlatSpec, Matchers}
 import org.scalatestplus.scalacheck.Checkers
 import play.api.http.Status._
 import play.api.libs.json.Json
-import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, UpstreamErrorResponse}
 import utils.WireMockHelper
 
 class PspConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper with Checkers {
@@ -102,6 +102,47 @@ class PspConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper w
         .willReturn(
           aResponse()
             .withStatus(CONFLICT)
+            .withBody(Json.stringify(duplicateSubmissionJson))
+        )
+    )
+
+    val connector = injector.instanceOf[PspConnector]
+
+    recoverToSucceededIf[DuplicateSubmissionException] {
+      connector.deAuthorise(pstr, psaDeAuthPsa)
+    } map {
+      _ =>
+        server.findAll(postRequestedFor(urlEqualTo(deAuthUrl))).size() shouldBe 1
+    }
+  }
+
+  "deAuthorise" should "fail if bad request" in {
+    server.stubFor(
+      post(urlEqualTo(deAuthUrl))
+        .withRequestBody(equalToJson(Json.stringify(Json.toJson(psaDeAuthPsa))))
+        .willReturn(
+          aResponse()
+            .withStatus(BAD_REQUEST)
+        )
+    )
+
+    val connector = injector.instanceOf[PspConnector]
+
+    recoverToSucceededIf[BadRequestException] {
+      connector.deAuthorise(pstr, psaDeAuthPsa)
+    } map {
+      _ =>
+        server.findAll(postRequestedFor(urlEqualTo(deAuthUrl))).size() shouldBe 1
+    }
+  }
+
+  "deAuthorise" should "fail if UpstreamErrorResponse" in {
+    server.stubFor(
+      post(urlEqualTo(deAuthUrl))
+        .withRequestBody(equalToJson(Json.stringify(Json.toJson(psaDeAuthPsa))))
+        .willReturn(
+          aResponse()
+            .withStatus(INTERNAL_SERVER_ERROR)
         )
     )
 
@@ -123,7 +164,7 @@ object PspConnectorSpec {
 
   private implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  private val psaDeAuthPsa = DeAuthorise(
+  val psaDeAuthPsa: DeAuthorise = DeAuthorise(
     ceaseIDType = "PSAID",
     ceaseNumber = "A1234567",
     initiatedIDType = "PSAID",
@@ -131,7 +172,7 @@ object PspConnectorSpec {
     ceaseDate = "2019-03-29"
   )
 
-  private val psaDeAuthPsp = DeAuthorise(
+  val psaDeAuthPsp: DeAuthorise = DeAuthorise(
     ceaseIDType = "PSPID",
     ceaseNumber = "21234568",
     initiatedIDType = "PSAID",
@@ -139,11 +180,16 @@ object PspConnectorSpec {
     ceaseDate = "2019-03-29"
   )
 
-  private val pspDeAuthPsp = DeAuthorise(
+  val pspDeAuthPsp: DeAuthorise = DeAuthorise(
     ceaseIDType = "PSPID",
     ceaseNumber = "21234568",
     initiatedIDType = "PSPID",
     initiatedIDNumber = "21234569",
     ceaseDate = "2019-03-29"
+  )
+
+  private val duplicateSubmissionJson = Json.obj(
+    "code" -> "DUPLICATE_SUBMISSION",
+    "reason" -> "The remote endpoint has indicated that duplicate submission."
   )
 }

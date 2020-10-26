@@ -41,6 +41,9 @@ trait PspConnector {
 
 }
 
+abstract class DeAuthorisationException extends Exception
+class DuplicateSubmissionException extends DeAuthorisationException
+
 class PspConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) extends PspConnector with HttpResponseHelper {
 
 
@@ -84,6 +87,7 @@ class PspConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) ex
       response =>
         response.status match {
           case OK => response
+          case CONFLICT if response.body.contains("DUPLICATE_SUBMISSION") => throw new DuplicateSubmissionException
           case _ => handleErrorResponse("POST", config.deAuthorisePspUrl)(response)
         }
     } andThen {
