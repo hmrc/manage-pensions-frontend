@@ -302,6 +302,10 @@ messages__confirmRemovePsa__heading = Are you sure you want to remove {0} as sch
 messages__confirmRemovePsa_required = Select yes if you are sure you want to remove the scheme administrator
 messages__returnToSchemeDetails__link = Return to {0}
 
+messages__confirmRemovePsp__title = Are you sure you want to remove the scheme practitioner?
+messages__confirmRemovePsp__heading = Are you sure you want to remove {0} as scheme practitioner for {1}?
+messages__confirmRemovePsp_required = Select yes if you are sure you want to remove the scheme practitioner
+
 messages__confirmRemoved__title = The scheme administrator has been removed
 messages__confirmRemoved__heading = {0} has been removed as scheme administrator of {1}
 messages__confirmRemoved__return_link = Return to your pension schemes
@@ -477,3 +481,6 @@ messages__viewPractitioners__title = Pension scheme practitioners
 messages__viewPractitioners__practitionerNameHeader = Practitioner
 messages__viewPractitioners__authorisedByHeader = Authorised by
 messages__viewPractitioners__dateAuthorisedHeader = Date authorised
+messages__viewPractitioners__deAuthoriseLinkHeader = De-authorise link
+messages__viewPractitioners__deAuthoriseLinkText = Deauthorise
+messages__viewPractitioners__deAuthoriseLinkText__hiddenText = De-authorise {0}

@@ -80,13 +80,10 @@ class ViewPractitionersControllerSpec extends ControllerSpecBase {
 
   private def controller(dataRetrievalAction: DataRetrievalAction = validData): ViewPractitionersController =
     new ViewPractitionersController(
-      frontendAppConfig,
       messagesApi,
-      FakeNavigator,
       FakeAuthAction,
       dataRetrievalAction,
       new DataRequiredActionImpl,
-      FakeUserAnswersCacheConnector,
       stubMessagesControllerComponents(),
       viewPractitionersView
     )

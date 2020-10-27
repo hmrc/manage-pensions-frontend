@@ -6,6 +6,9 @@ POST       /date-stopped-being-scheme-administrator     controllers.remove.Remov
 GET        /remove-as-scheme-administrator              controllers.remove.ConfirmRemovePsaController.onPageLoad()
 POST       /remove-as-scheme-administrator              controllers.remove.ConfirmRemovePsaController.onSubmit()
 
+GET        /remove-as-scheme-practitioner               controllers.psp.ConfirmRemovePspController.onPageLoad()
+POST       /remove-as-scheme-practitioner               controllers.psp.ConfirmRemovePspController.onSubmit()
+
 GET        /remove-psa                                  controllers.remove.RemovePsaController.onPageLoad()
 
 GET        /unable-to-remove-scheme-administrator       controllers.remove.CanNotBeRemovedController.onPageLoadWhereSuspended()
