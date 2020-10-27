@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-package controllers.psp
+package controllers.remove
 
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.psp.ConfirmRemovePspFormProvider
-import identifiers.invitations.SchemeNameId
-import identifiers.remove.ConfirmRemovePsaId
-import identifiers.{PSANameId, SchemeSrnId}
+import identifiers.remove.{ConfirmRemovePspId, PspDetailsId}
+import identifiers.{SchemeNameId, SchemeSrnId}
 import javax.inject.Inject
-import models.NormalMode
+import models.{Index, NormalMode}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
-import utils.annotations.RemovePSA
+import utils.annotations.RemovePSP
 import utils.{Navigator, UserAnswers}
 import views.html.psp.confirmRemovePsp
 
@@ -40,7 +39,7 @@ class ConfirmRemovePspController @Inject()(
                                             val appConfig: FrontendAppConfig,
                                             val auth: AuthAction,
                                             override val messagesApi: MessagesApi,
-                                            @RemovePSA navigator: Navigator,
+                                            @RemovePSP navigator: Navigator,
                                             val formProvider: ConfirmRemovePspFormProvider,
                                             val userAnswersCacheConnector: UserAnswersCacheConnector,
                                             val getData: DataRetrievalAction,
@@ -51,27 +50,27 @@ class ConfirmRemovePspController @Inject()(
 
   val form: Form[Boolean] = formProvider()
 
-  def onPageLoad: Action[AnyContent] = (auth() andThen getData andThen requireData).async {
+  def onPageLoad(index: Index): Action[AnyContent] = (auth() andThen getData andThen requireData).async {
     implicit request =>
-      (SchemeSrnId and SchemeNameId and PSANameId).retrieve.right.map {
-        case srn ~ schemeName ~ psaName =>
-          val preparedForm = request.userAnswers.get(ConfirmRemovePsaId).fold(form)(form.fill)
-          Future.successful(Ok(view(preparedForm, schemeName, srn, psaName)))
+      (SchemeSrnId and SchemeNameId and PspDetailsId(index)).retrieve.right.map {
+        case srn ~ schemeName ~ pspDetails =>
+          val preparedForm = request.userAnswers.get(ConfirmRemovePspId).fold(form)(form.fill)
+          Future.successful(Ok(view(preparedForm, schemeName, srn, pspDetails.name, index)))
       }
   }
 
-  def onSubmit: Action[AnyContent] = (auth() andThen getData andThen requireData).async {
+  def onSubmit(index: Index): Action[AnyContent] = (auth() andThen getData andThen requireData).async {
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[Boolean]) =>
-          (SchemeNameId and SchemeSrnId and PSANameId).retrieve.right.map {
-            case schemeName ~ srn ~ psaName =>
-              Future.successful(BadRequest(view(formWithErrors, schemeName, srn, psaName)))
+          (SchemeNameId and SchemeSrnId and PspDetailsId(index)).retrieve.right.map {
+            case schemeName ~ srn ~ pspDetails =>
+              Future.successful(BadRequest(view(formWithErrors, schemeName, srn, pspDetails.name, index)))
           },
         value => {
-          userAnswersCacheConnector.save(request.externalId, ConfirmRemovePsaId, value).map(
+          userAnswersCacheConnector.save(request.externalId, ConfirmRemovePspId, value).map(
             cacheMap =>
-              Redirect(navigator.nextPage(ConfirmRemovePsaId, NormalMode, UserAnswers(cacheMap)))
+              Redirect(navigator.nextPage(ConfirmRemovePspId, NormalMode, UserAnswers(cacheMap)))
           )
         }
       )

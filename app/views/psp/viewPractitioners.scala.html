@@ -75,7 +75,7 @@
                     @practitioner.dateAuthorised
                 </td>
                 <td class="govuk-table__cell" role="cell" id="deAuthoriseLink-@index">
-                    <a href="#" aria-hidden="true">
+                    <a href="@controllers.remove.routes.ConfirmRemovePspController.onPageLoad(index)" aria-hidden="true">
                         @messages("messages__viewPractitioners__deAuthoriseLinkText")
                         <span class="visually-hidden">
                             @messages("messages__viewPractitioners__deAuthoriseLinkText__hiddenText", practitioner.pspName)

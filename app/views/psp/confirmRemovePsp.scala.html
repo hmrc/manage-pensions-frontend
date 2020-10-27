@@ -28,7 +28,8 @@
         form: Form[_],
         schemeName: String,
         srn: String,
-        pspName: String
+        pspName: String,
+        index: Index
 )(
         implicit
         request: Request[_],
@@ -39,7 +40,7 @@
     title = titleWithErrors(form, messages("messages__confirmRemovePsp__title"))
 ) {
 
-    @formHelper(action = controllers.remove.routes.ConfirmRemovePsaController.onSubmit(), 'autoComplete -> "off") {
+    @formHelper(action = controllers.remove.routes.ConfirmRemovePspController.onSubmit(index), 'autoComplete -> "off") {
 
         @components.back_link()
 
