@@ -31,31 +31,33 @@ import views.html.schemesOverview
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class PspDashboardController @Inject()( override val messagesApi: MessagesApi,
-                                        service: PspDashboardService,
-                                        authenticate: AuthAction,
-                                        getData: DataRetrievalAction,
-                                        userAnswersCacheConnector: UserAnswersCacheConnector,
-                                        val controllerComponents: MessagesControllerComponents,
-                                        view: schemesOverview)
-                                        (implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+class PspDashboardController @Inject()(override val messagesApi: MessagesApi,
+                                       service: PspDashboardService,
+                                       authenticate: AuthAction,
+                                       getData: DataRetrievalAction,
+                                       userAnswersCacheConnector: UserAnswersCacheConnector,
+                                       val controllerComponents: MessagesControllerComponents,
+                                       view: schemesOverview)
+                                      (implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
 
   def onPageLoad: Action[AnyContent] = (authenticate(PSP) andThen getData).async {
     implicit request =>
       val pspId: String = request.pspIdOrException.id
       val subHeading: String = Message("messages__pspDashboard__sub_heading")
+      def returnLink: Option[Link] = if (request.psaId.nonEmpty) Some(link) else None
 
       service.getPspName(pspId).flatMap {
         case Some(name) =>
-            userAnswersCacheConnector.save(request.externalId, PSPNameId, name).map { _ =>
-              Ok(view(name, service.getTiles(pspId), Some(subHeading), Some(returnLink)))
-            }
+          userAnswersCacheConnector.save(request.externalId, PSPNameId, name).map { _ =>
+            Ok(view(name, service.getTiles(pspId), Some(subHeading), returnLink))
+          }
 
         case _ => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
       }
   }
 
-  def returnLink: Link = Link("switch-psa", routes.SchemesOverviewController.onPageLoad().url,
-                              Message("messages__pspDashboard__switch_psa"))
+  def link: Link = Link("switch-psa", routes.SchemesOverviewController.onPageLoad().url,
+    Message("messages__pspDashboard__switch_psa"))
+
 }

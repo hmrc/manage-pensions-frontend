@@ -75,21 +75,29 @@ class AuthImpl(override val authConnector: AuthConnector,
   }
 
   private def createAuthRequest[A](id: String, enrolments: Enrolments, affinityGroup: AffinityGroup, request: Request[A],
-    block: AuthenticatedRequest[A] => Future[Result]): Future[Result] =
-    if(authEntity == PSA) {
-      block(AuthenticatedRequest(request, id, Some(PsaId(getPsaId(enrolments))), None, userType(affinityGroup)))
+                                   block: AuthenticatedRequest[A] => Future[Result]): Future[Result] = {
+    val (psaId, pspId) = if(authEntity == PSA) {
+      (getPsaId(isMandatory = true, enrolments), getPspId(isMandatory = false, enrolments))
     } else {
-      block(AuthenticatedRequest(request, id, None, Some(PspId(getPspId(enrolments))), userType(affinityGroup)))
+      (getPsaId(isMandatory = false, enrolments), getPspId(isMandatory = true, enrolments))
     }
+    block(AuthenticatedRequest(request, id, psaId, pspId, userType(affinityGroup)))
+  }
 
+  private def getPsaId(isMandatory: Boolean, enrolments: Enrolments): Option[PsaId] = {
+    def failureResult: Option[PsaId] = if(isMandatory) throw IdNotFound() else None
+    enrolments.getEnrolment("HMRC-PODS-ORG")
+      .flatMap(_.getIdentifier("PSAID")).map(_.value)
+      .fold[Option[PsaId]](failureResult)(id => Some(PsaId(id)))
 
-  private def getPsaId(enrolments: Enrolments): String =
-    enrolments.getEnrolment("HMRC-PODS-ORG").flatMap(_.getIdentifier("PSAID")).map(_.value)
-      .getOrElse(throw new IdNotFound)
+  }
 
-  private def getPspId(enrolments: Enrolments): String =
-    enrolments.getEnrolment("HMRC-PODS-ORG").flatMap(_.getIdentifier("PSPID")).map(_.value)
-      .getOrElse(throw IdNotFound("PspIdNotFound"))
+  private def getPspId(isMandatory: Boolean, enrolments: Enrolments): Option[PspId] = {
+    def failureResult: Option[PspId] = if(isMandatory) throw IdNotFound("PspIdNotFound") else None
+    enrolments.getEnrolment("HMRC-PODS-ORG")
+      .flatMap(_.getIdentifier("PSPID")).map(_.value)
+      .fold[Option[PspId]](failureResult)(id => Some(PspId(id)))
+  }
 
   private def userType(affinityGroup: AffinityGroup): UserType = {
     affinityGroup match {
