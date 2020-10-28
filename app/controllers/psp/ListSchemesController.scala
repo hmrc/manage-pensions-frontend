@@ -51,7 +51,6 @@ class ListSchemesController @Inject()(
                                        userAnswersCacheConnector: UserAnswersCacheConnector,
                                        val controllerComponents: MessagesControllerComponents,
                                        view: list_schemes,
-                                       paginationService: PaginationService,
                                        formProvider: ListSchemesFormProvider,
                                        schemeSearchService: SchemeSearchService
                                      )(implicit val ec: ExecutionContext)

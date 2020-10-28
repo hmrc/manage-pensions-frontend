@@ -50,8 +50,6 @@ import ListSchemesControllerSpec._
       when(mockSchemeSearchService.search(any(), any())(any(), any())).thenReturn(Future.successful(Nil))
       val pagination: Int = 10
 
-      val numberOfPages = paginationService.divide(emptySchemes.length, pagination)
-
       when(mockAppConfig.listSchemePagination) thenReturn pagination
 
       val fixture = testFixture(psaIdNoSchemes)
@@ -63,11 +61,6 @@ import ListSchemesControllerSpec._
       contentAsString(result) mustBe viewAsString(
         schemes = emptySchemes,
         numberOfSchemes = emptySchemes.length,
-        pagination = pagination,
-        pageNumber = 1,
-        pageNumberLinks = Seq.empty,
-        numberOfPages = numberOfPages,
-        noResultsMessageKey = Some("messages__listSchemes__noSchemes"),
         formValue = None
       )
     }
@@ -89,11 +82,6 @@ import ListSchemesControllerSpec._
       contentAsString(result) mustBe viewAsString(
         schemes = fullSchemes,
         numberOfSchemes = fullSchemes.length,
-        pagination = pagination,
-        pageNumber = 1,
-        pageNumberLinks = Seq.empty,
-        numberOfPages = numberOfPages,
-        noResultsMessageKey = None,
         formValue = None
       )
     }
@@ -123,11 +111,6 @@ import ListSchemesControllerSpec._
       val expected = viewAsString(
         schemes = fullSchemes,
         numberOfSchemes = fullSchemes.length,
-        pagination = pagination,
-        pageNumber = 1,
-        pageNumberLinks = Seq.empty,
-        numberOfPages = numberOfPages,
-        noResultsMessageKey = None,
         Some(searchText)
       )
 
@@ -152,11 +135,6 @@ import ListSchemesControllerSpec._
       val expected = viewAsString(
         schemes = fullSchemes,
         numberOfSchemes = fullSchemes.length,
-        pagination = pagination,
-        pageNumber = 1,
-        pageNumberLinks = Seq.empty,
-        numberOfPages = numberOfPages,
-        noResultsMessageKey = None,
         Some("")
       )
 
@@ -185,11 +163,6 @@ import ListSchemesControllerSpec._
         val expected = viewAsString(
           schemes = List.empty,
           numberOfSchemes = 0,
-          pagination = pagination,
-          pageNumber = 1,
-          pageNumberLinks = Seq.empty,
-          numberOfPages = numberOfPages,
-          noResultsMessageKey = Some("messages__listSchemes__search_noMatches"),
           Some(incorrectSearchText)
         )
 
@@ -307,7 +280,6 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
           FakeUserAnswersCacheConnector,
           stubMessagesControllerComponents(),
           view,
-          paginationService,
           listSchemesFormProvider,
           mockSchemeSearchService
         )
@@ -315,11 +287,6 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
 
   private def viewAsString(schemes: List[SchemeDetails],
                            numberOfSchemes: Int,
-                           pagination: Int,
-                           pageNumber: Int,
-                           pageNumberLinks: Seq[Int],
-                           numberOfPages: Int,
-                           noResultsMessageKey: Option[String],
                            formValue: Option[String]): String = {
 
     view(
@@ -327,11 +294,7 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
         .fold(listSchemesFormProvider())(v => listSchemesFormProvider().bind(Map("searchText" -> v))),
       schemes = schemes,
       psaName = psaName,
-      numberOfSchemes = numberOfSchemes,
-      pagination = pagination,
-      pageNumber = pageNumber,
-      pageNumberLinks = pageNumberLinks,
-      numberOfPages = numberOfPages
+      numberOfSchemes = numberOfSchemes
     )(fakeRequest, messages).toString()
   }
 }
