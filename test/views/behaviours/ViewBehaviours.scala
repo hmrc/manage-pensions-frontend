@@ -43,10 +43,13 @@ trait ViewBehaviours extends ViewSpecBase {
 
         "display the correct browser title" in {
           val doc = asDocument(view())
+          println("\n\n title " +title)
           val titleKey = if(title == messagesApi("messages__schemesOverview__title")){
             messagesApi("messages__manage_pension_schemes__title")
           } else {
             title + " - " + messagesApi("messages__manage_pension_schemes__title")}
+          println("\n\n doc" +doc)
+          println("\n\n titleKey" +titleKey)
           assertEqualsMessage(doc, "title", titleKey)
         }
 
