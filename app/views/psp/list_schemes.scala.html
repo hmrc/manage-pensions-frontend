@@ -89,8 +89,8 @@
                 }
 
                 @if(schemes.nonEmpty && (form("searchText").value.exists(_.length > 0))) {
-                <legend>schemes.length </legend>
                     @components.scheme_list_psp(schemes, appConfig)
+                    <a id="view-scheme" href=""> @messages("messages__listSchemesPsp__viewScheme")</a>
                 }
                 @components.return_link(controllers.routes.SchemesOverviewController.onPageLoad(), Some(psaName))
             </div>

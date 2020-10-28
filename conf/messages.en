@@ -116,6 +116,7 @@ messages__listSchemesPsp__column__status = Status:
 messages__listSchemesPsp__noMatchesLeft = Your search -
 messages__listSchemesPsp__noMatchesRight = - did not match any pension schemes.
 messages__listSchemesPsp__noMatchesCheck = Check you have entered the PSTR correctly in full.
+messages__listSchemesPsp__viewScheme = View scheme
 
 
 
