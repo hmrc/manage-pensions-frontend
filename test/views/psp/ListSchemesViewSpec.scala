@@ -128,22 +128,22 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours with MockitoS
   }
 
   "list-schemes view" must {
-//
-//    behave like normalPage(
-//      view = view(
-//        schemes = emptyList,
-//        numberOfSchemes = emptyList.length
-//      ),
-//      messageKeyPrefix = "listSchemes",
-//      pageHeader = messages("messages__listSchemesPsp__title")
-//    )
-//
-//    "have link to redirect to Pension Schemes Online service" in {
-//      when(mockAppConfig.pensionSchemeOnlineServiceUrl) thenReturn "onlineserviceurl"
-//      view(schemes = emptyList,
-//        numberOfSchemes = emptyList.length
-//      ) must haveLink(frontendAppConfig.pensionSchemeOnlineServiceUrl, "manage-link")
-//    }
+
+    behave like normalPage(
+      view = view(
+        schemes = emptyList,
+        numberOfSchemes = emptyList.length
+      ),
+      messageKeyPrefix = "listSchemes",
+      pageHeader = messages("messages__listSchemesPsp__title")
+    )
+
+    "have link to redirect to Pension Schemes Online service" in {
+      when(mockAppConfig.pensionSchemeOnlineServiceUrl) thenReturn "onlineserviceurl"
+      view(schemes = emptyList,
+        numberOfSchemes = emptyList.length
+      ) must haveLink(frontendAppConfig.pensionSchemeOnlineServiceUrl, "manage-link")
+    }
 //
 //    "have search bar when more than minimum schemes" in {
 //
@@ -166,9 +166,10 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours with MockitoS
 //    }
 //
     "display a suitable message when there are no schemes to display" in {
-      val x = view(schemes = emptyList, numberOfSchemes = emptyList.length)
-      println(s"\n\n\n\n here $x")
-      x must haveElementWithText("noSchemes", messages("messages__listSchemesPsp__noMatchesLeft"))
+      view(
+       schemes = emptyList,
+       numberOfSchemes = emptyList.length
+     ) must haveElementWithText("noSchemes", messages("messages__listSchemesPsp__noMatchesLeft"))
     }
 //
 //    "display the correct column headers when there are schemes to display" in {
