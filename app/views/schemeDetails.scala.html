@@ -32,7 +32,6 @@
     schemeName: String,
     pstr: Option[String],
     openedDate: Option[String],
-    admins: Option[Seq[AssociatedPsa]],
     srn: String,
     isSchemeOpen: Boolean,
     displayChangeLink: Boolean,
@@ -52,6 +51,10 @@
             <p>@messages("messages__schemeDetails__pstr", pstr)</p>
         }
 
+        @openedDate.map { openedDate =>
+            <p>@messages("messages__schemeDetails__regDate", openedDate)</p>
+        }
+
         <p><a id="view-details" href="@appConfig.viewSchemeDetailsUrl.format(srn)">
             @if(displayChangeLink){ @messages("messages__schemeDetails__view_change_details_link")} else { @messages("messages__schemeDetails__view_details_link") }
         </a></p>
@@ -60,48 +63,17 @@
             <p>@messages("messages__schemeDetails__psa_making_changes", psaName)</p>
         }
 
-        @openedDate.map { openedDate =>
-            <h2>@Html(messages("messages__schemeDetails__opened_date_head"))</h2>
-            <p>@openedDate</p>
-        }
-
         @aftHtml
 
         @paymentsAndChargesHtml
 
-        @admins.map { admins =>
-            <h2>@messages("messages__schemeDetails__psa_list_head")</h2>
-
-            <div id="admins-list" class="dl--margin-bottom">
-                <dl class="dl--label-value">
-                    @for(psa <- admins){
-                    <div class="row-group">
-                                <dt>
-                                    @psa.name
-                                </dt>
-                                @if(psa.canRemove){
-                                <dd class="dd-remove-link">
-                                    <a id="remove-link" href="@controllers.remove.routes.RemovePsaController.onPageLoad()">
-                                        <span aria-hidden="true">@messages("messages__schemeDetails__remove")</span>
-                                        <span class="visually-hidden">@messages("messages__schemeDetails__remove") @psa.name</span>
-                                    </a>
-                                </dd>
-                                } else {
-                                <dd>
-                                    <span class="visually-hidden">@messages("messages__schemeDetails__visuallyhidden_remove",psa.name)</span>
-                                </dd>
-                                }
-
-                    </div>
-                    }
-                </dl>
-            </div>
-        }
+        <h2>@messages("messages__schemeDetails__psa_list_head")</h2>
 
         @if(isSchemeOpen){
             <p><a id="invite" href="@controllers.invitations.routes.InviteController.onPageLoad(srn)">@messages("messages__schemeDetails__invite_link")</a></p>
-            <p>@messages("messages__schemeDetails__invite_p1")</p>
         }
+
+        <p><a id="view-psa-list" href="@controllers.routes.ViewAdministratorsController.onPageLoad(srn)">@messages("messages__schemeDetails__view_psa")</a></p>
 
         @if(pspLinks.nonEmpty) {
             <h2>@messages("messages__schemeDetails__pspAuthoriseHeading")</h2>
