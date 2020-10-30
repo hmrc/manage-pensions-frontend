@@ -22,6 +22,7 @@ import models.{SchemeDetails, SchemeStatus}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.inject.bind
 import play.api.inject.guice.{GuiceApplicationBuilder, GuiceableModule}
@@ -76,7 +77,6 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours with MockitoS
   )
 
   private val psaName = "Test psa name"
-  private val searchText = "240017IN"
 
   implicit private val request: Request[_] = fakeRequest
 
@@ -89,7 +89,8 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours with MockitoS
     behave like normalPageWithoutBrowserTitle(
       view = view(
         schemes = emptyList,
-        numberOfSchemes = emptyList.length
+        numberOfSchemes = emptyList.length,
+        listSchemesFormProvider.apply()
       ),
       messageKeyPrefix = "listSchemes",
       pageHeader = messages("messages__listSchemesPsp__title")
@@ -98,23 +99,35 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours with MockitoS
     "have search bar" in {
 
       val doc = asDocument(view(schemes = emptyList,
-        numberOfSchemes = emptyList.length
+        numberOfSchemes = emptyList.length,
+        listSchemesFormProvider.apply()
       ).apply()
       )
 
       assertRenderedById(doc, "searchText-form")
     }
 
-//    "display a suitable message when there are no schemes to display against search text" in {
-//      val x = view(schemes = fullList, numberOfSchemes = fullList.length)
-//
-//      x must haveElementWithText("noSchemes", messages("messages__listSchemesPsp__noMatchesLeft"))
-//    }
+    "display a suitable message when there are no schemes to display against search text" in {
+      view(
+        schemes = emptyList,
+        numberOfSchemes = emptyList.length,
+        listSchemesFormProvider().bind(Map("searchText" -> "incorrect"))
+      )must haveElementWithText("noSchemes", "Your search - incorrect - did not match any pension schemes.")
+    }
+
+    "display a table of schemes when there are schemes to display against search text" in {
+      view(
+        schemes = fullList,
+        numberOfSchemes = fullList.length,
+        listSchemesFormProvider().bind(Map("searchText" -> "PSTR-6"))
+      ) must haveElementWithClass("scheme-list1", "dl--margin-bottom")
+    }
 
     "display a link to return to overview page" in {
           view(
             schemes = emptyList,
-            numberOfSchemes = emptyList.length
+            numberOfSchemes = emptyList.length,
+            listSchemesFormProvider.apply()
           ) must haveLink(controllers.routes.SchemesOverviewController.onPageLoad().url, "return-link")
     }
 
@@ -122,11 +135,12 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours with MockitoS
 
 
   private def view(schemes: List[SchemeDetails],
-                   numberOfSchemes: Int
+                   numberOfSchemes: Int,
+                   form: Form[_]
                   )(implicit request: Request[_], messages: Messages): () => HtmlFormat.Appendable = () =>
 
     listSchemesView(
-      form = listSchemesFormProvider.apply(),
+      form = form,
       schemes = schemes,
       psaName = psaName,
       numberOfSchemes = numberOfSchemes

@@ -47,10 +47,7 @@ import ListSchemesControllerSpec._
     when(mockMinimalPsaConnector.getPsaNameFromPsaID(any())(any(), any())).thenReturn(Future.successful(Some(psaName)))
 
     "return OK and the correct view when there are no schemes" in {
-      when(mockSchemeSearchService.search(any(), any())(any(), any())).thenReturn(Future.successful(Nil))
-      val pagination: Int = 10
-
-      when(mockAppConfig.listSchemePagination) thenReturn pagination
+      when(mockSchemeSearchService.searchPsp(any(), any())(any(), any())).thenReturn(Future.successful(Nil))
 
       val fixture = testFixture(psaIdNoSchemes)
 
@@ -64,27 +61,6 @@ import ListSchemesControllerSpec._
         formValue = None
       )
     }
-
-    "return OK and the correct view when there are schemes without pagination" in {
-      when(mockSchemeSearchService.search(any(), any())(any(), any())).thenReturn(Future.successful(fullSchemes))
-      val pagination: Int = 10
-
-      val numberOfPages = paginationService.divide(fullSchemes.length, pagination)
-
-      when(mockAppConfig.listSchemePagination) thenReturn pagination
-
-      val fixture = testFixture(psaIdWithSchemes)
-
-      val result = fixture.controller.onPageLoad(fakeRequest)
-
-      status(result) mustBe OK
-
-      contentAsString(result) mustBe viewAsString(
-        schemes = fullSchemes,
-        numberOfSchemes = fullSchemes.length,
-        formValue = None
-      )
-    }
   }
 
   "onSearch" when {
@@ -92,15 +68,9 @@ import ListSchemesControllerSpec._
     when(mockMinimalPsaConnector.getPsaNameFromPsaID(any())(any(), any()))
       .thenReturn(Future.successful(Some(psaName)))
 
-    "return OK and the correct view when there are schemes without pagination and search on non empty string" in {
+    "return OK and the correct view when there are schemes" in {
       val searchText = "24000001IN"
-      when(mockSchemeSearchService.search(any(), Matchers.eq(Some(searchText)))(any(), any())).thenReturn(Future.successful(fullSchemes))
-      val pagination: Int = 10
-
-      val numberOfPages =
-        paginationService.divide(fullSchemes.length, pagination)
-
-      when(mockAppConfig.listSchemePagination) thenReturn pagination
+      when(mockSchemeSearchService.searchPsp(any(), Matchers.eq(Some(searchText)))(any(), any())).thenReturn(Future.successful(fullSchemes))
 
       val fixture = testFixture(psaIdWithSchemes)
       val postRequest = fakeRequest.withFormUrlEncodedBody(("searchText", searchText))
@@ -118,13 +88,7 @@ import ListSchemesControllerSpec._
     }
 
     "return BADREQUEST and error when no value is entered into search" in {
-      when(mockSchemeSearchService.search(any(), Matchers.eq(None))(any(), any())).thenReturn(Future.successful(fullSchemes))
-
-      val pagination: Int = 10
-
-      val numberOfPages = paginationService.divide(fullSchemes.length, pagination)
-
-      when(mockAppConfig.listSchemePagination) thenReturn pagination
+      when(mockSchemeSearchService.searchPsp(any(), Matchers.eq(None))(any(), any())).thenReturn(Future.successful(fullSchemes))
 
       val fixture = testFixture(psaIdWithSchemes)
       val postRequest = fakeRequest.withFormUrlEncodedBody(("searchText", ""))
@@ -141,17 +105,10 @@ import ListSchemesControllerSpec._
       contentAsString(result) mustBe expected
     }
 
-      "return OK and the correct view with correct no matches message when unrecognised format is entered into search" in {
+      "return OK and the correct view with correct no matches message when no match is made" in {
 
-        val incorrectSearchText = "24000001IN"
-        when(mockSchemeSearchService.search(any(), Matchers.eq(Some(incorrectSearchText)))(any(), any())).thenReturn(Future.successful(Nil))
-
-        val pagination: Int = 10
-
-        val numberOfPages =
-          paginationService.divide(fullSchemes.length, pagination)
-
-        when(mockAppConfig.listSchemePagination) thenReturn pagination
+        val incorrectSearchText = "incorrect"
+        when(mockSchemeSearchService.searchPsp(any(), Matchers.eq(Some(incorrectSearchText)))(any(), any())).thenReturn(Future.successful(Nil))
 
         val fixture = testFixture(psaIdWithSchemes)
         val postRequest =
@@ -183,7 +140,6 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
   private val mockMinimalPsaConnector: MinimalPsaConnector =
     mock[MinimalPsaConnector]
   private val mockAppConfig: FrontendAppConfig = mock[FrontendAppConfig]
-  private val paginationService = new PaginationService
   private val listSchemesFormProvider = new ListSchemesFormProvider
   private val mockSchemeSearchService = mock[SchemeSearchService]
 
