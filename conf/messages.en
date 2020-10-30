@@ -292,12 +292,14 @@ messages__error__declaration__required = You need to agree to all the declaratio
 
 messages__schemeDetails__title = Pension scheme summary
 messages__schemeDetails__pstr = Pension Scheme Tax Reference: {0}
+messages__schemeDetails__regDate = Registration for Tax: {0}
 messages__schemeDetails__view_details_link = View the registered scheme details
 messages__schemeDetails__view_change_details_link = View or change the registered scheme details
 messages__schemeDetails__psa_making_changes = You cannot make changes to this scheme at the moment. {0} is making changes to this scheme.
 messages__schemeDetails__opened_date_head = This scheme was opened on:
 messages__schemeDetails__psa_list_head = Pension scheme administrators
 messages__schemeDetails__invite_link = Add a scheme administrator
+messages__schemeDetails__view_psa = View or remove a scheme administrator
 messages__schemeDetails__invite_p1 = To add a pension administrator they must be registered with the managing pension scheme service. You will need the name and administrator ID. They will get an invitation that they will have to accept.
 messages__schemeDetails__return_link = Return to your pension schemes
 messages__schemeDetails__remove = Remove
