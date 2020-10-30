@@ -16,19 +16,14 @@
 
 package controllers.remove
 
-import java.time.LocalDate
-
 import connectors.UserAnswersCacheConnector
-import connectors.admin.PspRemovalConnector
-import connectors.scheme.{PensionSchemeVarianceLockConnector, UpdateSchemeCacheConnector}
 import controllers.Retrievals
 import controllers.actions._
 import forms.remove.PspRemovalDateFormProvider
-import identifiers.invitations.PSTRId
-import identifiers.remove.{PspDetailsId, PspRemovalDateId, PsaRemovalDateId}
+import identifiers.remove.{PspDetailsId, PspRemovalDateId}
 import identifiers.{SchemeNameId, SchemeSrnId}
 import javax.inject.Inject
-import models.{Index, NormalMode, PspToBeRemovedFromScheme}
+import models.{Index, NormalMode}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.Reads._
@@ -50,9 +45,6 @@ class PspRemovalDateController @Inject()(
                                           getData: DataRetrievalAction,
                                           requireData: DataRequiredAction,
                                           formProvider: PspRemovalDateFormProvider,
-//                                          pspRemovalConnector: PspRemovalConnector,
-//                                          updateConnector: UpdateSchemeCacheConnector,
-//                                          lockConnector: PensionSchemeVarianceLockConnector,
                                           val controllerComponents: MessagesControllerComponents,
                                           view: pspRemovalDate
                                         )(implicit val ec: ExecutionContext)
@@ -88,48 +80,28 @@ class PspRemovalDateController @Inject()(
 
   def onSubmit(index: Index): Action[AnyContent] =
     (authenticate() andThen getData andThen requireData).async {
-    implicit request =>
-      (SchemeSrnId and SchemeNameId and PspDetailsId(index)).retrieve.right.map {
-        case srn ~ schemeName ~ pspDetails =>
-          formProvider(
-            relationshipStartDate = pspDetails.relationshipStartDate,
-            earliestDateError = earliestDateError(formatDate(pspDetails.relationshipStartDate)).resolve
-          ).bindFromRequest().fold(
-            (formWithErrors: Form[_]) =>
-              Future.successful(BadRequest(view(
-                form = formWithErrors,
-                pspName = pspDetails.name,
-                schemeName = schemeName,
-                srn = srn,
-                relationshipStartDate = formatDate(pspDetails.relationshipStartDate),
-                index = index
-              ))),
-            value =>
-              userAnswersCacheConnector.save(request.externalId, PspRemovalDateId(index), value).map {
-                cacheMap =>
-//                  pspRemovalConnector.remove(PspToBeRemovedFromScheme(
-//                    psaId = request.psaIdOrException.id,
-//                    pstr = pstr,
-//                    removalDate = value
-//                  )).flatMap { _ =>
-//                    lockConnector.getLockByPsa(
-//                      psaId = request.psaIdOrException.id
-//                    ).map {
-//                      case Some(lockedSchemeVariance) if lockedSchemeVariance.srn == srn =>
-//                        updateConnector.removeAll(srn).map { _ =>
-//                          lockConnector.releaseLock(
-//                            psaId = request.psaIdOrException.id,
-//                            srn = srn
-//                          )
-//                        }
-//                      case _ =>
-//                        Future.successful(())
-//                    }.map { _ =>
-                      Redirect(navigator.nextPage(PspRemovalDateId(index), NormalMode, UserAnswers(cacheMap)))
-                    }
-          )
-      }
-      //              }
-//      }
-  }
+      implicit request =>
+        (SchemeSrnId and SchemeNameId and PspDetailsId(index)).retrieve.right.map {
+          case srn ~ schemeName ~ pspDetails =>
+            formProvider(
+              relationshipStartDate = pspDetails.relationshipStartDate,
+              earliestDateError = earliestDateError(formatDate(pspDetails.relationshipStartDate)).resolve
+            ).bindFromRequest().fold(
+              (formWithErrors: Form[_]) =>
+                Future.successful(BadRequest(view(
+                  form = formWithErrors,
+                  pspName = pspDetails.name,
+                  schemeName = schemeName,
+                  srn = srn,
+                  relationshipStartDate = formatDate(pspDetails.relationshipStartDate),
+                  index = index
+                ))),
+              value =>
+                userAnswersCacheConnector.save(request.externalId, PspRemovalDateId(index), value).map {
+                  cacheMap =>
+                    Redirect(navigator.nextPage(PspRemovalDateId(index), NormalMode, UserAnswers(cacheMap)))
+                }
+            )
+        }
+    }
 }
