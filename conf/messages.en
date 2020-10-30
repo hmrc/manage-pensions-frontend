@@ -485,4 +485,4 @@ messages__pspDashboard__psp_change = Change your pension scheme practitioner det
 messages__pspDashboard__psp_deregister = Stop being a pension scheme practitioner
 messages__pspDashboard__scheme_heading = Pension schemes
 messages__pspDashboard__search_scheme = Search for a pension scheme
-messages__pspDashboard__switch_psa = Switch to PSA view
+messages__pspDashboard__switch_psa = Switch to administrator view
