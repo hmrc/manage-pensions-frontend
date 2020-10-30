@@ -102,7 +102,7 @@ class PsaRemovePspDeclarationControllerSpec extends ControllerWithQuestionPageBe
   behave like controllerWithOnSubmitMethod(
     onSubmitAction = onSubmitAction,
     validData = validData,
-    form = form().bind(Map("value" -> "true")),
+    form = form().bind(Map("value" -> "")),
     errorView = viewAsStringPostRequest,
     postRequest = postRequest,
     emptyPostRequest = Some(emptyPostRequest)
@@ -160,7 +160,8 @@ object PsaRemovePspDeclarationControllerSpec {
 
   private val validData: FakeDataRetrievalAction =
     new FakeDataRetrievalAction(Some(
-      data ++
+      data
+        ++
         Json.obj(PsaRemovePspDeclarationId(0).toString -> "true")
     ))
 
