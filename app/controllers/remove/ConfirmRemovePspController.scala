@@ -46,7 +46,10 @@ class ConfirmRemovePspController @Inject()(
                                             val requireData: DataRequiredAction,
                                             val controllerComponents: MessagesControllerComponents,
                                             view: confirmRemovePsp
-                                          )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
+                                          )(implicit val ec: ExecutionContext)
+  extends FrontendBaseController
+    with I18nSupport
+    with Retrievals {
 
   val form: Form[Boolean] = formProvider()
 
@@ -54,8 +57,12 @@ class ConfirmRemovePspController @Inject()(
     implicit request =>
       (SchemeSrnId and SchemeNameId and PspDetailsId(index)).retrieve.right.map {
         case srn ~ schemeName ~ pspDetails =>
-          val preparedForm = request.userAnswers.get(ConfirmRemovePspId).fold(form)(form.fill)
-          Future.successful(Ok(view(preparedForm, schemeName, srn, pspDetails.name, index)))
+          val preparedForm = request.userAnswers.get(ConfirmRemovePspId(index)).fold(form)(form.fill)
+          if (pspDetails.authorisingPSAID == request.psaIdOrException.id) {
+            Future.successful(Ok(view(preparedForm, schemeName, srn, pspDetails.name, index)))
+          } else {
+            Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+          }
       }
   }
 
@@ -68,9 +75,9 @@ class ConfirmRemovePspController @Inject()(
               Future.successful(BadRequest(view(formWithErrors, schemeName, srn, pspDetails.name, index)))
           },
         value => {
-          userAnswersCacheConnector.save(request.externalId, ConfirmRemovePspId, value).map(
+          userAnswersCacheConnector.save(request.externalId, ConfirmRemovePspId(index), value).map(
             cacheMap =>
-              Redirect(navigator.nextPage(ConfirmRemovePspId, NormalMode, UserAnswers(cacheMap)))
+              Redirect(navigator.nextPage(ConfirmRemovePspId(index), NormalMode, UserAnswers(cacheMap)))
           )
         }
       )

@@ -75,12 +75,18 @@
                     @practitioner.dateAuthorised
                 </td>
                 <td class="govuk-table__cell" role="cell" id="deAuthoriseLink-@index">
+                @if(practitioner.authorisedByLoggedInPsa) {
                     <a href="@controllers.remove.routes.ConfirmRemovePspController.onPageLoad(index)" aria-hidden="true">
                         @messages("messages__viewPractitioners__deAuthoriseLinkText")
                         <span class="visually-hidden">
                             @messages("messages__viewPractitioners__deAuthoriseLinkText__hiddenText", practitioner.pspName)
                         </span>
                     </a>
+                }else{
+                    <span class="visually-hidden">
+                        @messages("messages__viewPractitioners__didNotAuthorise__hiddenText", practitioner.pspName)
+                    </span>
+                }
                 </td>
             </tr>
         }

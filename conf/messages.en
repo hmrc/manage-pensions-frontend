@@ -45,6 +45,18 @@ messages__removal_date_error__before_association = The date cannot be before whe
 messages__removal_date_error__before_earliest_date = Enter a date after 29 May 2018
 messages__removal_date_error__common = Enter a correct date using the example format for when the scheme administrator stopped for this scheme
 
+messages__pspRemoval_date_error__all_blank = Enter the date when the scheme practitioner stopped for this scheme using a day, month and year
+messages__pspRemoval_date_error__day_blank = Enter a day when the scheme practitioner stopped for this scheme
+messages__pspRemoval_date_error__month_blank = Enter a month when the scheme practitioner stopped for this scheme
+messages__pspRemoval_date_error__year_blank = Enter a year when the scheme practitioner stopped for this scheme
+messages__pspRemoval_date_error__day_month_blank = Enter a day and month when the scheme practitioner stopped for this scheme
+messages__pspRemoval_date_error__month_year_blank = Enter a month and year when the scheme practitioner stopped for this scheme
+messages__pspRemoval_date_error__future_date = The date when the scheme practitioner stopped for this scheme must be today or in the past
+messages__pspRemoval_date_error__before_association = The date cannot be before when the scheme practitioner started managing the scheme
+messages__pspRemoval_date_error__before_earliest_date = Enter a date after {0}
+messages__pspRemoval_date_error__common = Enter a correct date using the example format for when the scheme practitioner stopped for this scheme
+
+
 messages__error__common__email__no_at_sign = Enter an email address which includes an @ symbol
 messages__error__common__email__start_with_at_sign = Enter an email address which does not start with @
 messages__error__common__email__dot_after_at_sign = Enter an email address in the correct format with a character between @ and dot
@@ -484,3 +496,8 @@ messages__viewPractitioners__dateAuthorisedHeader = Date authorised
 messages__viewPractitioners__deAuthoriseLinkHeader = De-authorise link
 messages__viewPractitioners__deAuthoriseLinkText = Deauthorise
 messages__viewPractitioners__deAuthoriseLinkText__hiddenText = De-authorise {0}
+messages__viewPractitioners__didNotAuthorise__hiddenText = {0} was authorised by a different PSA
+
+messages__pspRemovalDate__title = When did they stop being a scheme practitioner?
+messages__pspRemovalDate__heading = When did {0} stop being a scheme practitioner for {1}?
+messages__pspRemovalDate__lede = {0} became scheme practitioner on {1}. The date they stopped must be between {1} and today.

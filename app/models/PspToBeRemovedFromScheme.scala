@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package identifiers.remove
+package models
 
 import java.time.LocalDate
 
-import identifiers.TypedIdentifier
+import play.api.libs.json._
 
-case object RemovalDateId extends TypedIdentifier[LocalDate] {
-  override def toString: String = "removalDate"
+case class PspToBeRemovedFromScheme(psaId: String, pstr: String, removalDate: LocalDate)
+
+object PspToBeRemovedFromScheme {
+  implicit val formats: Format[PspToBeRemovedFromScheme] = Json.format[PspToBeRemovedFromScheme]
 }

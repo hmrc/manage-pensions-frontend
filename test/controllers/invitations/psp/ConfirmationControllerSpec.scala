@@ -34,8 +34,6 @@ class ConfirmationControllerSpec extends ControllerWithNormalPageBehaviours {
   private val testPspName = "test-psp-name"
   private val testSchemeName = "test-scheme-name"
 
-  private lazy val continue: Call = controllers.routes.SchemesOverviewController.onPageLoad()
-
   private val userAnswer = UserAnswers()
     .set(SchemeNameId)(testSchemeName).asOpt.value
     .set(PspNameId)(testPspName).asOpt.value

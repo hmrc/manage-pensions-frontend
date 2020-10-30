@@ -18,9 +18,10 @@ package utils.navigators
 
 import connectors.UserAnswersCacheConnector
 import controllers.routes._
-import identifiers.remove.ConfirmRemovePspId
+import identifiers.remove.{ConfirmRemovePspId, PspRemovalDateId}
 import identifiers.{Identifier, SchemeSrnId}
 import javax.inject.{Inject, Singleton}
+import models.Index
 import play.api.mvc.Call
 import utils.{Navigator, UserAnswers}
 
@@ -28,15 +29,16 @@ import utils.{Navigator, UserAnswers}
 class RemovePSPNavigator @Inject()(val dataCacheConnector: UserAnswersCacheConnector) extends Navigator {
 
   override def routeMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
-    case ConfirmRemovePspId => confirmRemovePspRoutes(ua)
+    case ConfirmRemovePspId(index) => confirmRemovePspRoutes(ua, index)
+    case PspRemovalDateId(_) => controllers.psp.routes.ViewPractitionersController.onPageLoad()
   }
 
-  private def confirmRemovePspRoutes(userAnswers: UserAnswers) = {
-    (userAnswers.get(ConfirmRemovePspId), userAnswers.get(SchemeSrnId)) match {
+  private def confirmRemovePspRoutes(userAnswers: UserAnswers, index: Index): Call = {
+    (userAnswers.get(ConfirmRemovePspId(index)), userAnswers.get(SchemeSrnId)) match {
       case (Some(false), Some(srn)) =>
         controllers.routes.SchemeDetailsController.onPageLoad(srn)
       case (Some(true), _) =>
-        controllers.psp.routes.ViewPractitionersController.onPageLoad()
+        controllers.remove.routes.PspRemovalDateController.onPageLoad(index)
       case _ =>
         controllers.routes.SessionExpiredController.onPageLoad()
     }
