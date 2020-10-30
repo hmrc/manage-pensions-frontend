@@ -503,3 +503,8 @@ messages__viewPractitioners__didNotAuthorise__hiddenText = {0} was authorised by
 messages__pspRemovalDate__title = When did they stop being a scheme practitioner?
 messages__pspRemovalDate__heading = When did {0} stop being a scheme practitioner for {1}?
 messages__pspRemovalDate__lede = {0} was authorised as a scheme practitioner on {1}. The date they stopped must be between {1} and today.
+
+messages__psaRemovePspDeclaration__title = Declaration
+messages__psaRemovePspDeclaration__p = I confirm I want to deauthorise this practitioner for this pension scheme.
+messages__psaRemovePspDeclaration__label = Agree
+messages__psaRemovePspDeclaration__required = Select the agree box to confirm you accept the declaration

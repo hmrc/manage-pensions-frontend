@@ -18,7 +18,8 @@ package utils.navigators
 
 import connectors.UserAnswersCacheConnector
 import controllers.routes._
-import identifiers.remove.{ConfirmRemovePspId, PspRemovalDateId}
+import controllers.remove.routes._
+import identifiers.remove.{ConfirmRemovePspId, PsaRemovePspDeclarationId, PspRemovalDateId}
 import identifiers.{Identifier, SchemeSrnId}
 import javax.inject.{Inject, Singleton}
 import models.Index
@@ -29,22 +30,27 @@ import utils.{Navigator, UserAnswers}
 class RemovePSPNavigator @Inject()(val dataCacheConnector: UserAnswersCacheConnector) extends Navigator {
 
   override def routeMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
-    case ConfirmRemovePspId(index) => confirmRemovePspRoutes(ua, index)
-    case PspRemovalDateId(_) => controllers.psp.routes.ViewPractitionersController.onPageLoad()
+    case ConfirmRemovePspId(index) =>
+      confirmRemovePspRoutes(ua, index)
+    case PspRemovalDateId(index) =>
+      PsaRemovePspDeclarationController.onPageLoad(index)
+    case PsaRemovePspDeclarationId(_) =>
+      controllers.psp.routes.ViewPractitionersController.onPageLoad()
   }
 
   private def confirmRemovePspRoutes(userAnswers: UserAnswers, index: Index): Call = {
     (userAnswers.get(ConfirmRemovePspId(index)), userAnswers.get(SchemeSrnId)) match {
       case (Some(false), Some(srn)) =>
-        controllers.routes.SchemeDetailsController.onPageLoad(srn)
+        SchemeDetailsController.onPageLoad(srn)
       case (Some(true), _) =>
-        controllers.remove.routes.PspRemovalDateController.onPageLoad(index)
+        PspRemovalDateController.onPageLoad(index)
       case _ =>
-        controllers.routes.SessionExpiredController.onPageLoad()
+        SessionExpiredController.onPageLoad()
     }
   }
 
   override protected def editRouteMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
-    case _ => SessionExpiredController.onPageLoad()
+    case _ =>
+      SessionExpiredController.onPageLoad()
   }
 }

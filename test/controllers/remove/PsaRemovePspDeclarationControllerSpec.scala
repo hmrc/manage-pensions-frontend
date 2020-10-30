@@ -18,46 +18,61 @@ package controllers.remove
 
 import java.time.LocalDate
 
-import connectors.{FakeUserAnswersCacheConnector, UserAnswersCacheConnector}
-import controllers.actions._
+import connectors.{FakeUserAnswersCacheConnector, PspConnector, UserAnswersCacheConnector}
+import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
-import forms.remove.PspRemovalDateFormProvider
-import identifiers.remove.PspRemovalDateId
+import forms.remove.PsaRemovePspDeclarationFormProvider
+import identifiers.invitations.PSTRId
+import identifiers.remove.PsaRemovePspDeclarationId
 import identifiers.{SchemeNameId, SchemeSrnId, SeqAuthorisedPractitionerId}
+import org.mockito.Matchers.any
+import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
-import org.scalatestplus.mockito._
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.data.Form
 import play.api.libs.json.{JsArray, Json}
 import play.api.mvc.{Action, AnyContent, AnyContentAsJson}
 import play.api.test.FakeRequest
+import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
-import utils.DateHelper._
-import views.html.remove.pspRemovalDate
+import views.html.remove.psaRemovePspDeclaration
 
-class PspRemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours with MockitoSugar with BeforeAndAfterEach {
+import scala.concurrent.Future
 
-  import PspRemovalDateControllerSpec._
+class PsaRemovePspDeclarationControllerSpec extends ControllerWithQuestionPageBehaviours with MockitoSugar with BeforeAndAfterEach {
 
-  private val formProvider: PspRemovalDateFormProvider = new PspRemovalDateFormProvider()
+  import PsaRemovePspDeclarationControllerSpec._
+
+  private val formProvider: PsaRemovePspDeclarationFormProvider = new PsaRemovePspDeclarationFormProvider()
   private val form = formProvider
 
-  private val view = app.injector.instanceOf[pspRemovalDate]
+  private val view = app.injector.instanceOf[psaRemovePspDeclaration]
+
+  private val mockPspConnector: PspConnector = mock[PspConnector]
 
   def controller(
                   dataRetrievalAction: DataRetrievalAction = sessionData,
                   fakeAuth: AuthAction = FakeAuthAction,
                   userAnswersCacheConnector: UserAnswersCacheConnector = FakeUserAnswersCacheConnector) =
-    new PspRemovalDateController(
+    new PsaRemovePspDeclarationController(
       messagesApi = messagesApi,
       userAnswersCacheConnector = userAnswersCacheConnector,
       navigator = navigator,
       authenticate = fakeAuth,
       getData = dataRetrievalAction,
       requireData = requiredDataAction,
+      pspConnector = mockPspConnector,
       formProvider = formProvider,
       controllerComponents = stubMessagesControllerComponents(),
       view = view
     )
+
+  override def beforeEach(): Unit = {
+    reset(mockPspConnector)
+    when(mockPspConnector.deAuthorise(any(), any())(any(), any())).thenReturn(
+      Future.successful(HttpResponse.apply(200, Json.stringify(Json.obj("processingDate" -> LocalDate.now))))
+    )
+  }
 
   private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
     controller(dataRetrievalAction, fakeAuth).onPageLoad(0)
@@ -71,23 +86,23 @@ class PspRemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours 
     controller(userAnswersCacheConnector = userAnswersConnector).onSubmit(0)
   }
 
-  private def viewAsString(form: Form[LocalDate]): String =
-    view(form, pspName, schemeName, srn, formatDate(relationshipStartDate), 0)(fakeRequest, messages).toString
+  private def viewAsString(form: Form[Boolean]): String =
+    view(form, schemeName, srn, 0)(fakeRequest, messages).toString
 
-  private def viewAsStringPostRequest(form: Form[LocalDate]): String =
-    view(form, pspName, schemeName, srn, formatDate(relationshipStartDate), 0)(postRequest, messages).toString
+  private def viewAsStringPostRequest(form: Form[Boolean]): String =
+    view(form, schemeName, srn, 0)(postRequest, messages).toString
 
   behave like controllerWithOnPageLoadMethodWithoutPrePopulation(
     onPageLoadAction = onPageLoadAction,
     emptyData = sessionData,
-    emptyForm = form(relationshipStartDate, "Some error"),
+    emptyForm = form(),
     validView = viewAsString
   )
 
   behave like controllerWithOnSubmitMethod(
     onSubmitAction = onSubmitAction,
     validData = validData,
-    form = form(relationshipStartDate, "Some error").bind(dateKeys),
+    form = form().bind(Map("value" -> "true")),
     errorView = viewAsStringPostRequest,
     postRequest = postRequest,
     emptyPostRequest = Some(emptyPostRequest)
@@ -96,24 +111,15 @@ class PspRemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours 
   behave like controllerThatSavesUserAnswers(
     saveAction = onSaveAction,
     validRequest = postRequest,
-    id = PspRemovalDateId(0),
-    value = date
+    id = PsaRemovePspDeclarationId(0),
+    value = true
   )
 }
 
-object PspRemovalDateControllerSpec extends MockitoSugar {
-  private val relationshipStartDate = LocalDate.parse("2020-04-01")
+object PsaRemovePspDeclarationControllerSpec {
   private val schemeName = "test scheme name"
-  private val pspName = "PSP Limited Company 1"
   private val srn = "test srn"
-  private val date = LocalDate.now()
-
-  val day: Int = LocalDate.now().getDayOfMonth
-  val month: Int = LocalDate.now().getMonthValue
-  val year: Int = LocalDate.now().getYear
-
-  val dateKeys = Map("pspRemovalDate.day" -> "", "pspRemovalDate.month" -> "", "pspRemovalDate.year" -> "")
-
+  private val pstr = "pstr"
   private val practitioners = JsArray(
     Seq(
       Json.obj(
@@ -145,7 +151,8 @@ object PspRemovalDateControllerSpec extends MockitoSugar {
   private val data = Json.obj(
     SchemeSrnId.toString -> srn,
     SchemeNameId.toString -> schemeName,
-    SeqAuthorisedPractitionerId.toString -> practitioners
+    SeqAuthorisedPractitionerId.toString -> practitioners,
+    PSTRId.toString -> pstr
   )
 
   private val sessionData: FakeDataRetrievalAction =
@@ -154,20 +161,16 @@ object PspRemovalDateControllerSpec extends MockitoSugar {
   private val validData: FakeDataRetrievalAction =
     new FakeDataRetrievalAction(Some(
       data ++
-        Json.obj(PspRemovalDateId(0).toString -> LocalDate.parse("2020-05-01"))
+        Json.obj(PsaRemovePspDeclarationId(0).toString -> "true")
     ))
 
-  val postRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.obj(
-    "pspRemovalDate.day" -> day.toString,
-    "pspRemovalDate.month" -> month.toString,
-    "pspRemovalDate.year" -> year.toString)
-  )
+  val postRequest: FakeRequest[AnyContentAsJson] =
+    FakeRequest().withJsonBody(Json.obj(
+      "value" -> "true"
+    ))
 
-  val emptyPostRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.obj(
-    "pspRemovalDate.day" -> "",
-    "pspRemovalDate.month" -> "",
-    "pspRemovalDate.year" -> "")
-  )
+  val emptyPostRequest: FakeRequest[AnyContentAsJson] =
+    FakeRequest().withJsonBody(Json.obj(
+      "value" -> ""
+    ))
 }
-
-
