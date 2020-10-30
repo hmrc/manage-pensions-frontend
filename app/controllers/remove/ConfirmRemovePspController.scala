@@ -31,6 +31,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.annotations.RemovePSP
 import utils.{Navigator, UserAnswers}
+import viewmodels.Message
 import views.html.psp.confirmRemovePsp
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -68,18 +69,18 @@ class ConfirmRemovePspController @Inject()(
 
   def onSubmit(index: Index): Action[AnyContent] = (auth() andThen getData andThen requireData).async {
     implicit request =>
-      form.bindFromRequest().fold(
-        (formWithErrors: Form[Boolean]) =>
-          (SchemeNameId and SchemeSrnId and PspDetailsId(index)).retrieve.right.map {
-            case schemeName ~ srn ~ pspDetails =>
-              Future.successful(BadRequest(view(formWithErrors, schemeName, srn, pspDetails.name, index)))
-          },
-        value => {
-          userAnswersCacheConnector.save(request.externalId, ConfirmRemovePspId(index), value).map(
-            cacheMap =>
-              Redirect(navigator.nextPage(ConfirmRemovePspId(index), NormalMode, UserAnswers(cacheMap)))
+      (SchemeNameId and SchemeSrnId and PspDetailsId(index)).retrieve.right.map {
+        case schemeName ~ srn ~ pspDetails =>
+          form.bindFromRequest().fold(
+            (formWithErrors: Form[Boolean]) =>
+              Future.successful(BadRequest(view(formWithErrors, schemeName, srn, pspDetails.name, index))),
+            value => {
+              userAnswersCacheConnector.save(request.externalId, ConfirmRemovePspId(index), value).map(
+                cacheMap =>
+                  Redirect(navigator.nextPage(ConfirmRemovePspId(index), NormalMode, UserAnswers(cacheMap)))
+              )
+            }
           )
-        }
-      )
+      }
   }
 }

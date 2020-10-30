@@ -316,9 +316,9 @@ messages__confirmRemovePsa__heading = Are you sure you want to remove {0} as sch
 messages__confirmRemovePsa_required = Select yes if you are sure you want to remove the scheme administrator
 messages__returnToSchemeDetails__link = Return to {0}
 
-messages__confirmRemovePsp__title = Are you sure you want to remove the scheme practitioner?
-messages__confirmRemovePsp__heading = Are you sure you want to remove {0} as scheme practitioner for {1}?
-messages__confirmRemovePsp_required = Select yes if you are sure you want to remove the scheme practitioner
+messages__confirmRemovePsp__title = Are you sure you want to deauthorise the scheme practitioner?
+messages__confirmRemovePsp__heading = Are you sure you want to deauthorise {0} as scheme practitioner for {1}?
+messages__confirmRemovePsp_required = Select yes if you want to deauthorise this pension scheme practitioner
 
 messages__confirmRemoved__title = The scheme administrator has been removed
 messages__confirmRemoved__heading = {0} has been removed as scheme administrator of {1}
@@ -502,4 +502,4 @@ messages__viewPractitioners__didNotAuthorise__hiddenText = {0} was authorised by
 
 messages__pspRemovalDate__title = When did they stop being a scheme practitioner?
 messages__pspRemovalDate__heading = When did {0} stop being a scheme practitioner for {1}?
-messages__pspRemovalDate__lede = {0} became scheme practitioner on {1}. The date they stopped must be between {1} and today.
+messages__pspRemovalDate__lede = {0} was authorised as a scheme practitioner on {1}. The date they stopped must be between {1} and today.
