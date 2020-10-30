@@ -25,7 +25,7 @@ import play.api.data.Form
 
 class PspRemovalDateFormProvider @Inject() extends DateMapping with Constraints {
 
-  val beforeAssociation = "messages__pspRemoval_date_error__before_association"
+  val beforeAssociation = "messages__pspRemoval_date_error__before_relationshipStartDate"
   val futureDateError = "messages__pspRemoval_date_error__future_date"
   val dateErrors: DateErrors = DateErrors(
     "messages__pspRemoval_date_error__all_blank",

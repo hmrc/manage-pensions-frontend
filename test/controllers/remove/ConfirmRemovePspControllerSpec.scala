@@ -110,13 +110,13 @@ object ConfirmRemovePspControllerSpec {
   private val practitioners = JsArray(
     Seq(
       Json.obj(
-        "authorisingPSAID" -> "A2100005",
+        "authorisingPSAID" -> "A0000000",
         "authorisingPSA" -> Json.obj(
           "firstName" -> "Nigel",
           "lastName" -> "Smith",
           "middleName" -> "Robert"
         ),
-        "relationshipStartDate" -> "2021-04-01",
+        "relationshipStartDate" -> "2020-04-01",
         "id" -> "A2200005",
         "organisationOrPartnershipName" -> "PSP Limited Company 1"
       ),
@@ -125,7 +125,7 @@ object ConfirmRemovePspControllerSpec {
         "authorisingPSA" -> Json.obj(
           "organisationOrPartnershipName" -> "Acme Ltd"
         ),
-        "relationshipStartDate" -> "2021-04-01",
+        "relationshipStartDate" -> "2020-04-01",
         "id" -> "A2200007",
         "individual" -> Json.obj(
           "firstName" -> "PSP Individual",

@@ -52,7 +52,7 @@ messages__pspRemoval_date_error__year_blank = Enter a year when the scheme pract
 messages__pspRemoval_date_error__day_month_blank = Enter a day and month when the scheme practitioner stopped for this scheme
 messages__pspRemoval_date_error__month_year_blank = Enter a month and year when the scheme practitioner stopped for this scheme
 messages__pspRemoval_date_error__future_date = The date when the scheme practitioner stopped for this scheme must be today or in the past
-messages__pspRemoval_date_error__before_association = The date cannot be before when the scheme practitioner started managing the scheme
+messages__pspRemoval_date_error__before_relationshipStartDate = The date cannot be before when the scheme practitioner started managing the scheme
 messages__pspRemoval_date_error__before_earliest_date = Enter a date after {0}
 messages__pspRemoval_date_error__common = Enter a correct date using the example format for when the scheme practitioner stopped for this scheme
 
