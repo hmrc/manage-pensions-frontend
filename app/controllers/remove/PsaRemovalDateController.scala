@@ -52,19 +52,19 @@ import views.html.remove.removalDate
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
-class RemovalDateController @Inject()(appConfig: FrontendAppConfig,
-                                      override val messagesApi: MessagesApi,
-                                      dataCacheConnector: UserAnswersCacheConnector,
-                                      @RemovePSA navigator: Navigator,
-                                      authenticate: AuthAction,
-                                      getData: DataRetrievalAction,
-                                      requireData: DataRequiredAction,
-                                      formProvider: RemovalDateFormProvider,
-                                      psaRemovalConnector: PsaRemovalConnector,
-                                      updateConnector: UpdateSchemeCacheConnector,
-                                      lockConnector: PensionSchemeVarianceLockConnector,
-                                      val controllerComponents: MessagesControllerComponents,
-                                      view: removalDate)(
+class PsaRemovalDateController @Inject()(appConfig: FrontendAppConfig,
+                                         override val messagesApi: MessagesApi,
+                                         dataCacheConnector: UserAnswersCacheConnector,
+                                         @RemovePSA navigator: Navigator,
+                                         authenticate: AuthAction,
+                                         getData: DataRetrievalAction,
+                                         requireData: DataRequiredAction,
+                                         formProvider: RemovalDateFormProvider,
+                                         psaRemovalConnector: PsaRemovalConnector,
+                                         updateConnector: UpdateSchemeCacheConnector,
+                                         lockConnector: PensionSchemeVarianceLockConnector,
+                                         val controllerComponents: MessagesControllerComponents,
+                                         view: removalDate)(
                                        implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
 
   private def form(schemeOpenDate: LocalDate) = formProvider(schemeOpenDate, appConfig.earliestDatePsaRemoval)

@@ -280,12 +280,14 @@ messages__error__declaration__required = You need to agree to all the declaratio
 
 messages__schemeDetails__title = Pension scheme summary
 messages__schemeDetails__pstr = Pension Scheme Tax Reference: {0}
+messages__schemeDetails__regDate = Registration for Tax: {0}
 messages__schemeDetails__view_details_link = View the registered scheme details
 messages__schemeDetails__view_change_details_link = View or change the registered scheme details
 messages__schemeDetails__psa_making_changes = You cannot make changes to this scheme at the moment. {0} is making changes to this scheme.
 messages__schemeDetails__opened_date_head = This scheme was opened on:
 messages__schemeDetails__psa_list_head = Pension scheme administrators
 messages__schemeDetails__invite_link = Add a scheme administrator
+messages__schemeDetails__view_psa = View or remove a scheme administrator
 messages__schemeDetails__invite_p1 = To add a pension administrator they must be registered with the managing pension scheme service. You will need the name and administrator ID. They will get an invitation that they will have to accept.
 messages__schemeDetails__return_link = Return to your pension schemes
 messages__schemeDetails__remove = Remove
@@ -301,6 +303,10 @@ messages__confirmRemovePsa__title = Are you sure you want to remove the scheme a
 messages__confirmRemovePsa__heading = Are you sure you want to remove {0} as scheme administrator for {1}?
 messages__confirmRemovePsa_required = Select yes if you are sure you want to remove the scheme administrator
 messages__returnToSchemeDetails__link = Return to {0}
+
+messages__confirmRemovePsp__title = Are you sure you want to remove the scheme practitioner?
+messages__confirmRemovePsp__heading = Are you sure you want to remove {0} as scheme practitioner for {1}?
+messages__confirmRemovePsp_required = Select yes if you are sure you want to remove the scheme practitioner
 
 messages__confirmRemoved__title = The scheme administrator has been removed
 messages__confirmRemoved__heading = {0} has been removed as scheme administrator of {1}
@@ -477,6 +483,9 @@ messages__viewPractitioners__title = Pension scheme practitioners
 messages__viewPractitioners__practitionerNameHeader = Practitioner
 messages__viewPractitioners__authorisedByHeader = Authorised by
 messages__viewPractitioners__dateAuthorisedHeader = Date authorised
+messages__viewPractitioners__deAuthoriseLinkHeader = De-authorise link
+messages__viewPractitioners__deAuthoriseLinkText = Deauthorise
+messages__viewPractitioners__deAuthoriseLinkText__hiddenText = De-authorise {0}
 
 messages__pspDashboard__sub_heading = Practitioner
 messages__pspDashboard__details_heading = Practitioner details

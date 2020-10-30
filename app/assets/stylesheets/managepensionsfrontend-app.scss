@@ -164,4 +164,7 @@ a[href]::after { content: none !important; }
 }
 .js-enabled #global-header .header-proposition #proposition-links li {
     width : auto;
+    border-bottom: none;
+    padding-top:0;
+
 }

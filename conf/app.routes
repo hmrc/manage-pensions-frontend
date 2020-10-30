@@ -31,6 +31,7 @@ GET         /overview                                     controllers.SchemesOve
 GET         /dashboard                                    controllers.PspDashboardController.onPageLoad()
 
 GET         /pension-scheme-summary/:srn                  controllers.SchemeDetailsController.onPageLoad(srn: SchemeReferenceNumber)
+GET         /:srn/view-administrators                     controllers.ViewAdministratorsController.onPageLoad(srn: SchemeReferenceNumber)
 
 GET         /view-practitioners                           controllers.psp.ViewPractitionersController.onPageLoad()
 

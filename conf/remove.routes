@@ -1,10 +1,13 @@
 GET        /removed-as-scheme-administrator             controllers.remove.ConfirmRemovedController.onPageLoad()
 
-GET        /date-stopped-being-scheme-administrator     controllers.remove.RemovalDateController.onPageLoad
-POST       /date-stopped-being-scheme-administrator     controllers.remove.RemovalDateController.onSubmit
+GET        /date-stopped-being-scheme-administrator     controllers.remove.PsaRemovalDateController.onPageLoad
+POST       /date-stopped-being-scheme-administrator     controllers.remove.PsaRemovalDateController.onSubmit
 
 GET        /remove-as-scheme-administrator              controllers.remove.ConfirmRemovePsaController.onPageLoad()
 POST       /remove-as-scheme-administrator              controllers.remove.ConfirmRemovePsaController.onSubmit()
+
+GET        /remove-as-scheme-practitioner/:index        controllers.remove.ConfirmRemovePspController.onPageLoad(index: Int)
+POST       /remove-as-scheme-practitioner/:index        controllers.remove.ConfirmRemovePspController.onSubmit(index: Int)
 
 GET        /remove-psa                                  controllers.remove.RemovePsaController.onPageLoad()
 
