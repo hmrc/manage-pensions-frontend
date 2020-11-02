@@ -15,6 +15,7 @@ POST        /deauthorise-practitioner/:index                      controllers.re
 GET         /deauthorise-declaration/:index                       controllers.remove.PsaRemovePspDeclarationController.onPageLoad(index: Int)
 POST        /deauthorise-declaration/:index                       controllers.remove.PsaRemovePspDeclarationController.onSubmit(index: Int)
 
+GET         /deauthorised-from-scheme/:index                      controllers.remove.ConfirmPsaRemovedPspController.onPageLoad(index: Int)
 GET         /remove-psa                                           controllers.remove.RemovePsaController.onPageLoad()
 
 GET         /unable-to-remove-scheme-administrator                controllers.remove.CanNotBeRemovedController.onPageLoadWhereSuspended()

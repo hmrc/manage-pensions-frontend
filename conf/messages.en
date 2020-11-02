@@ -508,3 +508,9 @@ messages__psaRemovePspDeclaration__title = Declaration
 messages__psaRemovePspDeclaration__p = I confirm I want to deauthorise this practitioner for this pension scheme.
 messages__psaRemovePspDeclaration__label = Agree
 messages__psaRemovePspDeclaration__required = Select the agree box to confirm you accept the declaration
+
+messages__confirmPsaRemovedPsp__title = Practitioner has been deauthorised
+messages__confirmPsaRemovedPsp__heading = You have deauthorised {0} as a scheme practitioner for {1}
+messages__confirmPsaRemovedPsp__p1 = We have sent a confirmation email to {0}
+messages__confirmPsaRemovedPsp__h2 = What happens next
+messages__confirmPsaRemovedPsp__p2 = A letter will be sent to {0} to confirm they have been deauthorised as a scheme practitioner for {1}.

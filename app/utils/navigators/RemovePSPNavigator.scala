@@ -27,15 +27,16 @@ import play.api.mvc.Call
 import utils.{Navigator, UserAnswers}
 
 @Singleton
-class RemovePSPNavigator @Inject()(val dataCacheConnector: UserAnswersCacheConnector) extends Navigator {
+class RemovePSPNavigator @Inject()(val dataCacheConnector: UserAnswersCacheConnector)
+  extends Navigator {
 
   override def routeMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
     case ConfirmRemovePspId(index) =>
       confirmRemovePspRoutes(ua, index)
     case PspRemovalDateId(index) =>
       PsaRemovePspDeclarationController.onPageLoad(index)
-    case PsaRemovePspDeclarationId(_) =>
-      controllers.psp.routes.ViewPractitionersController.onPageLoad()
+    case PsaRemovePspDeclarationId(index) =>
+      controllers.remove.routes.ConfirmPsaRemovedPspController.onPageLoad(index)
   }
 
   private def confirmRemovePspRoutes(userAnswers: UserAnswers, index: Index): Call = {
