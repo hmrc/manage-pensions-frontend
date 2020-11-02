@@ -215,7 +215,6 @@ object AdviserManualAddressControllerSpec extends ControllerSpecBase {
   def viewAsString(value: Option[Address], form: Form[Address], prepopulated: Boolean = false, prefix: String = messageKeyPrefix)
                   (implicit app: Application): String = {
 
-    val appConfig = app.injector.instanceOf[FrontendAppConfig]
     val messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
     view(form, NormalMode, countryOptions, prepopulated, prefix, name)(FakeRequest(), messages).toString()

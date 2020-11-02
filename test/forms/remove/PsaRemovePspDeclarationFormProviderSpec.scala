@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
-package identifiers.remove
+package forms.remove
 
-import java.time.LocalDate
+import forms.behaviours.CheckboxBehaviour
+import play.api.data.Form
 
-import identifiers.TypedIdentifier
+class PsaRemovePspDeclarationFormProviderSpec extends CheckboxBehaviour {
 
-case object RemovalDateId extends TypedIdentifier[LocalDate] {
-  override def toString: String = "removalDate"
+  private val form: Form[Boolean] = new PsaRemovePspDeclarationFormProvider()()
+  private val fieldName = "value"
+  private val trueValue = "true"
+  private val invalidKey = "messages__psaRemovePspDeclaration__required"
+
+  "PsaRemovePspDeclarationFormProvider" should {
+    behave like formWithCheckbox(form, fieldName, trueValue, acceptTrueOnly = true, invalidKey)
+  }
+
 }

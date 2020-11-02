@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
-package viewmodels
+package forms.remove
 
-case class AuthorisedPractitionerViewModel(
-                                            pspName: String,
-                                            authorisedBy: String,
-                                            dateAuthorised: String,
-                                            authorisedByLoggedInPsa: Boolean
-                                          )
+import com.google.inject.Inject
+import play.api.data.Form
+import forms.mappings.CheckboxMapping
 
+class PsaRemovePspDeclarationFormProvider @Inject() () extends CheckboxMapping {
+  def apply(): Form[Boolean] =
+    Form(
+      "value" -> checkboxMapping(
+        fieldName = "value",
+        trueValue = "true",
+        acceptTrueOnly = true,
+        invalidKey = "messages__psaRemovePspDeclaration__required"
+      )
+    )
+}

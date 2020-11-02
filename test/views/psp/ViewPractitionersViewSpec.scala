@@ -30,11 +30,11 @@ class ViewPractitionersViewSpec extends ViewBehaviours {
   val schemeName  = "Test Scheme name"
   val schemeSrn  = "12345"
   val returnCall: Call  = controllers.routes.SchemeDetailsController.onPageLoad(SchemeReferenceNumber(schemeSrn))
-  val practitioners = Seq(AuthorisedPractitionerViewModel("Joe Bloggs", "Ann Bloggs", "02-01-2020"))
+  val practitioners = Seq(AuthorisedPractitionerViewModel("Joe Bloggs", "Ann Bloggs", "02-01-2020", true))
   private val viewPractitionersView = injector.instanceOf[viewPractitioners]
 
 
-  def createView: (() => HtmlFormat.Appendable) = () =>
+  def createView: () => HtmlFormat.Appendable = () =>
     viewPractitionersView(schemeName, returnCall, practitioners)(fakeRequest, messages)
 
   "ViewPractitioners page" must {

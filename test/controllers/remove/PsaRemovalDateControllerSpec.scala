@@ -26,7 +26,7 @@ import connectors.UserAnswersCacheConnector
 import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.remove.RemovalDateFormProvider
-import identifiers.remove.RemovalDateId
+import identifiers.remove.PsaRemovalDateId
 import models.PsaToBeRemovedFromScheme
 import models.SchemeVariance
 import org.mockito.Matchers
@@ -98,7 +98,7 @@ class PsaRemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours 
   behave like controllerWithOnSubmitMethod(onSubmitAction, data, form(associationDate, frontendAppConfig.earliestDatePsaRemoval).bind(dateKeys),
     viewAsStringPostRequest, postRequest, Some(emptyPostRequest))
 
-  behave like controllerThatSavesUserAnswers(onSaveAction, postRequest, RemovalDateId, date)
+  behave like controllerThatSavesUserAnswers(onSaveAction, postRequest, PsaRemovalDateId, date)
 
   "controller" must {
     "remove lock and cached update data if present and lock and updated scheme owned by PSA" in {

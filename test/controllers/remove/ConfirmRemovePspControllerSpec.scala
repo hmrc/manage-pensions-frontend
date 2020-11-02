@@ -25,6 +25,7 @@ import identifiers.{SchemeNameId, SchemeSrnId, SeqAuthorisedPractitionerId}
 import models.Index
 import play.api.data.Form
 import play.api.libs.json.{JsArray, Json}
+import play.api.mvc.{Action, AnyContent}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import views.html.psp.confirmRemovePsp
@@ -51,15 +52,15 @@ class ConfirmRemovePspControllerSpec extends ControllerWithQuestionPageBehaviour
     view
   )
 
-  private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
+  private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
     controller(dataRetrievalAction, fakeAuth).onPageLoad(Index(0))
   }
 
-  private def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
+  private def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
     controller(dataRetrievalAction, fakeAuth).onSubmit(Index(0))
   }
 
-  private def onSaveAction(userAnswersCacheConnector: UserAnswersCacheConnector = FakeUserAnswersCacheConnector) = {
+  private def onSaveAction(userAnswersCacheConnector: UserAnswersCacheConnector = FakeUserAnswersCacheConnector): Action[AnyContent] = {
     controller(userAnswersCacheConnector = userAnswersCacheConnector).onSubmit(Index(0))
   }
 
@@ -94,7 +95,7 @@ class ConfirmRemovePspControllerSpec extends ControllerWithQuestionPageBehaviour
   behave like controllerThatSavesUserAnswers(
     saveAction = onSaveAction,
     validRequest = postRequest,
-    id = ConfirmRemovePspId,
+    id = ConfirmRemovePspId(0),
     value = true
   )
 }
@@ -109,13 +110,13 @@ object ConfirmRemovePspControllerSpec {
   private val practitioners = JsArray(
     Seq(
       Json.obj(
-        "authorisingPSAID" -> "A2100005",
+        "authorisingPSAID" -> "A0000000",
         "authorisingPSA" -> Json.obj(
           "firstName" -> "Nigel",
           "lastName" -> "Smith",
           "middleName" -> "Robert"
         ),
-        "relationshipStartDate" -> "2021-04-01",
+        "relationshipStartDate" -> "2020-04-01",
         "id" -> "A2200005",
         "organisationOrPartnershipName" -> "PSP Limited Company 1"
       ),
@@ -124,7 +125,7 @@ object ConfirmRemovePspControllerSpec {
         "authorisingPSA" -> Json.obj(
           "organisationOrPartnershipName" -> "Acme Ltd"
         ),
-        "relationshipStartDate" -> "2021-04-01",
+        "relationshipStartDate" -> "2020-04-01",
         "id" -> "A2200007",
         "individual" -> Json.obj(
           "firstName" -> "PSP Individual",
@@ -146,7 +147,7 @@ object ConfirmRemovePspControllerSpec {
   private val validData: FakeDataRetrievalAction =
     new FakeDataRetrievalAction(Some(
       data ++
-      Json.obj(ConfirmRemovePspId.toString -> true)
+      Json.obj(ConfirmRemovePspId(0).toString -> true)
     ))
 }
 
