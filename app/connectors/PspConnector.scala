@@ -84,7 +84,7 @@ class PspConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) ex
       "ceaseNumber" -> deAuthorise.ceaseNumber,
       "initiatedIDType" -> deAuthorise.initiatedIDType,
       "initiatedIDNumber" -> deAuthorise.initiatedIDNumber,
-      "ceaseDate" -> deAuthorise.ceaseDate,
+      "ceaseDate" -> deAuthorise.ceaseDate
     )
 
     val json: JsObject = deAuthorise.ceaseIDType match {
