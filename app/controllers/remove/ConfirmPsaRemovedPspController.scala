@@ -18,7 +18,7 @@ package controllers.remove
 
 import com.google.inject.Inject
 import connectors.UserAnswersCacheConnector
-import connectors.admin.MinimalPsaConnector
+import connectors.admin.MinimalConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import identifiers.SchemeNameId
@@ -29,7 +29,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import views.html.remove.confirmPsaRemovedPsp
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class ConfirmPsaRemovedPspController @Inject()(
                                                 override val messagesApi: MessagesApi,
@@ -38,7 +38,7 @@ class ConfirmPsaRemovedPspController @Inject()(
                                                 requireData: DataRequiredAction,
                                                 userAnswersCacheConnector: UserAnswersCacheConnector,
                                                 val controllerComponents: MessagesControllerComponents,
-                                                minimalPsaConnector: MinimalPsaConnector,
+                                                minimalPsaConnector: MinimalConnector,
                                                 view: confirmPsaRemovedPsp
                                               )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
@@ -53,6 +53,7 @@ class ConfirmPsaRemovedPspController @Inject()(
           case schemeName ~ pspDetails =>
             minimalPsaConnector.getMinimalPsaDetails(request.psaIdOrException.id) flatMap {
               psaDetails =>
+                //                Future.successful(Ok(view(pspDetails.name, schemeName, psaDetails.email)))
                 userAnswersCacheConnector.removeAll(request.externalId).map {
                   _ =>
                     Ok(view(pspDetails.name, schemeName, psaDetails.email))

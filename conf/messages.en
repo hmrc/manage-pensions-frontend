@@ -15,7 +15,7 @@ site.error = Error:
 checkYourAnswers.title = Check your answers
 checkYourAnswers.heading = Check your answers
 
-error.summary.title = There is problem
+error.summary.title = There is a problem
 
 messages__manage_pension_schemes__title = Managing pension schemes - GOV.UK
 
@@ -316,9 +316,11 @@ messages__confirmRemovePsa__heading = Are you sure you want to remove {0} as sch
 messages__confirmRemovePsa_required = Select yes if you are sure you want to remove the scheme administrator
 messages__returnToSchemeDetails__link = Return to {0}
 
-messages__confirmRemovePsp__title = Are you sure you want to deauthorise the scheme practitioner?
+messages__confirmRemovePsp__title = Are you sure you want to de-authorise the scheme practitioner?
 messages__confirmRemovePsp__heading = Are you sure you want to deauthorise {0} as scheme practitioner for {1}?
+messages__confirmRemovePsp__heading__screenReaderAlternativeText = Are you sure you want to de-authorise {0} as scheme practitioner for {1}?
 messages__confirmRemovePsp_required = Select yes if you want to deauthorise this pension scheme practitioner
+messages__confirmRemovePsp_required__screenReaderAlternativeText = Select yes if you want to de-authorise this pension scheme practitioner
 
 messages__confirmRemoved__title = The scheme administrator has been removed
 messages__confirmRemoved__heading = {0} has been removed as scheme administrator of {1}
@@ -498,7 +500,7 @@ messages__viewPractitioners__dateAuthorisedHeader = Date authorised
 messages__viewPractitioners__deAuthoriseLinkHeader = De-authorise link
 messages__viewPractitioners__deAuthoriseLinkText = Deauthorise
 messages__viewPractitioners__deAuthoriseLinkText__hiddenText = De-authorise {0}
-messages__viewPractitioners__didNotAuthorise__hiddenText = {0} was authorised by a different PSA
+messages__viewPractitioners__didNotAuthorise__hiddenText = Cannot de-authorise {0}
 
 messages__pspRemovalDate__title = When did they stop being a scheme practitioner?
 messages__pspRemovalDate__heading = When did {0} stop being a scheme practitioner for {1}?
@@ -506,14 +508,17 @@ messages__pspRemovalDate__lede = {0} was authorised as a scheme practitioner on 
 
 messages__psaRemovePspDeclaration__title = Declaration
 messages__psaRemovePspDeclaration__p = I confirm I want to deauthorise this practitioner for this pension scheme.
+messages__psaRemovePspDeclaration__p__screenReaderAlternative = I confirm I want to de-authorise this practitioner for this pension scheme.
 messages__psaRemovePspDeclaration__label = Agree
 messages__psaRemovePspDeclaration__required = Select the agree box to confirm you accept the declaration
 
-messages__confirmPsaRemovedPsp__title = Practitioner has been deauthorised
+messages__confirmPsaRemovedPsp__title = Practitioner has been de-authorised
 messages__confirmPsaRemovedPsp__heading = You have deauthorised {0} as a scheme practitioner for {1}
+messages__confirmPsaRemovedPsp__heading__screenReaderAlternative = You have de-authorised {0} as a scheme practitioner for {1}
 messages__confirmPsaRemovedPsp__p1 = We have sent a confirmation email to {0}
 messages__confirmPsaRemovedPsp__h2 = What happens next
 messages__confirmPsaRemovedPsp__p2 = A letter will be sent to {0} to confirm they have been deauthorised as a scheme practitioner for {1}.
+messages__confirmPsaRemovedPsp__p2__screenReaderAlternative = A letter will be sent to {0} to confirm they have been de-authorised as a scheme practitioner for {1}.
 
 messages__pspDashboard__sub_heading = Practitioner
 messages__pspDashboard__details_heading = Practitioner details

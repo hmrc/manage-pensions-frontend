@@ -40,16 +40,25 @@ class ConfirmRemovePsaViewSpec extends YesNoViewBehaviours {
 
   "ConfirmRemovePsa" must {
 
-    behave like normalPageWithTitle(createView, prefix, messages(s"messages__${prefix}__title"), messages(s"messages__${prefix}__heading", psaName, schemeName))
+    behave like normalPageWithTitle(
+      view = createView,
+      messageKeyPrefix = prefix,
+      title = messages(s"messages__${prefix}__title"),
+      pageHeader = messages(s"messages__${prefix}__heading", psaName, schemeName)
+    )
 
     behave like pageWithSubmitButton(createView)
 
-    behave like yesNoPage(createViewUsingForm, prefix, routes.ConfirmRemovePsaController.onSubmit().url)
+    behave like yesNoPage(
+      createView = createViewUsingForm,
+      messageKeyPrefix = prefix,
+      expectedFormAction = routes.ConfirmRemovePsaController.onSubmit().url
+    )
 
     behave like pageWithReturnLink(
-      createView,
-      controllers.routes.SchemeDetailsController.onPageLoad(srn).url,
-      messages("messages__returnToSchemeDetails__link", schemeName)
+      view = createView,
+      url = controllers.routes.SchemeDetailsController.onPageLoad(srn).url,
+      text = messages("messages__returnToSchemeDetails__link", schemeName)
     )
   }
 }

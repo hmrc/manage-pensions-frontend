@@ -54,7 +54,9 @@ class PsaRemovePspDeclarationViewSpec extends QuestionViewBehaviours[Boolean] {
 
     "display declaration text" in {
       val doc = asDocument(psaRemovePspDeclarationView()())
-      doc.getElementById("para_id").text mustBe messages("messages__psaRemovePspDeclaration__p")
+      doc.getElementById("para_id").text mustBe
+        messages("messages__psaRemovePspDeclaration__p") + " " +
+          messages("messages__psaRemovePspDeclaration__p__screenReaderAlternative")
     }
 
     "show an error summary when rendered with an error" in {

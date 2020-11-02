@@ -32,24 +32,42 @@
     <span class="bold">@psaEmailAddress</span>
 }
 
+@headingText = {
+    <span aria-hidden="true">
+        @messages("messages__confirmPsaRemovedPsp__heading", pspName, schemeName)
+    </span>
+    <span class="visually-hidden">
+        @messages("messages__confirmPsaRemovedPsp__heading__screenReaderAlternative", pspName, schemeName)
+    </span>
+}
+
+@p2Text = {
+    <span aria-hidden="true">
+        @messages("messages__confirmPsaRemovedPsp__p2", pspName, schemeName)
+    </span>
+    <span class="visually-hidden">
+        @messages("messages__confirmPsaRemovedPsp__p2__screenReaderAlternative", pspName, schemeName)
+    </span>
+}
+
 @main_template(
     title = messages("messages__confirmPsaRemovedPsp__title"),
     bodyClasses = None
 ) {
 
     <div class="govuk-box-highlight">
-        @components.heading(messages("messages__confirmPsaRemovedPsp__heading", pspName, schemeName))
+        @components.heading(headingText.toString)
     </div>
 
     <p>
-        @Html(messages("messages__confirmPsaRemovedPsp__p1", email.toString()))
+        @Html(messages("messages__confirmPsaRemovedPsp__p1", email.toString))
     </p>
 
     <h2>
         @messages("messages__confirmPsaRemovedPsp__h2")
     </h2>
 
-    @components.paragraph_text(messages("messages__confirmPsaRemovedPsp__p2", pspName, schemeName))
+    <p>@Html(p2Text.toString)</p>
 
     <a id="return-link" href="@controllers.routes.ListSchemesController.onPageLoad().url">
         @messages("messages__confirmRemoved__return_link")

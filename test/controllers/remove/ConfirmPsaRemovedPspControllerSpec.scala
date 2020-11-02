@@ -18,7 +18,7 @@ package controllers.remove
 
 import base.SpecBase
 import connectors.FakeUserAnswersCacheConnector
-import connectors.admin.MinimalPsaConnector
+import connectors.admin.MinimalConnector
 import controllers.actions._
 import controllers.behaviours.ControllerWithNormalPageBehaviours
 import identifiers.{SchemeNameId, SeqAuthorisedPractitionerId}
@@ -42,7 +42,7 @@ class ConfirmPsaRemovedPspControllerSpec
   import ConfirmPsaRemovedPspControllerSpec._
 
   private val view = injector.instanceOf[confirmPsaRemovedPsp]
-  private val mockMinimalPsaConnector: MinimalPsaConnector = mock[MinimalPsaConnector]
+  private val mockMinimalPsaConnector: MinimalConnector = mock[MinimalConnector]
 
   override def beforeEach(): Unit = {
     reset(mockMinimalPsaConnector)

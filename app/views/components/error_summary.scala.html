@@ -14,19 +14,32 @@
  * limitations under the License.
  *@
 
-@(errors: Seq[FormError])(implicit messages: Messages)
+@(
+        errors: Seq[FormError],
+        screenReaderAlternativeText: Boolean = false
+)(
+        implicit
+        messages: Messages
+)
+
+@errorText(error: FormError) = @{
+    if (screenReaderAlternativeText)
+        <span aria-hidden="true">{messages(error.message, error.args: _*)}</span>
+        <span class="visually-hidden">{messages(s"${error.message}__screenReaderAlternativeText", error.args: _*)}</span>
+    else
+        messages(error.message, error.args: _*)
+}
 @if(errors.nonEmpty) {
     <div class="error-summary error-summary--show" role="alert" aria-labelledby="error-summary-heading" tabindex="-1">
 
         <h2 class="h2-heading error-summary-heading" id="error-summary-heading">
-        @messages("error.summary.title")
+            @messages("error.summary.title")
         </h2>
 
         <ul role="list" class="error-summary-list">
             @for(error <- errors) {
-
                 <li>
-                    <a href="#@{error.key.replace('.', '_')}">@messages(error.message, error.args:_*)</a>
+                    <a href="#@{error.key.replace('.', '_')}">@errorText(error: FormError)</a>
                 </li>
             }
         </ul>

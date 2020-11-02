@@ -42,7 +42,9 @@ class ConfirmPsaRemovedPspViewSpec extends ViewBehaviours {
     behave like normalPage(
       view = createView(),
       messageKeyPrefix = messageKeyPrefix,
-      pageHeader = Message("messages__confirmPsaRemovedPsp__heading", pspName, schemeName)
+      pageHeader =
+        Message("messages__confirmPsaRemovedPsp__heading", pspName, schemeName).resolve + " " +
+          Message("messages__confirmPsaRemovedPsp__heading__screenReaderAlternative", pspName, schemeName).resolve
     )
 
     behave like pageWithReturnLink(
