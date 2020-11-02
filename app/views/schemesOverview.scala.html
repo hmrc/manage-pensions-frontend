@@ -15,9 +15,8 @@
  *@
 
 @import config.FrontendAppConfig
-@import viewmodels.{Message, CardViewModel}
-@import uk.gov.hmrc.play.views.html._
-@import views.html._
+@import viewmodels.CardViewModel
+@import models.Link
 
 @this(
     main_template: main_template,
@@ -26,7 +25,9 @@
 
 @(
 name: String,
-cards: Seq[CardViewModel]
+cards: Seq[CardViewModel],
+subHeading: Option[String] = None,
+returnLink: Option[Link] = None
 )(implicit request: Request[_], messages: Messages)
 
 @main_template(
@@ -34,12 +35,16 @@ cards: Seq[CardViewModel]
     mainContentContainerClasses = Some("full-width")
 ) {
 
-    @components.heading(name)
+    @components.heading(name, secondaryHeaderKey = subHeading)
 
     <div class="flex-container grid-row">
     @for(card <- cards){
         @components.card(card)
     }
     </div>
+
+    @returnLink.map { ret =>
+        <a id="@ret.id" href="@ret.url">@messages(ret.linkText)</a>
+    }
 
 }

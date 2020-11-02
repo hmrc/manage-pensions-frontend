@@ -17,7 +17,7 @@
 package controllers.invitations.psp
 
 import com.google.inject.Inject
-import connectors.admin.MinimalPsaConnector
+import connectors.admin.MinimalConnector
 import connectors.admin.NoMatchFoundException
 import controllers.Retrievals
 import controllers.actions.AuthAction
@@ -42,7 +42,7 @@ class CheckYourAnswersController @Inject()(override val messagesApi: MessagesApi
                                            getData: DataRetrievalAction,
                                            requireData: DataRequiredAction,
                                            checkYourAnswersFactory: CheckYourAnswersFactory,
-                                           minimalConnector: MinimalPsaConnector,
+                                           minimalConnector: MinimalConnector,
                                            val controllerComponents: MessagesControllerComponents,
                                            view: check_your_answers
                                           )(implicit val ec: ExecutionContext) extends FrontendBaseController with Retrievals with I18nSupport {

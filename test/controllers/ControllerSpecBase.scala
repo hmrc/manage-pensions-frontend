@@ -22,14 +22,18 @@ import identifiers.PSANameId
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.inject.guice.GuiceableModule
 import play.api.libs.json.Json
+import uk.gov.hmrc.domain.PspId
 
 trait ControllerSpecBase extends SpecBase {
 
   val cacheMapId = "id"
+  val psp: Option[PspId] = Some(PspId("00000000"))
 
   def getEmptyData: FakeDataRetrievalAction = new FakeDataRetrievalAction(Some(Json.obj()))
+  def getEmptyDataPsp: FakeDataRetrievalAction = new FakeDataRetrievalAction(Some(Json.obj()), pspId = psp)
 
   def dontGetAnyData: FakeDataRetrievalAction = new FakeDataRetrievalAction(None)
+  def dontGetAnyDataPsp: FakeDataRetrievalAction = new FakeDataRetrievalAction(None, pspId = psp)
 
   def getDataWithPsaName(psaId: String = "A0000000"): FakeDataRetrievalAction = new FakeDataRetrievalAction(Some(Json.obj(
     PSANameId.toString -> "Test Psa Name"

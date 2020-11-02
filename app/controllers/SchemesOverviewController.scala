@@ -55,7 +55,7 @@ class SchemesOverviewController @Inject()(
 
           service.getTiles(psaId).flatMap { cards =>
             userAnswersCacheConnector.save(request.externalId, PSANameId, name).map { _ =>
-              Ok(view(name, cards))
+              Ok(view(name, cards, None))
             }
           }
 
