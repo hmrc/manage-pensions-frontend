@@ -27,8 +27,8 @@ case class DeAuthorise(
                       )
 
 object DeAuthorise {
-  implicit lazy val writes: Writes[DeAuthorise] =
-    (deAuthorise: DeAuthorise) => {
+  implicit lazy val writes: Writes[DeAuthorise] = new Writes[DeAuthorise] {
+    override def writes(deAuthorise: DeAuthorise): JsObject = {
       val commonJson = Json.obj(
         "ceaseIDType" -> deAuthorise.ceaseIDType,
         "ceaseNumber" -> deAuthorise.ceaseNumber,
@@ -39,21 +39,19 @@ object DeAuthorise {
 
       deAuthorise.ceaseIDType match {
         case "PSPID" =>
-            deAuthorise.initiatedIDType match {
-              case "PSAID" =>
-                Json.obj("declarationCeasePSPDetails" ->
-                  Json.obj("declarationBox1" -> "true")
-                ) ++ commonJson
-              case _ =>
-                Json.obj("declarationCeasePSPDetails" ->
-                  Json.obj("declarationBox2" -> "true")
-                ) ++ commonJson
-            }
+          deAuthorise.initiatedIDType match {
+            case "PSAID" =>
+              Json.obj("declarationCeasePSPDetails" ->
+                Json.obj("declarationBox1" -> "true")) ++ commonJson
+            case _ =>
+              Json.obj("declarationCeasePSPDetails" ->
+                Json.obj("declarationBox2" -> "true")) ++ commonJson
+          }
         case _ =>
           commonJson
       }
     }
-
+  }
   implicit lazy val reads: Reads[DeAuthorise] =
     Json.reads[DeAuthorise]
 }
