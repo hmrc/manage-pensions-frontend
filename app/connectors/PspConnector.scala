@@ -79,29 +79,11 @@ class PspConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) ex
 
     val headerCarrier = hc.withExtraHeaders("pstr" -> pstr)
 
-    val commonJson: JsObject = Json.obj(
-      "ceaseIDType" -> deAuthorise.ceaseIDType,
-      "ceaseNumber" -> deAuthorise.ceaseNumber,
-      "initiatedIDType" -> deAuthorise.initiatedIDType,
-      "initiatedIDNumber" -> deAuthorise.initiatedIDNumber,
-      "ceaseDate" -> deAuthorise.ceaseDate
-    )
-
-    val json: JsObject = deAuthorise.ceaseIDType match {
-      case "PSPID" =>
-        deAuthorise.initiatedIDType match {
-          case "PSAID" =>
-            Json.obj("declarationCeasePSPDetails" ->
-              Json.obj("declarationBox1" -> "true")) ++ commonJson
-          case _ =>
-            Json.obj("declarationCeasePSPDetails" ->
-              Json.obj("declarationBox2" -> "true")) ++ commonJson
-        }
-      case _ =>
-        commonJson
-    }
-
-    http.POST[JsValue, HttpResponse](config.deAuthorisePspUrl, json)(implicitly, implicitly, headerCarrier, implicitly) map {
+    http.POST[JsValue, HttpResponse](
+      config.deAuthorisePspUrl, Json.toJson(deAuthorise)
+    )(
+      implicitly, implicitly, headerCarrier, implicitly
+    ) map {
       response =>
         response.status match {
           case OK => response
