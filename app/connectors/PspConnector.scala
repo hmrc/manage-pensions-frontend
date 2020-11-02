@@ -77,15 +77,15 @@ class PspConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) ex
   override def deAuthorise(pstr: String, deAuthorise: DeAuthorise)
                           (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
 
-    val headerCarrier = hc.withExtraHeaders("pstr" -> pstr)
+//    val headerCarrier = hc.withExtraHeaders("pstr" -> pstr)
 
-    val json: JsObject = Json.obj(
-      "ceaseIDType" -> deAuthorise.ceaseIDType,
-      "ceaseNumber" -> deAuthorise.ceaseNumber,
-      "initiatedIDType" -> deAuthorise.initiatedIDType,
-      "initiatedIDNumber" -> deAuthorise.initiatedIDNumber,
-      "ceaseDate" -> deAuthorise.ceaseDate,
-    )
+//    val json: JsObject = Json.obj(
+//      "ceaseIDType" -> deAuthorise.ceaseIDType,
+//      "ceaseNumber" -> deAuthorise.ceaseNumber,
+//      "initiatedIDType" -> deAuthorise.initiatedIDType,
+//      "initiatedIDNumber" -> deAuthorise.initiatedIDNumber,
+//      "ceaseDate" -> deAuthorise.ceaseDate,
+//    )
 
 //    val json: JsObject = deAuthorise.ceaseIDType match {
 //      case "PSPID" =>
@@ -102,9 +102,15 @@ class PspConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) ex
 //    }
 
     http.POST[JsValue, HttpResponse](
-      config.deAuthorisePspUrl, json
+      config.deAuthorisePspUrl, Json.obj(
+        "ceaseIDType" -> deAuthorise.ceaseIDType,
+        "ceaseNumber" -> deAuthorise.ceaseNumber,
+        "initiatedIDType" -> deAuthorise.initiatedIDType,
+        "initiatedIDNumber" -> deAuthorise.initiatedIDNumber,
+        "ceaseDate" -> deAuthorise.ceaseDate,
+      )
     )(
-      implicitly, implicitly, headerCarrier, implicitly
+      implicitly, implicitly, hc.withExtraHeaders("pstr" -> pstr), implicitly
     ) map {
       response =>
         response.status match {
