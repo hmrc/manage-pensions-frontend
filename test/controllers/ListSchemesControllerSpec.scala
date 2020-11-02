@@ -18,7 +18,7 @@ package controllers
 
 import config.FrontendAppConfig
 import connectors.FakeUserAnswersCacheConnector
-import connectors.admin.MinimalPsaConnector
+import connectors.admin.MinimalConnector
 import controllers.actions.AuthAction
 import controllers.actions.FakeAuthAction
 import forms.ListSchemesFormProvider
@@ -269,8 +269,8 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
   private val psaIdWithSchemes: String = "A0000002"
   private val psaName: String = "Test Psa Name"
   private val emptySchemes: List[SchemeDetails] = List.empty[SchemeDetails]
-  private val mockMinimalPsaConnector: MinimalPsaConnector =
-    mock[MinimalPsaConnector]
+  private val mockMinimalPsaConnector: MinimalConnector =
+    mock[MinimalConnector]
   private val mockAppConfig: FrontendAppConfig = mock[FrontendAppConfig]
   private val paginationService = new PaginationService
   private val listSchemesFormProvider = new ListSchemesFormProvider

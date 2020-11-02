@@ -24,6 +24,7 @@ import forms.remove.ConfirmRemovePsaFormProvider
 import identifiers.remove.ConfirmRemovePsaId
 import play.api.data.Form
 import play.api.libs.json.Json
+import play.api.mvc.{Action, AnyContent}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.UserAnswerOps
@@ -40,15 +41,15 @@ class ConfirmRemovePsaControllerSpec extends ControllerWithQuestionPageBehaviour
     frontendAppConfig, fakeAuth, messagesApi, navigator, formProvider,
     userAnswersCacheConnector, dataRetrievalAction, requiredDataAction, stubMessagesControllerComponents(), view)
 
-  private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
+  private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
     controller(dataRetrievalAction, fakeAuth).onPageLoad()
   }
 
-  private def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
+  private def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
     controller(dataRetrievalAction, fakeAuth).onSubmit()
   }
 
-  private def onSaveAction(userAnswersConnector: UserAnswersCacheConnector = FakeUserAnswersCacheConnector) = {
+  private def onSaveAction(userAnswersConnector: UserAnswersCacheConnector = FakeUserAnswersCacheConnector): Action[AnyContent] = {
     controller(userAnswersCacheConnector = userAnswersConnector).onSubmit()
   }
 

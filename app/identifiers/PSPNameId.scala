@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-package viewmodels
+package identifiers
 
-case class AuthorisedPractitionerViewModel(
-                                            pspName: String,
-                                            authorisedBy: String,
-                                            dateAuthorised: String,
-                                            authorisedByLoggedInPsa: Boolean
-                                          )
-
+object PSPNameId extends TypedIdentifier[String] {
+  override def toString: String = "loggedInPspName"
+}

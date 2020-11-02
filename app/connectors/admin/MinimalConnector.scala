@@ -35,8 +35,8 @@ import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 import scala.util.Failure
 
-@ImplementedBy(classOf[MinimalPsaConnectorImpl])
-trait MinimalPsaConnector {
+@ImplementedBy(classOf[MinimalConnectorImpl])
+trait MinimalConnector {
 
   def getMinimalPsaDetails(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP]
 
@@ -49,7 +49,7 @@ trait MinimalPsaConnector {
 
 class NoMatchFoundException extends Exception
 
-class MinimalPsaConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) extends MinimalPsaConnector with HttpResponseHelper {
+class MinimalConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) extends MinimalConnector with HttpResponseHelper {
 
   override def getMinimalPsaDetails(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP] =
     getMinimalDetails(hc.withExtraHeaders("psaId" -> psaId))
@@ -76,15 +76,10 @@ class MinimalPsaConnectorImpl @Inject()(http: HttpClient, config: FrontendAppCon
   override def getPsaNameFromPsaID(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] =
     getMinimalPsaDetails(psaId).map(getNameFromId)
 
-  override def getNameFromPspID(pspId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = {
-    val recoveredMinDetails = getMinimalPspDetails(pspId).map(Some(_)) recoverWith {
+  override def getNameFromPspID(pspId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] =
+    getMinimalPspDetails(pspId).map(getNameFromId) recoverWith {
       case _: NotFoundException => Future.successful(None)
     }
-    recoveredMinDetails map {
-      case None => None
-      case Some(minDetails) => getNameFromId(minDetails)
-    }
-  }
 
   private def getNameFromId(minDetails: MinimalPSAPSP): Option[String] =
     (minDetails.individualDetails, minDetails.organisationName) match {

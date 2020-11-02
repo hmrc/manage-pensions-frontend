@@ -17,7 +17,8 @@
 package identifiers.remove
 
 import identifiers.TypedIdentifier
+import models.Index
 
-object ConfirmRemovePspId extends TypedIdentifier[Boolean] {
+case class ConfirmRemovePspId(index: Index) extends TypedIdentifier[Boolean] {
   override def toString: String = "confirmRemovePsp"
 }

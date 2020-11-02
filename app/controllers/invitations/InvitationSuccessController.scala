@@ -20,7 +20,7 @@ import java.time.LocalDate
 
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
-import connectors.admin.MinimalPsaConnector
+import connectors.admin.MinimalConnector
 import controllers.Retrievals
 import controllers.actions.AuthAction
 import controllers.actions.DataRequiredAction
@@ -53,7 +53,7 @@ class InvitationSuccessController @Inject()(
                                              getData: DataRetrievalAction,
                                              requireData: DataRequiredAction,
                                              userAnswersCacheConnector: UserAnswersCacheConnector,
-                                             minimalPsaConnector: MinimalPsaConnector,
+                                             minimalPsaConnector: MinimalConnector,
                                              @Invitation navigator: Navigator,
                                              val controllerComponents: MessagesControllerComponents,
                                              view: invitation_success

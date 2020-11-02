@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package viewmodels
+package identifiers.remove
 
-case class AuthorisedPractitionerViewModel(
-                                            pspName: String,
-                                            authorisedBy: String,
-                                            dateAuthorised: String,
-                                            authorisedByLoggedInPsa: Boolean
-                                          )
+import java.time.LocalDate
 
+import identifiers.TypedIdentifier
+
+case object PsaRemovalDateId extends TypedIdentifier[LocalDate] {
+  override def toString: String = "removal"
+}

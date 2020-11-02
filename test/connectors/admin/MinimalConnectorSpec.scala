@@ -27,9 +27,9 @@ import uk.gov.hmrc.http.BadRequestException
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.WireMockHelper
 
-class MinimalPsaConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper {
+class MinimalConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper {
 
-  import MinimalPsaConnectorSpec._
+  import MinimalConnectorSpec._
 
   override protected def portConfigKey: String = "microservice.services.pension-administrator.port"
 
@@ -46,7 +46,7 @@ class MinimalPsaConnectorSpec extends AsyncFlatSpec with Matchers with WireMockH
         )
     )
 
-    val connector = injector.instanceOf[MinimalPsaConnector]
+    val connector = injector.instanceOf[MinimalConnector]
 
     connector.getMinimalPsaDetails(psaId).map(psa =>
       psa shouldBe expectedResponse
@@ -66,7 +66,7 @@ class MinimalPsaConnectorSpec extends AsyncFlatSpec with Matchers with WireMockH
         )
     )
 
-    val connector = injector.instanceOf[MinimalPsaConnector]
+    val connector = injector.instanceOf[MinimalConnector]
     recoverToSucceededIf[BadRequestException] {
       connector.getMinimalPsaDetails(psaId)
     }
@@ -82,7 +82,7 @@ class MinimalPsaConnectorSpec extends AsyncFlatSpec with Matchers with WireMockH
             .withBody(errorResponse("INVALID_CORRELATIONID"))
         )
     )
-    val connector = injector.instanceOf[MinimalPsaConnector]
+    val connector = injector.instanceOf[MinimalConnector]
 
     recoverToSucceededIf[BadRequestException] {
       connector.getMinimalPsaDetails(psaId)
@@ -91,7 +91,7 @@ class MinimalPsaConnectorSpec extends AsyncFlatSpec with Matchers with WireMockH
 
 }
 
-object MinimalPsaConnectorSpec extends JsonFileReader {
+object MinimalConnectorSpec extends JsonFileReader {
 
   private val psaId = "A1234567"
   private val minimalPsaDetailsUrl = s"/pension-administrator/get-minimal-psa"

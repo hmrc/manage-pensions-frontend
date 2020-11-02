@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package viewmodels
+package identifiers.remove
 
-case class AuthorisedPractitionerViewModel(
-                                            pspName: String,
-                                            authorisedBy: String,
-                                            dateAuthorised: String,
-                                            authorisedByLoggedInPsa: Boolean
-                                          )
+import identifiers.TypedIdentifier
+import models.Index
 
+case class PsaRemovePspDeclarationId(index: Index) extends TypedIdentifier[Boolean] {
+  override def toString: String = "psaRemovePspDeclaration"
+}

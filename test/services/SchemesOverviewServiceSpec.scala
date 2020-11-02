@@ -22,7 +22,7 @@ import java.time.ZoneOffset
 
 import base.SpecBase
 import connectors._
-import connectors.admin.MinimalPsaConnector
+import connectors.admin.MinimalConnector
 import controllers.routes.ListSchemesController
 import models._
 import models.requests.OptionalDataRequest
@@ -52,7 +52,7 @@ class SchemesOverviewServiceSpec extends SpecBase with MockitoSugar with BeforeA
 
   import SchemesOverviewServiceSpec._
 
-  private val minimalPsaConnector: MinimalPsaConnector = mock[MinimalPsaConnector]
+  private val minimalPsaConnector: MinimalConnector = mock[MinimalConnector]
   private val frontendConnector = mock[FrontendConnector]
   private val invitationsCacheConnector = mock[InvitationsCacheConnector]
 
