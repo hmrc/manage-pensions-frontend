@@ -21,7 +21,7 @@ import config.FrontendAppConfig
 import models.invitations.psp.DeAuthorise
 import play.api.Logger
 import play.api.http.Status._
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{JsObject, JsValue, Json}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import utils.HttpResponseHelper
@@ -79,7 +79,7 @@ class PspConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) ex
 
     val headerCarrier = hc.withExtraHeaders("pstr" -> pstr)
 
-    val commonJson = Json.obj(
+    val json: JsObject = Json.obj(
       "ceaseIDType" -> deAuthorise.ceaseIDType,
       "ceaseNumber" -> deAuthorise.ceaseNumber,
       "initiatedIDType" -> deAuthorise.initiatedIDType,
@@ -87,19 +87,19 @@ class PspConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) ex
       "ceaseDate" -> deAuthorise.ceaseDate,
     )
 
-    val json = deAuthorise.ceaseIDType match {
-      case "PSPID" =>
-        deAuthorise.initiatedIDType match {
-          case "PSAID" =>
-            Json.obj("declarationCeasePSPDetails" ->
-              Json.obj("declarationBox1" -> "true")) ++ commonJson
-          case _ =>
-            Json.obj("declarationCeasePSPDetails" ->
-              Json.obj("declarationBox2" -> "true")) ++ commonJson
-        }
-      case _ =>
-        commonJson
-    }
+//    val json: JsObject = deAuthorise.ceaseIDType match {
+//      case "PSPID" =>
+//        deAuthorise.initiatedIDType match {
+//          case "PSAID" =>
+//            Json.obj("declarationCeasePSPDetails" ->
+//              Json.obj("declarationBox1" -> "true")) ++ commonJson
+//          case _ =>
+//            Json.obj("declarationCeasePSPDetails" ->
+//              Json.obj("declarationBox2" -> "true")) ++ commonJson
+//        }
+//      case _ =>
+//        commonJson
+//    }
 
     http.POST[JsValue, HttpResponse](
       config.deAuthorisePspUrl, json
