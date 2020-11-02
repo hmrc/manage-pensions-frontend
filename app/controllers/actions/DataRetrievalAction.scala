@@ -23,6 +23,7 @@ import connectors.UserAnswersCacheConnector
 import models.requests.AuthenticatedRequest
 import models.requests.OptionalDataRequest
 import play.api.mvc.ActionTransformer
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.HeaderCarrierConverter
 import utils.UserAnswers
 
@@ -33,11 +34,10 @@ class DataRetrievalActionImpl @Inject()(val dataCacheConnector: UserAnswersCache
                                        (implicit val executionContext: ExecutionContext) extends DataRetrievalAction {
 
   override protected def transform[A](request: AuthenticatedRequest[A]): Future[OptionalDataRequest[A]] = {
-    implicit val hc = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
-
+    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
     dataCacheConnector.fetch(request.externalId).map {
-      case None => OptionalDataRequest(request.request, request.externalId, None, request.psaId)
-      case Some(data) => OptionalDataRequest(request.request, request.externalId, Some(new UserAnswers(data)), request.psaId)
+      case None => OptionalDataRequest(request.request, request.externalId, None, request.psaId, request.pspId)
+      case Some(data) => OptionalDataRequest(request.request, request.externalId, Some(UserAnswers(data)), request.psaId, request.pspId)
     }
   }
 }
