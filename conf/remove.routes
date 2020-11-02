@@ -1,15 +1,21 @@
-GET        /removed-as-scheme-administrator             controllers.remove.ConfirmRemovedController.onPageLoad()
+GET         /removed-as-scheme-administrator                      controllers.remove.ConfirmRemovedController.onPageLoad()
 
-GET        /date-stopped-being-scheme-administrator     controllers.remove.PsaRemovalDateController.onPageLoad
-POST       /date-stopped-being-scheme-administrator     controllers.remove.PsaRemovalDateController.onSubmit
+GET         /date-stopped-being-scheme-administrator              controllers.remove.PsaRemovalDateController.onPageLoad
+POST        /date-stopped-being-scheme-administrator              controllers.remove.PsaRemovalDateController.onSubmit
 
-GET        /remove-as-scheme-administrator              controllers.remove.ConfirmRemovePsaController.onPageLoad()
-POST       /remove-as-scheme-administrator              controllers.remove.ConfirmRemovePsaController.onSubmit()
+GET         /date-stopped-being-scheme-practitioner/:index        controllers.remove.PspRemovalDateController.onPageLoad(index: Int)
+POST        /date-stopped-being-scheme-practitioner/:index        controllers.remove.PspRemovalDateController.onSubmit(index: Int)
 
-GET        /remove-as-scheme-practitioner/:index        controllers.remove.ConfirmRemovePspController.onPageLoad(index: Int)
-POST       /remove-as-scheme-practitioner/:index        controllers.remove.ConfirmRemovePspController.onSubmit(index: Int)
+GET         /remove-as-scheme-administrator                       controllers.remove.ConfirmRemovePsaController.onPageLoad()
+POST        /remove-as-scheme-administrator                       controllers.remove.ConfirmRemovePsaController.onSubmit()
 
-GET        /remove-psa                                  controllers.remove.RemovePsaController.onPageLoad()
+GET         /deauthorise-practitioner/:index                      controllers.remove.ConfirmRemovePspController.onPageLoad(index: Int)
+POST        /deauthorise-practitioner/:index                      controllers.remove.ConfirmRemovePspController.onSubmit(index: Int)
 
-GET        /unable-to-remove-scheme-administrator       controllers.remove.CanNotBeRemovedController.onPageLoadWhereSuspended()
-GET        /cannot-remove-scheme-administrator          controllers.remove.CanNotBeRemovedController.onPageLoadWhereRemovalDelay()
+GET         /deauthorise-declaration/:index                       controllers.remove.PsaRemovePspDeclarationController.onPageLoad(index: Int)
+POST        /deauthorise-declaration/:index                       controllers.remove.PsaRemovePspDeclarationController.onSubmit(index: Int)
+
+GET         /remove-psa                                           controllers.remove.RemovePsaController.onPageLoad()
+
+GET         /unable-to-remove-scheme-administrator                controllers.remove.CanNotBeRemovedController.onPageLoadWhereSuspended()
+GET         /cannot-remove-scheme-administrator                   controllers.remove.CanNotBeRemovedController.onPageLoadWhereRemovalDelay()

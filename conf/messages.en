@@ -45,6 +45,18 @@ messages__removal_date_error__before_association = The date cannot be before whe
 messages__removal_date_error__before_earliest_date = Enter a date after 29 May 2018
 messages__removal_date_error__common = Enter a correct date using the example format for when the scheme administrator stopped for this scheme
 
+messages__pspRemoval_date_error__all_blank = Enter the date when the scheme practitioner stopped for this scheme using a day, month and year
+messages__pspRemoval_date_error__day_blank = Enter a day when the scheme practitioner stopped for this scheme
+messages__pspRemoval_date_error__month_blank = Enter a month when the scheme practitioner stopped for this scheme
+messages__pspRemoval_date_error__year_blank = Enter a year when the scheme practitioner stopped for this scheme
+messages__pspRemoval_date_error__day_month_blank = Enter a day and month when the scheme practitioner stopped for this scheme
+messages__pspRemoval_date_error__month_year_blank = Enter a month and year when the scheme practitioner stopped for this scheme
+messages__pspRemoval_date_error__future_date = The date when the scheme practitioner stopped for this scheme must be today or in the past
+messages__pspRemoval_date_error__before_relationshipStartDate = The date cannot be before when the scheme practitioner started managing the scheme
+messages__pspRemoval_date_error__before_earliest_date = Enter a date after {0}
+messages__pspRemoval_date_error__common = Enter a correct date using the example format for when the scheme practitioner stopped for this scheme
+
+
 messages__error__common__email__no_at_sign = Enter an email address which includes an @ symbol
 messages__error__common__email__start_with_at_sign = Enter an email address which does not start with @
 messages__error__common__email__dot_after_at_sign = Enter an email address in the correct format with a character between @ and dot
@@ -304,9 +316,9 @@ messages__confirmRemovePsa__heading = Are you sure you want to remove {0} as sch
 messages__confirmRemovePsa_required = Select yes if you are sure you want to remove the scheme administrator
 messages__returnToSchemeDetails__link = Return to {0}
 
-messages__confirmRemovePsp__title = Are you sure you want to remove the scheme practitioner?
-messages__confirmRemovePsp__heading = Are you sure you want to remove {0} as scheme practitioner for {1}?
-messages__confirmRemovePsp_required = Select yes if you are sure you want to remove the scheme practitioner
+messages__confirmRemovePsp__title = Are you sure you want to deauthorise the scheme practitioner?
+messages__confirmRemovePsp__heading = Are you sure you want to deauthorise {0} as scheme practitioner for {1}?
+messages__confirmRemovePsp_required = Select yes if you want to deauthorise this pension scheme practitioner
 
 messages__confirmRemoved__title = The scheme administrator has been removed
 messages__confirmRemoved__heading = {0} has been removed as scheme administrator of {1}
@@ -486,7 +498,16 @@ messages__viewPractitioners__dateAuthorisedHeader = Date authorised
 messages__viewPractitioners__deAuthoriseLinkHeader = De-authorise link
 messages__viewPractitioners__deAuthoriseLinkText = Deauthorise
 messages__viewPractitioners__deAuthoriseLinkText__hiddenText = De-authorise {0}
+messages__viewPractitioners__didNotAuthorise__hiddenText = {0} was authorised by a different PSA
 
+messages__pspRemovalDate__title = When did they stop being a scheme practitioner?
+messages__pspRemovalDate__heading = When did {0} stop being a scheme practitioner for {1}?
+messages__pspRemovalDate__lede = {0} was authorised as a scheme practitioner on {1}. The date they stopped must be between {1} and today.
+
+messages__psaRemovePspDeclaration__title = Declaration
+messages__psaRemovePspDeclaration__p = I confirm I want to deauthorise this practitioner for this pension scheme.
+messages__psaRemovePspDeclaration__label = Agree
+messages__psaRemovePspDeclaration__required = Select the agree box to confirm you accept the declaration
 messages__pspDashboard__sub_heading = Practitioner
 messages__pspDashboard__details_heading = Practitioner details
 messages__pspDashboard__psp_id = Practitioner ID:

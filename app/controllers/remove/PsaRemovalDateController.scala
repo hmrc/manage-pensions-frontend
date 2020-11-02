@@ -28,7 +28,7 @@ import controllers.actions._
 import forms.remove.RemovalDateFormProvider
 import identifiers.invitations.PSTRId
 import identifiers.invitations.SchemeNameId
-import identifiers.remove.RemovalDateId
+import identifiers.remove.PsaRemovalDateId
 import identifiers.AssociatedDateId
 import identifiers.PSANameId
 import identifiers.SchemeSrnId
@@ -89,7 +89,7 @@ class PsaRemovalDateController @Inject()(appConfig: FrontendAppConfig,
             (formWithErrors: Form[_]) =>
               Future.successful(BadRequest(view(formWithErrors, psaName, schemeName, srn, formatDate(associationDate)))),
             value =>
-              dataCacheConnector.save(request.externalId, RemovalDateId, value).flatMap { cacheMap =>
+              dataCacheConnector.save(request.externalId, PsaRemovalDateId, value).flatMap { cacheMap =>
                 psaRemovalConnector.remove(PsaToBeRemovedFromScheme(request.psaIdOrException.id, pstr, value)).flatMap { _ =>
                   val updateDataAndlockRemovalResult = lockConnector.getLockByPsa(request.psaIdOrException.id).map {
                     case Some(lockedSchemeVariance) if lockedSchemeVariance.srn == srn =>
@@ -97,7 +97,7 @@ class PsaRemovalDateController @Inject()(appConfig: FrontendAppConfig,
                     case _ => Future.successful(())
                   }
                   updateDataAndlockRemovalResult.map { _ =>
-                    Redirect(navigator.nextPage(RemovalDateId, NormalMode, UserAnswers(cacheMap)))
+                    Redirect(navigator.nextPage(PsaRemovalDateId, NormalMode, UserAnswers(cacheMap)))
                   }
                 }
 

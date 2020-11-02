@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package viewmodels
+package models
 
-case class AuthorisedPractitionerViewModel(
-                                            pspName: String,
-                                            authorisedBy: String,
-                                            dateAuthorised: String,
-                                            authorisedByLoggedInPsa: Boolean
-                                          )
+import java.time.LocalDate
 
+import play.api.libs.json._
+
+case class PspToBeRemovedFromScheme(psaId: String, pstr: String, removalDate: LocalDate)
+
+object PspToBeRemovedFromScheme {
+  implicit val formats: Format[PspToBeRemovedFromScheme] = Json.format[PspToBeRemovedFromScheme]
+}

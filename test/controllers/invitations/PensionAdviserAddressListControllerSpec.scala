@@ -188,7 +188,6 @@ object PensionAdviserAddressListControllerSpec {
 
   def viewAsString(app: Application, value: Option[Int]): String = {
 
-    val appConfig = app.injector.instanceOf[FrontendAppConfig]
     val request = FakeRequest()
     val messages = app.injector.instanceOf[MessagesApi].preferred(request)
 
