@@ -33,8 +33,7 @@
 import com.google.inject.AbstractModule
 import utils.Navigator
 import utils.annotations._
-import utils.countryOptions.CountryOptions
-import utils.countryOptions.CountryOptionsEUAndEEA
+import utils.countryOptions.{CountryOptions, CountryOptionsEUAndEEA}
 import utils.navigators._
 
 class PODSModule extends AbstractModule {
@@ -59,6 +58,10 @@ class PODSModule extends AbstractModule {
     bind(classOf[Navigator])
       .annotatedWith(classOf[RemovePSA])
       .to(classOf[RemovePSANavigator])
+
+    bind(classOf[Navigator])
+      .annotatedWith(classOf[RemovePSP])
+      .to(classOf[RemovePSPNavigator])
 
     bind(classOf[CountryOptions])
       .annotatedWith(classOf[EUAndEEA])

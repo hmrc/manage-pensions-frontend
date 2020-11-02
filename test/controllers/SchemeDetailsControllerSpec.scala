@@ -107,7 +107,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
       val result = controller().onPageLoad(srn)(fakeRequest)
       status(result) mustBe OK
 
-      val expected = schemeDetailsView(schemeName, pstr, openDate, administrators, srn, isSchemeOpen = false,
+      val expected = schemeDetailsView(schemeName, pstr, openDate, srn, isSchemeOpen = false,
         displayChangeLink = false, lockingPsa = Some("test-psa"), aftHtml = aftHtml,
         paymentsAndChargesHtml = Html(""), Nil)(fakeRequest, messages).toString()
       contentAsString(result) mustBe expected
@@ -128,7 +128,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
 
       val result = controller().onPageLoad(srn)(fakeRequest)
       status(result) mustBe OK
-      contentAsString(result) mustBe schemeDetailsView(schemeName, pstr, openDate, administrators, srn, isSchemeOpen = true,
+      contentAsString(result) mustBe schemeDetailsView(schemeName, pstr, openDate, srn, isSchemeOpen = true,
         displayChangeLink = false, lockingPsa = Some("test-psa"), aftHtml = aftHtml,
         paymentsAndChargesHtml = paymentsAndChargesHtml, Nil)(fakeRequest, messages).toString()
     }
@@ -149,7 +149,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
 
       val result = controller().onPageLoad(srn)(fakeRequest)
       status(result) mustBe OK
-      contentAsString(result) mustBe schemeDetailsView(schemeName, pstr, openDate, administrators, srn, isSchemeOpen = true,
+      contentAsString(result) mustBe schemeDetailsView(schemeName, pstr, openDate, srn, isSchemeOpen = true,
         displayChangeLink = false, lockingPsa = Some("test-psa"), aftHtml = aftHtml,
         paymentsAndChargesHtml = paymentsAndChargesHtml, pspLinks)(fakeRequest, messages).toString()
     }

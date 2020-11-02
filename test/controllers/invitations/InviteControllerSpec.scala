@@ -20,7 +20,7 @@ import base.JsonFileReader
 import base.SpecBase
 import config.FeatureSwitchManagementService
 import config.FeatureSwitchManagementServiceTestImpl
-import connectors.admin.MinimalPsaConnector
+import connectors.admin.MinimalConnector
 import connectors.FakeUserAnswersCacheConnector
 import connectors.scheme.SchemeDetailsConnector
 import controllers.actions.FakeAuthAction
@@ -89,7 +89,7 @@ object InviteControllerSpec extends SpecBase with JsonFileReader {
   val config = injector.instanceOf[Configuration]
   val featureSwitch: FeatureSwitchManagementService = new FeatureSwitchManagementServiceTestImpl(config, environment)
 
-  def fakeMinimalPsaConnector(isSuspended: Boolean): MinimalPsaConnector = new MinimalPsaConnector {
+  def fakeMinimalPsaConnector(isSuspended: Boolean): MinimalConnector = new MinimalConnector {
     override def getMinimalPsaDetails(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP] =
       Future.successful(psaMinimalSubscription.copy(isPsaSuspended = isSuspended))
 

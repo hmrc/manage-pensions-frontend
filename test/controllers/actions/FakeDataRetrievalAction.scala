@@ -19,19 +19,19 @@ package controllers.actions
 import models.requests.AuthenticatedRequest
 import models.requests.OptionalDataRequest
 import play.api.libs.json.JsValue
-import uk.gov.hmrc.domain.PsaId
+import uk.gov.hmrc.domain.{PsaId, PspId}
 import utils.UserAnswers
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
-class FakeDataRetrievalAction(json: Option[JsValue], psaId: String = "A0000000") extends DataRetrievalAction {
+class FakeDataRetrievalAction(json: Option[JsValue], psaId: String = "A0000000", pspId: Option[PspId] = None) extends DataRetrievalAction {
   implicit val executionContext: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
 
   override protected def transform[A](request: AuthenticatedRequest[A]): Future[OptionalDataRequest[A]] = json match {
     case None =>
-      Future.successful(OptionalDataRequest(request.request, request.externalId, None, Some(PsaId(psaId))))
+      Future.successful(OptionalDataRequest(request.request, request.externalId, None, Some(PsaId(psaId)), pspId))
     case Some(cacheMap) =>
-      Future.successful(OptionalDataRequest(request.request, request.externalId, Some(UserAnswers(cacheMap)), Some(PsaId(psaId))))
+      Future.successful(OptionalDataRequest(request.request, request.externalId, Some(UserAnswers(cacheMap)), Some(PsaId(psaId)), pspId))
   }
 }

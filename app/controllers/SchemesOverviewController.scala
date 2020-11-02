@@ -33,16 +33,15 @@ import views.html.schemesOverview
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
-class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
-                                          override val messagesApi: MessagesApi,
-                                          service: SchemesOverviewService,
-                                          authenticate: AuthAction,
-                                          getData: DataRetrievalAction,
-                                          userAnswersCacheConnector: UserAnswersCacheConnector,
-                                          val controllerComponents: MessagesControllerComponents,
-                                          view: schemesOverview
-                                         )
-                                         (implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+class SchemesOverviewController @Inject()(
+                                           override val messagesApi: MessagesApi,
+                                           service: SchemesOverviewService,
+                                           authenticate: AuthAction,
+                                           getData: DataRetrievalAction,
+                                           userAnswersCacheConnector: UserAnswersCacheConnector,
+                                           val controllerComponents: MessagesControllerComponents,
+                                           view: schemesOverview
+                                         )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
 
   def onPageLoad: Action[AnyContent] = (authenticate() andThen getData).async {
@@ -56,7 +55,7 @@ class SchemesOverviewController @Inject()(appConfig: FrontendAppConfig,
 
           service.getTiles(psaId).flatMap { cards =>
             userAnswersCacheConnector.save(request.externalId, PSANameId, name).map { _ =>
-              Ok(view(name, cards))
+              Ok(view(name, cards, None))
             }
           }
 

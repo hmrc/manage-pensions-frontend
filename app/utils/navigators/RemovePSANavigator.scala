@@ -19,7 +19,7 @@ package utils.navigators
 import connectors.UserAnswersCacheConnector
 import controllers.routes._
 import identifiers.remove.ConfirmRemovePsaId
-import identifiers.remove.RemovalDateId
+import identifiers.remove.PsaRemovalDateId
 import identifiers.Identifier
 import identifiers.SchemeSrnId
 import javax.inject.Inject
@@ -33,7 +33,7 @@ class RemovePSANavigator @Inject()(val dataCacheConnector: UserAnswersCacheConne
 
   override def routeMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
     case ConfirmRemovePsaId => confirmRemovePsaRoutes(ua)
-    case RemovalDateId => controllers.remove.routes.ConfirmRemovedController.onPageLoad()
+    case PsaRemovalDateId => controllers.remove.routes.ConfirmRemovedController.onPageLoad()
   }
 
   private def confirmRemovePsaRoutes(userAnswers: UserAnswers) = {
@@ -41,7 +41,7 @@ class RemovePSANavigator @Inject()(val dataCacheConnector: UserAnswersCacheConne
       case (Some(false), Some(srn)) =>
         controllers.routes.SchemeDetailsController.onPageLoad(srn)
       case (Some(true), _) =>
-        controllers.remove.routes.RemovalDateController.onPageLoad()
+        controllers.remove.routes.PsaRemovalDateController.onPageLoad()
       case _ =>
         controllers.routes.SessionExpiredController.onPageLoad()
     }

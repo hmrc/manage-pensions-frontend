@@ -15,23 +15,30 @@
  *@
 
 @import config.FrontendAppConfig
-@import uk.gov.hmrc.play.views.html._
 @import views.html._
 @import play.api.mvc.Call
 @import viewmodels.AuthorisedPractitionerViewModel
 
 @this(
-main_template: main_template,
-formHelper: FormWithCSRF,
-appConfig: FrontendAppConfig
+        main_template: main_template,
+        formHelper: FormWithCSRF,
+        appConfig: FrontendAppConfig
 )
 
-
-@(schemeName: String, returnCall: Call, practitioners: Seq[AuthorisedPractitionerViewModel])(implicit request: Request[_], messages: Messages)
+@(
+        schemeName: String,
+        returnCall: Call,
+        practitioners: Seq[AuthorisedPractitionerViewModel]
+)(
+        implicit
+        request: Request[_],
+        messages: Messages
+)
 
 @main_template(
     title = s"${messages("messages__viewPractitioners__title")}",
-    bodyClasses = None) {
+    bodyClasses = None
+) {
 
     @components.back_link()
 
@@ -46,32 +53,51 @@ appConfig: FrontendAppConfig
                 <th class="govuk-table__header" scope="col">
                     <span id="authorised-by-header" class="heading-small">@messages("messages__viewPractitioners__authorisedByHeader")</span>
                 </th>
-
                 <th class="govuk-table__header" scope="col">
                     <span id="date-authorised-header" class="heading-small">@messages("messages__viewPractitioners__dateAuthorisedHeader")</span>
                 </th>
+                <td>
+                    <span class="visually-hidden">@messages("messages__viewPractitioners__deAuthoriseLinkHeader")</span>
+                </td>
             </tr>
         </thead>
 
         <tbody>
         @for((practitioner, index) <- practitioners.zipWithIndex) {
-
             <tr class="member-details" role="row">
                 <td class="govuk-table__cell" role="cell" id="pspName-@index">
-                    @{practitioner.pspName}
+                    @practitioner.pspName
                 </td>
                 <td class="govuk-table__cell" role="cell" id="authorisedBy-@index">
-                    @{practitioner.authorisedBy}
+                    @practitioner.authorisedBy
                 </td>
                 <td class="govuk-table__cell" role="cell" id="dateAuthorised-@index">
-                    @{practitioner.dateAuthorised}
+                    @practitioner.dateAuthorised
+                </td>
+                <td class="govuk-table__cell" role="cell" id="deAuthoriseLink-@index">
+                @if(practitioner.authorisedByLoggedInPsa) {
+                    <a href="@controllers.remove.routes.ConfirmRemovePspController.onPageLoad(index)" aria-hidden="true">
+                        @messages("messages__viewPractitioners__deAuthoriseLinkText")
+                        <span class="visually-hidden">
+                            @messages("messages__viewPractitioners__deAuthoriseLinkText__hiddenText", practitioner.pspName)
+                        </span>
+                    </a>
+                }else{
+                    <span class="visually-hidden">
+                        @messages("messages__viewPractitioners__didNotAuthorise__hiddenText", practitioner.pspName)
+                    </span>
+                }
                 </td>
             </tr>
         }
         </tbody>
     </table>
 
-    <p class="govuk-margin-top-5"><a id="authorise" href="@controllers.invitations.psp.routes.WhatYouWillNeedController.onPageLoad()">@messages("messages__pspAuthorise__link")</a></p>
+    <p class="govuk-margin-top-5">
+        <a id="authorise" href="@controllers.invitations.psp.routes.WhatYouWillNeedController.onPageLoad()">
+            @messages("messages__pspAuthorise__link")
+        </a>
+    </p>
 
     @components.return_link(returnCall, Some(schemeName))
 }

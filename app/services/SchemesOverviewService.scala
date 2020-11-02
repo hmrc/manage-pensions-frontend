@@ -18,7 +18,7 @@ package services
 
 import config.FrontendAppConfig
 import connectors._
-import connectors.admin.MinimalPsaConnector
+import connectors.admin.MinimalConnector
 import controllers.routes._
 import javax.inject.Inject
 import models.Link
@@ -35,7 +35,7 @@ import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
 class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
-                                       minimalPsaConnector: MinimalPsaConnector,
+                                       minimalPsaConnector: MinimalConnector,
                                        invitationsCacheConnector: InvitationsCacheConnector,
                                        frontendConnector: FrontendConnector
                                       )(implicit ec: ExecutionContext) {
@@ -47,7 +47,7 @@ class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
       schemeHtml <- frontendConnector.retrieveSchemeUrlsPartial
     } yield {
       Seq(
-        adminCard(invitationLink, deregisterLink, psaId, adminHtml),
+        adminCard(invitationLink, psaId, adminHtml),
         schemeCard(schemeHtml)
       )
     }
@@ -64,7 +64,7 @@ class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
       Future.successful(Html(""))
     }
   }
-  private def adminCard(invitationLink: Seq[Link], deregistrationLink: Seq[Link], psaId: String, html: Html)
+  private def adminCard(invitationLink: Seq[Link], psaId: String, html: Html)
                        (implicit messages: Messages): CardViewModel =
 
     CardViewModel(
@@ -74,7 +74,7 @@ class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
       subHeadingParam = Some(psaId),
       links = Seq(
         Link("psaLink", appConfig.registeredPsaDetailsUrl, Message("messages__schemeOverview__psa_change"))
-      ) ++ invitationLink ++ deregistrationLink,
+      ) ++ invitationLink ++ deregisterLink,
       html = Some(html)
     )
 
@@ -98,7 +98,7 @@ class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
       Seq(Link("invitations-received", controllers.invitations.routes.YourInvitationsController.onPageLoad().url, linkText))
     }
 
-  private def deregisterLink(implicit hc: HeaderCarrier): Seq[Link] =
+  private val deregisterLink: Seq[Link] =
     Seq(Link("deregister-link", appConfig.psaDeregisterUrl,
       Message("messages__schemeOverview__psa_deregister")))
 

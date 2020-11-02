@@ -16,19 +16,14 @@
 
 package controllers.psp
 
-import connectors.FakeUserAnswersCacheConnector
 import controllers.ControllerSpecBase
 import controllers.actions._
-import identifiers.SchemeNameId
-import identifiers.SchemeSrnId
-import identifiers.SeqAuthorisedPractitionerId
+import identifiers.{SchemeNameId, SchemeSrnId, SeqAuthorisedPractitionerId}
 import models.SchemeReferenceNumber
-import play.api.libs.json.JsArray
-import play.api.libs.json.Json
+import play.api.libs.json.{JsArray, Json}
 import play.api.mvc.Call
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
-import utils.FakeNavigator
 import viewmodels.AuthorisedPractitionerViewModel
 import views.html.psp.viewPractitioners
 
@@ -38,8 +33,8 @@ class ViewPractitionersControllerSpec extends ControllerSpecBase {
   private val schemeSrn  = "12345"
   private def returnCall: Call  = controllers.routes.SchemeDetailsController.onPageLoad(SchemeReferenceNumber(schemeSrn))
   private val practitionersViewModel = Seq(
-    AuthorisedPractitionerViewModel("PSP Limited Company 1", "Nigel Robert Smith", "1 April 2021"),
-    AuthorisedPractitionerViewModel("PSP Individual Second", "Acme Ltd", "1 April 2021")
+    AuthorisedPractitionerViewModel("PSP Limited Company 1", "Nigel Robert Smith", "1 April 2021", false),
+    AuthorisedPractitionerViewModel("PSP Individual Second", "Acme Ltd", "1 April 2021", false)
   )
 
   private val practitioners = JsArray(
@@ -80,13 +75,10 @@ class ViewPractitionersControllerSpec extends ControllerSpecBase {
 
   private def controller(dataRetrievalAction: DataRetrievalAction = validData): ViewPractitionersController =
     new ViewPractitionersController(
-      frontendAppConfig,
       messagesApi,
-      FakeNavigator,
       FakeAuthAction,
       dataRetrievalAction,
       new DataRequiredActionImpl,
-      FakeUserAnswersCacheConnector,
       stubMessagesControllerComponents(),
       viewPractitionersView
     )
