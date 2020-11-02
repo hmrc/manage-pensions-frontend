@@ -17,41 +17,41 @@
 package controllers.invitations.psp
 
 import com.google.inject.Inject
+import connectors.admin.MinimalConnector
 import connectors.scheme.ListOfSchemesConnector
-import connectors.{ActiveRelationshipExistsException, PspConnector}
+import connectors.{ActiveRelationshipExistsException, EmailConnector, EmailSent, PspConnector}
 import controllers.Retrievals
-import controllers.actions.AuthAction
-import controllers.actions.DataRequiredAction
-import controllers.actions.DataRetrievalAction
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, IdNotFound}
 import forms.invitations.psp.DeclarationFormProvider
-import identifiers.SchemeSrnId
 import identifiers.invitations.psp.{PspClientReferenceId, PspId, PspNameId}
+import identifiers.{SchemeNameId, SchemeSrnId}
+import models.SendEmailRequest
 import models.invitations.psp.ClientReference
 import models.requests.DataRequest
+import play.api.Logger
 import play.api.data.Form
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.SchemeDetailsService
-import play.api.i18n.I18nSupport
-import play.api.i18n.MessagesApi
-import play.api.mvc.Action
-import play.api.mvc.AnyContent
-import play.api.mvc.MessagesControllerComponents
-import play.api.mvc.Result
+import uk.gov.hmrc.domain.PsaId
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import views.html.invitations.psp.declaration
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class DeclarationController @Inject()( override val messagesApi: MessagesApi,
-                                       formProvider: DeclarationFormProvider,
-                                       auth: AuthAction,
-                                       getData: DataRetrievalAction,
-                                       requireData: DataRequiredAction,
-                                       pspConnector: PspConnector,
-                                       listOfSchemesConnector: ListOfSchemesConnector,
-                                       schemeDetailsService: SchemeDetailsService,
-                                       val controllerComponents: MessagesControllerComponents,
-                                       view: declaration
+class DeclarationController @Inject()(override val messagesApi: MessagesApi,
+                                      formProvider: DeclarationFormProvider,
+                                      auth: AuthAction,
+                                      getData: DataRetrievalAction,
+                                      requireData: DataRequiredAction,
+                                      pspConnector: PspConnector,
+                                      listOfSchemesConnector: ListOfSchemesConnector,
+                                      schemeDetailsService: SchemeDetailsService,
+                                      emailConnector: EmailConnector,
+                                      minimalConnector: MinimalConnector,
+                                      val controllerComponents: MessagesControllerComponents,
+                                      view: declaration
                                      )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
   val form: Form[Boolean] = formProvider()
   val sessionExpired: Future[Result] = Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
@@ -66,17 +66,19 @@ class DeclarationController @Inject()( override val messagesApi: MessagesApi,
       form.bindFromRequest().fold(
         (formWithErrors: Form[Boolean]) =>
           Future.successful(BadRequest(view(formWithErrors))),
-        _ => inviteAndRedirect()
+        _ => inviteEmailAndRedirect()
       )
    }
 
-  private def inviteAndRedirect()(implicit request: DataRequest[AnyContent]): Future[Result] =
-    (SchemeSrnId and PspNameId and PspId and PspClientReferenceId).retrieve.right.map {
-      case srn ~ pspName ~ pspId ~ pspCR =>
+  private def inviteEmailAndRedirect()(implicit request: DataRequest[AnyContent]): Future[Result] =
+    (SchemeNameId and SchemeSrnId and PspNameId and PspId and PspClientReferenceId).retrieve.right.map {
+      case schemeName ~ srn ~ pspName ~ pspId ~ pspCR =>
         getPstr(srn).flatMap {
           case Some(pstr) =>
-            pspConnector.authorisePsp(pstr, pspName, pspId, getClientReference(pspCR)).map { _ =>
-              Redirect(routes.ConfirmationController.onPageLoad())
+            pspConnector.authorisePsp(pstr, pspName, pspId, getClientReference(pspCR)).flatMap { _ =>
+              sendEmail(request.psaId, pspName, schemeName).map { _ =>
+                Redirect(routes.ConfirmationController.onPageLoad())
+              }
             } recoverWith {
               case _: ActiveRelationshipExistsException =>
                 Future.successful(Redirect(controllers.invitations.psp.routes.AlreadyAssociatedWithSchemeController.onPageLoad()))
@@ -95,5 +97,32 @@ class DeclarationController @Inject()( override val messagesApi: MessagesApi,
   private def getClientReference(answer: ClientReference): Option[String] = answer match {
     case ClientReference.HaveClientReference(reference) => Some(reference)
     case ClientReference.NoClientReference => None
+  }
+
+  private def sendEmail(psaIdOpt: Option[PsaId], pspName: String, schemeName: String)
+                              (implicit headerCarrier: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
+    val psaId: PsaId = psaIdOpt.getOrElse(throw IdNotFound())
+    minimalConnector.getMinimalPsaDetails(psaId.id).map { psa =>
+
+      val email = SendEmailRequest(
+        List(psa.email),
+        "pods_authorise_psp",
+        Map(
+          "psaInvitor" -> psa.name,
+          "pspInvitee" -> pspName,
+          "schemeName" -> schemeName
+        ),
+        force = false,
+        None
+      )
+
+      emailConnector.sendEmail(email).map {
+        case EmailSent => println("\n\n >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>EmailSent")
+          ()
+        case _ =>
+          Logger.error("Unable to send email to authorising PSA. Support intervention possibly required.")
+          ()
+      }
+    }
   }
 }
