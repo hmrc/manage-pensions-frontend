@@ -21,11 +21,19 @@ import java.time.LocalDate
 import play.api.libs.json.Json
 import play.api.libs.json.OFormat
 
-case class AuthorisingPSA(firstName: Option[String], lastName: Option[String], middleName: Option[String], organisationOrPartnershipName: Option[String]) {
+case class AuthorisingPSA(
+                           firstName: Option[String],
+                           lastName: Option[String],
+                           middleName: Option[String],
+                           organisationOrPartnershipName: Option[String]
+                         ) {
   def name: String = (organisationOrPartnershipName, firstName, middleName, lastName) match {
-    case (Some(v), _, _, _) => v
-    case (_, Some(f), Some(m), Some(l)) => (s"$f $m $l").replace("  ", " ")
-    case _ => throw new RuntimeException("No authorising psa name")
+    case (Some(orgName), _, _, _) =>
+      orgName
+    case (_, Some(first), Some(middle), Some(last)) =>
+      s"$first $middle $last".replace("  ", " ")
+    case _ =>
+      throw new RuntimeException("No authorising psa name")
   }
 }
 
@@ -33,7 +41,10 @@ object AuthorisingPSA {
   implicit val formats: OFormat[AuthorisingPSA] = Json.format[AuthorisingPSA]
 }
 
-case class AuthorisingIndividual(firstName: String, lastName: String) {
+case class AuthorisingIndividual(
+                                  firstName: String,
+                                  lastName: String
+                                ) {
   def fullName: String = s"$firstName $lastName"
 }
 
@@ -42,13 +53,14 @@ object AuthorisingIndividual {
 }
 
 case class AuthorisedPractitioner(
-  organisationOrPartnershipName: Option[String],
-  individual: Option[AuthorisingIndividual],
-  authorisingPSAID: String,
-  authorisingPSA: AuthorisingPSA,
-  relationshipStartDate:LocalDate,
-  id: String) {
-  def name = (individual, organisationOrPartnershipName) match {
+                                   organisationOrPartnershipName: Option[String],
+                                   individual: Option[AuthorisingIndividual],
+                                   authorisingPSAID: String,
+                                   authorisingPSA: AuthorisingPSA,
+                                   relationshipStartDate: LocalDate,
+                                   id: String
+                                 ) {
+  def name: String = (individual, organisationOrPartnershipName) match {
     case (Some(i), _) => i.fullName
     case (_, Some(o)) => o
     case _ => throw new RuntimeException("No psp name")
@@ -56,6 +68,5 @@ case class AuthorisedPractitioner(
 }
 
 object AuthorisedPractitioner {
-
   implicit val formats: OFormat[AuthorisedPractitioner] = Json.format[AuthorisedPractitioner]
 }

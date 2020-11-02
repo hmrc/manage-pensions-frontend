@@ -20,7 +20,7 @@ import controllers.actions.DataRetrievalAction
 import controllers.actions.FakeDataRetrievalAction
 import identifiers.invitations._
 import identifiers.remove.ConfirmRemovePsaId
-import identifiers.remove.RemovalDateId
+import identifiers.remove.PsaRemovalDateId
 import identifiers.AssociatedDateId
 import identifiers.MinimalSchemeDetailId
 import identifiers.PSANameId
@@ -98,7 +98,7 @@ package object utils {
     }
 
     def removalDate(date: LocalDate): UserAnswers = {
-      answers.set(RemovalDateId)(date).asOpt.value
+      answers.set(PsaRemovalDateId)(date).asOpt.value
     }
 
     def psaName(psaName: String): UserAnswers = {

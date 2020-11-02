@@ -26,14 +26,14 @@ import utils.UserAnswers
 case class OptionalDataRequest[A](request: Request[A], externalId: String, userAnswers: Option[UserAnswers],
   psaId: Option[PsaId], pspId: Option[PspId] = None)
   extends WrappedRequest[A](request) with IdentifiedRequest {
-  def psaIdOrException:PsaId = psaId.getOrElse(throw IdNotFound("PsaIdNotFound"))
+  def psaIdOrException:PsaId = psaId.getOrElse(throw IdNotFound())
   def pspIdOrException:PspId = pspId.getOrElse(throw IdNotFound("PspIdNotFound"))
 }
 
 case class DataRequest[A](request: Request[A], externalId: String, userAnswers: UserAnswers, psaId: Option[PsaId],
   pspId: Option[PspId] = None)
   extends WrappedRequest[A](request) with IdentifiedRequest {
-  def psaIdOrException:PsaId = psaId.getOrElse(throw IdNotFound("PsaIdNotFound"))
+  def psaIdOrException:PsaId = psaId.getOrElse(throw IdNotFound())
   def pspIdOrException:PspId = pspId.getOrElse(throw IdNotFound("PspIdNotFound"))
 }
 

@@ -53,7 +53,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
   private val view: schemesOverview = app.injector.instanceOf[schemesOverview]
 
   def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): SchemesOverviewController =
-    new SchemesOverviewController(appConfig, messagesApi, fakeSchemesOverviewService, FakeAuthAction,
+    new SchemesOverviewController(messagesApi, fakeSchemesOverviewService, FakeAuthAction,
       dataRetrievalAction, fakeUserAnswersCacheConnector, stubMessagesControllerComponents(),
       view)
 

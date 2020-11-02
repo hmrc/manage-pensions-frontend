@@ -23,9 +23,7 @@ import controllers.Retrievals
 import controllers.actions.AuthAction
 import controllers.actions.DataRequiredAction
 import controllers.actions.DataRetrievalAction
-import identifiers.SeqAuthorisedPractitionerId
-import identifiers.SchemeNameId
-import identifiers.SchemeSrnId
+import identifiers.{PSANameId, SchemeNameId, SchemeSrnId, SeqAuthorisedPractitionerId}
 import models.SchemeReferenceNumber
 import play.api.i18n.I18nSupport
 import play.api.i18n.MessagesApi
@@ -41,26 +39,29 @@ import views.html.psp.viewPractitioners
 
 import scala.concurrent.Future
 
-class ViewPractitionersController @Inject()(appConfig: FrontendAppConfig,
-                                            override val messagesApi: MessagesApi,
-                                            @Invitation navigator: Navigator,
-                                            authenticate: AuthAction,
-                                            getData: DataRetrievalAction,
-                                            requireData: DataRequiredAction,
-                                            userAnswersCacheConnector: UserAnswersCacheConnector,
-                                            val controllerComponents: MessagesControllerComponents,
-                                            view: viewPractitioners
-                                         ) extends FrontendBaseController with I18nSupport with Retrievals {
+class ViewPractitionersController @Inject()(
+                                             override val messagesApi: MessagesApi,
+                                             authenticate: AuthAction,
+                                             getData: DataRetrievalAction,
+                                             requireData: DataRequiredAction,
+                                             val controllerComponents: MessagesControllerComponents,
+                                             view: viewPractitioners
+                                           ) extends FrontendBaseController with I18nSupport with Retrievals {
 
   def onPageLoad(): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
       (SchemeSrnId and SchemeNameId and SeqAuthorisedPractitionerId).retrieve.right.map {
         case srn ~ schemeName ~ authorisedPractitioners =>
-          val authorisedPractitionerViewModelSeq = authorisedPractitioners.map( p =>
-            AuthorisedPractitionerViewModel(p.name, p.authorisingPSA.name, DateHelper.formatDate(p.relationshipStartDate))
+          val authorisedPractitionerViewModelSeq = authorisedPractitioners.map(p =>
+            AuthorisedPractitionerViewModel(
+              pspName = p.name,
+              authorisedBy = p.authorisingPSA.name,
+              dateAuthorised = DateHelper.formatDate(p.relationshipStartDate),
+              authorisedByLoggedInPsa = request.psaIdOrException.id == p.authorisingPSAID
+            )
           )
-        val returnCall = controllers.routes.SchemeDetailsController.onPageLoad(SchemeReferenceNumber(srn))
-        Future.successful(Ok(view(schemeName, returnCall, authorisedPractitionerViewModelSeq)))
+          val returnCall = controllers.routes.SchemeDetailsController.onPageLoad(SchemeReferenceNumber(srn))
+          Future.successful(Ok(view(schemeName, returnCall, authorisedPractitionerViewModelSeq)))
       }
   }
 
