@@ -39,14 +39,16 @@ object DeAuthorise {
 
       deAuthorise.ceaseIDType match {
         case "PSPID" =>
-          Json.obj("declarationCeasePSPDetails" -> {
             deAuthorise.initiatedIDType match {
               case "PSAID" =>
-                Json.obj("declarationBox1" -> "true")
+                Json.obj("declarationCeasePSPDetails" ->
+                  Json.obj("declarationBox1" -> "true")
+                ) ++ commonJson
               case _ =>
-                Json.obj("declarationBox2" -> "true")
+                Json.obj("declarationCeasePSPDetails" ->
+                  Json.obj("declarationBox2" -> "true")
+                ) ++ commonJson
             }
-          }) ++ commonJson
         case _ =>
           commonJson
       }
