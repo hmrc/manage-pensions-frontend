@@ -94,7 +94,7 @@ class AuthImpl(override val authConnector: AuthConnector,
 
   private def getPspId(isMandatory: Boolean, enrolments: Enrolments): Option[PspId] = {
     def failureResult: Option[PspId] = if(isMandatory) throw IdNotFound("PspIdNotFound") else None
-    enrolments.getEnrolment("HMRC-PODS-ORG")
+    enrolments.getEnrolment("HMRC-PODSPP-ORG")
       .flatMap(_.getIdentifier("PSPID")).map(_.value)
       .fold[Option[PspId]](failureResult)(id => Some(PspId(id)))
   }
