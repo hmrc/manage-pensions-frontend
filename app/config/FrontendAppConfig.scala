@@ -133,6 +133,8 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val pspDetailsUrl: String = loadConfig("urls.pspDetails")
   lazy val pspDeregisterUrl: String = loadConfig("urls.pspDeregister")
 
+  lazy val baseUrlEmail: String = servicesConfig.baseUrl("email")
+  lazy val emailUrl: String = s"$baseUrlEmail${runModeConfiguration.underlying.getString("urls.email")}"
 
   def languageMap: Map[String, Lang] = Map(
     "english" -> Lang("en"),
