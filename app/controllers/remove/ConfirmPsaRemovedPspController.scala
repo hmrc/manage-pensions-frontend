@@ -29,7 +29,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import views.html.remove.confirmPsaRemovedPsp
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 class ConfirmPsaRemovedPspController @Inject()(
                                                 override val messagesApi: MessagesApi,
@@ -53,8 +53,7 @@ class ConfirmPsaRemovedPspController @Inject()(
           case schemeName ~ pspDetails =>
             minimalPsaConnector.getMinimalPsaDetails(request.psaIdOrException.id) flatMap {
               psaDetails =>
-                //                Future.successful(Ok(view(pspDetails.name, schemeName, psaDetails.email)))
-                userAnswersCacheConnector.removeAll(request.externalId).map {
+                userAnswersCacheConnector.removeAll(request.externalId) map {
                   _ =>
                     Ok(view(pspDetails.name, schemeName, psaDetails.email))
                 }
