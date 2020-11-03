@@ -26,7 +26,7 @@ import connectors.UserAnswersCacheConnector
 import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.remove.RemovalDateFormProvider
-import identifiers.remove.RemovalDateId
+import identifiers.remove.PsaRemovalDateId
 import models.PsaToBeRemovedFromScheme
 import models.SchemeVariance
 import org.mockito.Matchers
@@ -54,9 +54,9 @@ import views.html.remove.removalDate
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
-class RemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours with MockitoSugar with BeforeAndAfterEach{
+class PsaRemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours with MockitoSugar with BeforeAndAfterEach{
 
-  import RemovalDateControllerSpec._
+  import PsaRemovalDateControllerSpec._
 
   private val formProvider: RemovalDateFormProvider = new RemovalDateFormProvider()
   private val form = formProvider
@@ -64,7 +64,7 @@ class RemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours wit
   private val view = app.injector.instanceOf[removalDate]
 
   def controller(dataRetrievalAction: DataRetrievalAction = data, fakeAuth: AuthAction = FakeAuthAction,
-                 userAnswersCacheConnector: UserAnswersCacheConnector = FakeUserAnswersCacheConnector) = new RemovalDateController(
+                 userAnswersCacheConnector: UserAnswersCacheConnector = FakeUserAnswersCacheConnector) = new PsaRemovalDateController(
     frontendAppConfig, messagesApi, userAnswersCacheConnector, navigator, fakeAuth, dataRetrievalAction,
     requiredDataAction, formProvider, fakePsaRemovalConnector,
     mockedUpdateSchemeCacheConnector, mockedPensionSchemeVarianceLockConnector, stubMessagesControllerComponents(), view)
@@ -98,7 +98,7 @@ class RemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours wit
   behave like controllerWithOnSubmitMethod(onSubmitAction, data, form(associationDate, frontendAppConfig.earliestDatePsaRemoval).bind(dateKeys),
     viewAsStringPostRequest, postRequest, Some(emptyPostRequest))
 
-  behave like controllerThatSavesUserAnswers(onSaveAction, postRequest, RemovalDateId, date)
+  behave like controllerThatSavesUserAnswers(onSaveAction, postRequest, PsaRemovalDateId, date)
 
   "controller" must {
     "remove lock and cached update data if present and lock and updated scheme owned by PSA" in {
@@ -134,7 +134,7 @@ class RemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours wit
   }
 }
 
-object RemovalDateControllerSpec extends MockitoSugar {
+object PsaRemovalDateControllerSpec extends MockitoSugar {
   private val associationDate = LocalDate.parse("2018-10-01")
   private val schemeName = "test scheme name"
   private val psaName = "test psa name"

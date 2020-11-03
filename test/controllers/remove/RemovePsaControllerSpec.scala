@@ -19,7 +19,7 @@ package controllers.remove
 import java.time.LocalDate
 
 import base.SpecBase
-import connectors.admin.MinimalPsaConnector
+import connectors.admin.MinimalConnector
 import connectors.FakeUserAnswersCacheConnector
 import connectors.scheme.SchemeDetailsConnector
 import controllers.actions.DataRequiredActionImpl
@@ -47,7 +47,7 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
 
   import RemovePsaControllerSpec._
 
-  def fakeMinimalPsaConnector(psaMinimalSubscription: MinimalPSAPSP = psaMinimalSubscription): MinimalPsaConnector = new MinimalPsaConnector {
+  def fakeMinimalPsaConnector(psaMinimalSubscription: MinimalPSAPSP = psaMinimalSubscription): MinimalConnector = new MinimalConnector {
     override def getMinimalPsaDetails(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP] =
       Future.successful(psaMinimalSubscription)
 

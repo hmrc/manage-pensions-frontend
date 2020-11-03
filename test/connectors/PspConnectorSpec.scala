@@ -23,7 +23,7 @@ import models.invitations.psp.DeAuthorise
 import org.scalatest.{AsyncFlatSpec, Matchers}
 import org.scalatestplus.scalacheck.Checkers
 import play.api.http.Status._
-import play.api.libs.json.Json
+import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, UpstreamErrorResponse}
 import utils.WireMockHelper
 
@@ -35,7 +35,7 @@ class PspConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper w
   "deAuthorise" should "return successfully for PSA deAuth PSA" in {
     server.stubFor(
       post(urlEqualTo(deAuthUrl))
-        .withRequestBody(equalToJson(Json.stringify(Json.toJson(psaDeAuthPsa))))
+        .withRequestBody(equalToJson(Json.stringify(Json.toJson(psaDeAuthPsaJson))))
         .willReturn(
           aResponse()
             .withStatus(OK)
@@ -56,7 +56,7 @@ class PspConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper w
   "deAuthorise" should "return successfully for PSA deAuth PSP" in {
     server.stubFor(
       post(urlEqualTo(deAuthUrl))
-        .withRequestBody(equalToJson(Json.stringify(Json.toJson(psaDeAuthPsp))))
+        .withRequestBody(equalToJson(Json.stringify(psaDeAuthPspJson)))
         .willReturn(
           aResponse()
             .withStatus(OK)
@@ -77,7 +77,7 @@ class PspConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper w
   "deAuthorise" should "return successfully for PSP deAuth PSP" in {
     server.stubFor(
       post(urlEqualTo(deAuthUrl))
-        .withRequestBody(equalToJson(Json.stringify(Json.toJson(pspDeAuthPsp))))
+        .withRequestBody(equalToJson(Json.stringify(pspDeAuthPspJson)))
         .willReturn(
           aResponse()
             .withStatus(OK)
@@ -186,6 +186,34 @@ object PspConnectorSpec {
     initiatedIDType = "PSPID",
     initiatedIDNumber = "21234569",
     ceaseDate = "2019-03-29"
+  )
+
+  val psaDeAuthPsaJson: JsObject = Json.obj(
+    "ceaseIDType" -> "PSAID",
+    "ceaseNumber" -> "A1234567",
+    "initiatedIDType" -> "PSAID",
+    "initiatedIDNumber" -> "A2000567",
+    "ceaseDate" -> "2019-03-29"
+  )
+
+  val psaDeAuthPspJson: JsObject = Json.obj(
+    "ceaseIDType" -> "PSPID",
+    "ceaseNumber" -> "21234568",
+    "initiatedIDType" -> "PSAID",
+    "initiatedIDNumber" -> "A1234568",
+    "ceaseDate" -> "2019-03-29",
+    "declarationCeasePSPDetails" ->
+      Json.obj("declarationBox1" -> "true")
+  )
+
+  val pspDeAuthPspJson: JsObject = Json.obj(
+    "ceaseIDType" -> "PSPID",
+    "ceaseNumber" -> "21234568",
+    "initiatedIDType" -> "PSPID",
+    "initiatedIDNumber" -> "21234569",
+    "ceaseDate" -> "2019-03-29",
+    "declarationCeasePSPDetails" ->
+      Json.obj("declarationBox2" -> "true")
   )
 
   private val duplicateSubmissionJson = Json.obj(

@@ -19,7 +19,7 @@ package views
 import models.Link
 import org.jsoup.Jsoup
 import play.twirl.api.{Html, HtmlFormat}
-import viewmodels.{AssociatedPsa, Message}
+import viewmodels.Message
 import views.behaviours.ViewBehaviours
 import views.html.schemeDetails
 
@@ -32,14 +32,11 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
   private val messageKeyPrefix = "schemeDetails"
   private val schemeName = "Test Scheme Name"
   private val openedDate = "29 February 2017"
-  private val administrators = Seq(AssociatedPsa("First Psa", canRemove = true), AssociatedPsa("Second User", canRemove = false))
-  private val administratorsNoRemove = Seq(AssociatedPsa("First Psa", canRemove = false), AssociatedPsa("Second User", canRemove = false))
   private val srn = "P12345678"
   private val pstr: Option[String] = Some("87654321XX")
   private val schemeDetailsView = injector.instanceOf[schemeDetails]
 
   def createView(date: Option[String] = Some(openedDate),
-                 psaList: Option[Seq[AssociatedPsa]] = Some(administrators),
                  isSchemeOpen: Boolean = true,
                  displayChangeLink: Boolean = false,
                  lockingPsa: Option[String] = None,
@@ -50,7 +47,6 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
       schemeName,
       pstr,
       date,
-      psaList,
       srn,
       isSchemeOpen,
       displayChangeLink,
@@ -65,10 +61,11 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
       createView(),
       messageKeyPrefix,
       schemeName,
-      "_opened_date_head",
       "_psa_list_head",
       "_view_details_link",
-      "_return_link"
+      "_return_link",
+      "_invite_link",
+      "_view_psa"
     )
 
     "display the pstr" in {
@@ -99,30 +96,20 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
       Jsoup.parse(createView(None)().toString()) mustNot haveDynamicText(openedDate)
     }
 
-    "contain list of administrators" in {
-      for (psa <- administrators) Jsoup.parse(createView()().toString) must haveDynamicText(psa.name)
-    }
-
-    "render the 'Remove' link if a PSA can be removed from the scheme" in {
-      appRunning()
-      createView() must haveLink(controllers.remove.routes.RemovePsaController.onPageLoad().url, "remove-link")
-    }
-
-    "not render the 'Remove' link if no PSAs can be removed from the scheme" in {
-      createView(psaList = Some(administratorsNoRemove)) must notHaveElementWithId("remove-link")
-    }
-
-    "not contain list of administrators if not data is returned from API" in {
-      Jsoup.parse(createView(psaList = None)().toString) mustNot haveDynamicText("messages__schemeDetails__psa_list_head")
-      for (psa <- administrators)
-        Jsoup.parse(createView(psaList = None)().toString) mustNot haveDynamicText(psa.name)
+    "contain section with links for administrators" in {
+      Jsoup.parse(createView()().toString) must haveDynamicText("messages__schemeDetails__psa_list_head")
     }
 
     "have link to Invite another PSA" in {
       Jsoup.parse(createView()().toString()).select("a[id=invite]") must
         haveLink(controllers.invitations.routes.InviteController.onPageLoad(srn).url)
-
     }
+
+    "render the 'View or remove' link if a PSA can be removed from the scheme" in {
+      appRunning()
+      createView() must haveLink(controllers.routes.ViewAdministratorsController.onPageLoad(srn).url, "view-psa-list")
+    }
+
 
     "have link to authorise page" in {
       Jsoup.parse(createView()().toString()).select("a[id=authorise]") must

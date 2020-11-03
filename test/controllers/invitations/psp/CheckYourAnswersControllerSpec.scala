@@ -17,7 +17,7 @@
 package controllers.invitations.psp
 
 import base.JsonFileReader
-import connectors.admin.MinimalPsaConnector
+import connectors.admin.MinimalConnector
 import controllers.ControllerSpecBase
 import controllers.actions.DataRequiredActionImpl
 import controllers.actions.DataRetrievalAction
@@ -49,7 +49,7 @@ class CheckYourAnswersControllerSpec extends ControllerSpecBase with MockitoSuga
 
     import CheckYourAnswersControllerSpec._
 
-    private val mockMinConnector = mock[MinimalPsaConnector]
+    private val mockMinConnector = mock[MinimalConnector]
     def controller(dataRetrievalAction: DataRetrievalAction = data) = new CheckYourAnswersController(
         messagesApi, FakeAuthAction, dataRetrievalAction, new DataRequiredActionImpl,
         checkYourAnswersFactory, mockMinConnector, stubMessagesControllerComponents(), view

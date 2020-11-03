@@ -19,7 +19,7 @@ package controllers.invitations
 import com.google.inject.Inject
 import com.google.inject.Singleton
 import config.FeatureSwitchManagementService
-import connectors.admin.MinimalPsaConnector
+import connectors.admin.MinimalConnector
 import connectors.UserAnswersCacheConnector
 import connectors.scheme.SchemeDetailsConnector
 import controllers.actions.AuthAction
@@ -42,7 +42,7 @@ class InviteController @Inject()(authenticate: AuthAction,
                                  schemeDetailsConnector: SchemeDetailsConnector,
                                  userAnswersCacheConnector: UserAnswersCacheConnector,
                                  featureSwitchManagementService: FeatureSwitchManagementService,
-                                 minimalPsaConnector: MinimalPsaConnector,
+                                 minimalPsaConnector: MinimalConnector,
                                  val controllerComponents: MessagesControllerComponents)(implicit val ec: ExecutionContext) extends FrontendBaseController {
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate().async {

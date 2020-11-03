@@ -27,30 +27,29 @@ case class DeAuthorise(
                       )
 
 object DeAuthorise {
-  implicit lazy val writes: Writes[DeAuthorise] =
-    (deAuthorise: DeAuthorise) => {
-      val commonJson = Json.obj(
-        "ceaseIDType" -> deAuthorise.ceaseIDType,
-        "ceaseNumber" -> deAuthorise.ceaseNumber,
-        "initiatedIDType" -> deAuthorise.initiatedIDType,
-        "initiatedIDNumber" -> deAuthorise.initiatedIDNumber,
-        "ceaseDate" -> deAuthorise.ceaseDate,
-      )
+  implicit lazy val writes: Writes[DeAuthorise] = (deAuthorise: DeAuthorise) => {
+    val commonJson = Json.obj(
+      "ceaseIDType" -> deAuthorise.ceaseIDType,
+      "ceaseNumber" -> deAuthorise.ceaseNumber,
+      "initiatedIDType" -> deAuthorise.initiatedIDType,
+      "initiatedIDNumber" -> deAuthorise.initiatedIDNumber,
+      "ceaseDate" -> deAuthorise.ceaseDate
+    )
 
-      deAuthorise.ceaseIDType match {
-        case "PSPID" =>
-          Json.obj("declarationCeasePSPDetails" -> {
-            deAuthorise.initiatedIDType match {
-              case "PSAID" =>
-                Json.obj("declarationBox1" -> "true")
-              case _ =>
-                Json.obj("declarationBox2" -> "true")
-            }
-          }) ++ commonJson
-        case _ =>
-          commonJson
-      }
+    deAuthorise.ceaseIDType match {
+      case "PSPID" =>
+        deAuthorise.initiatedIDType match {
+          case "PSAID" =>
+            Json.obj("declarationCeasePSPDetails" ->
+              Json.obj("declarationBox1" -> "true")) ++ commonJson
+          case _ =>
+            Json.obj("declarationCeasePSPDetails" ->
+              Json.obj("declarationBox2" -> "true")) ++ commonJson
+        }
+      case _ =>
+        commonJson
     }
+  }
 
   implicit lazy val reads: Reads[DeAuthorise] =
     Json.reads[DeAuthorise]

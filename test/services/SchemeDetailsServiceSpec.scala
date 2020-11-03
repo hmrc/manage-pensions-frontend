@@ -19,7 +19,7 @@ package services
 import base.SpecBase
 import config.FrontendAppConfig
 import connectors.FrontendConnector
-import connectors.admin.MinimalPsaConnector
+import connectors.admin.MinimalConnector
 import connectors.scheme.PensionSchemeVarianceLockConnector
 import identifiers.invitations.PSTRId
 import identifiers.SchemeNameId
@@ -51,7 +51,7 @@ class SchemeDetailsServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
 
   private implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val authReq: AuthenticatedRequest[AnyContent] = AuthenticatedRequest(fakeRequest, "id", Some(PsaId(psaId)), None, Individual)
-  private val minimalPsaConnector: MinimalPsaConnector = mock[MinimalPsaConnector]
+  private val minimalPsaConnector: MinimalConnector = mock[MinimalConnector]
   private val lockConnector = mock[PensionSchemeVarianceLockConnector]
   private val frontendConnector = mock[FrontendConnector]
   private val mockAppConfig = mock[FrontendAppConfig]

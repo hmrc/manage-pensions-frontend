@@ -17,20 +17,20 @@
 package controllers.invitations.psp
 
 import base.JsonFileReader
-import connectors.ActiveRelationshipExistsException
-import connectors.PspConnector
+import connectors.admin.MinimalConnector
+import connectors.{ActiveRelationshipExistsException, EmailConnector, EmailSent, PspConnector}
 import connectors.scheme.ListOfSchemesConnector
 import controllers.ControllerSpecBase
-import controllers.actions.{DataRequiredActionImpl, FakeDataRetrievalAction, FakeAuthAction, DataRetrievalAction}
+import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
 import forms.invitations.psp.DeclarationFormProvider
-import identifiers.SchemeSrnId
-import identifiers.invitations.psp.{PspId, PspClientReferenceId, PspNameId}
-import models.ListOfSchemes
+import identifiers.{SchemeNameId, SchemeSrnId}
+import identifiers.invitations.psp.{PspClientReferenceId, PspId, PspNameId}
+import models.{ListOfSchemes, MinimalPSAPSP}
 import models.invitations.psp.ClientReference
 import models.invitations.psp.ClientReference.HaveClientReference
 import org.mockito.Matchers._
 import org.mockito.Mockito._
-import org.scalatest.{RecoverMethods, BeforeAndAfterEach}
+import org.scalatest.{BeforeAndAfterEach, RecoverMethods}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.Configuration
 import play.api.data.Form
@@ -58,14 +58,19 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
   private val mockPspConnector = mock[PspConnector]
   private val mockListOfSchemesConnector = mock[ListOfSchemesConnector]
   private val mockSchemeDetailsService = mock[SchemeDetailsService]
+  private val mockEmailConnector = mock[EmailConnector]
+  private val mockMinimalConnector = mock[MinimalConnector]
 
   val srn: String = "srn"
   val pstr: String = "pstr"
   val pspName: String = "psp-name"
+  val schemeName: String = "scheme-name"
   val pspId: String = "psp-id"
   val pspCR: ClientReference = HaveClientReference("psp-client-reference")
+  val minPsa: MinimalPSAPSP = MinimalPSAPSP("z@z.z", isPsaSuspended = false, Some("ABC Corps"), None)
 
   val userAnswers: UserAnswers = UserAnswers().set(SchemeSrnId)(srn).asOpt.value
+    .set(SchemeNameId)(schemeName).asOpt.value
     .set(PspNameId)(pspName).asOpt.value
     .set(PspId)(pspId).asOpt.value
     .set(PspClientReferenceId)(pspCR).asOpt.value
@@ -82,6 +87,8 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
     mockPspConnector,
     mockListOfSchemesConnector,
     mockSchemeDetailsService,
+    mockEmailConnector,
+    mockMinimalConnector,
     stubMessagesControllerComponents(),
     view
   )
@@ -114,6 +121,9 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
         when(mockListOfSchemesConnector.getListOfSchemes(any())(any(), any())).thenReturn(listOfSchemesResponse)
         when(mockSchemeDetailsService.pstr(any(), any())).thenReturn(Some(pstr))
         when(mockPspConnector.authorisePsp(any(), any(), any(), any())(any(), any())).thenReturn(Future.successful(()))
+        when(mockEmailConnector.sendEmail(any())(any(), any())).thenReturn(Future.successful(EmailSent))
+        when(mockMinimalConnector.getMinimalPsaDetails(any())(any(), any()))
+          .thenReturn(Future.successful(minPsa))
 
         val result = controller(data).onSubmit()(fakeRequest.withFormUrlEncodedBody("agree" -> "agreed"))
         status(result) mustBe SEE_OTHER
@@ -138,6 +148,9 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
         when(mockListOfSchemesConnector.getListOfSchemes(any())(any(), any())).thenReturn(listOfSchemesResponse)
         when(mockSchemeDetailsService.pstr(any(), any())).thenReturn(Some(pstr))
         when(mockPspConnector.authorisePsp(any(), any(), any(), any())(any(), any())).thenReturn(Future.failed(new ActiveRelationshipExistsException))
+        when(mockEmailConnector.sendEmail(any())(any(), any())).thenReturn(Future.successful(EmailSent))
+        when(mockMinimalConnector.getMinimalPsaDetails(any())(any(), any()))
+          .thenReturn(Future.successful(minPsa))
 
         val result = controller(data).onSubmit()(fakeRequest.withFormUrlEncodedBody("agree" -> "agreed"))
         status(result) mustBe SEE_OTHER

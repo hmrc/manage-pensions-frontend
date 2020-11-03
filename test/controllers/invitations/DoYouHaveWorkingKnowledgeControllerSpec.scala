@@ -41,20 +41,8 @@ class DoYouHaveWorkingKnowledgeControllerSpec extends ControllerWithQuestionPage
 
   private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
-  val controller = new DoYouHaveWorkingKnowledgeController(
-    frontendAppConfig,
-    FakeAuthAction,
-    messagesApi,
-    FakeNavigator,
-    formProvider,
-    FakeUserAnswersCacheConnector,
-    new FakeDataRetrievalAction(Some(Json.obj())),
-    new DataRequiredActionImpl,
-    stubMessagesControllerComponents(),
-    view
-  )
     new DoYouHaveWorkingKnowledgeController(
-      frontendAppConfig, fakeAuth, messagesApi, navigator,formProvider,
+      frontendAppConfig, fakeAuth, messagesApi, navigator, formProvider,
       FakeUserAnswersCacheConnector, dataRetrievalAction, requiredDataAction, stubMessagesControllerComponents(),
       view).onPageLoad(NormalMode)
   }
@@ -67,7 +55,7 @@ class DoYouHaveWorkingKnowledgeControllerSpec extends ControllerWithQuestionPage
       view).onSubmit(NormalMode)
   }
 
- def viewAsString(form: Form[Boolean] = form) = view(form, NormalMode)(fakeRequest, messages).toString
+  def viewAsString(form: Form[Boolean] = form) = view(form, NormalMode)(fakeRequest, messages).toString
 
   behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, userAnswer.dataRetrievalAction, form, form.fill(true), viewAsString)
 
