@@ -51,7 +51,7 @@ import ListSchemesControllerSpec._
     "return OK and the correct view when there are no schemes" in {
       when(mockSchemeSearchService.searchPsp(any(), any())(any(), any())).thenReturn(Future.successful(Nil))
 
-      val fixture = testFixture(psaIdNoSchemes)
+      val fixture = testFixture(pspIdNoSchemes)
 
       val result = fixture.controller.onPageLoad(fakeRequest)
 
@@ -74,7 +74,7 @@ import ListSchemesControllerSpec._
       val searchText = "24000001IN"
       when(mockSchemeSearchService.searchPsp(any(), Matchers.eq(Some(searchText)))(any(), any())).thenReturn(Future.successful(fullSchemes))
 
-      val fixture = testFixture(psaIdWithSchemes)
+      val fixture = testFixture(pspIdWithSchemes)
       val postRequest = fakeRequest.withFormUrlEncodedBody(("searchText", searchText))
       val result = fixture.controller.onSearch(postRequest)
 
@@ -92,7 +92,7 @@ import ListSchemesControllerSpec._
     "return BADREQUEST and error when no value is entered into search" in {
       when(mockSchemeSearchService.searchPsp(any(), Matchers.eq(None))(any(), any())).thenReturn(Future.successful(fullSchemes))
 
-      val fixture = testFixture(psaIdWithSchemes)
+      val fixture = testFixture(pspIdWithSchemes)
       val postRequest = fakeRequest.withFormUrlEncodedBody(("searchText", ""))
       val result = fixture.controller.onSearch(postRequest)
 
@@ -112,7 +112,7 @@ import ListSchemesControllerSpec._
         val incorrectSearchText = "incorrect"
         when(mockSchemeSearchService.searchPsp(any(), Matchers.eq(Some(incorrectSearchText)))(any(), any())).thenReturn(Future.successful(Nil))
 
-        val fixture = testFixture(psaIdWithSchemes)
+        val fixture = testFixture(pspIdWithSchemes)
         val postRequest =
           fakeRequest.withFormUrlEncodedBody(("searchText", incorrectSearchText))
         val result = fixture.controller.onSearch(postRequest)
@@ -135,9 +135,9 @@ trait TestFixture {
 }
 
 object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
-  private val psaIdNoSchemes: String = "20000001"
-  private val psaIdWithSchemes: String = "20000002"
-  private val pspName: String = "Test Psa Name"
+  private val pspIdNoSchemes: String = "20000001"
+  private val pspIdWithSchemes: String = "20000002"
+  private val pspName: String = "Test Psp Name"
   private val emptySchemes: List[SchemeDetails] = List.empty[SchemeDetails]
   private val mockMinimalConnector: MinimalConnector =
     mock[MinimalConnector]
@@ -222,18 +222,18 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
     )
   private val view: list_schemes = app.injector.instanceOf[list_schemes]
 
-  private def testFixture(psaId: String): TestFixture =
+  private def testFixture(pspId: String): TestFixture =
     new TestFixture with MockitoSugar {
 
-      private def authAction(psaId: String): AuthAction =
-        FakeAuthAction.createWithPspId(psaId)
+      private def authAction(pspId: String): AuthAction =
+        FakeAuthAction.createWithPspId(pspId)
 
       override val controller: ListSchemesController =
         new ListSchemesController(
           mockAppConfig,
           messagesApi,
-          authAction(psaId),
-          getDataWithPspName(psaId),
+          authAction(pspId),
+          getDataWithPspName(pspId),
           mockMinimalConnector,
           FakeUserAnswersCacheConnector,
           stubMessagesControllerComponents(),
@@ -251,7 +251,7 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
       form = formValue
         .fold(listSchemesFormProvider())(v => listSchemesFormProvider().bind(Map("searchText" -> v))),
       schemes = schemes,
-      psaName = pspName,
+      pspName = pspName,
       numberOfSchemes = numberOfSchemes
     )(fakeRequest, messages).toString()
   }

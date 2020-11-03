@@ -76,7 +76,7 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours with MockitoS
     )
   )
 
-  private val psaName = "Test psa name"
+  private val pspName = "Test psp name"
 
   implicit private val request: Request[_] = fakeRequest
 
@@ -142,7 +142,7 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours with MockitoS
     listSchemesView(
       form = form,
       schemes = schemes,
-      psaName = psaName,
+      pspName = pspName,
       numberOfSchemes = numberOfSchemes
     )
 }

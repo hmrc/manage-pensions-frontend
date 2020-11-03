@@ -27,7 +27,7 @@
 @(
     form: Form[_],
     schemes: List[SchemeDetails],
-    psaName: String,
+    pspName: String,
     numberOfSchemes: Int
 )(implicit
     request: Request[_],
@@ -92,7 +92,7 @@
                     @components.scheme_list_psp(schemes, appConfig)
                     <a id="view-scheme" href=""> @messages("messages__listSchemesPsp__viewScheme")</a>
                 }
-                @components.return_link(controllers.routes.SchemesOverviewController.onPageLoad(), Some(psaName))
+                @components.return_link(controllers.routes.SchemesOverviewController.onPageLoad(), Some(pspName))
             </div>
         </div>
 

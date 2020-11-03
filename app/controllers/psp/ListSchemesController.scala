@@ -77,7 +77,7 @@ class ListSchemesController @Inject()(
                 view(
                   form,
                   schemes = schemeDetails,
-                  psaName = name,
+                  pspName = name,
                   numberOfSchemes = numberOfSchemes,
                 )
               )
