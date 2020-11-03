@@ -19,11 +19,12 @@ package controllers.psp
 import com.google.inject.Inject
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
-import connectors.admin.MinimalPsaConnector
+import connectors.admin.MinimalConnector
 import controllers.actions.AuthAction
 import controllers.actions.DataRetrievalAction
 import forms.psp.ListSchemesFormProvider
 import identifiers.PSANameId
+import models.AuthEntity.PSP
 import models.SchemeDetails
 import models.requests.OptionalDataRequest
 import play.api.data.Form
@@ -46,7 +47,7 @@ class ListSchemesController @Inject()(
                                        override val messagesApi: MessagesApi,
                                        authenticate: AuthAction,
                                        getData: DataRetrievalAction,
-                                       minimalPsaConnector: MinimalPsaConnector,
+                                       minimalConnector: MinimalConnector,
                                        userAnswersCacheConnector: UserAnswersCacheConnector,
                                        val controllerComponents: MessagesControllerComponents,
                                        view: list_schemes,
@@ -65,7 +66,7 @@ class ListSchemesController @Inject()(
                         )(implicit hc: HeaderCarrier,
                           request: OptionalDataRequest[AnyContent]): Future[Result] = {
     val status = if (form.hasErrors) BadRequest else Ok
-    minimalPsaConnector
+    minimalConnector
       .getPsaNameFromPsaID(request.psaIdOrException.id)
       .flatMap(_.map {
         name =>
@@ -102,7 +103,7 @@ class ListSchemesController @Inject()(
     }
   }
 
-  def onPageLoad: Action[AnyContent] = (authenticate() andThen getData).async {
+  def onPageLoad: Action[AnyContent] = (authenticate(PSP) andThen getData).async {
     implicit request =>
       renderView(
         schemeDetails = Nil,
@@ -112,7 +113,7 @@ class ListSchemesController @Inject()(
 
   }
 
-  def onSearch: Action[AnyContent] = (authenticate() andThen getData).async {
+  def onSearch: Action[AnyContent] = (authenticate(PSP) andThen getData).async {
     implicit request =>
       form
         .bindFromRequest()
