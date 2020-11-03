@@ -41,16 +41,27 @@ class ConfirmRemovePspViewSpec extends YesNoViewBehaviours {
 
   "ConfirmRemovePsp" must {
 
-    behave like normalPageWithTitle(createView, prefix, messages(s"messages__${prefix}__title"), messages(s"messages__${prefix}__heading", pspName, schemeName))
+    behave like normalPageWithTitle(
+      view = createView,
+      messageKeyPrefix = prefix,
+      title = messages(s"messages__${prefix}__title"),
+      pageHeader =
+        messages(s"messages__${prefix}__heading", pspName, schemeName) +
+          messages(s"messages__${prefix}__heading__screenReaderAlternativeText", pspName, schemeName)
+    )
 
     behave like pageWithSubmitButton(createView)
 
-    behave like yesNoPage(createViewUsingForm, prefix, routes.ConfirmRemovePspController.onSubmit(Index(0)).url)
+    behave like yesNoPage(
+      createView = createViewUsingForm,
+      messageKeyPrefix = prefix,
+      expectedFormAction = routes.ConfirmRemovePspController.onSubmit(Index(0)).url
+    )
 
     behave like pageWithReturnLink(
-      createView,
-      controllers.routes.SchemeDetailsController.onPageLoad(srn).url,
-      messages("messages__returnToSchemeDetails__link", schemeName)
+      view = createView,
+      url = controllers.routes.SchemeDetailsController.onPageLoad(srn).url,
+      text = messages("messages__returnToSchemeDetails__link", schemeName)
     )
   }
 }

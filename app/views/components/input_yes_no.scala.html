@@ -27,13 +27,30 @@
         headingIsLegend: Boolean = false,
         yesHint: Option[String] = None,
         noHint: Option[String] = None,
-        radioLabelClass: Option[String] = None
+        radioLabelClass: Option[String] = None,
+        screenReaderAlternativeLabelText: Option[String] = None,
+        screenReaderAlternativeErrorText: Boolean = false
 )(implicit messages: Messages)
 
 @ariaDescribedBy = @{
-val errorId = if (field.hasErrors) Seq(s"error-message-${field.id}-input") else Seq.empty
-val hintId = if (hint.nonEmpty) Seq(s"${field.id}-yesno-hint") else Seq.empty
-(hintId ++ errorId).mkString(" ")
+    val errorId = if (field.hasErrors) Seq(s"error-message-${field.id}-input") else Seq.empty
+    val hintId = if (hint.nonEmpty) Seq(s"${field.id}-yesno-hint") else Seq.empty
+    (hintId ++ errorId).mkString(" ")
+}
+
+@labelText = @{
+    if (screenReaderAlternativeLabelText.isEmpty) label
+    else
+        <span aria-hidden="true">{label}</span>
+        <span class="visually-hidden">{screenReaderAlternativeLabelText.get}</span>
+}
+
+@errorText(error: FormError) = @{
+    if (screenReaderAlternativeErrorText)
+        <span aria-hidden="true">{messages(error.message, error.args: _*)}</span>
+        <span class="visually-hidden">{messages(s"${error.message}__screenReaderAlternativeText", error.args: _*)}</span>
+    else
+        messages(error.message, error.args: _*)
 }
 
 <div class="form-group @if(field.hasErrors){form-field--error}">
@@ -41,9 +58,9 @@ val hintId = if (hint.nonEmpty) Seq(s"${field.id}-yesno-hint") else Seq.empty
 
         <legend>
             @if(headingIsLegend){
-                <h1 class="heading-xlarge">@label</h1>
+                <h1 class="heading-xlarge">@labelText</h1>
             } else {
-                <span class="bold @if(labelClass.nonEmpty){@labelClass}">@label</span>
+                <span class="bold @if(labelClass.nonEmpty){@labelClass}">@labelText</span>
             }
 
             @secondaryLabel.map { secLabel =>
@@ -52,16 +69,19 @@ val hintId = if (hint.nonEmpty) Seq(s"${field.id}-yesno-hint") else Seq.empty
         </legend>
 
         @paragraphText.map{para=>
-        <p>@para</p>
+            <p>@para</p>
         }
 
         @if(hint.nonEmpty){
             <span id="@{field.id}-yesno-hint" class="form-hint">@hint</span>
         }
+
         @field.errors.map { error =>
-        <span class="error-notification" id="error-message-@{field.id}-input">
-                    <span class="visually-hidden">@messages("site.error")</span> @messages(error.message, error.args: _*)</span>
+            <span class="error-notification" id="error-message-@{field.id}-input">
+                <span class="visually-hidden">@messages("site.error")</span> @errorText(error)
+            </span>
         }
+
         <div class="multiple-choice" data-target="@if(yesAssoc.nonEmpty){@yesAssoc}">
             <input id="@{field.id}-yes" type="radio" name="@{field.id}" value="true" @if(field.value.contains("true")){checked="checked"}
             @if(yesHint.nonEmpty){aria-describedby="@{field.id}-yes-hint"}/>
