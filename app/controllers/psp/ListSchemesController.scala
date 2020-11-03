@@ -67,7 +67,7 @@ class ListSchemesController @Inject()(
                           request: OptionalDataRequest[AnyContent]): Future[Result] = {
     val status = if (form.hasErrors) BadRequest else Ok
     minimalConnector
-      .getPsaNameFromPsaID(request.psaIdOrException.id)
+      .getNameFromPspID(request.pspIdOrException.id)
       .flatMap(_.map {
         name =>
           userAnswersCacheConnector
@@ -94,7 +94,7 @@ class ListSchemesController @Inject()(
                                    pageNumber: Int,
                                    searchText: Option[String]
                                  )(implicit request: OptionalDataRequest[AnyContent]): Future[Result] = {
-    schemeSearchService.searchPsp(request.psaIdOrException.id, searchText).flatMap { searchResult =>
+    schemeSearchService.searchPsp(request.pspIdOrException.id, searchText).flatMap { searchResult =>
           renderView(
             schemeDetails = searchResult,
             numberOfSchemes = searchResult.length,

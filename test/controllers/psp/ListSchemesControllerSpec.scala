@@ -18,18 +18,20 @@ package controllers.psp
 
 import config.FrontendAppConfig
 import connectors.FakeUserAnswersCacheConnector
-import connectors.admin.MinimalPsaConnector
+import connectors.admin.MinimalConnector
 import controllers.ControllerSpecBase
-import controllers.actions.{AuthAction, FakeAuthAction}
+import controllers.actions.AuthAction
+import controllers.actions.FakeAuthAction
 import forms.psp.ListSchemesFormProvider
-import models.{SchemeDetails, SchemeStatus}
+import models.SchemeDetails
+import models.SchemeStatus
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.test.Helpers._
-import services.{PaginationService, SchemeSearchService}
+import services.SchemeSearchService
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import views.html.psp.list_schemes
 
@@ -44,7 +46,7 @@ import ListSchemesControllerSpec._
 
   "onPageLoad" when {
 
-    when(mockMinimalPsaConnector.getPsaNameFromPsaID(any())(any(), any())).thenReturn(Future.successful(Some(psaName)))
+    when(mockMinimalConnector.getNameFromPspID(any())(any(), any())).thenReturn(Future.successful(Some(pspName)))
 
     "return OK and the correct view when there are no schemes" in {
       when(mockSchemeSearchService.searchPsp(any(), any())(any(), any())).thenReturn(Future.successful(Nil))
@@ -65,8 +67,8 @@ import ListSchemesControllerSpec._
 
   "onSearch" when {
 
-    when(mockMinimalPsaConnector.getPsaNameFromPsaID(any())(any(), any()))
-      .thenReturn(Future.successful(Some(psaName)))
+    when(mockMinimalConnector.getNameFromPspID(any())(any(), any()))
+      .thenReturn(Future.successful(Some(pspName)))
 
     "return OK and the correct view when there are schemes" in {
       val searchText = "24000001IN"
@@ -133,12 +135,12 @@ trait TestFixture {
 }
 
 object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
-  private val psaIdNoSchemes: String = "A0000001"
-  private val psaIdWithSchemes: String = "A0000002"
-  private val psaName: String = "Test Psa Name"
+  private val psaIdNoSchemes: String = "20000001"
+  private val psaIdWithSchemes: String = "20000002"
+  private val pspName: String = "Test Psa Name"
   private val emptySchemes: List[SchemeDetails] = List.empty[SchemeDetails]
-  private val mockMinimalPsaConnector: MinimalPsaConnector =
-    mock[MinimalPsaConnector]
+  private val mockMinimalConnector: MinimalConnector =
+    mock[MinimalConnector]
   private val mockAppConfig: FrontendAppConfig = mock[FrontendAppConfig]
   private val listSchemesFormProvider = new ListSchemesFormProvider
   private val mockSchemeSearchService = mock[SchemeSearchService]
@@ -224,15 +226,15 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
     new TestFixture with MockitoSugar {
 
       private def authAction(psaId: String): AuthAction =
-        FakeAuthAction.createWithPsaId(psaId)
+        FakeAuthAction.createWithPspId(psaId)
 
       override val controller: ListSchemesController =
         new ListSchemesController(
           mockAppConfig,
           messagesApi,
           authAction(psaId),
-          getDataWithPsaName(psaId),
-          mockMinimalPsaConnector,
+          getDataWithPspName(psaId),
+          mockMinimalConnector,
           FakeUserAnswersCacheConnector,
           stubMessagesControllerComponents(),
           view,
@@ -249,7 +251,7 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
       form = formValue
         .fold(listSchemesFormProvider())(v => listSchemesFormProvider().bind(Map("searchText" -> v))),
       schemes = schemes,
-      psaName = psaName,
+      psaName = pspName,
       numberOfSchemes = numberOfSchemes
     )(fakeRequest, messages).toString()
   }

@@ -66,6 +66,8 @@ class SchemeSearchService @Inject()(listSchemesConnector: ListOfSchemesConnector
     listSchemesConnector.getListOfSchemesForPsp(pspId)
       .map {
         case Right(listOfSchemes) =>
+          println( "\n>>>>" + listOfSchemes)
+          println("\nKK:" + searchText)
           val filterSearchResults =
             searchText.fold[List[SchemeDetails] => List[SchemeDetails]](identity)(
               st => filterPspSchemesByPstr(st, _: List[SchemeDetails])
