@@ -90,7 +90,7 @@
 
                 @if(schemes.nonEmpty && (form("searchText").value.exists(_.length > 0))) {
                     @components.scheme_list_psp(schemes, appConfig)
-                    <a id="view-scheme" href=""> @messages("messages__listSchemesPsp__viewScheme")</a>
+@*                    <a id="view-scheme" href=""> @messages("messages__listSchemesPsp__viewScheme")</a>*@
                 }
                 @components.return_link(controllers.routes.PspDashboardController.onPageLoad(), Some(pspName))
             </div>

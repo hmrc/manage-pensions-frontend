@@ -27,7 +27,7 @@ class ListSchemesFormProvider @Inject()() extends Mappings with Transforms {
     "searchText" -> text("messages__listSchemesPsp__search_required").
     transform(standardTextTransform, noTransform).
       verifying(firstError(
-        pstr("messages__listSchemesPsp__search_invalid")))
+        search("messages__listSchemesPsp__search_invalid")))
   )
 }
 

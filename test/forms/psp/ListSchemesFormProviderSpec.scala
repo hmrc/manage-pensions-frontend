@@ -47,7 +47,7 @@ class ListSchemesFormProviderSpec extends FieldBehaviours {
         form,
         fieldName,
     "1£!234",
-        FormError(fieldName, invalidErrorKey, Seq(Constraints.pstrRegx))
+        FormError(fieldName, invalidErrorKey, Seq(Constraints.searchRegx))
     )
 
   }
