@@ -18,11 +18,17 @@ package forms.psp
 
 import forms.mappings.Mappings
 import javax.inject.Inject
+import forms.mappings.Transforms
 import play.api.data.Form
 
-class ListSchemesFormProvider @Inject()() extends Mappings {
+class ListSchemesFormProvider @Inject()() extends Mappings with Transforms {
 
   def apply(): Form[String] = Form(
-    "searchText" -> text("messages__listSchemesPsp__search_required")
+    "searchText" -> text("messages__listSchemesPsp__search_required").
+    transform(standardTextTransform, noTransform).
+      verifying(firstError(
+        pstr("messages__listSchemesPsp__search_invalid")))
   )
 }
+
+

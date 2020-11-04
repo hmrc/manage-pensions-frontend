@@ -79,7 +79,7 @@
                         <a id="clear-search-link" href="@ListSchemesController.onPageLoad"> @messages("messages__listSchemes__searchText_clearlink")</a>
                     </p>
                 }
-                @if(form("searchText").value.isDefined && schemes.isEmpty) {
+                @if(form("searchText").value.isDefined && form.errors.isEmpty && schemes.isEmpty) {
                 @form("searchText").value.map{ searchText =>
 
                     <p id="noSchemes">@messages("messages__listSchemesPsp__noMatchesLeft") <span class="bold">@searchText</span>
@@ -92,7 +92,7 @@
                     @components.scheme_list_psp(schemes, appConfig)
                     <a id="view-scheme" href=""> @messages("messages__listSchemesPsp__viewScheme")</a>
                 }
-                @components.return_link(controllers.routes.SchemesOverviewController.onPageLoad(), Some(pspName))
+                @components.return_link(controllers.routes.PspDashboardController.onPageLoad(), Some(pspName))
             </div>
         </div>
 

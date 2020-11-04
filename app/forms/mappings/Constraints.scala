@@ -121,6 +121,8 @@ trait Constraints {
 
   protected def psaId(errorKey: String): Constraint[String] = regexp(psaIdRegx, errorKey)
 
+  protected def pstr(errorKey: String): Constraint[String] = regexp(pstrRegx, errorKey)
+
   protected def clientRef(errorKey: String): Constraint[String] = regexp(clientRefRegx, errorKey)
 
   protected def addressLine(errorKey: String): Constraint[String] = regexp(addressLineRegex, errorKey)
@@ -152,6 +154,7 @@ trait Constraints {
 }
 
 object Constraints {
+  val pstrRegx = """^[0-9]{8}[A-Z]{2}$"""
   val psaIdRegx = """^A[0-9]{7}$"""
   val pspIdRegx = """^[0|1|2]{1}[0-9]{7}$"""
   val clientRefRegx = """^[a-zA-Z0-9\\\/\-]{1,11}$"""

@@ -119,9 +119,9 @@ class ListSchemesController @Inject()(
         .bindFromRequest()
         .fold(
           (formWithErrors: Form[_]) =>
-            searchAndRenderView(
-              searchText = None,
-              pageNumber = 1,
+            renderView(
+              schemeDetails = Nil,
+              numberOfSchemes = 0,
               form = formWithErrors
             ),
           value => {
