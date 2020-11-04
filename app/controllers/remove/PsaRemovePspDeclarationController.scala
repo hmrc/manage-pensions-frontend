@@ -20,6 +20,7 @@ import java.time.LocalDate
 
 import config.FrontendAppConfig
 import connectors.EmailConnector
+import connectors.admin.MinimalConnector
 import connectors.{UserAnswersCacheConnector, PspConnector}
 import controllers.Retrievals
 import controllers.actions.{DataRequiredAction, AuthAction, DataRetrievalAction}
@@ -57,7 +58,7 @@ class PsaRemovePspDeclarationController @Inject()(
                                                    pspConnector: PspConnector,
                                                    formProvider: PsaRemovePspDeclarationFormProvider,
                                                    val controllerComponents: MessagesControllerComponents,
-                                                   @PensionAdminCache userAnswersCacheConnectorPsaAdmin: UserAnswersCacheConnector,
+                                                   minimalPsaConnector: MinimalConnector,
                                                    appConfig: FrontendAppConfig,
                                                    emailConnector: EmailConnector,
                                                    view: psaRemovePspDeclaration
@@ -90,7 +91,7 @@ class PsaRemovePspDeclarationController @Inject()(
               form.bindFromRequest().fold(
                 (formWithErrors: Form[Boolean]) =>
                   Future.successful(BadRequest(view(formWithErrors, schemeName, srn, index))),
-                value =>
+                value => {
                   for {
                     cacheMap <- userAnswersCacheConnector.save(request.externalId, PsaRemovePspDeclarationId(index), value)
                     _ <-  pspConnector.deAuthorise(
@@ -103,10 +104,10 @@ class PsaRemovePspDeclarationController @Inject()(
                           ceaseDate = LocalDate.now().toString
                       )
                     )
-                    emailAddress <- getEmailAddress(request)
+                    minimalDetails <- minimalPsaConnector.getMinimalPsaDetails(request.psaIdOrException.id)
                     _ <- emailConnector.sendEmail(
                         SendEmailRequest(
-                          to = List(emailAddress),
+                          to = List(minimalDetails.email),
                           templateId = appConfig.emailPsaDeauthorisePspTemplateId,
                           parameters = Map("" -> "")
                         )
@@ -114,39 +115,11 @@ class PsaRemovePspDeclarationController @Inject()(
                   } yield {
                     Redirect(navigator.nextPage(PsaRemovePspDeclarationId(index), NormalMode, UserAnswers(cacheMap)))
                   }
+                  }
               )
             } else {
               Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
             }
         }
     }
-
-  private def getEmailAddress(request: DataRequest[_])(implicit ec: ExecutionContext): Future[String] = {
-    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
-
-    val futureOptionPsaUA = userAnswersCacheConnectorPsaAdmin.fetch(request.externalId).map {
-      case None => None
-      case Some(data) => Some(UserAnswers(data))
-    }
-
-    val futureOptionEmailAddress = futureOptionPsaUA.map { optionUA =>
-      optionUA.flatMap { ua =>
-        val individual = (ua.json \ "individualContactDetails" \ "email").asOpt[String]
-        val company = (ua.json \ "contactDetails" \ "email").asOpt[String]
-        val partnership = (ua.json \ "partnershipContactDetails" \ "email").asOpt[String]
-
-        (individual, company, partnership) match {
-          case (e@Some(_), _, _) => e
-          case (_, e@Some(_), _) => e
-          case (_, _, e@Some(_)) => e
-          case _ => None
-        }
-      }
-    }
-
-    futureOptionEmailAddress.map {
-      case None => throw new RuntimeException("No email address found for PSA")
-      case Some(e) => e
-    }
-  }
 }
