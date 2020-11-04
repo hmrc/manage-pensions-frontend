@@ -23,3 +23,6 @@ GET         /cannot-remove-scheme-administrator                   controllers.re
 
 GET         /remove-psp/deauthorise-practitioner                  controllers.remove.pspSelfRemoval.ConfirmRemovalController.onPageLoad()
 POST        /remove-psp/deauthorise-practitioner                  controllers.remove.pspSelfRemoval.ConfirmRemovalController.onSubmit()
+
+GET         /remove-psp/date-removed                              controllers.remove.pspSelfRemoval.RemovalDateController.onPageLoad()
+POST        /remove-psp/date-removed                              controllers.remove.pspSelfRemoval.RemovalDateController.onSubmit()

@@ -532,3 +532,7 @@ messages__pspDashboard__switch_psa = Switch to administrator view
 messages__confirmPspSelfRemoval__title = Are you sure you want to deauthorise this scheme practitioner?
 messages__confirmPspSelfRemoval__heading = Are you sure you want to deauthorise {0} as scheme practitioner for {1}?
 messages__confirmPspSelfRemoval__error = Select yes if you want to deauthorise this pension scheme practitioner
+
+messages__pspSelfRemovalDate__title = When did they stop being a scheme practitioner
+messages__pspSelfRemovalDate__heading = When did you stop being a scheme practitioner for {0}?
+messages__pspSelfRemovalDate__lede = You were authorised as a pension scheme practitioner for this scheme on {0}. The date you stopped must be between {0} and today.

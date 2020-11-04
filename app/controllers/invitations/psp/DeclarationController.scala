@@ -117,8 +117,7 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
       )
 
       emailConnector.sendEmail(email).map {
-        case EmailSent => println("\n\n >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>EmailSent")
-          ()
+        case EmailSent => ()
         case _ =>
           Logger.error("Unable to send email to authorising PSA. Support intervention possibly required.")
           ()
