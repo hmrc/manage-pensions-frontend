@@ -49,11 +49,12 @@ import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import views.html.remove.psaRemovePspDeclaration
 import connectors.FakeUserAnswersCacheConnector
 import connectors.UserAnswersCacheConnector
+import connectors.admin.MinimalConnector
+import models.MinimalPSAPSP
 import org.mockito.Matchers
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import play.api.data.Form
-import play.api.libs.json.JsValue
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 
@@ -72,7 +73,7 @@ class PsaRemovePspDeclarationControllerSpec extends ControllerWithQuestionPageBe
 
   private val mockEmailConnector = mock[EmailConnector]
 
-  private val mockUserAnswersCacheConnectorPsa = mock[UserAnswersCacheConnector]
+  private val mockMinimalConnector = mock[MinimalConnector]
 
   def controller(
                   dataRetrievalAction: DataRetrievalAction = sessionData,
@@ -88,19 +89,19 @@ class PsaRemovePspDeclarationControllerSpec extends ControllerWithQuestionPageBe
       pspConnector = mockPspConnector,
       formProvider = formProvider,
       controllerComponents = stubMessagesControllerComponents(),
-      userAnswersCacheConnectorPsaAdmin = mockUserAnswersCacheConnectorPsa,
+      minimalPsaConnector = mockMinimalConnector,
       appConfig = frontendAppConfig,
       emailConnector = mockEmailConnector,
       view = view
     )
 
   override def beforeEach(): Unit = {
-    reset(mockPspConnector, mockEmailConnector, mockUserAnswersCacheConnectorPsa)
+    reset(mockPspConnector, mockEmailConnector, mockMinimalConnector)
     when(mockPspConnector.deAuthorise(any(), any())(any(), any())).thenReturn(
       Future.successful(HttpResponse.apply(OK, Json.stringify(Json.obj("processingDate" -> LocalDate.now))))
     )
     when(mockEmailConnector.sendEmail(any())(any(), any())).thenReturn(Future.successful(EmailSent))
-    when(mockUserAnswersCacheConnectorPsa.fetch(any())(any(), any())).thenReturn(Future.successful(Some(psaDataWithIndividualEmail)))
+    when(mockMinimalConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPSAPSP(individualEmail)))
   }
 
   private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
@@ -137,45 +138,15 @@ class PsaRemovePspDeclarationControllerSpec extends ControllerWithQuestionPageBe
     emptyPostRequest = Some(emptyPostRequest)
   )
 
-  "send an email to the correct email address when psp successfully removed by an individual PSA" in {
+  "send an email to the PSA email address when psp successfully removed by the PSA" in {
     val result = onSubmitAction(validData, FakeAuthAction)(postRequest)
 
-    when(mockUserAnswersCacheConnectorPsa.fetch(any())(any(), any())).thenReturn(Future.successful(Some(psaDataWithIndividualEmail)))
+    when(mockMinimalConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPSAPSP(individualEmail)))
 
     status(result) mustBe SEE_OTHER
     redirectLocation(result) mustBe Some(onwardRoute.url)
     val expectedEmailRequest = models.SendEmailRequest(
       to = List(individualEmail),
-      templateId = frontendAppConfig.emailPsaDeauthorisePspTemplateId,
-      parameters = Map("" -> "")
-    )
-    verify(mockEmailConnector, times(1)).sendEmail(Matchers.eq(expectedEmailRequest))(any(), any())
-  }
-
-  "send an email to the correct email address when psp successfully removed by a company PSA" in {
-    val result = onSubmitAction(validData, FakeAuthAction)(postRequest)
-
-    when(mockUserAnswersCacheConnectorPsa.fetch(any())(any(), any())).thenReturn(Future.successful(Some(psaDataWithCompanyEmail)))
-
-    status(result) mustBe SEE_OTHER
-    redirectLocation(result) mustBe Some(onwardRoute.url)
-    val expectedEmailRequest = models.SendEmailRequest(
-      to = List(companyEmail),
-      templateId = frontendAppConfig.emailPsaDeauthorisePspTemplateId,
-      parameters = Map("" -> "")
-    )
-    verify(mockEmailConnector, times(1)).sendEmail(Matchers.eq(expectedEmailRequest))(any(), any())
-  }
-
-  "send an email to the correct email address when psp successfully removed by a partnership PSA" in {
-    val result = onSubmitAction(validData, FakeAuthAction)(postRequest)
-
-    when(mockUserAnswersCacheConnectorPsa.fetch(any())(any(), any())).thenReturn(Future.successful(Some(psaDataWithPartnershipEmail)))
-
-    status(result) mustBe SEE_OTHER
-    redirectLocation(result) mustBe Some(onwardRoute.url)
-    val expectedEmailRequest = models.SendEmailRequest(
-      to = List(partnershipEmail),
       templateId = frontendAppConfig.emailPsaDeauthorisePspTemplateId,
       parameters = Map("" -> "")
     )
@@ -223,8 +194,6 @@ object PsaRemovePspDeclarationControllerSpec {
   )
 
   private val individualEmail = "individual@ind@com"
-  private val companyEmail = "company@ind@com"
-  private val partnershipEmail = "partnership@ind@com"
 
   private val data = Json.obj(
     SchemeSrnId.toString -> srn,
@@ -232,7 +201,6 @@ object PsaRemovePspDeclarationControllerSpec {
     SeqAuthorisedPractitionerId.toString -> practitioners,
     PSTRId.toString -> pstr
   )
-
 
   private val sessionData: FakeDataRetrievalAction =
     new FakeDataRetrievalAction(Some(data))
@@ -244,28 +212,12 @@ object PsaRemovePspDeclarationControllerSpec {
         Json.obj(PsaRemovePspDeclarationId(0).toString -> "true")
     ))
 
-  private val psaDataWithIndividualEmail: JsValue =
-        Json.obj(
-          "individualContactDetails" -> Json.obj(
-            "email" -> individualEmail
-          )
-        )
-
-  private val psaDataWithCompanyEmail: JsValue =
-        Json.obj(
-          PsaRemovePspDeclarationId(0).toString -> "true",
-          "contactDetails" -> Json.obj(
-            "email" -> companyEmail
-          )
-        )
-
-  private val psaDataWithPartnershipEmail: JsValue =
-        Json.obj(
-          PsaRemovePspDeclarationId(0).toString -> "true",
-          "partnershipContactDetails" -> Json.obj(
-            "email" -> partnershipEmail
-          )
-        )
+  private def minimalPSAPSP(email:String): MinimalPSAPSP = MinimalPSAPSP(
+    email = email,
+    isPsaSuspended = false,
+    organisationName  = None,
+    individualDetails = None
+  )
 
   val postRequest: FakeRequest[AnyContentAsJson] =
     FakeRequest().withJsonBody(Json.obj(
