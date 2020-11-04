@@ -57,14 +57,18 @@ class ConfirmRemovalController @Inject()( val auth: AuthAction,
       }
   }
 
-  def onSubmit: Action[AnyContent] = (auth() andThen getData andThen requireData).async {
+  def onSubmit: Action[AnyContent] = (auth(PSP) andThen getData andThen requireData).async {
     implicit request =>
+      println("\n\n >>>>>>>>>>>>>>>>>.>>>>>> 1")
       form.bindFromRequest().fold(
-        (formWithErrors: Form[Boolean]) =>
+        (formWithErrors: Form[Boolean]) => {
+          println("\n\n >>>>>>>>>>>>>>>>>.>>>>>> 2")
           (SchemeNameId and SchemeSrnId and PSPNameId).retrieve.right.map {
             case schemeName ~ srn ~ pspName =>
+              println("\n\n >>>>>>>>>>>>>>>>>.>>>>>> 3")
               Future.successful(BadRequest(view(formWithErrors, schemeName, srn, pspName)))
-          },
+          }
+        },
         value =>
           userAnswersCacheConnector.save(request.externalId, ConfirmRemovalId, value).map { cacheMap =>
             Redirect(navigator.nextPage(ConfirmRemovalId, NormalMode, UserAnswers(cacheMap)))
