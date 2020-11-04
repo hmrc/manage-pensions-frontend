@@ -18,25 +18,27 @@ package controllers.remove
 
 import java.time.LocalDate
 
-import connectors.{PspConnector, UserAnswersCacheConnector}
+import config.FrontendAppConfig
+import connectors.EmailConnector
+import connectors.{UserAnswersCacheConnector, PspConnector}
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import controllers.actions.{DataRequiredAction, AuthAction, DataRetrievalAction}
 import forms.remove.PsaRemovePspDeclarationFormProvider
 import identifiers.invitations.PSTRId
 import identifiers.{SchemeNameId, SchemeSrnId}
 import identifiers.remove.{PsaRemovePspDeclarationId, PspDetailsId}
 import javax.inject.Inject
 import models.invitations.psp.DeAuthorise
-import models.{Index, NormalMode}
+import models.{NormalMode, Index}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{AnyContent, MessagesControllerComponents, Action}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.{Navigator, UserAnswers}
 import utils.annotations.RemovePSP
 import views.html.remove.psaRemovePspDeclaration
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{Future, ExecutionContext}
 
 class PsaRemovePspDeclarationController @Inject()(
                                                    override val messagesApi: MessagesApi,
@@ -48,6 +50,8 @@ class PsaRemovePspDeclarationController @Inject()(
                                                    pspConnector: PspConnector,
                                                    formProvider: PsaRemovePspDeclarationFormProvider,
                                                    val controllerComponents: MessagesControllerComponents,
+                                                   appConfig: FrontendAppConfig,
+                                                   emailConnector: EmailConnector,
                                                    view: psaRemovePspDeclaration
                                                  )(implicit val ec: ExecutionContext)
   extends FrontendBaseController

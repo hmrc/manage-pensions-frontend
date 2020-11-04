@@ -18,24 +18,44 @@ package controllers.remove
 
 import java.time.LocalDate
 
-import connectors.{FakeUserAnswersCacheConnector, PspConnector, UserAnswersCacheConnector}
-import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
+import connectors.EmailConnector
+import connectors.EmailSent
+import connectors.PspConnector
+import controllers.actions.AuthAction
+import controllers.actions.DataRetrievalAction
+import controllers.actions.FakeAuthAction
+import controllers.actions.FakeDataRetrievalAction
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.remove.PsaRemovePspDeclarationFormProvider
 import identifiers.invitations.PSTRId
 import identifiers.remove.PsaRemovePspDeclarationId
-import identifiers.{SchemeNameId, SchemeSrnId, SeqAuthorisedPractitionerId}
+import identifiers.SchemeNameId
+import identifiers.SchemeSrnId
+import identifiers.SeqAuthorisedPractitionerId
 import org.mockito.Matchers.any
-import org.mockito.Mockito.{reset, when}
+import org.mockito.Mockito.reset
+import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.data.Form
-import play.api.libs.json.{JsArray, Json}
-import play.api.mvc.{Action, AnyContent, AnyContentAsJson}
-import play.api.test.FakeRequest
+import play.api.libs.json.JsArray
+import play.api.libs.json.Json
+import play.api.mvc.Action
+import play.api.mvc.AnyContent
+import play.api.mvc.AnyContentAsJson
+import play.api.test.Helpers.redirectLocation
+import play.api.test.Helpers.status
 import uk.gov.hmrc.http.HttpResponse
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import views.html.remove.psaRemovePspDeclaration
+import connectors.FakeUserAnswersCacheConnector
+import connectors.UserAnswersCacheConnector
+import models.SendEmailRequest
+import org.mockito.Matchers
+import org.mockito.Mockito.times
+import org.mockito.Mockito.verify
+import play.api.data.Form
+import play.api.test.FakeRequest
+import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
@@ -49,6 +69,8 @@ class PsaRemovePspDeclarationControllerSpec extends ControllerWithQuestionPageBe
   private val view = app.injector.instanceOf[psaRemovePspDeclaration]
 
   private val mockPspConnector: PspConnector = mock[PspConnector]
+
+  private val mockEmailConnector = mock[EmailConnector]
 
   def controller(
                   dataRetrievalAction: DataRetrievalAction = sessionData,
@@ -64,6 +86,8 @@ class PsaRemovePspDeclarationControllerSpec extends ControllerWithQuestionPageBe
       pspConnector = mockPspConnector,
       formProvider = formProvider,
       controllerComponents = stubMessagesControllerComponents(),
+      appConfig = frontendAppConfig,
+      emailConnector = mockEmailConnector,
       view = view
     )
 
@@ -72,6 +96,7 @@ class PsaRemovePspDeclarationControllerSpec extends ControllerWithQuestionPageBe
     when(mockPspConnector.deAuthorise(any(), any())(any(), any())).thenReturn(
       Future.successful(HttpResponse.apply(200, Json.stringify(Json.obj("processingDate" -> LocalDate.now))))
     )
+    when(mockEmailConnector.sendEmail(any())(any(), any())).thenReturn(Future.successful(EmailSent))
   }
 
   private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
@@ -107,6 +132,19 @@ class PsaRemovePspDeclarationControllerSpec extends ControllerWithQuestionPageBe
     postRequest = postRequest,
     emptyPostRequest = Some(emptyPostRequest)
   )
+
+  "send an email to the correct email address when psp successfully removed by an individual PSA" in {
+    val result = onSubmitAction(validDataWithIndividualEmail, FakeAuthAction)(postRequest)
+
+    status(result) mustBe SEE_OTHER
+    redirectLocation(result) mustBe Some(onwardRoute.url)
+    val expectedEmailRequest = models.SendEmailRequest(
+      to = List(individualEmail),
+      templateId = frontendAppConfig.emailPsaDeauthorisePspTemplateId,
+      parameters = Map("" -> "")
+    )
+    verify(mockEmailConnector, times(1)).sendEmail(Matchers.eq(expectedEmailRequest))(any(), any())
+  }
 
   behave like controllerThatSavesUserAnswers(
     saveAction = onSaveAction,
@@ -163,6 +201,20 @@ object PsaRemovePspDeclarationControllerSpec {
       data
         ++
         Json.obj(PsaRemovePspDeclarationId(0).toString -> "true")
+    ))
+
+  private val individualEmail = "individual@ind@com"
+
+  private val validDataWithIndividualEmail: FakeDataRetrievalAction =
+    new FakeDataRetrievalAction(Some(
+      data
+        ++
+        Json.obj(
+          PsaRemovePspDeclarationId(0).toString -> "true",
+          "individualContactDetails" -> Json.obj(
+            "email" -> individualEmail
+        )
+      )
     ))
 
   val postRequest: FakeRequest[AnyContentAsJson] =
