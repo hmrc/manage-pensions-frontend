@@ -528,3 +528,7 @@ messages__pspDashboard__psp_deregister = Stop being a pension scheme practitione
 messages__pspDashboard__scheme_heading = Pension schemes
 messages__pspDashboard__search_scheme = Search for a pension scheme
 messages__pspDashboard__switch_psa = Switch to administrator view
+
+messages__confirmPspSelfRemoval__title = Are you sure you want to deauthorise this scheme practitioner?
+messages__confirmPspSelfRemoval__heading = Are you sure you want to deauthorise {0} as scheme practitioner for {1}?
+messages__confirmPspSelfRemoval__error = Select yes if you want to deauthorise this pension scheme practitioner
