@@ -92,7 +92,7 @@ class PsaRemovePspDeclarationControllerSpec extends ControllerWithQuestionPageBe
     )
 
   override def beforeEach(): Unit = {
-    reset(mockPspConnector)
+    reset(mockPspConnector, mockEmailConnector)
     when(mockPspConnector.deAuthorise(any(), any())(any(), any())).thenReturn(
       Future.successful(HttpResponse.apply(200, Json.stringify(Json.obj("processingDate" -> LocalDate.now))))
     )
@@ -126,7 +126,7 @@ class PsaRemovePspDeclarationControllerSpec extends ControllerWithQuestionPageBe
 
   behave like controllerWithOnSubmitMethod(
     onSubmitAction = onSubmitAction,
-    validData = validData,
+    validData = validDataWithIndividualEmail,
     form = form().bind(Map("value" -> "")),
     errorView = viewAsStringPostRequest,
     postRequest = postRequest,
@@ -140,6 +140,32 @@ class PsaRemovePspDeclarationControllerSpec extends ControllerWithQuestionPageBe
     redirectLocation(result) mustBe Some(onwardRoute.url)
     val expectedEmailRequest = models.SendEmailRequest(
       to = List(individualEmail),
+      templateId = frontendAppConfig.emailPsaDeauthorisePspTemplateId,
+      parameters = Map("" -> "")
+    )
+    verify(mockEmailConnector, times(1)).sendEmail(Matchers.eq(expectedEmailRequest))(any(), any())
+  }
+
+  "send an email to the correct email address when psp successfully removed by a company PSA" in {
+    val result = onSubmitAction(validDataWithCompanyEmail, FakeAuthAction)(postRequest)
+
+    status(result) mustBe SEE_OTHER
+    redirectLocation(result) mustBe Some(onwardRoute.url)
+    val expectedEmailRequest = models.SendEmailRequest(
+      to = List(companyEmail),
+      templateId = frontendAppConfig.emailPsaDeauthorisePspTemplateId,
+      parameters = Map("" -> "")
+    )
+    verify(mockEmailConnector, times(1)).sendEmail(Matchers.eq(expectedEmailRequest))(any(), any())
+  }
+
+  "send an email to the correct email address when psp successfully removed by a partnership PSA" in {
+    val result = onSubmitAction(validDataWithPartnershipEmail, FakeAuthAction)(postRequest)
+
+    status(result) mustBe SEE_OTHER
+    redirectLocation(result) mustBe Some(onwardRoute.url)
+    val expectedEmailRequest = models.SendEmailRequest(
+      to = List(partnershipEmail),
       templateId = frontendAppConfig.emailPsaDeauthorisePspTemplateId,
       parameters = Map("" -> "")
     )
@@ -186,6 +212,10 @@ object PsaRemovePspDeclarationControllerSpec {
     )
   )
 
+  private val individualEmail = "individual@ind@com"
+  private val companyEmail = "company@ind@com"
+  private val partnershipEmail = "partnership@ind@com"
+
   private val data = Json.obj(
     SchemeSrnId.toString -> srn,
     SchemeNameId.toString -> schemeName,
@@ -194,16 +224,15 @@ object PsaRemovePspDeclarationControllerSpec {
   )
 
   private val sessionData: FakeDataRetrievalAction =
-    new FakeDataRetrievalAction(Some(data))
-
-  private val validData: FakeDataRetrievalAction =
     new FakeDataRetrievalAction(Some(
       data
-        ++
-        Json.obj(PsaRemovePspDeclarationId(0).toString -> "true")
+      ++
+      Json.obj(
+        "individualContactDetails" -> Json.obj(
+          "email" -> individualEmail
+        )
+      )
     ))
-
-  private val individualEmail = "individual@ind@com"
 
   private val validDataWithIndividualEmail: FakeDataRetrievalAction =
     new FakeDataRetrievalAction(Some(
@@ -215,6 +244,30 @@ object PsaRemovePspDeclarationControllerSpec {
             "email" -> individualEmail
         )
       )
+    ))
+
+  private val validDataWithCompanyEmail: FakeDataRetrievalAction =
+    new FakeDataRetrievalAction(Some(
+      data
+        ++
+        Json.obj(
+          PsaRemovePspDeclarationId(0).toString -> "true",
+          "contactDetails" -> Json.obj(
+            "email" -> companyEmail
+          )
+        )
+    ))
+
+  private val validDataWithPartnershipEmail: FakeDataRetrievalAction =
+    new FakeDataRetrievalAction(Some(
+      data
+        ++
+        Json.obj(
+          PsaRemovePspDeclarationId(0).toString -> "true",
+          "partnershipContactDetails" -> Json.obj(
+            "email" -> partnershipEmail
+          )
+        )
     ))
 
   val postRequest: FakeRequest[AnyContentAsJson] =

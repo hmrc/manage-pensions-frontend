@@ -28,6 +28,7 @@ import identifiers.invitations.PSTRId
 import identifiers.{SchemeNameId, SchemeSrnId}
 import identifiers.remove.{PsaRemovePspDeclarationId, PspDetailsId}
 import javax.inject.Inject
+import models.SendEmailRequest
 import models.invitations.psp.DeAuthorise
 import models.{NormalMode, Index}
 import play.api.data.Form
@@ -83,9 +84,9 @@ class PsaRemovePspDeclarationController @Inject()(
                 (formWithErrors: Form[Boolean]) =>
                   Future.successful(BadRequest(view(formWithErrors, schemeName, srn, index))),
                 value =>
-                  userAnswersCacheConnector.save(request.externalId, PsaRemovePspDeclarationId(index), value).flatMap {
-                    cacheMap =>
-                      pspConnector.deAuthorise(
+                  for {
+                    cacheMap <- userAnswersCacheConnector.save(request.externalId, PsaRemovePspDeclarationId(index), value)
+                    _ <-  pspConnector.deAuthorise(
                         pstr = pstr,
                         deAuthorise = DeAuthorise(
                           ceaseIDType = "PSP",
@@ -93,11 +94,17 @@ class PsaRemovePspDeclarationController @Inject()(
                           initiatedIDType = "PSA",
                           initiatedIDNumber = request.psaIdOrException.id,
                           ceaseDate = LocalDate.now().toString
+                      )
+                    )
+                    _ <- emailConnector.sendEmail(
+                        SendEmailRequest(
+                          to = List(getEmailAddress(request.userAnswers)),
+                          templateId = appConfig.emailPsaDeauthorisePspTemplateId,
+                          parameters = Map("" -> "")
                         )
-                      ).map {
-                        _ =>
-                          Redirect(navigator.nextPage(PsaRemovePspDeclarationId(index), NormalMode, UserAnswers(cacheMap)))
-                      }
+                      )
+                  } yield {
+                    Redirect(navigator.nextPage(PsaRemovePspDeclarationId(index), NormalMode, UserAnswers(cacheMap)))
                   }
               )
             } else {
@@ -105,5 +112,18 @@ class PsaRemovePspDeclarationController @Inject()(
             }
         }
     }
+
+  private def getEmailAddress(ua: UserAnswers): String = {
+    val individual = (ua.json \ "individualContactDetails" \ "email").asOpt[String]
+    val company = (ua.json \ "contactDetails" \ "email").asOpt[String]
+    val partnership = (ua.json \ "partnershipContactDetails" \ "email").asOpt[String]
+
+    (individual, company, partnership) match {
+      case (Some(e), _, _) => e
+      case (_, Some(e), _) => e
+      case (_, _, Some(e)) => e
+      case _ => throw new RuntimeException("No email address found for PSA")
+    }
+  }
 }
 
