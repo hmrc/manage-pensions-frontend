@@ -49,11 +49,11 @@ import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import views.html.remove.psaRemovePspDeclaration
 import connectors.FakeUserAnswersCacheConnector
 import connectors.UserAnswersCacheConnector
-import models.SendEmailRequest
 import org.mockito.Matchers
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import play.api.data.Form
+import play.api.libs.json.JsValue
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 
@@ -72,6 +72,8 @@ class PsaRemovePspDeclarationControllerSpec extends ControllerWithQuestionPageBe
 
   private val mockEmailConnector = mock[EmailConnector]
 
+  private val mockUserAnswersCacheConnectorPsa = mock[UserAnswersCacheConnector]
+
   def controller(
                   dataRetrievalAction: DataRetrievalAction = sessionData,
                   fakeAuth: AuthAction = FakeAuthAction,
@@ -86,17 +88,19 @@ class PsaRemovePspDeclarationControllerSpec extends ControllerWithQuestionPageBe
       pspConnector = mockPspConnector,
       formProvider = formProvider,
       controllerComponents = stubMessagesControllerComponents(),
+      userAnswersCacheConnectorPsaAdmin = mockUserAnswersCacheConnectorPsa,
       appConfig = frontendAppConfig,
       emailConnector = mockEmailConnector,
       view = view
     )
 
   override def beforeEach(): Unit = {
-    reset(mockPspConnector, mockEmailConnector)
+    reset(mockPspConnector, mockEmailConnector, mockUserAnswersCacheConnectorPsa)
     when(mockPspConnector.deAuthorise(any(), any())(any(), any())).thenReturn(
-      Future.successful(HttpResponse.apply(200, Json.stringify(Json.obj("processingDate" -> LocalDate.now))))
+      Future.successful(HttpResponse.apply(OK, Json.stringify(Json.obj("processingDate" -> LocalDate.now))))
     )
     when(mockEmailConnector.sendEmail(any())(any(), any())).thenReturn(Future.successful(EmailSent))
+    when(mockUserAnswersCacheConnectorPsa.fetch(any())(any(), any())).thenReturn(Future.successful(Some(psaDataWithIndividualEmail)))
   }
 
   private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
@@ -107,7 +111,7 @@ class PsaRemovePspDeclarationControllerSpec extends ControllerWithQuestionPageBe
     controller(dataRetrievalAction, fakeAuth).onSubmit(0)
   }
 
-  private def onSaveAction(userAnswersConnector: UserAnswersCacheConnector = FakeUserAnswersCacheConnector): Action[AnyContent] = {
+  private def onSaveAction(userAnswersConnector: UserAnswersCacheConnector): Action[AnyContent] = {
     controller(userAnswersCacheConnector = userAnswersConnector).onSubmit(0)
   }
 
@@ -126,7 +130,7 @@ class PsaRemovePspDeclarationControllerSpec extends ControllerWithQuestionPageBe
 
   behave like controllerWithOnSubmitMethod(
     onSubmitAction = onSubmitAction,
-    validData = validDataWithIndividualEmail,
+    validData = validData,
     form = form().bind(Map("value" -> "")),
     errorView = viewAsStringPostRequest,
     postRequest = postRequest,
@@ -134,7 +138,9 @@ class PsaRemovePspDeclarationControllerSpec extends ControllerWithQuestionPageBe
   )
 
   "send an email to the correct email address when psp successfully removed by an individual PSA" in {
-    val result = onSubmitAction(validDataWithIndividualEmail, FakeAuthAction)(postRequest)
+    val result = onSubmitAction(validData, FakeAuthAction)(postRequest)
+
+    when(mockUserAnswersCacheConnectorPsa.fetch(any())(any(), any())).thenReturn(Future.successful(Some(psaDataWithIndividualEmail)))
 
     status(result) mustBe SEE_OTHER
     redirectLocation(result) mustBe Some(onwardRoute.url)
@@ -147,7 +153,9 @@ class PsaRemovePspDeclarationControllerSpec extends ControllerWithQuestionPageBe
   }
 
   "send an email to the correct email address when psp successfully removed by a company PSA" in {
-    val result = onSubmitAction(validDataWithCompanyEmail, FakeAuthAction)(postRequest)
+    val result = onSubmitAction(validData, FakeAuthAction)(postRequest)
+
+    when(mockUserAnswersCacheConnectorPsa.fetch(any())(any(), any())).thenReturn(Future.successful(Some(psaDataWithCompanyEmail)))
 
     status(result) mustBe SEE_OTHER
     redirectLocation(result) mustBe Some(onwardRoute.url)
@@ -160,7 +168,9 @@ class PsaRemovePspDeclarationControllerSpec extends ControllerWithQuestionPageBe
   }
 
   "send an email to the correct email address when psp successfully removed by a partnership PSA" in {
-    val result = onSubmitAction(validDataWithPartnershipEmail, FakeAuthAction)(postRequest)
+    val result = onSubmitAction(validData, FakeAuthAction)(postRequest)
+
+    when(mockUserAnswersCacheConnectorPsa.fetch(any())(any(), any())).thenReturn(Future.successful(Some(psaDataWithPartnershipEmail)))
 
     status(result) mustBe SEE_OTHER
     redirectLocation(result) mustBe Some(onwardRoute.url)
@@ -223,52 +233,39 @@ object PsaRemovePspDeclarationControllerSpec {
     PSTRId.toString -> pstr
   )
 
-  private val sessionData: FakeDataRetrievalAction =
-    new FakeDataRetrievalAction(Some(
-      data
-      ++
-      Json.obj(
-        "individualContactDetails" -> Json.obj(
-          "email" -> individualEmail
-        )
-      )
-    ))
 
-  private val validDataWithIndividualEmail: FakeDataRetrievalAction =
+  private val sessionData: FakeDataRetrievalAction =
+    new FakeDataRetrievalAction(Some(data))
+
+  private val validData: FakeDataRetrievalAction =
     new FakeDataRetrievalAction(Some(
       data
         ++
+        Json.obj(PsaRemovePspDeclarationId(0).toString -> "true")
+    ))
+
+  private val psaDataWithIndividualEmail: JsValue =
         Json.obj(
-          PsaRemovePspDeclarationId(0).toString -> "true",
           "individualContactDetails" -> Json.obj(
             "email" -> individualEmail
+          )
         )
-      )
-    ))
 
-  private val validDataWithCompanyEmail: FakeDataRetrievalAction =
-    new FakeDataRetrievalAction(Some(
-      data
-        ++
+  private val psaDataWithCompanyEmail: JsValue =
         Json.obj(
           PsaRemovePspDeclarationId(0).toString -> "true",
           "contactDetails" -> Json.obj(
             "email" -> companyEmail
           )
         )
-    ))
 
-  private val validDataWithPartnershipEmail: FakeDataRetrievalAction =
-    new FakeDataRetrievalAction(Some(
-      data
-        ++
+  private val psaDataWithPartnershipEmail: JsValue =
         Json.obj(
           PsaRemovePspDeclarationId(0).toString -> "true",
           "partnershipContactDetails" -> Json.obj(
             "email" -> partnershipEmail
           )
         )
-    ))
 
   val postRequest: FakeRequest[AnyContentAsJson] =
     FakeRequest().withJsonBody(Json.obj(

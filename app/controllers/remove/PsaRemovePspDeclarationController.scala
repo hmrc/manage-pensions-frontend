@@ -30,11 +30,17 @@ import identifiers.remove.{PsaRemovePspDeclarationId, PspDetailsId}
 import javax.inject.Inject
 import models.SendEmailRequest
 import models.invitations.psp.DeAuthorise
+import models.requests.AuthenticatedRequest
+import models.requests.DataRequest
+import models.requests.OptionalDataRequest
 import models.{NormalMode, Index}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{AnyContent, MessagesControllerComponents, Action}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.HeaderCarrierConverter
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
+import utils.annotations.PensionAdminCache
 import utils.{Navigator, UserAnswers}
 import utils.annotations.RemovePSP
 import views.html.remove.psaRemovePspDeclaration
@@ -51,6 +57,7 @@ class PsaRemovePspDeclarationController @Inject()(
                                                    pspConnector: PspConnector,
                                                    formProvider: PsaRemovePspDeclarationFormProvider,
                                                    val controllerComponents: MessagesControllerComponents,
+                                                   @PensionAdminCache userAnswersCacheConnectorPsaAdmin: UserAnswersCacheConnector,
                                                    appConfig: FrontendAppConfig,
                                                    emailConnector: EmailConnector,
                                                    view: psaRemovePspDeclaration
@@ -96,9 +103,10 @@ class PsaRemovePspDeclarationController @Inject()(
                           ceaseDate = LocalDate.now().toString
                       )
                     )
+                    emailAddress <- getEmailAddress(request)
                     _ <- emailConnector.sendEmail(
                         SendEmailRequest(
-                          to = List(getEmailAddress(request.userAnswers)),
+                          to = List(emailAddress),
                           templateId = appConfig.emailPsaDeauthorisePspTemplateId,
                           parameters = Map("" -> "")
                         )
@@ -113,17 +121,32 @@ class PsaRemovePspDeclarationController @Inject()(
         }
     }
 
-  private def getEmailAddress(ua: UserAnswers): String = {
-    val individual = (ua.json \ "individualContactDetails" \ "email").asOpt[String]
-    val company = (ua.json \ "contactDetails" \ "email").asOpt[String]
-    val partnership = (ua.json \ "partnershipContactDetails" \ "email").asOpt[String]
+  private def getEmailAddress(request: DataRequest[_])(implicit ec: ExecutionContext): Future[String] = {
+    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
 
-    (individual, company, partnership) match {
-      case (Some(e), _, _) => e
-      case (_, Some(e), _) => e
-      case (_, _, Some(e)) => e
-      case _ => throw new RuntimeException("No email address found for PSA")
+    val futureOptionPsaUA = userAnswersCacheConnectorPsaAdmin.fetch(request.externalId).map {
+      case None => None
+      case Some(data) => Some(UserAnswers(data))
+    }
+
+    val futureOptionEmailAddress = futureOptionPsaUA.map { optionUA =>
+      optionUA.flatMap { ua =>
+        val individual = (ua.json \ "individualContactDetails" \ "email").asOpt[String]
+        val company = (ua.json \ "contactDetails" \ "email").asOpt[String]
+        val partnership = (ua.json \ "partnershipContactDetails" \ "email").asOpt[String]
+
+        (individual, company, partnership) match {
+          case (e@Some(_), _, _) => e
+          case (_, e@Some(_), _) => e
+          case (_, _, e@Some(_)) => e
+          case _ => None
+        }
+      }
+    }
+
+    futureOptionEmailAddress.map {
+      case None => throw new RuntimeException("No email address found for PSA")
+      case Some(e) => e
     }
   }
 }
-
