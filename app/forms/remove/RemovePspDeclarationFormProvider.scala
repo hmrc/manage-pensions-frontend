@@ -16,18 +16,18 @@
 
 package forms.remove
 
-import forms.behaviours.CheckboxBehaviour
+import com.google.inject.Inject
 import play.api.data.Form
+import forms.mappings.CheckboxMapping
 
-class PsaRemovePspDeclarationFormProviderSpec extends CheckboxBehaviour {
-
-  private val form: Form[Boolean] = new PsaRemovePspDeclarationFormProvider()()
-  private val fieldName = "value"
-  private val trueValue = "true"
-  private val invalidKey = "messages__psaRemovePspDeclaration__required"
-
-  "PsaRemovePspDeclarationFormProvider" should {
-    behave like formWithCheckbox(form, fieldName, trueValue, acceptTrueOnly = true, invalidKey)
-  }
-
+class RemovePspDeclarationFormProvider @Inject()() extends CheckboxMapping {
+  def apply(): Form[Boolean] =
+    Form(
+      "value" -> checkboxMapping(
+        fieldName = "value",
+        trueValue = "true",
+        acceptTrueOnly = true,
+        invalidKey = "messages__removePspDeclaration__required"
+      )
+    )
 }

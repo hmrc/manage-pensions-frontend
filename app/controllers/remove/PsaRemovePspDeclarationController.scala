@@ -21,7 +21,7 @@ import java.time.LocalDate
 import connectors.{PspConnector, UserAnswersCacheConnector}
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
-import forms.remove.PsaRemovePspDeclarationFormProvider
+import forms.remove.RemovePspDeclarationFormProvider
 import identifiers.invitations.PSTRId
 import identifiers.{SchemeNameId, SchemeSrnId}
 import identifiers.remove.{PsaRemovePspDeclarationId, PspDetailsId}
@@ -46,7 +46,7 @@ class PsaRemovePspDeclarationController @Inject()(
                                                    getData: DataRetrievalAction,
                                                    requireData: DataRequiredAction,
                                                    pspConnector: PspConnector,
-                                                   formProvider: PsaRemovePspDeclarationFormProvider,
+                                                   formProvider: RemovePspDeclarationFormProvider,
                                                    val controllerComponents: MessagesControllerComponents,
                                                    view: psaRemovePspDeclaration
                                                  )(implicit val ec: ExecutionContext)

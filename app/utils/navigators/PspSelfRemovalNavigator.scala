@@ -29,7 +29,7 @@ class PspSelfRemovalNavigator @Inject()(val dataCacheConnector: UserAnswersCache
 
   override def routeMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
     case ConfirmRemovalId => confirmRemovePsaRoutes(ua)
-    case RemovalDateId => controllers.remove.routes.ConfirmRemovedController.onPageLoad()
+    case RemovalDateId => DeclarationController.onPageLoad()
   }
 
   private def confirmRemovePsaRoutes(userAnswers: UserAnswers): Call = {

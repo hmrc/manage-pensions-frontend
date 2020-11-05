@@ -26,3 +26,9 @@ POST        /remove-psp/deauthorise-practitioner                  controllers.re
 
 GET         /remove-psp/date-removed                              controllers.remove.pspSelfRemoval.RemovalDateController.onPageLoad()
 POST        /remove-psp/date-removed                              controllers.remove.pspSelfRemoval.RemovalDateController.onSubmit()
+
+GET         /remove-psp/declaration                               controllers.remove.pspSelfRemoval.DeclarationController.onPageLoad()
+POST        /remove-psp/declaration                               controllers.remove.pspSelfRemoval.DeclarationController.onSubmit()
+
+GET         /remove-psp/removed-from-scheme                       controllers.remove.pspSelfRemoval.ConfirmationController.onPageLoad()
+POST        /remove-psp/removed-from-scheme                       controllers.remove.pspSelfRemoval.ConfirmationController.onSubmit()

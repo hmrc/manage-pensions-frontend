@@ -28,22 +28,28 @@
 @(form: Form[_], schemeName: String, srn: String, pspName: String)(implicit request: Request[_], messages: Messages)
 
 @main_template(
-title = titleWithErrors(form, messages("messages__confirmPspSelfRemoval__title"))
+title = titleWithErrors(form, messages("messages__confirmRemovePsp__title"))
 ){
 
     @formHelper(action = controllers.remove.pspSelfRemoval.routes.ConfirmRemovalController.onSubmit(), 'autoComplete -> "off") {
 
         @components.back_link()
 
-        @components.error_summary(form.errors)
+        @components.error_summary(
+        errors = form.errors,
+        screenReaderAlternativeText = true
+        )
         <div class="form-group @if(form.hasErrors){form-group--error}">
 
-        @components.input_yes_no(
+            @components.input_yes_no(
             field = form("value"),
-            label = messages("messages__confirmPspSelfRemoval__heading", pspName, schemeName),
+            label = messages("messages__confirmRemovePsp__heading", pspName, schemeName),
             labelClass = Some("visually-hidden"),
-            headingIsLegend = true
-        )
+            headingIsLegend = true,
+            screenReaderAlternativeLabelText =
+            Some(messages("messages__confirmRemovePsp__heading__screenReaderAlternativeText", pspName, schemeName)),
+            screenReaderAlternativeErrorText = true
+            )
         </div>
         @components.submit_button()
 

@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package views.remove
+package views.remove.pspSelfRemoval
 
 import forms.remove.RemovePspDeclarationFormProvider
 import play.api.data.{Form, FormError}
 import play.twirl.api.HtmlFormat
 import viewmodels.Message
 import views.behaviours.QuestionViewBehaviours
-import views.html.remove.psaRemovePspDeclaration
+import views.html.remove.pspSelfRemoval.declaration
 
-class PsaRemovePspDeclarationViewSpec extends QuestionViewBehaviours[Boolean] {
+class DeclarationViewSpec extends QuestionViewBehaviours[Boolean] {
 
   private val messageKeyPrefix = "removePspDeclaration"
   val form = new RemovePspDeclarationFormProvider()()
@@ -32,40 +32,40 @@ class PsaRemovePspDeclarationViewSpec extends QuestionViewBehaviours[Boolean] {
   override val errorMessage: String = messages("messages__removePspDeclaration__required")
   override val error: FormError = FormError("value", messages("messages__removePspDeclaration__required"))
 
-  private val view = injector.instanceOf[psaRemovePspDeclaration]
+  private val view = injector.instanceOf[declaration]
 
-  def psaRemovePspDeclarationView(form: Form[Boolean] = form): () => HtmlFormat.Appendable = () =>
-    view(form, schemeName, srn, 0)(fakeRequest, messages)
+  def declarationView(form: Form[Boolean] = form): () => HtmlFormat.Appendable = () =>
+    view(form, schemeName, srn)(fakeRequest, messages)
 
-  def psaRemovePspDeclarationViewWithForm(form: Form[Boolean] = form): HtmlFormat.Appendable =
-    view(form, schemeName, srn, 0)(fakeRequest, messages)
+  def declarationViewWithForm(form: Form[Boolean] = form): HtmlFormat.Appendable =
+    view(form, schemeName, srn)(fakeRequest, messages)
 
   "declaration view" must {
 
     behave like normalPage(
-      view = psaRemovePspDeclarationView(),
+      view = declarationView(),
       messageKeyPrefix = messageKeyPrefix,
       pageHeader = Message("messages__removePspDeclaration__title")
     )
 
-    behave like pageWithBackLink(psaRemovePspDeclarationView())
+    behave like pageWithBackLink(declarationView())
 
-    behave like pageWithSubmitButton(psaRemovePspDeclarationView())
+    behave like pageWithSubmitButton(declarationView())
 
     "display declaration text" in {
-      val doc = asDocument(psaRemovePspDeclarationView()())
+      val doc = asDocument(declarationView()())
       doc.getElementById("para_id").text mustBe
-        messages("messages__removePspDeclaration__p") + " " +
-          messages("messages__removePspDeclaration__p__screenReaderAlternative")
+        messages("messages__removePspDeclaration__p_self") + " " +
+          messages("messages__removePspDeclaration__p_self__screenReaderAlternative")
     }
 
     "show an error summary when rendered with an error" in {
-      val doc = asDocument(psaRemovePspDeclarationViewWithForm(form.withError(error)))
+      val doc = asDocument(declarationViewWithForm(form.withError(error)))
       assertRenderedById(doc, "error-summary-heading")
     }
 
     "show an error in the value field's label when rendered with an error" in {
-      val doc = asDocument(psaRemovePspDeclarationViewWithForm(form.withError(error)))
+      val doc = asDocument(declarationViewWithForm(form.withError(error)))
       val errorSpan = doc.getElementsByClass("error-message")
       errorSpan.text mustBe s"${messages("site.error")} ${messages(errorMessage)}"
     }

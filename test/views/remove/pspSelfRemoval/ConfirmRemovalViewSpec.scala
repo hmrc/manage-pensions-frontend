@@ -29,7 +29,7 @@ class ConfirmRemovalViewSpec extends YesNoViewBehaviours {
   private val schemeName = "test scheme name"
   private val srn = "test srn"
   private val pspName = "test psp name"
-  val prefix = "confirmPspSelfRemoval"
+  val prefix = "confirmRemovePsp"
   private val confirmRemovalView = injector.instanceOf[confirmRemoval]
 
   private def createView: () => HtmlFormat.Appendable = () =>
@@ -44,7 +44,8 @@ class ConfirmRemovalViewSpec extends YesNoViewBehaviours {
       view = createView,
       messageKeyPrefix = prefix,
       title = messages(s"messages__${prefix}__title"),
-      pageHeader = messages(s"messages__${prefix}__heading", pspName, schemeName)
+      pageHeader = messages(s"messages__${prefix}__heading", pspName, schemeName) +
+        messages(s"messages__${prefix}__heading__screenReaderAlternativeText", pspName, schemeName)
     )
 
     behave like pageWithSubmitButton(createView)
