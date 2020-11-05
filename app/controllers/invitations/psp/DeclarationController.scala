@@ -23,28 +23,40 @@ import config.FrontendAppConfig
 import connectors.EmailNotSent
 import connectors.admin.MinimalConnector
 import connectors.scheme.ListOfSchemesConnector
-import connectors.{EmailSent, EmailConnector, PspConnector, ActiveRelationshipExistsException}
+import connectors.ActiveRelationshipExistsException
+import connectors.EmailConnector
+import connectors.PspConnector
 import controllers.Retrievals
-import controllers.actions.{IdNotFound, DataRequiredAction, AuthAction, DataRetrievalAction}
+import controllers.actions.AuthAction
+import controllers.actions.DataRequiredAction
+import controllers.actions.DataRetrievalAction
+import controllers.actions.IdNotFound
 import forms.invitations.psp.DeclarationFormProvider
-import identifiers.invitations.psp.{PspId, PspClientReferenceId, PspNameId}
-import identifiers.{SchemeNameId, SchemeSrnId}
+import identifiers.invitations.psp.PspClientReferenceId
+import identifiers.invitations.psp.PspId
+import identifiers.invitations.psp.PspNameId
+import identifiers.SchemeNameId
+import identifiers.SchemeSrnId
 import models.SendEmailRequest
 import models.invitations.psp.ClientReference
 import models.requests.DataRequest
 import play.api.Logger
 import play.api.data.Form
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Result, AnyContent, MessagesControllerComponents, Action}
+import play.api.i18n.I18nSupport
+import play.api.i18n.MessagesApi
+import play.api.mvc.Action
+import play.api.mvc.AnyContent
+import play.api.mvc.MessagesControllerComponents
+import play.api.mvc.Result
 import services.SchemeDetailsService
 import uk.gov.hmrc.crypto.ApplicationCrypto
 import uk.gov.hmrc.crypto.PlainText
 import uk.gov.hmrc.domain.PsaId
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import views.html.invitations.psp.declaration
 
-import scala.concurrent.{Future, ExecutionContext}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 class DeclarationController @Inject()(override val messagesApi: MessagesApi,
                                       formProvider: DeclarationFormProvider,
@@ -139,8 +151,6 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
   )(implicit request: DataRequest[AnyContent], ec: ExecutionContext): Future[Unit] = {
     val psaId: PsaId = psaIdOpt.getOrElse(throw IdNotFound())
     minimalConnector.getMinimalPsaDetails(psaId.id).map { psa =>
-      val requestId = hc.requestId.map(_.value).getOrElse(request.headers.get("X-Session-ID").getOrElse(""))
-
       val email = SendEmailRequest(
         List(psa.email),
         "pods_authorise_psp",
