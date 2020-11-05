@@ -18,15 +18,16 @@ package audit
 
 case class PSPAuthorisationEmailAuditEvent(
                                psaId: String,
-                               pspName: String,
-                               schemeName: String
+                               pspId: String,
+                               pstr: String
                              ) extends AuditEvent {
   override def auditType: String = "PSPAuthorisationEmail"
 
   override def details: Map[String, String] = {
     Map(
       "psaId" -> psaId,
-      "schemeName" -> schemeName
+      "pspId" -> pspId,
+      "pstr" -> pstr
     )
   }
 }

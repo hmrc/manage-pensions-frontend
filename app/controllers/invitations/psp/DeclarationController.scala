@@ -84,8 +84,8 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
                 auditService.sendEvent(
                   PSPAuthorisationEmailAuditEvent(
                     psaId = request.psaIdOrException.id,
-                    pspName = pspName,
-                    schemeName = schemeName
+                    pspId = pspId,
+                    pstr = pstr
                   )
                 )
                 Redirect(routes.ConfirmationController.onPageLoad())

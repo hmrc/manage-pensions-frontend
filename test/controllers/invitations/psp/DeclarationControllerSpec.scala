@@ -142,8 +142,8 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
 
         val expectedAuditEvent = PSPAuthorisationEmailAuditEvent(
           psaId = "A0000000",
-          pspName = pspName,
-          schemeName = schemeName
+          pspId = pspId,
+          pstr = pstr
         )
 
         verify(mockAuditService, times(1)).sendEvent(Matchers.eq(expectedAuditEvent))(any(), any())
