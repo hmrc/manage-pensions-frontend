@@ -16,14 +16,17 @@
 
 package controllers.invitations.psp
 
+import audit.AuditService
+import audit.PSPAuthorisationEmailAuditEvent
 import com.google.inject.Inject
+import connectors.EmailNotSent
 import connectors.admin.MinimalConnector
 import connectors.scheme.ListOfSchemesConnector
-import connectors.{ActiveRelationshipExistsException, EmailConnector, EmailSent, PspConnector}
+import connectors.{EmailSent, EmailConnector, PspConnector, ActiveRelationshipExistsException}
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, IdNotFound}
+import controllers.actions.{IdNotFound, DataRequiredAction, AuthAction, DataRetrievalAction}
 import forms.invitations.psp.DeclarationFormProvider
-import identifiers.invitations.psp.{PspClientReferenceId, PspId, PspNameId}
+import identifiers.invitations.psp.{PspId, PspClientReferenceId, PspNameId}
 import identifiers.{SchemeNameId, SchemeSrnId}
 import models.SendEmailRequest
 import models.invitations.psp.ClientReference
@@ -31,14 +34,14 @@ import models.requests.DataRequest
 import play.api.Logger
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.api.mvc.{Result, AnyContent, MessagesControllerComponents, Action}
 import services.SchemeDetailsService
 import uk.gov.hmrc.domain.PsaId
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import views.html.invitations.psp.declaration
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{Future, ExecutionContext}
 
 class DeclarationController @Inject()(override val messagesApi: MessagesApi,
                                       formProvider: DeclarationFormProvider,
@@ -51,6 +54,7 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
                                       emailConnector: EmailConnector,
                                       minimalConnector: MinimalConnector,
                                       val controllerComponents: MessagesControllerComponents,
+                                      auditService: AuditService,
                                       view: declaration
                                      )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
   val form: Form[Boolean] = formProvider()
@@ -77,6 +81,13 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
           case Some(pstr) =>
             pspConnector.authorisePsp(pstr, pspName, pspId, getClientReference(pspCR)).flatMap { _ =>
               sendEmail(request.psaId, pspName, schemeName).map { _ =>
+                auditService.sendEvent(
+                  PSPAuthorisationEmailAuditEvent(
+                    psaId = request.psaIdOrException.id,
+                    pspName = pspName,
+                    schemeName = schemeName
+                  )
+                )
                 Redirect(routes.ConfirmationController.onPageLoad())
               }
             } recoverWith {
@@ -116,12 +127,11 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
         None
       )
 
-      emailConnector.sendEmail(email).map {
-        case EmailSent => println("\n\n >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>EmailSent")
-          ()
-        case _ =>
+      emailConnector.sendEmail(email).map{ emailStatus =>
+        if (emailStatus == EmailNotSent) {
           Logger.error("Unable to send email to authorising PSA. Support intervention possibly required.")
-          ()
+        }
+        ()
       }
     }
   }

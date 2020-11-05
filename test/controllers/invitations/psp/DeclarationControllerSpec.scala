@@ -16,21 +16,24 @@
 
 package controllers.invitations.psp
 
+import audit.AuditService
+import audit.PSPAuthorisationEmailAuditEvent
 import base.JsonFileReader
 import connectors.admin.MinimalConnector
-import connectors.{ActiveRelationshipExistsException, EmailConnector, EmailSent, PspConnector}
+import connectors.{EmailSent, EmailConnector, PspConnector, ActiveRelationshipExistsException}
 import connectors.scheme.ListOfSchemesConnector
 import controllers.ControllerSpecBase
-import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
+import controllers.actions.{DataRequiredActionImpl, FakeDataRetrievalAction, FakeAuthAction, DataRetrievalAction}
 import forms.invitations.psp.DeclarationFormProvider
 import identifiers.{SchemeNameId, SchemeSrnId}
-import identifiers.invitations.psp.{PspClientReferenceId, PspId, PspNameId}
-import models.{ListOfSchemes, MinimalPSAPSP}
+import identifiers.invitations.psp.{PspId, PspClientReferenceId, PspNameId}
+import models.{MinimalPSAPSP, ListOfSchemes}
 import models.invitations.psp.ClientReference
 import models.invitations.psp.ClientReference.HaveClientReference
+import org.mockito.Matchers
 import org.mockito.Matchers._
 import org.mockito.Mockito._
-import org.scalatest.{BeforeAndAfterEach, RecoverMethods}
+import org.scalatest.{RecoverMethods, BeforeAndAfterEach}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.Configuration
 import play.api.data.Form
@@ -60,6 +63,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
   private val mockSchemeDetailsService = mock[SchemeDetailsService]
   private val mockEmailConnector = mock[EmailConnector]
   private val mockMinimalConnector = mock[MinimalConnector]
+  private val mockAuditService = mock[AuditService]
 
   val srn: String = "srn"
   val pstr: String = "pstr"
@@ -78,6 +82,12 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
   val data: DataRetrievalAction = new FakeDataRetrievalAction(Some(userAnswers.json))
   val listOfSchemesResponse: Future[Right[Nothing, ListOfSchemes]] = Future.successful(Right(ListOfSchemes("", "", None)))
 
+  override def beforeEach: Unit = {
+    super.beforeEach
+    reset(mockAuditService)
+    doNothing().when(mockAuditService).sendEvent(any())(any(), any())
+  }
+
   def controller(dataRetrievalAction: DataRetrievalAction = getEmptyData) = new DeclarationController(
     messagesApi,
     formProvider,
@@ -90,6 +100,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
     mockEmailConnector,
     mockMinimalConnector,
     stubMessagesControllerComponents(),
+    mockAuditService,
     view
   )
 
@@ -116,7 +127,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
 
     "on a POST" must {
 
-      "invite psp and redirect to confirmation page when valid data is submitted" in {
+      "invite psp and redirect to confirmation page when valid data is submitted and an email audit event is sent" in {
 
         when(mockListOfSchemesConnector.getListOfSchemes(any())(any(), any())).thenReturn(listOfSchemesResponse)
         when(mockSchemeDetailsService.pstr(any(), any())).thenReturn(Some(pstr))
@@ -128,6 +139,14 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
         val result = controller(data).onSubmit()(fakeRequest.withFormUrlEncodedBody("agree" -> "agreed"))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).value mustBe onwardRoute.url
+
+        val expectedAuditEvent = PSPAuthorisationEmailAuditEvent(
+          psaId = "A0000000",
+          pspName = pspName,
+          schemeName = schemeName
+        )
+
+        verify(mockAuditService, times(1)).sendEvent(Matchers.eq(expectedAuditEvent))(any(), any())
         }
 
       "return Bad Request if invalid data is submitted" in {
