@@ -92,6 +92,27 @@ class SchemeSearchServiceSpec extends SpecBase with MockitoSugar with ScalaFutur
       }
     }
   }
+
+  "SearchPsp" must {
+    "return correct list of scheme details with search on correct pstr" in {
+      when(mockSchemesConnector.getListOfSchemesForPsp(Matchers.eq(pspId))(any(), any()))
+        .thenReturn(Future.successful(Right(listOfSchemes)))
+
+      whenReady(schemeSearchService.searchPsp(pspId, Some(pstr))) { result =>
+        result mustBe fullSchemes.filter(_.pstr contains pstr)
+      }
+    }
+    "return empty list for correct format pstr but no match" in {
+      val emptyList = ListOfSchemes("", "", None)
+      when(mockSchemesConnector.getListOfSchemesForPsp(Matchers.eq(pspId))(any(), any()))
+        .thenReturn(Future.successful(Right(emptyList)))
+
+      whenReady(schemeSearchService.searchPsp(pspId, Some("S2400000016"))) { result =>
+        result mustBe Nil
+      }
+    }
+  }
+
 }
 
 object SchemeSearchServiceSpec extends SpecBase with MockitoSugar with BeforeAndAfterEach {
@@ -99,6 +120,7 @@ object SchemeSearchServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
   private val psaId: String = "psaId"
+  private val pspId: String = "pspId"
 
   def listOfSchemes: ListOfSchemes = ListOfSchemes("", "", Some(fullSchemes))
 

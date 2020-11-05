@@ -19,6 +19,7 @@ package controllers
 import base.SpecBase
 import controllers.actions.FakeDataRetrievalAction
 import identifiers.PSANameId
+import identifiers.PSPNameId
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.inject.guice.GuiceableModule
 import play.api.libs.json.Json
@@ -38,6 +39,10 @@ trait ControllerSpecBase extends SpecBase {
   def getDataWithPsaName(psaId: String = "A0000000"): FakeDataRetrievalAction = new FakeDataRetrievalAction(Some(Json.obj(
     PSANameId.toString -> "Test Psa Name"
   )), psaId)
+
+  def getDataWithPspName(pspId: String = "00000000"): FakeDataRetrievalAction = new FakeDataRetrievalAction(Some(Json.obj(
+    PSPNameId.toString -> "Test Pspa Name"
+  )), pspId = Some(PspId(pspId)))
 
   protected def applicationBuilder(modules: Seq[GuiceableModule] = Seq.empty): GuiceApplicationBuilder =
     new GuiceApplicationBuilder()

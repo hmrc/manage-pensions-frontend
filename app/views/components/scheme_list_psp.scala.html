@@ -1,0 +1,74 @@
+@*
+ * Copyright 2020 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import uk.gov.hmrc.urls.Link
+@import config.FrontendAppConfig
+@import models.SchemeStatus
+
+@(schemes: List[SchemeDetails], appConfig: FrontendAppConfig)(implicit messages: Messages)
+
+@pstrValue(pstr: Option[String]) = @{
+pstr.getOrElse(messages("messages__listSchemes__pstr_not_assigned"))
+}
+
+@statusValue(status: String) = @{
+status match {
+case SchemeStatus.Pending.value             => messages("messages__listSchemes__status_pending")
+case SchemeStatus.PendingInfoRequired.value => messages("messages__listSchemes__status_pending_req")
+case SchemeStatus.PendingInfoReceived.value => messages("messages__listSchemes__status_pending_rec")
+case SchemeStatus.Rejected.value            => messages("messages__listSchemes__status_rejected")
+case SchemeStatus.Open.value                => messages("messages__listSchemes__status_open")
+case SchemeStatus.Deregistered.value        => messages("messages__listSchemes__status_deregistered")
+case SchemeStatus.WoundUp.value             => messages("messages__listSchemes__status_wound_up")
+case SchemeStatus.RejectedUnderAppeal.value => messages("messages__listSchemes__status_rejected_appeal")
+case _ => status
+}
+}
+
+<div id="scheme-list1" class="dl--margin-bottom">
+    @for((scheme, index) <- schemes.zipWithIndex){
+    <dl class="dl--label-value">
+        <div class="row-group">
+            <dt class="bold">
+                @messages("messages__listSchemesPsp__column__schemeName")
+            </dt>
+            <dd class="dl--label-left">
+                @{scheme.name}
+            </dd>
+
+        </div>
+        <div class="row-group">
+            <dt class="bold">
+                @messages("messages__listSchemesPsp__column__pstr")
+            </dt>
+            <dd class="dl--label-left">
+                @pstrValue(scheme.pstr)
+            </dd>
+
+        </div>
+        <div class="row-group">
+            <dt class="bold">
+                @messages("messages__listSchemesPsp__column__status")
+            </dt>
+            <dd class="dl--label-left">
+                @statusValue(scheme.schemeStatus)
+            </dd>
+
+        </div>
+
+    </dl>
+    }
+</div>

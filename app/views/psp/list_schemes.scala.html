@@ -1,0 +1,101 @@
+@*
+ * Copyright 2020 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.FrontendAppConfig
+@import models.SchemeDetails
+@import controllers.psp.routes.ListSchemesController
+
+@this(
+    main_template: main_template,
+    formHelper: FormWithCSRF,
+    appConfig: FrontendAppConfig
+)
+
+@(
+    form: Form[_],
+    schemes: List[SchemeDetails],
+    pspName: String,
+    numberOfSchemes: Int
+)(implicit
+    request: Request[_],
+    messages: Messages
+)
+
+@manageRedirectLink = @{
+    val href: String = appConfig.pensionSchemeOnlineServiceUrl
+
+    val linkText: String = messages("messages__schemesOverview__manage__redirect__link")
+
+    Html(s"""<a id="manage-link" href="$href">$linkText</a>""")
+}
+
+@button_content = @{
+    if(form("searchText").value.exists(_.length > 0)) {
+        "messages__listSchemes__search_again"
+    } else {
+        "messages__listSchemes__search_submit"
+    }
+}
+
+@main_template(
+    title = messages("messages__listSchemesPsp__title"),
+    bodyClasses = Some("full-width")
+) {
+
+    @formHelper(action = ListSchemesController.onSearch, 'autoComplete -> "off") {
+        @components.back_link()
+
+        <div class="grid-row">
+            <div class="column-two-thirds">
+                @components.heading(headingKey = messages("messages__listSchemesPsp__heading"))
+
+                <p>@messages("messages__listSchemesPsp__lede")</p>
+
+
+                    @components.input_search(
+                        field = form("searchText"),
+                        label = messages("messages__listSchemesPsp__searchText_label"),
+                        labelClass = Some("heading-medium"),
+                        inputClass = Some("form-control--width-two-thirds"),
+                        messageKey = messages(button_content)
+                    )
+
+
+                @if(form("searchText").value.exists(_.length > 0)) {
+                    <p class="govuk-margin-bottom-3">
+                        <a id="clear-search-link" href="@ListSchemesController.onPageLoad"> @messages("messages__listSchemes__searchText_clearlink")</a>
+                    </p>
+                }
+                @if(form("searchText").value.isDefined && form.errors.isEmpty && schemes.isEmpty) {
+                @form("searchText").value.map{ searchText =>
+
+                    <p id="noSchemes">@messages("messages__listSchemesPsp__noMatchesLeft") <span class="bold">@searchText</span>
+                        @messages("messages__listSchemesPsp__noMatchesRight")</p>
+                    <p id="noMatchesCheck">@messages("messages__listSchemesPsp__noMatchesCheck")</p>
+                }
+                }
+
+                @if(schemes.nonEmpty && (form("searchText").value.exists(_.length > 0))) {
+                    @components.scheme_list_psp(schemes, appConfig)
+@*                    <a id="view-scheme" href=""> @messages("messages__listSchemesPsp__viewScheme")</a>*@
+                }
+                @components.return_link(controllers.routes.PspDashboardController.onPageLoad(), Some(pspName))
+            </div>
+        </div>
+
+
+    }
+}

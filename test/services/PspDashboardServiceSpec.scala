@@ -75,7 +75,7 @@ object PspDashboardServiceSpec extends SpecBase with MockitoSugar  {
     CardViewModel(
       id = "scheme-card",
       heading = Message("messages__pspDashboard__scheme_heading"),
-      links = Seq(Link("search-schemes", ListSchemesController.onPageLoad().url, Message("messages__pspDashboard__search_scheme")))
+      links = Seq(Link("search-schemes", controllers.psp.routes.ListSchemesController.onPageLoad().url, Message("messages__pspDashboard__search_scheme")))
     )
 
   private val tiles: Seq[CardViewModel] = Seq(schemeCard, practitionerCard)

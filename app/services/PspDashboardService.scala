@@ -18,14 +18,15 @@ package services
 
 import config.FrontendAppConfig
 import connectors.admin.MinimalConnector
-import controllers.routes._
 import javax.inject.Inject
 import models.Link
 import play.api.i18n.Messages
 import uk.gov.hmrc.http.HeaderCarrier
-import viewmodels.{CardViewModel, Message}
+import viewmodels.CardViewModel
+import viewmodels.Message
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 class PspDashboardService @Inject()(appConfig: FrontendAppConfig,
                                     minimalConnector: MinimalConnector
@@ -57,7 +58,7 @@ class PspDashboardService @Inject()(appConfig: FrontendAppConfig,
       heading = Message("messages__pspDashboard__scheme_heading"),
       links = Seq(Link(
         "search-schemes",
-        ListSchemesController.onPageLoad().url,   //todo change link once 4159 is implemented
+        controllers.psp.routes.ListSchemesController.onPageLoad().url,   //todo change link once 4159 is implemented
         Message("messages__pspDashboard__search_scheme")))
     )
 }
