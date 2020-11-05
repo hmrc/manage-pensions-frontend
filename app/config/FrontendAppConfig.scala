@@ -57,8 +57,8 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   val reportAProblemNonJSUrl = getConfigString("contact-frontend.report-problem-url.non-js")
   val betaFeedbackUrl = getConfigString("contact-frontend.beta-feedback-url.authenticated")
   val betaFeedbackUnauthenticatedUrl = getConfigString("contact-frontend.beta-feedback-url.unauthenticated")
-  def emailCallback(encryptedPsaId: String, encryptedPspId: String, encryptedPstr: String, encryptedEmail: String) =
-    s"$pensionsSchemeUrl${runModeConfiguration.get[String](path = "urls.emailCallback")
+  def pspAuthEmailCallback(encryptedPsaId: String, encryptedPspId: String, encryptedPstr: String, encryptedEmail: String) =
+    s"$pensionsSchemeUrl${runModeConfiguration.get[String](path = "urls.pspAuthEmailCallback")
       .format(encryptedPsaId, encryptedPspId, encryptedPstr, encryptedEmail)}"
 
   lazy val authUrl: String = servicesConfig.baseUrl("auth")

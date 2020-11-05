@@ -138,7 +138,7 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
     val encryptedPstr = crypto.QueryParameterCrypto.encrypt(PlainText(pstr)).value
     val encryptedEmail = crypto.QueryParameterCrypto.encrypt(PlainText(email)).value
 
-    appConfig.emailCallback(encryptedPsaId, encryptedPspId, encryptedPstr, encryptedEmail)
+    appConfig.pspAuthEmailCallback(encryptedPsaId, encryptedPspId, encryptedPstr, encryptedEmail)
   }
 
 
