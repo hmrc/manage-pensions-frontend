@@ -53,6 +53,9 @@ class AuditServiceImpl @Inject()(
                                            ec: ExecutionContext): Unit = {
 
     val details = rh.toAuditDetails() ++ event.details
+
+    println( "\n>>>SEMNDING AUDI EV:" + event)
+
     Logger.debug(s"[AuditService][sendEvent] sending ${event.auditType}")
 
     val result: Future[AuditResult] = connector.sendEvent(

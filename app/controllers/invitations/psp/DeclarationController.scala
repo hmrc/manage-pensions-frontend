@@ -116,8 +116,6 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
   }
 
   private def callBackUrl(
-    requestId: String,
-    journeyType: String,
     psaId: PsaId,
     pspId: String,
     pstr: String,
@@ -128,7 +126,7 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
     val encryptedPstr = crypto.QueryParameterCrypto.encrypt(PlainText(pstr)).value
     val encryptedEmail = crypto.QueryParameterCrypto.encrypt(PlainText(email)).value
 
-    appConfig.emailCallback(requestId, journeyType, encryptedPsaId, encryptedPspId, encryptedPstr, encryptedEmail)
+    appConfig.emailCallback(encryptedPsaId, encryptedPspId, encryptedPstr, encryptedEmail)
   }
 
 
@@ -152,7 +150,7 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
           "schemeName" -> schemeName
         ),
         force = false,
-        eventUrl = Some(callBackUrl(requestId, "PSPAuthorisation", psaId, pspId, pstr, psa.email))
+        eventUrl = Some(callBackUrl(psaId, pspId, pstr, psa.email))
       )
 
       emailConnector.sendEmail(email).map{ emailStatus =>
