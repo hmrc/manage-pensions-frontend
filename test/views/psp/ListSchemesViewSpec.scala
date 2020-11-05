@@ -128,7 +128,7 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours with MockitoS
             schemes = emptyList,
             numberOfSchemes = emptyList.length,
             listSchemesFormProvider.apply()
-          ) must haveLink(controllers.routes.SchemesOverviewController.onPageLoad().url, "return-link")
+          ) must haveLink(controllers.routes.PspDashboardController.onPageLoad().url, "return-link")
     }
 
   }
