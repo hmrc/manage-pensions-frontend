@@ -42,7 +42,7 @@ object FakeAuthAction extends AuthAction {
     override def apply(authEntity: AuthEntity = PSA): Auth = new FakeAuth(authEntity = PSA, pspId = None, userType = userType)
   }
   def createWithPspId(pspId:String): AuthAction = new AuthAction {
-    override def apply(authEntity: AuthEntity = PSA): Auth = new FakeAuth(authEntity = PSP, pspId = Some(PspId(pspId)), psaId = None)
+    override def apply(authEntity: AuthEntity = PSP): Auth = new FakeAuth(authEntity = PSP, pspId = Some(PspId(pspId)), psaId = None)
   }
   val externalId: String = "id"
 }

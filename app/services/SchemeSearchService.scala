@@ -58,4 +58,15 @@ class SchemeSearchService @Inject()(listSchemesConnector: ListOfSchemesConnector
         case _ => List.empty[SchemeDetails]
       }
   }: Future[List[SchemeDetails]]
+
+  def searchPsp(pspId: String, searchText: Option[String])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[List[SchemeDetails]] = {
+    listSchemesConnector.getListOfSchemesForPsp(pspId)
+      .map {
+        case Right(listOfSchemes) =>
+          searchText
+            .flatMap( st => listOfSchemes.schemeDetails.map(_.filter(_.pstr.contains(st))))
+            .getOrElse(List.empty[SchemeDetails])
+        case _ => List.empty[SchemeDetails]
+      }
+  }: Future[List[SchemeDetails]]
 }

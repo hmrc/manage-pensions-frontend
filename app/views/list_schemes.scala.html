@@ -136,7 +136,15 @@
             @if(schemes.size>0){
                 <div class="grid-row">
                     <div class="column-two-thirds">
-                        <p class="govuk-margin-top-5 govuk-margin-bottom-0">@{schemes.size} results</p>
+                        <p class="govuk-margin-top-5 govuk-margin-bottom-0">
+                            @{
+                                if(schemes.size == 1) {
+                                    messages("messages__listSchemes__search_result")
+                                } else {
+                                    messages("messages__listSchemes__search_multipleResults", schemes.size)
+                                }
+                            }
+                        </p>
                     </div>
                 </div>
             }
