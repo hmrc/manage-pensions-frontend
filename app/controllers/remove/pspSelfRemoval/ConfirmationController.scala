@@ -17,35 +17,47 @@
 package controllers.remove.pspSelfRemoval
 
 import com.google.inject.Inject
+import connectors.UserAnswersCacheConnector
+import connectors.admin.MinimalConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
-import forms.remove.RemovePspDeclarationFormProvider
+import identifiers.{SchemeNameId, SeqAuthorisedPractitionerId}
 import models.AuthEntity.PSP
-import play.api.data.Form
+import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
-import views.html.remove.pspSelfRemoval.declaration
+import views.html.remove.pspSelfRemoval.confirmation
 
 import scala.concurrent.ExecutionContext
 
 class ConfirmationController @Inject()(override val messagesApi: MessagesApi,
-                                       formProvider: RemovePspDeclarationFormProvider,
                                        auth: AuthAction,
                                        getData: DataRetrievalAction,
                                        requireData: DataRequiredAction,
+                                       minimalConnector: MinimalConnector,
+                                       userAnswersCacheConnector: UserAnswersCacheConnector,
                                        val controllerComponents: MessagesControllerComponents,
-                                       view: declaration
+                                       view: confirmation
                                      )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
-  val form: Form[Boolean] = formProvider()
 
-  def onPageLoad(): Action[AnyContent] = (auth(PSP) andThen getData andThen requireData) {
-    implicit request =>
-      Ok
-  }
-
-  def onSubmit(): Action[AnyContent] = (auth(PSP) andThen getData andThen requireData) {
+  def onPageLoad(): Action[AnyContent] = (auth(PSP) andThen getData andThen requireData).async {
       implicit request =>
-        Ok
+
+        (SchemeNameId and SeqAuthorisedPractitionerId).retrieve.right.map {
+          case schemeName ~ pspList =>
+            val pspId: String = request.pspIdOrException.id
+
+            minimalConnector.getMinimalPspDetails(request.pspIdOrException.id) map { pspDetails =>
+         //       userAnswersCacheConnector.removeAll(request.externalId) map { _ =>
+                  pspList.find(_.id == pspId).map { psp =>
+                    Ok(view(schemeName, psp.authorisingPSA.name, pspDetails.email))
+                  }.getOrElse {
+                    Logger.debug("Logged in PSP not found in the list of PSPs for the given scheme")
+                    Redirect(controllers.routes.SessionExpiredController.onPageLoad())
+                  }
+         //       }
+            }
+        }
     }
 }

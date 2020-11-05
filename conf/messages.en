@@ -9,6 +9,7 @@ site.yes = Yes
 site.no = No
 site.return_to = Return to {0}
 site.return_to_overview = Return to manage and register your pension schemes
+site.return_to_psp_overview = Return to your practitioner overview
 site.return_to_scheme_overview = Return to pension scheme overview
 site.error = Error:
 
@@ -552,3 +553,11 @@ messages__pspDashboard__switch_psa = Switch to administrator view
 messages__pspSelfRemovalDate__title = When did they stop being a scheme practitioner
 messages__pspSelfRemovalDate__heading = When did you stop being a scheme practitioner for {0}?
 messages__pspSelfRemovalDate__lede = You were authorised as a pension scheme practitioner for this scheme on {0}. The date you stopped must be between {0} and today.
+
+messages__pspRemovalConfirmation__title = Practitioner has been de-authorised
+messages__pspRemovalConfirmation__heading = You have deauthorised yourself as a scheme practitioner for {0}
+messages__pspRemovalConfirmation__heading__screenReaderAlternative = You have dee authorised yourself as a scheme practitioner for {0}
+messages__pspRemovalConfirmation__p1 = We have sent a confirmation email to {0}
+messages__pspRemovalConfirmation__h2 = What happens next
+messages__pspRemovalConfirmation__p2 = A letter will be sent to {0} to let them know that you have deauthorised yourself as a scheme practitioner for {1}.
+messages__pspRemovalConfirmation__p2__screenReaderAlternative = A letter will be sent to {0} to let them know that you have deauthorised yourself as a scheme practitioner for {1}.

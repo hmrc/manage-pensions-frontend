@@ -19,7 +19,7 @@ package controllers.remove.pspSelfRemoval
 import connectors.FakeUserAnswersCacheConnector
 import controllers.ControllerSpecBase
 import controllers.actions._
-import forms.remove.pspSelfRemoval.ConfirmRemovalFormProvider
+import forms.remove.ConfirmRemovePspFormProvider
 import identifiers.remove.pspSelfRemoval.ConfirmRemovalId
 import identifiers.{PSPNameId, SchemeNameId, SchemeSrnId}
 import play.api.data.Form
@@ -32,7 +32,7 @@ import views.html.remove.pspSelfRemoval.confirmRemoval
 
 class ConfirmRemovalControllerSpec extends ControllerSpecBase {
 
-  private val formProvider = new ConfirmRemovalFormProvider()
+  private val formProvider = new ConfirmRemovePspFormProvider()
   private val form = formProvider()
 
   private def onwardRoute = Call("GET", "/foo")

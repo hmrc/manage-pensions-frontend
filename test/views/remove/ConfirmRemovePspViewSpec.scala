@@ -17,7 +17,7 @@
 package views.remove
 
 import controllers.remove._
-import forms.psp.ConfirmRemovePspFormProvider
+import forms.remove.ConfirmRemovePspFormProvider
 import models.Index
 import play.api.data.Form
 import play.twirl.api.HtmlFormat

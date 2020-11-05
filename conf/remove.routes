@@ -31,4 +31,3 @@ GET         /remove-psp/declaration                               controllers.re
 POST        /remove-psp/declaration                               controllers.remove.pspSelfRemoval.DeclarationController.onSubmit()
 
 GET         /remove-psp/removed-from-scheme                       controllers.remove.pspSelfRemoval.ConfirmationController.onPageLoad()
-POST        /remove-psp/removed-from-scheme                       controllers.remove.pspSelfRemoval.ConfirmationController.onSubmit()

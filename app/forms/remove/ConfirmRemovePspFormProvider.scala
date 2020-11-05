@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package forms.remove.pspSelfRemoval
+package forms.remove
 
 import forms.mappings.Mappings
 import javax.inject.Inject
 import play.api.data.Form
 
-class ConfirmRemovalFormProvider @Inject()() extends Mappings {
+class ConfirmRemovePspFormProvider @Inject()() extends Mappings {
 
   def apply(): Form[Boolean] = Form(
-    "value" -> boolean("messages__confirmPspSelfRemoval__error")
+    "value" -> boolean("messages__confirmRemovePsp_required")
   )
 }

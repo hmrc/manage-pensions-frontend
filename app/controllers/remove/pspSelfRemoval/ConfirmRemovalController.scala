@@ -19,7 +19,7 @@ package controllers.remove.pspSelfRemoval
 import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
-import forms.remove.pspSelfRemoval.ConfirmRemovalFormProvider
+import forms.remove.ConfirmRemovePspFormProvider
 import identifiers.remove.pspSelfRemoval.ConfirmRemovalId
 import identifiers.{PSPNameId, SchemeNameId, SchemeSrnId}
 import javax.inject.Inject
@@ -40,7 +40,7 @@ class ConfirmRemovalController @Inject()( val auth: AuthAction,
                                           val requireData: DataRequiredAction,
                                           override val messagesApi: MessagesApi,
                                           @PspSelfRemoval navigator: Navigator,
-                                          val formProvider: ConfirmRemovalFormProvider,
+                                          val formProvider: ConfirmRemovePspFormProvider,
                                           val userAnswersCacheConnector: UserAnswersCacheConnector,
                                           val controllerComponents: MessagesControllerComponents,
                                           view: confirmRemoval

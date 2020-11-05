@@ -23,7 +23,7 @@ import controllers.ControllerSpecBase
 import controllers.actions._
 import forms.remove.PspRemovalDateFormProvider
 import identifiers.remove.pspSelfRemoval.RemovalDateId
-import identifiers.{AssociatedDateId, SchemeNameId, SchemeSrnId}
+import identifiers.{AssociatedDateId, SchemeNameId, SchemeSrnId, SeqAuthorisedPractitionerId}
 import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.mvc.{AnyContentAsJson, Call}
@@ -32,6 +32,8 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.DateHelper.formatDate
 import utils.FakeNavigator
+import testhelpers.CommonBuilders._
+import uk.gov.hmrc.domain.PspId
 import views.html.remove.pspSelfRemoval.removalDate
 
 class RemovalDateControllerSpec extends ControllerSpecBase {
@@ -44,19 +46,20 @@ class RemovalDateControllerSpec extends ControllerSpecBase {
   private val schemeName = "test-scheme"
   private val srn = "srn"
   private val ceaseDate = LocalDate.now()
+  private val pspId = Some(PspId("00000000"))
 
   private val data = Json.obj(
     AssociatedDateId.toString -> date,
     SchemeNameId.toString -> schemeName,
-    SchemeSrnId.toString -> srn
+    SchemeSrnId.toString -> srn,
+    SeqAuthorisedPractitionerId.toString -> pspDetails
   )
 
   private val view = injector.instanceOf[removalDate]
 
-  def controller(dataRetrievalAction: DataRetrievalAction = new FakeDataRetrievalAction(Some(data))) = new RemovalDateController(
-    messagesApi, FakeUserAnswersCacheConnector, new FakeNavigator(onwardRoute),
-    FakeAuthAction, dataRetrievalAction, new DataRequiredActionImpl,
-    formProvider, stubMessagesControllerComponents(), view)
+  def controller(dataRetrievalAction: DataRetrievalAction = new FakeDataRetrievalAction(Some(data), pspId = pspId)) =
+    new RemovalDateController(messagesApi, FakeUserAnswersCacheConnector, new FakeNavigator(onwardRoute), FakeAuthAction,
+      dataRetrievalAction, new DataRequiredActionImpl, formProvider, stubMessagesControllerComponents(), view)
 
   private def viewAsString(form: Form[_] = form) = view(form, schemeName, srn, formatDate(date))(fakeRequest, messages).toString
 
@@ -71,7 +74,7 @@ class RemovalDateControllerSpec extends ControllerSpecBase {
 
       "populate the view correctly on a GET if the question has previously been answered" in {
 
-        val dataRetrieval = new FakeDataRetrievalAction(Some(data ++ Json.obj(RemovalDateId.toString -> ceaseDate)))
+        val dataRetrieval = new FakeDataRetrievalAction(Some(data ++ Json.obj(RemovalDateId.toString -> ceaseDate)), pspId = pspId)
         val result = controller(dataRetrieval).onPageLoad()(fakeRequest)
         contentAsString(result) mustBe viewAsString(form.fill(ceaseDate))
       }
