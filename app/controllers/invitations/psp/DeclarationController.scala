@@ -19,6 +19,7 @@ package controllers.invitations.psp
 import audit.AuditService
 import audit.PSPAuthorisationEmailAuditEvent
 import com.google.inject.Inject
+import config.FrontendAppConfig
 import connectors.EmailNotSent
 import connectors.admin.MinimalConnector
 import connectors.scheme.ListOfSchemesConnector
@@ -36,6 +37,8 @@ import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Result, AnyContent, MessagesControllerComponents, Action}
 import services.SchemeDetailsService
+import uk.gov.hmrc.crypto.ApplicationCrypto
+import uk.gov.hmrc.crypto.PlainText
 import uk.gov.hmrc.domain.PsaId
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
@@ -55,6 +58,8 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
                                       minimalConnector: MinimalConnector,
                                       val controllerComponents: MessagesControllerComponents,
                                       auditService: AuditService,
+                                      crypto: ApplicationCrypto,
+                                      appConfig: FrontendAppConfig,
                                       view: declaration
                                      )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
   val form: Form[Boolean] = formProvider()
@@ -80,7 +85,7 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
         getPstr(srn).flatMap {
           case Some(pstr) =>
             pspConnector.authorisePsp(pstr, pspName, pspId, getClientReference(pspCR)).flatMap { _ =>
-              sendEmail(request.psaId, pspName, schemeName).map { _ =>
+              sendEmail(request.psaId, pspId, pstr, pspName, schemeName).map { _ =>
                 auditService.sendEvent(
                   PSPAuthorisationEmailAuditEvent(
                     psaId = request.psaIdOrException.id,
@@ -110,10 +115,33 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
     case ClientReference.NoClientReference => None
   }
 
-  private def sendEmail(psaIdOpt: Option[PsaId], pspName: String, schemeName: String)
-                              (implicit headerCarrier: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
+  private def callBackUrl(
+    requestId: String,
+    journeyType: String,
+    psaId: PsaId,
+    pspId: String,
+    pstr: String,
+    email: String
+  ): String = {
+    val encryptedPsaId = crypto.QueryParameterCrypto.encrypt(PlainText(psaId.value)).value
+    val encryptedPspId = crypto.QueryParameterCrypto.encrypt(PlainText(pspId)).value
+    val encryptedPstr = crypto.QueryParameterCrypto.encrypt(PlainText(pstr)).value
+    val encryptedEmail = crypto.QueryParameterCrypto.encrypt(PlainText(email)).value
+
+    appConfig.emailCallback(requestId, journeyType, encryptedPsaId, encryptedPspId, encryptedPstr, encryptedEmail)
+  }
+
+
+  private def sendEmail(
+    psaIdOpt: Option[PsaId],
+    pspId: String,
+    pstr: String,
+    pspName: String,
+    schemeName: String
+  )(implicit request: DataRequest[AnyContent], ec: ExecutionContext): Future[Unit] = {
     val psaId: PsaId = psaIdOpt.getOrElse(throw IdNotFound())
     minimalConnector.getMinimalPsaDetails(psaId.id).map { psa =>
+      val requestId = hc.requestId.map(_.value).getOrElse(request.headers.get("X-Session-ID").getOrElse(""))
 
       val email = SendEmailRequest(
         List(psa.email),
@@ -124,7 +152,7 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
           "schemeName" -> schemeName
         ),
         force = false,
-        None
+        eventUrl = Some(callBackUrl(requestId, "PSPAuthorisation", psaId, pspId, pstr, psa.email))
       )
 
       emailConnector.sendEmail(email).map{ emailStatus =>
