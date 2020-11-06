@@ -16,6 +16,9 @@
 
 package controllers.invitations.psp
 
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
+
 import audit.AuditService
 import audit.PSPAuthorisationEmailAuditEvent
 import com.google.inject.Inject
@@ -133,14 +136,13 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
     pstr: String,
     email: String
   ): String = {
-    val encryptedPsaId = crypto.QueryParameterCrypto.encrypt(PlainText(psaId.value)).value
-    val encryptedPspId = crypto.QueryParameterCrypto.encrypt(PlainText(pspId)).value
-    val encryptedPstr = crypto.QueryParameterCrypto.encrypt(PlainText(pstr)).value
-    val encryptedEmail = crypto.QueryParameterCrypto.encrypt(PlainText(email)).value
+    val encryptedPsaId = URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(psaId.value)).value, StandardCharsets.UTF_8.toString)
+    val encryptedPspId = URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(pspId)).value, StandardCharsets.UTF_8.toString)
+    val encryptedPstr = URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(pstr)).value, StandardCharsets.UTF_8.toString)
+    val encryptedEmail = URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(email)).value, StandardCharsets.UTF_8.toString)
 
     appConfig.pspAuthEmailCallback(encryptedPsaId, encryptedPspId, encryptedPstr, encryptedEmail)
   }
-
 
   private def sendEmail(
     psaIdOpt: Option[PsaId],
