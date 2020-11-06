@@ -40,6 +40,7 @@ import identifiers.invitations.psp.PspId
 import identifiers.invitations.psp.PspNameId
 import identifiers.SchemeNameId
 import identifiers.SchemeSrnId
+import models.MinimalPSAPSP
 import models.SendEmailRequest
 import models.invitations.psp.ClientReference
 import models.requests.DataRequest
@@ -100,15 +101,19 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
         getPstr(srn).flatMap {
           case Some(pstr) =>
             pspConnector.authorisePsp(pstr, pspName, pspId, getClientReference(pspCR)).flatMap { _ =>
-              sendEmail(request.psaId, pspId, pstr, pspName, schemeName).map { _ =>
-                auditService.sendEvent(
-                  PSPAuthorisationEmailAuditEvent(
-                    psaId = request.psaIdOrException.id,
-                    pspId = pspId,
-                    pstr = pstr
+              val psaId = request.psaIdOrException.id
+              minimalConnector.getMinimalPsaDetails(psaId).flatMap { minimalPSAPSP =>
+                sendEmail(minimalPSAPSP, psaId, pspId, pstr, pspName, schemeName).map { _ =>
+                  auditService.sendEvent(
+                    PSPAuthorisationEmailAuditEvent(
+                      psaId = request.psaIdOrException.id,
+                      pspId = pspId,
+                      pstr = pstr,
+                      minimalPSAPSP.email
+                    )
                   )
-                )
-                Redirect(routes.ConfirmationController.onPageLoad())
+                  Redirect(routes.ConfirmationController.onPageLoad())
+                }
               }
             } recoverWith {
               case _: ActiveRelationshipExistsException =>
@@ -131,12 +136,12 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
   }
 
   private def callBackUrl(
-    psaId: PsaId,
+    psaId: String,
     pspId: String,
     pstr: String,
     email: String
   ): String = {
-    val encryptedPsaId = URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(psaId.value)).value, StandardCharsets.UTF_8.toString)
+    val encryptedPsaId = URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(psaId)).value, StandardCharsets.UTF_8.toString)
     val encryptedPspId = URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(pspId)).value, StandardCharsets.UTF_8.toString)
     val encryptedPstr = URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(pstr)).value, StandardCharsets.UTF_8.toString)
     val encryptedEmail = URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(email)).value, StandardCharsets.UTF_8.toString)
@@ -145,24 +150,23 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
   }
 
   private def sendEmail(
-    psaIdOpt: Option[PsaId],
+    minimalPSAPSP: MinimalPSAPSP,
+    psaId: String,
     pspId: String,
     pstr: String,
     pspName: String,
     schemeName: String
   )(implicit request: DataRequest[AnyContent], ec: ExecutionContext): Future[Unit] = {
-    val psaId: PsaId = psaIdOpt.getOrElse(throw IdNotFound())
-    minimalConnector.getMinimalPsaDetails(psaId.id).map { psa =>
       val email = SendEmailRequest(
-        List(psa.email),
+        List(minimalPSAPSP.email),
         "pods_authorise_psp",
         Map(
-          "psaInvitor" -> psa.name,
+          "psaInvitor" -> minimalPSAPSP.name,
           "pspInvitee" -> pspName,
           "schemeName" -> schemeName
         ),
         force = false,
-        eventUrl = Some(callBackUrl(psaId, pspId, pstr, psa.email))
+        eventUrl = Some(callBackUrl(psaId, pspId, pstr, minimalPSAPSP.email))
       )
 
       emailConnector.sendEmail(email).map{ emailStatus =>
@@ -171,6 +175,6 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
         }
         ()
       }
-    }
+
   }
 }

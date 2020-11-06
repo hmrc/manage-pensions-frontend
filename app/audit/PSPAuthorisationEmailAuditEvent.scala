@@ -19,7 +19,8 @@ package audit
 case class PSPAuthorisationEmailAuditEvent(
                                psaId: String,
                                pspId: String,
-                               pstr: String
+                               pstr: String,
+                               emailAddress: String
                              ) extends AuditEvent {
   override def auditType: String = "PSPAuthorisationEmailEvent"
 
@@ -28,6 +29,7 @@ case class PSPAuthorisationEmailAuditEvent(
       "psaId" -> psaId,
       "pspId" -> pspId,
       "pstr" -> pstr,
+      "emailAddress" -> emailAddress,
       "event" -> "Sent"
     )
   }
