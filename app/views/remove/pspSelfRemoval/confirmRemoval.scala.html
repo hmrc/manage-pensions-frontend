@@ -53,7 +53,7 @@ title = titleWithErrors(form, messages("messages__confirmRemovePsp__title"))
         </div>
         @components.submit_button()
 
-        <p><a id="return-link" href="@controllers.routes.SchemeDetailsController.onPageLoad(srn)">@messages("messages__returnToSchemeDetails__link", schemeName)</a></p>
+        <p><a id="return-link" href="@controllers.routes.PspSchemeDashboardController.onPageLoad(srn)">@messages("messages__returnToSchemeDetails__link", schemeName)</a></p>
 
     }
 }

@@ -34,7 +34,7 @@ class PspSelfRemovalNavigator @Inject()(val dataCacheConnector: UserAnswersCache
 
   private def confirmRemovePsaRoutes(userAnswers: UserAnswers): Call = {
     (userAnswers.get(ConfirmRemovalId), userAnswers.get(SchemeSrnId)) match {
-      case (Some(false), Some(srn)) => controllers.routes.SchemeDetailsController.onPageLoad(srn)
+      case (Some(false), Some(srn)) => controllers.routes.PspSchemeDashboardController.onPageLoad(srn)
       case (Some(true), _) => RemovalDateController.onPageLoad()
       case _ => controllers.routes.SessionExpiredController.onPageLoad()
     }

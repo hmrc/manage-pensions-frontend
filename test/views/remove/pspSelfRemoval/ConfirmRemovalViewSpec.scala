@@ -58,7 +58,7 @@ class ConfirmRemovalViewSpec extends YesNoViewBehaviours {
 
     behave like pageWithReturnLink(
       view = createView,
-      url = controllers.routes.SchemeDetailsController.onPageLoad(srn).url,
+      url = controllers.routes.PspSchemeDashboardController.onPageLoad(srn).url,
       text = messages("messages__returnToSchemeDetails__link", schemeName)
     )
   }

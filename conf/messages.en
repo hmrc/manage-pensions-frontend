@@ -335,7 +335,7 @@ messages__confirmRemovePsa__heading = Are you sure you want to remove {0} as sch
 messages__confirmRemovePsa_required = Select yes if you are sure you want to remove the scheme administrator
 messages__returnToSchemeDetails__link = Return to {0}
 
-messages__confirmRemovePsp__title = Are you sure you want to de-authorise the scheme practitioner?
+messages__confirmRemovePsp__title = Are you sure you want to deauthorise the scheme practitioner?
 messages__confirmRemovePsp__heading = Are you sure you want to deauthorise {0} as scheme practitioner for {1}?
 messages__confirmRemovePsp__heading__screenReaderAlternativeText = Are you sure you want to dee authorise {0} as scheme practitioner for {1}?
 messages__confirmRemovePsp_required = Select yes if you want to deauthorise this pension scheme practitioner
@@ -554,10 +554,10 @@ messages__pspSelfRemovalDate__title = When did they stop being a scheme practiti
 messages__pspSelfRemovalDate__heading = When did you stop being a scheme practitioner for {0}?
 messages__pspSelfRemovalDate__lede = You were authorised as a pension scheme practitioner for this scheme on {0}. The date you stopped must be between {0} and today.
 
-messages__pspRemovalConfirmation__title = Practitioner has been de-authorised
+messages__pspRemovalConfirmation__title = Practitioner has been deauthorised
 messages__pspRemovalConfirmation__heading = You have deauthorised yourself as a scheme practitioner for {0}
 messages__pspRemovalConfirmation__heading__screenReaderAlternative = You have dee authorised yourself as a scheme practitioner for {0}
 messages__pspRemovalConfirmation__p1 = We have sent a confirmation email to {0}
 messages__pspRemovalConfirmation__h2 = What happens next
 messages__pspRemovalConfirmation__p2 = A letter will be sent to {0} to let them know that you have deauthorised yourself as a scheme practitioner for {1}.
-messages__pspRemovalConfirmation__p2__screenReaderAlternative = A letter will be sent to {0} to let them know that you have deauthorised yourself as a scheme practitioner for {1}.
+messages__pspRemovalConfirmation__p2__screenReaderAlternative = A letter will be sent to {0} to let them know that you have dee authorised yourself as a scheme practitioner for {1}.
