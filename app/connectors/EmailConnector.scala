@@ -48,7 +48,6 @@ class EmailConnectorImpl @Inject()(
 
   override def sendEmail(email: SendEmailRequest)
                         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[EmailStatus] = {
-
     http.POST[SendEmailRequest, HttpResponse](appConfig.emailUrl, email).map { response =>
       response.status match {
         case ACCEPTED =>
