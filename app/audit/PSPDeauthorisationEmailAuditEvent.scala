@@ -22,7 +22,7 @@ case class PSPDeauthorisationEmailAuditEvent(
   pstr: String,
   emailAddress: String
 ) extends AuditEvent {
-  override def auditType: String = "PSPDeauthorisedEmail"
+  override def auditType: String = "PSPDeauthorisedEmailEvent"
 
   override def details: Map[String, String] = {
     Map(
