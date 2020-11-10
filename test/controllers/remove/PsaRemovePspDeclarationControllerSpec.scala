@@ -174,23 +174,11 @@ class PsaRemovePspDeclarationControllerSpec extends ControllerWithQuestionPageBe
 
     val expectedAuditEvent = PSPDeauthorisationEmailAuditEvent(
       psaId = "A0000000",
-      pspId = pspId,
+      pspId = "A2200005",
       pstr = pstr,
       emailAddress = minPsa.email
     )
     verify(mockAuditService, times(1)).sendEvent(Matchers.eq(expectedAuditEvent))(any(), any())
-
-
-    //val expectedEmailRequest = models.SendEmailRequest(
-    //  to = List(individualEmail),
-    //  templateId = frontendAppConfig.emailPsaDeauthorisePspTemplateId,
-    //  parameters = Map(
-    //    "psaName" -> minPsa.name,
-    //    "pspName" -> "PSP Limited Company 1",
-    //    "schemeName" -> schemeName
-    //  )
-    //)
-
   }
 
   behave like controllerThatSavesUserAnswers(

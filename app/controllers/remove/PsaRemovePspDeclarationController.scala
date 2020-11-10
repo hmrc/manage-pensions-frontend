@@ -22,6 +22,7 @@ import java.time.LocalDate
 
 import audit.AuditService
 import audit.PSPAuthorisationEmailAuditEvent
+import audit.PSPDeauthorisationEmailAuditEvent
 import config.FrontendAppConfig
 import connectors.EmailConnector
 import connectors.EmailNotSent
@@ -127,7 +128,7 @@ class PsaRemovePspDeclarationController @Inject()(
                       _ <- sendEmail(minimalPSAPSP, psaId, pspDetails.id, pstr, pspDetails.name, schemeName)
                     } yield {
                       auditService.sendEvent(
-                        PSPAuthorisationEmailAuditEvent(
+                        PSPDeauthorisationEmailAuditEvent(
                           psaId = psaId,
                           pspId = pspDetails.id,
                           pstr = pstr,
