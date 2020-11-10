@@ -146,6 +146,8 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
 
   def routeToSwitchLanguage: String => Call = (lang: String) => routes.LanguageSwitchController.switchToLanguage(lang)
 
+  lazy val emailPsaDeauthorisePspTemplateId: String = runModeConfiguration.get[String]("email.psaDeauthorisePspTemplateId")
+
   lazy val daysDataSaved: Int = loadConfig("daysDataSaved").toInt
   lazy val invitationExpiryDays: Int = loadConfig("invitationExpiryDays").toInt
   lazy val earliestDatePsaRemoval: LocalDate = LocalDate.parse(loadConfig("earliestDatePsaRemoval"))
