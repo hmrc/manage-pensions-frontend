@@ -61,6 +61,10 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
     s"$practitionerUrl${runModeConfiguration.get[String](path = "urls.pspAuthEmailCallback")
       .format(encryptedPsaId, encryptedPspId, encryptedPstr, encryptedEmail)}"
 
+  def pspDeauthEmailCallback(encryptedPsaId: String, encryptedPspId: String, encryptedPstr: String, encryptedEmail: String) =
+    s"$practitionerUrl${runModeConfiguration.get[String](path = "urls.pspDeauthEmailCallback")
+      .format(encryptedPsaId, encryptedPspId, encryptedPstr, encryptedEmail)}"
+
   lazy val authUrl: String = servicesConfig.baseUrl("auth")
   lazy val pensionsSchemeUrl: String = servicesConfig.baseUrl("pensions-scheme")
   lazy val pensionAdminUrl: String = servicesConfig.baseUrl("pension-administrator")
