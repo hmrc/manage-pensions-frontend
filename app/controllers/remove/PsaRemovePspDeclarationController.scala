@@ -18,16 +18,19 @@ package controllers.remove
 
 import java.time.LocalDate
 
-import connectors.{PspConnector, UserAnswersCacheConnector}
+import config.FrontendAppConfig
+import connectors.{EmailConnector, EmailNotSent, PspConnector, UserAnswersCacheConnector}
+import connectors.admin.MinimalConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.remove.RemovePspDeclarationFormProvider
-import identifiers.invitations.PSTRId
 import identifiers.{SchemeNameId, SchemeSrnId}
+import identifiers.invitations.PSTRId
 import identifiers.remove.{PsaRemovePspDeclarationId, PspDetailsId}
 import javax.inject.Inject
+import models.{Index, NormalMode, SendEmailRequest}
 import models.invitations.psp.DeAuthorise
-import models.{Index, NormalMode}
+import play.api.Logger
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -48,6 +51,9 @@ class PsaRemovePspDeclarationController @Inject()(
                                                    pspConnector: PspConnector,
                                                    formProvider: RemovePspDeclarationFormProvider,
                                                    val controllerComponents: MessagesControllerComponents,
+                                                   minimalPsaConnector: MinimalConnector,
+                                                   appConfig: FrontendAppConfig,
+                                                   emailConnector: EmailConnector,
                                                    view: psaRemovePspDeclaration
                                                  )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
@@ -78,22 +84,37 @@ class PsaRemovePspDeclarationController @Inject()(
               form.bindFromRequest().fold(
                 (formWithErrors: Form[Boolean]) =>
                   Future.successful(BadRequest(view(formWithErrors, schemeName, srn, index))),
-                value =>
-                  userAnswersCacheConnector.save(request.externalId, PsaRemovePspDeclarationId(index), value).flatMap {
-                    cacheMap =>
-                      pspConnector.deAuthorise(
-                        pstr = pstr,
-                        deAuthorise = DeAuthorise(
-                          ceaseIDType = "PSP",
-                          ceaseNumber = pspDetails.id,
-                          initiatedIDType = "PSA",
-                          initiatedIDNumber = request.psaIdOrException.id,
-                          ceaseDate = LocalDate.now().toString
+                value => {
+                    for {
+                      cacheMap <- userAnswersCacheConnector.save(request.externalId, PsaRemovePspDeclarationId(index), value)
+                      _ <-  pspConnector.deAuthorise(
+                          pstr = pstr,
+                          deAuthorise = DeAuthorise(
+                            ceaseIDType = "PSP",
+                            ceaseNumber = pspDetails.id,
+                            initiatedIDType = "PSA",
+                            initiatedIDNumber = request.psaIdOrException.id,
+                            ceaseDate = LocalDate.now().toString
                         )
-                      ).map {
-                        _ =>
-                          Redirect(navigator.nextPage(PsaRemovePspDeclarationId(index), NormalMode, UserAnswers(cacheMap)))
+                      )
+                      minimalDetails <- minimalPsaConnector.getMinimalPsaDetails(request.psaIdOrException.id)
+                      emailResponse <- emailConnector.sendEmail(
+                          SendEmailRequest(
+                            to = List(minimalDetails.email),
+                            templateId = appConfig.emailPsaDeauthorisePspTemplateId,
+                            parameters = Map(
+                              "psaName" -> minimalDetails.name,
+                              "pspName" -> pspDetails.name,
+                              "schemeName" -> schemeName
+                            )
+                          )
+                        )
+                    } yield {
+                      if (emailResponse== EmailNotSent) {
+                        Logger.error("Unable to send email to de-authorising PSA. Support intervention possibly required.")
                       }
+                      Redirect(navigator.nextPage(PsaRemovePspDeclarationId(index), NormalMode, UserAnswers(cacheMap)))
+                    }
                   }
               )
             } else {
@@ -102,4 +123,3 @@ class PsaRemovePspDeclarationController @Inject()(
         }
     }
 }
-
