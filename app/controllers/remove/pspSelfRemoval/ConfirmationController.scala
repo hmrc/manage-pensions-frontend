@@ -48,15 +48,15 @@ class ConfirmationController @Inject()(override val messagesApi: MessagesApi,
           case schemeName ~ pspList =>
             val pspId: String = request.pspIdOrException.id
 
-            minimalConnector.getMinimalPspDetails(request.pspIdOrException.id) map { pspDetails =>
-         //       userAnswersCacheConnector.removeAll(request.externalId) map { _ =>
+            minimalConnector.getMinimalPspDetails(request.pspIdOrException.id) flatMap { pspDetails =>
+                userAnswersCacheConnector.removeAll(request.externalId) map { _ =>
                   pspList.find(_.id == pspId).map { psp =>
                     Ok(view(schemeName, psp.authorisingPSA.name, pspDetails.email))
                   }.getOrElse {
                     Logger.debug("Logged in PSP not found in the list of PSPs for the given scheme")
                     Redirect(controllers.routes.SessionExpiredController.onPageLoad())
                   }
-         //       }
+                }
             }
         }
     }
