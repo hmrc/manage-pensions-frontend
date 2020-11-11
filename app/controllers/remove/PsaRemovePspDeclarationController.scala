@@ -90,9 +90,9 @@ class PsaRemovePspDeclarationController @Inject()(
                       _ <-  pspConnector.deAuthorise(
                           pstr = pstr,
                           deAuthorise = DeAuthorise(
-                            ceaseIDType = "PSP",
+                            ceaseIDType = "PSPID",
                             ceaseNumber = pspDetails.id,
-                            initiatedIDType = "PSA",
+                            initiatedIDType = "PSAID",
                             initiatedIDNumber = request.psaIdOrException.id,
                             ceaseDate = LocalDate.now().toString
                         )

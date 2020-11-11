@@ -63,7 +63,7 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
                   Future.successful(BadRequest(view(formWithErrors, schemeName, srn))),
                 _ => {
                   val pspId = request.pspIdOrException.id
-                  val deAuthModel: DeAuthorise = DeAuthorise("PSP", pspId, "PSP", pspId, LocalDate.now().toString)
+                  val deAuthModel: DeAuthorise = DeAuthorise("PSPID", pspId, "PSPID", pspId, LocalDate.now().toString)
                   pspConnector.deAuthorise(pstr, deAuthModel).map { _ =>
                     Redirect(controllers.remove.pspSelfRemoval.routes.ConfirmationController.onPageLoad())
                   }

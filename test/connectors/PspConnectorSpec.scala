@@ -203,7 +203,7 @@ object PspConnectorSpec {
     "initiatedIDNumber" -> "A1234568",
     "ceaseDate" -> "2019-03-29",
     "declarationCeasePSPDetails" ->
-      Json.obj("declarationBox1" -> "true")
+      Json.obj("declarationBox1" -> true)
   )
 
   val pspDeAuthPspJson: JsObject = Json.obj(
@@ -213,7 +213,7 @@ object PspConnectorSpec {
     "initiatedIDNumber" -> "21234569",
     "ceaseDate" -> "2019-03-29",
     "declarationCeasePSPDetails" ->
-      Json.obj("declarationBox2" -> "true")
+      Json.obj("declarationBox2" -> true)
   )
 
   private val duplicateSubmissionJson = Json.obj(
