@@ -21,7 +21,7 @@ import config.FrontendAppConfig
 import models.invitations.psp.DeAuthorise
 import play.api.Logger
 import play.api.http.Status._
-import play.api.libs.json.{JsObject, JsValue, Json}
+import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import utils.HttpResponseHelper
@@ -33,7 +33,7 @@ import scala.util.Failure
 trait PspConnector {
 
   @throws(classOf[ActiveRelationshipExistsException])
-  def authorisePsp(pstr: String, pspName: String, pspId: String, clientReference: Option[String])
+  def authorisePsp(pstr: String, psaId: String, pspId: String, clientReference: Option[String])
                   (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit]
 
   def deAuthorise(pstr: String, deAuthorise: DeAuthorise)
@@ -53,7 +53,7 @@ class PspConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) ex
     val clientRefJson = clientReference.map(cr => Json.obj("clientReference" -> cr)).getOrElse(Json.obj())
     val headerCarrier = hc.withExtraHeaders("pstr" -> pstr)
     val pspDetails = Json.obj(
-      "inviteeIDType" -> "PSP",
+      "inviteeIDType" -> "PSPID",
       "inviterPSAID" -> psaId,
       "inviteeIDNumber" -> pspId) ++ clientRefJson
 
