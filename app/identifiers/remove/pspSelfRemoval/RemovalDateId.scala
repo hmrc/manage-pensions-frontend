@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package identifiers
+package identifiers.remove.pspSelfRemoval
 
 import java.time.LocalDate
 
-case object AssociatedDateId extends TypedIdentifier[LocalDate] {
-  override def toString: String = "associatedDate"
+import identifiers.TypedIdentifier
+
+case object RemovalDateId extends TypedIdentifier[LocalDate] {
+  override def toString: String = "pspSelfRemovalDate"
 }

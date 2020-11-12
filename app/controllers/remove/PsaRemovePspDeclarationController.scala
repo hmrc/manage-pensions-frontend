@@ -19,41 +19,27 @@ package controllers.remove
 import java.time.LocalDate
 
 import config.FrontendAppConfig
-import connectors.EmailConnector
-import connectors.EmailNotSent
+import connectors.{EmailConnector, EmailNotSent, PspConnector, UserAnswersCacheConnector}
 import connectors.admin.MinimalConnector
-import connectors.PspConnector
-import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
-import controllers.actions.AuthAction
-import controllers.actions.DataRequiredAction
-import controllers.actions.DataRetrievalAction
-import forms.remove.PsaRemovePspDeclarationFormProvider
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import forms.remove.RemovePspDeclarationFormProvider
+import identifiers.{SchemeNameId, SchemeSrnId}
 import identifiers.invitations.PSTRId
-import identifiers.SchemeNameId
-import identifiers.SchemeSrnId
-import identifiers.remove.PsaRemovePspDeclarationId
-import identifiers.remove.PspDetailsId
+import identifiers.remove.{PsaRemovePspDeclarationId, PspDetailsId}
 import javax.inject.Inject
-import models.SendEmailRequest
+import models.{Index, NormalMode, SendEmailRequest}
 import models.invitations.psp.DeAuthorise
-import models.Index
-import models.NormalMode
 import play.api.Logger
 import play.api.data.Form
-import play.api.i18n.I18nSupport
-import play.api.i18n.MessagesApi
-import play.api.mvc.Action
-import play.api.mvc.AnyContent
-import play.api.mvc.MessagesControllerComponents
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
-import utils.Navigator
-import utils.UserAnswers
+import utils.{Navigator, UserAnswers}
 import utils.annotations.RemovePSP
 import views.html.remove.psaRemovePspDeclaration
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class PsaRemovePspDeclarationController @Inject()(
                                                    override val messagesApi: MessagesApi,
@@ -63,7 +49,7 @@ class PsaRemovePspDeclarationController @Inject()(
                                                    getData: DataRetrievalAction,
                                                    requireData: DataRequiredAction,
                                                    pspConnector: PspConnector,
-                                                   formProvider: PsaRemovePspDeclarationFormProvider,
+                                                   formProvider: RemovePspDeclarationFormProvider,
                                                    val controllerComponents: MessagesControllerComponents,
                                                    minimalPsaConnector: MinimalConnector,
                                                    appConfig: FrontendAppConfig,
@@ -104,9 +90,9 @@ class PsaRemovePspDeclarationController @Inject()(
                       _ <-  pspConnector.deAuthorise(
                           pstr = pstr,
                           deAuthorise = DeAuthorise(
-                            ceaseIDType = "PSP",
+                            ceaseIDType = "PSPID",
                             ceaseNumber = pspDetails.id,
-                            initiatedIDType = "PSA",
+                            initiatedIDType = "PSAID",
                             initiatedIDNumber = request.psaIdOrException.id,
                             ceaseDate = LocalDate.now().toString
                         )

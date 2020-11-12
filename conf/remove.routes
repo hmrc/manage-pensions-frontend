@@ -20,3 +20,14 @@ GET         /remove-psa                                           controllers.re
 
 GET         /unable-to-remove-scheme-administrator                controllers.remove.CanNotBeRemovedController.onPageLoadWhereSuspended()
 GET         /cannot-remove-scheme-administrator                   controllers.remove.CanNotBeRemovedController.onPageLoadWhereRemovalDelay()
+
+GET         /remove-psp/deauthorise-practitioner                  controllers.remove.pspSelfRemoval.ConfirmRemovalController.onPageLoad()
+POST        /remove-psp/deauthorise-practitioner                  controllers.remove.pspSelfRemoval.ConfirmRemovalController.onSubmit()
+
+GET         /remove-psp/date-removed                              controllers.remove.pspSelfRemoval.RemovalDateController.onPageLoad()
+POST        /remove-psp/date-removed                              controllers.remove.pspSelfRemoval.RemovalDateController.onSubmit()
+
+GET         /remove-psp/declaration                               controllers.remove.pspSelfRemoval.DeclarationController.onPageLoad()
+POST        /remove-psp/declaration                               controllers.remove.pspSelfRemoval.DeclarationController.onSubmit()
+
+GET         /remove-psp/removed-from-scheme                       controllers.remove.pspSelfRemoval.ConfirmationController.onPageLoad()

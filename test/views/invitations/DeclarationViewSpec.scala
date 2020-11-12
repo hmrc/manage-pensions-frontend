@@ -41,7 +41,7 @@ class DeclarationViewSpec extends QuestionViewBehaviours[Boolean] {
 
   "declaration view" must {
 
-    behave like normalPage(declarationView(), messageKeyPrefix, Message("messages__declaration__heading"))
+    behave like normalPage(declarationView(), messageKeyPrefix, Message("messages__declaration__title"))
 
     behave like pageWithBackLink(declarationView())
 

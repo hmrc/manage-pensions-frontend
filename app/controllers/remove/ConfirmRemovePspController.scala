@@ -20,7 +20,7 @@ import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
-import forms.psp.ConfirmRemovePspFormProvider
+import forms.remove.ConfirmRemovePspFormProvider
 import identifiers.remove.{ConfirmRemovePspId, PspDetailsId}
 import identifiers.{SchemeNameId, SchemeSrnId}
 import javax.inject.Inject

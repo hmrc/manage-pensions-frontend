@@ -16,6 +16,8 @@
 
 package testhelpers
 
+import java.time.LocalDate
+
 import models._
 
 object CommonBuilders {
@@ -42,4 +44,12 @@ object CommonBuilders {
 
   val listOfSchemesResponse = ListOfSchemes("2001-12-17T09:30:47Z", "1", Some(List(schemeDetail)))
   val listOfSchemesPartialResponse = ListOfSchemes("2001-12-17T09:30:47Z", "1", Some(List(schemeDetailWithoutDate)))
+
+  private val pspName: String = "test-psp-name"
+  val psaName: String = "test-psa-name"
+  private val authorisingPsa: AuthorisingPSA = AuthorisingPSA(None, None, None, Some(psaName))
+  val pspDetails: Seq[AuthorisedPractitioner] = Seq(
+    AuthorisedPractitioner(Some(pspName), None, "A0000000", authorisingPsa,
+      LocalDate.parse("2020-04-01"), "00000000")
+  )
 }

@@ -75,8 +75,9 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
       case schemeName ~ srn ~ pspName ~ pspId ~ pspCR =>
         getPstr(srn).flatMap {
           case Some(pstr) =>
-            pspConnector.authorisePsp(pstr, pspName, pspId, getClientReference(pspCR)).flatMap { _ =>
-              sendEmail(request.psaId, pspName, schemeName).map { _ =>
+            val psaId: PsaId = request.psaId.getOrElse(throw IdNotFound())
+            pspConnector.authorisePsp(pstr, psaId.id, pspId, getClientReference(pspCR)).flatMap { _ =>
+              sendEmail(psaId.id, pspName, schemeName).map { _ =>
                 Redirect(routes.ConfirmationController.onPageLoad())
               }
             } recoverWith {
@@ -99,10 +100,9 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
     case ClientReference.NoClientReference => None
   }
 
-  private def sendEmail(psaIdOpt: Option[PsaId], pspName: String, schemeName: String)
+  private def sendEmail(psaId: String, pspName: String, schemeName: String)
                               (implicit headerCarrier: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
-    val psaId: PsaId = psaIdOpt.getOrElse(throw IdNotFound())
-    minimalConnector.getMinimalPsaDetails(psaId.id).map { psa =>
+    minimalConnector.getMinimalPsaDetails(psaId).map { psa =>
 
       val email = SendEmailRequest(
         List(psa.email),
@@ -117,8 +117,7 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
       )
 
       emailConnector.sendEmail(email).map {
-        case EmailSent => println("\n\n >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>EmailSent")
-          ()
+        case EmailSent => ()
         case _ =>
           Logger.error("Unable to send email to authorising PSA. Support intervention possibly required.")
           ()

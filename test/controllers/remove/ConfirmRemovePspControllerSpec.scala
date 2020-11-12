@@ -19,7 +19,7 @@ package controllers.remove
 import connectors.{FakeUserAnswersCacheConnector, UserAnswersCacheConnector}
 import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
-import forms.psp.ConfirmRemovePspFormProvider
+import forms.remove.ConfirmRemovePspFormProvider
 import identifiers.remove.ConfirmRemovePspId
 import identifiers.{SchemeNameId, SchemeSrnId, SeqAuthorisedPractitionerId}
 import models.Index

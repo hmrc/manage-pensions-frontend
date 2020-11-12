@@ -32,15 +32,15 @@ class DeAuthoriseSpec extends WordSpec with MustMatchers {
     "write declarationCeasePSPDetails declarationBox1 for PSA deAuth PSP" in {
       val result: JsValue = Json.toJson(psaDeAuthPsp)
 
-      (result \ "declarationCeasePSPDetails" \ "declarationBox1").asOpt[String] mustBe Some("true")
-      (result \ "declarationCeasePSPDetails" \ "declarationBox2").asOpt[String] mustBe None
+      (result \ "declarationCeasePSPDetails" \ "declarationBox1").asOpt[Boolean] mustBe Some(true)
+      (result \ "declarationCeasePSPDetails" \ "declarationBox2").asOpt[Boolean] mustBe None
     }
 
     "write declarationCeasePSPDetails declarationBox2 for PSP deAuth PSP" in {
       val result: JsValue = Json.toJson(pspDeAuthPsp)
 
-      (result \ "declarationCeasePSPDetails" \ "declarationBox1").asOpt[String] mustBe None
-      (result \ "declarationCeasePSPDetails" \ "declarationBox2").asOpt[String] mustBe Some("true")
+      (result \ "declarationCeasePSPDetails" \ "declarationBox1").asOpt[Boolean] mustBe None
+      (result \ "declarationCeasePSPDetails" \ "declarationBox2").asOpt[Boolean] mustBe Some(true)
     }
   }
 }
