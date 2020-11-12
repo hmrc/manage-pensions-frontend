@@ -32,6 +32,87 @@ class PspConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper w
 
   import connectors.PspConnectorSpec._
 
+  "authorisePsp" should "return successfully for PSA authorising PSP" in {
+    server.stubFor(
+      post(urlEqualTo(pspAuthUrl))
+        .withRequestBody(equalToJson(Json.stringify(Json.toJson(pspAuthJson))))
+        .willReturn(
+          aResponse()
+            .withStatus(OK)
+            .withBody(Json.stringify(Json.obj("processingDate" -> LocalDateTime.now())))
+        )
+    )
+
+    val connector = injector.instanceOf[PspConnector]
+
+    connector.authorisePsp(pstr, psaId, pspId, Some(cr)) map {
+      response =>
+        server.findAll(postRequestedFor(urlEqualTo(pspAuthUrl))).size() shouldBe 1
+        response shouldBe ()
+    }
+  }
+
+  "authorisePsp" should "fail if ACTIVE_RELATIONSHIP_EXISTS" in {
+    server.stubFor(
+      post(urlEqualTo(pspAuthUrl))
+        .withRequestBody(equalToJson(Json.stringify(Json.toJson(pspAuthJson))))
+        .willReturn(
+          aResponse()
+            .withStatus(FORBIDDEN)
+            .withBody(Json.stringify(activeRelationshipJson))
+        )
+    )
+
+    val connector = injector.instanceOf[PspConnector]
+
+    recoverToSucceededIf[ActiveRelationshipExistsException] {
+      connector.authorisePsp(pstr, psaId, pspId, Some(cr))
+    } map {
+      _ =>
+        server.findAll(postRequestedFor(urlEqualTo(pspAuthUrl))).size() shouldBe 1
+    }
+  }
+
+  "authorisePsp" should "fail if bad request" in {
+    server.stubFor(
+      post(urlEqualTo(pspAuthUrl))
+        .withRequestBody(equalToJson(Json.stringify(Json.toJson(pspAuthJson))))
+        .willReturn(
+          aResponse()
+            .withStatus(BAD_REQUEST)
+        )
+    )
+
+    val connector = injector.instanceOf[PspConnector]
+
+    recoverToSucceededIf[BadRequestException] {
+      connector.authorisePsp(pstr, psaId, pspId, Some(cr))
+    } map {
+      _ =>
+        server.findAll(postRequestedFor(urlEqualTo(pspAuthUrl))).size() shouldBe 1
+    }
+  }
+
+  "authorisePsp" should "fail if UpstreamErrorResponse" in {
+    server.stubFor(
+      post(urlEqualTo(pspAuthUrl))
+        .withRequestBody(equalToJson(Json.stringify(Json.toJson(pspAuthJson))))
+        .willReturn(
+          aResponse()
+            .withStatus(INTERNAL_SERVER_ERROR)
+        )
+    )
+
+    val connector = injector.instanceOf[PspConnector]
+
+    recoverToSucceededIf[UpstreamErrorResponse] {
+      connector.authorisePsp(pstr, psaId, pspId, Some(cr))
+    } map {
+      _ =>
+        server.findAll(postRequestedFor(urlEqualTo(pspAuthUrl))).size() shouldBe 1
+    }
+  }
+
   "deAuthorise" should "return successfully for PSA deAuth PSA" in {
     server.stubFor(
       post(urlEqualTo(deAuthUrl))
@@ -159,6 +240,7 @@ class PspConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper w
 
 object PspConnectorSpec {
   private val deAuthUrl = "/pension-practitioner/de-authorise-psp"
+  private val pspAuthUrl = "/pension-practitioner/authorise-psp"
 
   private val pstr = "0"
 
@@ -219,5 +301,22 @@ object PspConnectorSpec {
   private val duplicateSubmissionJson = Json.obj(
     "code" -> "DUPLICATE_SUBMISSION",
     "reason" -> "The remote endpoint has indicated that duplicate submission."
+  )
+
+  private val activeRelationshipJson = Json.obj(
+    "code" -> "ACTIVE_RELATIONSHIP_EXISTS",
+    "reason" -> "The remote endpoint has indicated that an active relation already exists"
+  )
+
+  val psaId: String = "A0000000"
+  val pspId: String = "00000000"
+  val cr: String = "xyz"
+  val pspAuthJson: JsObject = Json.obj(
+    "pspAssociationIDsDetails" -> Json.obj(
+      "inviteeIDType" -> "PSPID",
+      "inviterPSAID" -> psaId,
+      "inviteeIDNumber" -> pspId,
+      "clientReference" -> cr),
+    "pspDeclarationDetails" -> Json.obj("box1" -> true, "box2" -> true, "box3" -> true)
   )
 }
