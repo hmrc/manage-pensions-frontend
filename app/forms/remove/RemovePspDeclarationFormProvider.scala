@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-package forms.psp
+package forms.remove
 
-import forms.mappings.Mappings
-import javax.inject.Inject
+import com.google.inject.Inject
 import play.api.data.Form
+import forms.mappings.CheckboxMapping
 
-class ConfirmRemovePspFormProvider @Inject()() extends Mappings {
-
-  def apply(): Form[Boolean] = Form(
-    "value" -> boolean("messages__confirmRemovePsp_required")
-  )
+class RemovePspDeclarationFormProvider @Inject()() extends CheckboxMapping {
+  def apply(): Form[Boolean] =
+    Form(
+      "value" -> checkboxMapping(
+        fieldName = "value",
+        trueValue = "true",
+        acceptTrueOnly = true,
+        invalidKey = "messages__removePspDeclaration__required"
+      )
+    )
 }

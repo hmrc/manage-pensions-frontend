@@ -21,7 +21,6 @@ import java.nio.charset.StandardCharsets
 import java.time.LocalDate
 
 import audit.AuditService
-import audit.PSPAuthorisationEmailAuditEvent
 import audit.PSPDeauthorisationEmailAuditEvent
 import config.FrontendAppConfig
 import connectors.EmailConnector
@@ -33,8 +32,7 @@ import controllers.Retrievals
 import controllers.actions.AuthAction
 import controllers.actions.DataRequiredAction
 import controllers.actions.DataRetrievalAction
-import controllers.invitations.psp.routes
-import forms.remove.PsaRemovePspDeclarationFormProvider
+import forms.remove.RemovePspDeclarationFormProvider
 import identifiers.invitations.PSTRId
 import identifiers.SchemeNameId
 import identifiers.SchemeSrnId
@@ -73,7 +71,7 @@ class PsaRemovePspDeclarationController @Inject()(
                                                    getData: DataRetrievalAction,
                                                    requireData: DataRequiredAction,
                                                    pspConnector: PspConnector,
-                                                   formProvider: PsaRemovePspDeclarationFormProvider,
+                                                   formProvider: RemovePspDeclarationFormProvider,
                                                    val controllerComponents: MessagesControllerComponents,
                                                    auditService: AuditService,
                                                    minimalConnector: MinimalConnector,
@@ -117,9 +115,9 @@ class PsaRemovePspDeclarationController @Inject()(
                       _ <-  pspConnector.deAuthorise(
                           pstr = pstr,
                           deAuthorise = DeAuthorise(
-                            ceaseIDType = "PSP",
+                            ceaseIDType = "PSPID",
                             ceaseNumber = pspDetails.id,
-                            initiatedIDType = "PSA",
+                            initiatedIDType = "PSAID",
                             initiatedIDNumber = request.psaIdOrException.id,
                             ceaseDate = LocalDate.now().toString
                         )

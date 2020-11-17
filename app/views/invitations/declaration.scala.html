@@ -35,7 +35,7 @@
 
     @components.error_summary(form.errors)
 
-    @components.heading(Message("messages__declaration__heading"))
+    @components.heading(Message("messages__declaration__title"))
 
     @formHelper(action = DeclarationController.onSubmit(), 'autoComplete -> "off") {
 
@@ -68,7 +68,7 @@
 
         @components.fieldSet(
             field = form("agree"),
-            legend = Message("messages__declaration__heading"),
+            legend = Message("messages__declaration__title"),
             hiddenLegend = true
         ) {
             <div class="multiple-choice">

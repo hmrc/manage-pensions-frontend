@@ -17,46 +17,37 @@
 @import uk.gov.hmrc.play.views.html._
 @import views.html._
 @import viewmodels.Message
-@import controllers.remove.routes._
+@import controllers.remove.pspSelfRemoval.routes._
 @import utils.ViewHelper.titleWithErrors
 
 @this(
-        main_template: main_template,
-        formHelper: FormWithCSRF
+main_template: main_template,
+formHelper: FormWithCSRF
 )
 
-@(
-        form: Form[Boolean],
-        schemeName: String,
-        srn: String,
-        index: Int
-)(
-        implicit
-        request: Request[_],
-        messages: Messages
-)
+@(form: Form[Boolean], schemeName: String, srn: String)(implicit request: Request[_], messages: Messages)
 
 @paragraphText = {
     <span aria-hidden="true">
-        @messages("messages__removePspDeclaration__p")
-    </span>
+            @messages("messages__removePspDeclaration__p_self")
+        </span>
     <span class="visually-hidden">
-        @messages("messages__removePspDeclaration__p__screenReaderAlternative")
-    </span>
+            @messages("messages__removePspDeclaration__p_self__screenReaderAlternative")
+        </span>
 }
 
 @main_template(
     title = titleWithErrors(form, messages("messages__removePspDeclaration__title")),
     bodyClasses = None
-) {
+    ) {
 
-    @components.back_link()
+        @components.back_link()
 
-    @components.error_summary(form.errors)
+        @components.error_summary(form.errors)
 
-    @components.heading(Message("messages__removePspDeclaration__title"))
+        @components.heading(Message("messages__removePspDeclaration__title"))
 
-    @formHelper(action = PsaRemovePspDeclarationController.onSubmit(index), 'autoComplete -> "off") {
+        @formHelper(action = DeclarationController.onSubmit(), 'autoComplete -> "off") {
 
         <p id="para_id">@Html(paragraphText.toString)</p>
 
@@ -64,17 +55,17 @@
             field = form("value"),
             legend = messages("messages__removePspDeclaration__title"),
             hiddenLegend = true
-        ) {
-            <div class="multiple-choice">
-                <input id="declaration" name="value" type="checkbox" value="true">
-                <label for="consent">@messages("messages__removePspDeclaration__label")</label>
-            </div>
-        }
+            ) {
+                <div class="multiple-choice">
+                    <input id="declaration" name="value" type="checkbox" value="true">
+                    <label for="consent">@messages("messages__removePspDeclaration__label")</label>
+                </div>
+            }
 
         @components.submit_button("site.save_and_continue")
 
         <p>
-            <a id="return-link" href="@controllers.routes.SchemeDetailsController.onPageLoad(srn)">
+            <a id="return-link" href="@controllers.routes.PspSchemeDashboardController.onPageLoad(srn)">
                 @messages("messages__returnToSchemeDetails__link", schemeName)
             </a>
         </p>

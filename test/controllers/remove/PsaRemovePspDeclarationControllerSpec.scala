@@ -28,7 +28,7 @@ import controllers.actions.DataRetrievalAction
 import controllers.actions.FakeAuthAction
 import controllers.actions.FakeDataRetrievalAction
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
-import forms.remove.PsaRemovePspDeclarationFormProvider
+import forms.remove.RemovePspDeclarationFormProvider
 import identifiers.invitations.PSTRId
 import identifiers.remove.PsaRemovePspDeclarationId
 import identifiers.SchemeNameId
@@ -70,7 +70,7 @@ class PsaRemovePspDeclarationControllerSpec extends ControllerWithQuestionPageBe
 
   import PsaRemovePspDeclarationControllerSpec._
 
-  private val formProvider: PsaRemovePspDeclarationFormProvider = new PsaRemovePspDeclarationFormProvider()
+  private val formProvider: RemovePspDeclarationFormProvider = new RemovePspDeclarationFormProvider()
   private val form = formProvider
 
   private val view = app.injector.instanceOf[psaRemovePspDeclaration]

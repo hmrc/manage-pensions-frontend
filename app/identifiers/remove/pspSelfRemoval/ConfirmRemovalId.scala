@@ -14,20 +14,10 @@
  * limitations under the License.
  */
 
-package forms.remove
+package identifiers.remove.pspSelfRemoval
 
-import com.google.inject.Inject
-import play.api.data.Form
-import forms.mappings.CheckboxMapping
+import identifiers.TypedIdentifier
 
-class PsaRemovePspDeclarationFormProvider @Inject() () extends CheckboxMapping {
-  def apply(): Form[Boolean] =
-    Form(
-      "value" -> checkboxMapping(
-        fieldName = "value",
-        trueValue = "true",
-        acceptTrueOnly = true,
-        invalidKey = "messages__psaRemovePspDeclaration__required"
-      )
-    )
+object ConfirmRemovalId extends TypedIdentifier[Boolean] {
+  override def toString: String = "confirmPspSelfRemoval"
 }
