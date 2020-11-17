@@ -140,14 +140,13 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
     pspId: String,
     pstr: String,
     email: String
-  ): String = {
-    val encryptedPsaId = URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(psaId)).value, StandardCharsets.UTF_8.toString)
-    val encryptedPspId = URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(pspId)).value, StandardCharsets.UTF_8.toString)
-    val encryptedPstr = URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(pstr)).value, StandardCharsets.UTF_8.toString)
-    val encryptedEmail = URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(email)).value, StandardCharsets.UTF_8.toString)
+  ): String =
+    appConfig.pspAuthEmailCallback(
+      encodeAndEncrypt(psaId), encodeAndEncrypt(pspId), encodeAndEncrypt(pstr), encodeAndEncrypt(email)
+    )
 
-    appConfig.pspAuthEmailCallback(encryptedPsaId, encryptedPspId, encryptedPstr, encryptedEmail)
-  }
+  private def encodeAndEncrypt(s:String):String =
+    URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(s)).value, StandardCharsets.UTF_8.toString)
 
   private def sendEmail(
     minimalPSAPSP: MinimalPSAPSP,
