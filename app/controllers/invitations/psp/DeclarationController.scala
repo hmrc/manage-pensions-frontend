@@ -100,8 +100,8 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
       case schemeName ~ srn ~ pspName ~ pspId ~ pspCR =>
         getPstr(srn).flatMap {
           case Some(pstr) =>
-            pspConnector.authorisePsp(pstr, pspName, pspId, getClientReference(pspCR)).flatMap { _ =>
-              val psaId = request.psaIdOrException.id
+            val psaId = request.psaIdOrException.id
+            pspConnector.authorisePsp(pstr, psaId, pspId, getClientReference(pspCR)).flatMap { _ =>
               minimalConnector.getMinimalPsaDetails(psaId).flatMap { minimalPSAPSP =>
                 sendEmail(minimalPSAPSP, psaId, pspId, pstr, pspName, schemeName).map { _ =>
                   auditService.sendEvent(
