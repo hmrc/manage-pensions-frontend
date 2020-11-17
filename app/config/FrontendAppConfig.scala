@@ -57,11 +57,19 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   val reportAProblemNonJSUrl = getConfigString("contact-frontend.report-problem-url.non-js")
   val betaFeedbackUrl = getConfigString("contact-frontend.beta-feedback-url.authenticated")
   val betaFeedbackUnauthenticatedUrl = getConfigString("contact-frontend.beta-feedback-url.unauthenticated")
+  def pspAuthEmailCallback(encryptedPsaId: String, encryptedPspId: String, encryptedPstr: String, encryptedEmail: String) =
+    s"$practitionerUrl${runModeConfiguration.get[String](path = "urls.pspAuthEmailCallback")
+      .format(encryptedPsaId, encryptedPspId, encryptedPstr, encryptedEmail)}"
+
+  def pspDeauthEmailCallback(encryptedPsaId: String, encryptedPspId: String, encryptedPstr: String, encryptedEmail: String) =
+    s"$practitionerUrl${runModeConfiguration.get[String](path = "urls.pspDeauthEmailCallback")
+      .format(encryptedPsaId, encryptedPspId, encryptedPstr, encryptedEmail)}"
 
   lazy val authUrl: String = servicesConfig.baseUrl("auth")
   lazy val pensionsSchemeUrl: String = servicesConfig.baseUrl("pensions-scheme")
   lazy val pensionAdminUrl: String = servicesConfig.baseUrl("pension-administrator")
   lazy val aftUrl: String = servicesConfig.baseUrl("pension-scheme-accounting-for-tax")
+  lazy val practitionerUrl: String = servicesConfig.baseUrl("pension-practitioner")
 
   lazy val timeout: String = loadConfig("session._timeoutSeconds")
   lazy val countdown: String = loadConfig("session._CountdownInSeconds")

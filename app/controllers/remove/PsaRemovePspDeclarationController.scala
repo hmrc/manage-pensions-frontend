@@ -16,30 +16,52 @@
 
 package controllers.remove
 
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import java.time.LocalDate
 
+import audit.AuditService
+import audit.PSPDeauthorisationEmailAuditEvent
 import config.FrontendAppConfig
-import connectors.{EmailConnector, EmailNotSent, PspConnector, UserAnswersCacheConnector}
+import connectors.EmailConnector
+import connectors.EmailNotSent
 import connectors.admin.MinimalConnector
+import connectors.PspConnector
+import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import controllers.actions.AuthAction
+import controllers.actions.DataRequiredAction
+import controllers.actions.DataRetrievalAction
 import forms.remove.RemovePspDeclarationFormProvider
-import identifiers.{SchemeNameId, SchemeSrnId}
 import identifiers.invitations.PSTRId
-import identifiers.remove.{PsaRemovePspDeclarationId, PspDetailsId}
+import identifiers.SchemeNameId
+import identifiers.SchemeSrnId
+import identifiers.remove.PsaRemovePspDeclarationId
+import identifiers.remove.PspDetailsId
 import javax.inject.Inject
-import models.{Index, NormalMode, SendEmailRequest}
+import models.SendEmailRequest
 import models.invitations.psp.DeAuthorise
+import models.Index
+import models.MinimalPSAPSP
+import models.NormalMode
+import models.requests.DataRequest
 import play.api.Logger
 import play.api.data.Form
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.i18n.I18nSupport
+import play.api.i18n.MessagesApi
+import play.api.mvc.Action
+import play.api.mvc.AnyContent
+import play.api.mvc.MessagesControllerComponents
+import uk.gov.hmrc.crypto.ApplicationCrypto
+import uk.gov.hmrc.crypto.PlainText
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
-import utils.{Navigator, UserAnswers}
+import utils.Navigator
+import utils.UserAnswers
 import utils.annotations.RemovePSP
 import views.html.remove.psaRemovePspDeclaration
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 class PsaRemovePspDeclarationController @Inject()(
                                                    override val messagesApi: MessagesApi,
@@ -51,9 +73,11 @@ class PsaRemovePspDeclarationController @Inject()(
                                                    pspConnector: PspConnector,
                                                    formProvider: RemovePspDeclarationFormProvider,
                                                    val controllerComponents: MessagesControllerComponents,
-                                                   minimalPsaConnector: MinimalConnector,
+                                                   auditService: AuditService,
+                                                   minimalConnector: MinimalConnector,
                                                    appConfig: FrontendAppConfig,
                                                    emailConnector: EmailConnector,
+                                                   crypto: ApplicationCrypto,
                                                    view: psaRemovePspDeclaration
                                                  )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
@@ -85,6 +109,7 @@ class PsaRemovePspDeclarationController @Inject()(
                 (formWithErrors: Form[Boolean]) =>
                   Future.successful(BadRequest(view(formWithErrors, schemeName, srn, index))),
                 value => {
+                  val psaId = request.psaIdOrException.id
                     for {
                       cacheMap <- userAnswersCacheConnector.save(request.externalId, PsaRemovePspDeclarationId(index), value)
                       _ <-  pspConnector.deAuthorise(
@@ -97,22 +122,17 @@ class PsaRemovePspDeclarationController @Inject()(
                             ceaseDate = LocalDate.now().toString
                         )
                       )
-                      minimalDetails <- minimalPsaConnector.getMinimalPsaDetails(request.psaIdOrException.id)
-                      emailResponse <- emailConnector.sendEmail(
-                          SendEmailRequest(
-                            to = List(minimalDetails.email),
-                            templateId = appConfig.emailPsaDeauthorisePspTemplateId,
-                            parameters = Map(
-                              "psaName" -> minimalDetails.name,
-                              "pspName" -> pspDetails.name,
-                              "schemeName" -> schemeName
-                            )
-                          )
-                        )
+                      minimalPSAPSP <- minimalConnector.getMinimalPsaDetails(psaId)
+                      _ <- sendEmail(minimalPSAPSP, psaId, pspDetails.id, pstr, pspDetails.name, schemeName)
                     } yield {
-                      if (emailResponse== EmailNotSent) {
-                        Logger.error("Unable to send email to de-authorising PSA. Support intervention possibly required.")
-                      }
+                      auditService.sendEvent(
+                        PSPDeauthorisationEmailAuditEvent(
+                          psaId = psaId,
+                          pspId = pspDetails.id,
+                          pstr = pstr,
+                          minimalPSAPSP.email
+                        )
+                      )
                       Redirect(navigator.nextPage(PsaRemovePspDeclarationId(index), NormalMode, UserAnswers(cacheMap)))
                     }
                   }
@@ -122,4 +142,46 @@ class PsaRemovePspDeclarationController @Inject()(
             }
         }
     }
+
+  private def callBackUrl(
+    psaId: String,
+    pspId: String,
+    pstr: String,
+    email: String
+  ): String = {
+    val encryptedPsaId = URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(psaId)).value, StandardCharsets.UTF_8.toString)
+    val encryptedPspId = URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(pspId)).value, StandardCharsets.UTF_8.toString)
+    val encryptedPstr = URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(pstr)).value, StandardCharsets.UTF_8.toString)
+    val encryptedEmail = URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(email)).value, StandardCharsets.UTF_8.toString)
+
+    appConfig.pspDeauthEmailCallback(encryptedPsaId, encryptedPspId, encryptedPstr, encryptedEmail)
+  }
+
+  private def sendEmail(
+    minimalPSAPSP: MinimalPSAPSP,
+    psaId: String,
+    pspId: String,
+    pstr: String,
+    pspName: String,
+    schemeName: String
+  )(implicit request: DataRequest[AnyContent], ec: ExecutionContext): Future[Unit] = {
+    emailConnector.sendEmail(
+      SendEmailRequest(
+        to = List(minimalPSAPSP.email),
+        templateId = appConfig.emailPsaDeauthorisePspTemplateId,
+        parameters = Map(
+          "psaName" -> minimalPSAPSP.name,
+          "pspName" -> pspName,
+          "schemeName" -> schemeName
+        ),
+        force = false,
+        eventUrl = Some(callBackUrl(psaId, pspId, pstr, minimalPSAPSP.email))
+      )
+    ).map{ emailStatus =>
+        if (emailStatus == EmailNotSent) {
+          Logger.error("Unable to send email to de-authorising PSA. Support intervention possibly required.")
+        }
+        ()
+    }
+  }
 }

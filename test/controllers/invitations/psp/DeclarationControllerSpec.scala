@@ -16,21 +16,26 @@
 
 package controllers.invitations.psp
 
+import audit.AuditService
+import audit.PSPAuthorisationEmailAuditEvent
 import base.JsonFileReader
 import connectors.admin.MinimalConnector
-import connectors.{ActiveRelationshipExistsException, EmailConnector, EmailSent, PspConnector}
+import connectors.{EmailSent, EmailConnector, PspConnector, ActiveRelationshipExistsException}
 import connectors.scheme.ListOfSchemesConnector
 import controllers.ControllerSpecBase
-import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
+import controllers.actions.{DataRequiredActionImpl, FakeDataRetrievalAction, FakeAuthAction, DataRetrievalAction}
 import forms.invitations.psp.DeclarationFormProvider
 import identifiers.{SchemeNameId, SchemeSrnId}
-import identifiers.invitations.psp.{PspClientReferenceId, PspId, PspNameId}
-import models.{ListOfSchemes, MinimalPSAPSP}
+import identifiers.invitations.psp.{PspId, PspClientReferenceId, PspNameId}
+import models.SendEmailRequest
+import models.{MinimalPSAPSP, ListOfSchemes}
 import models.invitations.psp.ClientReference
 import models.invitations.psp.ClientReference.HaveClientReference
+import org.mockito.ArgumentCaptor
+import org.mockito.Matchers
 import org.mockito.Matchers._
 import org.mockito.Mockito._
-import org.scalatest.{BeforeAndAfterEach, RecoverMethods}
+import org.scalatest.{RecoverMethods, BeforeAndAfterEach}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.Configuration
 import play.api.data.Form
@@ -60,6 +65,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
   private val mockSchemeDetailsService = mock[SchemeDetailsService]
   private val mockEmailConnector = mock[EmailConnector]
   private val mockMinimalConnector = mock[MinimalConnector]
+  private val mockAuditService = mock[AuditService]
 
   val srn: String = "srn"
   val pstr: String = "pstr"
@@ -78,6 +84,12 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
   val data: DataRetrievalAction = new FakeDataRetrievalAction(Some(userAnswers.json))
   val listOfSchemesResponse: Future[Right[Nothing, ListOfSchemes]] = Future.successful(Right(ListOfSchemes("", "", None)))
 
+  override def beforeEach: Unit = {
+    super.beforeEach
+    reset(mockAuditService)
+    doNothing().when(mockAuditService).sendEvent(any())(any(), any())
+  }
+
   def controller(dataRetrievalAction: DataRetrievalAction = getEmptyData) = new DeclarationController(
     messagesApi,
     formProvider,
@@ -90,6 +102,9 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
     mockEmailConnector,
     mockMinimalConnector,
     stubMessagesControllerComponents(),
+    mockAuditService,
+    crypto,
+    frontendAppConfig,
     view
   )
 
@@ -116,8 +131,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
 
     "on a POST" must {
 
-      "invite psp and redirect to confirmation page when valid data is submitted" in {
-
+      "invite psp, redirect to confirmation page when valid data is submitted and send an email and email audit event" in {
         when(mockListOfSchemesConnector.getListOfSchemes(any())(any(), any())).thenReturn(listOfSchemesResponse)
         when(mockSchemeDetailsService.pstr(any(), any())).thenReturn(Some(pstr))
         when(mockPspConnector.authorisePsp(any(), any(), any(), any())(any(), any())).thenReturn(Future.successful(()))
@@ -128,7 +142,29 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
         val result = controller(data).onSubmit()(fakeRequest.withFormUrlEncodedBody("agree" -> "agreed"))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).value mustBe onwardRoute.url
-        }
+
+        val emailRequestCaptor = ArgumentCaptor.forClass(classOf[SendEmailRequest])
+
+        verify(mockEmailConnector, times(1)).sendEmail(emailRequestCaptor.capture())(any(), any())
+        val actualSendEmailRequest = emailRequestCaptor.getValue
+
+        actualSendEmailRequest.to mustBe List(minPsa.email)
+        actualSendEmailRequest.templateId mustBe "pods_authorise_psp"
+        actualSendEmailRequest.parameters mustBe Map(
+          "psaInvitor" -> minPsa.name,
+          "pspInvitee" -> pspName,
+          "schemeName" -> schemeName
+        )
+        actualSendEmailRequest.eventUrl.isDefined mustBe true
+
+        val expectedAuditEvent = PSPAuthorisationEmailAuditEvent(
+          psaId = "A0000000",
+          pspId = pspId,
+          pstr = pstr,
+          emailAddress = minPsa.email
+        )
+        verify(mockAuditService, times(1)).sendEvent(Matchers.eq(expectedAuditEvent))(any(), any())
+      }
 
       "return Bad Request if invalid data is submitted" in {
         val formWithErrors = form.withError("agree", messages("messages__error__psp_declaration__required"))

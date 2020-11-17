@@ -18,6 +18,8 @@ package controllers.remove
 
 import java.time.LocalDate
 
+import audit.AuditService
+import audit.PSPDeauthorisationEmailAuditEvent
 import connectors.EmailConnector
 import connectors.EmailSent
 import connectors.PspConnector
@@ -52,7 +54,10 @@ import connectors.UserAnswersCacheConnector
 import connectors.admin.MinimalConnector
 import models.IndividualDetails
 import models.MinimalPSAPSP
+import models.SendEmailRequest
+import org.mockito.ArgumentCaptor
 import org.mockito.Matchers
+import org.mockito.Mockito.doNothing
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import play.api.data.Form
@@ -76,6 +81,8 @@ class PsaRemovePspDeclarationControllerSpec extends ControllerWithQuestionPageBe
 
   private val mockMinimalConnector = mock[MinimalConnector]
 
+  private val mockAuditService = mock[AuditService]
+
   def controller(
                   dataRetrievalAction: DataRetrievalAction = sessionData,
                   fakeAuth: AuthAction = FakeAuthAction,
@@ -90,19 +97,22 @@ class PsaRemovePspDeclarationControllerSpec extends ControllerWithQuestionPageBe
       pspConnector = mockPspConnector,
       formProvider = formProvider,
       controllerComponents = stubMessagesControllerComponents(),
-      minimalPsaConnector = mockMinimalConnector,
+      auditService = mockAuditService,
+      minimalConnector = mockMinimalConnector,
       appConfig = frontendAppConfig,
       emailConnector = mockEmailConnector,
+      crypto,
       view = view
     )
 
   override def beforeEach(): Unit = {
-    reset(mockPspConnector, mockEmailConnector, mockMinimalConnector)
+    reset(mockPspConnector, mockEmailConnector, mockMinimalConnector, mockAuditService)
     when(mockPspConnector.deAuthorise(any(), any())(any(), any())).thenReturn(
       Future.successful(HttpResponse.apply(OK, Json.stringify(Json.obj("processingDate" -> LocalDate.now))))
     )
     when(mockEmailConnector.sendEmail(any())(any(), any())).thenReturn(Future.successful(EmailSent))
-    when(mockMinimalConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPsaPspIndividual))
+    when(mockMinimalConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minPsa))
+    doNothing().when(mockAuditService).sendEvent(any())(any(), any())
   }
 
   private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
@@ -140,23 +150,35 @@ class PsaRemovePspDeclarationControllerSpec extends ControllerWithQuestionPageBe
   )
 
 
-  "send an email to the PSA email address when psp successfully removed by the PSA" in {
+  "send an email to the PSA email address and send an audit event when psp successfully removed by the PSA" in {
     val result = onSubmitAction(validData, FakeAuthAction)(postRequest)
 
-    when(mockMinimalConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPsaPspIndividual))
+    when(mockMinimalConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minPsa))
 
     status(result) mustBe SEE_OTHER
+
     redirectLocation(result) mustBe Some(onwardRoute.url)
-    val expectedEmailRequest = models.SendEmailRequest(
-      to = List(individualEmail),
-      templateId = frontendAppConfig.emailPsaDeauthorisePspTemplateId,
-      parameters = Map(
-        "psaName" -> minimalPsaPspIndividual.name,
-        "pspName" -> "PSP Limited Company 1",
-        "schemeName" -> schemeName
-      )
+
+    val emailRequestCaptor = ArgumentCaptor.forClass(classOf[SendEmailRequest])
+    verify(mockEmailConnector, times(1)).sendEmail(emailRequestCaptor.capture())(any(), any())
+    val actualSendEmailRequest = emailRequestCaptor.getValue
+
+    actualSendEmailRequest.to mustBe List(minPsa.email)
+    actualSendEmailRequest.templateId mustBe frontendAppConfig.emailPsaDeauthorisePspTemplateId
+    actualSendEmailRequest.parameters mustBe Map(
+      "psaName" -> minPsa.name,
+      "pspName" -> "PSP Limited Company 1",
+      "schemeName" -> schemeName
     )
-    verify(mockEmailConnector, times(1)).sendEmail(Matchers.eq(expectedEmailRequest))(any(), any())
+    actualSendEmailRequest.eventUrl.isDefined mustBe true
+
+    val expectedAuditEvent = PSPDeauthorisationEmailAuditEvent(
+      psaId = "A0000000",
+      pspId = "A2200005",
+      pstr = pstr,
+      emailAddress = minPsa.email
+    )
+    verify(mockAuditService, times(1)).sendEvent(Matchers.eq(expectedAuditEvent))(any(), any())
   }
 
   behave like controllerThatSavesUserAnswers(
@@ -204,7 +226,7 @@ object PsaRemovePspDeclarationControllerSpec {
   private val individualFirstName = "Joe"
   private val individualLastName = "Bloggs"
 
-  private val minimalPsaPspIndividual = MinimalPSAPSP(
+  private val minPsa = MinimalPSAPSP(
     email = individualEmail,
     isPsaSuspended = false,
     organisationName  = None,
