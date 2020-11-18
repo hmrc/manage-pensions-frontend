@@ -29,6 +29,7 @@ import identifiers.SchemeStatusId
 import javax.inject.Inject
 import models.FeatureToggle.Enabled
 import models.FeatureToggleName.IntegrationFramework
+import models.FeatureToggleName.PSPAuthorisation
 import models._
 import models.requests.AuthenticatedRequest
 import play.api.i18n.I18nSupport
@@ -116,8 +117,8 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
   }
 
   private def getPspLinks(anyPSPs:Boolean)(implicit hc: HeaderCarrier, ec: ExecutionContext):Future[Seq[Link]] = {
-    featureToggleService.get(IntegrationFramework).map {
-      case Enabled(IntegrationFramework) =>
+    featureToggleService.get(PSPAuthorisation).map {
+      case Enabled(PSPAuthorisation) =>
       val viewPspLink = if (anyPSPs) {
         Seq(Link("view-practitioners", controllers.psp.routes.ViewPractitionersController.onPageLoad().url, Message("messages__pspViewOrDeauthorise__link")))
       } else {

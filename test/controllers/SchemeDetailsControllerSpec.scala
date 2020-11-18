@@ -27,6 +27,7 @@ import identifiers.invitations.PSTRId
 import models.FeatureToggle.Disabled
 import models.FeatureToggle.Enabled
 import models.FeatureToggleName.IntegrationFramework
+import models.FeatureToggleName.PSPAuthorisation
 import models._
 import org.mockito.Matchers.any
 import org.mockito.Matchers.{eq => eqTo}
@@ -151,7 +152,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
       when(schemeDetailsService.lockingPsa(any(), any())(any(), any())).thenReturn(Future.successful(Some("test-psa")))
       when(schemeDetailsService.retrieveAftHtml(any(), any())(any())).thenReturn(Future(Html("test-aft-html")))
       when(schemeDetailsService.retrievePaymentsAndChargesHtml(any())(any())).thenReturn(Future(Html("test-payments-and-charges-html")))
-      when(featureToggleService.get(any())(any(), any())).thenReturn(Future.successful(Enabled(IntegrationFramework)))
+      when(featureToggleService.get(any())(any(), any())).thenReturn(Future.successful(Enabled(PSPAuthorisation)))
 
       val result = controller().onPageLoad(srn)(fakeRequest)
       status(result) mustBe OK
