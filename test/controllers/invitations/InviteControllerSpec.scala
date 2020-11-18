@@ -18,8 +18,6 @@ package controllers.invitations
 
 import base.JsonFileReader
 import base.SpecBase
-import config.FeatureSwitchManagementService
-import config.FeatureSwitchManagementServiceTestImpl
 import connectors.admin.MinimalConnector
 import connectors.FakeUserAnswersCacheConnector
 import connectors.scheme.SchemeDetailsConnector
@@ -66,7 +64,7 @@ class InviteControllerSpec extends SpecBase {
     "redirect to unauthorised page if user is not authenticated" in {
 
       val controller = new InviteController(FakeUnAuthorisedAction, fakeSchemeDetailsConnector,
-        FakeUserAnswersCacheConnector, featureSwitch, fakeMinimalPsaConnector(isSuspended = false), stubMessagesControllerComponents())
+        FakeUserAnswersCacheConnector, fakeMinimalPsaConnector(isSuspended = false), stubMessagesControllerComponents())
 
       val result = controller.onPageLoad(srn)(fakeRequest)
 
@@ -87,7 +85,6 @@ object InviteControllerSpec extends SpecBase with JsonFileReader {
 
 
   val config = injector.instanceOf[Configuration]
-  val featureSwitch: FeatureSwitchManagementService = new FeatureSwitchManagementServiceTestImpl(config, environment)
 
   def fakeMinimalPsaConnector(isSuspended: Boolean): MinimalConnector = new MinimalConnector {
     override def getMinimalPsaDetails(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP] =
@@ -111,5 +108,5 @@ object InviteControllerSpec extends SpecBase with JsonFileReader {
   }
 
   def controller(isSuspended: Boolean) = new InviteController(mockAuthAction, fakeSchemeDetailsConnector,
-    FakeUserAnswersCacheConnector, featureSwitch, fakeMinimalPsaConnector(isSuspended), stubMessagesControllerComponents())
+    FakeUserAnswersCacheConnector, fakeMinimalPsaConnector(isSuspended), stubMessagesControllerComponents())
 }

@@ -16,20 +16,27 @@
 
 package controllers
 
-import config.{FeatureSwitchManagementService, FrontendAppConfig}
+import config.FrontendAppConfig
 import connectors._
-import connectors.scheme.{PensionSchemeVarianceLockConnector, SchemeDetailsConnector, ListOfSchemesConnector}
+import connectors.scheme.ListOfSchemesConnector
+import connectors.scheme.PensionSchemeVarianceLockConnector
+import connectors.scheme.SchemeDetailsConnector
 import controllers.actions._
 import handlers.ErrorHandler
-import identifiers.{SchemeNameId, SchemeStatusId, SchemeSrnId}
+import identifiers.SchemeNameId
+import identifiers.SchemeSrnId
+import identifiers.SchemeStatusId
 import javax.inject.Inject
 import models.FeatureToggle.Enabled
 import models.FeatureToggleName.IntegrationFramework
 import models._
 import models.requests.AuthenticatedRequest
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.I18nSupport
+import play.api.i18n.MessagesApi
 import play.api.libs.json.JsArray
-import play.api.mvc.{AnyContent, MessagesControllerComponents, Action}
+import play.api.mvc.Action
+import play.api.mvc.AnyContent
+import play.api.mvc.MessagesControllerComponents
 import play.twirl.api.Html
 import services.FeatureToggleService
 import services.SchemeDetailsService
@@ -39,7 +46,8 @@ import utils.UserAnswers
 import viewmodels.Message
 import views.html.schemeDetails
 
-import scala.concurrent.{Future, ExecutionContext}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                                         override val messagesApi: MessagesApi,

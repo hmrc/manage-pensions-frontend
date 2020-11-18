@@ -19,7 +19,6 @@ package connectors.scheme
 import com.google.inject.ImplementedBy
 import com.google.inject.Inject
 import com.google.inject.Singleton
-import config.FeatureSwitchManagementService
 import config.FrontendAppConfig
 import models.FeatureToggle.Enabled
 import models.FeatureToggleName.IntegrationFramework

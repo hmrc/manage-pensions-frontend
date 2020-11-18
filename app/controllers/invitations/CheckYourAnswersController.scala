@@ -19,7 +19,6 @@ package controllers.invitations
 import java.time.LocalDateTime
 
 import com.google.inject.Inject
-import config.FeatureSwitchManagementService
 import config.FrontendAppConfig
 import connectors.scheme.SchemeDetailsConnector
 import connectors.InvitationConnector
@@ -64,7 +63,6 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
                                            requireData: DataRequiredAction,
                                            checkYourAnswersFactory: CheckYourAnswersFactory,
                                            schemeDetailsConnector: SchemeDetailsConnector,
-                                           featureSwitchManagementService: FeatureSwitchManagementService,
                                            invitationConnector: InvitationConnector,
                                            val controllerComponents: MessagesControllerComponents,
                                            view: check_your_answers
