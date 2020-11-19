@@ -19,7 +19,7 @@ package connectors.scheme
 import com.github.tomakehurst.wiremock.client.WireMock._
 import models.FeatureToggle.Disabled
 import models.FeatureToggle.Enabled
-import models.FeatureToggleName.IntegrationFramework
+import models.FeatureToggleName.IntegrationFrameworkListSchemes
 import models.ListOfSchemes
 import models.SchemeDetails
 import models.SchemeStatus
@@ -55,7 +55,7 @@ class ListOfSchemesConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
   override def beforeEach(): Unit = {
     super.beforeEach()
     reset(mockFeatureToggleService)
-    when(mockFeatureToggleService.get(any())(any(), any())).thenReturn(Future.successful(Disabled(IntegrationFramework)))
+    when(mockFeatureToggleService.get(any())(any(), any())).thenReturn(Future.successful(Disabled(IntegrationFrameworkListSchemes)))
   }
 
   override protected def portConfigKey: String = "microservice.services.pensions-scheme.port"

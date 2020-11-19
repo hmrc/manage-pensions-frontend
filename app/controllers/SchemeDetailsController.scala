@@ -28,7 +28,7 @@ import identifiers.SchemeSrnId
 import identifiers.SchemeStatusId
 import javax.inject.Inject
 import models.FeatureToggle.Enabled
-import models.FeatureToggleName.IntegrationFramework
+import models.FeatureToggleName.IntegrationFrameworkListSchemes
 import models.FeatureToggleName.PSPAuthorisation
 import models._
 import models.requests.AuthenticatedRequest

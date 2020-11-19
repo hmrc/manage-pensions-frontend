@@ -21,7 +21,7 @@ import com.google.inject.Inject
 import com.google.inject.Singleton
 import config.FrontendAppConfig
 import models.FeatureToggle.Enabled
-import models.FeatureToggleName.IntegrationFramework
+import models.FeatureToggleName.IntegrationFrameworkListSchemes
 import models.ListOfSchemes
 import play.api.Logger
 import play.api.http.Status._
@@ -52,8 +52,8 @@ class ListOfSchemesConnectorImpl @Inject()(http: HttpClient, config: FrontendApp
           featureToggleService:FeatureToggleService) extends ListOfSchemesConnector {
 
   def getListOfSchemes(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]] = {
-    featureToggleService.get(IntegrationFramework).flatMap {
-      case Enabled(IntegrationFramework) =>
+    featureToggleService.get(IntegrationFrameworkListSchemes).flatMap {
+      case Enabled(IntegrationFrameworkListSchemes) =>
         val (url, schemeHc) = (config.listOfSchemesIFUrl, hc.withExtraHeaders("idType" -> "PSA", "idValue" -> psaId))
         listOfSchemes(url)(schemeHc, ec)
       case _ =>

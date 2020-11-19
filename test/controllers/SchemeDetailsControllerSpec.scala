@@ -26,7 +26,7 @@ import identifiers.SchemeNameId
 import identifiers.invitations.PSTRId
 import models.FeatureToggle.Disabled
 import models.FeatureToggle.Enabled
-import models.FeatureToggleName.IntegrationFramework
+import models.FeatureToggleName.IntegrationFrameworkListSchemes
 import models.FeatureToggleName.PSPAuthorisation
 import models._
 import org.mockito.Matchers.any
@@ -91,7 +91,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
     reset(fakeSchemeDetailsConnector, fakeListOfSchemesConnector, fakeSchemeLockConnector, schemeDetailsService)
     when(fakeSchemeLockConnector.isLockByPsaIdOrSchemeId(eqTo("A0000000"), any())(any(), any()))
       .thenReturn(Future.successful(Some(VarianceLock)))
-    when(featureToggleService.get(any())(any(), any())).thenReturn(Future.successful(Disabled(IntegrationFramework)))
+    when(featureToggleService.get(any())(any(), any())).thenReturn(Future.successful(Disabled(IntegrationFrameworkListSchemes)))
   }
 
    "SchemeDetailsController" must {
