@@ -561,3 +561,8 @@ messages__pspRemovalConfirmation__p1 = We have sent a confirmation email to {0}
 messages__pspRemovalConfirmation__h2 = What happens next
 messages__pspRemovalConfirmation__p2 = A letter will be sent to {0} to let them know that you have deauthorised yourself as a scheme practitioner for {1}.
 messages__pspRemovalConfirmation__p2__screenReaderAlternative = A letter will be sent to {0} to let them know that you have dee authorised yourself as a scheme practitioner for {1}.
+
+messages__pspSchemeDashboard__details_heading = Your practitioner details
+messages__pspSchemeDashboard__details_authBy = Authorised by:
+messages__pspSchemeDashboard__details_authDate = Date authorised to this scheme:
+messages__pspSchemeDashboard__details_clientRef = Client reference:

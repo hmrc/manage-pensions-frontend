@@ -20,7 +20,7 @@ import connectors._
 import connectors.admin.MinimalConnector
 import connectors.scheme.SchemeDetailsConnector
 import controllers.actions._
-import identifiers.{PSPNameId, SchemeSrnId}
+import identifiers.{PSPNameId, SchemeNameId, SchemeSrnId}
 import javax.inject.Inject
 import models.AuthEntity.PSP
 import models._
@@ -28,28 +28,36 @@ import models.requests.AuthenticatedRequest
 import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.PspSchemeDashboardService
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.UserAnswers
 import views.html.pspSchemeDashboard
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class PspSchemeDashboardController @Inject()(override val messagesApi: MessagesApi,
-                                             schemeDetailsConnector: SchemeDetailsConnector,
-                                             authenticate: AuthAction,
-                                             minimalConnector: MinimalConnector,
-                                             userAnswersCacheConnector: UserAnswersCacheConnector,
-                                             val controllerComponents: MessagesControllerComponents,
-                                             view: pspSchemeDashboard
-                                            )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+class PspSchemeDashboardController @Inject()(
+                                              override val messagesApi: MessagesApi,
+                                              schemeDetailsConnector: SchemeDetailsConnector,
+                                              authenticate: AuthAction,
+                                              minimalConnector: MinimalConnector,
+                                              userAnswersCacheConnector: UserAnswersCacheConnector,
+                                              val controllerComponents: MessagesControllerComponents,
+                                              service: PspSchemeDashboardService,
+                                              view: pspSchemeDashboard
+                                            )(implicit val ec: ExecutionContext)
+  extends FrontendBaseController
+    with I18nSupport
+    with Retrievals {
 
   def onPageLoad(srn: String): Action[AnyContent] = authenticate(PSP).async {
     implicit request =>
       getUserAnswers(srn).flatMap { userAnswers =>
-        val pspList = (userAnswers.json \ "pspDetails").as[Seq[AuthorisedPractitioner]].map(_.id)
-        if (pspList.contains(request.pspIdOrException.id)) {
+        val pspIdList: Seq[String] = (userAnswers.json \ "pspDetails").as[Seq[AuthorisedPractitioner]].map(_.id)
+
+        if (pspIdList.contains(request.pspIdOrException.id)) {
           userAnswersCacheConnector.upsert(request.externalId, userAnswers.json).map { _ =>
-            Ok(view())
+            val schemeName: String = (userAnswers.json \ "schemeName").as[String]
+              Ok(view(schemeName, service.getTiles(request.pspIdOrException.id)))
           }
         } else {
           Logger.debug("PSP tried to access an unauthorised scheme")
@@ -58,7 +66,8 @@ class PspSchemeDashboardController @Inject()(override val messagesApi: MessagesA
       }
   }
 
-  private def getUserAnswers(srn: String)(implicit request: AuthenticatedRequest[AnyContent]): Future[UserAnswers] =
+  private def getUserAnswers(srn: String)
+                            (implicit request: AuthenticatedRequest[AnyContent]): Future[UserAnswers] =
     for {
       _ <- userAnswersCacheConnector.removeAll(request.externalId)
       userAnswers <- schemeDetailsConnector.getSchemeDetails(request.pspIdOrException.id, "srn", srn)

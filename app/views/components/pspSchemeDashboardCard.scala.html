@@ -1,0 +1,53 @@
+@*
+ * Copyright 2020 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import viewmodels.PspSchemeDashboardCardViewModel
+
+@(cardModel: PspSchemeDashboardCardViewModel)(implicit messages: Messages)
+
+<div class="card" id="@cardModel.id">
+    <div class="card-body">
+        <h2 class="card-heading heading-small">
+            @cardModel.heading
+        </h2>
+
+        @cardModel.subHeadings.map { subHead =>
+            <h3 class="card-sub-heading">
+                <span class="font-xsmall">@subHead._1</span><br>
+                @subHead._2
+            </h3>
+        }
+    </div>
+
+    <div class="card-action">
+        @if(cardModel.links.nonEmpty){
+            <ul>
+                @for(link <- cardModel.links) {
+                    <li>
+                        <a id="@link.id" href="@link.url">@messages(link.linkText)</a>
+                    </li>
+                }
+
+                @if(cardModel.html.nonEmpty){
+                    @cardModel.html
+                }
+            </ul>
+        }
+
+    </div>
+
+
+</div>
