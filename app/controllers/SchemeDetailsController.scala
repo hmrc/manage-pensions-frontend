@@ -16,7 +16,6 @@
 
 package controllers
 
-import config.FrontendAppConfig
 import connectors._
 import connectors.scheme.ListOfSchemesConnector
 import connectors.scheme.PensionSchemeVarianceLockConnector
@@ -28,7 +27,6 @@ import identifiers.SchemeSrnId
 import identifiers.SchemeStatusId
 import javax.inject.Inject
 import models.FeatureToggle.Enabled
-import models.FeatureToggleName.IntegrationFrameworkListSchemes
 import models.FeatureToggleName.PSPAuthorisation
 import models._
 import models.requests.AuthenticatedRequest
@@ -50,8 +48,7 @@ import views.html.schemeDetails
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
-class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
-                                        override val messagesApi: MessagesApi,
+class SchemeDetailsController @Inject()(override val messagesApi: MessagesApi,
                                         schemeDetailsConnector: SchemeDetailsConnector,
                                         listSchemesConnector: ListOfSchemesConnector,
                                         schemeVarianceLockConnector: PensionSchemeVarianceLockConnector,
