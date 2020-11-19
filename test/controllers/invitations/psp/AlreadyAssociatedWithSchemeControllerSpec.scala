@@ -40,7 +40,6 @@ class AlreadyAssociatedWithSchemeControllerSpec extends ControllerSpecBase {
   private val view = injector.instanceOf[alreadyAssociatedWithScheme]
 
   def controller(dataRetrievalAction: DataRetrievalAction = minimalData) = new AlreadyAssociatedWithSchemeController(
-    config,
     messagesApi,
     FakeAuthAction,
     dataRetrievalAction,

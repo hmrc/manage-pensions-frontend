@@ -16,7 +16,6 @@
 
 package controllers.triage
 
-import config.FrontendAppConfig
 import controllers.actions.TriageAction
 import forms.triage.DoesPSTRStartWithTwoFormProvider
 import identifiers.triage.DoesPSTRStartWithTwoInvitedId
@@ -24,36 +23,32 @@ import javax.inject.Inject
 import models.NormalMode
 import models.triage.DoesPSTRStartWithATwo
 import play.api.data.Form
-import play.api.i18n.I18nSupport
-import play.api.i18n.Messages
-import play.api.i18n.MessagesApi
-import play.api.mvc.Action
-import play.api.mvc.AnyContent
-import play.api.mvc.Call
-import play.api.mvc.MessagesControllerComponents
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
-import utils.Enumerable
+import utils.{Enumerable, Navigator, UserAnswers}
 import utils.annotations.Triage
-import utils.Navigator
-import utils.UserAnswers
 import views.html.triage.doesPSTRStartWithTwo
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class DoesPSTRStartWithTwoInvitedController @Inject()(
-                                                      appConfig: FrontendAppConfig,
-                                                      override val messagesApi: MessagesApi,
-                                                      @Triage navigator: Navigator,
-                                                      triageAction: TriageAction,
-                                                      formProvider: DoesPSTRStartWithTwoFormProvider,
-                                                      val controllerComponents: MessagesControllerComponents,
-                                                      view: doesPSTRStartWithTwo
-                                                    )(implicit val ec: ExecutionContext) extends FrontendBaseController with Enumerable.Implicits with I18nSupport {
+                                                       override val messagesApi: MessagesApi,
+                                                       @Triage navigator: Navigator,
+                                                       triageAction: TriageAction,
+                                                       formProvider: DoesPSTRStartWithTwoFormProvider,
+                                                       val controllerComponents: MessagesControllerComponents,
+                                                       view: doesPSTRStartWithTwo
+                                                     )(implicit val ec: ExecutionContext)
+  extends FrontendBaseController
+    with Enumerable.Implicits
+    with I18nSupport {
 
   private def form(implicit messages: Messages): Form[DoesPSTRStartWithATwo] = formProvider()
 
-  private def hint(implicit messages: Messages) = Some(messages("messages__doesPSTRStartWithTwo_invited__hint"))
+  private def hint(implicit messages: Messages): Option[String] =
+    Some(messages("messages__doesPSTRStartWithTwo_invited__hint"))
+
   private def postCall: Call = controllers.triage.routes.DoesPSTRStartWithTwoInvitedController.onSubmit()
 
   def onPageLoad: Action[AnyContent] = triageAction.async {
