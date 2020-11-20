@@ -19,7 +19,6 @@ package services
 import config.FrontendAppConfig
 import connectors.admin.MinimalConnector
 import javax.inject.Inject
-import models.invitations.psp.ClientReference
 import models.{AuthorisedPractitioner, Link, MinimalPSAPSP}
 import play.api.i18n.Messages
 import uk.gov.hmrc.http.HeaderCarrier
@@ -50,6 +49,9 @@ class PspSchemeDashboardService @Inject()(
                 clientReference: Option[String]
               )(implicit messages: Messages, hc: HeaderCarrier): Seq[PspSchemeDashboardCardViewModel] =
     Seq(
+      aftReturnsCard,
+      aftUpcomingChargesCard,
+      aftOverdueChargesCard,
       schemeCard(srn, pstr, openDate),
       practitionerCard(loggedInPsp, clientReference)
     )
@@ -91,8 +93,7 @@ class PspSchemeDashboardService @Inject()(
                           srn: String,
                           pstr: String,
                           openDate: Option[String]
-                        )(implicit messages: Messages): PspSchemeDashboardCardViewModel = {
-
+                        )(implicit messages: Messages): PspSchemeDashboardCardViewModel =
     PspSchemeDashboardCardViewModel(
       id = "scheme-card",
       heading = Message("messages__pspSchemeDashboard__scheme_heading"),
@@ -113,5 +114,70 @@ class PspSchemeDashboardService @Inject()(
         linkText = Message("messages__pspSchemeDashboard__view_details_link")
       ))
     )
-  }
+
+  def aftReturnsCard(implicit messages: Messages): PspSchemeDashboardCardViewModel =
+    PspSchemeDashboardCardViewModel(
+      id = "aft-returns",
+      heading = Message("messages__pspSchemeDashboard__aftReturns_heading"),
+      subHeadings = Seq(
+        (Message("messages__pspSchemeDashboard__aftReturns__subHeading_aftDetails"), "In progress")
+      ),
+      links = Seq(
+        Link(
+          id = "view-aft-return",
+          url = "#",
+          linkText = Message("messages__pspSchemeDashboard__aftReturns__actions_viewLockReturn")
+        ),
+        Link(
+          id = "start-aft-return",
+          url = "#",
+          linkText = Message("messages__pspSchemeDashboard__aftReturns__actions_startNewReturn")
+        ),
+        Link(
+          id = "view-amend-past-aft-return",
+          url = "#",
+          linkText = Message("messages__pspSchemeDashboard__aftReturns__actions_viewOrAmend")
+        )
+      )
+    )
+
+  def aftUpcomingChargesCard(implicit messages: Messages): PspSchemeDashboardCardViewModel =
+    PspSchemeDashboardCardViewModel(
+      id = "aft-upcoming-charges",
+      heading = Message("messages__pspSchemeDashboard__aftUpcomingCharges_heading"),
+      subHeadings = Seq(
+        (Message("messages__pspSchemeDashboard__aftUpcomingCharges__subHeading_dueDate"), "£23.50")
+      ),
+      subHeadingParam = "detail-large",
+      links = Seq(
+        Link(
+          id = "view-payments-charges",
+          url = "#",
+          linkText = Message("messages__pspSchemeDashboard__aftUpcomingCharges__actions_viewPayments")
+        ),
+        Link(
+          id = "view-past-payments-charges",
+          url = "#",
+          linkText = Message("messages__pspSchemeDashboard__aftUpcomingCharges__actions_viewPastPayments")
+        )
+      )
+    )
+
+  def aftOverdueChargesCard(implicit messages: Messages): PspSchemeDashboardCardViewModel =
+    PspSchemeDashboardCardViewModel(
+      id = "aft-overdue-charges",
+      heading = Message("messages__pspSchemeDashboard__aftOverdueCharges_heading"),
+      subHeadings = Seq(
+        (Message("messages__pspSchemeDashboard__aftOverdueCharges__subHeading_total"), "£6,000.00"),
+        (Message("messages__pspSchemeDashboard__aftOverdueCharges__subHeading_interest"), "£155.81"),
+      ),
+      subHeadingParam = "detail-large",
+      links = Seq(
+        Link(
+          id = "view-overdue-payments-interest-charges",
+          url = "#",
+          linkText = Message("messages__pspSchemeDashboard__aftOverdueCharges__actions_view")
+        )
+      )
+    )
 }
