@@ -563,6 +563,11 @@ messages__pspRemovalConfirmation__p2 = A letter will be sent to {0} to let them 
 messages__pspRemovalConfirmation__p2__screenReaderAlternative = A letter will be sent to {0} to let them know that you have dee authorised yourself as a scheme practitioner for {1}.
 
 messages__pspSchemeDashboard__details_heading = Your practitioner details
-messages__pspSchemeDashboard__details_authBy = Authorised by:
-messages__pspSchemeDashboard__details_authDate = Date authorised to this scheme:
-messages__pspSchemeDashboard__details_clientRef = Client reference:
+messages__pspSchemeDashboard__details__subHeading_authBy = Authorised by:
+messages__pspSchemeDashboard__details__subHeading_authDate = Date authorised to this scheme:
+messages__pspSchemeDashboard__details__subHeading_clientRef = Client reference:
+
+messages__pspSchemeDashboard__scheme_heading = Pension scheme details
+messages__pspSchemeDashboard__scheme__subHeading_pstr = Pension Scheme Tax Reference:
+messages__pspSchemeDashboard__scheme__subHeading_regForTax = Registration for Tax:
+messages__pspSchemeDashboard__view_details_link = View the registered scheme details

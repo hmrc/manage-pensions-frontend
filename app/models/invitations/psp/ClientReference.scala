@@ -62,15 +62,11 @@ object ClientReference {
     }
   }
 
-  implicit lazy val writes = new Writes[ClientReference] {
-    def writes(o: ClientReference): JsObject = {
-      o match {
-        case ClientReference.HaveClientReference(reference) =>
-          Json.obj("hasReference" -> "true", "reference" -> reference)
-        case _ =>
-          Json.obj("hasReference" -> "false")
-      }
-    }
+  implicit lazy val writes: Writes[ClientReference] = {
+    case ClientReference.HaveClientReference(reference) =>
+      Json.obj("hasReference" -> "true", "reference" -> reference)
+    case _ =>
+      Json.obj("hasReference" -> "false")
   }
 
 }

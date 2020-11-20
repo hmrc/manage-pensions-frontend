@@ -23,6 +23,7 @@ case class PspSchemeDashboardCardViewModel(
                                             id: String,
                                             heading: String,
                                             subHeadings: Seq[(String, String)] = Seq.empty,
+                                            optionalSubHeadings: Seq[Option[(String, String)]] = Seq.empty,
                                             subHeadingParam: String = "bold",
                                             links: Seq[Link] = Nil,
                                             html: Option[Html] = None

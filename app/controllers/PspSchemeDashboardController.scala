@@ -18,17 +18,20 @@ package controllers
 
 import connectors._
 import connectors.admin.MinimalConnector
-import connectors.scheme.SchemeDetailsConnector
+import connectors.scheme.{ListOfSchemesConnector, SchemeDetailsConnector}
 import controllers.actions._
-import identifiers.{PSPNameId, SchemeNameId, SchemeSrnId}
+import handlers.ErrorHandler
+import identifiers.invitations.psp.PspClientReferenceId
+import identifiers.{PSPNameId, SchemeNameId, SchemeSrnId, SchemeStatusId}
 import javax.inject.Inject
 import models.AuthEntity.PSP
 import models._
+import models.invitations.psp.ClientReference
 import models.requests.AuthenticatedRequest
 import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.PspSchemeDashboardService
+import services.{PspSchemeDashboardService, SchemeDetailsService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.UserAnswers
 import views.html.pspSchemeDashboard
@@ -40,7 +43,10 @@ class PspSchemeDashboardController @Inject()(
                                               schemeDetailsConnector: SchemeDetailsConnector,
                                               authenticate: AuthAction,
                                               minimalConnector: MinimalConnector,
+                                              errorHandler: ErrorHandler,
+                                              listSchemesConnector: ListOfSchemesConnector,
                                               userAnswersCacheConnector: UserAnswersCacheConnector,
+                                              schemeDetailsService: SchemeDetailsService,
                                               val controllerComponents: MessagesControllerComponents,
                                               service: PspSchemeDashboardService,
                                               view: pspSchemeDashboard
@@ -51,20 +57,48 @@ class PspSchemeDashboardController @Inject()(
 
   def onPageLoad(srn: String): Action[AnyContent] = authenticate(PSP).async {
     implicit request =>
-      getUserAnswers(srn).flatMap { userAnswers =>
-        val pspIdList: Seq[String] = (userAnswers.json \ "pspDetails").as[Seq[AuthorisedPractitioner]].map(_.id)
+      getUserAnswers(srn).flatMap {
+        userAnswers =>
+          val pspList = (userAnswers.json \ "pspDetails").as[Seq[AuthorisedPractitioner]]
+          val pspIdList: Seq[String] = pspList.map(_.id)
 
-        if (pspIdList.contains(request.pspIdOrException.id)) {
-          userAnswersCacheConnector.upsert(request.externalId, userAnswers.json).map { _ =>
-            val schemeName: String = (userAnswers.json \ "schemeName").as[String]
-              Ok(view(schemeName, service.getTiles(request.pspIdOrException.id)))
+          if (pspIdList.contains(request.pspIdOrException.id)) {
+            val schemeStatus: String = userAnswers.get(SchemeStatusId).getOrElse("")
+            val clientReference: Option[String] = userAnswers.get(PspClientReferenceId).flatMap {
+              case ClientReference.HaveClientReference(reference) => Some(reference)
+              case ClientReference.NoClientReference => None
+            }
+            val isSchemeOpen: Boolean = schemeStatus.equalsIgnoreCase("open")
+            val loggedInPsp: AuthorisedPractitioner =
+              pspList
+                .find(_.id == request.pspIdOrException.id)
+                .getOrElse(throw new Exception("No logged in PSP found"))
+
+            listSchemesConnector.getListOfSchemes(loggedInPsp.authorisingPSAID).flatMap {
+              case Right(list) =>
+                userAnswersCacheConnector.upsert(request.externalId, userAnswers.json).map { _ =>
+                  Ok(view(
+                    schemeName = (userAnswers.json \ "schemeName").as[String],
+                    cards = service.getTiles(
+                      srn = srn,
+                      pstr = (userAnswers.json \ "pstr").as[String],
+                      openDate = schemeDetailsService.openedDate(srn, list, isSchemeOpen),
+                      loggedInPsp = loggedInPsp,
+                      clientReference = clientReference
+                    )
+                  ))
+                }
+              case _ =>
+                Future.successful(NotFound(errorHandler.notFoundTemplate))
+            }
+          } else {
+            Logger.debug("PSP tried to access an unauthorised scheme")
+            Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
           }
-        } else {
-          Logger.debug("PSP tried to access an unauthorised scheme")
-          Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
-        }
+
       }
   }
+
 
   private def getUserAnswers(srn: String)
                             (implicit request: AuthenticatedRequest[AnyContent]): Future[UserAnswers] =

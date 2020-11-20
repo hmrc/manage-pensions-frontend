@@ -30,6 +30,15 @@
                 @subHead._2
             </h3>
         }
+
+        @cardModel.optionalSubHeadings.map { optionalSubHeading =>
+            @optionalSubHeading.map { subHead =>
+                <h3 class="card-sub-heading">
+                    <span class="font-xsmall">@subHead._1</span><br>
+                @subHead._2
+                </h3>
+            }
+        }
     </div>
 
     <div class="card-action">

@@ -19,38 +19,63 @@ package services
 import config.FrontendAppConfig
 import connectors.admin.MinimalConnector
 import javax.inject.Inject
-import models.{Link, MinimalPSAPSP}
+import models.invitations.psp.ClientReference
+import models.{AuthorisedPractitioner, Link, MinimalPSAPSP}
 import play.api.i18n.Messages
 import uk.gov.hmrc.http.HeaderCarrier
-import viewmodels.{PspSchemeDashboardCardViewModel, Message}
+import utils.DateHelper
+import viewmodels.{Message, PspSchemeDashboardCardViewModel}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class PspSchemeDashboardService @Inject()(appConfig: FrontendAppConfig,
-                                          minimalConnector: MinimalConnector
+class PspSchemeDashboardService @Inject()(
+                                           appConfig: FrontendAppConfig,
+                                           minimalConnector: MinimalConnector
                                          )(implicit ec: ExecutionContext) {
 
   def getPspDetails(pspId: String)
                    (implicit hc: HeaderCarrier): Future[MinimalPSAPSP] =
     minimalConnector.getMinimalPspDetails(pspId)
 
-  def getTiles(pspId: String)
-              (implicit messages: Messages): Seq[PspSchemeDashboardCardViewModel] =
+  def getPsaDetails(psaId: String)
+                   (implicit hc: HeaderCarrier): Future[MinimalPSAPSP] =
+    minimalConnector.getMinimalPsaDetails(psaId)
+
+
+  def getTiles(
+                srn: String,
+                pstr: String,
+                openDate: Option[String],
+                loggedInPsp: AuthorisedPractitioner,
+                clientReference: Option[String]
+              )(implicit messages: Messages, hc: HeaderCarrier): Seq[PspSchemeDashboardCardViewModel] =
     Seq(
-//      schemeCard,
-      practitionerCard(pspId)
+      schemeCard(srn, pstr, openDate),
+      practitionerCard(loggedInPsp, clientReference)
     )
 
-  private def practitionerCard(pspId: String)
-                              (implicit messages: Messages): PspSchemeDashboardCardViewModel =
+  private def practitionerCard(
+                                loggedInPsp: AuthorisedPractitioner,
+                                clientReference: Option[String]
+                              )(implicit messages: Messages, hc: HeaderCarrier): PspSchemeDashboardCardViewModel = {
+
+    val authedBy: String = loggedInPsp.authorisingPSA.name
+    val relationshipStartDate: String = loggedInPsp.relationshipStartDate.format(DateHelper.formatter)
 
     PspSchemeDashboardCardViewModel(
-      id = "your-practitioner-card",
+      id = "practitioner-card",
       heading = Message("messages__pspSchemeDashboard__details_heading"),
       subHeadings = Seq(
-        (Message("messages__pspSchemeDashboard__details_authBy"), "Dave"),
-        (Message("messages__pspSchemeDashboard__details_authDate"), "14 Sep 2020"),
-        (Message("messages__pspSchemeDashboard__details_clientRef"), "01234577")
+        (Message("messages__pspSchemeDashboard__details__subHeading_authBy"), authedBy),
+        (Message("messages__pspSchemeDashboard__details__subHeading_authDate"), relationshipStartDate)
+      ),
+      optionalSubHeadings = Seq(
+        clientReference match {
+          case Some(ref) =>
+            Some(Message("messages__pspSchemeDashboard__details__subHeading_clientRef"), ref)
+          case _ =>
+            None
+        }
       ),
       links = Seq(
         Link(
@@ -60,14 +85,33 @@ class PspSchemeDashboardService @Inject()(appConfig: FrontendAppConfig,
         )
       )
     )
+  }
 
-  private def schemeCard(implicit messages: Messages): PspSchemeDashboardCardViewModel =
+  private def schemeCard(
+                          srn: String,
+                          pstr: String,
+                          openDate: Option[String]
+                        )(implicit messages: Messages): PspSchemeDashboardCardViewModel = {
+
     PspSchemeDashboardCardViewModel(
       id = "scheme-card",
-      heading = Message("messages__pspDashboard__scheme_heading"),
+      heading = Message("messages__pspSchemeDashboard__scheme_heading"),
+      subHeadings = Seq(
+        (Message("messages__pspSchemeDashboard__scheme__subHeading_pstr"), pstr)
+      ),
+      optionalSubHeadings = Seq(
+        openDate match {
+          case Some(date) =>
+            Some(Message("messages__pspSchemeDashboard__scheme__subHeading_regForTax"), date)
+          case _ =>
+            None
+        }
+      ),
       links = Seq(Link(
-        "search-schemes",
-        controllers.psp.routes.ListSchemesController.onPageLoad().url,
-        Message("messages__pspDashboard__search_scheme")))
+        id = "search-schemes",
+        url = controllers.routes.PspSchemeDashboardController.onPageLoad(srn).url,
+        linkText = Message("messages__pspSchemeDashboard__view_details_link")
+      ))
     )
+  }
 }
