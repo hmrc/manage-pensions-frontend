@@ -32,10 +32,12 @@ import scala.concurrent.Future
 
 class FrontendConnector @Inject()(http: HttpClient, config: FrontendAppConfig) {
 
-  def retrieveAftPartial[A](srn: String)(implicit request: Request[A], ec: ExecutionContext): Future[Html] =
+  def retrieveAftPartial[A](srn: String)
+                           (implicit request: Request[A], ec: ExecutionContext): Future[Html] =
     retrievePartial(config.aftPartialHtmlUrl.format(srn))
 
-  def retrievePaymentsAndChargesPartial[A](srn: String)(implicit request: Request[A], ec: ExecutionContext): Future[Html] =
+  def retrievePaymentsAndChargesPartial[A](srn: String)
+                                          (implicit request: Request[A], ec: ExecutionContext): Future[Html] =
     retrievePartial(config.paymentsAndChargesPartialHtmlUrl.format(srn))
 
   def retrieveSchemeUrlsPartial[A](implicit request: Request[A], ec: ExecutionContext): Future[Html] =
@@ -44,7 +46,13 @@ class FrontendConnector @Inject()(http: HttpClient, config: FrontendAppConfig) {
   def retrievePenaltiesUrlPartial[A](implicit request: Request[A], ec: ExecutionContext): Future[Html] =
     retrievePartial(config.penaltiesUrlPartialHtmlUrl)
 
-  private def retrievePartial[A](url: String)(implicit request: Request[A], ec: ExecutionContext): Future[Html] = {
+  def retrievePspDashboardAftCards[A](srn: String)
+                                     (implicit request: Request[A], ec: ExecutionContext): Future[Html] =
+    retrievePartial(config.pspDashboardAftCardUrl.format(srn))
+
+
+  private def retrievePartial[A](url: String)
+                                (implicit request: Request[A], ec: ExecutionContext): Future[Html] = {
     implicit val hc: HeaderCarrier = HeaderCarrierFunctions.headerCarrierForPartials(request).toHeaderCarrier
 
     http.GET[HtmlPartial](url) recover connectionExceptionsAsHtmlPartialFailure map {

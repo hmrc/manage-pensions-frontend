@@ -27,6 +27,7 @@
 
 @(
         schemeName: String,
+        aftCards: Seq[Html],
         cards: Seq[PspSchemeDashboardCardViewModel],
         returnLink: Option[Link] = None
 )(
@@ -42,6 +43,10 @@
     @components.heading(schemeName)
 
     <div class="flex-container grid-row">
+        @for(aftCard <- aftCards) {
+            @aftCard
+        }
+
         @for(card <- cards) {
             @components.pspSchemeDashboardCard(card)
         }

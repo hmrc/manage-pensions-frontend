@@ -16,18 +16,18 @@
 
 package controllers
 
-import config.{FeatureSwitchManagementService, FrontendAppConfig}
+import config.FeatureSwitchManagementService
 import connectors._
-import connectors.scheme.{PensionSchemeVarianceLockConnector, SchemeDetailsConnector, ListOfSchemesConnector}
+import connectors.scheme.{ListOfSchemesConnector, PensionSchemeVarianceLockConnector, SchemeDetailsConnector}
 import controllers.actions._
 import handlers.ErrorHandler
-import identifiers.{SchemeNameId, SchemeStatusId, SchemeSrnId}
+import identifiers.{SchemeNameId, SchemeSrnId, SchemeStatusId}
 import javax.inject.Inject
 import models._
 import models.requests.AuthenticatedRequest
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.JsArray
-import play.api.mvc.{AnyContent, MessagesControllerComponents, Action}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import play.twirl.api.Html
 import services.SchemeDetailsService
 import toggles.Toggles
@@ -36,7 +36,7 @@ import utils.UserAnswers
 import viewmodels.Message
 import views.html.schemeDetails
 
-import scala.concurrent.{Future, ExecutionContext}
+import scala.concurrent.{ExecutionContext, Future}
 
 class SchemeDetailsController @Inject()(
                                          override val messagesApi: MessagesApi,
@@ -50,7 +50,9 @@ class SchemeDetailsController @Inject()(
                                          schemeDetailsService: SchemeDetailsService,
                                          view: schemeDetails,
                                          fs: FeatureSwitchManagementService
-                                       )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+                                       )(implicit val ec: ExecutionContext)
+  extends FrontendBaseController
+    with I18nSupport {
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate().async {
     implicit request =>
@@ -61,7 +63,10 @@ class SchemeDetailsController @Inject()(
           val schemeName = userAnswers.get(SchemeNameId).getOrElse("")
           val schemeStatus = userAnswers.get(SchemeStatusId).getOrElse("")
           val isSchemeOpen = schemeStatus.equalsIgnoreCase("open")
-          val updatedUa = userAnswers.set(SchemeSrnId)(srn.id).flatMap(_.set(SchemeNameId)(schemeName)).asOpt.getOrElse(userAnswers)
+          val updatedUa = userAnswers
+            .set(SchemeSrnId)(srn.id).flatMap(
+            _.set(SchemeNameId)(schemeName)
+          ).asOpt.getOrElse(userAnswers)
           val displayChangeLink = schemeDetailsService.displayChangeLink(isSchemeOpen, lock)
           for {
             aftHtml <- schemeDetailsService.retrieveAftHtml(userAnswers, srn.id)
@@ -96,7 +101,8 @@ class SchemeDetailsController @Inject()(
 
   private def retrievePaymentsAndChargesHtml(
                                               srn: String,
-                                              isSchemeOpen: Boolean)(implicit request: AuthenticatedRequest[AnyContent]): Future[Html] = {
+                                              isSchemeOpen: Boolean
+                                            )(implicit request: AuthenticatedRequest[AnyContent]): Future[Html] = {
     if (isSchemeOpen) {
       schemeDetailsService.retrievePaymentsAndChargesHtml(srn)
     } else {
@@ -107,19 +113,26 @@ class SchemeDetailsController @Inject()(
   private def getPspLinks(anyPSPs: Boolean) = {
     if (fs.get(Toggles.pspAuthorisationEnabled)) {
       val viewPspLink = if (anyPSPs) {
-        Seq(Link("view-practitioners", controllers.psp.routes.ViewPractitionersController.onPageLoad().url, Message("messages__pspViewOrDeauthorise__link")))
+        Seq(Link(
+          id = "view-practitioners",
+          url = controllers.psp.routes.ViewPractitionersController.onPageLoad().url,
+          linkText = Message("messages__pspViewOrDeauthorise__link")
+        ))
       } else {
         Nil
       }
-      Seq(
-        Link("authorise", controllers.invitations.psp.routes.WhatYouWillNeedController.onPageLoad().url, Message("messages__pspAuthorise__link"))
-      ) ++ viewPspLink
+      Seq(Link(
+        id = "authorise",
+        url = controllers.invitations.psp.routes.WhatYouWillNeedController.onPageLoad().url,
+        linkText = Message("messages__pspAuthorise__link")
+      )) ++ viewPspLink
     } else {
       Nil
     }
   }
 
-  private def withSchemeAndLock(srn: SchemeReferenceNumber)(implicit request: AuthenticatedRequest[AnyContent]): Future[(UserAnswers, Option[Lock])] = {
+  private def withSchemeAndLock(srn: SchemeReferenceNumber)
+                               (implicit request: AuthenticatedRequest[AnyContent]): Future[(UserAnswers, Option[Lock])] = {
     for {
       _ <- userAnswersCacheConnector.removeAll(request.externalId)
       scheme <- schemeDetailsConnector.getSchemeDetails(request.psaIdOrException.id, "srn", srn)

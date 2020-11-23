@@ -22,7 +22,7 @@ import connectors.scheme.{ListOfSchemesConnector, SchemeDetailsConnector}
 import controllers.actions._
 import handlers.ErrorHandler
 import identifiers.invitations.psp.PspClientReferenceId
-import identifiers.{PSPNameId, SchemeNameId, SchemeSrnId, SchemeStatusId}
+import identifiers.{PSPNameId, SchemeSrnId, SchemeStatusId}
 import javax.inject.Inject
 import models.AuthEntity.PSP
 import models._
@@ -74,22 +74,27 @@ class PspSchemeDashboardController @Inject()(
                 .find(_.id == request.pspIdOrException.id)
                 .getOrElse(throw new Exception("No logged in PSP found"))
 
-            listSchemesConnector.getListOfSchemes(loggedInPsp.authorisingPSAID).flatMap {
-              case Right(list) =>
-                userAnswersCacheConnector.upsert(request.externalId, userAnswers.json).map { _ =>
-                  Ok(view(
-                    schemeName = (userAnswers.json \ "schemeName").as[String],
-                    cards = service.getTiles(
-                      srn = srn,
-                      pstr = (userAnswers.json \ "pstr").as[String],
-                      openDate = schemeDetailsService.openedDate(srn, list, isSchemeOpen),
-                      loggedInPsp = loggedInPsp,
-                      clientReference = clientReference
-                    )
-                  ))
-                }
-              case _ =>
-                Future.successful(NotFound(errorHandler.notFoundTemplate))
+            for {
+              aftCards <- schemeDetailsService.retrievePspDashboardAftCards(srn, request.pspIdOrException.id)
+              listOfSchemes <- listSchemesConnector.getListOfSchemesForPsp(request.pspIdOrException.id)
+              _ <- userAnswersCacheConnector.upsert(request.externalId, userAnswers.json)
+            } yield {
+              listOfSchemes match {
+                case Right(list) =>
+                    Ok(view(
+                      schemeName = (userAnswers.json \ "schemeName").as[String],
+                      aftCards = Seq(aftCards),
+                      cards = service.getTiles(
+                        srn = srn,
+                        pstr = (userAnswers.json \ "pstr").as[String],
+                        openDate = schemeDetailsService.openedDate(srn, list, isSchemeOpen),
+                        loggedInPsp = loggedInPsp,
+                        clientReference = clientReference
+                      )
+                    ))
+                case _ =>
+                  NotFound(errorHandler.notFoundTemplate)
+              }
             }
           } else {
             Logger.debug("PSP tried to access an unauthorised scheme")

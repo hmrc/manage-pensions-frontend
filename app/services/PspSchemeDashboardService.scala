@@ -49,9 +49,6 @@ class PspSchemeDashboardService @Inject()(
                 clientReference: Option[String]
               )(implicit messages: Messages, hc: HeaderCarrier): Seq[PspSchemeDashboardCardViewModel] =
     Seq(
-      aftReturnsCard,
-      aftUpcomingChargesCard,
-      aftOverdueChargesCard,
       schemeCard(srn, pstr, openDate),
       practitionerCard(loggedInPsp, clientReference)
     )

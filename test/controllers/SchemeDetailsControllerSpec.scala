@@ -64,7 +64,6 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
 
   def controller(): SchemeDetailsController = {
     new SchemeDetailsController(
-      frontendAppConfig,
       messagesApi,
       fakeSchemeDetailsConnector,
       fakeListOfSchemesConnector,
