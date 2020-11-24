@@ -52,7 +52,7 @@ class ListOfSchemesConnectorImpl @Inject()(http: HttpClient, config: FrontendApp
 
   def getListOfSchemes(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]] = {
     val (url, schemeHc) = if(fs.get(Toggles.listOfSchemesIFEnabled)) {
-        (config.listOfSchemesIFUrl, hc.withExtraHeaders("idType" -> "PSAID", "idValue" -> psaId))
+        (config.listOfSchemesIFUrl, hc.withExtraHeaders("idType" -> "psaid", "idValue" -> psaId))
     } else {
         (config.listOfSchemesUrl, hc.withExtraHeaders("psaId" -> psaId))
     }
@@ -61,7 +61,7 @@ class ListOfSchemesConnectorImpl @Inject()(http: HttpClient, config: FrontendApp
   }
 
   def getListOfSchemesForPsp(pspId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]] = {
-    val schemeHc = hc.withExtraHeaders("idType" -> "PSPID", "idValue" -> pspId)
+    val schemeHc = hc.withExtraHeaders("idType" -> "pspid", "idValue" -> pspId)
     listOfSchemes(config.listOfSchemesIFUrl)(schemeHc, ec)
   }
 
