@@ -118,8 +118,10 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
     new SchemeDetailsConnector {
 
       override def getSchemeDetails(psaId: String,
-                                    idNumber: String)(implicit hc: HeaderCarrier,
-                                                      ec: ExecutionContext): Future[UserAnswers] = {
+                                    idNumber: String,
+                                    schemeIdType: String
+                                   )(implicit hc: HeaderCarrier,
+                                     ec: ExecutionContext): Future[UserAnswers] = {
 
         Future.apply(UserAnswers(Json.parse(json)))(ec)
       }
@@ -150,7 +152,7 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
       )
       val ua = UserAnswers(uaJson)
       val sdc = mock[SchemeDetailsConnector]
-      when(sdc.getSchemeDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+      when(sdc.getSchemeDetails(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(ua))
 
       val result = controller(schemeDetailsConnector = sdc).onPageLoad(fakeRequest)

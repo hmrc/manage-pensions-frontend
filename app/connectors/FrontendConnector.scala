@@ -49,6 +49,7 @@ class FrontendConnector @Inject()(http: HttpClient, config: FrontendAppConfig) {
                                      (implicit request: Request[A], ec: ExecutionContext): Future[Html] = {
     val extraHeaders: Seq[(String, String)] = Seq(
       ("schemeIdNumber", srn),
+      ("schemeIdType", "srn"),
       ("userIdType", "PSPID"),
       ("userIdNumber", pspId)
     )

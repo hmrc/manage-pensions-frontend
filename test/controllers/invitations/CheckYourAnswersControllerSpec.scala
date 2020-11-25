@@ -149,7 +149,7 @@ object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours
 
   def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
-    when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any())(any(), any()))
+    when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any()))
       .thenReturn(Future.successful(UserAnswers(readJsonFromFile("/data/validSchemeDetailsResponse.json"))))
 
     new CheckYourAnswersController(
@@ -159,7 +159,7 @@ object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours
 
   def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction, invitationResponse: Future[Unit]) = {
 
-        when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any())(any(), any()))
+        when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any()))
           .thenReturn(Future.successful(UserAnswers(readJsonFromFile("/data/validSchemeDetailsResponse.json"))))
 
     new CheckYourAnswersController(

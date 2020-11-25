@@ -79,6 +79,7 @@ class PspSchemeDashboardController @Inject()(
               listOfSchemes <- listSchemesConnector.getListOfSchemesForPsp(request.pspIdOrException.id)
               _ <- userAnswersCacheConnector.upsert(request.externalId, userAnswers.json)
             } yield {
+              println(s"\n\n\taftCards:$aftCards\n\n")
               listOfSchemes match {
                 case Right(list) =>
                   Ok(view(
