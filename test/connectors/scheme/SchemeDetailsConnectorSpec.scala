@@ -39,7 +39,7 @@ class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
     server.stubFor(
       get(urlEqualTo(schemeDetailsUrl))
         .withHeader("schemeIdType", equalTo(schemeIdType))
-        .withHeader("idNumber", equalTo(idNumber))
+        .withHeader("schemeIdNumber", equalTo(idNumber))
         .willReturn(
           aResponse()
             .withStatus(Status.OK)
@@ -50,7 +50,7 @@ class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
 
     val connector = injector.instanceOf[SchemeDetailsConnector]
 
-    connector.getSchemeDetails(psaId, schemeIdType, idNumber).map(schemeDetails =>
+    connector.getSchemeDetails(psaId, idNumber).map(schemeDetails =>
       schemeDetails shouldBe UserAnswers(Json.parse(jsonResponse))
     )
 
@@ -71,7 +71,7 @@ class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
 
     val connector = injector.instanceOf[SchemeDetailsConnector]
     recoverToSucceededIf[BadRequestException] {
-      connector.getSchemeDetails(psaId, schemeIdType, idNumber)
+      connector.getSchemeDetails(psaId, idNumber)
     }
   }
 
@@ -90,7 +90,7 @@ class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
     val connector = injector.instanceOf[SchemeDetailsConnector]
 
     recoverToSucceededIf[BadRequestException] {
-      connector.getSchemeDetails(psaId, schemeIdType, idNumber)
+      connector.getSchemeDetails(psaId, idNumber)
     }
 
   }
@@ -107,7 +107,7 @@ class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
     val connector = injector.instanceOf[SchemeDetailsConnector]
 
     recoverToSucceededIf[BadRequestException] {
-      connector.getSchemeDetails(psaId, schemeIdType, idNumber)
+      connector.getSchemeDetails(psaId, idNumber)
     }
 
   }
@@ -125,7 +125,7 @@ class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
     val connector = injector.instanceOf[SchemeDetailsConnector]
 
     recoverToSucceededIf[BadRequestException] {
-      connector.getSchemeDetails(psaId, schemeIdType, idNumber)
+      connector.getSchemeDetails(psaId, idNumber)
     }
 
   }

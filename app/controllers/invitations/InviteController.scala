@@ -38,12 +38,14 @@ import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
 @Singleton
-class InviteController @Inject()(authenticate: AuthAction,
-                                 schemeDetailsConnector: SchemeDetailsConnector,
-                                 userAnswersCacheConnector: UserAnswersCacheConnector,
-                                 featureSwitchManagementService: FeatureSwitchManagementService,
-                                 minimalPsaConnector: MinimalConnector,
-                                 val controllerComponents: MessagesControllerComponents)(implicit val ec: ExecutionContext) extends FrontendBaseController {
+class InviteController @Inject()(
+                                  authenticate: AuthAction,
+                                  schemeDetailsConnector: SchemeDetailsConnector,
+                                  userAnswersCacheConnector: UserAnswersCacheConnector,
+                                  minimalPsaConnector: MinimalConnector,
+                                  val controllerComponents: MessagesControllerComponents
+                                )(implicit val ec: ExecutionContext)
+  extends FrontendBaseController {
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate().async {
     implicit request =>
@@ -52,24 +54,28 @@ class InviteController @Inject()(authenticate: AuthAction,
           Future.successful(Redirect(controllers.invitations.routes.YouCannotSendAnInviteController.onPageLoad()))
         } else {
           getSchemeDetails(srn) flatMap {
-              case Some(x) =>
-                val minimalSchemeDetail = MinimalSchemeDetail(srn, x.pstr, x.name)
-                userAnswersCacheConnector.save(request.externalId, MinimalSchemeDetailId, minimalSchemeDetail).map { _ =>
-                  Redirect(controllers.invitations.routes.WhatYouWillNeedController.onPageLoad())
-                }
-              case None => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+            case Some(x) =>
+              val minimalSchemeDetail = MinimalSchemeDetail(srn, x.pstr, x.name)
+              userAnswersCacheConnector.save(request.externalId, MinimalSchemeDetailId, minimalSchemeDetail).map { _ =>
+                Redirect(controllers.invitations.routes.WhatYouWillNeedController.onPageLoad())
+              }
+            case None => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
           }
         }
       }
   }
 
   private def getSchemeDetails(srn: SchemeReferenceNumber)(implicit request: AuthenticatedRequest[_]): Future[Option[SchemeDetails]] =
-      schemeDetailsConnector.getSchemeDetails(request.psaIdOrException.id, "srn", srn).map { scheme =>
-        scheme.get(SchemeNameId).flatMap { name =>
-          Some(SchemeDetails(name, scheme.get(PSTRId)))
-        }
-
+    schemeDetailsConnector.getSchemeDetails(
+      userIdNumber = request.psaIdOrException.id,
+      schemeIdNumber = srn,
+      schemeIdType = "srn"
+    ) map { scheme =>
+      scheme.get(SchemeNameId).flatMap { name =>
+        Some(SchemeDetails(name, scheme.get(PSTRId)))
       }
+
+    }
 
   case class SchemeDetails(name: String, pstr: Option[String])
 

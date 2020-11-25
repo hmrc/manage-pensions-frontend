@@ -68,7 +68,7 @@ class ViewAdministratorsControllerSpec extends ControllerSpecBase with BeforeAnd
       val desAnswers: UserAnswers = UserAnswers(desUserAnswers.json.as[JsObject] ++ Json.obj(
         "schemeStatus" -> "Rejected")
       )
-      when(fakeSchemeDetailsConnector.getSchemeDetails(eqTo("A0000000"), any(), any())(any(), any()))
+      when(fakeSchemeDetailsConnector.getSchemeDetails(eqTo("A0000000"), any())(any(), any()))
         .thenReturn(Future.successful(desAnswers))
       when(schemeDetailsService.administratorsVariations(any(), any(), any())).thenReturn(administrators)
 
@@ -80,7 +80,7 @@ class ViewAdministratorsControllerSpec extends ControllerSpecBase with BeforeAnd
     }
 
     "return NOT_FOUND when PSA data is not returned by API (as we don't know who administers the scheme)" in {
-      when(fakeSchemeDetailsConnector.getSchemeDetails(eqTo("A0000000"), any(), any())(any(), any()))
+      when(fakeSchemeDetailsConnector.getSchemeDetails(eqTo("A0000000"), any())(any(), any()))
         .thenReturn(Future.successful(UserAnswers(Json.obj("psaDetails" -> JsArray()))))
 
       val result = controller(dontGetAnyData).onPageLoad(srn)(fakeRequest)
@@ -88,7 +88,7 @@ class ViewAdministratorsControllerSpec extends ControllerSpecBase with BeforeAnd
     }
 
     "return NOT_FOUND and the correct not found view when the selected scheme is not administered by the logged-in PSA" in {
-      when(fakeSchemeDetailsConnector.getSchemeDetails(eqTo("A0000000"), any(), any())(any(), any()))
+      when(fakeSchemeDetailsConnector.getSchemeDetails(eqTo("A0000000"), any())(any(), any()))
         .thenReturn(Future.successful(UserAnswers(Json.obj("schemeStatus" -> "Open",
           SchemeNameId.toString -> schemeName,
           "psaDetails" -> JsArray(Seq(

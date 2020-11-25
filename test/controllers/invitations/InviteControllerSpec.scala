@@ -66,7 +66,7 @@ class InviteControllerSpec extends SpecBase {
     "redirect to unauthorised page if user is not authenticated" in {
 
       val controller = new InviteController(FakeUnAuthorisedAction, fakeSchemeDetailsConnector,
-        FakeUserAnswersCacheConnector, featureSwitch, fakeMinimalPsaConnector(isSuspended = false), stubMessagesControllerComponents())
+        FakeUserAnswersCacheConnector, fakeMinimalPsaConnector(isSuspended = false), stubMessagesControllerComponents())
 
       val result = controller.onPageLoad(srn)(fakeRequest)
 
@@ -104,12 +104,11 @@ object InviteControllerSpec extends SpecBase with JsonFileReader {
   def fakeSchemeDetailsConnector: SchemeDetailsConnector = new SchemeDetailsConnector {
 
     override def getSchemeDetails(psaId: String,
-                                  schemeIdType: String,
                                   idNumber: String)(implicit hc: HeaderCarrier,
                                                               ec: ExecutionContext): Future[UserAnswers] =
       Future.successful(UserAnswers(readJsonFromFile("/data/validSchemeDetailsUserAnswers.json")))
   }
 
   def controller(isSuspended: Boolean) = new InviteController(mockAuthAction, fakeSchemeDetailsConnector,
-    FakeUserAnswersCacheConnector, featureSwitch, fakeMinimalPsaConnector(isSuspended), stubMessagesControllerComponents())
+    FakeUserAnswersCacheConnector, fakeMinimalPsaConnector(isSuspended), stubMessagesControllerComponents())
 }

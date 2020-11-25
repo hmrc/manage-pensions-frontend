@@ -135,7 +135,11 @@ class SchemeDetailsController @Inject()(
                                (implicit request: AuthenticatedRequest[AnyContent]): Future[(UserAnswers, Option[Lock])] = {
     for {
       _ <- userAnswersCacheConnector.removeAll(request.externalId)
-      scheme <- schemeDetailsConnector.getSchemeDetails(request.psaIdOrException.id, "srn", srn)
+      scheme <- schemeDetailsConnector.getSchemeDetails(
+        userIdNumber = request.psaIdOrException.id,
+        schemeIdNumber = srn,
+        schemeIdType = "srn"
+      )
       lock <- schemeVarianceLockConnector.isLockByPsaIdOrSchemeId(request.psaIdOrException.id, srn.id)
     } yield {
       (scheme, lock)

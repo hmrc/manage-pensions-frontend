@@ -51,7 +51,6 @@ import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
 class DeclarationController @Inject()(
-                                       appConfig: FrontendAppConfig,
                                        override val messagesApi: MessagesApi,
                                        formProvider: DeclarationFormProvider,
                                        auth: AuthAction,
@@ -62,7 +61,6 @@ class DeclarationController @Inject()(
                                        invitationsCacheConnector: InvitationsCacheConnector,
                                        invitationConnector: InvitationConnector,
                                        @AcceptInvitation navigator: Navigator,
-                                       featureSwitchManagementService: FeatureSwitchManagementService,
                                        val controllerComponents: MessagesControllerComponents,
                                        view: declaration
                                      )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
@@ -72,7 +70,11 @@ class DeclarationController @Inject()(
     implicit request =>
       (DoYouHaveWorkingKnowledgeId and SchemeSrnId).retrieve.right.map {
         case haveWorkingKnowledge ~ srn =>
-            schemeDetailsConnector.getSchemeDetails(request.psaIdOrException.id, "srn", srn).flatMap { details =>
+            schemeDetailsConnector.getSchemeDetails(
+              userIdNumber = request.psaIdOrException.id,
+              schemeIdNumber = srn,
+              schemeIdType = "srn"
+            ) flatMap { details =>
               (details.get(GetSchemeNameId), details.get(SchemeTypeId)) match {
                 case (Some(name), Some(schemeType)) =>
                   val isMasterTrust = schemeType.equals(MasterTrust)

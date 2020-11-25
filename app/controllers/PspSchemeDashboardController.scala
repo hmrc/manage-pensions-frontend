@@ -81,17 +81,17 @@ class PspSchemeDashboardController @Inject()(
             } yield {
               listOfSchemes match {
                 case Right(list) =>
-                    Ok(view(
-                      schemeName = (userAnswers.json \ "schemeName").as[String],
-                      aftCards = Seq(aftCards),
-                      cards = service.getTiles(
-                        srn = srn,
-                        pstr = (userAnswers.json \ "pstr").as[String],
-                        openDate = schemeDetailsService.openedDate(srn, list, isSchemeOpen),
-                        loggedInPsp = loggedInPsp,
-                        clientReference = clientReference
-                      )
-                    ))
+                  Ok(view(
+                    schemeName = (userAnswers.json \ "schemeName").as[String],
+                    aftCards = Seq(aftCards),
+                    cards = service.getTiles(
+                      srn = srn,
+                      pstr = (userAnswers.json \ "pstr").as[String],
+                      openDate = schemeDetailsService.openedDate(srn, list, isSchemeOpen),
+                      loggedInPsp = loggedInPsp,
+                      clientReference = clientReference
+                    )
+                  ))
                 case _ =>
                   NotFound(errorHandler.notFoundTemplate)
               }
@@ -109,7 +109,11 @@ class PspSchemeDashboardController @Inject()(
                             (implicit request: AuthenticatedRequest[AnyContent]): Future[UserAnswers] =
     for {
       _ <- userAnswersCacheConnector.removeAll(request.externalId)
-      userAnswers <- schemeDetailsConnector.getSchemeDetails(request.pspIdOrException.id, "srn", srn)
+      userAnswers <- schemeDetailsConnector.getSchemeDetails(
+        userIdNumber = request.pspIdOrException.id,
+        schemeIdNumber = srn,
+        schemeIdType = "srn"
+      )
       minPspDetails <- minimalConnector.getMinimalPspDetails(request.pspIdOrException.id)
     } yield {
       userAnswers.set(SchemeSrnId)(srn)

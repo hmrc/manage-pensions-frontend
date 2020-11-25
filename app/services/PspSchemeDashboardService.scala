@@ -166,7 +166,7 @@ class PspSchemeDashboardService @Inject()(
       heading = Message("messages__pspSchemeDashboard__aftOverdueCharges_heading"),
       subHeadings = Seq(
         (Message("messages__pspSchemeDashboard__aftOverdueCharges__subHeading_total"), "£6,000.00"),
-        (Message("messages__pspSchemeDashboard__aftOverdueCharges__subHeading_interest"), "£155.81"),
+        (Message("messages__pspSchemeDashboard__aftOverdueCharges__subHeading_interest"), "£155.81")
       ),
       subHeadingParam = "detail-large",
       links = Seq(

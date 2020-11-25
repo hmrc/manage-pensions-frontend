@@ -41,26 +41,25 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
                                      minimalPsaConnector: MinimalConnector
                                     )(implicit ec: ExecutionContext) {
 
-  def retrieveAftHtml[A](userAnswers: UserAnswers, srn: String)(implicit request: Request[A]): Future[Html] = {
+  def retrieveAftHtml[A](userAnswers: UserAnswers, srn: String)
+                        (implicit request: Request[A]): Future[Html] =
     if (isCorrectSchemeStatus(userAnswers)) {
       frontendConnector.retrieveAftPartial(srn)
     } else {
       Future.successful(Html(""))
     }
-  }
 
-  def retrievePspDashboardAftCards[A](srn: String)
-                                     (implicit request: Request[A]): Future[Html] = {
-    frontendConnector.retrievePspDashboardAftCards(srn)
-  }
+  def retrievePspDashboardAftCards[A](srn: String, pspId: String)
+                                     (implicit request: Request[A]): Future[Html] =
+    frontendConnector.retrievePspDashboardAftCards(srn, pspId)
 
-  def retrievePaymentsAndChargesHtml[A](srn: String)(implicit request: Request[A]): Future[Html] = {
+  def retrievePaymentsAndChargesHtml[A](srn: String)
+                                       (implicit request: Request[A]): Future[Html] =
     if (appConfig.isFSEnabled) {
       frontendConnector.retrievePaymentsAndChargesPartial(srn)
     } else {
       Future.successful(Html(""))
     }
-  }
 
   private def isCorrectSchemeStatus(ua: UserAnswers): Boolean = {
     val validStatus = Seq(Open.value, WoundUp.value, Deregistered.value)
@@ -92,7 +91,7 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
       }
     }
 
-  def openedDate(srn: String, list: ListOfSchemes, isSchemeOpen: Boolean): Option[String] = {
+  def openedDate(srn: String, list: ListOfSchemes, isSchemeOpen: Boolean): Option[String] =
     if (isSchemeOpen) {
       list.schemeDetails.flatMap {
         listOfSchemes =>
@@ -107,7 +106,6 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
     else {
       None
     }
-  }
 
   def pstr(srn: String, list: ListOfSchemes): Option[String] =
     list.schemeDetails.flatMap { listOfSchemes =>

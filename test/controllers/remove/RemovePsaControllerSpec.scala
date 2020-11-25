@@ -89,38 +89,37 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
 
   val userAnswersJsonWithoutPstr =
     s"""{
-                       "benefits": "opt1",
-                       "schemeName": "Test Scheme name",
-                       "schemeType": {
-                         "schemeTypeDetails": "test scheme name",
-                         "name": "master"
-                       },
-                       "psaDetails" :[
-                         {
-                         "id":"A0000000",
-                         "individual":{
-                             "firstName": "Taylor",
-                             "middleName": "Middle",
-                             "lastName": "Rayon"
-                           },
-                           "organisationOrPartnershipName": "partnetship name",
-                           "relationshipDate": "2018-10-01"
-                         }
-                       ],
-                       "schemeStatus" : "Pending",
-                       "isAboutBenefitsAndInsuranceComplete": true,
-                       "isAboutMembersComplete": true,
-                       "isBeforeYouStartComplete": true
-                     }
-                     """.stripMargin
+        "benefits": "opt1",
+         "schemeName": "Test Scheme name",
+         "schemeType": {
+           "schemeTypeDetails": "test scheme name",
+           "name": "master"
+         },
+         "psaDetails" :[
+           {
+           "id":"A0000000",
+           "individual":{
+               "firstName": "Taylor",
+               "middleName": "Middle",
+               "lastName": "Rayon"
+             },
+             "organisationOrPartnershipName": "partnetship name",
+             "relationshipDate": "2018-10-01"
+           }
+         ],
+         "schemeStatus" : "Pending",
+         "isAboutBenefitsAndInsuranceComplete": true,
+         "isAboutMembersComplete": true,
+         "isBeforeYouStartComplete": true
+       }
+       """.stripMargin
 
   def fakeSchemeDetailsConnector(json: String = userAnswersJson): SchemeDetailsConnector =
     new SchemeDetailsConnector {
 
       override def getSchemeDetails(psaId: String,
-                                    schemeIdType: String,
                                     idNumber: String)(implicit hc: HeaderCarrier,
-                                                                ec: ExecutionContext): Future[UserAnswers] = {
+                                                      ec: ExecutionContext): Future[UserAnswers] = {
 
         Future.apply(UserAnswers(Json.parse(json)))(ec)
       }
@@ -128,7 +127,7 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
 
   def controller(dataRetrievalAction: DataRetrievalAction = data,
                  psaMinimalDetails: MinimalPSAPSP = psaMinimalSubscription,
-                 schemeDetailsConnector:SchemeDetailsConnector) =
+                 schemeDetailsConnector: SchemeDetailsConnector) =
     new RemovePsaController(FakeAuthAction, dataRetrievalAction,
       new DataRequiredActionImpl,
       schemeDetailsConnector,
@@ -151,7 +150,7 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
       )
       val ua = UserAnswers(uaJson)
       val sdc = mock[SchemeDetailsConnector]
-      when(sdc.getSchemeDetails(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+      when(sdc.getSchemeDetails(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(ua))
 
       val result = controller(schemeDetailsConnector = sdc).onPageLoad(fakeRequest)

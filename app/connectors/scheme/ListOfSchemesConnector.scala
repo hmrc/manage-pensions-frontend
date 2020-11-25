@@ -47,12 +47,17 @@ trait ListOfSchemesConnector {
 }
 
 @Singleton
-class ListOfSchemesConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig,
-                                           fs: FeatureSwitchManagementService) extends ListOfSchemesConnector {
+class ListOfSchemesConnectorImpl @Inject()(
+                                            http: HttpClient,
+                                            config: FrontendAppConfig,
+                                            fs: FeatureSwitchManagementService
+                                          )
+  extends ListOfSchemesConnector {
 
-  def getListOfSchemes(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]] = {
+  def getListOfSchemes(psaId: String)
+                      (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]] = {
     val (url, schemeHc) = if(fs.get(Toggles.listOfSchemesIFEnabled)) {
-        (config.listOfSchemesIFUrl, hc.withExtraHeaders("idType" -> "PSA", "idValue" -> psaId))
+        (config.listOfSchemesIFUrl, hc.withExtraHeaders("userIdType" -> "PSA", "userIdNumber" -> psaId))
     } else {
         (config.listOfSchemesUrl, hc.withExtraHeaders("psaId" -> psaId))
     }
@@ -60,8 +65,9 @@ class ListOfSchemesConnectorImpl @Inject()(http: HttpClient, config: FrontendApp
     listOfSchemes(url)(schemeHc, ec)
   }
 
-  def getListOfSchemesForPsp(pspId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]] = {
-    val schemeHc = hc.withExtraHeaders("idType" -> "PSP", "idValue" -> pspId)
+  def getListOfSchemesForPsp(pspId: String)
+                            (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]] = {
+    val schemeHc = hc.withExtraHeaders("userIdType" -> "psp", "userIdNumber" -> pspId)
     listOfSchemes(config.listOfSchemesIFUrl)(schemeHc, ec)
   }
 

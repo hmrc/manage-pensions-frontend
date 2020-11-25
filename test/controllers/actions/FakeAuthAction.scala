@@ -35,23 +35,28 @@ import scala.concurrent.Future
 
 object FakeAuthAction extends AuthAction {
   override def apply(authEntity: AuthEntity = PSA): Auth = new FakeAuth(authEntity)
-  def createWithPsaId(psaId:String): AuthAction = new AuthAction {
+
+  def createWithPsaId(psaId: String): AuthAction = new AuthAction {
     override def apply(authEntity: AuthEntity = PSA): Auth = new FakeAuth(authEntity = PSA, psaId = Some(PsaId(psaId)), pspId = None)
   }
-  def createWithUserType(userType:UserType): AuthAction = new AuthAction {
+
+  def createWithUserType(userType: UserType): AuthAction = new AuthAction {
     override def apply(authEntity: AuthEntity = PSA): Auth = new FakeAuth(authEntity = PSA, pspId = None, userType = userType)
   }
-  def createWithPspId(pspId:String): AuthAction = new AuthAction {
+
+  def createWithPspId(pspId: String): AuthAction = new AuthAction {
     override def apply(authEntity: AuthEntity = PSP): Auth = new FakeAuth(authEntity = PSP, pspId = Some(PspId(pspId)), psaId = None)
   }
+
   val externalId: String = "id"
 }
 
-class FakeAuth(authEntity: AuthEntity,
-  psaId:Option[PsaId] = Some(PsaId("A0000000")),
-  pspId:Option[PspId] = Some(PspId("00000000")),
-  userType: UserType = Individual
-) extends Auth {
+class FakeAuth(
+                authEntity: AuthEntity,
+                psaId: Option[PsaId] = Some(PsaId("A0000000")),
+                pspId: Option[PspId] = Some(PspId("00000000")),
+                userType: UserType = Individual
+              ) extends Auth {
   override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] =
     block(AuthenticatedRequest(request, "id", psaId, pspId, userType, authEntity))
 

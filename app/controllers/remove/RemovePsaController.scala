@@ -52,16 +52,18 @@ import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
 @Singleton
-class RemovePsaController @Inject()(authenticate: AuthAction,
-                                    val getData: DataRetrievalAction,
-                                    val requireData: DataRequiredAction,
-                                    schemeDetailsConnector: SchemeDetailsConnector,
-                                    userAnswersCacheConnector: UserAnswersCacheConnector,
-                                    minimalPsaConnector: MinimalConnector,
-                                    appConfig: FrontendAppConfig,
-                                    val controllerComponents: MessagesControllerComponents
-                                   )(
-                                     implicit val ec: ExecutionContext) extends FrontendBaseController with Retrievals {
+class RemovePsaController @Inject()(
+                                     authenticate: AuthAction,
+                                     val getData: DataRetrievalAction,
+                                     val requireData: DataRequiredAction,
+                                     schemeDetailsConnector: SchemeDetailsConnector,
+                                     userAnswersCacheConnector: UserAnswersCacheConnector,
+                                     minimalPsaConnector: MinimalConnector,
+                                     appConfig: FrontendAppConfig,
+                                     val controllerComponents: MessagesControllerComponents
+                                   )(implicit val ec: ExecutionContext)
+  extends FrontendBaseController
+    with Retrievals {
 
   def onPageLoad: Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
@@ -102,30 +104,35 @@ class RemovePsaController @Inject()(authenticate: AuthAction,
     pstr.getOrElse(throw new IllegalArgumentException("PSTR missing while removing PSA"))
 
   private def getSchemeNameAndPstr(srn: String, request: DataRequest[AnyContent])(implicit hd: HeaderCarrier): Future[SchemeInfo] = {
-      schemeDetailsConnector.getSchemeDetails(request.psaIdOrException.id, "srn", srn).map{ userAnswers =>
+    schemeDetailsConnector.getSchemeDetails(
+      userIdNumber = request.psaIdOrException.id,
+      schemeIdNumber = srn,
+      schemeIdType = "srn"
+    ) map { userAnswers =>
 
-        val admins = userAnswers.json.transform((JsPath \ 'psaDetails).json.pick)
-          .asOpt.map(_.as[JsArray].value).toSeq.flatten
-          .flatMap(_.transform((
-            (__ \ 'psaId).json.copyFrom((JsPath \ "id").json.pick) and
-              (__ \ 'relationshipDate).json.copyFrom((JsPath \ 'relationshipDate).json.pick)
-            ).reduce).asOpt.flatMap(_.validate[PsaAssociatedDate].asOpt))
+      val admins = userAnswers.json.transform((JsPath \ 'psaDetails).json.pick)
+        .asOpt.map(_.as[JsArray].value).toSeq.flatten
+        .flatMap(_.transform((
+          (__ \ 'psaId).json.copyFrom((JsPath \ "id").json.pick) and
+            (__ \ 'relationshipDate).json.copyFrom((JsPath \ 'relationshipDate).json.pick)
+          ).reduce).asOpt.flatMap(_.validate[PsaAssociatedDate].asOpt))
 
-        val psa = admins.filter(_.psaId.contains(request.psaIdOrException.id))
+      val psa = admins.filter(_.psaId.contains(request.psaIdOrException.id))
 
-        val associatedDate = if (psa.nonEmpty) {
-          psa.head.relationshipDate.map(LocalDate.parse(_))
-        } else {
-          None
-        }
-        SchemeInfo(
-          userAnswers.get(SchemeNameId).getOrElse(throw new IllegalArgumentException("SchemeName missing while removing PSA")),
-          getPstr(userAnswers.get(PSTRId)),
-          associatedDate.getOrElse(appConfig.earliestDatePsaRemoval)
-        )
+      val associatedDate = if (psa.nonEmpty) {
+        psa.head.relationshipDate.map(LocalDate.parse(_))
+      } else {
+        None
       }
+      SchemeInfo(
+        userAnswers.get(SchemeNameId).getOrElse(throw new IllegalArgumentException("SchemeName missing while removing PSA")),
+        getPstr(userAnswers.get(PSTRId)),
+        associatedDate.getOrElse(appConfig.earliestDatePsaRemoval)
+      )
+    }
   }
 
 
-  case class SchemeInfo(schemeName: String, pstr:String, associatedDate: LocalDate)
+  case class SchemeInfo(schemeName: String, pstr: String, associatedDate: LocalDate)
+
 }

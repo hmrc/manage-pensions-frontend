@@ -62,7 +62,6 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
   private val view = injector.instanceOf[declaration]
 
   def controller(dataRetrievalAction: DataRetrievalAction = getEmptyData) = new DeclarationController(
-    frontendAppConfig,
     messagesApi,
     formProvider,
     FakeAuthAction,
@@ -73,7 +72,6 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
     fakeInvitationCacheConnector,
     fakeInvitationConnector,
     new FakeNavigator(onwardRoute),
-    featureSwitch,
     stubMessagesControllerComponents(),
     view
   )
@@ -93,7 +91,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
     "on a GET" must {
 
       "return OK and the correct view when variations is on" in {
-        when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any()))
+        when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any())(any(), any()))
           .thenReturn(Future.successful(schemeDetailsResponse))
         val result = controller(data).onPageLoad()(fakeRequest)
 
@@ -102,7 +100,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
         FakeUserAnswersCacheConnector.verify(SchemeNameId, "Open Single Trust Scheme with Indiv Establisher and Trustees")
         FakeUserAnswersCacheConnector.verify(IsMasterTrustId, true)
         FakeUserAnswersCacheConnector.verify(PSTRId, "24000001IN")
-        verify(fakeSchemeDetailsConnector, times(1)).getSchemeDetails(any(), any(), any())(any(), any())
+        verify(fakeSchemeDetailsConnector, times(1)).getSchemeDetails(any(), any())(any(), any())
       }
 
       "redirect to Session Expired page if there is no cached data" in {
