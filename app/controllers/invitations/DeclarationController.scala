@@ -71,8 +71,8 @@ class DeclarationController @Inject()(
       (DoYouHaveWorkingKnowledgeId and SchemeSrnId).retrieve.right.map {
         case haveWorkingKnowledge ~ srn =>
             schemeDetailsConnector.getSchemeDetails(
-              userIdNumber = request.psaIdOrException.id,
-              schemeIdNumber = srn,
+              psaId = request.psaIdOrException.id,
+              idNumber = srn,
               schemeIdType = "srn"
             ) flatMap { details =>
               (details.get(GetSchemeNameId), details.get(SchemeTypeId)) match {

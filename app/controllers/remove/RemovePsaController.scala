@@ -105,8 +105,8 @@ class RemovePsaController @Inject()(
 
   private def getSchemeNameAndPstr(srn: String, request: DataRequest[AnyContent])(implicit hd: HeaderCarrier): Future[SchemeInfo] = {
     schemeDetailsConnector.getSchemeDetails(
-      userIdNumber = request.psaIdOrException.id,
-      schemeIdNumber = srn,
+      psaId = request.psaIdOrException.id,
+      idNumber = srn,
       schemeIdType = "srn"
     ) map { userAnswers =>
 

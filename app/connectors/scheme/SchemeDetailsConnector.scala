@@ -36,8 +36,8 @@ import scala.util.Failure
 trait SchemeDetailsConnector {
 
   def getSchemeDetails(
-                        userIdNumber: String,
-                        schemeIdNumber: String,
+                        psaId: String,
+                        idNumber: String,
                         schemeIdType: String
                       )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[UserAnswers]
 
@@ -49,16 +49,16 @@ class SchemeDetailsConnectorImpl @Inject()(http: HttpClient, config: FrontendApp
     with HttpResponseHelper {
 
   def getSchemeDetails(
-                        userIdNumber: String,
-                        schemeIdNumber: String,
+                        psaId: String,
+                        idNumber: String,
                         schemeIdType: String
                       )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[UserAnswers] = {
 
     val url = config.schemeDetailsUrl
     val schemeHc =
       hc.withExtraHeaders(
-        "schemeIdNumber" -> schemeIdNumber,
-        "userIdNumber" -> userIdNumber,
+        "idNumber" -> idNumber,
+        "psaId" -> psaId,
         "schemeIdType" -> schemeIdType
       )
     http.GET[HttpResponse](url)(implicitly, schemeHc, implicitly).map { response =>

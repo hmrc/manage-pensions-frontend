@@ -136,8 +136,8 @@ class SchemeDetailsController @Inject()(
     for {
       _ <- userAnswersCacheConnector.removeAll(request.externalId)
       scheme <- schemeDetailsConnector.getSchemeDetails(
-        userIdNumber = request.psaIdOrException.id,
-        schemeIdNumber = srn,
+        psaId = request.psaIdOrException.id,
+        idNumber = srn,
         schemeIdType = "srn"
       )
       lock <- schemeVarianceLockConnector.isLockByPsaIdOrSchemeId(request.psaIdOrException.id, srn.id)

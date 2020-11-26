@@ -48,10 +48,10 @@ class FrontendConnector @Inject()(http: HttpClient, config: FrontendAppConfig) {
   def retrievePspDashboardAftCards[A](srn: String, pspId: String)
                                      (implicit request: Request[A], ec: ExecutionContext): Future[Html] = {
     val extraHeaders: Seq[(String, String)] = Seq(
-      ("schemeIdNumber", srn),
+      ("idNumber", srn),
       ("schemeIdType", "srn"),
       ("userIdType", "PSPID"),
-      ("userIdNumber", pspId)
+      ("psaId", pspId)
     )
     retrievePartial(config.pspDashboardAftCardUrl, extraHeaders)
   }

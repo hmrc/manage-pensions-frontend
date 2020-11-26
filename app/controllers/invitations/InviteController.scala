@@ -67,8 +67,8 @@ class InviteController @Inject()(
 
   private def getSchemeDetails(srn: SchemeReferenceNumber)(implicit request: AuthenticatedRequest[_]): Future[Option[SchemeDetails]] =
     schemeDetailsConnector.getSchemeDetails(
-      userIdNumber = request.psaIdOrException.id,
-      schemeIdNumber = srn,
+      psaId = request.psaIdOrException.id,
+      idNumber = srn,
       schemeIdType = "srn"
     ) map { scheme =>
       scheme.get(SchemeNameId).flatMap { name =>

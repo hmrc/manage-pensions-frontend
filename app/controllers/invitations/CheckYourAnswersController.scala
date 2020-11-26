@@ -88,8 +88,8 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
                                             inviteePsaId: String)
                                            (implicit request: Request[_]): Future[Boolean] =
     schemeDetailsConnector.getSchemeDetails(
-      userIdNumber = psaId,
-      schemeIdNumber = srn,
+      psaId = psaId,
+      idNumber = srn,
       schemeIdType = "srn"
     ).map { scheme =>
       (scheme.json \ "psaDetails").toOption.exists(_.as[Seq[PsaDetails]].exists(_.id == inviteePsaId))

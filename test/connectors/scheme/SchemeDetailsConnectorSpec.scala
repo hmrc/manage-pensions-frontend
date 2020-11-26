@@ -38,8 +38,8 @@ class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
     val jsonResponse = """{"abc":"def"}"""
     server.stubFor(
       get(urlEqualTo(schemeDetailsUrl))
-        .withHeader("userIdNumber", equalTo(psaId))
-        .withHeader("schemeIdNumber", equalTo(idNumber))
+        .withHeader("psaId", equalTo(psaId))
+        .withHeader("idNumber", equalTo(idNumber))
         .withHeader("schemeIdType", equalTo(schemeIdType))
         .willReturn(
           aResponse()
@@ -52,8 +52,8 @@ class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
     val connector = injector.instanceOf[SchemeDetailsConnector]
 
     connector.getSchemeDetails(
-      userIdNumber = psaId,
-      schemeIdNumber = idNumber,
+      psaId = psaId,
+      idNumber = idNumber,
       schemeIdType = schemeIdType
     ) map(schemeDetails =>
       schemeDetails shouldBe UserAnswers(Json.parse(jsonResponse))
@@ -65,8 +65,8 @@ class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
 
     server.stubFor(
       get(urlEqualTo(schemeDetailsUrl))
-        .withHeader("userIdNumber", equalTo(psaId))
-        .withHeader("schemeIdNumber", equalTo(idNumber))
+        .withHeader("psaId", equalTo(psaId))
+        .withHeader("idNumber", equalTo(idNumber))
         .withHeader("schemeIdType", equalTo(schemeIdType))
         .willReturn(
           badRequest
@@ -78,8 +78,8 @@ class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
     val connector = injector.instanceOf[SchemeDetailsConnector]
     recoverToSucceededIf[BadRequestException] {
       connector.getSchemeDetails(
-        userIdNumber = psaId,
-        schemeIdNumber = idNumber,
+        psaId = psaId,
+        idNumber = idNumber,
         schemeIdType = schemeIdType
       )
     }
@@ -89,8 +89,8 @@ class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
 
     server.stubFor(
       get(urlEqualTo(schemeDetailsUrl))
-        .withHeader("userIdNumber", equalTo(psaId))
-        .withHeader("schemeIdNumber", equalTo(idNumber))
+        .withHeader("psaId", equalTo(psaId))
+        .withHeader("idNumber", equalTo(idNumber))
         .withHeader("schemeIdType", equalTo(schemeIdType))
         .willReturn(
           badRequest
@@ -102,8 +102,8 @@ class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
 
     recoverToSucceededIf[BadRequestException] {
       connector.getSchemeDetails(
-        userIdNumber = psaId,
-        schemeIdNumber = idNumber,
+        psaId = psaId,
+        idNumber = idNumber,
         schemeIdType = schemeIdType
       )
     }
@@ -123,8 +123,8 @@ class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
 
     recoverToSucceededIf[BadRequestException] {
       connector.getSchemeDetails(
-        userIdNumber = psaId,
-        schemeIdNumber = idNumber,
+        psaId = psaId,
+        idNumber = idNumber,
         schemeIdType = schemeIdType
       )
     }
@@ -145,8 +145,8 @@ class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
 
     recoverToSucceededIf[BadRequestException] {
       connector.getSchemeDetails(
-        userIdNumber = psaId,
-        schemeIdNumber = idNumber,
+        psaId = psaId,
+        idNumber = idNumber,
         schemeIdType = schemeIdType
       )
     }

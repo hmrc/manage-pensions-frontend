@@ -71,8 +71,8 @@ class ViewAdministratorsController @Inject()(
     request.userAnswers match {
       case Some(ua) if (ua.json \ "psaDetails").asOpt[Seq[PsaDetails]].nonEmpty => Future.successful(ua)
       case _ => schemeDetailsConnector.getSchemeDetails(
-        userIdNumber = request.psaIdOrException.id,
-        schemeIdNumber = srn,
+        psaId = request.psaIdOrException.id,
+        idNumber = srn,
         schemeIdType = "srn"
       )
     }
