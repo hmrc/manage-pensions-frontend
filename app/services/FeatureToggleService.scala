@@ -14,10 +14,19 @@
  * limitations under the License.
  */
 
-package toggles
+package services
 
-class TogglesSpec extends FeatureToggleBehaviours {
-  "list-of-schemes-IF-enabled new feature toggle" should {
-    behave like featureToggle("list-of-schemes-IF-enabled", false)
-  }
+import connectors.admin.FeatureToggleConnector
+import javax.inject.Inject
+import javax.inject.Singleton
+import models._
+import uk.gov.hmrc.http.HeaderCarrier
+
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
+
+@Singleton
+class FeatureToggleService @Inject()(featureToggleConnector:FeatureToggleConnector) {
+  def get(name: FeatureToggleName)(implicit hc:HeaderCarrier, ec: ExecutionContext): Future[FeatureToggle] =
+    featureToggleConnector.get(name.asString)
 }

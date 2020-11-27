@@ -21,10 +21,12 @@ import connectors.scheme.ListOfSchemesConnector
 import connectors.scheme.PensionSchemeVarianceLockConnector
 import connectors.scheme.SchemeDetailsConnector
 import controllers.actions._
-import _root_.config.FeatureSwitchManagementService
 import handlers.ErrorHandler
 import identifiers.SchemeNameId
 import identifiers.invitations.PSTRId
+import models.FeatureToggle.Disabled
+import models.FeatureToggle.Enabled
+import models.FeatureToggleName.PSPAuthorisation
 import models._
 import org.mockito.Matchers.any
 import org.mockito.Matchers.{eq => eqTo}
@@ -33,15 +35,19 @@ import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.JsObject
-import play.api.libs.json.{JsString, JsArray, Json}
+import play.api.libs.json.JsArray
+import play.api.libs.json.JsString
+import play.api.libs.json.Json
 import play.api.test.Helpers.contentAsString
 import play.api.test.Helpers._
 import play.twirl.api.Html
+import services.FeatureToggleService
 import services.SchemeDetailsService
 import testhelpers.CommonBuilders._
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.UserAnswers
-import viewmodels.{Message, AssociatedPsa}
+import viewmodels.AssociatedPsa
+import viewmodels.Message
 import views.html.error_template
 import views.html.error_template_page_not_found
 import views.html.schemeDetails
@@ -60,7 +66,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
     Link("authorise", controllers.invitations.psp.routes.WhatYouWillNeedController.onPageLoad().url, Message("messages__pspAuthorise__link")),
     Link("view-practitioners", controllers.psp.routes.ViewPractitionersController.onPageLoad().url, Message("messages__pspViewOrDeauthorise__link"))
   )
-  val featureSwitch: FeatureSwitchManagementService = mock[FeatureSwitchManagementService]
+  val featureToggleService: FeatureToggleService = mock[FeatureToggleService]
 
   def controller(): SchemeDetailsController = {
     new SchemeDetailsController(
@@ -74,7 +80,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
       stubMessagesControllerComponents(),
       schemeDetailsService,
       schemeDetailsView,
-      featureSwitch
+      featureToggleService
     )
   }
 
@@ -83,7 +89,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
     reset(fakeSchemeDetailsConnector, fakeListOfSchemesConnector, fakeSchemeLockConnector, schemeDetailsService)
     when(fakeSchemeLockConnector.isLockByPsaIdOrSchemeId(eqTo("A0000000"), any())(any(), any()))
       .thenReturn(Future.successful(Some(VarianceLock)))
-    when(featureSwitch.get(any())).thenReturn(false)
+    when(featureToggleService.get(any())(any(), any())).thenReturn(Future.successful(Disabled(PSPAuthorisation)))
   }
 
    "SchemeDetailsController" must {
@@ -144,7 +150,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
       when(schemeDetailsService.lockingPsa(any(), any())(any(), any())).thenReturn(Future.successful(Some("test-psa")))
       when(schemeDetailsService.retrieveAftHtml(any(), any())(any())).thenReturn(Future(Html("test-aft-html")))
       when(schemeDetailsService.retrievePaymentsAndChargesHtml(any())(any())).thenReturn(Future(Html("test-payments-and-charges-html")))
-      when(featureSwitch.get(any())).thenReturn(true)
+      when(featureToggleService.get(any())(any(), any())).thenReturn(Future.successful(Enabled(PSPAuthorisation)))
 
       val result = controller().onPageLoad(srn)(fakeRequest)
       status(result) mustBe OK

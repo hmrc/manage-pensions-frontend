@@ -17,7 +17,6 @@
 package controllers.invitations
 
 import base.JsonFileReader
-import config.FeatureSwitchManagementServiceTestImpl
 import connectors.scheme.SchemeDetailsConnector
 import connectors.FakeUserAnswersCacheConnector
 import connectors.InvitationConnector
@@ -58,7 +57,6 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
   private val fakeSchemeDetailsConnector: SchemeDetailsConnector = mock[SchemeDetailsConnector]
   private val fakeInvitationCacheConnector = mock[InvitationsCacheConnector]
   private val fakeInvitationConnector = mock[InvitationConnector]
-  private val featureSwitch = new FeatureSwitchManagementServiceTestImpl(config, environment)
   private val view = injector.instanceOf[declaration]
 
   def controller(dataRetrievalAction: DataRetrievalAction = getEmptyData) = new DeclarationController(

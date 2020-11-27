@@ -17,8 +17,6 @@
 package controllers.invitations
 
 import base.JsonFileReader
-import config.FeatureSwitchManagementService
-import config.FeatureSwitchManagementServiceTestImpl
 import connectors.scheme.SchemeDetailsConnector
 import connectors.InvitationConnector
 import connectors.NameMatchingFailedException
@@ -125,7 +123,6 @@ object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours
 
   private val fakeSchemeDetailsConnector: SchemeDetailsConnector = mock[SchemeDetailsConnector]
   val config = injector.instanceOf[Configuration]
-  val featureSwitch: FeatureSwitchManagementService = new FeatureSwitchManagementServiceTestImpl(config, environment)
   private val view = injector.instanceOf[check_your_answers]
 
   private def fakeInvitationConnector(response: Future[Unit] = Future.successful(())): InvitationConnector = new InvitationConnector {
@@ -144,7 +141,7 @@ object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours
 
     new CheckYourAnswersController(
       frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction,
-      checkYourAnswersFactory, fakeSchemeDetailsConnector, featureSwitch, fakeInvitationConnector(), stubMessagesControllerComponents(), view).onPageLoad()
+      checkYourAnswersFactory, fakeSchemeDetailsConnector, fakeInvitationConnector(), stubMessagesControllerComponents(), view).onPageLoad()
   }
 
   def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
@@ -154,7 +151,7 @@ object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours
 
     new CheckYourAnswersController(
       frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction,
-      checkYourAnswersFactory, fakeSchemeDetailsConnector, featureSwitch, fakeInvitationConnector(), stubMessagesControllerComponents(), view).onSubmit()
+      checkYourAnswersFactory, fakeSchemeDetailsConnector, fakeInvitationConnector(), stubMessagesControllerComponents(), view).onSubmit()
   }
 
   def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction, invitationResponse: Future[Unit]) = {
@@ -164,6 +161,6 @@ object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours
 
     new CheckYourAnswersController(
       frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction,
-      checkYourAnswersFactory, fakeSchemeDetailsConnector, featureSwitch, fakeInvitationConnector(invitationResponse), stubMessagesControllerComponents(), view).onSubmit()
+      checkYourAnswersFactory, fakeSchemeDetailsConnector, fakeInvitationConnector(invitationResponse), stubMessagesControllerComponents(), view).onSubmit()
   }
 }

@@ -16,21 +16,30 @@
 
 package controllers
 
-import config.FeatureSwitchManagementService
 import connectors._
-import connectors.scheme.{ListOfSchemesConnector, PensionSchemeVarianceLockConnector, SchemeDetailsConnector}
+import connectors.scheme.ListOfSchemesConnector
+import connectors.scheme.PensionSchemeVarianceLockConnector
+import connectors.scheme.SchemeDetailsConnector
 import controllers.actions._
 import handlers.ErrorHandler
-import identifiers.{SchemeNameId, SchemeSrnId, SchemeStatusId}
+import identifiers.SchemeNameId
+import identifiers.SchemeSrnId
+import identifiers.SchemeStatusId
 import javax.inject.Inject
+import models.FeatureToggle.Enabled
+import models.FeatureToggleName.PSPAuthorisation
 import models._
 import models.requests.AuthenticatedRequest
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.I18nSupport
+import play.api.i18n.MessagesApi
 import play.api.libs.json.JsArray
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.Action
+import play.api.mvc.AnyContent
+import play.api.mvc.MessagesControllerComponents
 import play.twirl.api.Html
+import services.FeatureToggleService
 import services.SchemeDetailsService
-import toggles.Toggles
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.UserAnswers
 import viewmodels.Message
@@ -38,64 +47,58 @@ import views.html.schemeDetails
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class SchemeDetailsController @Inject()(
-                                         override val messagesApi: MessagesApi,
-                                         schemeDetailsConnector: SchemeDetailsConnector,
-                                         listSchemesConnector: ListOfSchemesConnector,
-                                         schemeVarianceLockConnector: PensionSchemeVarianceLockConnector,
-                                         authenticate: AuthAction,
-                                         userAnswersCacheConnector: UserAnswersCacheConnector,
-                                         errorHandler: ErrorHandler,
-                                         val controllerComponents: MessagesControllerComponents,
-                                         schemeDetailsService: SchemeDetailsService,
-                                         view: schemeDetails,
-                                         fs: FeatureSwitchManagementService
-                                       )(implicit val ec: ExecutionContext)
-  extends FrontendBaseController
-    with I18nSupport {
+class SchemeDetailsController @Inject()(override val messagesApi: MessagesApi,
+                                        schemeDetailsConnector: SchemeDetailsConnector,
+                                        listSchemesConnector: ListOfSchemesConnector,
+                                        schemeVarianceLockConnector: PensionSchemeVarianceLockConnector,
+                                        authenticate: AuthAction,
+                                        userAnswersCacheConnector: UserAnswersCacheConnector,
+                                        errorHandler: ErrorHandler,
+                                        val controllerComponents: MessagesControllerComponents,
+                                        schemeDetailsService: SchemeDetailsService,
+                                        view: schemeDetails,
+                                        featureToggleService:FeatureToggleService
+                                       )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate().async {
     implicit request =>
       withSchemeAndLock(srn).flatMap { case (userAnswers, lock) =>
-        val admins = (userAnswers.json \ "psaDetails").as[Seq[PsaDetails]].map(_.id)
-        val anyPSPs = (userAnswers.json \ "pspDetails").asOpt[JsArray].exists(_.value.nonEmpty)
-        if (admins.contains(request.psaIdOrException.id)) {
-          val schemeName = userAnswers.get(SchemeNameId).getOrElse("")
-          val schemeStatus = userAnswers.get(SchemeStatusId).getOrElse("")
-          val isSchemeOpen = schemeStatus.equalsIgnoreCase("open")
-          val updatedUa = userAnswers
-            .set(SchemeSrnId)(srn.id).flatMap(
-            _.set(SchemeNameId)(schemeName)
-          ).asOpt.getOrElse(userAnswers)
-          val displayChangeLink = schemeDetailsService.displayChangeLink(isSchemeOpen, lock)
-          for {
-            aftHtml <- schemeDetailsService.retrieveAftHtml(userAnswers, srn.id)
-            paymentsAndChargesHtml <- retrievePaymentsAndChargesHtml(srn.id, isSchemeOpen)
-            listOfSchemes <- listSchemesConnector.getListOfSchemes(request.psaIdOrException.id)
-            _ <- userAnswersCacheConnector.upsert(request.externalId, updatedUa.json)
-            lockingPsa <- schemeDetailsService.lockingPsa(lock, srn)
-          } yield {
-            val pspLinks = getPspLinks(anyPSPs)
-            listOfSchemes match {
-              case Right(list) =>
-                Ok(view(
-                  schemeName,
-                  schemeDetailsService.pstr(srn.id, list),
-                  schemeDetailsService.openedDate(srn.id, list, isSchemeOpen),
-                  srn.id,
-                  isSchemeOpen,
-                  displayChangeLink,
-                  lockingPsa,
-                  aftHtml,
-                  paymentsAndChargesHtml,
-                  pspLinks
-                ))
-              case _ => NotFound(errorHandler.notFoundTemplate)
+          val admins = (userAnswers.json \ "psaDetails").as[Seq[PsaDetails]].map(_.id)
+          val anyPSPs = (userAnswers.json \ "pspDetails").asOpt[JsArray].exists(_.value.nonEmpty)
+          if (admins.contains(request.psaIdOrException.id)) {
+            val schemeName = userAnswers.get(SchemeNameId).getOrElse("")
+            val schemeStatus = userAnswers.get(SchemeStatusId).getOrElse("")
+            val isSchemeOpen = schemeStatus.equalsIgnoreCase("open")
+            val updatedUa = userAnswers.set(SchemeSrnId)(srn.id).flatMap(_.set(SchemeNameId)(schemeName)).asOpt.getOrElse(userAnswers)
+            val displayChangeLink = schemeDetailsService.displayChangeLink(isSchemeOpen, lock)
+            for {
+              aftHtml <- schemeDetailsService.retrieveAftHtml(userAnswers, srn.id)
+              paymentsAndChargesHtml <- retrievePaymentsAndChargesHtml(srn.id, isSchemeOpen)
+              listOfSchemes <- listSchemesConnector.getListOfSchemes(request.psaIdOrException.id)
+              _ <- userAnswersCacheConnector.upsert(request.externalId, updatedUa.json)
+              lockingPsa <- schemeDetailsService.lockingPsa(lock, srn)
+              pspLinks <- getPspLinks(anyPSPs)
+            } yield {
+              listOfSchemes match {
+                case Right(list) =>
+                  Ok(view(
+                    schemeName,
+                    schemeDetailsService.pstr(srn.id, list),
+                    schemeDetailsService.openedDate(srn.id, list, isSchemeOpen),
+                    srn.id,
+                    isSchemeOpen,
+                    displayChangeLink,
+                    lockingPsa,
+                    aftHtml,
+                    paymentsAndChargesHtml,
+                    pspLinks
+                  ))
+                case _ => NotFound(errorHandler.notFoundTemplate)
+              }
             }
+          } else {
+            Future.successful(NotFound(errorHandler.notFoundTemplate))
           }
-        } else {
-          Future.successful(NotFound(errorHandler.notFoundTemplate))
-        }
       }
   }
 
@@ -110,8 +113,9 @@ class SchemeDetailsController @Inject()(
     }
   }
 
-  private def getPspLinks(anyPSPs: Boolean) = {
-    if (fs.get(Toggles.pspAuthorisationEnabled)) {
+  private def getPspLinks(anyPSPs:Boolean)(implicit hc: HeaderCarrier, ec: ExecutionContext):Future[Seq[Link]] = {
+    featureToggleService.get(PSPAuthorisation).map {
+      case Enabled(PSPAuthorisation) =>
       val viewPspLink = if (anyPSPs) {
         Seq(Link(
           id = "view-practitioners",
@@ -121,15 +125,13 @@ class SchemeDetailsController @Inject()(
       } else {
         Nil
       }
-      Seq(Link(
-        id = "authorise",
-        url = controllers.invitations.psp.routes.WhatYouWillNeedController.onPageLoad().url,
-        linkText = Message("messages__pspAuthorise__link")
-      )) ++ viewPspLink
-    } else {
-      Nil
+      Seq(
+        Link("authorise", controllers.invitations.psp.routes.WhatYouWillNeedController.onPageLoad().url, Message("messages__pspAuthorise__link"))
+      ) ++ viewPspLink
+      case _ =>
+        Nil
     }
-  }
+ }
 
   private def withSchemeAndLock(srn: SchemeReferenceNumber)
                                (implicit request: AuthenticatedRequest[AnyContent]): Future[(UserAnswers, Option[Lock])] = {

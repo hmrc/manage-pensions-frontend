@@ -17,7 +17,6 @@
 package controllers.invitations
 
 import com.google.inject.Inject
-import config.FeatureSwitchManagementService
 import config.FrontendAppConfig
 import connectors.scheme.SchemeDetailsConnector
 import connectors.InvitationConnector

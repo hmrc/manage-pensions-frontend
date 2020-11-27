@@ -21,6 +21,7 @@ import java.time.LocalDate
 import com.google.inject.Inject
 import com.google.inject.Singleton
 import controllers.routes
+import models.FeatureToggleName
 import play.api.Mode
 import play.api.i18n.Lang
 import play.api.mvc.Call
@@ -64,6 +65,9 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   def pspDeauthEmailCallback(encryptedPsaId: String, encryptedPspId: String, encryptedPstr: String, encryptedEmail: String) =
     s"$practitionerUrl${runModeConfiguration.get[String](path = "urls.pspDeauthEmailCallback")
       .format(encryptedPsaId, encryptedPspId, encryptedPstr, encryptedEmail)}"
+
+  def featureToggleUrl(toggle:String) : String =
+    s"${servicesConfig.baseUrl("pension-administrator")}${runModeConfiguration.underlying.getString("urls.featureToggle").format(toggle)}"
 
   lazy val authUrl: String = servicesConfig.baseUrl("auth")
   lazy val pensionsSchemeUrl: String = servicesConfig.baseUrl("pensions-scheme")
@@ -171,6 +175,4 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val minimumSchemeSearchResults: Int = runModeConfiguration.get[Int]("minimumSchemeSearchResults")
 
   lazy val isFSEnabled: Boolean = runModeConfiguration.get[Boolean]("features.is-fs-enabled")
-  lazy val isPspAuthorisationEnabled: Boolean = runModeConfiguration.get[Boolean]("psp-authorisation-enabled")
-
 }

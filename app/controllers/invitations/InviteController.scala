@@ -18,7 +18,6 @@ package controllers.invitations
 
 import com.google.inject.Inject
 import com.google.inject.Singleton
-import config.FeatureSwitchManagementService
 import connectors.admin.MinimalConnector
 import connectors.UserAnswersCacheConnector
 import connectors.scheme.SchemeDetailsConnector
@@ -44,8 +43,7 @@ class InviteController @Inject()(
                                   userAnswersCacheConnector: UserAnswersCacheConnector,
                                   minimalPsaConnector: MinimalConnector,
                                   val controllerComponents: MessagesControllerComponents
-                                )(implicit val ec: ExecutionContext)
-  extends FrontendBaseController {
+                                )(implicit val ec: ExecutionContext) extends FrontendBaseController {
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate().async {
     implicit request =>
