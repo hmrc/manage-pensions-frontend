@@ -19,7 +19,7 @@ package services
 import config.FrontendAppConfig
 import connectors.admin.MinimalConnector
 import javax.inject.Inject
-import models.Link
+import models.{Link, MinimalPSAPSP}
 import play.api.i18n.Messages
 import uk.gov.hmrc.http.HeaderCarrier
 import viewmodels.CardViewModel
@@ -32,13 +32,13 @@ class PspDashboardService @Inject()(appConfig: FrontendAppConfig,
                                     minimalConnector: MinimalConnector
                                    )(implicit ec: ExecutionContext) {
 
-  def getPspName(pspId: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
-    minimalConnector.getNameFromPspID(pspId).map(identity)
+  def getPspDetails(pspId: String)(implicit hc: HeaderCarrier): Future[MinimalPSAPSP] =
+    minimalConnector.getMinimalPspDetails(pspId)
 
-  def getTiles(pspId: String)(implicit messages: Messages): Seq[CardViewModel] =
-    Seq(schemeCard, practitionerCard(pspId))
+  def getTiles(pspId: String, details: MinimalPSAPSP)(implicit messages: Messages): Seq[CardViewModel] =
+    Seq(schemeCard, practitionerCard(pspId, details))
 
-  private def practitionerCard(pspId: String)(implicit messages: Messages): CardViewModel =
+  private def practitionerCard(pspId: String, details: MinimalPSAPSP)(implicit messages: Messages): CardViewModel =
 
     CardViewModel(
       id = "practitioner-card",
@@ -48,9 +48,12 @@ class PspDashboardService @Inject()(appConfig: FrontendAppConfig,
       links = Seq(
         Link("pspLink", appConfig.pspDetailsUrl, Message("messages__pspDashboard__psp_change")),
         //todo change pspDeregisterUrl once page to redirect to is implemented
-        Link("deregister-link", appConfig.pspDeregisterUrl, Message("messages__pspDashboard__psp_deregister"))
+        Link("deregister-link", deregisterLink(details), Message("messages__pspDashboard__psp_deregister"))
       )
     )
+
+  private def deregisterLink(details: MinimalPSAPSP): String =
+    if(details.individualDetails.nonEmpty) appConfig.pspDeregisterIndividualUrl else appConfig.pspDeregisterCompanyUrl
 
   private def schemeCard(implicit messages: Messages): CardViewModel =
     CardViewModel(
