@@ -18,7 +18,6 @@ package controllers.invitations
 
 import com.google.inject.Inject
 import com.google.inject.Singleton
-import config.FeatureSwitchManagementService
 import connectors.admin.MinimalConnector
 import connectors.UserAnswersCacheConnector
 import connectors.scheme.SchemeDetailsConnector
@@ -41,7 +40,6 @@ import scala.concurrent.Future
 class InviteController @Inject()(authenticate: AuthAction,
                                  schemeDetailsConnector: SchemeDetailsConnector,
                                  userAnswersCacheConnector: UserAnswersCacheConnector,
-                                 featureSwitchManagementService: FeatureSwitchManagementService,
                                  minimalPsaConnector: MinimalConnector,
                                  val controllerComponents: MessagesControllerComponents)(implicit val ec: ExecutionContext) extends FrontendBaseController {
 

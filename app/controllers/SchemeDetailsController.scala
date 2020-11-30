@@ -16,30 +16,39 @@
 
 package controllers
 
-import config.{FeatureSwitchManagementService, FrontendAppConfig}
 import connectors._
-import connectors.scheme.{PensionSchemeVarianceLockConnector, SchemeDetailsConnector, ListOfSchemesConnector}
+import connectors.scheme.ListOfSchemesConnector
+import connectors.scheme.PensionSchemeVarianceLockConnector
+import connectors.scheme.SchemeDetailsConnector
 import controllers.actions._
 import handlers.ErrorHandler
-import identifiers.{SchemeNameId, SchemeStatusId, SchemeSrnId}
+import identifiers.SchemeNameId
+import identifiers.SchemeSrnId
+import identifiers.SchemeStatusId
 import javax.inject.Inject
+import models.FeatureToggle.Enabled
+import models.FeatureToggleName.PSPAuthorisation
 import models._
 import models.requests.AuthenticatedRequest
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.I18nSupport
+import play.api.i18n.MessagesApi
 import play.api.libs.json.JsArray
-import play.api.mvc.{AnyContent, MessagesControllerComponents, Action}
+import play.api.mvc.Action
+import play.api.mvc.AnyContent
+import play.api.mvc.MessagesControllerComponents
 import play.twirl.api.Html
+import services.FeatureToggleService
 import services.SchemeDetailsService
-import toggles.Toggles
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.UserAnswers
 import viewmodels.Message
 import views.html.schemeDetails
 
-import scala.concurrent.{Future, ExecutionContext}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
-class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
-                                        override val messagesApi: MessagesApi,
+class SchemeDetailsController @Inject()(override val messagesApi: MessagesApi,
                                         schemeDetailsConnector: SchemeDetailsConnector,
                                         listSchemesConnector: ListOfSchemesConnector,
                                         schemeVarianceLockConnector: PensionSchemeVarianceLockConnector,
@@ -49,7 +58,7 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
                                         val controllerComponents: MessagesControllerComponents,
                                         schemeDetailsService: SchemeDetailsService,
                                         view: schemeDetails,
-                                        fs: FeatureSwitchManagementService
+                                        featureToggleService:FeatureToggleService
                                        )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate().async {
@@ -69,8 +78,8 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
               listOfSchemes <- listSchemesConnector.getListOfSchemes(request.psaIdOrException.id)
               _ <- userAnswersCacheConnector.upsert(request.externalId, updatedUa.json)
               lockingPsa <- schemeDetailsService.lockingPsa(lock, srn)
+              pspLinks <- getPspLinks(anyPSPs)
             } yield {
-              val pspLinks = getPspLinks(anyPSPs)
               listOfSchemes match {
                 case Right(list) =>
                   Ok(view(
@@ -104,8 +113,9 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
     }
   }
 
-  private def getPspLinks(anyPSPs:Boolean) = {
-    if (fs.get(Toggles.pspAuthorisationEnabled)) {
+  private def getPspLinks(anyPSPs:Boolean)(implicit hc: HeaderCarrier, ec: ExecutionContext):Future[Seq[Link]] = {
+    featureToggleService.get(PSPAuthorisation).map {
+      case Enabled(PSPAuthorisation) =>
       val viewPspLink = if (anyPSPs) {
         Seq(Link("view-practitioners", controllers.psp.routes.ViewPractitionersController.onPageLoad().url, Message("messages__pspViewOrDeauthorise__link")))
       } else {
@@ -114,10 +124,10 @@ class SchemeDetailsController @Inject()(appConfig: FrontendAppConfig,
       Seq(
         Link("authorise", controllers.invitations.psp.routes.WhatYouWillNeedController.onPageLoad().url, Message("messages__pspAuthorise__link"))
       ) ++ viewPspLink
-    } else {
-      Nil
+      case _ =>
+        Nil
     }
-  }
+ }
 
   private def withSchemeAndLock(srn: SchemeReferenceNumber)(implicit request: AuthenticatedRequest[AnyContent]): Future[(UserAnswers, Option[Lock])] = {
     for {

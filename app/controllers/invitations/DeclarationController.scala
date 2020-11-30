@@ -17,7 +17,6 @@
 package controllers.invitations
 
 import com.google.inject.Inject
-import config.FeatureSwitchManagementService
 import config.FrontendAppConfig
 import connectors.scheme.SchemeDetailsConnector
 import connectors.InvitationConnector
@@ -62,7 +61,6 @@ class DeclarationController @Inject()(
                                        invitationsCacheConnector: InvitationsCacheConnector,
                                        invitationConnector: InvitationConnector,
                                        @AcceptInvitation navigator: Navigator,
-                                       featureSwitchManagementService: FeatureSwitchManagementService,
                                        val controllerComponents: MessagesControllerComponents,
                                        view: declaration
                                      )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {

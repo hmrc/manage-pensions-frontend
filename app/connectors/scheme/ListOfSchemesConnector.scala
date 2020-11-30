@@ -19,8 +19,9 @@ package connectors.scheme
 import com.google.inject.ImplementedBy
 import com.google.inject.Inject
 import com.google.inject.Singleton
-import config.FeatureSwitchManagementService
 import config.FrontendAppConfig
+import models.FeatureToggle.Enabled
+import models.FeatureToggleName.IntegrationFrameworkListSchemes
 import models.ListOfSchemes
 import play.api.Logger
 import play.api.http.Status._
@@ -28,7 +29,7 @@ import play.api.libs.json.JsError
 import play.api.libs.json.JsResultException
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.Json
-import toggles.Toggles
+import services.FeatureToggleService
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.HttpResponse
@@ -48,16 +49,17 @@ trait ListOfSchemesConnector {
 
 @Singleton
 class ListOfSchemesConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig,
-                                           fs: FeatureSwitchManagementService) extends ListOfSchemesConnector {
+          featureToggleService:FeatureToggleService) extends ListOfSchemesConnector {
 
   def getListOfSchemes(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]] = {
-    val (url, schemeHc) = if(fs.get(Toggles.listOfSchemesIFEnabled)) {
-        (config.listOfSchemesIFUrl, hc.withExtraHeaders("idType" -> "psaid", "idValue" -> psaId))
-    } else {
-        (config.listOfSchemesUrl, hc.withExtraHeaders("psaId" -> psaId))
+    featureToggleService.get(IntegrationFrameworkListSchemes).flatMap {
+      case Enabled(IntegrationFrameworkListSchemes) =>
+        val (url, schemeHc) = (config.listOfSchemesIFUrl, hc.withExtraHeaders("idType" -> "PSA", "idValue" -> psaId))
+        listOfSchemes(url)(schemeHc, ec)
+      case _ =>
+        val (url, schemeHc) = (config.listOfSchemesUrl, hc.withExtraHeaders("psaId" -> psaId))
+        listOfSchemes(url)(schemeHc, ec)
     }
-
-    listOfSchemes(url)(schemeHc, ec)
   }
 
   def getListOfSchemesForPsp(pspId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]] = {
