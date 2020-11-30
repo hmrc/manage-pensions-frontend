@@ -69,8 +69,8 @@ case SchemeStatus.RejectedUnderAppeal.value => messages("messages__listSchemes__
 case _ => status
 }
 }
-
-<table id="schemeList" class="hmrc-responsive-table" role="table">
+<div role="region" aria-labelledby="Caption01" tabindex="0">
+<table id="schemeList" class="govuk-table" role="table">
     <thead>
     <tr role="row">
         <th role="columnheader" class="govuk-table__header" scope="col">
@@ -95,17 +95,14 @@ case _ => status
 
     <tr class="member-details" role="row">
         <td class="govuk-table__cell" role="cell">
-            <span class="hmrc-responsive-table__heading" aria-hidden="true">@messages("messages__listSchemes__column_schemeName")</span>
             <a id="@{schemeNameId(index)}" href="@{controllers.routes.SchemeDetailsController.onPageLoad(scheme.referenceNumber).url}" target="_self" data-sso="false">
                 @{scheme.name}
             </a>
         </td>
         <td class="govuk-table__cell" role="cell" id="@{srnId(index)}">
-            <span class="hmrc-responsive-table__heading" aria-hidden="true">@messages("messages__listSchemes__column_srn")</span>
             @{scheme.referenceNumber}
         </td>
         <td class="govuk-table__cell" role="cell" id="@{pstrId(index)}">
-            <span class="hmrc-responsive-table__heading" aria-hidden="true">@messages("messages__listSchemes__column_pstr")</span>
             @if(scheme.pstr.nonEmpty) {
             @pstrValue(scheme.pstr)
             } else {
@@ -113,10 +110,10 @@ case _ => status
             }
         </td>
         <td class="govuk-table__cell" role="cell" id="@{statusId(index)}">
-            <span class="hmrc-responsive-table__heading" aria-hidden="true">@messages("messages__listSchemes__column_status")</span>
             @statusValue(scheme.schemeStatus)
         </td>
     </tr>
     }
     </tbody>
 </table>
+</div>
