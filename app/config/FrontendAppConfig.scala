@@ -21,7 +21,6 @@ import java.time.LocalDate
 import com.google.inject.Inject
 import com.google.inject.Singleton
 import controllers.routes
-import models.FeatureToggleName
 import play.api.Mode
 import play.api.i18n.Lang
 import play.api.mvc.Call
