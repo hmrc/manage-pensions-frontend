@@ -29,7 +29,7 @@ import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import viewmodels.Message
 import views.html.schemesOverview
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 class PspDashboardController @Inject()(override val messagesApi: MessagesApi,
                                        service: PspDashboardService,
@@ -47,13 +47,10 @@ class PspDashboardController @Inject()(override val messagesApi: MessagesApi,
       val subHeading: String = Message("messages__pspDashboard__sub_heading")
       def returnLink: Option[Link] = if (request.psaId.nonEmpty) Some(link) else None
 
-      service.getPspName(pspId).flatMap {
-        case Some(name) =>
-          userAnswersCacheConnector.save(request.externalId, PSPNameId, name).map { _ =>
-            Ok(view(name, service.getTiles(pspId), Some(subHeading), returnLink))
+      service.getPspDetails(pspId).flatMap { details =>
+          userAnswersCacheConnector.save(request.externalId, PSPNameId, details.name).map { _ =>
+            Ok(view(details.name, service.getTiles(pspId, details), Some(subHeading), returnLink))
           }
-
-        case _ => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
       }
   }
 

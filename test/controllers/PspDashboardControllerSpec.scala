@@ -20,7 +20,7 @@ import config._
 import connectors.UserAnswersCacheConnector
 import controllers.actions.{DataRetrievalAction, _}
 import controllers.routes.ListSchemesController
-import models.Link
+import models.{IndividualDetails, Link, MinimalPSAPSP}
 import org.mockito.Matchers.{eq => eqTo, _}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
@@ -41,6 +41,8 @@ class PspDashboardControllerSpec extends ControllerSpecBase with MockitoSugar wi
   val fakePspDashboardService: PspDashboardService = mock[PspDashboardService]
   val fakeUserAnswersCacheConnector: UserAnswersCacheConnector = mock[UserAnswersCacheConnector]
   val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
+  val minimalPsaDetails: MinimalPSAPSP = MinimalPSAPSP("test@test.com", isPsaSuspended = false, None,
+    Some(IndividualDetails("Test", None, "Psp Name")))
 
   private val view: schemesOverview = app.injector.instanceOf[schemesOverview]
 
@@ -53,10 +55,10 @@ class PspDashboardControllerSpec extends ControllerSpecBase with MockitoSugar wi
   "PspDashboard Controller" when {
     "onPageLoad" must {
       "return OK and the correct tiles" in {
-        when(fakePspDashboardService.getTiles(eqTo(pspId))(any()))
+        when(fakePspDashboardService.getTiles(eqTo(pspId), any())(any()))
           .thenReturn(tiles)
-        when(fakePspDashboardService.getPspName(eqTo(pspId))(any()))
-          .thenReturn(Future.successful(Some(pspName)))
+        when(fakePspDashboardService.getPspDetails(eqTo(pspId))(any()))
+          .thenReturn(Future.successful(minimalPsaDetails))
         when(fakeUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(Json.obj()))
 
@@ -83,7 +85,7 @@ object PspDashboardControllerSpec extends ControllerSpecBase {
       subHeadingParam = Some(pspId),
       links = Seq(
         Link("pspLink", frontendAppConfig.pspDetailsUrl, Message("messages__pspDashboard__psp_change")),
-        Link("deregister-link", frontendAppConfig.pspDeregisterUrl, Message("messages__pspDashboard__psp_deregister"))
+        Link("deregister-link", frontendAppConfig.pspDeregisterIndividualUrl, Message("messages__pspDashboard__psp_deregister"))
       )
     )
 
