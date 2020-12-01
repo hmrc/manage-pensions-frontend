@@ -18,14 +18,11 @@ package config
 
 import java.time.LocalDate
 
-import com.google.inject.Inject
-import com.google.inject.Singleton
+import com.google.inject.{Inject, Singleton}
 import controllers.routes
-import play.api.Mode
+import play.api.{Configuration, Environment, Mode}
 import play.api.i18n.Lang
 import play.api.mvc.Call
-import play.api.Configuration
-import play.api.Environment
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 @Singleton
@@ -142,7 +139,8 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
     .getString("urls.deAuthorisePsp")}"
 
   lazy val pspDetailsUrl: String = loadConfig("urls.pspDetails")
-  lazy val pspDeregisterUrl: String = loadConfig("urls.pspDeregister")
+  lazy val pspDeregisterCompanyUrl: String = loadConfig("urls.pspDeregisterCompany")
+  lazy val pspDeregisterIndividualUrl: String = loadConfig("urls.pspDeregisterIndividual")
 
   lazy val baseUrlEmail: String = servicesConfig.baseUrl("email")
   lazy val emailUrl: String = s"$baseUrlEmail${runModeConfiguration.underlying.getString("urls.email")}"
