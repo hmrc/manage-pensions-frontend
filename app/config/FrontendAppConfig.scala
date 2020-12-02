@@ -113,6 +113,7 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
     .getString("urls.acceptInvite")}"
   lazy val schemeDetailsUrl: String = s"${servicesConfig.baseUrl("pensions-scheme")}${runModeConfiguration.underlying
     .getString("urls.schemeDetails")}"
+  lazy val pspSchemeDetailsUrl: String = runModeConfiguration.underlying.getString("urls.pspSchemeDetails")
   lazy val viewSchemeDetailsUrl: String = runModeConfiguration.underlying.getString("urls.viewSchemeDetails")
   lazy val subscriptionDetailsUrl: String = s"${servicesConfig.baseUrl("pension-administrator")}${runModeConfiguration.underlying
     .getString("urls.subscriptionDetails")}"

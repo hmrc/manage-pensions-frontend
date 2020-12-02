@@ -30,6 +30,7 @@ import models.invitations.psp.ClientReference
 import models.requests.AuthenticatedRequest
 import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{PspSchemeDashboardService, SchemeDetailsService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
@@ -75,7 +76,7 @@ class PspSchemeDashboardController @Inject()(
                 .getOrElse(throw new Exception("No logged in PSP found"))
 
             for {
-              aftCards <- schemeDetailsService.retrievePspDashboardAftCards(srn, request.pspIdOrException.id)
+              aftCards <- schemeDetailsService.retrievePspDashboardAftCards(srn, request.pspIdOrException.id, loggedInPsp.authorisingPSAID)
               listOfSchemes <- listSchemesConnector.getListOfSchemesForPsp(request.pspIdOrException.id)
               _ <- userAnswersCacheConnector.upsert(request.externalId, userAnswers.json)
             } yield {
