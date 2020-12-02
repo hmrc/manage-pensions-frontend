@@ -63,7 +63,7 @@ class ListOfSchemesConnectorImpl @Inject()(http: HttpClient, config: FrontendApp
   }
 
   def getListOfSchemesForPsp(pspId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]] = {
-    val schemeHc = hc.withExtraHeaders("idType" -> "pspid", "idValue" -> pspId)
+    val schemeHc = hc.withExtraHeaders("idType" -> "PSP", "idValue" -> pspId)
     listOfSchemes(config.listOfSchemesIFUrl)(schemeHc, ec)
   }
 
