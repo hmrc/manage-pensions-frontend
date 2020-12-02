@@ -18,7 +18,6 @@ package services
 
 import base.SpecBase
 import connectors.admin.MinimalConnector
-import controllers.routes.ListSchemesController
 import models._
 import org.mockito.Matchers.{any, eq => eqTo}
 import org.mockito.Mockito._
@@ -37,8 +36,8 @@ class PspDashboardServiceSpec extends SpecBase with MockitoSugar with BeforeAndA
   private val minimalPsaConnector: MinimalConnector = mock[MinimalConnector]
 
   override def beforeEach(): Unit = {
-    when(minimalPsaConnector.getPsaNameFromPsaID(eqTo(pspId))(any(), any()))
-      .thenReturn(Future.successful(Some(pspName)))
+    when(minimalPsaConnector.getMinimalPspDetails(eqTo(pspId))(any(), any()))
+      .thenReturn(Future.successful(minimalPsaDetails))
     super.beforeEach()
   }
 
@@ -46,7 +45,7 @@ class PspDashboardServiceSpec extends SpecBase with MockitoSugar with BeforeAndA
 
   "getTiles" must {
     "return tiles with relevant links when all possible links are displayed" in {
-        service.getTiles(pspId) mustBe tiles
+        service.getTiles(pspId, minimalPsaDetails) mustBe tiles
       }
   }
 
@@ -57,7 +56,7 @@ object PspDashboardServiceSpec extends SpecBase with MockitoSugar  {
   val pspName: String = "John Doe"
   private val pspId = "00000000"
 
-  def minimalPsaDetails(psaSuspended: Boolean): MinimalPSAPSP = MinimalPSAPSP("test@test.com", psaSuspended, Some("Org Name"), None)
+  def minimalPsaDetails: MinimalPSAPSP = MinimalPSAPSP("test@test.com", isPsaSuspended = false, Some("Org Name"), None)
 
   private val practitionerCard: CardViewModel =
     CardViewModel(
@@ -67,7 +66,7 @@ object PspDashboardServiceSpec extends SpecBase with MockitoSugar  {
       subHeadingParam = Some(pspId),
       links = Seq(
         Link("pspLink", frontendAppConfig.pspDetailsUrl, Message("messages__pspDashboard__psp_change")),
-        Link("deregister-link", frontendAppConfig.pspDeregisterUrl, Message("messages__pspDashboard__psp_deregister"))
+        Link("deregister-link", frontendAppConfig.pspDeregisterCompanyUrl, Message("messages__pspDashboard__psp_deregister"))
       )
     )
 
