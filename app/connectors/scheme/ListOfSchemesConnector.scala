@@ -60,7 +60,7 @@ class ListOfSchemesConnectorImpl @Inject()(
                       (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]] = {
     featureToggleService.get(IntegrationFrameworkListSchemes).flatMap {
       case Enabled(IntegrationFrameworkListSchemes) =>
-        val (url, schemeHc) = (config.listOfSchemesIFUrl, hc.withExtraHeaders("idType" -> "PSA", "idValue" -> psaId))
+        val (url, schemeHc) = (config.listOfSchemesIFUrl, hc.withExtraHeaders("idType" -> "psaid", "idValue" -> psaId))
         listOfSchemes(url)(schemeHc, ec)
       case _ =>
         val (url, schemeHc) = (config.listOfSchemesUrl, hc.withExtraHeaders("psaId" -> psaId))
