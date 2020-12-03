@@ -75,7 +75,12 @@ class PspSchemeDashboardController @Inject()(
                 .getOrElse(throw new Exception("No logged in PSP found"))
 
             for {
-              aftCards <- schemeDetailsService.retrievePspDashboardAftCards(srn, request.pspIdOrException.id, loggedInPsp.authorisingPSAID)
+              aftReturnsCard <- schemeDetailsService.retrievePspDashboardAftReturnsCard(
+                srn = srn,
+                pspId = request.pspIdOrException.id,
+                authorisingPsaId = loggedInPsp.authorisingPSAID
+              )
+              upcomingAftCharges <- schemeDetailsService.retrievePspDashboardUpcomingAftChargesCard(srn)
               listOfSchemes <- listSchemesConnector.getListOfSchemesForPsp(request.pspIdOrException.id)
               _ <- userAnswersCacheConnector.upsert(request.externalId, userAnswers.json)
             } yield {
@@ -83,7 +88,8 @@ class PspSchemeDashboardController @Inject()(
                 case Right(list) =>
                   Ok(view(
                     schemeName = (userAnswers.json \ "schemeName").as[String],
-                    aftCards = Seq(aftCards),
+                    aftReturnsCard = Seq(aftReturnsCard),
+                    upcomingAftCharges = upcomingAftCharges,
                     cards = service.getTiles(
                       srn = srn,
                       pstr = (userAnswers.json \ "pstr").as[String],
