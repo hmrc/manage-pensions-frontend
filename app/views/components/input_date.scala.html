@@ -57,7 +57,7 @@ headingIsLegend: Boolean = false
     }
 
     @if(hint.nonEmpty){
-        <span class="form-hint govuk-hint" id="@{field.id}-date-hint">@hint</span>
+        <span class="form-hint" id="@{field.id}-date-hint">@hint</span>
     }
 
     @field.errors.map { error =>
