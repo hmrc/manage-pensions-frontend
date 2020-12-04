@@ -16,7 +16,7 @@
 
 package models
 
-import utils.{Enumerable, WithName}
+import utils.Enumerable
 
 sealed trait AuthEntity
 

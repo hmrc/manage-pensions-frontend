@@ -17,13 +17,7 @@
 package models.invitations.psp
 
 import models.WithName
-import play.api.libs.json.JsError
-import play.api.libs.json.JsObject
-import play.api.libs.json.JsPath
-import play.api.libs.json.JsSuccess
-import play.api.libs.json.Json
-import play.api.libs.json.Reads
-import play.api.libs.json.Writes
+import play.api.libs.json._
 import utils.InputOption
 
 sealed trait ClientReference
@@ -62,15 +56,11 @@ object ClientReference {
     }
   }
 
-  implicit lazy val writes = new Writes[ClientReference] {
-    def writes(o: ClientReference): JsObject = {
-      o match {
-        case ClientReference.HaveClientReference(reference) =>
-          Json.obj("hasReference" -> "true", "reference" -> reference)
-        case _ =>
-          Json.obj("hasReference" -> "false")
-      }
-    }
+  implicit lazy val writes: Writes[ClientReference] = {
+    case ClientReference.HaveClientReference(reference) =>
+      Json.obj("hasReference" -> "true", "reference" -> reference)
+    case _ =>
+      Json.obj("hasReference" -> "false")
   }
 
 }

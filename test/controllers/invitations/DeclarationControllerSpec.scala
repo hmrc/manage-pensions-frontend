@@ -60,7 +60,6 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
   private val view = injector.instanceOf[declaration]
 
   def controller(dataRetrievalAction: DataRetrievalAction = getEmptyData) = new DeclarationController(
-    frontendAppConfig,
     messagesApi,
     formProvider,
     FakeAuthAction,

@@ -35,24 +35,32 @@ import scala.util.Failure
 @ImplementedBy(classOf[SchemeDetailsConnectorImpl])
 trait SchemeDetailsConnector {
 
-  def getSchemeDetails(psaId: String,
-                       schemeIdType: String,
-                       idNumber: String)(implicit hc: HeaderCarrier,
-                                                   ec: ExecutionContext): Future[UserAnswers]
+  def getSchemeDetails(
+                        psaId: String,
+                        idNumber: String,
+                        schemeIdType: String
+                      )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[UserAnswers]
 
 }
 
 @Singleton
-class SchemeDetailsConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) extends
-  SchemeDetailsConnector with HttpResponseHelper {
+class SchemeDetailsConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig)
+  extends SchemeDetailsConnector
+    with HttpResponseHelper {
 
-  def getSchemeDetails(psaId: String,
-                       schemeIdType: String,
-                       idNumber: String)(implicit hc: HeaderCarrier,
-                                                   ec: ExecutionContext): Future[UserAnswers] = {
+  def getSchemeDetails(
+                        psaId: String,
+                        idNumber: String,
+                        schemeIdType: String
+                      )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[UserAnswers] = {
 
     val url = config.schemeDetailsUrl
-    val schemeHc = hc.withExtraHeaders("schemeIdType" -> schemeIdType, "idNumber" -> idNumber, "PSAId" -> psaId)
+    val schemeHc =
+      hc.withExtraHeaders(
+        "idNumber" -> idNumber,
+        "psaId" -> psaId,
+        "schemeIdType" -> schemeIdType
+      )
     http.GET[HttpResponse](url)(implicitly, schemeHc, implicitly).map { response =>
       response.status match {
         case OK =>

@@ -17,27 +17,42 @@
 @import config.FrontendAppConfig
 @import uk.gov.hmrc.play.views.html._
 @import views.html._
-@import controllers.routes._
-@import models.Mode
-@import viewmodels.{AssociatedPsa, Message}
 @import models.Link
-@import play.api.mvc.Call
+@import viewmodels.PspSchemeDashboardCardViewModel
 
 @this(
-    main_template: main_template,
-    appConfig: FrontendAppConfig
+        main_template: main_template,
+        appConfig: FrontendAppConfig
 )
 
-@()(implicit request: Request[_], messages: Messages)
+@(
+        schemeName: String,
+        aftCards: Seq[Html],
+        cards: Seq[PspSchemeDashboardCardViewModel],
+        returnLink: Option[Link] = None
+)(
+        implicit request: Request[_],
+        messages: Messages
+)
 
-    @main_template("Temporary page for PSP scheme dashboard", None) {
+@main_template(
+    title = schemeName,
+    mainContentContainerClasses = Some("full-width")
+) {
 
-        @components.back_link()
+    @components.heading(schemeName)
 
-        @components.heading("Temporary page for PSP scheme dashboard")
+    <div class="flex-container grid-row">
+        @for(aftCard <- aftCards) {
+            @aftCard
+        }
 
-        <p><a id="deauthorise-yourself" href="@controllers.remove.pspSelfRemoval.routes.ConfirmRemovalController.onPageLoad()">
-            @messages("De Authorise yourself")
-        </a></p>
+        @for(card <- cards) {
+            @components.pspSchemeDashboardCard(card)
+        }
+    </div>
 
+    @returnLink.map { ret =>
+        <a id="@ret.id" href="@ret.url">@messages(ret.linkText)</a>
     }
+}

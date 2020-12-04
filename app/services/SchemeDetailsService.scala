@@ -15,6 +15,7 @@
  */
 
 package services
+
 import java.time.LocalDate
 
 import com.google.inject.Inject
@@ -22,23 +23,17 @@ import config.FrontendAppConfig
 import connectors.FrontendConnector
 import connectors.admin.MinimalConnector
 import connectors.scheme.PensionSchemeVarianceLockConnector
-import identifiers.ListOfPSADetailsId
-import identifiers.SchemeStatusId
-import models.SchemeStatus.Deregistered
-import models.SchemeStatus.Open
-import models.SchemeStatus.WoundUp
+import identifiers.{ListOfPSADetailsId, SchemeStatusId}
+import models.SchemeStatus.{Deregistered, Open, WoundUp}
 import models._
 import models.requests.AuthenticatedRequest
-import play.api.mvc.AnyContent
-import play.api.mvc.Request
+import play.api.mvc.{AnyContent, Request}
 import play.twirl.api.Html
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.DateHelper
-import utils.UserAnswers
+import utils.{DateHelper, UserAnswers}
 import viewmodels.AssociatedPsa
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
                                      frontendConnector: FrontendConnector,
@@ -46,21 +41,25 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
                                      minimalPsaConnector: MinimalConnector
                                     )(implicit ec: ExecutionContext) {
 
-  def retrieveAftHtml[A](userAnswers: UserAnswers, srn: String)(implicit request: Request[A]): Future[Html] = {
+  def retrieveAftHtml[A](userAnswers: UserAnswers, srn: String)
+                        (implicit request: Request[A]): Future[Html] =
     if (isCorrectSchemeStatus(userAnswers)) {
       frontendConnector.retrieveAftPartial(srn)
     } else {
       Future.successful(Html(""))
     }
-  }
 
-  def retrievePaymentsAndChargesHtml[A](srn: String)(implicit request: Request[A]): Future[Html] = {
-    if(appConfig.isFSEnabled) {
+  def retrievePspDashboardAftCards[A](srn: String, pspId: String, authorisingPsaId: String)
+                                     (implicit request: Request[A]): Future[Html] =
+    frontendConnector.retrievePspDashboardAftCards(srn, pspId, authorisingPsaId)
+
+  def retrievePaymentsAndChargesHtml[A](srn: String)
+                                       (implicit request: Request[A]): Future[Html] =
+    if (appConfig.isFSEnabled) {
       frontendConnector.retrievePaymentsAndChargesPartial(srn)
     } else {
       Future.successful(Html(""))
     }
-  }
 
   private def isCorrectSchemeStatus(ua: UserAnswers): Boolean = {
     val validStatus = Seq(Open.value, WoundUp.value, Deregistered.value)
@@ -82,6 +81,7 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
       }
     }
   }
+
   def administratorsVariations(psaId: String, psaSchemeDetails: UserAnswers, schemeStatus: String): Option[Seq[AssociatedPsa]] =
     psaSchemeDetails.get(ListOfPSADetailsId).map { psaDetailsSeq =>
       psaDetailsSeq.map { psaDetails =>
@@ -90,7 +90,8 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
         AssociatedPsa(name, canRemove)
       }
     }
-  def openedDate(srn: String, list: ListOfSchemes, isSchemeOpen: Boolean): Option[String] = {
+
+  def openedDate(srn: String, list: ListOfSchemes, isSchemeOpen: Boolean): Option[String] =
     if (isSchemeOpen) {
       list.schemeDetails.flatMap {
         listOfSchemes =>
@@ -105,7 +106,7 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
     else {
       None
     }
-  }
+
   def pstr(srn: String, list: ListOfSchemes): Option[String] =
     list.schemeDetails.flatMap { listOfSchemes =>
       val currentScheme = listOfSchemes.filter(_.referenceNumber.contains(srn))
@@ -115,6 +116,7 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
         None
       }
     }
+
   def lockingPsa(lock: Option[Lock], srn: SchemeReferenceNumber)
                 (implicit request: AuthenticatedRequest[AnyContent], hc: HeaderCarrier): Future[Option[String]] =
     lock match {

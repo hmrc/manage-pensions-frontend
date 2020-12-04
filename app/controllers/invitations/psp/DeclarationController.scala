@@ -19,71 +19,58 @@ package controllers.invitations.psp
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
-import audit.AuditService
-import audit.PSPAuthorisationEmailAuditEvent
+import audit.{AuditService, PSPAuthorisationEmailAuditEvent}
 import com.google.inject.Inject
 import config.FrontendAppConfig
-import connectors.EmailNotSent
+import connectors.{ActiveRelationshipExistsException, EmailConnector, EmailNotSent, PspConnector}
 import connectors.admin.MinimalConnector
 import connectors.scheme.ListOfSchemesConnector
-import connectors.ActiveRelationshipExistsException
-import connectors.EmailConnector
-import connectors.PspConnector
 import controllers.Retrievals
-import controllers.actions.AuthAction
-import controllers.actions.DataRequiredAction
-import controllers.actions.DataRetrievalAction
-import controllers.actions.IdNotFound
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.invitations.psp.DeclarationFormProvider
-import identifiers.invitations.psp.PspClientReferenceId
-import identifiers.invitations.psp.PspId
-import identifiers.invitations.psp.PspNameId
-import identifiers.SchemeNameId
-import identifiers.SchemeSrnId
-import models.MinimalPSAPSP
-import models.SendEmailRequest
+import identifiers.{SchemeNameId, SchemeSrnId}
+import identifiers.invitations.psp.{PspClientReferenceId, PspId, PspNameId}
+import models.{MinimalPSAPSP, SendEmailRequest}
 import models.invitations.psp.ClientReference
 import models.requests.DataRequest
 import play.api.Logger
 import play.api.data.Form
-import play.api.i18n.I18nSupport
-import play.api.i18n.MessagesApi
-import play.api.mvc.Action
-import play.api.mvc.AnyContent
-import play.api.mvc.MessagesControllerComponents
-import play.api.mvc.Result
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.SchemeDetailsService
-import uk.gov.hmrc.crypto.ApplicationCrypto
-import uk.gov.hmrc.crypto.PlainText
-import uk.gov.hmrc.domain.PsaId
+import uk.gov.hmrc.crypto.{ApplicationCrypto, PlainText}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import views.html.invitations.psp.declaration
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class DeclarationController @Inject()(override val messagesApi: MessagesApi,
-                                      formProvider: DeclarationFormProvider,
-                                      auth: AuthAction,
-                                      getData: DataRetrievalAction,
-                                      requireData: DataRequiredAction,
-                                      pspConnector: PspConnector,
-                                      listOfSchemesConnector: ListOfSchemesConnector,
-                                      schemeDetailsService: SchemeDetailsService,
-                                      emailConnector: EmailConnector,
-                                      minimalConnector: MinimalConnector,
-                                      val controllerComponents: MessagesControllerComponents,
-                                      auditService: AuditService,
-                                      crypto: ApplicationCrypto,
-                                      appConfig: FrontendAppConfig,
-                                      view: declaration
-                                     )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
+class DeclarationController @Inject()(
+                                       override val messagesApi: MessagesApi,
+                                       formProvider: DeclarationFormProvider,
+                                       auth: AuthAction,
+                                       getData: DataRetrievalAction,
+                                       requireData: DataRequiredAction,
+                                       pspConnector: PspConnector,
+                                       listOfSchemesConnector: ListOfSchemesConnector,
+                                       schemeDetailsService: SchemeDetailsService,
+                                       emailConnector: EmailConnector,
+                                       minimalConnector: MinimalConnector,
+                                       val controllerComponents: MessagesControllerComponents,
+                                       auditService: AuditService,
+                                       crypto: ApplicationCrypto,
+                                       appConfig: FrontendAppConfig,
+                                       view: declaration
+                                     )(implicit val ec: ExecutionContext)
+  extends FrontendBaseController
+    with I18nSupport
+    with Retrievals {
   val form: Form[Boolean] = formProvider()
-  val sessionExpired: Future[Result] = Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+  val sessionExpired: Future[Result] =
+    Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
 
   def onPageLoad(): Action[AnyContent] = (auth() andThen getData andThen requireData) {
     implicit request =>
-          Ok(view(form))
+      Ok(view(form))
   }
 
   def onSubmit(): Action[AnyContent] = (auth() andThen getData andThen requireData).async {
@@ -93,7 +80,7 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
           Future.successful(BadRequest(view(formWithErrors))),
         _ => inviteEmailAndRedirect()
       )
-   }
+  }
 
   private def inviteEmailAndRedirect()(implicit request: DataRequest[AnyContent]): Future[Result] =
     (SchemeNameId and SchemeSrnId and PspNameId and PspId and PspClientReferenceId).retrieve.right.map {
@@ -136,44 +123,44 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
   }
 
   private def callBackUrl(
-    psaId: String,
-    pspId: String,
-    pstr: String,
-    email: String
-  ): String =
+                           psaId: String,
+                           pspId: String,
+                           pstr: String,
+                           email: String
+                         ): String =
     appConfig.pspAuthEmailCallback(
       encodeAndEncrypt(psaId), encodeAndEncrypt(pspId), encodeAndEncrypt(pstr), encodeAndEncrypt(email)
     )
 
-  private def encodeAndEncrypt(s:String):String =
+  private def encodeAndEncrypt(s: String): String =
     URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(s)).value, StandardCharsets.UTF_8.toString)
 
   private def sendEmail(
-    minimalPSAPSP: MinimalPSAPSP,
-    psaId: String,
-    pspId: String,
-    pstr: String,
-    pspName: String,
-    schemeName: String
-  )(implicit request: DataRequest[AnyContent], ec: ExecutionContext): Future[Unit] = {
-      val email = SendEmailRequest(
-        List(minimalPSAPSP.email),
-        "pods_authorise_psp",
-        Map(
-          "psaInvitor" -> minimalPSAPSP.name,
-          "pspInvitee" -> pspName,
-          "schemeName" -> schemeName
-        ),
-        force = false,
-        eventUrl = Some(callBackUrl(psaId, pspId, pstr, minimalPSAPSP.email))
-      )
+                         minimalPSAPSP: MinimalPSAPSP,
+                         psaId: String,
+                         pspId: String,
+                         pstr: String,
+                         pspName: String,
+                         schemeName: String
+                       )(implicit request: DataRequest[AnyContent], ec: ExecutionContext): Future[Unit] = {
+    val email = SendEmailRequest(
+      List(minimalPSAPSP.email),
+      "pods_authorise_psp",
+      Map(
+        "psaInvitor" -> minimalPSAPSP.name,
+        "pspInvitee" -> pspName,
+        "schemeName" -> schemeName
+      ),
+      force = false,
+      eventUrl = Some(callBackUrl(psaId, pspId, pstr, minimalPSAPSP.email))
+    )
 
-      emailConnector.sendEmail(email).map{ emailStatus =>
-        if (emailStatus == EmailNotSent) {
-          Logger.error("Unable to send email to authorising PSA. Support intervention possibly required.")
-        }
-        ()
+    emailConnector.sendEmail(email).map { emailStatus =>
+      if (emailStatus == EmailNotSent) {
+        Logger.error("Unable to send email to authorising PSA. Support intervention possibly required.")
       }
+      ()
+    }
 
   }
 }

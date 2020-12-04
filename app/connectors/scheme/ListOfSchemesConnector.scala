@@ -41,17 +41,23 @@ import scala.concurrent.Future
 @ImplementedBy(classOf[ListOfSchemesConnectorImpl])
 trait ListOfSchemesConnector {
 
-  def getListOfSchemes(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]]
+  def getListOfSchemes(psaId: String)
+                      (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]]
 
-  def getListOfSchemesForPsp(pspId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]]
+  def getListOfSchemesForPsp(pspId: String)
+                            (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]]
 
 }
 
 @Singleton
-class ListOfSchemesConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig,
-          featureToggleService:FeatureToggleService) extends ListOfSchemesConnector {
+class ListOfSchemesConnectorImpl @Inject()(
+                                            http: HttpClient,
+                                            config: FrontendAppConfig,
+                                            featureToggleService: FeatureToggleService
+                                          ) extends ListOfSchemesConnector {
 
-  def getListOfSchemes(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]] = {
+  def getListOfSchemes(psaId: String)
+                      (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]] = {
     featureToggleService.get(IntegrationFrameworkListSchemes).flatMap {
       case Enabled(IntegrationFrameworkListSchemes) =>
         val (url, schemeHc) = (config.listOfSchemesIFUrl, hc.withExtraHeaders("idType" -> "psaid", "idValue" -> psaId))
@@ -62,7 +68,8 @@ class ListOfSchemesConnectorImpl @Inject()(http: HttpClient, config: FrontendApp
     }
   }
 
-  def getListOfSchemesForPsp(pspId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]] = {
+  def getListOfSchemesForPsp(pspId: String)
+                            (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]] = {
     val schemeHc = hc.withExtraHeaders("idType" -> "pspid", "idValue" -> pspId)
     listOfSchemes(config.listOfSchemesIFUrl)(schemeHc, ec)
   }
@@ -82,7 +89,6 @@ class ListOfSchemesConnectorImpl @Inject()(http: HttpClient, config: FrontendApp
       }
     }
   }
-
 
 
 }

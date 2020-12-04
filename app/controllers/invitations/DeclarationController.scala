@@ -50,7 +50,6 @@ import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
 class DeclarationController @Inject()(
-                                       appConfig: FrontendAppConfig,
                                        override val messagesApi: MessagesApi,
                                        formProvider: DeclarationFormProvider,
                                        auth: AuthAction,
@@ -70,7 +69,11 @@ class DeclarationController @Inject()(
     implicit request =>
       (DoYouHaveWorkingKnowledgeId and SchemeSrnId).retrieve.right.map {
         case haveWorkingKnowledge ~ srn =>
-            schemeDetailsConnector.getSchemeDetails(request.psaIdOrException.id, "srn", srn).flatMap { details =>
+            schemeDetailsConnector.getSchemeDetails(
+              psaId = request.psaIdOrException.id,
+              idNumber = srn,
+              schemeIdType = "srn"
+            ) flatMap { details =>
               (details.get(GetSchemeNameId), details.get(SchemeTypeId)) match {
                 case (Some(name), Some(schemeType)) =>
                   val isMasterTrust = schemeType.equals(MasterTrust)

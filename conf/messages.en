@@ -561,3 +561,29 @@ messages__pspRemovalConfirmation__p1 = We have sent a confirmation email to {0}
 messages__pspRemovalConfirmation__h2 = What happens next
 messages__pspRemovalConfirmation__p2 = A letter will be sent to {0} to let them know that you have deauthorised yourself as a scheme practitioner for {1}.
 messages__pspRemovalConfirmation__p2__screenReaderAlternative = A letter will be sent to {0} to let them know that you have dee authorised yourself as a scheme practitioner for {1}.
+
+messages__pspSchemeDashboard__details_heading = Your practitioner details
+messages__pspSchemeDashboard__details__subHeading_authBy = Authorised by:
+messages__pspSchemeDashboard__details__subHeading_authDate = Date authorised to this scheme:
+messages__pspSchemeDashboard__details__subHeading_clientRef = Client reference:
+
+messages__pspSchemeDashboard__scheme_heading = Pension scheme details
+messages__pspSchemeDashboard__scheme__subHeading_pstr = Pension Scheme Tax Reference:
+messages__pspSchemeDashboard__scheme__subHeading_regForTax = Registration for Tax:
+messages__pspSchemeDashboard__view_details_link = View the registered scheme details
+
+messages__pspSchemeDashboard__aftReturns_heading = Accounting for Tax returns
+messages__pspSchemeDashboard__aftReturns__subHeading_aftDetails = AFT return 1 Apr to 30 Jun 2020:
+messages__pspSchemeDashboard__aftReturns__actions_viewLockReturn = View locked AFT return
+messages__pspSchemeDashboard__aftReturns__actions_startNewReturn = Start new AFT return
+messages__pspSchemeDashboard__aftReturns__actions_viewOrAmend = View or amend past AFT returns
+
+messages__pspSchemeDashboard__aftUpcomingCharges_heading = Upcoming AFT charges
+messages__pspSchemeDashboard__aftUpcomingCharges__subHeading_dueDate = Payment due by 15 Sep 2020:
+messages__pspSchemeDashboard__aftUpcomingCharges__actions_viewPayments = View payments and charges for 1 April to 30 June
+messages__pspSchemeDashboard__aftUpcomingCharges__actions_viewPastPayments = View past payments and charges
+
+messages__pspSchemeDashboard__aftOverdueCharges_heading = Overdue AFT charges
+messages__pspSchemeDashboard__aftOverdueCharges__subHeading_total = Total overdue payments:
+messages__pspSchemeDashboard__aftOverdueCharges__subHeading_interest = Interest accruing:
+messages__pspSchemeDashboard__aftOverdueCharges__actions_view = View overdue payments and interest charges for 1 January to 31 March
