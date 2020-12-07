@@ -228,12 +228,7 @@ table td:last-child, table th:last-child {
 
     }
 
-    tr.member-details > td:nth-child(5) {
-        border-bottom: 0px;
-    }
-    table td:last-child, table th:last-child {
-        border-bottom: 0px;
-    }
+
 }
 
 @media only screen and (min-width: 1000px) {
@@ -268,7 +263,28 @@ table td:last-child, table th:last-child {
         padding-right: 80px;
     }
 }
+.govuk-table {
 
+    font-family: "GDS Transport", Arial, sans-serif;
+    -moz-osx-font-smoothing: grayscale;
+    font-weight: 400;
+    font-size: 16px;
+    font-size: 1rem;
+    line-height: 1.25;
+    color: #0b0c0c;
+    border-spacing: 0;
+    border-collapse: collapse;
+
+}
+
+
+ [role="region"][aria-labelledby][tabindex] {
+    overflow: auto;
+  }
+​
+  [role="region"][aria-labelledby][tabindex]:focus {
+    outline: .1em solid rgba(0, 0, 0, .1);
+  }
 
 
 .dl--label-value dd{
