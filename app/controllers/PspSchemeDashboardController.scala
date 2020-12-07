@@ -59,23 +59,18 @@ class PspSchemeDashboardController @Inject()(
     implicit request =>
       getUserAnswers(srn).flatMap {
         userAnswers =>
-          val pspList = (userAnswers.json \ "pspDetails").as[Seq[AuthorisedPractitioner]]
-          val pspIdList: Seq[String] = pspList.map(_.id)
+          val pspDetails: AuthorisedPractitioner = (userAnswers.json \ "pspDetails").as[AuthorisedPractitioner]
 
-          if (pspIdList.contains(request.pspIdOrException.id)) {
+          if (pspDetails.id == request.pspIdOrException.id) {
             val schemeStatus: String = userAnswers.get(SchemeStatusId).getOrElse("")
             val clientReference: Option[String] = userAnswers.get(PspClientReferenceId).flatMap {
               case ClientReference.HaveClientReference(reference) => Some(reference)
               case ClientReference.NoClientReference => None
             }
             val isSchemeOpen: Boolean = schemeStatus.equalsIgnoreCase("open")
-            val loggedInPsp: AuthorisedPractitioner =
-              pspList
-                .find(_.id == request.pspIdOrException.id)
-                .getOrElse(throw new Exception("No logged in PSP found"))
 
             for {
-              aftCards <- schemeDetailsService.retrievePspDashboardAftCards(srn, request.pspIdOrException.id, loggedInPsp.authorisingPSAID)
+              aftCards <- schemeDetailsService.retrievePspDashboardAftCards(srn, request.pspIdOrException.id, pspDetails.authorisingPSAID)
               listOfSchemes <- listSchemesConnector.getListOfSchemesForPsp(request.pspIdOrException.id)
               _ <- userAnswersCacheConnector.upsert(request.externalId, userAnswers.json)
             } yield {
@@ -88,7 +83,7 @@ class PspSchemeDashboardController @Inject()(
                       srn = srn,
                       pstr = (userAnswers.json \ "pstr").as[String],
                       openDate = schemeDetailsService.openedDate(srn, list, isSchemeOpen),
-                      loggedInPsp = loggedInPsp,
+                      loggedInPsp = pspDetails,
                       clientReference = clientReference
                     )
                   ))
@@ -109,11 +104,7 @@ class PspSchemeDashboardController @Inject()(
                             (implicit request: AuthenticatedRequest[AnyContent]): Future[UserAnswers] =
     for {
       _ <- userAnswersCacheConnector.removeAll(request.externalId)
-      userAnswers <- schemeDetailsConnector.getSchemeDetails(
-        psaId = request.pspIdOrException.id,
-        idNumber = srn,
-        schemeIdType = "srn"
-      )
+      userAnswers <- schemeDetailsConnector.getPspSchemeDetails(request.pspIdOrException.id, srn)
       minPspDetails <- minimalConnector.getMinimalPspDetails(request.pspIdOrException.id)
     } yield {
       userAnswers.set(SchemeSrnId)(srn)

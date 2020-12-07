@@ -107,7 +107,7 @@ class PspSchemeDashboardService @Inject()(
       ),
       links = Seq(Link(
         id = "search-schemes",
-        url = appConfig.pspSchemeDetailsUrl.format(srn),
+        url = appConfig.pspTaskListUrl.format(srn),
         linkText = Message("messages__pspSchemeDashboard__view_details_link")
       ))
     )

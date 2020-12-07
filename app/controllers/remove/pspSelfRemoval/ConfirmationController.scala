@@ -21,9 +21,8 @@ import connectors.UserAnswersCacheConnector
 import connectors.admin.MinimalConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
-import identifiers.{SchemeNameId, SeqAuthorisedPractitionerId}
+import identifiers.{AuthorisedPractitionerId, SchemeNameId}
 import models.AuthEntity.PSP
-import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
@@ -44,18 +43,11 @@ class ConfirmationController @Inject()(override val messagesApi: MessagesApi,
   def onPageLoad(): Action[AnyContent] = (auth(PSP) andThen getData andThen requireData).async {
       implicit request =>
 
-        (SchemeNameId and SeqAuthorisedPractitionerId).retrieve.right.map {
-          case schemeName ~ pspList =>
-            val pspId: String = request.pspIdOrException.id
-
+        (SchemeNameId and AuthorisedPractitionerId).retrieve.right.map {
+          case schemeName ~ psp =>
             minimalConnector.getMinimalPspDetails(request.pspIdOrException.id) flatMap { pspDetails =>
                 userAnswersCacheConnector.removeAll(request.externalId) map { _ =>
-                  pspList.find(_.id == pspId).map { psp =>
                     Ok(view(schemeName, psp.authorisingPSA.name, pspDetails.email))
-                  }.getOrElse {
-                    Logger.debug("Logged in PSP not found in the list of PSPs for the given scheme")
-                    Redirect(controllers.routes.SessionExpiredController.onPageLoad())
-                  }
                 }
             }
         }
