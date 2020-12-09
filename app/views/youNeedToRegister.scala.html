@@ -42,9 +42,7 @@ appConfig: FrontendAppConfig
 
     <p>@Html(Message("messages__youNeedToRegister__p1"))</p>
 
-    <div class="section">
-        <a id="redirect-to-psa" href="@appConfig.registerSchemeAdministratorUrl">@messages("messages__youNeedToRegisterAdministrator__link")</a>
-    </div>
+    <a id="redirect-to-psa" href="@appConfig.registerSchemeAdministratorUrl">@messages("messages__youNeedToRegisterAdministrator__link")</a>
 
     <div class="section">
         <a id="redirect-to-psp" href="@appConfig.registerSchemePractitionerUrl">@messages("messages__youNeedToRegisterPractitioner__link")</a>
