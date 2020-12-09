@@ -19,7 +19,7 @@
 }
 
 @media screen and (min-width:900px) {
-  .card {
+  .full-width .card {
     flex-basis: 31%;
 
     &:nth-child(3n-1) {
@@ -51,7 +51,8 @@ html[data-useragent*='MSIE 10.0'] .flex-container {
   .card-body {
     border-bottom: 1px solid $panel-colour;
     padding: 12px;
-    height: 83px;
+    min-height: 83px;
+    background-color: #f0f0f0;
 
     @media screen and (max-width: 640px) {
       height: 50px;
@@ -76,6 +77,19 @@ html[data-useragent*='MSIE 10.0'] .flex-container {
       font-size: 32px;
       font-weight: 600;
       margin-bottom: 8px;
+    }
+
+    h3.detail-large {
+      color: $black;
+      font-size: 32px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      margin-top: 0.64em;
+    }
+
+    .card-sub-heading span {
+      display: block;
+      color: $govuk-secondary-text-colour;
     }
 
     .detail {

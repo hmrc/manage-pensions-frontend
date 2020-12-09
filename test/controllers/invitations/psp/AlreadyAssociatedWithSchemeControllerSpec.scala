@@ -16,7 +16,6 @@
 
 package controllers.invitations.psp
 
-import config.FrontendAppConfig
 import controllers.ControllerSpecBase
 import controllers.actions._
 import identifiers.SchemeNameId
@@ -34,13 +33,10 @@ class AlreadyAssociatedWithSchemeControllerSpec extends ControllerSpecBase {
     .set(PspNameId)("xyz").asOpt.value
     .set(SchemeNameId)(schemeName).asOpt.value
   private val minimalData = new FakeDataRetrievalAction(Some(userAnswer.json))
-  private val config = injector.instanceOf[FrontendAppConfig]
-
 
   private val view = injector.instanceOf[alreadyAssociatedWithScheme]
 
   def controller(dataRetrievalAction: DataRetrievalAction = minimalData) = new AlreadyAssociatedWithSchemeController(
-    config,
     messagesApi,
     FakeAuthAction,
     dataRetrievalAction,

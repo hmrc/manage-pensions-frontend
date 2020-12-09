@@ -23,11 +23,10 @@ import controllers.Retrievals
 import controllers.actions._
 import forms.remove.PspRemovalDateFormProvider
 import identifiers.remove.pspSelfRemoval.RemovalDateId
-import identifiers.{SchemeNameId, SchemeSrnId, SeqAuthorisedPractitionerId}
+import identifiers.{AuthorisedPractitionerId, SchemeNameId, SchemeSrnId}
 import javax.inject.Inject
 import models.AuthEntity.PSP
 import models.NormalMode
-import play.api.Logger
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.libs.json.Reads._
@@ -56,26 +55,19 @@ class RemovalDateController @Inject()(override val messagesApi: MessagesApi,
 
   def onPageLoad: Action[AnyContent] = (authenticate(PSP) andThen getData andThen requireData).async {
     implicit request =>
-      (SchemeNameId and SchemeSrnId and SeqAuthorisedPractitionerId).retrieve.right.map {
-        case schemeName ~ srn ~ pspList =>
-          val pspId: String = request.pspIdOrException.id
-          pspList.find(_.id == pspId).map { psp =>
+      (SchemeNameId and SchemeSrnId and AuthorisedPractitionerId).retrieve.right.map {
+        case schemeName ~ srn ~ psp =>
             val authDate: LocalDate = psp.relationshipStartDate
             val preparedForm = request.userAnswers.get(RemovalDateId).fold(form(authDate))(form(authDate).fill)
             Future.successful(Ok(view(preparedForm, schemeName, srn, formatDate(authDate))))
-          }.getOrElse {
-            Logger.debug("Logged in PSP not found in the list of PSPS for the given scheme")
-            Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
-          }
       }
   }
 
   def onSubmit: Action[AnyContent] = (authenticate(PSP) andThen getData andThen requireData).async {
     implicit request =>
-      (SchemeNameId and SchemeSrnId and SeqAuthorisedPractitionerId).retrieve.right.map {
-        case schemeName ~ srn ~ pspList =>
-          val pspId: String = request.pspIdOrException.id
-          pspList.find(_.id == pspId).map { psp =>
+      (SchemeNameId and SchemeSrnId and AuthorisedPractitionerId).retrieve.right.map {
+        case schemeName ~ srn ~ psp =>
+
             val authDate: LocalDate = psp.relationshipStartDate
 
             form(authDate).bindFromRequest().fold(
@@ -87,10 +79,7 @@ class RemovalDateController @Inject()(override val messagesApi: MessagesApi,
                   Redirect(navigator.nextPage(RemovalDateId, NormalMode, UserAnswers(cacheMap)))
                 }
             )
-          }.getOrElse {
-            Logger.error("Logged in PSP not found in the list of PSPS for the given scheme")
-            Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
-          }
+
       }
   }
 

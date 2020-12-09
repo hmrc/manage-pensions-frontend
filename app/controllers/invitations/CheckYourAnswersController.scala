@@ -85,7 +85,11 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
   private def isSchemeAssociatedWithInvitee(psaId: String, srn: String,
                                             inviteePsaId: String)
                                            (implicit request: Request[_]): Future[Boolean] =
-    schemeDetailsConnector.getSchemeDetails(psaId, "srn", srn).map { scheme =>
+    schemeDetailsConnector.getSchemeDetails(
+      psaId = psaId,
+      idNumber = srn,
+      schemeIdType = "srn"
+    ).map { scheme =>
       (scheme.json \ "psaDetails").toOption.exists(_.as[Seq[PsaDetails]].exists(_.id == inviteePsaId))
     }
 
@@ -117,7 +121,8 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
       }
   }
 
-  private def invite(invite: Invite, msd: MinimalSchemeDetail)(implicit hc: HeaderCarrier, request: DataRequest[AnyContent]): Future[Result] = {
+  private def invite(invite: Invite, msd: MinimalSchemeDetail)
+                    (implicit hc: HeaderCarrier, request: DataRequest[AnyContent]): Future[Result] = {
     invitationConnector.invite(invite)
       .map(_ => Redirect(navigator.nextPage(CheckYourAnswersId(msd.srn), NormalMode, request.userAnswers)))
       .recoverWith {

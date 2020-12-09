@@ -18,7 +18,6 @@ package connectors.scheme
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import models.FeatureToggle.Disabled
-import models.FeatureToggle.Enabled
 import models.FeatureToggleName.IntegrationFrameworkListSchemes
 import models.ListOfSchemes
 import models.SchemeDetails
@@ -28,7 +27,7 @@ import org.scalatest.AsyncFlatSpec
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.Matchers
 import org.scalatest.OptionValues
-import org.scalatest.mockito.MockitoSugar.mock
+import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.http.Status._
 import org.mockito.Mockito.reset
 import org.mockito.Mockito.when

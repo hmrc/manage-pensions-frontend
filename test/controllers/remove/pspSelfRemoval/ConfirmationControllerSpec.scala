@@ -20,17 +20,17 @@ import connectors.FakeUserAnswersCacheConnector
 import connectors.admin.MinimalConnector
 import controllers.ControllerSpecBase
 import controllers.actions._
-import identifiers.{SchemeNameId, SeqAuthorisedPractitionerId}
+import identifiers.{AuthorisedPractitionerId, SchemeNameId}
 import models.MinimalPSAPSP
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
 import play.api.test.Helpers._
+import testhelpers.CommonBuilders._
 import uk.gov.hmrc.domain.PspId
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import views.html.remove.pspSelfRemoval.confirmation
-import testhelpers.CommonBuilders._
 
 import scala.concurrent.Future
 
@@ -40,7 +40,7 @@ class ConfirmationControllerSpec extends ControllerSpecBase with MockitoSugar {
   private val email = "test@email.com"
   private val pspId = Some(PspId("00000000"))
   private val data = Json.obj(SchemeNameId.toString -> schemeName,
-    SeqAuthorisedPractitionerId.toString -> pspDetails)
+    AuthorisedPractitionerId.toString -> pspDetails)
 
   private val view = injector.instanceOf[confirmation]
   private val mockMinimalConnector = mock[MinimalConnector]

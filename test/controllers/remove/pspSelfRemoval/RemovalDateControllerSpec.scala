@@ -23,17 +23,17 @@ import controllers.ControllerSpecBase
 import controllers.actions._
 import forms.remove.PspRemovalDateFormProvider
 import identifiers.remove.pspSelfRemoval.RemovalDateId
-import identifiers.{AssociatedDateId, SchemeNameId, SchemeSrnId, SeqAuthorisedPractitionerId}
+import identifiers.{AssociatedDateId, AuthorisedPractitionerId, SchemeNameId, SchemeSrnId}
 import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.mvc.{AnyContentAsJson, Call}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import testhelpers.CommonBuilders._
+import uk.gov.hmrc.domain.PspId
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.DateHelper.formatDate
 import utils.FakeNavigator
-import testhelpers.CommonBuilders._
-import uk.gov.hmrc.domain.PspId
 import views.html.remove.pspSelfRemoval.removalDate
 
 class RemovalDateControllerSpec extends ControllerSpecBase {
@@ -52,7 +52,7 @@ class RemovalDateControllerSpec extends ControllerSpecBase {
     AssociatedDateId.toString -> date,
     SchemeNameId.toString -> schemeName,
     SchemeSrnId.toString -> srn,
-    SeqAuthorisedPractitionerId.toString -> pspDetails
+    AuthorisedPractitionerId.toString -> pspDetails
   )
 
   private val view = injector.instanceOf[removalDate]

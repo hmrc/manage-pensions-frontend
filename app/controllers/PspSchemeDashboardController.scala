@@ -18,50 +18,93 @@ package controllers
 
 import connectors._
 import connectors.admin.MinimalConnector
-import connectors.scheme.SchemeDetailsConnector
+import connectors.scheme.{ListOfSchemesConnector, SchemeDetailsConnector}
 import controllers.actions._
-import identifiers.{PSPNameId, SchemeSrnId}
+import handlers.ErrorHandler
+import identifiers.invitations.psp.PspClientReferenceId
+import identifiers.{PSPNameId, SchemeSrnId, SchemeStatusId}
 import javax.inject.Inject
 import models.AuthEntity.PSP
 import models._
+import models.invitations.psp.ClientReference
 import models.requests.AuthenticatedRequest
 import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.{PspSchemeDashboardService, SchemeDetailsService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.UserAnswers
 import views.html.pspSchemeDashboard
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class PspSchemeDashboardController @Inject()(override val messagesApi: MessagesApi,
-                                             schemeDetailsConnector: SchemeDetailsConnector,
-                                             authenticate: AuthAction,
-                                             minimalConnector: MinimalConnector,
-                                             userAnswersCacheConnector: UserAnswersCacheConnector,
-                                             val controllerComponents: MessagesControllerComponents,
-                                             view: pspSchemeDashboard
-                                            )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+class PspSchemeDashboardController @Inject()(
+                                              override val messagesApi: MessagesApi,
+                                              schemeDetailsConnector: SchemeDetailsConnector,
+                                              authenticate: AuthAction,
+                                              minimalConnector: MinimalConnector,
+                                              errorHandler: ErrorHandler,
+                                              listSchemesConnector: ListOfSchemesConnector,
+                                              userAnswersCacheConnector: UserAnswersCacheConnector,
+                                              schemeDetailsService: SchemeDetailsService,
+                                              val controllerComponents: MessagesControllerComponents,
+                                              service: PspSchemeDashboardService,
+                                              view: pspSchemeDashboard
+                                            )(implicit val ec: ExecutionContext)
+  extends FrontendBaseController
+    with I18nSupport
+    with Retrievals {
 
   def onPageLoad(srn: String): Action[AnyContent] = authenticate(PSP).async {
     implicit request =>
-      getUserAnswers(srn).flatMap { userAnswers =>
-        val pspList = (userAnswers.json \ "pspDetails").as[Seq[AuthorisedPractitioner]].map(_.id)
-        if (pspList.contains(request.pspIdOrException.id)) {
-          userAnswersCacheConnector.upsert(request.externalId, userAnswers.json).map { _ =>
-            Ok(view())
+      getUserAnswers(srn).flatMap {
+        userAnswers =>
+          val pspDetails: AuthorisedPractitioner = (userAnswers.json \ "pspDetails").as[AuthorisedPractitioner]
+
+          if (pspDetails.id == request.pspIdOrException.id) {
+            val schemeStatus: String = userAnswers.get(SchemeStatusId).getOrElse("")
+            val clientReference: Option[String] = userAnswers.get(PspClientReferenceId).flatMap {
+              case ClientReference.HaveClientReference(reference) => Some(reference)
+              case ClientReference.NoClientReference => None
+            }
+            val isSchemeOpen: Boolean = schemeStatus.equalsIgnoreCase("open")
+
+            for {
+              aftCards <- schemeDetailsService.retrievePspDashboardAftCards(srn, request.pspIdOrException.id, pspDetails.authorisingPSAID)
+              listOfSchemes <- listSchemesConnector.getListOfSchemesForPsp(request.pspIdOrException.id)
+              _ <- userAnswersCacheConnector.upsert(request.externalId, userAnswers.json)
+            } yield {
+              listOfSchemes match {
+                case Right(list) =>
+                  Ok(view(
+                    schemeName = (userAnswers.json \ "schemeName").as[String],
+                    aftCards = Seq(aftCards),
+                    cards = service.getTiles(
+                      srn = srn,
+                      pstr = (userAnswers.json \ "pstr").as[String],
+                      openDate = schemeDetailsService.openedDate(srn, list, isSchemeOpen),
+                      loggedInPsp = pspDetails,
+                      clientReference = clientReference
+                    )
+                  ))
+                case _ =>
+                  NotFound(errorHandler.notFoundTemplate)
+              }
+            }
+          } else {
+            Logger.debug("PSP tried to access an unauthorised scheme")
+            Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
           }
-        } else {
-          Logger.debug("PSP tried to access an unauthorised scheme")
-          Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
-        }
+
       }
   }
 
-  private def getUserAnswers(srn: String)(implicit request: AuthenticatedRequest[AnyContent]): Future[UserAnswers] =
+
+  private def getUserAnswers(srn: String)
+                            (implicit request: AuthenticatedRequest[AnyContent]): Future[UserAnswers] =
     for {
       _ <- userAnswersCacheConnector.removeAll(request.externalId)
-      userAnswers <- schemeDetailsConnector.getSchemeDetails(request.pspIdOrException.id, "srn", srn)
+      userAnswers <- schemeDetailsConnector.getPspSchemeDetails(request.pspIdOrException.id, srn)
       minPspDetails <- minimalConnector.getMinimalPspDetails(request.pspIdOrException.id)
     } yield {
       userAnswers.set(SchemeSrnId)(srn)

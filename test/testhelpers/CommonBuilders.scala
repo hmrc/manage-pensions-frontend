@@ -48,8 +48,11 @@ object CommonBuilders {
   private val pspName: String = "test-psp-name"
   val psaName: String = "test-psa-name"
   private val authorisingPsa: AuthorisingPSA = AuthorisingPSA(None, None, None, Some(psaName))
-  val pspDetails: Seq[AuthorisedPractitioner] = Seq(
+  val pspDetailsSeq: Seq[AuthorisedPractitioner] = Seq(
     AuthorisedPractitioner(Some(pspName), None, "A0000000", authorisingPsa,
       LocalDate.parse("2020-04-01"), "00000000")
   )
+
+  val pspDetails: AuthorisedPractitioner = AuthorisedPractitioner(Some(pspName), None, "A0000000", authorisingPsa,
+    LocalDate.parse("2020-04-01"), "00000000")
 }

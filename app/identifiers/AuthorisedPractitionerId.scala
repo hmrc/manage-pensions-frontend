@@ -14,16 +14,11 @@
  * limitations under the License.
  */
 
-package viewmodels
+package identifiers
 
-import models.Link
-import play.twirl.api.Html
+import models.AuthorisedPractitioner
 
-case class CardViewModel(
-                          id: String,
-                          heading: String,
-                          subHeading: Option[String] = None,
-                          subHeadingParam: Option[String] = None,
-                          links: Seq[Link] = Nil,
-                          html: Option[Html] = None
-                        )
+object AuthorisedPractitionerId extends TypedIdentifier[AuthorisedPractitioner] {
+
+  override def toString: String = "pspDetails"
+}

@@ -101,10 +101,14 @@ object InviteControllerSpec extends SpecBase with JsonFileReader {
   def fakeSchemeDetailsConnector: SchemeDetailsConnector = new SchemeDetailsConnector {
 
     override def getSchemeDetails(psaId: String,
-                                  schemeIdType: String,
-                                  idNumber: String)(implicit hc: HeaderCarrier,
+                                  idNumber: String,
+                                  schemeIdType: String
+                                 )(implicit hc: HeaderCarrier,
                                                               ec: ExecutionContext): Future[UserAnswers] =
       Future.successful(UserAnswers(readJsonFromFile("/data/validSchemeDetailsUserAnswers.json")))
+
+    override def getPspSchemeDetails(pspId: String, srn: String)
+                                    (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[UserAnswers] = ???
   }
 
   def controller(isSuspended: Boolean) = new InviteController(mockAuthAction, fakeSchemeDetailsConnector,

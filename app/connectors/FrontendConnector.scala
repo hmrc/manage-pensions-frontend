@@ -27,15 +27,16 @@ import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import uk.gov.hmrc.play.partials.HtmlPartial
 import uk.gov.hmrc.play.partials.HtmlPartial.connectionExceptionsAsHtmlPartialFailure
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class FrontendConnector @Inject()(http: HttpClient, config: FrontendAppConfig) {
 
-  def retrieveAftPartial[A](srn: String)(implicit request: Request[A], ec: ExecutionContext): Future[Html] =
+  def retrieveAftPartial[A](srn: String)
+                           (implicit request: Request[A], ec: ExecutionContext): Future[Html] =
     retrievePartial(config.aftPartialHtmlUrl.format(srn))
 
-  def retrievePaymentsAndChargesPartial[A](srn: String)(implicit request: Request[A], ec: ExecutionContext): Future[Html] =
+  def retrievePaymentsAndChargesPartial[A](srn: String)
+                                          (implicit request: Request[A], ec: ExecutionContext): Future[Html] =
     retrievePartial(config.paymentsAndChargesPartialHtmlUrl.format(srn))
 
   def retrieveSchemeUrlsPartial[A](implicit request: Request[A], ec: ExecutionContext): Future[Html] =
@@ -44,8 +45,26 @@ class FrontendConnector @Inject()(http: HttpClient, config: FrontendAppConfig) {
   def retrievePenaltiesUrlPartial[A](implicit request: Request[A], ec: ExecutionContext): Future[Html] =
     retrievePartial(config.penaltiesUrlPartialHtmlUrl)
 
-  private def retrievePartial[A](url: String)(implicit request: Request[A], ec: ExecutionContext): Future[Html] = {
-    implicit val hc: HeaderCarrier = HeaderCarrierFunctions.headerCarrierForPartials(request).toHeaderCarrier
+  def retrievePspDashboardAftCards[A](srn: String, pspId: String, authorisingPsaId: String)
+                                     (implicit request: Request[A], ec: ExecutionContext): Future[Html] = {
+    val extraHeaders: Seq[(String, String)] = Seq(
+      ("idNumber", srn),
+      ("schemeIdType", "srn"),
+      ("authorisingPsaId", authorisingPsaId),
+      ("psaId", pspId)
+    )
+    retrievePartial(config.pspDashboardAftCardUrl, extraHeaders)
+  }
+
+
+  private def retrievePartial[A](url: String, extraHeaders: Seq[(String, String)] = Seq.empty)
+                                (implicit request: Request[A], ec: ExecutionContext): Future[Html] = {
+
+    implicit val hc: HeaderCarrier =
+      HeaderCarrierFunctions
+        .headerCarrierForPartials(request)
+        .toHeaderCarrier
+        .withExtraHeaders(extraHeaders: _*)
 
     http.GET[HtmlPartial](url) recover connectionExceptionsAsHtmlPartialFailure map {
       case HtmlPartial.Success(_, content) =>

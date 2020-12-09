@@ -34,15 +34,17 @@ import views.html.viewAdministrators
 import scala.concurrent.{ExecutionContext, Future}
 
 class ViewAdministratorsController @Inject()(
-                                        override val messagesApi: MessagesApi,
-                                        schemeDetailsConnector: SchemeDetailsConnector,
-                                        authenticate: AuthAction,
-                                        getData: DataRetrievalAction,
-                                        errorHandler: ErrorHandler,
-                                        val controllerComponents: MessagesControllerComponents,
-                                        schemeDetailsService: SchemeDetailsService,
-                                        view: viewAdministrators
-                                       )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+                                              override val messagesApi: MessagesApi,
+                                              schemeDetailsConnector: SchemeDetailsConnector,
+                                              authenticate: AuthAction,
+                                              getData: DataRetrievalAction,
+                                              errorHandler: ErrorHandler,
+                                              val controllerComponents: MessagesControllerComponents,
+                                              schemeDetailsService: SchemeDetailsService,
+                                              view: viewAdministrators
+                                            )(implicit val ec: ExecutionContext)
+  extends FrontendBaseController
+    with I18nSupport {
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate() andThen getData).async {
     implicit request =>
@@ -53,9 +55,10 @@ class ViewAdministratorsController @Inject()(
           val schemeName = userAnswers.get(SchemeNameId).getOrElse("")
           val schemeStatus = userAnswers.get(SchemeStatusId).getOrElse("")
           val isSchemeOpen = schemeStatus.equalsIgnoreCase("open")
-          val psaList: Option[Seq[AssociatedPsa]] = schemeDetailsService.administratorsVariations(request.psaIdOrException.id, userAnswers, schemeStatus)
+          val psaList: Option[Seq[AssociatedPsa]] =
+            schemeDetailsService.administratorsVariations(request.psaIdOrException.id, userAnswers, schemeStatus)
 
-           Ok(view(schemeName, psaList, srn.id, isSchemeOpen))
+          Ok(view(schemeName, psaList, srn.id, isSchemeOpen))
 
         } else {
           NotFound(errorHandler.notFoundTemplate)
@@ -64,10 +67,14 @@ class ViewAdministratorsController @Inject()(
   }
 
   private def getUserAnswers(srn: SchemeReferenceNumber)
-                               (implicit request: OptionalDataRequest[AnyContent]): Future[UserAnswers] =
+                            (implicit request: OptionalDataRequest[AnyContent]): Future[UserAnswers] =
     request.userAnswers match {
       case Some(ua) if (ua.json \ "psaDetails").asOpt[Seq[PsaDetails]].nonEmpty => Future.successful(ua)
-      case _ => schemeDetailsConnector.getSchemeDetails(request.psaIdOrException.id, "srn", srn)
+      case _ => schemeDetailsConnector.getSchemeDetails(
+        psaId = request.psaIdOrException.id,
+        idNumber = srn,
+        schemeIdType = "srn"
+      )
     }
 
 }

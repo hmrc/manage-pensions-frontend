@@ -17,7 +17,6 @@
 package controllers.invitations.psp
 
 import com.google.inject.Inject
-import config.FrontendAppConfig
 import controllers.Retrievals
 import controllers.actions._
 import identifiers.SchemeNameId
@@ -29,13 +28,17 @@ import views.html.invitations.psp.alreadyAssociatedWithScheme
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class AlreadyAssociatedWithSchemeController @Inject()(appConfig: FrontendAppConfig,
-                                            override val messagesApi: MessagesApi,
-                                            authenticate: AuthAction,
-                                            getData: DataRetrievalAction,
-                                            requireData: DataRequiredAction,
-                                            val controllerComponents: MessagesControllerComponents,
-                                            view: alreadyAssociatedWithScheme)(implicit val ec: ExecutionContext) extends FrontendBaseController with Retrievals with I18nSupport {
+class AlreadyAssociatedWithSchemeController @Inject()(
+                                                       override val messagesApi: MessagesApi,
+                                                       authenticate: AuthAction,
+                                                       getData: DataRetrievalAction,
+                                                       requireData: DataRequiredAction,
+                                                       val controllerComponents: MessagesControllerComponents,
+                                                       view: alreadyAssociatedWithScheme
+                                                     )(implicit val ec: ExecutionContext)
+  extends FrontendBaseController
+    with Retrievals
+    with I18nSupport {
 
 
   def onPageLoad: Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {

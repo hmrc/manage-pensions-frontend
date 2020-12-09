@@ -30,12 +30,13 @@ trait IdentifiedRequest {
 }
 
 case class AuthenticatedRequest[A](request: Request[A],
-  externalId: String,
-  psaId: Option[PsaId],
-  pspId: Option[PspId] = None,
-  userType : UserType,
-  authEntity: AuthEntity = PSA)
+                                   externalId: String,
+                                   psaId: Option[PsaId],
+                                   pspId: Option[PspId] = None,
+                                   userType: UserType,
+                                   authEntity: AuthEntity = PSA)
   extends WrappedRequest[A](request) with IdentifiedRequest {
-  def psaIdOrException:PsaId = psaId.getOrElse(throw new IdNotFound)
-  def pspIdOrException:PspId = pspId.getOrElse(throw new IdNotFound)
+  def psaIdOrException: PsaId = psaId.getOrElse(throw new IdNotFound)
+
+  def pspIdOrException: PspId = pspId.getOrElse(throw new IdNotFound)
 }

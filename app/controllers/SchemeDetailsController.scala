@@ -45,8 +45,7 @@ import utils.UserAnswers
 import viewmodels.Message
 import views.html.schemeDetails
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class SchemeDetailsController @Inject()(override val messagesApi: MessagesApi,
                                         schemeDetailsConnector: SchemeDetailsConnector,
@@ -104,8 +103,9 @@ class SchemeDetailsController @Inject()(override val messagesApi: MessagesApi,
   }
 
   private def retrievePaymentsAndChargesHtml(
-    srn:String,
-    isSchemeOpen:Boolean)(implicit request: AuthenticatedRequest[AnyContent]):Future[Html] = {
+                                              srn: String,
+                                              isSchemeOpen: Boolean
+                                            )(implicit request: AuthenticatedRequest[AnyContent]): Future[Html] = {
     if (isSchemeOpen) {
       schemeDetailsService.retrievePaymentsAndChargesHtml(srn)
     } else {
@@ -117,7 +117,11 @@ class SchemeDetailsController @Inject()(override val messagesApi: MessagesApi,
     featureToggleService.get(PSPAuthorisation).map {
       case Enabled(PSPAuthorisation) =>
       val viewPspLink = if (anyPSPs) {
-        Seq(Link("view-practitioners", controllers.psp.routes.ViewPractitionersController.onPageLoad().url, Message("messages__pspViewOrDeauthorise__link")))
+        Seq(Link(
+          id = "view-practitioners",
+          url = controllers.psp.routes.ViewPractitionersController.onPageLoad().url,
+          linkText = Message("messages__pspViewOrDeauthorise__link")
+        ))
       } else {
         Nil
       }
@@ -129,10 +133,15 @@ class SchemeDetailsController @Inject()(override val messagesApi: MessagesApi,
     }
  }
 
-  private def withSchemeAndLock(srn: SchemeReferenceNumber)(implicit request: AuthenticatedRequest[AnyContent]): Future[(UserAnswers, Option[Lock])] = {
+  private def withSchemeAndLock(srn: SchemeReferenceNumber)
+                               (implicit request: AuthenticatedRequest[AnyContent]): Future[(UserAnswers, Option[Lock])] = {
     for {
       _ <- userAnswersCacheConnector.removeAll(request.externalId)
-      scheme <- schemeDetailsConnector.getSchemeDetails(request.psaIdOrException.id, "srn", srn)
+      scheme <- schemeDetailsConnector.getSchemeDetails(
+        psaId = request.psaIdOrException.id,
+        idNumber = srn,
+        schemeIdType = "srn"
+      )
       lock <- schemeVarianceLockConnector.isLockByPsaIdOrSchemeId(request.psaIdOrException.id, srn.id)
     } yield {
       (scheme, lock)
