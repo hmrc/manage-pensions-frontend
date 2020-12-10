@@ -66,14 +66,12 @@ messages__error__common__email__address__required = Enter an email address
 messages__error__common__email__address__length = Enter an email address using less than 133 characters
 messages__error__common__email__address__invalid = Enter an email address in the correct format - you might have to check that you have the correct email
 
-messages__youNeedToRegister__title = You need to register
-messages__youNeedToRegister__heading = Manage and register your pension schemes
-messages__youNeedToRegister__lede = You must register to use this service before you can register a pension scheme.
-messages__youNeedToRegister__p1 = You can only use this service if you are a {0}.
-messages__youNeedToRegister__p1__link = pension scheme administrator
-messages__youNeedToRegister__p2 = If you are a {0}, you cannot register to use this service.
-messages__youNeedToRegister__p2__link = pension scheme practitioner
-messages__youNeedToRegister__button = Register as a pension scheme administrator
+messages__youNeedToRegister__title = Manage and register your pension schemes
+messages__youNeedToRegister__heading = You need to register as a pension scheme administrator or practitioner
+messages__youNeedToRegister__lede = You must do this before you can use the Managing Pension Schemes service.
+messages__youNeedToRegister__p1 = You can register as an individual, company or partnership.
+messages__youNeedToRegisterAdministrator__link = Register as a pension scheme administrator
+messages__youNeedToRegisterPractitioner__link = Register as a pension scheme practitioner
 messages__youNeedToRegister__govUk__link = Exit to GOV.UK
 
 messages__youCannotSendAnInvite__title = An invite cannot be sent
