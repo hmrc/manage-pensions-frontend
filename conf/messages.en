@@ -72,7 +72,6 @@ messages__youNeedToRegister__lede = You must do this before you can use the Mana
 messages__youNeedToRegister__p1 = You can register as an individual, company or partnership.
 messages__youNeedToRegisterAdministrator__link = Register as a pension scheme administrator
 messages__youNeedToRegisterPractitioner__link = Register as a pension scheme practitioner
-messages__youNeedToRegister__govUk__link = Exit to GOV.UK
 
 messages__youCannotSendAnInvite__title = An invite cannot be sent
 messages__youCannotSendAnInvite__heading = An invite cannot be sent
