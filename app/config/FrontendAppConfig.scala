@@ -79,6 +79,7 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val loginToListSchemesUrl: String = loadConfig("urls.loginToListSchemes")
   lazy val serviceSignOut: String = loadConfig("urls.logout")
   lazy val registerSchemeAdministratorUrl: String = loadConfig("urls.registerSchemeAdministrator")
+  lazy val registerSchemePractitionerUrl: String = loadConfig("urls.registerSchemePractitioner")
   lazy val pensionAdministratorGovUkLink: String = runModeConfiguration.underlying
     .getString("urls.pensionAdministratorGovUkLink")
   lazy val pensionPractitionerGovUkLink: String = runModeConfiguration.underlying
