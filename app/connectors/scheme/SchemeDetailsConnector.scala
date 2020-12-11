@@ -35,11 +35,10 @@ import scala.util.Failure
 @ImplementedBy(classOf[SchemeDetailsConnectorImpl])
 trait SchemeDetailsConnector {
 
-  def getSchemeDetails(
-                        psaId: String,
-                        idNumber: String,
-                        schemeIdType: String
-                      )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[UserAnswers]
+  def getSchemeDetails(psaId: String, idNumber: String, schemeIdType: String)
+                      (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[UserAnswers]
+
+  def getPspSchemeDetails(pspId: String, srn: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[UserAnswers]
 
 }
 
@@ -48,7 +47,7 @@ class SchemeDetailsConnectorImpl @Inject()(http: HttpClient, config: FrontendApp
   extends SchemeDetailsConnector
     with HttpResponseHelper {
 
-  def getSchemeDetails(
+  override def getSchemeDetails(
                         psaId: String,
                         idNumber: String,
                         schemeIdType: String
@@ -70,6 +69,21 @@ class SchemeDetailsConnectorImpl @Inject()(http: HttpClient, config: FrontendApp
       }
     } andThen {
       case Failure(t: Throwable) => Logger.warn("Unable to get scheme details", t)
+    }
+  }
+
+  override def getPspSchemeDetails(pspId: String, srn: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[UserAnswers] = {
+
+    val url = config.pspSchemeDetailsUrl
+    val schemeHc = hc.withExtraHeaders("srn" -> srn, "pspId" -> pspId)
+
+    http.GET[HttpResponse](url)(implicitly, schemeHc, implicitly).map { response =>
+      response.status match {
+        case OK => UserAnswers(Json.parse(response.body))
+        case _ => handleErrorResponse("GET", url)(response)
+      }
+    } andThen {
+      case Failure(t: Throwable) => Logger.warn("Unable to psp get scheme details", t)
     }
   }
 }

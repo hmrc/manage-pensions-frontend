@@ -115,11 +115,7 @@ class PspSchemeDashboardController @Inject()(
                             (implicit request: AuthenticatedRequest[AnyContent]): Future[UserAnswers] =
     for {
       _ <- userAnswersCacheConnector.removeAll(request.externalId)
-      userAnswers <- schemeDetailsConnector.getSchemeDetails(
-        psaId = request.pspIdOrException.id,
-        idNumber = srn,
-        schemeIdType = "srn"
-      )
+      userAnswers <- schemeDetailsConnector.getPspSchemeDetails(request.pspIdOrException.id, srn)
       minPspDetails <- minimalConnector.getMinimalPspDetails(request.pspIdOrException.id)
     } yield {
       userAnswers.set(SchemeSrnId)(srn)

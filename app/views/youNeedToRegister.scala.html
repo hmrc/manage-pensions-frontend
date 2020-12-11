@@ -38,14 +38,13 @@ appConfig: FrontendAppConfig
     @components.back_link()
     @components.heading(messages("messages__youNeedToRegister__heading"))
 
-    <p class="lede">@messages("messages__youNeedToRegister__lede")</p>
+    <p>@messages("messages__youNeedToRegister__lede")</p>
 
-    <p>@Html(Message("messages__youNeedToRegister__p1").withArgs(psaGovUkLink))</p>
-    <p>@Html(Message("messages__youNeedToRegister__p2").withArgs(pspGovUkLink))</p>
+    <p>@Html(Message("messages__youNeedToRegister__p1"))</p>
+
+    <a id="redirect-to-psa" href="@appConfig.registerSchemeAdministratorUrl">@messages("messages__youNeedToRegisterAdministrator__link")</a>
 
     <div class="section">
-        <a id="redirect-to-psa" href="@appConfig.registerSchemeAdministratorUrl" role="button" class="button">@messages("messages__youNeedToRegister__button")</a>
+        <a id="redirect-to-psp" href="@appConfig.registerSchemePractitionerUrl">@messages("messages__youNeedToRegisterPractitioner__link")</a>
     </div>
-
-    <a id="gov-uk-link" href="@appConfig.govUkLink" role="button">@messages("messages__youNeedToRegister__govUk__link")</a>
 }

@@ -79,6 +79,7 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val loginToListSchemesUrl: String = loadConfig("urls.loginToListSchemes")
   lazy val serviceSignOut: String = loadConfig("urls.logout")
   lazy val registerSchemeAdministratorUrl: String = loadConfig("urls.registerSchemeAdministrator")
+  lazy val registerSchemePractitionerUrl: String = loadConfig("urls.registerSchemePractitioner")
   lazy val pensionAdministratorGovUkLink: String = runModeConfiguration.underlying
     .getString("urls.pensionAdministratorGovUkLink")
   lazy val pensionPractitionerGovUkLink: String = runModeConfiguration.underlying
@@ -113,7 +114,9 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
     .getString("urls.acceptInvite")}"
   lazy val schemeDetailsUrl: String = s"${servicesConfig.baseUrl("pensions-scheme")}${runModeConfiguration.underlying
     .getString("urls.schemeDetails")}"
-  lazy val pspSchemeDetailsUrl: String = runModeConfiguration.underlying.getString("urls.pspSchemeDetails")
+  lazy val pspSchemeDetailsUrl: String = s"${servicesConfig.baseUrl("pensions-scheme")}${runModeConfiguration.underlying
+    .getString("urls.pspSchemeDetails")}"
+  lazy val pspTaskListUrl: String = runModeConfiguration.underlying.getString("urls.pspTaskList")
   lazy val viewSchemeDetailsUrl: String = runModeConfiguration.underlying.getString("urls.viewSchemeDetails")
   lazy val subscriptionDetailsUrl: String = s"${servicesConfig.baseUrl("pension-administrator")}${runModeConfiguration.underlying
     .getString("urls.subscriptionDetails")}"
