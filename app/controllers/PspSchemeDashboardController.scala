@@ -23,6 +23,7 @@ import controllers.actions._
 import handlers.ErrorHandler
 import identifiers.invitations.psp.PspClientReferenceId
 import identifiers.{PSPNameId, SchemeSrnId, SchemeStatusId}
+
 import javax.inject.Inject
 import models.AuthEntity.PSP
 import models._
@@ -30,6 +31,7 @@ import models.invitations.psp.ClientReference
 import models.requests.AuthenticatedRequest
 import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{PspSchemeDashboardService, SchemeDetailsService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
@@ -59,26 +61,22 @@ class PspSchemeDashboardController @Inject()(
     implicit request =>
       getUserAnswers(srn).flatMap {
         userAnswers =>
-          val pspList = (userAnswers.json \ "pspDetails").as[Seq[AuthorisedPractitioner]]
-          val pspIdList: Seq[String] = pspList.map(_.id)
+          val pspDetails: AuthorisedPractitioner = (userAnswers.json \ "pspDetails").as[AuthorisedPractitioner]
 
-          if (pspIdList.contains(request.pspIdOrException.id)) {
+          if (pspDetails.id == request.pspIdOrException.id) {
             val schemeStatus: String = userAnswers.get(SchemeStatusId).getOrElse("")
             val clientReference: Option[String] = userAnswers.get(PspClientReferenceId).flatMap {
               case ClientReference.HaveClientReference(reference) => Some(reference)
               case ClientReference.NoClientReference => None
             }
             val isSchemeOpen: Boolean = schemeStatus.equalsIgnoreCase("open")
-            val loggedInPsp: AuthorisedPractitioner =
-              pspList
-                .find(_.id == request.pspIdOrException.id)
-                .getOrElse(throw new Exception("No logged in PSP found"))
+
 
             for {
               aftReturnsCard <- schemeDetailsService.retrievePspDashboardAftReturnsCard(
                 srn = srn,
                 pspId = request.pspIdOrException.id,
-                authorisingPsaId = loggedInPsp.authorisingPSAID
+                authorisingPsaId = pspDetails.authorisingPSAID
               )
               upcomingAftCharges <- schemeDetailsService.retrievePspDashboardUpcomingAftChargesCard(srn)
               listOfSchemes <- listSchemesConnector.getListOfSchemesForPsp(request.pspIdOrException.id)
@@ -94,7 +92,7 @@ class PspSchemeDashboardController @Inject()(
                       srn = srn,
                       pstr = (userAnswers.json \ "pstr").as[String],
                       openDate = schemeDetailsService.openedDate(srn, list, isSchemeOpen),
-                      loggedInPsp = loggedInPsp,
+                      loggedInPsp = pspDetails,
                       clientReference = clientReference
                     )
                   ))
