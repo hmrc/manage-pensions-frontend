@@ -6,7 +6,8 @@
 		"lastName": "Last"
 	},
 	"email": "test@test.com",
-	"isPsaSuspended": false
+	"isPsaSuspended": false,
+	"rlsFlag": false
 }
 
 

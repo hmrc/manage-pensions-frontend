@@ -16,13 +16,14 @@
 
 package controllers
 
+import config.FrontendAppConfig
 import connectors._
 import connectors.admin.MinimalConnector
-import connectors.scheme.{ListOfSchemesConnector, SchemeDetailsConnector}
+import connectors.scheme.{SchemeDetailsConnector, ListOfSchemesConnector}
 import controllers.actions._
 import handlers.ErrorHandler
 import identifiers.invitations.psp.PspClientReferenceId
-import identifiers.{PSPNameId, SchemeSrnId, SchemeStatusId}
+import identifiers.{SchemeStatusId, SchemeSrnId, PSPNameId}
 import javax.inject.Inject
 import models.AuthEntity.PSP
 import models._
@@ -30,13 +31,14 @@ import models.invitations.psp.ClientReference
 import models.requests.AuthenticatedRequest
 import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.Result
+import play.api.mvc.{AnyContent, MessagesControllerComponents, Action}
 import services.{PspSchemeDashboardService, SchemeDetailsService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import utils.UserAnswers
 import views.html.pspSchemeDashboard
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{Future, ExecutionContext}
 
 class PspSchemeDashboardController @Inject()(
                                               override val messagesApi: MessagesApi,
@@ -49,7 +51,8 @@ class PspSchemeDashboardController @Inject()(
                                               schemeDetailsService: SchemeDetailsService,
                                               val controllerComponents: MessagesControllerComponents,
                                               service: PspSchemeDashboardService,
-                                              view: pspSchemeDashboard
+                                              view: pspSchemeDashboard,
+                                              config: FrontendAppConfig
                                             )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport
@@ -57,8 +60,7 @@ class PspSchemeDashboardController @Inject()(
 
   def onPageLoad(srn: String): Action[AnyContent] = authenticate(PSP).async {
     implicit request =>
-      getUserAnswers(srn).flatMap {
-        userAnswers =>
+      withUserAnswers(srn) { userAnswers =>
           val pspDetails: AuthorisedPractitioner = (userAnswers.json \ "pspDetails").as[AuthorisedPractitioner]
 
           if (pspDetails.id == request.pspIdOrException.id) {
@@ -99,16 +101,24 @@ class PspSchemeDashboardController @Inject()(
       }
   }
 
-
-  private def getUserAnswers(srn: String)
-                            (implicit request: AuthenticatedRequest[AnyContent]): Future[UserAnswers] =
-    for {
+  private def withUserAnswers(srn: String)(block: UserAnswers => Future[Result])
+                            (implicit request: AuthenticatedRequest[AnyContent]): Future[Result] = {
+    val requiredDetails = for {
       _ <- userAnswersCacheConnector.removeAll(request.externalId)
-      userAnswers <- schemeDetailsConnector.getPspSchemeDetails(request.pspIdOrException.id, srn)
-      minPspDetails <- minimalConnector.getMinimalPspDetails(request.pspIdOrException.id)
+        userAnswers <- schemeDetailsConnector.getPspSchemeDetails(request.pspIdOrException.id, srn)
+        minPspDetails <- minimalConnector.getMinimalPspDetails(request.pspIdOrException.id)
     } yield {
-      userAnswers.set(SchemeSrnId)(srn)
-        .flatMap(_.set(PSPNameId)(minPspDetails.name)).asOpt
-        .getOrElse(userAnswers)
+      (userAnswers, minPspDetails)
     }
+
+    requiredDetails.flatMap { case (userAnswers, minPspDetails) =>
+      if (minPspDetails.rlsFlag) {
+        Future.successful(Redirect(config.pspUpdateContactDetailsUrl))
+      } else {
+        val ua = userAnswers.set(SchemeSrnId)(srn).flatMap(_.set(PSPNameId)(minPspDetails.name)).asOpt
+          .getOrElse(userAnswers)
+        block(ua)
+      }
+    }
+  }
 }
