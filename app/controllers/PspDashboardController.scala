@@ -16,6 +16,7 @@
 
 package controllers
 
+import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import controllers.actions._
 import identifiers.PSPNameId
@@ -23,13 +24,14 @@ import javax.inject.Inject
 import models.AuthEntity.PSP
 import models.Link
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{AnyContent, MessagesControllerComponents, Action}
 import services.PspDashboardService
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
 import viewmodels.Message
 import views.html.schemesOverview
 
 import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 
 class PspDashboardController @Inject()(
                                         override val messagesApi: MessagesApi,
@@ -38,7 +40,8 @@ class PspDashboardController @Inject()(
                                         getData: DataRetrievalAction,
                                         userAnswersCacheConnector: UserAnswersCacheConnector,
                                         val controllerComponents: MessagesControllerComponents,
-                                        view: schemesOverview
+                                        view: schemesOverview,
+                                        config: FrontendAppConfig
                                       )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport {
@@ -52,9 +55,14 @@ class PspDashboardController @Inject()(
       def returnLink: Option[Link] = if (request.psaId.nonEmpty) Some(link) else None
 
       service.getPspDetails(pspId).flatMap { details =>
+        if (details.rlsFlag) {
+          Future.successful(Redirect(config.pspUpdateContactDetailsUrl))
+        } else {
           userAnswersCacheConnector.save(request.externalId, PSPNameId, details.name).map { _ =>
             Ok(view(details.name, service.getTiles(pspId, details), Some(subHeading), returnLink))
           }
+        }
+
       }
   }
 

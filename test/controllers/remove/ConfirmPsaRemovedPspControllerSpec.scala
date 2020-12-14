@@ -89,7 +89,8 @@ object ConfirmPsaRemovedPspControllerSpec {
     email = psaEmail,
     isPsaSuspended = false,
     organisationName = Some(schemeName),
-    individualDetails = None
+    individualDetails = None,
+    rlsFlag = false
   )
 
   private val practitioners = JsArray(

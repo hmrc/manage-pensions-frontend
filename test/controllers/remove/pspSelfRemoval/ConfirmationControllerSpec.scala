@@ -56,7 +56,7 @@ class ConfirmationControllerSpec extends ControllerSpecBase with MockitoSugar {
 
       "return OK and the correct view" in {
         when(mockMinimalConnector.getMinimalPspDetails(any())(any(), any()))
-          .thenReturn(Future.successful(MinimalPSAPSP(email, isPsaSuspended = false, None, None)))
+          .thenReturn(Future.successful(MinimalPSAPSP(email, isPsaSuspended = false, None, None, rlsFlag = false)))
         val result = controller().onPageLoad()(fakeRequest)
         status(result) mustBe OK
         contentAsString(result) mustBe viewAsString

@@ -56,7 +56,7 @@ object PspDashboardServiceSpec extends SpecBase with MockitoSugar  {
   val pspName: String = "John Doe"
   private val pspId = "00000000"
 
-  def minimalPsaDetails: MinimalPSAPSP = MinimalPSAPSP("test@test.com", isPsaSuspended = false, Some("Org Name"), None)
+  def minimalPsaDetails: MinimalPSAPSP = MinimalPSAPSP("test@test.com", isPsaSuspended = false, Some("Org Name"), None, rlsFlag = false)
 
   private val practitionerCard: CardViewModel =
     CardViewModel(

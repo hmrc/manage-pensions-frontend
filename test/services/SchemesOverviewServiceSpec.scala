@@ -123,13 +123,13 @@ object SchemesOverviewServiceSpec extends SpecBase with MockitoSugar  {
 
   val deleteDate: String = LocalDate.now(ZoneOffset.UTC).plusDays(frontendAppConfig.daysDataSaved).format(formatter)
 
-  def minimalPsaDetails(psaSuspended: Boolean): MinimalPSAPSP = MinimalPSAPSP("test@test.com", psaSuspended, Some("Org Name"), None)
+  def minimalPsaDetails(psaSuspended: Boolean): MinimalPSAPSP = MinimalPSAPSP("test@test.com", psaSuspended, Some("Org Name"), None, rlsFlag = false)
 
   val minimalPsaName: Option[String] = Some("John Doe Doe")
   val minimalPsaOrgName: Option[String] = Some("Org Name")
   val expectedPsaOrgName: Option[String] = Some("Org Name")
   val individualPsaDetailsWithNoMiddleName: Option[String] = Some("John Doe")
-  val minimalPsaDetailsOrg: MinimalPSAPSP = MinimalPSAPSP("test@test.com", isPsaSuspended = false, Some("Org Name"), None)
+  val minimalPsaDetailsOrg: MinimalPSAPSP = MinimalPSAPSP("test@test.com", isPsaSuspended = false, Some("Org Name"), None, rlsFlag = false)
   val expectedName: String = "John Doe Doe"
 
   val schemeNameJsonOption: JsObject = Json.obj("schemeName" -> schemeName)

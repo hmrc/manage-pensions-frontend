@@ -18,18 +18,24 @@ package controllers
 
 import config._
 import connectors.UserAnswersCacheConnector
-import controllers.actions.{DataRetrievalAction, _}
+import controllers.actions.DataRetrievalAction
+import controllers.actions._
 import controllers.routes.ListSchemesController
-import models.{IndividualDetails, Link, MinimalPSAPSP}
-import org.mockito.Matchers.{eq => eqTo, _}
-import org.mockito.Mockito._
+import models.IndividualDetails
+import models.Link
+import models.MinimalPSAPSP
+import org.mockito.Matchers.{eq => eqTo}
+import org.mockito.Matchers._
+import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
-import play.api.test.Helpers.{contentAsString, _}
+import play.api.test.Helpers.contentAsString
+import play.api.test.Helpers._
 import services.PspDashboardService
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
-import viewmodels.{CardViewModel, Message}
+import viewmodels.CardViewModel
+import viewmodels.Message
 import views.html.schemesOverview
 
 import scala.concurrent.Future
@@ -38,17 +44,18 @@ class PspDashboardControllerSpec extends ControllerSpecBase with MockitoSugar wi
 
   import PspDashboardControllerSpec._
 
-  val fakePspDashboardService: PspDashboardService = mock[PspDashboardService]
-  val fakeUserAnswersCacheConnector: UserAnswersCacheConnector = mock[UserAnswersCacheConnector]
-  val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
-  val minimalPsaDetails: MinimalPSAPSP = MinimalPSAPSP("test@test.com", isPsaSuspended = false, None,
-    Some(IndividualDetails("Test", None, "Psp Name")))
+  private val fakePspDashboardService: PspDashboardService = mock[PspDashboardService]
+  private val fakeUserAnswersCacheConnector: UserAnswersCacheConnector = mock[UserAnswersCacheConnector]
+  private val mockAppConfig: FrontendAppConfig = mock[FrontendAppConfig]
+  private def minimalPsaDetails(rlsFlag:Boolean): MinimalPSAPSP = MinimalPSAPSP("test@test.com", isPsaSuspended = false, None,
+    Some(IndividualDetails("Test", None, "Psp Name")), rlsFlag = rlsFlag)
 
   private val view: schemesOverview = app.injector.instanceOf[schemesOverview]
+  private val dummyUrl = "dummy"
 
   def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyDataPsp): PspDashboardController =
     new PspDashboardController(messagesApi, fakePspDashboardService, FakeAuthAction, dataRetrievalAction,
-      fakeUserAnswersCacheConnector, stubMessagesControllerComponents(), view)
+      fakeUserAnswersCacheConnector, stubMessagesControllerComponents(), view, mockAppConfig)
 
   def viewAsString(): String = view(pspName, tiles, Some(subHeading), Some(returnLink))(fakeRequest, messages).toString
 
@@ -58,7 +65,7 @@ class PspDashboardControllerSpec extends ControllerSpecBase with MockitoSugar wi
         when(fakePspDashboardService.getTiles(eqTo(pspId), any())(any()))
           .thenReturn(tiles)
         when(fakePspDashboardService.getPspDetails(eqTo(pspId))(any()))
-          .thenReturn(Future.successful(minimalPsaDetails))
+          .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false)))
         when(fakeUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(Json.obj()))
 
@@ -68,6 +75,20 @@ class PspDashboardControllerSpec extends ControllerSpecBase with MockitoSugar wi
         contentAsString(result) mustBe viewAsString()
       }
 
+      "redirect to update contact details page when rls flag is true" in {
+        when(fakePspDashboardService.getTiles(eqTo(pspId), any())(any()))
+          .thenReturn(tiles)
+        when(fakePspDashboardService.getPspDetails(eqTo(pspId))(any()))
+          .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = true)))
+        when(fakeUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any()))
+          .thenReturn(Future.successful(Json.obj()))
+        when(mockAppConfig.pspUpdateContactDetailsUrl) thenReturn dummyUrl
+
+        val result = controller().onPageLoad(fakeRequest)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(dummyUrl)
+      }
 
     }
   }

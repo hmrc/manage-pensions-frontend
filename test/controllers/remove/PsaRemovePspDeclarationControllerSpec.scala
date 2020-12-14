@@ -230,7 +230,8 @@ object PsaRemovePspDeclarationControllerSpec {
     email = individualEmail,
     isPsaSuspended = false,
     organisationName  = None,
-    individualDetails = Some(IndividualDetails(firstName = individualFirstName, middleName = None, lastName = individualLastName))
+    individualDetails = Some(IndividualDetails(firstName = individualFirstName, middleName = None, lastName = individualLastName)),
+    rlsFlag = false
   )
 
   private val data = Json.obj(
