@@ -80,7 +80,7 @@ object InviteControllerSpec extends SpecBase with JsonFileReader {
   val pstr = "24000001IN"
   val schemeName = "Open Single Trust Scheme with Indiv Establisher and Trustees"
 
-  private val psaMinimalSubscription = MinimalPSAPSP(email, false, None, Some(IndividualDetails("First", Some("Middle"), "Last")))
+  private val psaMinimalSubscription = MinimalPSAPSP(email, false, None, Some(IndividualDetails("First", Some("Middle"), "Last")), rlsFlag = false)
   private val mockAuthAction = FakeAuthAction
 
 

@@ -64,7 +64,7 @@ class InvitationSuccessControllerSpec extends ControllerWithNormalPageBehaviours
 
   private def fakeMinimalPsaConnector = new MinimalConnector {
     override def getMinimalPsaDetails(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP] =
-      Future.successful(MinimalPSAPSP(testEmail, false, Some(testInviteeName), None))
+      Future.successful(MinimalPSAPSP(testEmail, false, Some(testInviteeName), None, rlsFlag = false))
 
     override def getPsaNameFromPsaID(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = ???
 
