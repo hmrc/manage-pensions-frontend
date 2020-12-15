@@ -27,7 +27,8 @@
 
 @(
         schemeName: String,
-        aftCards: Seq[Html],
+        aftReturnsCard: Seq[Html],
+        upcomingAftCharges: Html,
         cards: Seq[PspSchemeDashboardCardViewModel],
         returnLink: Option[Link] = None
 )(
@@ -43,10 +44,10 @@
     @components.heading(schemeName)
 
     <div class="flex-container grid-row">
-        @for(aftCard <- aftCards) {
+        @for(aftCard <- aftReturnsCard) {
             @aftCard
         }
-
+        @upcomingAftCharges
         @for(card <- cards) {
             @components.pspSchemeDashboardCard(card)
         }

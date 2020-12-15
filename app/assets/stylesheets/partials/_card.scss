@@ -90,6 +90,14 @@ html[data-useragent*='MSIE 10.0'] .flex-container {
     .card-sub-heading span {
       display: block;
       color: $govuk-secondary-text-colour;
+      .font-large.bold {
+        color: $black;
+      }
+    }
+
+    .card-sub-heading span.font-large.bold {
+      color: $black;
+      font-size: 32px;
     }
 
     .detail {
