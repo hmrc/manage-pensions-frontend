@@ -23,6 +23,7 @@ import controllers.actions._
 import handlers.ErrorHandler
 import identifiers.invitations.psp.PspClientReferenceId
 import identifiers.{PSPNameId, SchemeSrnId, SchemeStatusId}
+
 import javax.inject.Inject
 import models.AuthEntity.PSP
 import models._
@@ -30,6 +31,7 @@ import models.invitations.psp.ClientReference
 import models.requests.AuthenticatedRequest
 import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{PspSchemeDashboardService, SchemeDetailsService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
@@ -69,8 +71,14 @@ class PspSchemeDashboardController @Inject()(
             }
             val isSchemeOpen: Boolean = schemeStatus.equalsIgnoreCase("open")
 
+
             for {
-              aftCards <- schemeDetailsService.retrievePspDashboardAftCards(srn, request.pspIdOrException.id, pspDetails.authorisingPSAID)
+              aftReturnsCard <- schemeDetailsService.retrievePspDashboardAftReturnsCard(
+                srn = srn,
+                pspId = request.pspIdOrException.id,
+                authorisingPsaId = pspDetails.authorisingPSAID
+              )
+              upcomingAftCharges <- schemeDetailsService.retrievePspDashboardUpcomingAftChargesCard(srn)
               listOfSchemes <- listSchemesConnector.getListOfSchemesForPsp(request.pspIdOrException.id)
               _ <- userAnswersCacheConnector.upsert(request.externalId, userAnswers.json)
             } yield {
@@ -78,7 +86,8 @@ class PspSchemeDashboardController @Inject()(
                 case Right(list) =>
                   Ok(view(
                     schemeName = (userAnswers.json \ "schemeName").as[String],
-                    aftCards = Seq(aftCards),
+                    aftReturnsCard = Seq(aftReturnsCard),
+                    upcomingAftCharges = upcomingAftCharges,
                     cards = service.getTiles(
                       srn = srn,
                       pstr = (userAnswers.json \ "pstr").as[String],
