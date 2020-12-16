@@ -40,26 +40,27 @@ class SchemesOverviewController @Inject()(
                                            getData: DataRetrievalAction,
                                            userAnswersCacheConnector: UserAnswersCacheConnector,
                                            val controllerComponents: MessagesControllerComponents,
+                                           config: FrontendAppConfig,
                                            view: schemesOverview
                                          )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
-
   def onPageLoad: Action[AnyContent] = (authenticate() andThen getData).async {
     implicit request =>
-
       val psaId = request.psaIdOrException.id
-
-      service.getPsaName(psaId).flatMap {
-
-        case Some(name) =>
-
-          service.getTiles(psaId).flatMap { cards =>
-            userAnswersCacheConnector.save(request.externalId, PSANameId, name).map { _ =>
-              Ok(view(name, cards, None))
-            }
+      service.getPsaMinimalDetails(psaId).flatMap { minDetails =>
+        if (minDetails.rlsFlag) {
+          Future.successful(Redirect(config.psaUpdateContactDetailsUrl))
+        } else {
+          service.getPsaName(psaId).flatMap {
+            case Some(name) =>
+              service.getTiles(psaId).flatMap { cards =>
+                userAnswersCacheConnector.save(request.externalId, PSANameId, name).map { _ =>
+                  Ok(view(name, cards, None))
+                }
+              }
+            case _ => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
           }
-
-        case _ => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+        }
       }
   }
 

@@ -32,14 +32,9 @@ class PspSchemeDashboardService @Inject()(
                                            minimalConnector: MinimalConnector
                                          )(implicit ec: ExecutionContext) {
 
-  def getPspDetails(pspId: String)
+  def getMinimalPspDetails(pspId: String)
                    (implicit hc: HeaderCarrier): Future[MinimalPSAPSP] =
     minimalConnector.getMinimalPspDetails(pspId)
-
-  def getPsaDetails(psaId: String)
-                   (implicit hc: HeaderCarrier): Future[MinimalPSAPSP] =
-    minimalConnector.getMinimalPsaDetails(psaId)
-
 
   def getTiles(
                 srn: String,

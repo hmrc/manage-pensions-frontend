@@ -146,6 +146,7 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
     .getString("urls.deAuthorisePsp")}"
 
   lazy val pspDetailsUrl: String = loadConfig("urls.pspDetails")
+  lazy val psaUpdateContactDetailsUrl: String = loadConfig("urls.psaUpdateContactDetails")
   lazy val pspUpdateContactDetailsUrl: String = loadConfig("urls.pspUpdateContactDetails")
   lazy val pspDeregisterCompanyUrl: String = loadConfig("urls.pspDeregisterCompany")
   lazy val pspDeregisterIndividualUrl: String = loadConfig("urls.pspDeregisterIndividual")
