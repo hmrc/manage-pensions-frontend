@@ -83,6 +83,7 @@ class PspSchemeDashboardController @Inject()(
                 authorisingPsaId = pspDetails.authorisingPSAID
               )
               upcomingAftCharges <- schemeDetailsService.retrievePspDashboardUpcomingAftChargesCard(srn)
+              overdueAftCharges <- schemeDetailsService.retrievePspDashboardOverdueAftChargesCard(srn)
               listOfSchemes <- listSchemesConnector.getListOfSchemesForPsp(request.pspIdOrException.id)
               _ <- userAnswersCacheConnector.upsert(request.externalId, userAnswers.json)
             } yield {
@@ -92,6 +93,7 @@ class PspSchemeDashboardController @Inject()(
                     schemeName = (userAnswers.json \ "schemeName").as[String],
                     aftReturnsCard = Seq(aftReturnsCard),
                     upcomingAftCharges = upcomingAftCharges,
+                    overdueAftCharges = overdueAftCharges,
                     cards = service.getTiles(
                       srn = srn,
                       pstr = (userAnswers.json \ "pstr").as[String],

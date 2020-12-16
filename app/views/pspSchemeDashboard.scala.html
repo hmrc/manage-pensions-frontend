@@ -29,6 +29,7 @@
         schemeName: String,
         aftReturnsCard: Seq[Html],
         upcomingAftCharges: Html,
+        overdueAftCharges: Html,
         cards: Seq[PspSchemeDashboardCardViewModel],
         returnLink: Option[Link] = None
 )(
@@ -48,6 +49,7 @@
             @aftCard
         }
         @upcomingAftCharges
+        @overdueAftCharges
         @for(card <- cards) {
             @components.pspSchemeDashboardCard(card)
         }
