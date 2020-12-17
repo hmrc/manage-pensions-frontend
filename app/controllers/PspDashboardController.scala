@@ -46,7 +46,6 @@ class PspDashboardController @Inject()(
   extends FrontendBaseController
     with I18nSupport {
 
-
   def onPageLoad: Action[AnyContent] = (authenticate(PSP) andThen getData).async {
     implicit request =>
       val pspId: String = request.pspIdOrException.id
@@ -58,15 +57,27 @@ class PspDashboardController @Inject()(
         if (details.rlsFlag) {
           Future.successful(Redirect(config.pspUpdateContactDetailsUrl))
         } else {
-          userAnswersCacheConnector.save(request.externalId, PSPNameId, details.name).map { _ =>
-            Ok(view(details.name, service.getTiles(pspId, details), Some(subHeading), returnLink))
+          userAnswersCacheConnector.save(
+            cacheId = request.externalId,
+            id = PSPNameId,
+            value = details.name
+          ).map { _ =>
+            Ok(view(
+              name = details.name,
+              cards = service.getTiles(pspId, details),
+              subHeading = Some(subHeading),
+              returnLink = returnLink
+            ))
           }
         }
 
       }
   }
 
-  def link: Link = Link("switch-psa", routes.SchemesOverviewController.onPageLoad().url,
-    Message("messages__pspDashboard__switch_psa"))
+  def link: Link = Link(
+    id = "switch-psa",
+    url = routes.SchemesOverviewController.onPageLoad().url,
+    linkText = Message("messages__pspDashboard__switch_psa")
+  )
 
 }

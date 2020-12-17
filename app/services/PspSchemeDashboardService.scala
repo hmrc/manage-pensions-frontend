@@ -68,19 +68,15 @@ class PspSchemeDashboardService @Inject()(
         (Message("messages__pspSchemeDashboard__details__subHeading_authBy"), authedBy),
         (Message("messages__pspSchemeDashboard__details__subHeading_authDate"), relationshipStartDate)
       ),
-      optionalSubHeadings = Seq(
-        clientReference match {
-          case Some(ref) =>
-            Some(Message("messages__pspSchemeDashboard__details__subHeading_clientRef"), ref)
-          case _ =>
-            None
-        }
-      ),
+      optionalSubHeading = clientReference map {
+        ref =>
+          (Message("messages__pspSchemeDashboard__details__subHeading_clientRef"), ref)
+      },
       links = Seq(
         Link(
           id = "deauthorise-yourself",
           url = controllers.remove.pspSelfRemoval.routes.ConfirmRemovalController.onPageLoad().url,
-          linkText = Message("De Authorise yourself")
+          linkText = Message("messages__pspSchemeDashboard__details__deAuth_Link")
         )
       )
     )
@@ -97,14 +93,10 @@ class PspSchemeDashboardService @Inject()(
       subHeadings = Seq(
         (Message("messages__pspSchemeDashboard__scheme__subHeading_pstr"), pstr)
       ),
-      optionalSubHeadings = Seq(
-        openDate match {
-          case Some(date) =>
-            Some(Message("messages__pspSchemeDashboard__scheme__subHeading_regForTax"), date)
-          case _ =>
-            None
-        }
-      ),
+      optionalSubHeading = openDate map {
+        date =>
+          (Message("messages__pspSchemeDashboard__scheme__subHeading_regForTax"), date)
+      },
       links = Seq(Link(
         id = "search-schemes",
         url = appConfig.pspTaskListUrl.format(srn),

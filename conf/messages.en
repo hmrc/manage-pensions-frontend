@@ -563,6 +563,7 @@ messages__pspSchemeDashboard__details_heading = Your practitioner details
 messages__pspSchemeDashboard__details__subHeading_authBy = Authorised by:
 messages__pspSchemeDashboard__details__subHeading_authDate = Date authorised to this scheme:
 messages__pspSchemeDashboard__details__subHeading_clientRef = Client reference:
+messages__pspSchemeDashboard__details__deAuth_Link = De Authorise yourself
 
 messages__pspSchemeDashboard__scheme_heading = Pension scheme details
 messages__pspSchemeDashboard__scheme__subHeading_pstr = Pension Scheme Tax Reference:

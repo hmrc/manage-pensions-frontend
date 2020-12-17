@@ -18,55 +18,110 @@ package controllers
 
 import config._
 import connectors.UserAnswersCacheConnector
-import controllers.actions.DataRetrievalAction
-import controllers.actions._
-import controllers.routes.ListSchemesController
-import models.IndividualDetails
-import models.Link
-import models.MinimalPSAPSP
-import org.mockito.Matchers.{eq => eqTo}
-import org.mockito.Matchers._
+import controllers.actions.{DataRetrievalAction, _}
+import models.{IndividualDetails, Link, MinimalPSAPSP}
+import org.mockito.Matchers.{eq => eqTo, _}
 import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
-import play.api.test.Helpers.contentAsString
-import play.api.test.Helpers._
+import play.api.test.Helpers.{contentAsString, _}
 import services.PspDashboardService
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
-import viewmodels.CardViewModel
-import viewmodels.Message
+import viewmodels.{CardViewModel, Message}
 import views.html.schemesOverview
 
 import scala.concurrent.Future
 
-class PspDashboardControllerSpec extends ControllerSpecBase with MockitoSugar with BeforeAndAfterEach {
+class PspDashboardControllerSpec
+  extends ControllerSpecBase
+    with MockitoSugar
+    with BeforeAndAfterEach {
 
   import PspDashboardControllerSpec._
 
-  private val fakePspDashboardService: PspDashboardService = mock[PspDashboardService]
-  private val fakeUserAnswersCacheConnector: UserAnswersCacheConnector = mock[UserAnswersCacheConnector]
+  private val mockPspDashboardService: PspDashboardService = mock[PspDashboardService]
+  private val mockUserAnswersCacheConnector: UserAnswersCacheConnector = mock[UserAnswersCacheConnector]
   private val mockAppConfig: FrontendAppConfig = mock[FrontendAppConfig]
-  private def minimalPsaDetails(rlsFlag:Boolean): MinimalPSAPSP = MinimalPSAPSP("test@test.com", isPsaSuspended = false, None,
-    Some(IndividualDetails("Test", None, "Psp Name")), rlsFlag = rlsFlag)
+
+  private def minimalPsaDetails(rlsFlag: Boolean): MinimalPSAPSP =
+    MinimalPSAPSP(
+      email = "test@test.com",
+      isPsaSuspended = false,
+      organisationName = None,
+      individualDetails = Some(IndividualDetails("Test", None, "Psp Name")),
+      rlsFlag = rlsFlag
+    )
 
   private val view: schemesOverview = app.injector.instanceOf[schemesOverview]
   private val dummyUrl = "dummy"
 
   def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyDataPsp): PspDashboardController =
-    new PspDashboardController(messagesApi, fakePspDashboardService, FakeAuthAction, dataRetrievalAction,
-      fakeUserAnswersCacheConnector, stubMessagesControllerComponents(), view, mockAppConfig)
+    new PspDashboardController(
+      messagesApi = messagesApi,
+      service = mockPspDashboardService,
+      authenticate = FakeAuthAction,
+      getData = dataRetrievalAction,
+      userAnswersCacheConnector = mockUserAnswersCacheConnector,
+      controllerComponents = stubMessagesControllerComponents(),
+      view = view,
+      config = mockAppConfig
+    )
 
-  def viewAsString(): String = view(pspName, tiles, Some(subHeading), Some(returnLink))(fakeRequest, messages).toString
+  def viewAsString(): String = view(
+    name = pspName,
+    cards = tiles,
+    subHeading = Some(subHeading),
+    returnLink = Some(returnLink)
+  )(
+    fakeRequest,
+    messages
+  ).toString
+
+  private val practitionerCard: CardViewModel =
+    CardViewModel(
+      id = "practitioner-card",
+      heading = Message("messages__pspDashboard__details_heading"),
+      subHeading = Some(Message("messages__pspDashboard__psp_id")),
+      subHeadingParam = Some(pspId),
+      links = Seq(
+        Link(
+          id = "pspLink",
+          url = frontendAppConfig.pspDetailsUrl,
+          linkText = Message("messages__pspDashboard__psp_change")
+        ),
+        Link(
+          id = "deregister-link",
+          url = frontendAppConfig.pspDeregisterIndividualUrl,
+          linkText = Message("messages__pspDashboard__psp_deregister")
+        )
+      )
+    )
+
+  private def schemeCard: CardViewModel =
+    CardViewModel(
+      id = "scheme-card",
+      heading = Message("messages__pspDashboard__scheme_heading"),
+      links = Seq(
+        Link(
+          id = "search-schemes",
+          url = controllers.routes.ListSchemesController.onPageLoad().url,
+          linkText = Message("messages__pspDashboard__search_scheme")
+        )
+      )
+    )
+
+  private val tiles: Seq[CardViewModel] = Seq(schemeCard, practitionerCard)
+  val subHeading: String = Message("messages__pspDashboard__sub_heading")
 
   "PspDashboard Controller" when {
     "onPageLoad" must {
       "return OK and the correct tiles" in {
-        when(fakePspDashboardService.getTiles(eqTo(pspId), any())(any()))
+        when(mockPspDashboardService.getTiles(eqTo(pspId), any())(any()))
           .thenReturn(tiles)
-        when(fakePspDashboardService.getPspDetails(eqTo(pspId))(any()))
+        when(mockPspDashboardService.getPspDetails(eqTo(pspId))(any()))
           .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false)))
-        when(fakeUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any()))
+        when(mockUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(Json.obj()))
 
         val result = controller().onPageLoad(fakeRequest)
@@ -76,11 +131,11 @@ class PspDashboardControllerSpec extends ControllerSpecBase with MockitoSugar wi
       }
 
       "redirect to update contact details page when rls flag is true" in {
-        when(fakePspDashboardService.getTiles(eqTo(pspId), any())(any()))
+        when(mockPspDashboardService.getTiles(eqTo(pspId), any())(any()))
           .thenReturn(tiles)
-        when(fakePspDashboardService.getPspDetails(eqTo(pspId))(any()))
+        when(mockPspDashboardService.getPspDetails(eqTo(pspId))(any()))
           .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = true)))
-        when(fakeUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any()))
+        when(mockUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(Json.obj()))
         when(mockAppConfig.pspUpdateContactDetailsUrl) thenReturn dummyUrl
 
@@ -94,33 +149,15 @@ class PspDashboardControllerSpec extends ControllerSpecBase with MockitoSugar wi
   }
 }
 
-object PspDashboardControllerSpec extends ControllerSpecBase {
+object PspDashboardControllerSpec {
   val pspName = "Test Psp Name"
   private val pspId = "00000000"
-
-  private val practitionerCard: CardViewModel =
-    CardViewModel(
-      id = "practitioner-card",
-      heading = Message("messages__pspDashboard__details_heading"),
-      subHeading = Some(Message("messages__pspDashboard__psp_id")),
-      subHeadingParam = Some(pspId),
-      links = Seq(
-        Link("pspLink", frontendAppConfig.pspDetailsUrl, Message("messages__pspDashboard__psp_change")),
-        Link("deregister-link", frontendAppConfig.pspDeregisterIndividualUrl, Message("messages__pspDashboard__psp_deregister"))
-      )
+  private val returnLink: Link =
+    Link(
+      id = "switch-psa",
+      url = routes.SchemesOverviewController.onPageLoad().url,
+      linkText = Message("messages__pspDashboard__switch_psa")
     )
-
-  private def schemeCard: CardViewModel =
-    CardViewModel(
-      id = "scheme-card",
-      heading = Message("messages__pspDashboard__scheme_heading"),
-      links = Seq(Link("search-schemes", ListSchemesController.onPageLoad().url, Message("messages__pspDashboard__search_scheme")))
-    )
-
-  private val tiles: Seq[CardViewModel] = Seq(schemeCard, practitionerCard)
-  val subHeading: String = Message("messages__pspDashboard__sub_heading")
-  private val returnLink: Link = Link("switch-psa", routes.SchemesOverviewController.onPageLoad().url,
-    Message("messages__pspDashboard__switch_psa"))
 }
 
 
