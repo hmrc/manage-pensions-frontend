@@ -45,7 +45,14 @@
             <ul>
                 @for(link <- cardModel.links) {
                     <li>
-                        <a id="@link.id" href="@link.url">@messages(link.linkText)</a>
+                        @if(link.screenReaderAlternativeText.nonEmpty) {
+                            <a id="@link.id" href="@link.url">
+                                <span aria-hidden="true">@messages(link.linkText)</span>
+                                <span class="visually-hidden">@messages(link.screenReaderAlternativeText.get)</span>
+                            </a>
+                        }else{
+                            <a id="@link.id" href="@link.url">@messages(link.linkText)</a>
+                        }
                     </li>
                 }
 

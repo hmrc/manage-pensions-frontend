@@ -76,7 +76,8 @@ class PspSchemeDashboardService @Inject()(
         Link(
           id = "deauthorise-yourself",
           url = controllers.remove.pspSelfRemoval.routes.ConfirmRemovalController.onPageLoad().url,
-          linkText = Message("messages__pspSchemeDashboard__details__deAuth_Link")
+          linkText = Message("messages__pspSchemeDashboard__details__deAuth_Link"),
+          screenReaderAlternativeText = Some(Message("messages__pspSchemeDashboard__details__deAuth_Link_screenReaderAlternative"))
         )
       )
     )
