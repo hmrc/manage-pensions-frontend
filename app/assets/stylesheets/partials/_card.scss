@@ -98,6 +98,9 @@ html[data-useragent*='MSIE 10.0'] .flex-container {
     .card-sub-heading span.font-large.bold {
       color: $black;
       font-size: 32px;
+      span.font-xsmall {
+        display: inline;
+      }
     }
 
     .detail {

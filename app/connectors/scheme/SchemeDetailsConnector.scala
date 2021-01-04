@@ -38,7 +38,8 @@ trait SchemeDetailsConnector {
   def getSchemeDetails(psaId: String, idNumber: String, schemeIdType: String)
                       (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[UserAnswers]
 
-  def getPspSchemeDetails(pspId: String, srn: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[UserAnswers]
+  def getPspSchemeDetails(pspId: String, srn: String)
+                         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[UserAnswers]
 
 }
 
@@ -48,10 +49,13 @@ class SchemeDetailsConnectorImpl @Inject()(http: HttpClient, config: FrontendApp
     with HttpResponseHelper {
 
   override def getSchemeDetails(
-                        psaId: String,
-                        idNumber: String,
-                        schemeIdType: String
-                      )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[UserAnswers] = {
+                                 psaId: String,
+                                 idNumber: String,
+                                 schemeIdType: String
+                               )(
+                                 implicit hc: HeaderCarrier,
+                                 ec: ExecutionContext
+                               ): Future[UserAnswers] = {
 
     val url = config.schemeDetailsUrl
     val schemeHc =
@@ -72,7 +76,8 @@ class SchemeDetailsConnectorImpl @Inject()(http: HttpClient, config: FrontendApp
     }
   }
 
-  override def getPspSchemeDetails(pspId: String, srn: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[UserAnswers] = {
+  override def getPspSchemeDetails(pspId: String, srn: String)
+                                  (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[UserAnswers] = {
 
     val url = config.pspSchemeDetailsUrl
     val schemeHc = hc.withExtraHeaders("srn" -> srn, "pspId" -> pspId)
