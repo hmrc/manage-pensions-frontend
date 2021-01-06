@@ -51,7 +51,7 @@ class PspDashboardServiceSpec extends SpecBase with MockitoSugar with BeforeAndA
 
 }
 
-object PspDashboardServiceSpec extends SpecBase with MockitoSugar  {
+object PspDashboardServiceSpec extends SpecBase with MockitoSugar {
 
   val pspName: String = "John Doe"
   private val pspId = "00000000"

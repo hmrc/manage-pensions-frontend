@@ -48,7 +48,8 @@ trait SpecBase extends PlaySpec with GuiceOneAppPerSuite {
 
   def environment: Environment = injector.instanceOf[Environment]
 
-
   def appRunning(): Unit =  app
 
 }
+
+object SpecBase extends SpecBase

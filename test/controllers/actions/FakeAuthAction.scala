@@ -16,11 +16,11 @@
 
 package controllers.actions
 
+import base.SpecBase.controllerComponents
 import models.AuthEntity.{PSA, PSP}
 import models.requests.AuthenticatedRequest
 import models.{AuthEntity, Individual, UserType}
 import play.api.mvc._
-import services.PspDashboardServiceSpec.controllerComponents
 import uk.gov.hmrc.domain.{PsaId, PspId}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -46,13 +46,18 @@ class FakeAuth(
                 pspId: Option[PspId] = Some(PspId("00000000")),
                 userType: UserType = Individual
               ) extends Auth {
-  override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] =
+
+  override def invokeBlock[A](
+                               request: Request[A],
+                               block: AuthenticatedRequest[A] => Future[Result]
+                             ): Future[Result] =
     block(AuthenticatedRequest(request, "id", psaId, pspId, userType, authEntity))
 
   val parser: BodyParser[AnyContent] =
     controllerComponents.parsers.defaultBodyParser
 
-  override protected def executionContext: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
+  override protected def executionContext: ExecutionContext =
+    scala.concurrent.ExecutionContext.Implicits.global
 }
 
 

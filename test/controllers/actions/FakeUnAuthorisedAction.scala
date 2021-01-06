@@ -16,13 +16,13 @@
 
 package controllers.actions
 
+import base.SpecBase.controllerComponents
 import controllers.routes
 import models.AuthEntity
 import models.AuthEntity.PSA
 import models.requests.AuthenticatedRequest
 import play.api.mvc.Results._
 import play.api.mvc.{AnyContent, BodyParser, Request, Result}
-import services.PspDashboardServiceSpec.controllerComponents
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -35,7 +35,8 @@ object FakeUnAuthorisedAction extends AuthAction {
                                  ): Future[Result] =
         Future.successful(Redirect(routes.UnauthorisedController.onPageLoad()))
 
-      val parser: BodyParser[AnyContent] = controllerComponents.parsers.defaultBodyParser
+      val parser: BodyParser[AnyContent] =
+        controllerComponents.parsers.defaultBodyParser
 
       override protected def executionContext: ExecutionContext =
         scala.concurrent.ExecutionContext.Implicits.global
