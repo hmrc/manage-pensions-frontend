@@ -23,7 +23,7 @@ import play.api.i18n.I18nSupport
 import play.api.i18n.Lang
 import play.api.i18n.MessagesApi
 import play.api.mvc._
-import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 class LanguageSwitchController @Inject()(
                                           configuration: Configuration,

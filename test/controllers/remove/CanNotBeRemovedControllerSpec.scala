@@ -26,7 +26,6 @@ import models.Organization
 import models.OtherUser
 import play.api.test.Helpers.status
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import viewmodels.RemovalViewModel
 import views.html.remove.cannot_be_removed
 
@@ -36,7 +35,7 @@ class CanNotBeRemovedControllerSpec extends ControllerWithNormalPageBehaviours {
   private val view = injector.instanceOf[cannot_be_removed]
 
   def fakeControllerAction(authAction: AuthAction = FakeUnAuthorisedAction) = new CanNotBeRemovedController(
-    frontendAppConfig, messagesApi, authAction, FakeUserAnswersCacheConnector, stubMessagesControllerComponents(), view)
+    frontendAppConfig, messagesApi, authAction, FakeUserAnswersCacheConnector, controllerComponents, view)
 
   def individualViewAsString(): String = view(viewModelIndividual)(fakeRequest, messages).toString
 

@@ -25,7 +25,6 @@ import models.SchemeReferenceNumber
 import play.api.mvc.Action
 import play.api.mvc.AnyContent
 import play.api.mvc.Call
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.UserAnswers
 import views.html.invitations.psp.pspDoesNotMatch
 
@@ -52,7 +51,7 @@ class PspDoesNotMatchControllerSpec extends ControllerWithNormalPageBehaviours {
 
     new PspDoesNotMatchController(
       messagesApi, fakeAuth, dataRetrievalAction, requiredDateAction,
-      stubMessagesControllerComponents(), pspDoesNotMatchView).onPageLoad()
+      controllerComponents, pspDoesNotMatchView).onPageLoad()
   }
 
   def redirectionCall(): Call = onwardRoute

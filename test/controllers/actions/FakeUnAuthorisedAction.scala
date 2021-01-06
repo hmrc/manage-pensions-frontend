@@ -21,25 +21,24 @@ import models.AuthEntity
 import models.AuthEntity.PSA
 import models.requests.AuthenticatedRequest
 import play.api.mvc.Results._
-import play.api.mvc.AnyContent
-import play.api.mvc.BodyParser
-import play.api.mvc.Request
-import play.api.mvc.Result
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
+import play.api.mvc.{AnyContent, BodyParser, Request, Result}
+import services.PspDashboardServiceSpec.controllerComponents
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 object FakeUnAuthorisedAction extends AuthAction {
   def apply(authEntity: AuthEntity = PSA): Auth = {
     new Auth {
-      override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] =
+      override def invokeBlock[A](
+                                   request: Request[A],
+                                   block: AuthenticatedRequest[A] => Future[Result]
+                                 ): Future[Result] =
         Future.successful(Redirect(routes.UnauthorisedController.onPageLoad()))
 
-      val parser: BodyParser[AnyContent] = stubMessagesControllerComponents().parsers.defaultBodyParser
+      val parser: BodyParser[AnyContent] = controllerComponents.parsers.defaultBodyParser
 
-      override protected def executionContext: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
-
+      override protected def executionContext: ExecutionContext =
+        scala.concurrent.ExecutionContext.Implicits.global
     }
   }
 }

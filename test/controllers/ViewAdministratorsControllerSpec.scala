@@ -29,7 +29,6 @@ import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.{JsArray, JsObject, JsString, Json}
 import play.api.test.Helpers.{contentAsString, _}
 import services.SchemeDetailsService
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.UserAnswers
 import viewmodels.AssociatedPsa
 import views.html.{error_template, error_template_page_not_found, viewAdministrators}
@@ -43,7 +42,7 @@ class ViewAdministratorsControllerSpec extends ControllerSpecBase with BeforeAnd
   val viewAdministratorsView: viewAdministrators = app.injector.instanceOf[viewAdministrators]
   val errorHandlerView: error_template = app.injector.instanceOf[error_template]
   val errorHandlerNotFoundView: error_template_page_not_found = app.injector.instanceOf[error_template_page_not_found]
-  val errorHandler = new ErrorHandler(frontendAppConfig, messagesApi, errorHandlerView, errorHandlerNotFoundView)
+  val errorHandler = new ErrorHandler(messagesApi, errorHandlerView, errorHandlerNotFoundView)
 
 
   def controller(dataRetrievalAction: DataRetrievalAction = getEmptyData): ViewAdministratorsController = {
@@ -53,7 +52,7 @@ class ViewAdministratorsControllerSpec extends ControllerSpecBase with BeforeAnd
       FakeAuthAction,
       dataRetrievalAction,
       errorHandler,
-      stubMessagesControllerComponents(),
+      controllerComponents,
       schemeDetailsService,
       viewAdministratorsView
     )

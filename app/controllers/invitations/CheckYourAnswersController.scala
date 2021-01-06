@@ -44,7 +44,7 @@ import play.api.mvc._
 import uk.gov.hmrc.domain.PsaId
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.NotFoundException
-import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.annotations.Invitation
 import utils.CheckYourAnswersFactory
 import utils.DateHelper

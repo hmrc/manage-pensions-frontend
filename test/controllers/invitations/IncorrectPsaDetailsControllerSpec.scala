@@ -21,7 +21,6 @@ import controllers.behaviours.ControllerWithNormalPageBehaviours
 import models.MinimalSchemeDetail
 import play.api.mvc.Action
 import play.api.mvc.AnyContent
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.UserAnswers
 import views.html.invitations.incorrectPsaDetails
 
@@ -40,7 +39,7 @@ class IncorrectPsaDetailsControllerSpec extends ControllerWithNormalPageBehaviou
   def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
 
     new IncorrectPsaDetailsController(
-      frontendAppConfig, messagesApi, fakeAuth, dataRetrievalAction, requiredDateAction, stubMessagesControllerComponents(), view).onPageLoad()
+      frontendAppConfig, messagesApi, fakeAuth, dataRetrievalAction, requiredDateAction, controllerComponents, view).onPageLoad()
   }
 
   def viewAsString(): String = view(invitee, srn, schemeName)(fakeRequest, messages).toString

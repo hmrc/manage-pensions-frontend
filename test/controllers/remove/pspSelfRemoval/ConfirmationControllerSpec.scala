@@ -29,7 +29,6 @@ import play.api.libs.json.Json
 import play.api.test.Helpers._
 import testhelpers.CommonBuilders._
 import uk.gov.hmrc.domain.PspId
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import views.html.remove.pspSelfRemoval.confirmation
 
 import scala.concurrent.Future
@@ -47,7 +46,7 @@ class ConfirmationControllerSpec extends ControllerSpecBase with MockitoSugar {
 
   def controller(dataRetrievalAction: DataRetrievalAction = new FakeDataRetrievalAction(Some(data), pspId = pspId)) =
     new ConfirmationController(messagesApi, FakeAuthAction, dataRetrievalAction, new DataRequiredActionImpl,
-      mockMinimalConnector, FakeUserAnswersCacheConnector, stubMessagesControllerComponents(), view)
+      mockMinimalConnector, FakeUserAnswersCacheConnector, controllerComponents, view)
 
   private def viewAsString = view(schemeName, psaName, email)(fakeRequest, messages).toString
 

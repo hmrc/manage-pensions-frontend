@@ -29,7 +29,6 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.{JsArray, Json}
 import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import views.html.remove.confirmPsaRemovedPsp
 
 import scala.concurrent.Future
@@ -57,7 +56,7 @@ class ConfirmPsaRemovedPspControllerSpec
       getData = dataRetrievalAction,
       requireData = new DataRequiredActionImpl,
       userAnswersCacheConnector = FakeUserAnswersCacheConnector,
-      controllerComponents = stubMessagesControllerComponents(),
+      controllerComponents = controllerComponents,
       minimalPsaConnector = mockMinimalPsaConnector,
       view = view
     ).onPageLoad(0)

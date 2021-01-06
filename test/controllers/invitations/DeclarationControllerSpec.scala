@@ -43,7 +43,6 @@ import play.api.data.Form
 import play.api.mvc.Call
 import play.api.test.Helpers._
 import testhelpers.InvitationBuilder
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils._
 import views.html.invitations.declaration
 
@@ -70,7 +69,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
     fakeInvitationCacheConnector,
     fakeInvitationConnector,
     new FakeNavigator(onwardRoute),
-    stubMessagesControllerComponents(),
+    controllerComponents,
     view
   )
 

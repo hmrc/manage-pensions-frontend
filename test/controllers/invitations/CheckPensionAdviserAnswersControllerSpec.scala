@@ -22,7 +22,6 @@ import controllers.behaviours.ControllerWithNormalPageBehaviours
 import models.CheckMode
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.mvc.Call
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.countryOptions.CountryOptions
 import utils.CheckYourAnswersFactory
 import utils.UserAnswers
@@ -60,14 +59,14 @@ class CheckPensionAdviserAnswersControllerSpec extends ControllerWithNormalPageB
 
     new CheckPensionAdviserAnswersController(
       frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction,
-      checkYourAnswersFactory, stubMessagesControllerComponents(), view).onPageLoad()
+      checkYourAnswersFactory, controllerComponents, view).onPageLoad()
   }
 
   def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
     new CheckPensionAdviserAnswersController(
       frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction,
-      checkYourAnswersFactory, stubMessagesControllerComponents(), view).onSubmit()
+      checkYourAnswersFactory, controllerComponents, view).onSubmit()
   }
 
   behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, Some(userAnswer), viewAsString)

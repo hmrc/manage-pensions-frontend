@@ -25,7 +25,6 @@ import models.SchemeReferenceNumber
 import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import views.html.invitations.psp.whatYouWillNeed
 
 class WhatYouWillNeedControllerSpec extends ControllerSpecBase {
@@ -48,7 +47,7 @@ class WhatYouWillNeedControllerSpec extends ControllerSpecBase {
       FakeAuthAction,
       dataRetrievalAction,
       new DataRequiredActionImpl,
-      stubMessagesControllerComponents(),
+      controllerComponents,
       whatYouWillNeedView
     )
 
@@ -64,7 +63,8 @@ class WhatYouWillNeedControllerSpec extends ControllerSpecBase {
     "redirect to psp name controller for a POST" in {
       val result = controller().onSubmit()(fakeRequest)
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.invitations.psp.routes.PspNameController.onPageLoad(NormalMode).url)
+      redirectLocation(result) mustBe
+        Some(controllers.invitations.psp.routes.PspNameController.onPageLoad(NormalMode).url)
     }
   }
 }

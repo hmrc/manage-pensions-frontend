@@ -17,7 +17,6 @@
 package controllers
 
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import views.html.unauthorised
 
 class UnauthorisedControllerSpec extends ControllerSpecBase {
@@ -27,12 +26,12 @@ class UnauthorisedControllerSpec extends ControllerSpecBase {
 
   "Unauthorised Controller" must {
     "return 200 for a GET" in {
-      val result = new UnauthorisedController(frontendAppConfig, messagesApi, stubMessagesControllerComponents(), view).onPageLoad()(fakeRequest)
+      val result = new UnauthorisedController(frontendAppConfig, messagesApi, controllerComponents, view).onPageLoad()(fakeRequest)
       status(result) mustBe OK
     }
 
     "return the correct view for a GET" in {
-      val result = new UnauthorisedController(frontendAppConfig, messagesApi, stubMessagesControllerComponents(), view).onPageLoad()(fakeRequest)
+      val result = new UnauthorisedController(frontendAppConfig, messagesApi, controllerComponents, view).onPageLoad()(fakeRequest)
       contentAsString(result) mustBe view()(fakeRequest, messages).toString
     }
   }

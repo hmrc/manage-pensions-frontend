@@ -20,20 +20,25 @@ import config.FrontendAppConfig
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice._
 import play.api.Environment
-import play.api.i18n.Messages
-import play.api.i18n.MessagesApi
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject._
-import play.api.mvc.AnyContentAsEmpty
+import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.crypto.ApplicationCrypto
 
+import scala.concurrent.ExecutionContext
+
 trait SpecBase extends PlaySpec with GuiceOneAppPerSuite {
   protected def crypto: ApplicationCrypto = injector.instanceOf[ApplicationCrypto]
-  implicit val global = scala.concurrent.ExecutionContext.Implicits.global
+
+  implicit val global: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
 
   def injector: Injector = app.injector
 
   def frontendAppConfig: FrontendAppConfig = injector.instanceOf[FrontendAppConfig]
+
+  def controllerComponents: MessagesControllerComponents =
+    injector.instanceOf[MessagesControllerComponents]
 
   def messagesApi: MessagesApi = injector.instanceOf[MessagesApi]
 

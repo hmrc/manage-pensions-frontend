@@ -17,9 +17,7 @@
 package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
-import org.scalatest.AsyncWordSpec
-import org.scalatest.MustMatchers
-import org.scalatest.OptionValues
+import org.scalatest.{AsyncWordSpec, MustMatchers, OptionValues}
 import play.api.http.Status
 import play.api.test.FakeRequest
 import play.twirl.api.Html
@@ -27,7 +25,11 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.partials.HeaderCarrierForPartials
 import utils.WireMockHelper
 
-class FrontendConnectorSpec extends AsyncWordSpec with MustMatchers with WireMockHelper with OptionValues {
+class FrontendConnectorSpec
+  extends AsyncWordSpec
+    with MustMatchers
+    with WireMockHelper
+    with OptionValues {
 
   override protected def portConfigKey: String = "microservice.services.aft-frontend.port"
 

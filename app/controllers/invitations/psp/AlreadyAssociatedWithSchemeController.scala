@@ -23,7 +23,7 @@ import identifiers.SchemeNameId
 import identifiers.invitations.psp.PspNameId
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.invitations.psp.alreadyAssociatedWithScheme
 
 import scala.concurrent.{ExecutionContext, Future}

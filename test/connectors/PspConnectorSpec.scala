@@ -48,7 +48,6 @@ class PspConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper w
     connector.authorisePsp(pstr, psaId, pspId, Some(cr)) map {
       response =>
         server.findAll(postRequestedFor(urlEqualTo(pspAuthUrl))).size() shouldBe 1
-        response shouldBe ()
     }
   }
 

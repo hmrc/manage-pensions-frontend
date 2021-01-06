@@ -17,7 +17,6 @@
 package controllers
 
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import views.html.session_expired
 
 class SessionExpiredControllerSpec extends ControllerSpecBase {
@@ -26,12 +25,12 @@ class SessionExpiredControllerSpec extends ControllerSpecBase {
 
   "SessionExpired Controller" must {
     "return 200 for a GET" in {
-      val result = new SessionExpiredController(frontendAppConfig, messagesApi, stubMessagesControllerComponents(), view).onPageLoad()(fakeRequest)
+      val result = new SessionExpiredController(frontendAppConfig, messagesApi, controllerComponents, view).onPageLoad()(fakeRequest)
       status(result) mustBe OK
     }
 
     "return the correct view for a GET" in {
-      val result = new SessionExpiredController(frontendAppConfig, messagesApi, stubMessagesControllerComponents(), view).onPageLoad()(fakeRequest)
+      val result = new SessionExpiredController(frontendAppConfig, messagesApi, controllerComponents, view).onPageLoad()(fakeRequest)
       contentAsString(result) mustBe view()(fakeRequest, messages).toString
     }
   }

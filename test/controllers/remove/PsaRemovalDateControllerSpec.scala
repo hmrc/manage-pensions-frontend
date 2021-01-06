@@ -46,7 +46,6 @@ import play.api.test.Helpers.redirectLocation
 import play.api.test.Helpers.status
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.DateHelper._
 import utils.UserAnswers
 import views.html.remove.removalDate
@@ -67,7 +66,7 @@ class PsaRemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours 
                  userAnswersCacheConnector: UserAnswersCacheConnector = FakeUserAnswersCacheConnector) = new PsaRemovalDateController(
     frontendAppConfig, messagesApi, userAnswersCacheConnector, navigator, fakeAuth, dataRetrievalAction,
     requiredDataAction, formProvider, fakePsaRemovalConnector,
-    mockedUpdateSchemeCacheConnector, mockedPensionSchemeVarianceLockConnector, stubMessagesControllerComponents(), view)
+    mockedUpdateSchemeCacheConnector, mockedPensionSchemeVarianceLockConnector, controllerComponents, view)
 
   private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
     controller(dataRetrievalAction, fakeAuth).onPageLoad()

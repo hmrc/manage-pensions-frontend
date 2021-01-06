@@ -17,37 +17,25 @@
 package controllers.invitations
 
 import com.google.inject.Inject
-import config.FrontendAppConfig
+import connectors.{InvitationConnector, InvitationsCacheConnector, UserAnswersCacheConnector}
 import connectors.scheme.SchemeDetailsConnector
-import connectors.InvitationConnector
-import connectors.InvitationsCacheConnector
-import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
-import controllers.actions.AuthAction
-import controllers.actions.DataRequiredAction
-import controllers.actions.DataRetrievalAction
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.invitations.DeclarationFormProvider
 import identifiers.invitations._
-import identifiers.SchemeSrnId
-import identifiers.SchemeTypeId
-import identifiers.{SchemeNameId => GetSchemeNameId}
+import identifiers.{SchemeSrnId, SchemeTypeId, SchemeNameId => GetSchemeNameId}
 import models.SchemeType.MasterTrust
 import models._
 import models.requests.DataRequest
 import play.api.data.Form
-import play.api.i18n.I18nSupport
-import play.api.i18n.MessagesApi
-import play.api.mvc.Action
-import play.api.mvc.AnyContent
-import play.api.mvc.MessagesControllerComponents
-import play.api.mvc.Result
-import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.Navigator
 import utils.annotations.AcceptInvitation
 import views.html.invitations.declaration
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class DeclarationController @Inject()(
                                        override val messagesApi: MessagesApi,
@@ -62,34 +50,38 @@ class DeclarationController @Inject()(
                                        @AcceptInvitation navigator: Navigator,
                                        val controllerComponents: MessagesControllerComponents,
                                        view: declaration
-                                     )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
+                                     )(implicit val ec: ExecutionContext)
+  extends FrontendBaseController
+    with I18nSupport
+    with Retrievals {
+
   val form: Form[Boolean] = formProvider()
 
   def onPageLoad(): Action[AnyContent] = (auth() andThen getData andThen requireData).async {
     implicit request =>
       (DoYouHaveWorkingKnowledgeId and SchemeSrnId).retrieve.right.map {
         case haveWorkingKnowledge ~ srn =>
-            schemeDetailsConnector.getSchemeDetails(
-              psaId = request.psaIdOrException.id,
-              idNumber = srn,
-              schemeIdType = "srn"
-            ) flatMap { details =>
-              (details.get(GetSchemeNameId), details.get(SchemeTypeId)) match {
-                case (Some(name), Some(schemeType)) =>
-                  val isMasterTrust = schemeType.equals(MasterTrust)
+          schemeDetailsConnector.getSchemeDetails(
+            psaId = request.psaIdOrException.id,
+            idNumber = srn,
+            schemeIdType = "srn"
+          ) flatMap { details =>
+            (details.get(GetSchemeNameId), details.get(SchemeTypeId)) match {
+              case (Some(name), Some(schemeType)) =>
+                val isMasterTrust = schemeType.equals(MasterTrust)
 
-                  for {
-                    _ <- userAnswersCacheConnector.save(SchemeNameId, name)
-                    _ <- userAnswersCacheConnector.save(IsMasterTrustId, isMasterTrust)
-                    _ <- userAnswersCacheConnector.save(PSTRId, details.get(PSTRId).getOrElse(""))
-                  } yield {
-                    Ok(view(haveWorkingKnowledge, isMasterTrust, form))
-                  }
+                for {
+                  _ <- userAnswersCacheConnector.save(SchemeNameId, name)
+                  _ <- userAnswersCacheConnector.save(IsMasterTrustId, isMasterTrust)
+                  _ <- userAnswersCacheConnector.save(PSTRId, details.get(PSTRId).getOrElse(""))
+                } yield {
+                  Ok(view(haveWorkingKnowledge, isMasterTrust, form))
+                }
 
-                case _ => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+              case _ => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
 
-              }
             }
+          }
 
       }
   }
@@ -119,8 +111,19 @@ class DeclarationController @Inject()(
     invitationsCacheConnector.get(pstr, request.psaIdOrException).flatMap { invitations =>
       invitations.headOption match {
         case Some(invitation) =>
-          val acceptedInvitation = AcceptedInvitation(invitation.pstr, request.psaIdOrException, invitation.inviterPsaId, declaration,
-            haveWorkingKnowledge, userAnswers.json.validate[PensionAdviserDetails](PensionAdviserDetails.userAnswerReads).asOpt)
+          val acceptedInvitation =
+            AcceptedInvitation(
+              pstr = invitation.pstr,
+              inviteePsaId = request.psaIdOrException,
+              inviterPsaId = invitation.inviterPsaId,
+              declaration = declaration,
+              declarationDuties = haveWorkingKnowledge,
+              pensionAdviserDetails =
+                userAnswers
+                  .json
+                  .validate[PensionAdviserDetails](PensionAdviserDetails.userAnswerReads)
+                  .asOpt
+            )
 
           invitationConnector.acceptInvite(acceptedInvitation).flatMap { _ =>
             invitationsCacheConnector.remove(invitation.pstr, request.psaIdOrException).map { _ =>

@@ -27,7 +27,6 @@ import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
 import play.api.test.Helpers.{contentAsString, _}
 import services.PspDashboardService
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import viewmodels.{CardViewModel, Message}
 import views.html.schemesOverview
 
@@ -63,7 +62,7 @@ class PspDashboardControllerSpec
       authenticate = FakeAuthAction,
       getData = dataRetrievalAction,
       userAnswersCacheConnector = mockUserAnswersCacheConnector,
-      controllerComponents = stubMessagesControllerComponents(),
+      controllerComponents = controllerComponents,
       view = view,
       config = mockAppConfig
     )

@@ -34,7 +34,6 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.domain.PspId
 import uk.gov.hmrc.http.HttpResponse
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import views.html.remove.pspSelfRemoval.declaration
 
 import scala.concurrent.Future
@@ -61,7 +60,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar {
 
   def controller(dataRetrievalAction: DataRetrievalAction = new FakeDataRetrievalAction(Some(data), pspId = pspId)): DeclarationController =
     new DeclarationController(messagesApi, formProvider, FakeAuthAction, dataRetrievalAction,
-      new DataRequiredActionImpl, mockPspConnector, stubMessagesControllerComponents(), view)
+      new DataRequiredActionImpl, mockPspConnector, controllerComponents, view)
 
   private def viewAsString(form: Form[Boolean] = form) = view(form, schemeName, srn)(fakeRequest, messages).toString
 
