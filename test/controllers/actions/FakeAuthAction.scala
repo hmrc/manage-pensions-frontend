@@ -16,37 +16,26 @@
 
 package controllers.actions
 
-import models.AuthEntity
-import models.AuthEntity.PSA
-import models.AuthEntity.PSP
+import base.SpecBase.controllerComponents
+import models.AuthEntity.{PSA, PSP}
 import models.requests.AuthenticatedRequest
-import models.Individual
-import models.UserType
-import play.api.mvc.AnyContent
-import play.api.mvc.BodyParser
-import play.api.mvc.Request
-import play.api.mvc.Result
-import uk.gov.hmrc.domain.PsaId
-import uk.gov.hmrc.domain.PspId
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
+import models.{AuthEntity, Individual, UserType}
+import play.api.mvc._
+import uk.gov.hmrc.domain.{PsaId, PspId}
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 object FakeAuthAction extends AuthAction {
   override def apply(authEntity: AuthEntity = PSA): Auth = new FakeAuth(authEntity)
 
-  def createWithPsaId(psaId: String): AuthAction = new AuthAction {
-    override def apply(authEntity: AuthEntity = PSA): Auth = new FakeAuth(authEntity = PSA, psaId = Some(PsaId(psaId)), pspId = None)
-  }
+  def createWithPsaId(psaId: String): AuthAction =
+    (_: AuthEntity) => new FakeAuth(authEntity = PSA, psaId = Some(PsaId(psaId)), pspId = None)
 
-  def createWithUserType(userType: UserType): AuthAction = new AuthAction {
-    override def apply(authEntity: AuthEntity = PSA): Auth = new FakeAuth(authEntity = PSA, pspId = None, userType = userType)
-  }
+  def createWithUserType(userType: UserType): AuthAction =
+    (_: AuthEntity) => new FakeAuth(authEntity = PSA, pspId = None, userType = userType)
 
-  def createWithPspId(pspId: String): AuthAction = new AuthAction {
-    override def apply(authEntity: AuthEntity = PSP): Auth = new FakeAuth(authEntity = PSP, pspId = Some(PspId(pspId)), psaId = None)
-  }
+  def createWithPspId(pspId: String): AuthAction =
+    (_: AuthEntity) => new FakeAuth(authEntity = PSP, pspId = Some(PspId(pspId)), psaId = None)
 
   val externalId: String = "id"
 }
@@ -57,12 +46,18 @@ class FakeAuth(
                 pspId: Option[PspId] = Some(PspId("00000000")),
                 userType: UserType = Individual
               ) extends Auth {
-  override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] =
+
+  override def invokeBlock[A](
+                               request: Request[A],
+                               block: AuthenticatedRequest[A] => Future[Result]
+                             ): Future[Result] =
     block(AuthenticatedRequest(request, "id", psaId, pspId, userType, authEntity))
 
-  val parser: BodyParser[AnyContent] = stubMessagesControllerComponents().parsers.defaultBodyParser
+  val parser: BodyParser[AnyContent] =
+    controllerComponents.parsers.defaultBodyParser
 
-  override protected def executionContext: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
+  override protected def executionContext: ExecutionContext =
+    scala.concurrent.ExecutionContext.Implicits.global
 }
 
 

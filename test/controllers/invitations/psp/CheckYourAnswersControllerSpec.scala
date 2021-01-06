@@ -35,7 +35,6 @@ import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.mvc.Call
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.countryOptions.CountryOptions
 import utils.CheckYourAnswersFactory
 import utils.UserAnswers
@@ -52,7 +51,7 @@ class CheckYourAnswersControllerSpec extends ControllerSpecBase with MockitoSuga
     private val mockMinConnector = mock[MinimalConnector]
     def controller(dataRetrievalAction: DataRetrievalAction = data) = new CheckYourAnswersController(
         messagesApi, FakeAuthAction, dataRetrievalAction, new DataRequiredActionImpl,
-        checkYourAnswersFactory, mockMinConnector, stubMessagesControllerComponents(), view
+        checkYourAnswersFactory, mockMinConnector, controllerComponents, view
     )
 
     "Check Your Answers Controller Spec" must {

@@ -24,7 +24,6 @@ import controllers.actions.FakeUnAuthorisedAction
 import models.MinimalSchemeDetail
 import play.api.mvc.Call
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.FakeNavigator
 import utils.UserAnswers
 import views.html.invitations.invitation_duplicate
@@ -106,7 +105,7 @@ object InvitationDuplicateControllerSpec extends ControllerSpecBase {
       dataRetrievalAction,
       new DataRequiredActionImpl,
       testNavigator,
-      stubMessagesControllerComponents(),
+      controllerComponents,
       view
     )
 

@@ -20,7 +20,6 @@ import controllers.actions._
 import controllers.behaviours.ControllerWithNormalPageBehaviours
 import play.api.mvc.Action
 import play.api.mvc.AnyContent
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import views.html.invitations.youCannotSendAnInvite
 
 class YouCannotSendAnInviteControllerSpec extends ControllerWithNormalPageBehaviours {
@@ -31,7 +30,7 @@ class YouCannotSendAnInviteControllerSpec extends ControllerWithNormalPageBehavi
 
     new YouCannotSendAnInviteController(
       frontendAppConfig, messagesApi, fakeAuth, dataRetrievalAction, requiredDateAction,
-      stubMessagesControllerComponents(), youCannotSendAnInviteView).onPageLoad()
+      controllerComponents, youCannotSendAnInviteView).onPageLoad()
   }
 
   private def viewAsString(): String = youCannotSendAnInviteView()(fakeRequest, messages).toString

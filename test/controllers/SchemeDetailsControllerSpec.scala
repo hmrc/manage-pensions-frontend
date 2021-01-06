@@ -44,7 +44,6 @@ import play.twirl.api.Html
 import services.FeatureToggleService
 import services.SchemeDetailsService
 import testhelpers.CommonBuilders._
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.UserAnswers
 import viewmodels.AssociatedPsa
 import viewmodels.Message
@@ -61,7 +60,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
   val schemeDetailsView: schemeDetails = app.injector.instanceOf[schemeDetails]
   val errorHandlerView: error_template = app.injector.instanceOf[error_template]
   val errorHandlerNotFoundView: error_template_page_not_found = app.injector.instanceOf[error_template_page_not_found]
-  val errorHandler = new ErrorHandler(frontendAppConfig, messagesApi, errorHandlerView, errorHandlerNotFoundView)
+  val errorHandler = new ErrorHandler(messagesApi, errorHandlerView, errorHandlerNotFoundView)
   val pspLinks = Seq(
     Link("authorise", controllers.invitations.psp.routes.WhatYouWillNeedController.onPageLoad().url, Message("messages__pspAuthorise__link")),
     Link("view-practitioners", controllers.psp.routes.ViewPractitionersController.onPageLoad().url, Message("messages__pspViewOrDeauthorise__link"))
@@ -77,7 +76,7 @@ class SchemeDetailsControllerSpec extends ControllerSpecBase with BeforeAndAfter
       FakeAuthAction,
       FakeUserAnswersCacheConnector,
       errorHandler,
-      stubMessagesControllerComponents(),
+      controllerComponents,
       schemeDetailsService,
       schemeDetailsView,
       featureToggleService

@@ -26,7 +26,6 @@ import models.SchemeReferenceNumber
 import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.FakeNavigator
 import views.html.invitations.whatYouWillNeed
 
@@ -52,7 +51,7 @@ class WhatYouWillNeedControllerSpec extends ControllerSpecBase {
       dataRetrievalAction,
       new DataRequiredActionImpl,
       FakeUserAnswersCacheConnector,
-      stubMessagesControllerComponents(),
+      controllerComponents,
       whatYouWillNeedView
     )
 
@@ -68,7 +67,8 @@ class WhatYouWillNeedControllerSpec extends ControllerSpecBase {
     "redirect to psa name controller for a POST" in {
       val result = controller().onSubmit()(fakeRequest)
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.invitations.routes.PsaNameController.onPageLoad(NormalMode).url)
+      redirectLocation(result) mustBe
+        Some(controllers.invitations.routes.PsaNameController.onPageLoad(NormalMode).url)
     }
   }
 }

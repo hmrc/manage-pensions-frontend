@@ -27,7 +27,6 @@ import play.api.data.Form
 import play.api.libs.json.{JsArray, Json}
 import play.api.mvc.{Action, AnyContent}
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import views.html.psp.confirmRemovePsp
 
 class ConfirmRemovePspControllerSpec extends ControllerWithQuestionPageBehaviours {
@@ -48,7 +47,7 @@ class ConfirmRemovePspControllerSpec extends ControllerWithQuestionPageBehaviour
     userAnswersCacheConnector,
     dataRetrievalAction,
     requiredDataAction,
-    stubMessagesControllerComponents(),
+    controllerComponents,
     view
   )
 

@@ -42,7 +42,6 @@ import play.api.data.Form
 import play.api.mvc.Call
 import play.api.test.Helpers._
 import services.SchemeDetailsService
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.UserAnswers
 import views.html.invitations.psp.declaration
 
@@ -101,7 +100,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
     mockSchemeDetailsService,
     mockEmailConnector,
     mockMinimalConnector,
-    stubMessagesControllerComponents(),
+    controllerComponents,
     mockAuditService,
     crypto,
     frontendAppConfig,

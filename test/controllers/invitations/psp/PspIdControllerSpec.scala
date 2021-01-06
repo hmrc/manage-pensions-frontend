@@ -28,7 +28,6 @@ import models.NormalMode
 import models.SchemeReferenceNumber
 import play.api.data.Form
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.UserAnswers
 import views.html.invitations.psp.pspId
 
@@ -53,14 +52,14 @@ class PspIdControllerSpec extends ControllerWithQuestionPageBehaviours {
 
     new PspIdController(
       frontendAppConfig, messagesApi, fakeAuth, navigator, FakeUserAnswersCacheConnector,
-      dataRetrievalAction, requiredDataAction, formProvider, stubMessagesControllerComponents(), view).onPageLoad(NormalMode)
+      dataRetrievalAction, requiredDataAction, formProvider, controllerComponents, view).onPageLoad(NormalMode)
   }
 
   def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
     new PspIdController(
       frontendAppConfig, messagesApi, fakeAuth, navigator, FakeUserAnswersCacheConnector,
-      dataRetrievalAction, requiredDataAction, formProvider, stubMessagesControllerComponents(), view).onSubmit(NormalMode)
+      dataRetrievalAction, requiredDataAction, formProvider, controllerComponents, view).onSubmit(NormalMode)
   }
 
   def viewAsString(form: Form[_] = form) = view(form, "xyz", NormalMode, schemeName, returnCall)(fakeRequest, messages).toString

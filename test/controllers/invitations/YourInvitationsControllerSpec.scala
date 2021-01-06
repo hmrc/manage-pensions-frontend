@@ -31,7 +31,6 @@ import play.api.mvc.Call
 import play.api.test.Helpers._
 import play.twirl.api.HtmlFormat
 import testhelpers.InvitationBuilder._
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.FakeNavigator
 import views.html.invitations.yourInvitations
 
@@ -62,7 +61,7 @@ class YourInvitationsControllerSpec extends ControllerSpecBase with MockitoSugar
       mockInvitationsCacheConnector,
       FakeUserAnswersCacheConnector,
       navigator,
-      stubMessagesControllerComponents(),
+      controllerComponents,
       yourInvitationsView
     )
   }

@@ -26,7 +26,6 @@ import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent}
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.UserAnswerOps
 import utils.UserAnswers
 import views.html.remove.confirmRemovePsa
@@ -39,7 +38,7 @@ class ConfirmRemovePsaControllerSpec extends ControllerWithQuestionPageBehaviour
   def controller(dataRetrievalAction: DataRetrievalAction = data, fakeAuth: AuthAction = FakeAuthAction,
                  userAnswersCacheConnector: UserAnswersCacheConnector = FakeUserAnswersCacheConnector) = new ConfirmRemovePsaController(
     frontendAppConfig, fakeAuth, messagesApi, navigator, formProvider,
-    userAnswersCacheConnector, dataRetrievalAction, requiredDataAction, stubMessagesControllerComponents(), view)
+    userAnswersCacheConnector, dataRetrievalAction, requiredDataAction, controllerComponents, view)
 
   private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
     controller(dataRetrievalAction, fakeAuth).onPageLoad()

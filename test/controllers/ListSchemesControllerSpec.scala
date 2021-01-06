@@ -32,13 +32,14 @@ import org.scalatestplus.mockito.MockitoSugar
 import play.api.test.Helpers._
 import services.PaginationService
 import services.SchemeSearchService
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
+//import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import views.html.list_schemes
 
 import scala.concurrent.Future
 
 class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar with BeforeAndAfterEach {
-import ListSchemesControllerSpec._
+
+  import ListSchemesControllerSpec._
 
   override def beforeEach(): Unit = {
     when(mockAppConfig.minimumSchemeSearchResults) thenReturn 1
@@ -225,38 +226,38 @@ import ListSchemesControllerSpec._
       contentAsString(result) mustBe expected
     }
 
-      "return OK and the correct view with correct no matches message when unrecognised format is entered into search" in {
+    "return OK and the correct view with correct no matches message when unrecognised format is entered into search" in {
 
-        val incorrectSearchText = "24000001IN"
-        when(mockSchemeSearchService.search(any(), Matchers.eq(Some(incorrectSearchText)))(any(), any())).thenReturn(Future.successful(Nil))
+      val incorrectSearchText = "24000001IN"
+      when(mockSchemeSearchService.search(any(), Matchers.eq(Some(incorrectSearchText)))(any(), any())).thenReturn(Future.successful(Nil))
 
-        val pagination: Int = 10
+      val pagination: Int = 10
 
-        val numberOfPages =
-          paginationService.divide(fullSchemes.length, pagination)
+      val numberOfPages =
+        paginationService.divide(fullSchemes.length, pagination)
 
-        when(mockAppConfig.listSchemePagination) thenReturn pagination
+      when(mockAppConfig.listSchemePagination) thenReturn pagination
 
-        val fixture = testFixture(psaIdWithSchemes)
-        val postRequest =
-          fakeRequest.withFormUrlEncodedBody(("searchText", incorrectSearchText))
-        val result = fixture.controller.onSearch(postRequest)
+      val fixture = testFixture(psaIdWithSchemes)
+      val postRequest =
+        fakeRequest.withFormUrlEncodedBody(("searchText", incorrectSearchText))
+      val result = fixture.controller.onSearch(postRequest)
 
-        status(result) mustBe OK
+      status(result) mustBe OK
 
-        val expected = viewAsString(
-          schemes = List.empty,
-          numberOfSchemes = 0,
-          pagination = pagination,
-          pageNumber = 1,
-          pageNumberLinks = Seq.empty,
-          numberOfPages = numberOfPages,
-          noResultsMessageKey = Some("messages__listSchemes__search_noMatches"),
-          Some(incorrectSearchText)
-        )
+      val expected = viewAsString(
+        schemes = List.empty,
+        numberOfSchemes = 0,
+        pagination = pagination,
+        pageNumber = 1,
+        pageNumberLinks = Seq.empty,
+        numberOfPages = numberOfPages,
+        noResultsMessageKey = Some("messages__listSchemes__search_noMatches"),
+        Some(incorrectSearchText)
+      )
 
-        contentAsString(result) mustBe expected
-      }
+      contentAsString(result) mustBe expected
+    }
   }
 }
 
@@ -367,7 +368,7 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
           getDataWithPsaName(psaId),
           mockMinimalPsaConnector,
           FakeUserAnswersCacheConnector,
-          stubMessagesControllerComponents(),
+          controllerComponents,
           view,
           paginationService,
           listSchemesFormProvider,

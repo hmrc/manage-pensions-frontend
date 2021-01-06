@@ -24,18 +24,23 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.Action
 import play.api.mvc.AnyContent
 import play.api.mvc.MessagesControllerComponents
-import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.index
 
 import scala.concurrent.ExecutionContext
 
-class IndexController @Inject()(val appConfig: FrontendAppConfig,
-                                override val messagesApi: MessagesApi,
-                                authenticate: AuthAction,
-                                val controllerComponents: MessagesControllerComponents,
-                                view: index)(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+class IndexController @Inject()(
+                                 val appConfig: FrontendAppConfig,
+                                 override val messagesApi: MessagesApi,
+                                 authenticate: AuthAction,
+                                 val controllerComponents: MessagesControllerComponents,
+                                 view: index
+                               )(implicit val ec: ExecutionContext)
+  extends FrontendBaseController
+    with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = authenticate() { implicit request =>
-    Ok(view())
+  def onPageLoad: Action[AnyContent] = authenticate() {
+    implicit request =>
+      Ok(view())
   }
 }

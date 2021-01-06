@@ -30,7 +30,6 @@ import play.api.data.Form
 import play.api.libs.json.{JsArray, Json}
 import play.api.mvc.{Action, AnyContent, AnyContentAsJson}
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.DateHelper._
 import views.html.remove.pspRemovalDate
 
@@ -55,7 +54,7 @@ class PspRemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours 
       getData = dataRetrievalAction,
       requireData = requiredDataAction,
       formProvider = formProvider,
-      controllerComponents = stubMessagesControllerComponents(),
+      controllerComponents = controllerComponents,
       view = view
     )
 

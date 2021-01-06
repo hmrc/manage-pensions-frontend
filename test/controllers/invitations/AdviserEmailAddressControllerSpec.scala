@@ -27,7 +27,6 @@ import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.FakeNavigator
 import views.html.invitations.adviserEmailAddress
 
@@ -46,7 +45,7 @@ class AdviserEmailAddressControllerSpec extends ControllerSpecBase {
 
   def controller(dataRetrievalAction: DataRetrievalAction = minimalAdviserData) = new AdviserEmailAddressController(
     frontendAppConfig, messagesApi, FakeAuthAction, new FakeNavigator(onwardRoute), dataRetrievalAction, new DataRequiredActionImpl, formProvider,
-    FakeUserAnswersCacheConnector, stubMessagesControllerComponents(), view
+    FakeUserAnswersCacheConnector, controllerComponents, view
   )
 
   private def viewAsString(form: Form[_] = form) = view(form, NormalMode, "test name")(fakeRequest, messages).toString

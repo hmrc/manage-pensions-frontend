@@ -32,7 +32,6 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.test.Helpers._
 import services.SchemeSearchService
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import views.html.psp.list_schemes
 
 import scala.concurrent.Future
@@ -236,7 +235,7 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
           getDataWithPspName(pspId),
           mockMinimalConnector,
           FakeUserAnswersCacheConnector,
-          stubMessagesControllerComponents(),
+          controllerComponents,
           view,
           listSchemesFormProvider,
           mockSchemeSearchService

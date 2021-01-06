@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,6 @@ import services.{PspSchemeDashboardService, SchemeDetailsService}
 import testhelpers.CommonBuilders.{listOfSchemesResponse, pspDetails}
 import uk.gov.hmrc.domain.PspId
 import uk.gov.hmrc.http.HttpResponse
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.UserAnswers
 import viewmodels.PspSchemeDashboardCardViewModel
 import views.html.pspSchemeDashboard
@@ -73,7 +72,7 @@ class PspSchemeDashboardControllerSpec
       listSchemesConnector = listSchemesConnector,
       userAnswersCacheConnector = userAnswersCacheConnector,
       schemeDetailsService = schemeDetailsService,
-      controllerComponents = stubMessagesControllerComponents(),
+      controllerComponents = controllerComponents,
       service = pspSchemeDashboardService,
       view = view,
       config = appConfig

@@ -21,7 +21,7 @@ import models.requests.DataRequest
 import play.api.libs.json.Reads
 import play.api.mvc.AnyContent
 import play.api.mvc.Result
-import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import scala.concurrent.Future
 import scala.language.implicitConversions

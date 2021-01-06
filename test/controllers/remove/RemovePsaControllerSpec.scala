@@ -37,7 +37,6 @@ import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.UserAnswers
 
 import scala.concurrent.ExecutionContext
@@ -139,7 +138,7 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
       FakeUserAnswersCacheConnector,
       fakeMinimalPsaConnector(psaMinimalDetails),
       frontendAppConfig,
-      stubMessagesControllerComponents()
+      controllerComponents
     )
 
 
@@ -222,7 +221,7 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
       val controller = new RemovePsaController(FakeUnAuthorisedAction, data, new DataRequiredActionImpl,
         fakeSchemeDetailsConnector(), FakeUserAnswersCacheConnector,
         fakeMinimalPsaConnector(psaMinimalSubscription.copy(isPsaSuspended = false)), frontendAppConfig,
-        stubMessagesControllerComponents()
+        controllerComponents
       )
 
       val result = controller.onPageLoad(fakeRequest)

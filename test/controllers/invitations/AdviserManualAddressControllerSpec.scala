@@ -16,41 +16,25 @@
 
 package controllers.invitations
 
-import config.FrontendAppConfig
-import connectors.FakeUserAnswersCacheConnector
-import connectors.UserAnswersCacheConnector
+import connectors.{FakeUserAnswersCacheConnector, UserAnswersCacheConnector}
 import controllers.ControllerSpecBase
-import controllers.actions.AuthAction
-import controllers.actions.DataRetrievalAction
-import controllers.actions.FakeAuthAction
-import controllers.actions.FakeDataRetrievalAction
+import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
 import forms.invitations.AdviserManualAddressFormProvider
-import identifiers.invitations.AdviserAddressId
-import identifiers.invitations.AdviserAddressListId
-import identifiers.invitations.AdviserAddressPostCodeLookupId
-import identifiers.invitations.AdviserNameId
-import models.Address
-import models.NormalMode
-import models.TolerantAddress
+import identifiers.invitations.{AdviserAddressId, AdviserAddressListId, AdviserAddressPostCodeLookupId, AdviserNameId}
+import models.{Address, NormalMode, TolerantAddress}
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.MustMatchers
-import org.scalatest.OptionValues
-import org.scalatest.WordSpec
+import org.scalatest.{MustMatchers, OptionValues, WordSpec}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.Application
 import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.inject.bind
-import play.api.libs.json.JsObject
-import play.api.libs.json.JsValue
-import play.api.libs.json.Json
+import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import utils.annotations.AcceptInvitation
 import utils.countryOptions.CountryOptions
-import utils.FakeCountryOptions
-import utils.FakeNavigator
-import utils.Navigator
+import utils.{FakeCountryOptions, FakeNavigator, Navigator}
 import views.html.invitations.adviserAddress
 
 class AdviserManualAddressControllerSpec extends WordSpec with MustMatchers with MockitoSugar with ScalaFutures with OptionValues {

@@ -24,7 +24,7 @@ import play.api.Logger
 import play.api.http.Status.OK
 import play.api.libs.json.Json
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.play.bootstrap.http.HttpClient
+import uk.gov.hmrc.http.HttpClient
 import utils.HttpResponseHelper
 import utils.UserAnswers
 

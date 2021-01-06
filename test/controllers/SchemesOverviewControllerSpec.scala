@@ -35,7 +35,6 @@ import play.api.test.Helpers.contentAsString
 import play.api.test.Helpers._
 import play.twirl.api.Html
 import services.SchemesOverviewService
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import viewmodels.CardViewModel
 import viewmodels.Message
 import views.html.schemesOverview
@@ -54,7 +53,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
 
   def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): SchemesOverviewController =
     new SchemesOverviewController(messagesApi, fakeSchemesOverviewService, FakeAuthAction,
-      dataRetrievalAction, fakeUserAnswersCacheConnector, stubMessagesControllerComponents(),
+      dataRetrievalAction, fakeUserAnswersCacheConnector, controllerComponents,
       view)
 
   def viewAsString(): String = view(

@@ -34,7 +34,7 @@ import models.TolerantAddress
 import play.api.data.Form
 import play.api.i18n._
 import play.api.mvc._
-import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.annotations.AcceptInvitation
 import utils.Navigator
 import utils.UserAnswers

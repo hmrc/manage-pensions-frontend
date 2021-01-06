@@ -16,31 +16,20 @@
 
 package controllers.invitations
 
-import config.FrontendAppConfig
-import connectors.FakeUserAnswersCacheConnector
-import connectors.UserAnswersCacheConnector
-import controllers.actions.AuthAction
-import controllers.actions.DataRetrievalAction
-import controllers.actions.FakeAuthAction
-import controllers.actions.FakeDataRetrievalAction
+import connectors.{FakeUserAnswersCacheConnector, UserAnswersCacheConnector}
+import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
 import forms.invitations.PensionAdviserAddressListFormProvider
-import identifiers.invitations.AdviserAddressId
-import identifiers.invitations.AdviserAddressListId
-import identifiers.invitations.AdviserAddressPostCodeLookupId
-import models.NormalMode
-import models.TolerantAddress
-import org.scalatest.BeforeAndAfterEach
-import org.scalatest.Matchers
-import org.scalatest.WordSpec
+import identifiers.invitations.{AdviserAddressId, AdviserAddressListId, AdviserAddressPostCodeLookupId}
+import models.{NormalMode, TolerantAddress}
+import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
 import play.api.Application
 import play.api.i18n.MessagesApi
 import play.api.inject.bind
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import utils.{FakeNavigator, Navigator}
 import utils.annotations.AcceptInvitation
-import utils.FakeNavigator
-import utils.Navigator
 import views.html.invitations.pension_adviser_address_list
 
 class PensionAdviserAddressListControllerSpec extends WordSpec with Matchers with BeforeAndAfterEach {

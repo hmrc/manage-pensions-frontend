@@ -47,7 +47,6 @@ import play.api.mvc.AnyContentAsJson
 import play.api.test.Helpers.redirectLocation
 import play.api.test.Helpers.status
 import uk.gov.hmrc.http.HttpResponse
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import views.html.remove.psaRemovePspDeclaration
 import connectors.FakeUserAnswersCacheConnector
 import connectors.UserAnswersCacheConnector
@@ -96,7 +95,7 @@ class PsaRemovePspDeclarationControllerSpec extends ControllerWithQuestionPageBe
       requireData = requiredDataAction,
       pspConnector = mockPspConnector,
       formProvider = formProvider,
-      controllerComponents = stubMessagesControllerComponents(),
+      controllerComponents = controllerComponents,
       auditService = mockAuditService,
       minimalConnector = mockMinimalConnector,
       appConfig = frontendAppConfig,
