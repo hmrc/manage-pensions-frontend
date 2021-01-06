@@ -18,4 +18,9 @@ package models
 
 import viewmodels.Message
 
-case class Link(id: String, url: String, linkText: Message)
+case class Link(
+                 id: String,
+                 url: String,
+                 linkText: Message,
+                 screenReaderAlternativeText: Option[Message] = None
+               )

@@ -53,6 +53,12 @@ object CommonBuilders {
       LocalDate.parse("2020-04-01"), "00000000")
   )
 
-  val pspDetails: AuthorisedPractitioner = AuthorisedPractitioner(Some(pspName), None, "A0000000", authorisingPsa,
-    LocalDate.parse("2020-04-01"), "00000000")
+  val pspDetails: AuthorisedPractitioner = AuthorisedPractitioner(
+    organisationOrPartnershipName = Some(pspName),
+    individual = None,
+    authorisingPSAID = "A0000000",
+    authorisingPSA = authorisingPsa,
+    relationshipStartDate = LocalDate.parse("2020-04-01"),
+    id = "00000000"
+  )
 }

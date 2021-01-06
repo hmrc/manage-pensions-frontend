@@ -19,32 +19,35 @@
 @import models.Link
 
 @this(
-    main_template: main_template,
-    appConfig: FrontendAppConfig
+        main_template: main_template,
+        appConfig: FrontendAppConfig
 )
 
 @(
-name: String,
-cards: Seq[CardViewModel],
-subHeading: Option[String] = None,
-returnLink: Option[Link] = None
-)(implicit request: Request[_], messages: Messages)
+        name: String,
+        cards: Seq[CardViewModel],
+        subHeading: Option[String] = None,
+        returnLink: Option[Link] = None
+)(
+        implicit request: Request[_],
+        messages: Messages
+)
 
-@main_template(
-    title = name,
-    mainContentContainerClasses = None
-) {
+    @main_template(
+        title = name,
+        mainContentContainerClasses = None
+    ) {
 
-    @components.heading(name, secondaryHeaderKey = subHeading)
+        @components.heading(name, secondaryHeaderKey = subHeading)
 
-    <div class="flex-container grid-row">
-    @for(card <- cards){
-        @components.card(card)
+        <div class="flex-container grid-row">
+        @for(card <- cards) {
+            @components.card(card)
+        }
+        </div>
+
+        @returnLink.map { ret =>
+            <a id="@ret.id" href="@ret.url">@messages(ret.linkText)</a>
+        }
+
     }
-    </div>
-
-    @returnLink.map { ret =>
-        <a id="@ret.id" href="@ret.url">@messages(ret.linkText)</a>
-    }
-
-}
