@@ -35,8 +35,7 @@ import play.api.test.Helpers.contentAsString
 import play.api.test.Helpers._
 import play.twirl.api.Html
 import services.SchemesOverviewService
-import viewmodels.CardViewModel
-import viewmodels.Message
+import viewmodels.{CardSubHeading, CardSubHeadingParam, CardViewModel, Message}
 import views.html.schemesOverview
 
 import scala.concurrent.Future
@@ -103,8 +102,12 @@ object SchemesOverviewControllerSpec extends ControllerSpecBase {
   private val adminCard = CardViewModel(
     id = "administrator-card",
     heading = Message("messages__schemeOverview__psa_heading"),
-    subHeading = Some(Message("messages__schemeOverview__psa_id")),
-    subHeadingParam = Some(psaId),
+    subHeadings = Seq(CardSubHeading(
+      subHeading = Message("messages__schemeOverview__psa_id"),
+      subHeadingClasses = "heading-small card-sub-heading",
+      subHeadingParams = Seq(CardSubHeadingParam(
+        subHeadingParam = psaId,
+        subHeadingParamClasses = "font-small")))),
     links = Seq(
       Link("psaLink", frontendAppConfig.registeredPsaDetailsUrl, Message("messages__schemeOverview__psa_change")),
       Link("invitations-received", controllers.invitations.routes.YourInvitationsController.onPageLoad().url,

@@ -28,8 +28,7 @@ import play.api.mvc.AnyContent
 import play.api.mvc.Request
 import play.twirl.api.Html
 import uk.gov.hmrc.http.HeaderCarrier
-import viewmodels.CardViewModel
-import viewmodels.Message
+import viewmodels.{CardSubHeading, CardSubHeadingParam, CardViewModel, Message}
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
@@ -70,8 +69,12 @@ class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
     CardViewModel(
       id = "administrator-card",
       heading = Message("messages__schemeOverview__psa_heading"),
-      subHeading = Some(Message("messages__schemeOverview__psa_id")),
-      subHeadingParam = Some(psaId),
+      subHeadings = Seq(CardSubHeading(
+        subHeading = Message("messages__schemeOverview__psa_id"),
+        subHeadingClasses = "heading-small card-sub-heading",
+        subHeadingParams = Seq(CardSubHeadingParam(
+          subHeadingParam = psaId,
+          subHeadingParamClasses = "font-small")))),
       links = Seq(
         Link("psaLink", appConfig.registeredPsaDetailsUrl, Message("messages__schemeOverview__psa_change"))
       ) ++ invitationLink ++ deregisterLink,

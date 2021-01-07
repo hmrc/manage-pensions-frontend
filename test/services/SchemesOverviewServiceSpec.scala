@@ -34,10 +34,10 @@ import testhelpers.InvitationBuilder.{invitation1, invitationList}
 import uk.gov.hmrc.domain.PsaId
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.UserAnswers
-import viewmodels.{CardViewModel, Message}
-
+import viewmodels.{CardSubHeading, CardSubHeadingParam, CardViewModel, Message}
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDate, ZoneOffset}
+
 import scala.concurrent.Future
 import scala.language.postfixOps
 
@@ -129,8 +129,12 @@ object SchemesOverviewServiceSpec extends SpecBase with MockitoSugar  {
                         invitation: Seq[Link] = invitationsLink) = CardViewModel(
     id = "administrator-card",
     heading = Message("messages__schemeOverview__psa_heading"),
-    subHeading = Some(Message("messages__schemeOverview__psa_id")),
-    subHeadingParam = Some(psaId),
+    subHeadings = Seq(CardSubHeading(
+      subHeading = Message("messages__schemeOverview__psa_id"),
+      subHeadingClasses = "heading-small card-sub-heading",
+      subHeadingParams = Seq(CardSubHeadingParam(
+        subHeadingParam = psaId,
+        subHeadingParamClasses = "font-small")))),
     links = Seq(
       Link("psaLink", frontendAppConfig.registeredPsaDetailsUrl, Message("messages__schemeOverview__psa_change"))
     ) ++ invitation ++ deregistration,

@@ -27,7 +27,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
 import play.api.test.Helpers.{contentAsString, _}
 import services.PspDashboardService
-import viewmodels.{CardViewModel, Message}
+import viewmodels.{CardSubHeading, CardSubHeadingParam, CardViewModel, Message}
 import views.html.schemesOverview
 
 import scala.concurrent.Future
@@ -81,8 +81,14 @@ class PspDashboardControllerSpec
     CardViewModel(
       id = "practitioner-card",
       heading = Message("messages__pspDashboard__details_heading"),
-      subHeading = Some(Message("messages__pspDashboard__psp_id")),
-      subHeadingParam = Some(pspId),
+      subHeadings = Seq(
+        CardSubHeading(
+          subHeading = Message("messages__pspDashboard__psp_id"),
+          subHeadingClasses = "heading-small card-sub-heading",
+          subHeadingParams = Seq(
+            CardSubHeadingParam(
+              subHeadingParam = pspId,
+              subHeadingParamClasses = "font-small")))),
       links = Seq(
         Link(
           id = "pspLink",
