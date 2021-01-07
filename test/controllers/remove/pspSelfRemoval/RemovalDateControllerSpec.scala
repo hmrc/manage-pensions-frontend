@@ -31,7 +31,6 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import testhelpers.CommonBuilders._
 import uk.gov.hmrc.domain.PspId
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.DateHelper.formatDate
 import utils.FakeNavigator
 import views.html.remove.pspSelfRemoval.removalDate
@@ -59,7 +58,7 @@ class RemovalDateControllerSpec extends ControllerSpecBase {
 
   def controller(dataRetrievalAction: DataRetrievalAction = new FakeDataRetrievalAction(Some(data), pspId = pspId)) =
     new RemovalDateController(messagesApi, FakeUserAnswersCacheConnector, new FakeNavigator(onwardRoute), FakeAuthAction,
-      dataRetrievalAction, new DataRequiredActionImpl, formProvider, stubMessagesControllerComponents(), view)
+      dataRetrievalAction, new DataRequiredActionImpl, formProvider, controllerComponents, view)
 
   private def viewAsString(form: Form[_] = form) = view(form, schemeName, srn, formatDate(date))(fakeRequest, messages).toString
 

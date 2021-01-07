@@ -24,10 +24,7 @@ import models.NormalMode
 import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import utils.FakeNavigator
-import utils.UserAnswerOps
-import utils.UserAnswers
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
+import utils.{UserAnswerOps, UserAnswers}
 import views.html.invitations.doYouHaveWorkingKnowledge
 
 class DoYouHaveWorkingKnowledgeControllerSpec extends ControllerWithQuestionPageBehaviours {
@@ -43,7 +40,7 @@ class DoYouHaveWorkingKnowledgeControllerSpec extends ControllerWithQuestionPage
 
     new DoYouHaveWorkingKnowledgeController(
       frontendAppConfig, fakeAuth, messagesApi, navigator, formProvider,
-      FakeUserAnswersCacheConnector, dataRetrievalAction, requiredDataAction, stubMessagesControllerComponents(),
+      FakeUserAnswersCacheConnector, dataRetrievalAction, requiredDataAction, controllerComponents,
       view).onPageLoad(NormalMode)
   }
 
@@ -51,7 +48,7 @@ class DoYouHaveWorkingKnowledgeControllerSpec extends ControllerWithQuestionPage
 
     new DoYouHaveWorkingKnowledgeController(
       frontendAppConfig, fakeAuth, messagesApi, navigator, formProvider,
-      FakeUserAnswersCacheConnector, dataRetrievalAction, requiredDataAction, stubMessagesControllerComponents(),
+      FakeUserAnswersCacheConnector, dataRetrievalAction, requiredDataAction, controllerComponents,
       view).onSubmit(NormalMode)
   }
 

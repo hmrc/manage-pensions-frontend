@@ -24,7 +24,6 @@ import models.NormalMode
 import play.api.data.Form
 import play.api.mvc.Action
 import play.api.mvc.AnyContent
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.UserAnswers
 import utils._
 import views.html.invitations.psaName
@@ -41,14 +40,14 @@ class PsaNameControllerSpec extends ControllerWithQuestionPageBehaviours {
 
     new PsaNameController(
       frontendAppConfig, messagesApi, FakeUserAnswersCacheConnector, navigator, fakeAuth,
-      dataRetrievalAction, requiredDataAction, formProvider, stubMessagesControllerComponents(), psaNameView).onPageLoad(NormalMode)
+      dataRetrievalAction, requiredDataAction, formProvider, controllerComponents, psaNameView).onPageLoad(NormalMode)
   }
 
   def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
 
     new PsaNameController(
       frontendAppConfig, messagesApi, FakeUserAnswersCacheConnector, navigator, fakeAuth,
-      dataRetrievalAction, requiredDataAction, formProvider, stubMessagesControllerComponents(), psaNameView).onSubmit(NormalMode)
+      dataRetrievalAction, requiredDataAction, formProvider, controllerComponents, psaNameView).onSubmit(NormalMode)
   }
 
   private def viewAsString(form: Form[_]): String = psaNameView(form, NormalMode)(fakeRequest, messages).toString

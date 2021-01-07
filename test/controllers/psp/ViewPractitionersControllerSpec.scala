@@ -23,7 +23,6 @@ import models.SchemeReferenceNumber
 import play.api.libs.json.{JsArray, Json}
 import play.api.mvc.Call
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import viewmodels.AuthorisedPractitionerViewModel
 import views.html.psp.viewPractitioners
 
@@ -79,7 +78,7 @@ class ViewPractitionersControllerSpec extends ControllerSpecBase {
       FakeAuthAction,
       dataRetrievalAction,
       new DataRequiredActionImpl,
-      stubMessagesControllerComponents(),
+      controllerComponents,
       viewPractitionersView
     )
 

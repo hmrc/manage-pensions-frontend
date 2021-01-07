@@ -28,7 +28,6 @@ import play.api.mvc.Action
 import play.api.mvc.AnyContent
 import play.api.mvc.AnyContentAsJson
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.FakeNavigator
 import utils.UserAnswers
 import views.html.invitations.adviserDetails
@@ -47,7 +46,7 @@ class AdviserDetailsControllerSpec extends ControllerWithQuestionPageBehaviours 
 
     new AdviserDetailsController(
       frontendAppConfig, messagesApi,fakeAuth, new FakeNavigator(onwardRoute), dataRetrievalAction,
-      requiredDataAction, formProvider, FakeUserAnswersCacheConnector, stubMessagesControllerComponents(),
+      requiredDataAction, formProvider, FakeUserAnswersCacheConnector, controllerComponents,
       view).onPageLoad(NormalMode)
   }
 
@@ -56,7 +55,7 @@ class AdviserDetailsControllerSpec extends ControllerWithQuestionPageBehaviours 
 
     new AdviserDetailsController(
       frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction,
-      requiredDataAction, formProvider, FakeUserAnswersCacheConnector, stubMessagesControllerComponents(),
+      requiredDataAction, formProvider, FakeUserAnswersCacheConnector, controllerComponents,
       view).onSubmit(NormalMode)
   }
 

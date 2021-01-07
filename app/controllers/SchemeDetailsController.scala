@@ -40,7 +40,7 @@ import play.twirl.api.Html
 import services.FeatureToggleService
 import services.SchemeDetailsService
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.UserAnswers
 import viewmodels.Message
 import views.html.schemeDetails

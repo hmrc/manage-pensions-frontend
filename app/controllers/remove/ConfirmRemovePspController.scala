@@ -23,17 +23,16 @@ import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.remove.ConfirmRemovePspFormProvider
 import identifiers.remove.{ConfirmRemovePspId, PspDetailsId}
 import identifiers.{SchemeNameId, SchemeSrnId}
-import javax.inject.Inject
 import models.{Index, NormalMode}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.annotations.RemovePSP
 import utils.{Navigator, UserAnswers}
-import viewmodels.Message
 import views.html.psp.confirmRemovePsp
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class ConfirmRemovePspController @Inject()(

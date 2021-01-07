@@ -18,27 +18,20 @@ package controllers
 
 import config._
 import connectors.UserAnswersCacheConnector
-import controllers.actions.DataRetrievalAction
-import controllers.actions._
+import controllers.actions.{DataRetrievalAction, _}
 import controllers.routes.ListSchemesController
-import models.Link
-import models.MinimalPSAPSP
+import models.{Link, MinimalPSAPSP}
 import org.joda.time.format.DateTimeFormat
-import org.joda.time.DateTime
-import org.joda.time.DateTimeZone
-import org.mockito.Matchers.{eq => eqTo}
-import org.mockito.Matchers._
+import org.joda.time.{DateTime, DateTimeZone}
+import org.mockito.Matchers.{eq => eqTo, _}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
-import play.api.test.Helpers.contentAsString
-import play.api.test.Helpers._
+import play.api.test.Helpers.{contentAsString, _}
 import play.twirl.api.Html
 import services.SchemesOverviewService
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
-import viewmodels.CardViewModel
-import viewmodels.Message
+import viewmodels.{CardViewModel, Message}
 import views.html.schemesOverview
 
 import scala.concurrent.Future
@@ -55,7 +48,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
 
   def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): SchemesOverviewController =
     new SchemesOverviewController(messagesApi, fakeSchemesOverviewService, FakeAuthAction,
-      dataRetrievalAction, fakeUserAnswersCacheConnector, stubMessagesControllerComponents(), appConfig, view)
+      dataRetrievalAction, fakeUserAnswersCacheConnector, controllerComponents, appConfig, view)
 
   def viewAsString(): String = view(
     psaName,

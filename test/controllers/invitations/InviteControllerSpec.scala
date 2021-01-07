@@ -16,26 +16,22 @@
 
 package controllers.invitations
 
-import base.JsonFileReader
-import base.SpecBase
+import base.{JsonFileReader, SpecBase}
 import config.FrontendAppConfig
 import org.mockito.Mockito.when
 import connectors.admin.MinimalConnector
 import connectors.FakeUserAnswersCacheConnector
 import connectors.scheme.SchemeDetailsConnector
-import controllers.actions.FakeAuthAction
-import controllers.actions.FakeUnAuthorisedAction
+import controllers.actions.{FakeAuthAction, FakeUnAuthorisedAction}
 import identifiers.MinimalSchemeDetailId
 import models._
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.Configuration
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.UserAnswers
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class InviteControllerSpec extends SpecBase {
 
@@ -77,7 +73,7 @@ class InviteControllerSpec extends SpecBase {
     "redirect to unauthorised page if user is not authenticated" in {
 
       val controller = new InviteController(FakeUnAuthorisedAction, fakeSchemeDetailsConnector,
-        FakeUserAnswersCacheConnector, fakeMinimalPsaConnector(isSuspended = false), stubMessagesControllerComponents(), mockAppConfig)
+        FakeUserAnswersCacheConnector, fakeMinimalPsaConnector(isSuspended = false), controllerComponents, mockAppConfig)
 
       val result = controller.onPageLoad(srn)(fakeRequest)
 
@@ -127,5 +123,5 @@ object InviteControllerSpec extends SpecBase with JsonFileReader with MockitoSug
   }
 
   def controller(isSuspended: Boolean, rlsFlag: Boolean = false) = new InviteController(mockAuthAction, fakeSchemeDetailsConnector,
-    FakeUserAnswersCacheConnector, fakeMinimalPsaConnector(isSuspended, rlsFlag), stubMessagesControllerComponents(), mockAppConfig)
+    FakeUserAnswersCacheConnector, fakeMinimalPsaConnector(isSuspended, rlsFlag), controllerComponents, mockAppConfig)
 }

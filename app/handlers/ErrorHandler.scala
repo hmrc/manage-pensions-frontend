@@ -17,16 +17,13 @@
 package handlers
 
 import com.google.inject.Inject
-import config.FrontendAppConfig
-import play.api.i18n.I18nSupport
-import play.api.i18n.MessagesApi
+import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.Request
 import play.twirl.api.Html
-import uk.gov.hmrc.play.bootstrap.http.FrontendErrorHandler
+import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
 import views.html._
 
 class ErrorHandler @Inject()(
-                              appConfig: FrontendAppConfig,
                               val messagesApi: MessagesApi,
                               view: error_template,
                               notFoundView: error_template_page_not_found

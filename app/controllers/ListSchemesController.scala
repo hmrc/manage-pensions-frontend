@@ -37,7 +37,7 @@ import play.api.mvc.Result
 import services.PaginationService
 import services.SchemeSearchService
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.list_schemes
 
 import scala.concurrent.ExecutionContext

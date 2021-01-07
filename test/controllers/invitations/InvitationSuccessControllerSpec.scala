@@ -28,7 +28,6 @@ import models.MinimalSchemeDetail
 import play.api.mvc.Call
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.DateHelper
 import utils.UserAnswers
 import views.html.invitations.invitation_success
@@ -77,14 +76,14 @@ class InvitationSuccessControllerSpec extends ControllerWithNormalPageBehaviours
 
     new InvitationSuccessController(
       messagesApi, frontendAppConfig, fakeAuth, dataRetrievalAction, requiredDateAction, FakeUserAnswersCacheConnector, fakeMinimalPsaConnector, navigator,
-      stubMessagesControllerComponents(), invitationSuccessView).onPageLoad(testSrn)
+      controllerComponents, invitationSuccessView).onPageLoad(testSrn)
   }
 
   private def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
     new InvitationSuccessController(
       messagesApi, frontendAppConfig, fakeAuth, dataRetrievalAction, requiredDateAction, FakeUserAnswersCacheConnector, fakeMinimalPsaConnector, navigator,
-      stubMessagesControllerComponents(), invitationSuccessView).onSubmit(testSrn)
+      controllerComponents, invitationSuccessView).onSubmit(testSrn)
   }
 
   def testExpiryDate(config: FrontendAppConfig): LocalDate = {

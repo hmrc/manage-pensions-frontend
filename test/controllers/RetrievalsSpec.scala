@@ -18,28 +18,29 @@ package controllers
 
 import identifiers.TypedIdentifier
 import models.requests.DataRequest
-import org.scalatest.EitherValues
-import org.scalatest.WordSpec
-import org.scalatest.MustMatchers._
 import org.scalatest.concurrent.ScalaFutures
-import play.api.libs.json.JsValue
-import play.api.libs.json.Json
-import play.api.mvc.AnyContent
-import play.api.mvc.MessagesControllerComponents
-import play.api.mvc.Result
+import org.scalatest.{EitherValues, MustMatchers, WordSpec}
+import play.api.Application
+import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.libs.json.{JsValue, Json}
+import play.api.mvc.{AnyContent, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.domain.PsaId
-import uk.gov.hmrc.play.bootstrap.controller.FrontendBaseController
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.UserAnswers
 
 import scala.concurrent.Future
 
-class RetrievalsSpec extends WordSpec with FrontendBaseController with Retrievals with EitherValues with ScalaFutures {
+class RetrievalsSpec
+  extends WordSpec
+    with FrontendBaseController
+    with Retrievals
+    with EitherValues
+    with ScalaFutures
+    with MustMatchers {
 
-  val controllerComponents: MessagesControllerComponents = stubMessagesControllerComponents()
-
-  def dataRequest(data: JsValue): DataRequest[AnyContent] = DataRequest(FakeRequest("", ""), "cacheId", UserAnswers(data), Some(PsaId("A0000000")))
+  def dataRequest(data: JsValue): DataRequest[AnyContent] =
+    DataRequest(FakeRequest("", ""), "cacheId", UserAnswers(data), Some(PsaId("A0000000")))
 
   val success: String => Future[Result] = { _: String =>
     Future.successful(Ok("Success"))
@@ -80,4 +81,9 @@ class RetrievalsSpec extends WordSpec with FrontendBaseController with Retrieval
 
   }
 
+  val application: Application =
+    new GuiceApplicationBuilder().build()
+
+  override protected def controllerComponents: MessagesControllerComponents =
+    application.injector.instanceOf[MessagesControllerComponents]
 }

@@ -28,7 +28,6 @@ import models.SchemeReferenceNumber
 import play.api.data.Form
 import play.api.mvc.Action
 import play.api.mvc.AnyContent
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.UserAnswers
 import utils._
 import views.html.invitations.psp.pspName
@@ -58,14 +57,14 @@ class PspNameControllerSpec extends ControllerWithQuestionPageBehaviours {
 
     new PspNameController(
       frontendAppConfig, messagesApi, FakeUserAnswersCacheConnector, navigator, fakeAuth,
-      dataRetrievalAction, requiredDataAction, formProvider, stubMessagesControllerComponents(), pspNameView).onPageLoad(NormalMode)
+      dataRetrievalAction, requiredDataAction, formProvider, controllerComponents, pspNameView).onPageLoad(NormalMode)
   }
 
   def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
 
     new PspNameController(
       frontendAppConfig, messagesApi, FakeUserAnswersCacheConnector, navigator, fakeAuth,
-      dataRetrievalAction, requiredDataAction, formProvider, stubMessagesControllerComponents(), pspNameView).onSubmit(NormalMode)
+      dataRetrievalAction, requiredDataAction, formProvider, controllerComponents, pspNameView).onSubmit(NormalMode)
   }
 
   private def viewAsString(form: Form[_]): String = pspNameView(form, NormalMode, schemeName, returnCall)(fakeRequest, messages).toString

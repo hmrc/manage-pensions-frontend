@@ -37,7 +37,6 @@ import play.api.test.Helpers.contentAsString
 import play.api.test.Helpers.redirectLocation
 import play.api.test.Helpers.status
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.FakeNavigator
 import utils.UserAnswers
 import views.html.invitations.psp.pspClientReference
@@ -64,7 +63,7 @@ class PspClientReferenceControllerSpec extends ControllerSpecBase {
 
   def controller(dataRetrievalAction: DataRetrievalAction = minimalData) = new PspClientReferenceController(
     messagesApi, FakeAuthAction, new FakeNavigator(onwardRoute), FakeUserAnswersCacheConnector,
-    dataRetrievalAction, new DataRequiredActionImpl, formProvider, stubMessagesControllerComponents(), view
+    dataRetrievalAction, new DataRequiredActionImpl, formProvider, controllerComponents, view
   )
 
   private def viewAsString(form: Form[_] = form): String = view(form, "xyz", NormalMode, schemeName, returnCall)(fakeRequest, messages).toString

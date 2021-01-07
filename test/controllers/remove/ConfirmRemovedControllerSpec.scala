@@ -24,7 +24,6 @@ import controllers.actions.DataRetrievalAction
 import controllers.behaviours.ControllerWithNormalPageBehaviours
 import play.api.mvc.Action
 import play.api.mvc.AnyContent
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.UserAnswers
 import views.html.remove.confirmRemoved
 
@@ -53,7 +52,7 @@ object ConfirmRemovedControllerSpec extends ControllerSpecBase {
       dataRetrievalAction,
       base.requiredDateAction,
       FakeUserAnswersCacheConnector,
-      stubMessagesControllerComponents(),
+      controllerComponents,
       confirmRemovedView
     ).onPageLoad()
 

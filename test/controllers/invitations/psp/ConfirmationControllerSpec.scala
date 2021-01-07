@@ -24,7 +24,6 @@ import identifiers.invitations.psp.PspNameId
 import play.api.mvc.Action
 import play.api.mvc.AnyContent
 import play.api.mvc.Call
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import utils.UserAnswers
 import views.html.invitations.psp.confirmation
 
@@ -47,7 +46,7 @@ class ConfirmationControllerSpec extends ControllerWithNormalPageBehaviours {
 
     new ConfirmationController(
       messagesApi, frontendAppConfig, fakeAuth, dataRetrievalAction, requiredDateAction, FakeUserAnswersCacheConnector,
-      stubMessagesControllerComponents(), confirmationView).onPageLoad()
+      controllerComponents, confirmationView).onPageLoad()
   }
 
 

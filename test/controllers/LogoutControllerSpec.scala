@@ -23,7 +23,6 @@ import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.mvc.Results.Ok
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 
 import scala.concurrent.Future
 
@@ -31,8 +30,12 @@ class LogoutControllerSpec extends ControllerSpecBase with MockitoSugar {
 
   private val mockAftCacheConnector = mock[AftCacheConnector]
 
-  private def logoutController = new LogoutController(frontendAppConfig, mockAftCacheConnector, FakeAuthAction,
-    stubMessagesControllerComponents())
+  private def logoutController = new LogoutController(
+    appConfig = frontendAppConfig,
+    aftCacheConnector = mockAftCacheConnector,
+    authenticate = FakeAuthAction,
+    controllerComponents = controllerComponents
+  )
 
   "Logout Controller" must {
 

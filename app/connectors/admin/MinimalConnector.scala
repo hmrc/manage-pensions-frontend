@@ -28,7 +28,7 @@ import play.api.libs.json.JsSuccess
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.play.bootstrap.http.HttpClient
+import uk.gov.hmrc.http.HttpClient
 import utils.HttpResponseHelper
 
 import scala.concurrent.ExecutionContext
