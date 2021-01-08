@@ -39,7 +39,7 @@
 
         @components.back_link()
 
-        @components.heading(messages("messages__schemeDetails__psa_list_head"), secondaryHeaderKey = Some(schemeName))
+        @components.heading(messages("messages__psaSchemeDash__psa_list_head"), secondaryHeaderKey = Some(schemeName))
 
         @admins.map { admins =>
             <div id="admins-list" class="dl--margin-bottom">
@@ -52,13 +52,13 @@
                                 @if(psa.canRemove){
                                 <dd class="dd-remove-link">
                                     <a id="remove-link" href="@controllers.remove.routes.RemovePsaController.onPageLoad()">
-                                        <span aria-hidden="true">@messages("messages__schemeDetails__remove")</span>
-                                        <span class="visually-hidden">@messages("messages__schemeDetails__remove") @psa.name</span>
+                                        <span aria-hidden="true">@messages("messages__psaSchemeDash__remove")</span>
+                                        <span class="visually-hidden">@messages("messages__psaSchemeDash__remove") @psa.name</span>
                                     </a>
                                 </dd>
                                 } else {
                                 <dd>
-                                    <span class="visually-hidden">@messages("messages__schemeDetails__visuallyhidden_remove",psa.name)</span>
+                                    <span class="visually-hidden">@messages("messages__psaSchemeDash__visuallyhidden_remove",psa.name)</span>
                                 </dd>
                                 }
 
@@ -69,7 +69,7 @@
         }
 
         @if(isSchemeOpen){
-            <p><a id="invite" href="@controllers.invitations.routes.InviteController.onPageLoad(srn)">@messages("messages__schemeDetails__invite_link")</a></p>
+            <p><a id="invite" href="@controllers.invitations.routes.InviteController.onPageLoad(srn)">@messages("messages__psaSchemeDash__invite_link")</a></p>
         }
 
         <p class="govuk-margin-top-8"><a id="return" href="@routes.SchemeDetailsController.onPageLoad(srn)">@messages("messages__returnToSchemeDetails__link", schemeName)</a></p>

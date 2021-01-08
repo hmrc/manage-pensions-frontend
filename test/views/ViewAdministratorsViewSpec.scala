@@ -38,7 +38,7 @@ class ViewAdministratorsViewSpec extends ViewSpecBase with ViewBehaviours {
     behave like normalPageWithoutBrowserTitle(
       createView(),
       messageKeyPrefix,
-      messages("messages__schemeDetails__psa_list_head"),
+      messages("messages__psaSchemeDash__psa_list_head"),
       "_invite_link"
     )
 

@@ -48,40 +48,40 @@
         @components.heading(schemeName)
 
         @pstr.map {pstr =>
-            <p>@messages("messages__schemeDetails__pstr", pstr)</p>
+            <p>@messages("messages__psaSchemeDash__pstr", pstr)</p>
         }
 
         @openedDate.map { openedDate =>
-            <p>@messages("messages__schemeDetails__regDate", openedDate)</p>
+            <p>@messages("messages__psaSchemeDash__regDate", openedDate)</p>
         }
 
         <p><a id="view-details" href="@appConfig.viewSchemeDetailsUrl.format(srn)">
-            @if(displayChangeLink){ @messages("messages__schemeDetails__view_change_details_link")} else { @messages("messages__schemeDetails__view_details_link") }
+            @if(displayChangeLink){ @messages("messages__psaSchemeDash__view_change_details_link")} else { @messages("messages__psaSchemeDash__view_details_link") }
         </a></p>
 
         @lockingPsa.map {psaName =>
-            <p>@messages("messages__schemeDetails__psa_making_changes", psaName)</p>
+            <p>@messages("messages__psaSchemeDash__psa_making_changes", psaName)</p>
         }
 
         @aftHtml
 
         @paymentsAndChargesHtml
 
-        <h2>@messages("messages__schemeDetails__psa_list_head")</h2>
+        <h2>@messages("messages__psaSchemeDash__psa_list_head")</h2>
 
         @if(isSchemeOpen){
-            <p><a id="invite" href="@controllers.invitations.routes.InviteController.onPageLoad(srn)">@messages("messages__schemeDetails__invite_link")</a></p>
+            <p><a id="invite" href="@controllers.invitations.routes.InviteController.onPageLoad(srn)">@messages("messages__psaSchemeDash__invite_link")</a></p>
         }
 
-        <p><a id="view-psa-list" href="@controllers.routes.ViewAdministratorsController.onPageLoad(srn)">@messages("messages__schemeDetails__view_psa")</a></p>
+        <p><a id="view-psa-list" href="@controllers.routes.ViewAdministratorsController.onPageLoad(srn)">@messages("messages__psaSchemeDash__view_psa")</a></p>
 
         @if(pspLinks.nonEmpty) {
-            <h2>@messages("messages__schemeDetails__pspAuthoriseHeading")</h2>
+            <h2>@messages("messages__psaSchemeDash__psp_heading")</h2>
             @pspLinks.map { link =>
                 <p><a id= "@link.id" href="@link.url">@link.linkText.resolve</a></p>
             }
         }
 
-        <p class="govuk-margin-top-8"><a id="return" href="@routes.ListSchemesController.onPageLoad()">@messages("messages__schemeDetails__return_link")</a></p>
+        <p class="govuk-margin-top-8"><a id="return" href="@routes.ListSchemesController.onPageLoad()">@messages("messages__psaSchemeDash__return_link")</a></p>
 
     }

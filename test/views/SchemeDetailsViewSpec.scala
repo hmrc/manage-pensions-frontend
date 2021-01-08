@@ -70,19 +70,19 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
 
     "display the pstr" in {
       Jsoup.parse(createView()().toString()) must
-        haveDynamicText(messages("messages__schemeDetails__pstr", pstr.get))
+        haveDynamicText(messages("messages__psaSchemeDash__pstr", pstr.get))
     }
 
     "have link to view scheme details" in {
       Jsoup.parse(createView(displayChangeLink = true)().toString()).select("a[id=view-details]") must
         haveLink(s"http://localhost:8200/register-pension-scheme/scheme-details/$srn")
-      haveDynamicText(messages("messages__schemeDetails__view_details_link"))
+      haveDynamicText(messages("messages__psaSchemeDash__view_details_link"))
     }
 
     "have link to view or change scheme details" in {
       Jsoup.parse(createView()().toString()).select("a[id=view-details]") must
         haveLink(s"http://localhost:8200/register-pension-scheme/scheme-details/$srn")
-      haveDynamicText(messages("messages__schemeDetails__view_change_details_link"))
+      haveDynamicText(messages("messages__psaSchemeDash__view_change_details_link"))
     }
 
     "display the date on which scheme was opened" in {
@@ -92,12 +92,12 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
 
     "not display the date on which scheme was opened if no date is returned from API" in {
 
-      Jsoup.parse(createView(None)().toString()) mustNot haveDynamicText(messages("messages__schemeDetails__opened_date_head"))
+      Jsoup.parse(createView(None)().toString()) mustNot haveDynamicText(messages("messages__psaSchemeDash__opened_date_head"))
       Jsoup.parse(createView(None)().toString()) mustNot haveDynamicText(openedDate)
     }
 
     "contain section with links for administrators" in {
-      Jsoup.parse(createView()().toString) must haveDynamicText("messages__schemeDetails__psa_list_head")
+      Jsoup.parse(createView()().toString) must haveDynamicText("messages__psaSchemeDash__psa_list_head")
     }
 
     "have link to Invite another PSA" in {
@@ -141,7 +141,7 @@ class SchemeDetailsViewSpec extends ViewSpecBase with ViewBehaviours {
 
     "render the name of PSA locking the same if applicable" in {
       Jsoup.parse(createView(lockingPsa = Some("Gilderoy Lockhart"))().toString) must
-        haveDynamicText("messages__schemeDetails__psa_making_changes", "Gilderoy Lockhart")
+        haveDynamicText("messages__psaSchemeDash__psa_making_changes", "Gilderoy Lockhart")
     }
 
   }
