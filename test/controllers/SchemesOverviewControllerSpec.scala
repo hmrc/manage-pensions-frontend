@@ -18,25 +18,20 @@ package controllers
 
 import config._
 import connectors.UserAnswersCacheConnector
-import controllers.actions.DataRetrievalAction
-import controllers.actions._
+import controllers.actions.{DataRetrievalAction, _}
 import controllers.routes.ListSchemesController
-import models.Link
+import models.{Link, MinimalPSAPSP}
 import org.joda.time.format.DateTimeFormat
-import org.joda.time.DateTime
-import org.joda.time.DateTimeZone
-import org.mockito.Matchers.{eq => eqTo}
-import org.mockito.Matchers._
+import org.joda.time.{DateTime, DateTimeZone}
+import org.mockito.Matchers.{eq => eqTo, _}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
-import play.api.test.Helpers.contentAsString
-import play.api.test.Helpers._
+import play.api.test.Helpers.{contentAsString, _}
 import play.twirl.api.Html
 import services.SchemesOverviewService
-import viewmodels.CardViewModel
-import viewmodels.Message
+import viewmodels.{CardViewModel, Message}
 import views.html.schemesOverview
 
 import scala.concurrent.Future
@@ -47,20 +42,28 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
 
   val fakeSchemesOverviewService: SchemesOverviewService = mock[SchemesOverviewService]
   val fakeUserAnswersCacheConnector: UserAnswersCacheConnector = mock[UserAnswersCacheConnector]
-  val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
+  val appConfig: FrontendAppConfig = mock[FrontendAppConfig] //app.injector.instanceOf[FrontendAppConfig]
 
   private val view: schemesOverview = app.injector.instanceOf[schemesOverview]
 
   def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): SchemesOverviewController =
     new SchemesOverviewController(messagesApi, fakeSchemesOverviewService, FakeAuthAction,
-      dataRetrievalAction, fakeUserAnswersCacheConnector, controllerComponents,
-      view)
+      dataRetrievalAction, fakeUserAnswersCacheConnector, controllerComponents, appConfig, view)
 
   def viewAsString(): String = view(
     psaName,
     tiles
   )(fakeRequest, messages).toString
 
+  private def minimalDetails(rlsFlag:Boolean = false) = MinimalPSAPSP(
+    email = "a@a.c",
+    isPsaSuspended = false,
+    organisationName = None,
+    individualDetails = None,
+    rlsFlag = rlsFlag
+  )
+
+  private val dummyURl = "/url"
 
   "SchemesOverview Controller" when {
     "onPageLoad" must {
@@ -68,12 +71,29 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
         when(fakeSchemesOverviewService.getTiles(eqTo(psaId))(any(), any(), any())).thenReturn(Future.successful(Seq(adminCard, schemeCard)))
         when(fakeSchemesOverviewService.getPsaName(eqTo(psaId))(any()))
           .thenReturn(Future.successful(Some(psaName)))
+        when(fakeSchemesOverviewService.getPsaMinimalDetails(any())(any()))
+          .thenReturn(Future.successful(minimalDetails()))
         when(fakeUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(Json.obj()))
 
         val result = controller().onPageLoad(fakeRequest)
 
         status(result) mustBe OK
         contentAsString(result) mustBe viewAsString()
+      }
+
+      "redirect to update contact address when RLS flag is set" in {
+        when(fakeSchemesOverviewService.getTiles(eqTo(psaId))(any(), any(), any())).thenReturn(Future.successful(Seq(adminCard, schemeCard)))
+        when(fakeSchemesOverviewService.getPsaName(eqTo(psaId))(any()))
+          .thenReturn(Future.successful(Some(psaName)))
+        when(fakeSchemesOverviewService.getPsaMinimalDetails(any())(any()))
+          .thenReturn(Future.successful(minimalDetails(rlsFlag = true)))
+        when(fakeUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(Json.obj()))
+        when(appConfig.psaUpdateContactDetailsUrl).thenReturn(dummyURl)
+
+        val result = controller().onPageLoad(fakeRequest)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(appConfig.psaUpdateContactDetailsUrl)
       }
 
 
