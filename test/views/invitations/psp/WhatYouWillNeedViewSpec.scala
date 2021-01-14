@@ -28,7 +28,7 @@ class WhatYouWillNeedViewSpec extends ViewBehaviours {
   private val messageKeyPrefix = "pspWhatYouWillNeed"
   val schemeName  = "Test Scheme name"
   val schemeSrn  = "12345"
-  val returnCall: Call  = controllers.routes.SchemeDetailsController.onPageLoad(SchemeReferenceNumber(schemeSrn))
+  val returnCall: Call  = controllers.routes.PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(schemeSrn))
   private val whatYouWillNeedView = injector.instanceOf[whatYouWillNeed]
 
   def createView: (() => HtmlFormat.Appendable) = () =>

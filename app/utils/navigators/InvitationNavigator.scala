@@ -34,7 +34,7 @@ class InvitationNavigator @Inject() extends Navigator {
     case InviteeNameId => PsaIdController.onPageLoad(NormalMode)
     case InviteePSAId => CheckYourAnswersController.onPageLoad()
     case CheckYourAnswersId(srn) => InvitationSuccessController.onPageLoad(srn)
-    case InvitationSuccessId(srn) => SchemeDetailsController.onPageLoad(srn)
+    case InvitationSuccessId(srn) => PsaSchemeDashboardController.onPageLoad(srn)
   }
 
   override protected def editRouteMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {

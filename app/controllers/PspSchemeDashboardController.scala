@@ -36,8 +36,8 @@ import services.{PspSchemeDashboardService, SchemeDetailsService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.UserAnswers
 import views.html.pspSchemeDashboard
-
 import javax.inject.Inject
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class PspSchemeDashboardController @Inject()(

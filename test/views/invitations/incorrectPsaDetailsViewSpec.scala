@@ -47,7 +47,7 @@ class incorrectPsaDetailsViewSpec extends ViewBehaviours {
     }
 
     "include a link to the scheme details page" in {
-      createView() must haveLink(controllers.routes.SchemeDetailsController.onPageLoad(srn).url, "return-link")
+      createView() must haveLink(controllers.routes.PsaSchemeDashboardController.onPageLoad(srn).url, "return-link")
     }
 
     "include dynamic text for the scheme details page" in {

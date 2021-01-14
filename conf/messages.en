@@ -323,6 +323,7 @@ messages__psaSchemeDash__remove = Remove
 messages__psaSchemeDash__visuallyhidden_remove = Cannot remove {0}
 messages__psaSchemeDash__psp_heading = Pension scheme practitioners
 messages__psaSchemeDash__addedOn = Added on {0}:
+messages__psaSchemeDash__added = Added:
 
 messages__check__your__answer__main__containt__label = You are adding this scheme administrator to {0}.
 messages__check__your__answer__adviser__name__label = Who has working knowledge of pensions and pensions tax legislation?

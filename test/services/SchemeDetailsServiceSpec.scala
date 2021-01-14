@@ -122,9 +122,9 @@ class SchemeDetailsServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
 
   "administratorVariations" must {
     "return a list of associated psas with canRemove status" in {
-       val result  = service.administratorsVariations(psaId, userAnswersWithAssociatedPsa, "Open")
-        result mustBe administrators
-      }
+      val result  = service.administratorsVariations(psaId, userAnswersWithAssociatedPsa, "Open")
+      result mustBe administrators
+    }
   }
 
   "openedDate" must {

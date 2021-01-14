@@ -52,7 +52,7 @@ class RemovalDateViewSpec extends QuestionViewBehaviours[LocalDate] {
 
     behave like pageWithReturnLink(
       createView,
-      controllers.routes.SchemeDetailsController.onPageLoad(srn).url,
+      controllers.routes.PsaSchemeDashboardController.onPageLoad(srn).url,
       messages("messages__returnToSchemeDetails__link", schemeName)
     )
 

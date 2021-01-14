@@ -56,7 +56,7 @@ class PspClientReferenceControllerSpec extends ControllerSpecBase {
   val userAnswerWithPspClientRef: UserAnswers = userAnswer.set(PspClientReferenceId)(HaveClientReference("A0000000")).asOpt.value
   val minimalData = new FakeDataRetrievalAction(Some(userAnswer.json))
 
-  private val returnCall = controllers.routes.SchemeDetailsController.onPageLoad(SchemeReferenceNumber("srn"))
+  private val returnCall = controllers.routes.PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber("srn"))
 
 
   private val view = injector.instanceOf[pspClientReference]

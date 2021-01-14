@@ -54,7 +54,7 @@ class WhatYouWillNeedController @Inject()(appConfig: FrontendAppConfig,
     implicit request =>
       (SchemeSrnId and SchemeNameId).retrieve.right.map {
         case srn ~ schemeName =>
-        val returnCall = controllers.routes.SchemeDetailsController.onPageLoad(SchemeReferenceNumber(srn))
+        val returnCall = controllers.routes.PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(srn))
         Future.successful(Ok(view(schemeName, returnCall)))
       }
   }

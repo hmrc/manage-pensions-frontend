@@ -33,7 +33,7 @@ class WhatYouWillNeedControllerSpec extends ControllerSpecBase {
 
   val schemeName  = "Test Scheme name"
   val schemeSrn  = "12345"
-  val returnCall: Call  = controllers.routes.SchemeDetailsController.onPageLoad(SchemeReferenceNumber(schemeSrn))
+  val returnCall: Call  = controllers.routes.PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(schemeSrn))
 
   val validData = new FakeDataRetrievalAction(Some(Json.obj(
     SchemeSrnId.toString -> schemeSrn,

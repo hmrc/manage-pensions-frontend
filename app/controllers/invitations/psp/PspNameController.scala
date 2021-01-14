@@ -88,6 +88,6 @@ class PspNameController @Inject()(appConfig: FrontendAppConfig,
       )
   }
 
-  private def returnCall(srn:String):Call  = controllers.routes.SchemeDetailsController.onPageLoad(SchemeReferenceNumber(srn))
+  private def returnCall(srn:String):Call  = controllers.routes.PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(srn))
 
 }

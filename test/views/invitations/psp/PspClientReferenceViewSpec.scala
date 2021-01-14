@@ -31,7 +31,7 @@ class PspClientReferenceViewSpec extends ViewBehaviours {
 
   private val schemeName = "Test Scheme"
 
-  private val returnCall = controllers.routes.SchemeDetailsController.onPageLoad(SchemeReferenceNumber("srn"))
+  private val returnCall = controllers.routes.PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber("srn"))
 
   val formProvider = new PspClientReferenceFormProvider
   val form: Form[ClientReference] = formProvider()

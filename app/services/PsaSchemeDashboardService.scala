@@ -20,12 +20,14 @@ import java.time.LocalDate
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
+import identifiers.{ListOfPSADetailsId, SchemeStatusId, SeqAuthorisedPractitionerId}
 import models.FeatureToggle.Enabled
 import models.FeatureToggleName.PSPAuthorisation
-import models.{Link, ListOfSchemes, Lock, VarianceLock}
+import models.{AuthorisedPractitioner, Link, ListOfSchemes, Lock, PsaDetails, VarianceLock}
 import play.api.i18n.Messages
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.DateHelper
+import utils.DateHelper._
+import utils.UserAnswers
 import viewmodels.{CardSubHeading, CardSubHeadingParam, CardViewModel, Message}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -35,28 +37,29 @@ class PsaSchemeDashboardService @Inject()(
                                            featureToggleService: FeatureToggleService
                                          )(implicit ec: ExecutionContext) {
 
-  def cards(srn: String, lock: Option[Lock])
+  def cards(srn: String, lock: Option[Lock], list: ListOfSchemes, ua: UserAnswers)
            (implicit hc: HeaderCarrier,
             ec: ExecutionContext,
             messages: Messages): Future[Seq[CardViewModel]] =
     for {
-      pspCard <- getPspCard(Some(""))
-    } yield Seq(psaCard(true, srn, Some(""))) ++ pspCard
+      pspCard <- pspCard(ua)
+    } yield Seq(schemeCard(srn, list, lock, ua)) ++ Seq(psaCard(srn, ua)) ++ pspCard
 
   //Scheme details card
-  private def schemeCard(srn: String, isSchemeOpen: Boolean, list: ListOfSchemes, lock: Option[Lock])(implicit messages: Messages) =
+  def schemeCard(srn: String, list: ListOfSchemes, lock: Option[Lock], ua: UserAnswers)
+                        (implicit messages: Messages): CardViewModel =
     CardViewModel(
       id = "scheme_details",
       heading = Message("messages__psaSchemeDash__scheme_details_head"),
-      subHeadings = optToSeq(pstrSubHead(srn, list)) ++ optToSeq(dateSubHead(srn, list, isSchemeOpen)),
-      links = Seq(schemeDetailsLink(srn, isSchemeOpen, lock))
+      subHeadings = optToSeq(pstrSubHead(srn, list)) ++ optToSeq(dateSubHead(srn, list, ua)),
+      links = Seq(schemeDetailsLink(srn, ua, lock))
     )
 
-  private def schemeDetailsLink(srn: String, isSchemeOpen: Boolean, lock: Option[Lock])
+  private def schemeDetailsLink(srn: String, ua: UserAnswers, lock: Option[Lock])
                                (implicit messages: Messages): Link = {
     val viewOrChangeLinkText = messages("messages__psaSchemeDash__view_change_details_link")
     val viewLinkText = messages("messages__psaSchemeDash__view_details_link")
-    val linkText = if (!isSchemeOpen) {
+    val linkText = if (!isSchemeOpen(ua)) {
       viewLinkText
     } else {
       lock match {
@@ -67,13 +70,13 @@ class PsaSchemeDashboardService @Inject()(
     Link("view-details", appConfig.viewSchemeDetailsUrl.format(srn), linkText)
   }
 
-  def dateSubHead(srn: String, list: ListOfSchemes, isSchemeOpen: Boolean)
+  private def dateSubHead(srn: String, list: ListOfSchemes, ua: UserAnswers)
                  (implicit messages: Messages): Option[CardSubHeading] =
-    if (isSchemeOpen) {
+    if (isSchemeOpen(ua)) {
       list.schemeDetails.flatMap {
         listOfSchemes =>
           val currentScheme = listOfSchemes.filter(_.referenceNumber.contains(srn))
-          def date: Option[String] = currentScheme.head.openDate.map(date => LocalDate.parse(date).format(DateHelper.formatter))
+          def date: Option[String] = currentScheme.head.openDate.map(date => LocalDate.parse(date).format(formatter))
           if (currentScheme.nonEmpty && date.nonEmpty) {
             Some(CardSubHeading(
               subHeading = Message("messages__psaSchemeDash__regDate"),
@@ -90,7 +93,7 @@ class PsaSchemeDashboardService @Inject()(
       None
     }
 
-  def pstrSubHead(srn: String, list: ListOfSchemes)(implicit messages: Messages): Option[CardSubHeading] =
+  private def pstrSubHead(srn: String, list: ListOfSchemes)(implicit messages: Messages): Option[CardSubHeading] =
     list.schemeDetails.flatMap { listOfSchemes =>
       val currentScheme = listOfSchemes.filter(_.referenceNumber.contains(srn))
       if (currentScheme.nonEmpty && currentScheme.head.pstr.nonEmpty) {
@@ -106,20 +109,20 @@ class PsaSchemeDashboardService @Inject()(
     }
 
   //PSA card
-  private def psaCard(isSchemeOpen: Boolean, srn: String, latestPsa: Option[String])
+  def psaCard(srn: String, ua: UserAnswers)
                      (implicit messages: Messages): CardViewModel =
     CardViewModel(
       id = "psa_list",
       heading = Message("messages__psaSchemeDash__psa_list_head"),
-      subHeadings = latestPsaSubHeading(latestPsa),
-      links = invitePsaLink(isSchemeOpen, srn) ++ Seq(
+      subHeadings = latestPsaSubHeading(ua),
+      links = invitePsaLink(isSchemeOpen(ua), srn) ++ Seq(
         Link("view-psa-list",
           controllers.routes.ViewAdministratorsController.onPageLoad(srn).url,
           Message("messages__psaSchemeDash__view_psa"))
       )
     )
 
-  def invitePsaLink(isSchemeOpen: Boolean, srn: String): Seq[Link] =
+  private def invitePsaLink(isSchemeOpen: Boolean, srn: String): Seq[Link] =
     if(isSchemeOpen) {
       Seq(Link(
         id = "invite",
@@ -130,52 +133,69 @@ class PsaSchemeDashboardService @Inject()(
       Nil
     }
 
-  def latestPsaSubHeading(latestPsa: Option[String])(implicit messages: Messages): Seq[CardSubHeading] =
-    latestPsa.fold[Seq[CardSubHeading]](Nil) { psa =>
+  private def latestPsaSubHeading(ua: UserAnswers)(implicit messages: Messages): Seq[CardSubHeading] =
+    latestPsa(ua).fold[Seq[CardSubHeading]](Nil) { psa =>
       Seq(CardSubHeading(
-        subHeading = Message("messages__psaSchemeDash__addedOn"),
+        subHeading = psa.relationshipDate.fold(messages("messages__psaSchemeDash__added"))(date =>
+          messages("messages__psaSchemeDash__addedOn", LocalDate.parse(date).format(formatter))),
         subHeadingClasses = "heading-small card-sub-heading",
         subHeadingParams = Seq(CardSubHeadingParam(
-          subHeadingParam = psa,
+          subHeadingParam = psa.getPsaName.getOrElse(throw PsaNameCannotBeRetrievedException),
           subHeadingParamClasses = "font-small"))))
     }
 
+  private def latestPsa(ua: UserAnswers): Option[PsaDetails] =
+    ua.get(ListOfPSADetailsId) flatMap { seqPsa =>
+      implicit val localDateOrdering: Ordering[LocalDate] = _ compareTo _
+      seqPsa.sortBy(_.relationshipDate).reverse.headOption
+    }
+
   //PSP card
-  private def getPspCard(latestPsp: Option[String])
-                        (implicit hc: HeaderCarrier, ec: ExecutionContext, messages: Messages):Future[Seq[CardViewModel]] =
+  def pspCard(ua: UserAnswers)
+             (implicit hc: HeaderCarrier, ec: ExecutionContext, messages: Messages):Future[Seq[CardViewModel]] =
     featureToggleService.get(PSPAuthorisation).map {
       case Enabled(PSPAuthorisation) =>
-
         Seq(CardViewModel(
           id = "psp_list",
           heading = Message("messages__psaSchemeDash__psp_heading"),
-          subHeadings = latestPspSubHeading(latestPsp),
+          subHeadings = latestPspSubHeading(ua),
           links = Seq(
             Link("authorise", controllers.invitations.psp.routes.WhatYouWillNeedController.onPageLoad().url, Message("messages__pspAuthorise__link"))
-          ) ++ viewPspLink(latestPsp)
+          ) ++ viewPspLink(ua)
         ))
       case _ =>
         Nil
     }
 
-  def viewPspLink(latestPsp: Option[String]): Seq[Link] = latestPsp.fold[Seq[Link]](Nil) { _ =>
-    Seq(Link(
-      id = "view-practitioners",
-      url = controllers.psp.routes.ViewPractitionersController.onPageLoad().url,
-      linkText = Message("messages__pspViewOrDeauthorise__link")
-    ))
-  }
+  private def viewPspLink(ua: UserAnswers): Seq[Link] =
+    latestPsp(ua).fold[Seq[Link]](Nil) { _ =>
+      Seq(Link(
+        id = "view-practitioners",
+        url = controllers.psp.routes.ViewPractitionersController.onPageLoad().url,
+        linkText = Message("messages__pspViewOrDeauthorise__link")
+      ))
+    }
+
+  private def latestPsp(ua: UserAnswers): Option[AuthorisedPractitioner] =
+    ua.get(SeqAuthorisedPractitionerId) flatMap { seqPsp =>
+        implicit val localDateOrdering: Ordering[LocalDate] = _ compareTo _
+        seqPsp.sortBy(_.relationshipStartDate).reverse.headOption
+    }
 
 
-  def latestPspSubHeading(latestPsp: Option[String])(implicit messages: Messages): Seq[CardSubHeading] =
-    latestPsp.fold[Seq[CardSubHeading]](Nil) { psp =>
+  private def latestPspSubHeading(ua: UserAnswers)(implicit messages: Messages): Seq[CardSubHeading] =
+    latestPsp(ua).fold[Seq[CardSubHeading]](Nil) { psp =>
       Seq(CardSubHeading(
-        subHeading = Message("messages__psaSchemeDash__addedOn"),
+        subHeading = Message("messages__psaSchemeDash__addedOn", psp.relationshipStartDate.format(formatter)),
         subHeadingClasses = "heading-small card-sub-heading",
         subHeadingParams = Seq(CardSubHeadingParam(
-          subHeadingParam = psp,
+          subHeadingParam = psp.name,
           subHeadingParamClasses = "font-small"))))
     }
 
-  def optToSeq[A](value: Option[A]): Seq[A] = value.fold[Seq[A]](Nil)(x => Seq(x))
+  private def isSchemeOpen(ua: UserAnswers): Boolean = ua.get(SchemeStatusId).getOrElse("").equalsIgnoreCase("open")
+
+  private def optToSeq[A](value: Option[A]): Seq[A] = value.fold[Seq[A]](Nil)(x => Seq(x))
 }
+
+case object PsaNameCannotBeRetrievedException extends Exception

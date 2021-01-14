@@ -42,7 +42,7 @@ class RemovePSPNavigator @Inject()(val dataCacheConnector: UserAnswersCacheConne
   private def confirmRemovePspRoutes(userAnswers: UserAnswers, index: Index): Call = {
     (userAnswers.get(ConfirmRemovePspId(index)), userAnswers.get(SchemeSrnId)) match {
       case (Some(false), Some(srn)) =>
-        SchemeDetailsController.onPageLoad(srn)
+        PsaSchemeDashboardController.onPageLoad(srn)
       case (Some(true), _) =>
         PspRemovalDateController.onPageLoad(index)
       case _ =>

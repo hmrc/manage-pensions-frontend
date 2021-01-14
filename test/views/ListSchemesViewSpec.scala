@@ -236,7 +236,7 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours with MockitoS
         )
 
         actual must haveLinkWithUrlAndContent(s"schemeName-$index",
-          controllers.routes.SchemeDetailsController.onPageLoad(s"reference-number-$index").url, s"scheme-name-$index")
+          controllers.routes.PsaSchemeDashboardController.onPageLoad(s"reference-number-$index").url, s"scheme-name-$index")
       }
     }
 

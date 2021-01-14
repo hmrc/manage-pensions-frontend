@@ -58,7 +58,7 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
     frontendConnector.retrievePspDashboardUpcomingAftChargesCard(srn)
 
   def retrievePspDashboardOverdueAftChargesCard[A](srn: String)
-                                                   (implicit request: Request[A]): Future[Html] =
+                                                  (implicit request: Request[A]): Future[Html] =
     frontendConnector.retrievePspDashboardOverdueAftChargesCard(srn)
 
   def retrievePaymentsAndChargesHtml[A](srn: String)
@@ -93,7 +93,7 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
   def administratorsVariations(psaId: String, psaSchemeDetails: UserAnswers, schemeStatus: String): Option[Seq[AssociatedPsa]] =
     psaSchemeDetails.get(ListOfPSADetailsId).map { psaDetailsSeq =>
       psaDetailsSeq.map { psaDetails =>
-        val name = PsaDetails.getPsaName(psaDetails).getOrElse("")
+        val name = psaDetails.getPsaName.getOrElse("")
         val canRemove = psaDetails.id.equals(psaId) && PsaSchemeDetails.canRemovePsaVariations(psaId, psaDetailsSeq, schemeStatus)
         AssociatedPsa(name, canRemove)
       }

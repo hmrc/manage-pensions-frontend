@@ -35,7 +35,7 @@ class PspDoesNotMatchControllerSpec extends ControllerWithNormalPageBehaviours {
   private val testSrn = "test-srn"
   private val testSchemeName = "test-scheme-name"
 
-  private lazy val continue: Call = controllers.routes.SchemeDetailsController.onPageLoad(SchemeReferenceNumber(testSrn))
+  private lazy val continue: Call = controllers.routes.PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(testSrn))
 
   private val userAnswer = UserAnswers()
     .set(SchemeNameId)(testSchemeName).asOpt.value

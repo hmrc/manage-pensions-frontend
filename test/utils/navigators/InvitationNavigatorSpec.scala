@@ -58,7 +58,7 @@ object InvitationNavigatorSpec extends OptionValues {
   lazy val emptyAnswers = UserAnswers(Json.obj())
   lazy val checkYourAnswer: Call = controllers.invitations.routes.CheckYourAnswersController.onPageLoad()
   lazy val invitationSuccess: Call = controllers.invitations.routes.InvitationSuccessController.onPageLoad(testSrn)
-  lazy val schemeDetails: Call = controllers.routes.SchemeDetailsController.onPageLoad(testSrn)
+  lazy val schemeDetails: Call = controllers.routes.PsaSchemeDashboardController.onPageLoad(testSrn)
   lazy val psaIdPage: Call = controllers.invitations.routes.PsaIdController.onPageLoad(NormalMode)
 
   implicit val ex: IdentifiedRequest = new IdentifiedRequest() {
