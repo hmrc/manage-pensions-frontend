@@ -22,6 +22,7 @@ import connectors.admin.MinimalConnector
 import controllers.routes._
 import javax.inject.Inject
 import models.Link
+import models.MinimalPSAPSP
 import models.requests.OptionalDataRequest
 import play.api.i18n.Messages
 import play.api.mvc.AnyContent
@@ -53,6 +54,9 @@ class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
 
   def getPsaName(psaId: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
     minimalPsaConnector.getPsaNameFromPsaID(psaId).map(identity)
+
+  def getPsaMinimalDetails(psaId: String)(implicit hc: HeaderCarrier): Future[MinimalPSAPSP] =
+    minimalPsaConnector.getMinimalPsaDetails(psaId)
 
   //TILES HELPER METHODS
 

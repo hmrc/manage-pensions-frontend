@@ -18,6 +18,7 @@ package controllers.invitations
 
 import com.google.inject.Inject
 import com.google.inject.Singleton
+import config.FrontendAppConfig
 import connectors.admin.MinimalConnector
 import connectors.UserAnswersCacheConnector
 import connectors.scheme.SchemeDetailsConnector
@@ -42,7 +43,8 @@ class InviteController @Inject()(
                                   schemeDetailsConnector: SchemeDetailsConnector,
                                   userAnswersCacheConnector: UserAnswersCacheConnector,
                                   minimalPsaConnector: MinimalConnector,
-                                  val controllerComponents: MessagesControllerComponents
+                                  val controllerComponents: MessagesControllerComponents,
+                                  appConfig: FrontendAppConfig
                                 )(implicit val ec: ExecutionContext) extends FrontendBaseController {
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate().async {
@@ -50,10 +52,12 @@ class InviteController @Inject()(
       minimalPsaConnector.getMinimalPsaDetails(request.psaIdOrException.id).flatMap { minimalPsaDetails =>
         if (minimalPsaDetails.isPsaSuspended) {
           Future.successful(Redirect(controllers.invitations.routes.YouCannotSendAnInviteController.onPageLoad()))
+        } else if (minimalPsaDetails.rlsFlag) {
+          Future.successful(Redirect(appConfig.psaUpdateContactDetailsUrl))
         } else {
           getSchemeDetails(srn) flatMap {
-            case Some(x) =>
-              val minimalSchemeDetail = MinimalSchemeDetail(srn, x.pstr, x.name)
+            case Some(schemeDetails) =>
+              val minimalSchemeDetail = MinimalSchemeDetail(srn, schemeDetails.pstr, schemeDetails.name)
               userAnswersCacheConnector.save(request.externalId, MinimalSchemeDetailId, minimalSchemeDetail).map { _ =>
                 Redirect(controllers.invitations.routes.WhatYouWillNeedController.onPageLoad())
               }

@@ -16,22 +16,22 @@
 
 package controllers.invitations
 
-import base.JsonFileReader
-import base.SpecBase
+import base.{JsonFileReader, SpecBase}
+import config.FrontendAppConfig
+import org.mockito.Mockito.when
 import connectors.admin.MinimalConnector
 import connectors.FakeUserAnswersCacheConnector
 import connectors.scheme.SchemeDetailsConnector
-import controllers.actions.FakeAuthAction
-import controllers.actions.FakeUnAuthorisedAction
+import controllers.actions.{FakeAuthAction, FakeUnAuthorisedAction}
 import identifiers.MinimalSchemeDetailId
 import models._
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.Configuration
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.UserAnswers
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class InviteControllerSpec extends SpecBase {
 
@@ -51,6 +51,16 @@ class InviteControllerSpec extends SpecBase {
       FakeUserAnswersCacheConnector.verifyNot(MinimalSchemeDetailId)
     }
 
+    "redirect to update contact page if rls flag is true" in {
+
+      when(mockAppConfig.psaUpdateContactDetailsUrl).thenReturn(dummyUrl)
+
+      val result = controller(isSuspended = false, rlsFlag = true).onPageLoad(srn)(fakeRequest)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(dummyUrl)
+    }
+
     "save minimal scheme details and then redirect to psa name page if PSASuspension is false" in {
       val result = controller(isSuspended = false).onPageLoad(srn)(fakeRequest)
 
@@ -63,17 +73,17 @@ class InviteControllerSpec extends SpecBase {
     "redirect to unauthorised page if user is not authenticated" in {
 
       val controller = new InviteController(FakeUnAuthorisedAction, fakeSchemeDetailsConnector,
-        FakeUserAnswersCacheConnector, fakeMinimalPsaConnector(isSuspended = false), controllerComponents)
+        FakeUserAnswersCacheConnector, fakeMinimalPsaConnector(isSuspended = false), controllerComponents, mockAppConfig)
 
       val result = controller.onPageLoad(srn)(fakeRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad.url)
+      redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)
     }
   }
 }
 
-object InviteControllerSpec extends SpecBase with JsonFileReader {
+object InviteControllerSpec extends SpecBase with JsonFileReader with MockitoSugar {
   private val email = "test@test.com"
   val srn = "S9000000000"
   val pstr = "24000001IN"
@@ -82,12 +92,14 @@ object InviteControllerSpec extends SpecBase with JsonFileReader {
   private val psaMinimalSubscription = MinimalPSAPSP(email, false, None, Some(IndividualDetails("First", Some("Middle"), "Last")), rlsFlag = false)
   private val mockAuthAction = FakeAuthAction
 
+  private val dummyUrl = "/url"
+  private val mockAppConfig = mock[FrontendAppConfig]
 
   val config = injector.instanceOf[Configuration]
 
-  def fakeMinimalPsaConnector(isSuspended: Boolean): MinimalConnector = new MinimalConnector {
+  def fakeMinimalPsaConnector(isSuspended: Boolean, rlsFlag: Boolean = false): MinimalConnector = new MinimalConnector {
     override def getMinimalPsaDetails(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP] =
-      Future.successful(psaMinimalSubscription.copy(isPsaSuspended = isSuspended))
+      Future.successful(psaMinimalSubscription.copy(isPsaSuspended = isSuspended, rlsFlag = rlsFlag))
 
     override def getPsaNameFromPsaID(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] =
       Future.successful(None)
@@ -110,6 +122,6 @@ object InviteControllerSpec extends SpecBase with JsonFileReader {
                                     (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[UserAnswers] = ???
   }
 
-  def controller(isSuspended: Boolean) = new InviteController(mockAuthAction, fakeSchemeDetailsConnector,
-    FakeUserAnswersCacheConnector, fakeMinimalPsaConnector(isSuspended), controllerComponents)
+  def controller(isSuspended: Boolean, rlsFlag: Boolean = false) = new InviteController(mockAuthAction, fakeSchemeDetailsConnector,
+    FakeUserAnswersCacheConnector, fakeMinimalPsaConnector(isSuspended, rlsFlag), controllerComponents, mockAppConfig)
 }
