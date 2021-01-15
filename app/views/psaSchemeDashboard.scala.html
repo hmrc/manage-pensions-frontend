@@ -28,8 +28,7 @@
 @(
         schemeName: String,
         aftHtml: Html,
-        cards: Seq[CardViewModel],
-        returnLink: Option[Link] = None
+        cards: Seq[CardViewModel]
 )(implicit request: Request[_], messages: Messages)
 
 @main_template(
@@ -46,7 +45,7 @@
         }
     </div>
 
-    @returnLink.map { ret =>
-        <a id="@ret.id" href="@ret.url">@messages(ret.linkText)</a>
-    }
+    <a id="list-schemes" href="controllers.routes.ListSchemesController.onPageLoad().url">@messages("messages__psaSchemeDash__return_link")</a>
+
+
 }
