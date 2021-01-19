@@ -1,0 +1,50 @@
+@*
+ * Copyright 2021 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@this(
+    main_template: main_template
+)
+
+@()(implicit request: Request[_], messages: Messages)
+
+@main_template(
+    title = messages("messages__contactHMRC__title"),
+
+    bodyClasses = None) {
+
+        @components.back_link()
+
+        <h1 class="heading-xlarge">@messages("messages__contactHMRC__heading")</h1>
+
+        <p>@messages("messages__contactHMRC__p1")</p>
+        <p>@messages("messages__contactHMRC__p2")</p>
+
+        <div class="panel panel-border-narrow" >
+            <span class="address-multi-line">@messages("messages__contactHMRC__address1")</span>
+            <span class="address-multi-line">@messages("messages__contactHMRC__address2")</span>
+            <span class="address-multi-line">@messages("messages__contactHMRC__address3")</span>
+            <span class="address-multi-line">@messages("messages__contactHMRC__address4")</span>
+        </div>
+
+        <p>@messages("messages__contactHMRC__p3")</p>
+
+        <ul class="list list-bullet">
+            <li>@messages("messages__contactHMRC__item1")</li>
+            <li>@messages("messages__contactHMRC__item2")</li>
+            <li>@messages("messages__contactHMRC__item3")</li>
+        </ul>
+
+    }

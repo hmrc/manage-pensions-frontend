@@ -589,3 +589,18 @@ messages__pspSchemeDashboard__aftOverdueCharges_heading = Overdue AFT charges
 messages__pspSchemeDashboard__aftOverdueCharges__subHeading_total = Total overdue payments:
 messages__pspSchemeDashboard__aftOverdueCharges__subHeading_interest = Interest accruing:
 messages__pspSchemeDashboard__aftOverdueCharges__actions_view = View overdue payments and interest charges for 1 January to 31 March
+
+messages__contactHMRC__title = You need to update the company''s details before registering
+messages__contactHMRC__heading = You cannot access this service
+messages__contactHMRC__p1 = We need to update your records before you can continue to use the Managing Pensions Schemes service.
+messages__contactHMRC__p2 = Please write to HMRC at:
+messages__contactHMRC__p3 = In your letter you must include:
+messages__contactHMRC__item1 = your scheme administrator name
+messages__contactHMRC__item2 = your scheme administrator ID
+messages__contactHMRC__item3 = a print-out of this page or a note saying that HMRC needs to update your records
+
+messages__contactHMRC__address1 = Pension Schemes Services
+messages__contactHMRC__address2 = HM Revenue and Customs
+messages__contactHMRC__address3 = BX9 1GH
+messages__contactHMRC__address4 = United Kingdom
+
