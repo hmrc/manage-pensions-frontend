@@ -22,8 +22,7 @@ import javax.inject.Inject
 import models.{Link, MinimalPSAPSP}
 import play.api.i18n.Messages
 import uk.gov.hmrc.http.HeaderCarrier
-import viewmodels.CardViewModel
-import viewmodels.Message
+import viewmodels.{CardSubHeading, CardSubHeadingParam, CardViewModel, Message}
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
@@ -43,8 +42,14 @@ class PspDashboardService @Inject()(appConfig: FrontendAppConfig,
     CardViewModel(
       id = "practitioner-card",
       heading = Message("messages__pspDashboard__details_heading"),
-      subHeading = Some(Message("messages__pspDashboard__psp_id")),
-      subHeadingParam = Some(pspId),
+      subHeadings = Seq(
+        CardSubHeading(
+          subHeading = Message("messages__pspDashboard__psp_id"),
+          subHeadingClasses = "heading-small card-sub-heading",
+          subHeadingParams = Seq(
+            CardSubHeadingParam(
+              subHeadingParam = pspId,
+              subHeadingParamClasses = "font-small")))),
       links = Seq(
         Link("pspLink", appConfig.pspDetailsUrl, Message("messages__pspDashboard__psp_change")),
         //todo change pspDeregisterUrl once page to redirect to is implemented

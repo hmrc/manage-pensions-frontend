@@ -24,13 +24,16 @@
             @cardModel.heading
         </h2>
 
-        @cardModel.subHeading.map { subHead =>
-            <h3 class="heading-small card-sub-heading">
-                @subHead @cardModel.subHeadingParam.map{param =>
-                <span class ="font-small">@param</span>
+        @for(sh <- cardModel.subHeadings) {
+            <h3 class=@sh.subHeadingClasses>
+                @sh.subHeading
+                @for(shParam <- sh.subHeadingParams) {
+                    <span class =@shParam.subHeadingParamClasses>@shParam.subHeadingParam</span>
                 }
             </h3>
         }
+
+
     </div>
     <div class="card-action">
     @if(cardModel.links.nonEmpty){

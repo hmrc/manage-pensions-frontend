@@ -23,7 +23,7 @@ import views.behaviours.ViewBehaviours
 import views.html.viewAdministrators
 
 class ViewAdministratorsViewSpec extends ViewSpecBase with ViewBehaviours {
-  private val messageKeyPrefix = "schemeDetails"
+  private val messageKeyPrefix = "psaSchemeDash"
   private val schemeName = "Test Scheme Name"
   private val administrators = Seq(AssociatedPsa("First Psa", canRemove = true), AssociatedPsa("Second User", canRemove = false))
   private val administratorsNoRemove = Seq(AssociatedPsa("First Psa", canRemove = false), AssociatedPsa("Second User", canRemove = false))
@@ -38,7 +38,7 @@ class ViewAdministratorsViewSpec extends ViewSpecBase with ViewBehaviours {
     behave like normalPageWithoutBrowserTitle(
       createView(),
       messageKeyPrefix,
-      messages("messages__schemeDetails__psa_list_head"),
+      messages("messages__psaSchemeDash__psa_list_head"),
       "_invite_link"
     )
 
@@ -69,13 +69,13 @@ class ViewAdministratorsViewSpec extends ViewSpecBase with ViewBehaviours {
     "not have link to Invite another PSA" when {
       "scheme status is not open" in {
         Jsoup.parse(createView(isSchemeOpen = false)().toString()).select("a[id=invite]") mustNot
-          haveLink(controllers.routes.SchemeDetailsController.onPageLoad(srn).url)
+          haveLink(controllers.routes.PsaSchemeDashboardController.onPageLoad(srn).url)
       }
     }
 
     "have link to return to list of schemes page" in {
       Jsoup.parse(createView()().toString()).select("a[id=return]") must
-        haveLink(controllers.routes.SchemeDetailsController.onPageLoad(srn).url)
+        haveLink(controllers.routes.PsaSchemeDashboardController.onPageLoad(srn).url)
     }
 
   }

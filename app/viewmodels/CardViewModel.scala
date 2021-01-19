@@ -22,8 +22,18 @@ import play.twirl.api.Html
 case class CardViewModel(
                           id: String,
                           heading: String,
-                          subHeading: Option[String] = None,
-                          subHeadingParam: Option[String] = None,
+                          subHeadings: Seq[CardSubHeading] = Seq.empty,
                           links: Seq[Link] = Nil,
                           html: Option[Html] = None
                         )
+
+case class CardSubHeading(
+                           subHeading: String,
+                           subHeadingClasses: String,
+                           subHeadingParams: Seq[CardSubHeadingParam] = Seq.empty
+                          )
+
+case class CardSubHeadingParam(
+                                subHeadingParam: String,
+                                subHeadingParamClasses: String,
+                              )

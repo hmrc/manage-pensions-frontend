@@ -30,7 +30,7 @@ class ViewPractitionersControllerSpec extends ControllerSpecBase {
 
   private val schemeName  = "Test Scheme name"
   private val schemeSrn  = "12345"
-  private def returnCall: Call  = controllers.routes.SchemeDetailsController.onPageLoad(SchemeReferenceNumber(schemeSrn))
+  private def returnCall: Call  = controllers.routes.PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(schemeSrn))
   private val practitionersViewModel = Seq(
     AuthorisedPractitionerViewModel("PSP Limited Company 1", "Nigel Robert Smith", "1 April 2021", false),
     AuthorisedPractitionerViewModel("PSP Individual Second", "Acme Ltd", "1 April 2021", false)

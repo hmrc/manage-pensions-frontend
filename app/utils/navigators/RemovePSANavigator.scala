@@ -39,7 +39,7 @@ class RemovePSANavigator @Inject()(val dataCacheConnector: UserAnswersCacheConne
   private def confirmRemovePsaRoutes(userAnswers: UserAnswers) = {
     (userAnswers.get(ConfirmRemovePsaId), userAnswers.get(SchemeSrnId)) match {
       case (Some(false), Some(srn)) =>
-        controllers.routes.SchemeDetailsController.onPageLoad(srn)
+        controllers.routes.PsaSchemeDashboardController.onPageLoad(srn)
       case (Some(true), _) =>
         controllers.remove.routes.PsaRemovalDateController.onPageLoad()
       case _ =>

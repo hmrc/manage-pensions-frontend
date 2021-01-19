@@ -35,7 +35,7 @@ class PspIdViewSpec extends QuestionViewBehaviours[String] {
 
   private val schemeName = "Test Scheme"
 
-  private val returnCall = controllers.routes.SchemeDetailsController.onPageLoad(SchemeReferenceNumber("srn"))
+  private val returnCall = controllers.routes.PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber("srn"))
 
   def createView: () => HtmlFormat.Appendable = () => pspIdView(form, "pspName", NormalMode, schemeName, returnCall)(fakeRequest, messages)
 

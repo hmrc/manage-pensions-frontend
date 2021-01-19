@@ -54,7 +54,7 @@ class ViewPractitionersController @Inject()(
               authorisedByLoggedInPsa = request.psaIdOrException.id == p.authorisingPSAID
             )
           )
-          val returnCall = controllers.routes.SchemeDetailsController.onPageLoad(SchemeReferenceNumber(srn))
+          val returnCall = controllers.routes.PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(srn))
           Future.successful(Ok(view(schemeName, returnCall, authorisedPractitionerViewModelSeq)))
       }
   }

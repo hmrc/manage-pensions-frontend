@@ -1,0 +1,93 @@
+/*
+ * Copyright 2021 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package controllers
+
+import connectors._
+import connectors.scheme.{ListOfSchemesConnector, PensionSchemeVarianceLockConnector, SchemeDetailsConnector}
+import controllers.actions._
+import identifiers.{SchemeNameId, SchemeSrnId, SchemeStatusId}
+import javax.inject.Inject
+import models._
+import models.requests.AuthenticatedRequest
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.twirl.api.Html
+import services.PsaSchemeDashboardService
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.UserAnswers
+import views.html.psaSchemeDashboard
+
+import scala.concurrent.{ExecutionContext, Future}
+
+class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesApi,
+                                             schemeDetailsConnector: SchemeDetailsConnector,
+                                             listSchemesConnector: ListOfSchemesConnector,
+                                             schemeVarianceLockConnector: PensionSchemeVarianceLockConnector,
+                                             authenticate: AuthAction,
+                                             userAnswersCacheConnector: UserAnswersCacheConnector,
+                                             val controllerComponents: MessagesControllerComponents,
+                                             psaSchemeDashboardService: PsaSchemeDashboardService,
+                                             view: psaSchemeDashboard,
+                                             frontendConnector: FrontendConnector
+                                       )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+
+  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate().async {
+    implicit request =>
+      getSchemeAndLock(srn).flatMap { case (userAnswers, lock, listOfSchemes) =>
+
+        val schemeName = userAnswers.get(SchemeNameId).getOrElse("")
+        val isSchemeOpen = userAnswers.get(SchemeStatusId).getOrElse("").equalsIgnoreCase("open")
+        val updatedUa = userAnswers.set(SchemeSrnId)(srn.id).flatMap(_.set(SchemeNameId)(schemeName)).asOpt.getOrElse(userAnswers)
+
+        for {
+          aftHtml <- retrieveAftTilesHtml(srn, isSchemeOpen)
+          _ <- userAnswersCacheConnector.upsert(request.externalId, updatedUa.json)
+          cards <- psaSchemeDashboardService.cards(srn, lock, listOfSchemes, userAnswers)
+        } yield {
+              Ok(view(schemeName, aftHtml, cards))
+          }
+        }
+      }
+
+  private def retrieveAftTilesHtml(
+                                    srn: String,
+                                    isSchemeOpen: Boolean
+                                  )(implicit request: AuthenticatedRequest[AnyContent]): Future[Html] = {
+    if (isSchemeOpen) {
+      frontendConnector.retrieveAftPartial(srn)
+    } else {
+      Future.successful(Html(""))
+    }
+  }
+
+  private def getSchemeAndLock(srn: SchemeReferenceNumber)
+                              (implicit request: AuthenticatedRequest[AnyContent]): Future[(UserAnswers, Option[Lock], ListOfSchemes)] = {
+    for {
+      _ <- userAnswersCacheConnector.removeAll(request.externalId)
+      scheme <- schemeDetailsConnector.getSchemeDetails(request.psaIdOrException.id, srn, "srn")
+      lock <- schemeVarianceLockConnector.isLockByPsaIdOrSchemeId(request.psaIdOrException.id, srn.id)
+      listOfSchemes <- listSchemesConnector.getListOfSchemes(request.psaIdOrException.id)
+    } yield {
+      listOfSchemes match {
+        case Right(list) => (scheme, lock, list)
+        case _ => throw ListOfSchemesRetrievalException
+      }
+    }
+  }
+}
+
+case object ListOfSchemesRetrievalException extends Exception

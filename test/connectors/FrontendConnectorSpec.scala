@@ -35,7 +35,7 @@ class FrontendConnectorSpec
 
   implicit val headerCarrier: HeaderCarrierForPartials =
     HeaderCarrierForPartials(hc = HeaderCarrier(), encodedCookies = "")
-  private val aftPartialUrl = "/manage-pension-scheme-accounting-for-tax/srn/aft-partial"
+  private val aftPartialUrl = "/manage-pension-scheme-accounting-for-tax/srn/psa-scheme-dashboard-cards"
   private val paymentsAndChargesPartialHtmlUrl = "/manage-pension-scheme-accounting-for-tax/srn/payments-and-charges-partial"
   private val srn = "srn"
   implicit val request: FakeRequest[_] = FakeRequest("", "")

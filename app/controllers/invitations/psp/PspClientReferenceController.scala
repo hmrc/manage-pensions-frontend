@@ -89,6 +89,6 @@ class PspClientReferenceController @Inject()(override val messagesApi: MessagesA
 
   }
 
-    private def returnCall(srn:String):Call  = controllers.routes.SchemeDetailsController.onPageLoad(SchemeReferenceNumber(srn))
+    private def returnCall(srn:String):Call  = controllers.routes.PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(srn))
 
 }

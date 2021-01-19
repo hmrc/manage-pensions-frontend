@@ -96,7 +96,7 @@ case _ => status
 
     <tr class="member-details" role="row">
         <td class="govuk-table__cell" role="cell">
-            <a id="@{schemeNameId(index)}" href="@{controllers.routes.SchemeDetailsController.onPageLoad(scheme.referenceNumber).url}" target="_self" data-sso="false">
+            <a id="@{schemeNameId(index)}" href="@{controllers.routes.PsaSchemeDashboardController.onPageLoad(scheme.referenceNumber).url}" target="_self" data-sso="false">
                 @{scheme.name}
             </a>
         </td>

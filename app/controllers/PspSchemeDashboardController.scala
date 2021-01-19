@@ -36,8 +36,8 @@ import services.{PspSchemeDashboardService, SchemeDetailsService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.UserAnswers
 import views.html.pspSchemeDashboard
-
 import javax.inject.Inject
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class PspSchemeDashboardController @Inject()(
@@ -101,7 +101,7 @@ class PspSchemeDashboardController @Inject()(
                   returnLink = Some(Link(
                     id = "search-schemes",
                     url = controllers.psp.routes.ListSchemesController.onPageLoad().url,
-                    linkText = Message("messages__schemeDetails__return_link").resolve
+                    linkText = Message("messages__psaSchemeDash__return_link").resolve
                   ))
                 ))
               case _ =>

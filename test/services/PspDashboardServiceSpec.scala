@@ -24,7 +24,7 @@ import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
-import viewmodels.{CardViewModel, Message}
+import viewmodels.{CardSubHeading, CardSubHeadingParam, CardViewModel, Message}
 
 import scala.concurrent.Future
 import scala.language.postfixOps
@@ -62,8 +62,14 @@ object PspDashboardServiceSpec extends SpecBase with MockitoSugar {
     CardViewModel(
       id = "practitioner-card",
       heading = Message("messages__pspDashboard__details_heading"),
-      subHeading = Some(Message("messages__pspDashboard__psp_id")),
-      subHeadingParam = Some(pspId),
+      subHeadings = Seq(
+        CardSubHeading(
+          subHeading = Message("messages__pspDashboard__psp_id"),
+          subHeadingClasses = "heading-small card-sub-heading",
+          subHeadingParams = Seq(
+            CardSubHeadingParam(
+              subHeadingParam = pspId,
+              subHeadingParamClasses = "font-small")))),
       links = Seq(
         Link("pspLink", frontendAppConfig.pspDetailsUrl, Message("messages__pspDashboard__psp_change")),
         Link("deregister-link", frontendAppConfig.pspDeregisterCompanyUrl, Message("messages__pspDashboard__psp_deregister"))

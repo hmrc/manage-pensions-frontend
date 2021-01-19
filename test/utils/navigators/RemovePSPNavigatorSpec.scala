@@ -56,7 +56,7 @@ object RemovePSPNavigatorSpec {
   private def dataDescriber(answers: UserAnswers): String = answers.toString
 
   private val sessionExpiredPage = controllers.routes.SessionExpiredController.onPageLoad()
-  private val schemeDetailsPage = controllers.routes.SchemeDetailsController.onPageLoad(srn)
+  private val schemeDetailsPage = controllers.routes.PsaSchemeDashboardController.onPageLoad(srn)
   private val pspRemovalDatePage = controllers.remove.routes.PspRemovalDateController.onPageLoad(0)
   private val psaRemovePspDeclarationPage = controllers.remove.routes.PsaRemovePspDeclarationController.onPageLoad(0)
   private val psaRemovePspConfirmationPage = controllers.remove.routes.ConfirmPsaRemovedPspController.onPageLoad(0)
