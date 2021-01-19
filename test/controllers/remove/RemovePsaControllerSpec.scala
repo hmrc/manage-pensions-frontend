@@ -182,6 +182,15 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
       redirectLocation(result) mustBe Some(frontendAppConfig.psaUpdateContactDetailsUrl)
     }
 
+    "redirect to contact HMRC page if PSA has deceased flag set" in {
+
+      val result = controller(psaMinimalDetails = psaMinimalSubscription.copy(deceasedFlag = true),
+        schemeDetailsConnector = fakeSchemeDetailsConnector()).onPageLoad(fakeRequest)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(controllers.routes.ContactHMRCController.onPageLoad().url)
+    }
+
     "redirect to session expired page if no srn in userAnswers" in {
 
       val result = controller(UserAnswers().dataRetrievalAction,

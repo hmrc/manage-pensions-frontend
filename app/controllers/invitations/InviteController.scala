@@ -54,6 +54,8 @@ class InviteController @Inject()(
           Future.successful(Redirect(controllers.invitations.routes.YouCannotSendAnInviteController.onPageLoad()))
         } else if (minimalPsaDetails.rlsFlag) {
           Future.successful(Redirect(appConfig.psaUpdateContactDetailsUrl))
+        } else if (minimalPsaDetails.deceasedFlag) {
+          Future.successful(Redirect(controllers.routes.ContactHMRCController.onPageLoad()))
         } else {
           getSchemeDetails(srn) flatMap {
             case Some(schemeDetails) =>

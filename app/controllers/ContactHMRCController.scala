@@ -17,11 +17,9 @@
 package controllers
 
 import config.FrontendAppConfig
-import connectors.admin.MinimalConnector
-import controllers.actions.{AuthAction, DataRetrievalAction}
 import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{AnyContent, MessagesControllerComponents, Action}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.contactHMRC
 
@@ -29,17 +27,10 @@ import scala.concurrent.ExecutionContext
 
 class ContactHMRCController @Inject()(val appConfig: FrontendAppConfig,
                                        override val messagesApi: MessagesApi,
-                                       authenticate: AuthAction,
-                                       getData: DataRetrievalAction,
                                        val controllerComponents: MessagesControllerComponents,
-                                       minimalPsaConnector: MinimalConnector,
                                        view: contactHMRC)(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (authenticate() andThen getData).async { implicit request =>
-    val psaId = request.psaIdOrException.id
-    minimalPsaConnector.getMinimalPsaDetails(psaId).map { minimalPSAPSP =>
-      //minimalPSAPSP.deceasedFlag
-      Ok(view())
-    }
+  def onPageLoad: Action[AnyContent] = Action { implicit request =>
+    Ok(view())
   }
 }

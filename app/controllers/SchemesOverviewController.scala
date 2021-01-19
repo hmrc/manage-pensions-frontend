@@ -46,6 +46,8 @@ class SchemesOverviewController @Inject()(
       service.getPsaMinimalDetails(psaId).flatMap { minDetails =>
         if (minDetails.rlsFlag) {
           Future.successful(Redirect(config.psaUpdateContactDetailsUrl))
+        } else if (minDetails.deceasedFlag) {
+          Future.successful(Redirect(controllers.routes.ContactHMRCController.onPageLoad()))
         } else {
           service.getPsaName(psaId).flatMap {
             case Some(name) =>

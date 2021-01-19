@@ -61,6 +61,14 @@ class InviteControllerSpec extends SpecBase {
       redirectLocation(result) mustBe Some(dummyUrl)
     }
 
+    "redirect to contact HMRC page if deceased flag is true" in {
+
+      val result = controller(isSuspended = false, deceasedFlag = true).onPageLoad(srn)(fakeRequest)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(controllers.routes.ContactHMRCController.onPageLoad().url)
+    }
+
     "save minimal scheme details and then redirect to psa name page if PSASuspension is false" in {
       val result = controller(isSuspended = false).onPageLoad(srn)(fakeRequest)
 
@@ -98,9 +106,9 @@ object InviteControllerSpec extends SpecBase with JsonFileReader with MockitoSug
 
   val config = injector.instanceOf[Configuration]
 
-  def fakeMinimalPsaConnector(isSuspended: Boolean, rlsFlag: Boolean = false): MinimalConnector = new MinimalConnector {
+  def fakeMinimalPsaConnector(isSuspended: Boolean, rlsFlag: Boolean = false, deceasedFlag:Boolean = false): MinimalConnector = new MinimalConnector {
     override def getMinimalPsaDetails(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP] =
-      Future.successful(psaMinimalSubscription.copy(isPsaSuspended = isSuspended, rlsFlag = rlsFlag))
+      Future.successful(psaMinimalSubscription.copy(isPsaSuspended = isSuspended, rlsFlag = rlsFlag, deceasedFlag = deceasedFlag))
 
     override def getPsaNameFromPsaID(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] =
       Future.successful(None)
@@ -123,6 +131,7 @@ object InviteControllerSpec extends SpecBase with JsonFileReader with MockitoSug
                                     (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[UserAnswers] = ???
   }
 
-  def controller(isSuspended: Boolean, rlsFlag: Boolean = false) = new InviteController(mockAuthAction, fakeSchemeDetailsConnector,
-    FakeUserAnswersCacheConnector, fakeMinimalPsaConnector(isSuspended, rlsFlag), controllerComponents, mockAppConfig)
+  def controller(isSuspended: Boolean, rlsFlag: Boolean = false, deceasedFlag:Boolean = false) =
+    new InviteController(mockAuthAction, fakeSchemeDetailsConnector,
+    FakeUserAnswersCacheConnector, fakeMinimalPsaConnector(isSuspended, rlsFlag, deceasedFlag), controllerComponents, mockAppConfig)
 }
