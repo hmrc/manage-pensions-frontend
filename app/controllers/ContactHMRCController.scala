@@ -34,6 +34,6 @@ class ContactHMRCController @Inject()(val appConfig: FrontendAppConfig,
                                        view: contactHMRC)(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = Action { implicit request =>
-    Ok(view(titleMessageKey = "messages__contactHMRC__company_title"))
+    Ok(view())
   }
 }

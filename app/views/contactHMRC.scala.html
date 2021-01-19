@@ -18,10 +18,10 @@
     main_template: main_template
 )
 
-@(titleMessageKey:String)(implicit request: Request[_], messages: Messages)
+@()(implicit request: Request[_], messages: Messages)
 
 @main_template(
-    title = messages(titleMessageKey),
+    title = messages("messages__contactHMRC__title"),
 
     bodyClasses = None) {
 
