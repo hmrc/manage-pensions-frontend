@@ -245,7 +245,8 @@ object PspSchemeDashboardControllerSpec {
       isPsaSuspended = false,
       organisationName = None,
       individualDetails = Some(IndividualDetails("Test", None, "Psp Name")),
-      rlsFlag = rlsFlag
+      rlsFlag = rlsFlag,
+      deceasedFlag = false
     )
 
   private val ua = UserAnswers(

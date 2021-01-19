@@ -36,7 +36,8 @@ case class MinimalPSAPSP(
                           isPsaSuspended: Boolean,
                           organisationName: Option[String],
                           individualDetails: Option[IndividualDetails],
-                          rlsFlag: Boolean
+                          rlsFlag: Boolean,
+                          deceasedFlag: Boolean
                         ) {
   def name: String = {
     individualDetails

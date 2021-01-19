@@ -39,7 +39,6 @@ import java.time.format.DateTimeFormatter
 import java.time.{LocalDate, ZoneOffset}
 
 import scala.concurrent.Future
-import scala.language.postfixOps
 
 class SchemesOverviewServiceSpec extends SpecBase with MockitoSugar with BeforeAndAfterEach with ScalaFutures {
 
@@ -113,13 +112,15 @@ object SchemesOverviewServiceSpec extends SpecBase with MockitoSugar  {
 
   val deleteDate: String = LocalDate.now(ZoneOffset.UTC).plusDays(frontendAppConfig.daysDataSaved).format(formatter)
 
-  def minimalPsaDetails(psaSuspended: Boolean): MinimalPSAPSP = MinimalPSAPSP("test@test.com", psaSuspended, Some("Org Name"), None, rlsFlag = false)
+  def minimalPsaDetails(psaSuspended: Boolean): MinimalPSAPSP = MinimalPSAPSP("test@test.com", psaSuspended, Some("Org Name"), None,
+    rlsFlag = false, deceasedFlag = false)
 
   val minimalPsaName: Option[String] = Some("John Doe Doe")
   val minimalPsaOrgName: Option[String] = Some("Org Name")
   val expectedPsaOrgName: Option[String] = Some("Org Name")
   val individualPsaDetailsWithNoMiddleName: Option[String] = Some("John Doe")
-  val minimalPsaDetailsOrg: MinimalPSAPSP = MinimalPSAPSP("test@test.com", isPsaSuspended = false, Some("Org Name"), None, rlsFlag = false)
+  val minimalPsaDetailsOrg: MinimalPSAPSP = MinimalPSAPSP("test@test.com", isPsaSuspended = false, Some("Org Name"), None,
+    rlsFlag = false, deceasedFlag = false)
   val expectedName: String = "John Doe Doe"
 
   val schemeNameJsonOption: JsObject = Json.obj("schemeName" -> schemeName)

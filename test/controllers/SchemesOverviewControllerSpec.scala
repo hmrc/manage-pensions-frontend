@@ -61,7 +61,8 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
     isPsaSuspended = false,
     organisationName = None,
     individualDetails = None,
-    rlsFlag = rlsFlag
+    rlsFlag = rlsFlag,
+    deceasedFlag = false
   )
 
   private val dummyURl = "/url"

@@ -49,7 +49,8 @@ class PspDashboardControllerSpec
       isPsaSuspended = false,
       organisationName = None,
       individualDetails = Some(IndividualDetails("Test", None, "Psp Name")),
-      rlsFlag = rlsFlag
+      rlsFlag = rlsFlag,
+      deceasedFlag = false
     )
 
   private val view: schemesOverview = app.injector.instanceOf[schemesOverview]

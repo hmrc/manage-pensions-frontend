@@ -89,7 +89,8 @@ object InviteControllerSpec extends SpecBase with JsonFileReader with MockitoSug
   val pstr = "24000001IN"
   val schemeName = "Open Single Trust Scheme with Indiv Establisher and Trustees"
 
-  private val psaMinimalSubscription = MinimalPSAPSP(email, false, None, Some(IndividualDetails("First", Some("Middle"), "Last")), rlsFlag = false)
+  private val psaMinimalSubscription = MinimalPSAPSP(email, false, None, Some(IndividualDetails("First", Some("Middle"), "Last")),
+    rlsFlag = false, deceasedFlag = false)
   private val mockAuthAction = FakeAuthAction
 
   private val dummyUrl = "/url"

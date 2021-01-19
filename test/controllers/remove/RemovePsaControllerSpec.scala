@@ -246,7 +246,8 @@ object RemovePsaControllerSpec {
   private val userAnswer = UserAnswers().srn("S9000000000")
   private val data = userAnswer.dataRetrievalAction
 
-  private val psaMinimalSubscription = MinimalPSAPSP("test@test.com", false, None, Some(IndividualDetails("First", Some("Middle"), "Last")), rlsFlag = false)
+  private val psaMinimalSubscription = MinimalPSAPSP("test@test.com", false, None, Some(IndividualDetails("First", Some("Middle"), "Last")),
+    rlsFlag = false, deceasedFlag = false)
 }
 
 

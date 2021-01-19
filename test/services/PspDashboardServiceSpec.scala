@@ -27,7 +27,6 @@ import org.scalatestplus.mockito.MockitoSugar
 import viewmodels.{CardSubHeading, CardSubHeadingParam, CardViewModel, Message}
 
 import scala.concurrent.Future
-import scala.language.postfixOps
 
 class PspDashboardServiceSpec extends SpecBase with MockitoSugar with BeforeAndAfterEach with ScalaFutures {
 
@@ -56,7 +55,8 @@ object PspDashboardServiceSpec extends SpecBase with MockitoSugar {
   val pspName: String = "John Doe"
   private val pspId = "00000000"
 
-  def minimalPsaDetails: MinimalPSAPSP = MinimalPSAPSP("test@test.com", isPsaSuspended = false, Some("Org Name"), None, rlsFlag = false)
+  def minimalPsaDetails: MinimalPSAPSP = MinimalPSAPSP("test@test.com", isPsaSuspended = false, Some("Org Name"), None,
+    rlsFlag = false, deceasedFlag = false)
 
   private val practitionerCard: CardViewModel =
     CardViewModel(

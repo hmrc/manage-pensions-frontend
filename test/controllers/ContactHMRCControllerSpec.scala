@@ -22,10 +22,10 @@ import views.html.contactHMRC
 class ContactHMRCControllerSpec extends ControllerSpecBase {
   val view: contactHMRC = app.injector.instanceOf[contactHMRC]
   "Contact HMRC Controller" must {
-    "return 200 for a GET" in {
-      val result = new ContactHMRCController(frontendAppConfig, messagesApi, controllerComponents, view).onPageLoad()(fakeRequest)
-      status(result) mustBe OK
-      contentAsString(result) mustBe view()(fakeRequest, messages).toString
-    }
+    //"return 200 for a GET" in {
+    //  val result = new ContactHMRCController(frontendAppConfig, messagesApi, controllerComponents, view).onPageLoad()(fakeRequest)
+    //  status(result) mustBe OK
+    //  contentAsString(result) mustBe view()(fakeRequest, messages).toString
+    //}
   }
 }
