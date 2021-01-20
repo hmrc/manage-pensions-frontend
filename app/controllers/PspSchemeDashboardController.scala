@@ -32,12 +32,13 @@ import viewmodels.Message
 import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import play.twirl.api.Html
 import services.{PspSchemeDashboardService, SchemeDetailsService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.UserAnswers
 import views.html.pspSchemeDashboard
-import javax.inject.Inject
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class PspSchemeDashboardController @Inject()(
@@ -66,19 +67,17 @@ class PspSchemeDashboardController @Inject()(
 
         if (pspDetails.id == request.pspIdOrException.id) {
           val schemeStatus: String = userAnswers.get(SchemeStatusId).getOrElse("")
+
           val clientReference: Option[String] = userAnswers.get(PspClientReferenceId).flatMap {
             case ClientReference.HaveClientReference(reference) => Some(reference)
             case ClientReference.NoClientReference => None
           }
+
           val isSchemeOpen: Boolean =
             schemeStatus.equalsIgnoreCase("open")
 
           for {
-            aftReturnsCard <- schemeDetailsService.retrievePspDashboardAftReturnsCard(
-              srn = srn,
-              pspId = request.pspIdOrException.id,
-              authorisingPsaId = pspDetails.authorisingPSAID
-            )
+            aftReturnsCard <- aftReturnsCard(schemeStatus, srn, pspDetails.authorisingPSAID)
             upcomingAftCharges <- schemeDetailsService.retrievePspDashboardUpcomingAftChargesCard(srn)
             overdueAftCharges <- schemeDetailsService.retrievePspDashboardOverdueAftChargesCard(srn)
             listOfSchemes <- listSchemesConnector.getListOfSchemesForPsp(request.pspIdOrException.id)
@@ -114,6 +113,17 @@ class PspSchemeDashboardController @Inject()(
         }
       }
   }
+
+  private def aftReturnsCard(schemeStatus: String, srn: String, authorisingPsaId: String)
+                            (implicit request: AuthenticatedRequest[AnyContent]): Future[Html] =
+    if (
+      schemeStatus.equalsIgnoreCase("open") ||
+      schemeStatus.equalsIgnoreCase("wound-up") ||
+      schemeStatus.equalsIgnoreCase("deregistered")
+    )
+      schemeDetailsService.retrievePspDashboardAftReturnsCard(srn, request.pspIdOrException.id, authorisingPsaId)
+    else
+      Future.successful(Html(""))
 
   private def withUserAnswers(srn: String)(block: UserAnswers => Future[Result])
                              (implicit request: AuthenticatedRequest[AnyContent]): Future[Result] = {

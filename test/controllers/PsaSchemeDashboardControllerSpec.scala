@@ -45,8 +45,6 @@ class PsaSchemeDashboardControllerSpec extends ControllerSpecBase with MockitoSu
   private val mockService: PsaSchemeDashboardService = mock[PsaSchemeDashboardService]
 
   private val schemeName = "Benefits Scheme"
-  private val pstr = Some("10000678RE")
-  private val openDate = Some("10 October 2012")
   private val srn = SchemeReferenceNumber("S1000000456")
   private val aftHtml = Html("test-aft-html")
 

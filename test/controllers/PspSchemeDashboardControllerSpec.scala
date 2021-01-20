@@ -119,7 +119,8 @@ class PspSchemeDashboardControllerSpec
 
   private def viewAsString(
                             clientReference: Option[String] = None,
-                            openDate: Option[String] = None
+                            openDate: Option[String] = None,
+                            aftReturnsCard: Html = aftReturnsCard
                           ): String = view(
     schemeName = schemeName,
     aftReturnsCard = aftReturnsCard,
@@ -158,9 +159,9 @@ class PspSchemeDashboardControllerSpec
   }
 
   "PspSchemeDashboardController.onPageLoad" must {
-    "return ok and correct cards" in {
+    "return ok and correct cards when start aft is allowed" in {
       when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
-        .thenReturn(Future.successful(ua))
+        .thenReturn(Future.successful(ua()))
       when(minimalConnector.getMinimalPspDetails(any())(any(), any()))
         .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false)))
       when(listSchemesConnector.getListOfSchemesForPsp(any())(any(), any()))
@@ -175,9 +176,26 @@ class PspSchemeDashboardControllerSpec
       contentAsString(result) mustBe viewAsString()
     }
 
+    "return ok and correct cards when start aft is not allowed" in {
+      when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
+        .thenReturn(Future.successful(ua("pending")))
+      when(minimalConnector.getMinimalPspDetails(any())(any(), any()))
+        .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false)))
+      when(listSchemesConnector.getListOfSchemesForPsp(any())(any(), any()))
+        .thenReturn(Future.successful(Right(listOfSchemesResponse)))
+      when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any())(any(), any()))
+        .thenReturn(cards(None, None))
+
+
+      val result = controller().onPageLoad(srn)(fakeRequest)
+
+      status(result) mustBe OK
+      contentAsString(result) mustBe viewAsString(aftReturnsCard = Html(""))
+    }
+
     "return ok and correct cards when open date and client ref are populated" in {
       when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
-        .thenReturn(Future.successful(ua))
+        .thenReturn(Future.successful(ua()))
       when(minimalConnector.getMinimalPspDetails(any())(any(), any()))
         .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false)))
       when(listSchemesConnector.getListOfSchemesForPsp(any())(any(), any()))
@@ -193,7 +211,7 @@ class PspSchemeDashboardControllerSpec
 
     "return not found when list schemes does not come back" in {
       when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
-        .thenReturn(Future.successful(ua))
+        .thenReturn(Future.successful(ua()))
       when(minimalConnector.getMinimalPspDetails(any())(any(), any()))
         .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false)))
       when(listSchemesConnector.getListOfSchemesForPsp(any())(any(), any()))
@@ -208,7 +226,7 @@ class PspSchemeDashboardControllerSpec
 
     "return see other when RLS flag true" in {
       when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
-        .thenReturn(Future.successful(ua))
+        .thenReturn(Future.successful(ua()))
       when(minimalConnector.getMinimalPspDetails(any())(any(), any()))
         .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = true)))
 
@@ -219,7 +237,7 @@ class PspSchemeDashboardControllerSpec
 
     "return see other if pspDetails id does match psp id from request" in {
       when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
-        .thenReturn(Future.successful(ua))
+        .thenReturn(Future.successful(ua()))
       when(minimalConnector.getMinimalPspDetails(any())(any(), any()))
         .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false)))
 
@@ -248,13 +266,15 @@ object PspSchemeDashboardControllerSpec {
       rlsFlag = rlsFlag
     )
 
-  private val ua = UserAnswers(
-    Json.obj(
-      "pspDetails" -> pspDetails,
-      "schemeName" -> schemeName,
-      "pstr" -> pstr
+  private def ua(schemeStatus: String = "open"): UserAnswers =
+    UserAnswers(
+      Json.obj(
+        "pspDetails" -> pspDetails,
+        "schemeName" -> schemeName,
+        "pstr" -> pstr,
+        "schemeStatus" -> schemeStatus
+      )
     )
-  )
 
   private val returnLink: Link =
     Link(
