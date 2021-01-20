@@ -43,31 +43,36 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
                                              psaSchemeDashboardService: PsaSchemeDashboardService,
                                              view: psaSchemeDashboard,
                                              frontendConnector: FrontendConnector
-                                       )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+                                            )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate().async {
     implicit request =>
       getSchemeAndLock(srn).flatMap { case (userAnswers, lock, listOfSchemes) =>
 
         val schemeName = userAnswers.get(SchemeNameId).getOrElse("")
-        val isSchemeOpen = userAnswers.get(SchemeStatusId).getOrElse("").equalsIgnoreCase("open")
+        val schemeStatus = userAnswers.get(SchemeStatusId).getOrElse("")
+
         val updatedUa = userAnswers.set(SchemeSrnId)(srn.id).flatMap(_.set(SchemeNameId)(schemeName)).asOpt.getOrElse(userAnswers)
 
         for {
-          aftHtml <- retrieveAftTilesHtml(srn, isSchemeOpen)
+          aftHtml <- retrieveAftTilesHtml(srn, schemeStatus)
           _ <- userAnswersCacheConnector.upsert(request.externalId, updatedUa.json)
           cards <- psaSchemeDashboardService.cards(srn, lock, listOfSchemes, userAnswers)
         } yield {
-              Ok(view(schemeName, aftHtml, cards))
-          }
+          Ok(view(schemeName, aftHtml, cards))
         }
       }
+  }
 
   private def retrieveAftTilesHtml(
                                     srn: String,
-                                    isSchemeOpen: Boolean
+                                    schemeStatus: String
                                   )(implicit request: AuthenticatedRequest[AnyContent]): Future[Html] = {
-    if (isSchemeOpen) {
+    if (
+      schemeStatus.equalsIgnoreCase("open") ||
+      schemeStatus.equalsIgnoreCase("wound-up") ||
+      schemeStatus.equalsIgnoreCase("deregistered")
+    ) {
       frontendConnector.retrieveAftPartial(srn)
     } else {
       Future.successful(Html(""))
