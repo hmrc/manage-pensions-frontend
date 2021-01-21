@@ -27,7 +27,6 @@ import org.scalatestplus.mockito.MockitoSugar
 import viewmodels.{CardSubHeading, CardSubHeadingParam, CardViewModel, Message}
 
 import scala.concurrent.Future
-import scala.language.postfixOps
 
 class PspDashboardServiceSpec extends SpecBase with MockitoSugar with BeforeAndAfterEach with ScalaFutures {
 
