@@ -35,5 +35,5 @@ case class CardSubHeading(
 
 case class CardSubHeadingParam(
                                 subHeadingParam: String,
-                                subHeadingParamClasses: String,
+                                subHeadingParamClasses: String
                               )
