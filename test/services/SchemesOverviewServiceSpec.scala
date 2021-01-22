@@ -39,7 +39,6 @@ import java.time.format.DateTimeFormatter
 import java.time.{LocalDate, ZoneOffset}
 
 import scala.concurrent.Future
-import scala.language.postfixOps
 
 class SchemesOverviewServiceSpec extends SpecBase with MockitoSugar with BeforeAndAfterEach with ScalaFutures {
 

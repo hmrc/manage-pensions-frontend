@@ -17,7 +17,6 @@
 package controllers
 
 import connectors.aft.AftCacheConnector
-import controllers.actions.FakeAuthAction
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -33,7 +32,6 @@ class LogoutControllerSpec extends ControllerSpecBase with MockitoSugar {
   private def logoutController = new LogoutController(
     appConfig = frontendAppConfig,
     aftCacheConnector = mockAftCacheConnector,
-    authenticate = FakeAuthAction,
     controllerComponents = controllerComponents
   )
 
