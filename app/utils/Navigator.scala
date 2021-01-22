@@ -29,6 +29,8 @@ import scala.concurrent.ExecutionContext
 
 abstract class Navigator {
 
+  private val logger = Logger(classOf[Navigator])
+
   protected def routeMap(ua: UserAnswers): PartialFunction[Identifier, Call]
 
   protected def editRouteMap(ua: UserAnswers): PartialFunction[Identifier, Call]
@@ -45,7 +47,7 @@ abstract class Navigator {
   }
 
   private[this] def defaultPage(id: Identifier, mode: Mode): Call = {
-    Logger.warn(s"No navigation defined for id $id in mode $mode")
+    logger.warn(s"No navigation defined for id $id in mode $mode")
     controllers.routes.IndexController.onPageLoad()
   }
 }

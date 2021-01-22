@@ -16,20 +16,15 @@
 
 package connectors.scheme
 
-import com.google.inject.ImplementedBy
-import com.google.inject.Inject
-import com.google.inject.Singleton
+import com.google.inject.{ImplementedBy, Inject, Singleton}
 import config.FrontendAppConfig
 import play.api.Logger
 import play.api.http.Status.OK
 import play.api.libs.json.Json
-import uk.gov.hmrc.http._
-import uk.gov.hmrc.http.HttpClient
-import utils.HttpResponseHelper
-import utils.UserAnswers
+import uk.gov.hmrc.http.{HttpClient, _}
+import utils.{HttpResponseHelper, UserAnswers}
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Failure
 
 @ImplementedBy(classOf[SchemeDetailsConnectorImpl])
@@ -47,6 +42,8 @@ trait SchemeDetailsConnector {
 class SchemeDetailsConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig)
   extends SchemeDetailsConnector
     with HttpResponseHelper {
+
+  private val logger = Logger(classOf[SchemeDetailsConnectorImpl])
 
   override def getSchemeDetails(
                                  psaId: String,
@@ -72,7 +69,7 @@ class SchemeDetailsConnectorImpl @Inject()(http: HttpClient, config: FrontendApp
         case _ => handleErrorResponse("GET", url)(response)
       }
     } andThen {
-      case Failure(t: Throwable) => Logger.warn("Unable to get scheme details", t)
+      case Failure(t: Throwable) => logger.warn("Unable to get scheme details", t)
     }
   }
 
@@ -88,7 +85,7 @@ class SchemeDetailsConnectorImpl @Inject()(http: HttpClient, config: FrontendApp
         case _ => handleErrorResponse("GET", url)(response)
       }
     } andThen {
-      case Failure(t: Throwable) => Logger.warn("Unable to psp get scheme details", t)
+      case Failure(t: Throwable) => logger.warn("Unable to psp get scheme details", t)
     }
   }
 }

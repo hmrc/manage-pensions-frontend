@@ -67,6 +67,8 @@ case class TolerantAddress(addressLine1: Option[String],
 
 object TolerantAddress {
 
+  private val logger = Logger(classOf[TolerantAddress])
+
   val postCodeLookupAddressReads: Reads[TolerantAddress] = (
     (JsPath \ "address" \ "lines").read[List[String]] and
       (JsPath \ "address" \ "postcode").read[String] and
@@ -78,7 +80,7 @@ object TolerantAddress {
     val addressLines: (Option[String], Option[String], Option[String], Option[String]) = {
       lines.size match {
         case 0 =>
-          Logger.warn(s"[NoAddressLinesFoundException]-$postCode,$countryCode")
+          logger.warn(s"[NoAddressLinesFoundException]-$postCode,$countryCode")
           (None, None, None, None)
         case 1 =>
           val townOrCounty = getTownOrCounty(town, county, lines)

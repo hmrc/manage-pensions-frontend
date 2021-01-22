@@ -84,6 +84,8 @@ class PsaRemovePspDeclarationController @Inject()(
     with I18nSupport
     with Retrievals {
 
+  private val logger = Logger(classOf[PsaRemovePspDeclarationController])
+
   private def form: Form[Boolean] = formProvider()
 
   def onPageLoad(index: Index): Action[AnyContent] =
@@ -110,32 +112,32 @@ class PsaRemovePspDeclarationController @Inject()(
                   Future.successful(BadRequest(view(formWithErrors, schemeName, srn, index))),
                 value => {
                   val psaId = request.psaIdOrException.id
-                    for {
-                      cacheMap <- userAnswersCacheConnector.save(request.externalId, PsaRemovePspDeclarationId(index), value)
-                      _ <-  pspConnector.deAuthorise(
-                          pstr = pstr,
-                          deAuthorise = DeAuthorise(
-                            ceaseIDType = "PSPID",
-                            ceaseNumber = pspDetails.id,
-                            initiatedIDType = "PSAID",
-                            initiatedIDNumber = request.psaIdOrException.id,
-                            ceaseDate = LocalDate.now().toString
-                        )
+                  for {
+                    cacheMap <- userAnswersCacheConnector.save(request.externalId, PsaRemovePspDeclarationId(index), value)
+                    _ <- pspConnector.deAuthorise(
+                      pstr = pstr,
+                      deAuthorise = DeAuthorise(
+                        ceaseIDType = "PSPID",
+                        ceaseNumber = pspDetails.id,
+                        initiatedIDType = "PSAID",
+                        initiatedIDNumber = request.psaIdOrException.id,
+                        ceaseDate = LocalDate.now().toString
                       )
-                      minimalPSAPSP <- minimalConnector.getMinimalPsaDetails(psaId)
-                      _ <- sendEmail(minimalPSAPSP, psaId, pspDetails.id, pstr, pspDetails.name, schemeName)
-                    } yield {
-                      auditService.sendEvent(
-                        PSPDeauthorisationEmailAuditEvent(
-                          psaId = psaId,
-                          pspId = pspDetails.id,
-                          pstr = pstr,
-                          minimalPSAPSP.email
-                        )
+                    )
+                    minimalPSAPSP <- minimalConnector.getMinimalPsaDetails(psaId)
+                    _ <- sendEmail(minimalPSAPSP, psaId, pspDetails.id, pstr, pspDetails.name, schemeName)
+                  } yield {
+                    auditService.sendEvent(
+                      PSPDeauthorisationEmailAuditEvent(
+                        psaId = psaId,
+                        pspId = pspDetails.id,
+                        pstr = pstr,
+                        minimalPSAPSP.email
                       )
-                      Redirect(navigator.nextPage(PsaRemovePspDeclarationId(index), NormalMode, UserAnswers(cacheMap)))
-                    }
+                    )
+                    Redirect(navigator.nextPage(PsaRemovePspDeclarationId(index), NormalMode, UserAnswers(cacheMap)))
                   }
+                }
               )
             } else {
               Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
@@ -144,11 +146,11 @@ class PsaRemovePspDeclarationController @Inject()(
     }
 
   private def callBackUrl(
-    psaId: String,
-    pspId: String,
-    pstr: String,
-    email: String
-  ): String = {
+                           psaId: String,
+                           pspId: String,
+                           pstr: String,
+                           email: String
+                         ): String = {
     val encryptedPsaId = URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(psaId)).value, StandardCharsets.UTF_8.toString)
     val encryptedPspId = URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(pspId)).value, StandardCharsets.UTF_8.toString)
     val encryptedPstr = URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(pstr)).value, StandardCharsets.UTF_8.toString)
@@ -158,13 +160,13 @@ class PsaRemovePspDeclarationController @Inject()(
   }
 
   private def sendEmail(
-    minimalPSAPSP: MinimalPSAPSP,
-    psaId: String,
-    pspId: String,
-    pstr: String,
-    pspName: String,
-    schemeName: String
-  )(implicit request: DataRequest[AnyContent], ec: ExecutionContext): Future[Unit] = {
+                         minimalPSAPSP: MinimalPSAPSP,
+                         psaId: String,
+                         pspId: String,
+                         pstr: String,
+                         pspName: String,
+                         schemeName: String
+                       )(implicit request: DataRequest[AnyContent], ec: ExecutionContext): Future[Unit] = {
     emailConnector.sendEmail(
       SendEmailRequest(
         to = List(minimalPSAPSP.email),
@@ -177,11 +179,11 @@ class PsaRemovePspDeclarationController @Inject()(
         force = false,
         eventUrl = Some(callBackUrl(psaId, pspId, pstr, minimalPSAPSP.email))
       )
-    ).map{ emailStatus =>
-        if (emailStatus == EmailNotSent) {
-          Logger.error("Unable to send email to de-authorising PSA. Support intervention possibly required.")
-        }
-        ()
+    ).map { emailStatus =>
+      if (emailStatus == EmailNotSent) {
+        logger.error("Unable to send email to de-authorising PSA. Support intervention possibly required.")
+      }
+      ()
     }
   }
 }

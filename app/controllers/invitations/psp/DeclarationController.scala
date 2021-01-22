@@ -64,9 +64,10 @@ class DeclarationController @Inject()(
   extends FrontendBaseController
     with I18nSupport
     with Retrievals {
+
+  private val logger = Logger(classOf[DeclarationController])
+
   val form: Form[Boolean] = formProvider()
-  val sessionExpired: Future[Result] =
-    Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
 
   def onPageLoad(): Action[AnyContent] = (auth() andThen getData andThen requireData) {
     implicit request =>
@@ -106,9 +107,12 @@ class DeclarationController @Inject()(
               case _: ActiveRelationshipExistsException =>
                 Future.successful(Redirect(controllers.invitations.psp.routes.AlreadyAssociatedWithSchemeController.onPageLoad()))
             }
-          case _ => sessionExpired
+          case _ =>
+            Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
         }
-    }.left.map(_ => sessionExpired)
+    }.left.map(_ =>
+      Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+    )
 
 
   private def getPstr(srn: String)(implicit request: DataRequest[AnyContent]): Future[Option[String]] =
@@ -157,7 +161,7 @@ class DeclarationController @Inject()(
 
     emailConnector.sendEmail(email).map { emailStatus =>
       if (emailStatus == EmailNotSent) {
-        Logger.error("Unable to send email to authorising PSA. Support intervention possibly required.")
+        logger.error("Unable to send email to authorising PSA. Support intervention possibly required.")
       }
       ()
     }

@@ -28,8 +28,13 @@ import utils.HttpResponseHelper
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Failure
 
-class FeatureToggleConnector @Inject()(http: HttpClient, config: FrontendAppConfig) extends HttpResponseHelper {
-  def get(name: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[FeatureToggle] = {
+class FeatureToggleConnector @Inject()(http: HttpClient, config: FrontendAppConfig)
+  extends HttpResponseHelper {
+
+  private val logger = Logger(classOf[FeatureToggleConnector])
+
+  def get(name: String)
+         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[FeatureToggle] = {
     val endPoint = config.featureToggleUrl(name)
     http.GET[HttpResponse](endPoint) map {
       response =>
@@ -38,7 +43,7 @@ class FeatureToggleConnector @Inject()(http: HttpClient, config: FrontendAppConf
         case _ => handleErrorResponse("GET", endPoint)(response)
       }
     } andThen {
-      case Failure(t: Throwable) => Logger.warn("Unable to get toggle value", t)
+      case Failure(t: Throwable) => logger.warn("Unable to get toggle value", t)
     }
   }
 }

@@ -33,18 +33,26 @@ import scala.util.Failure
 
 @ImplementedBy(classOf[PsaRemovalConnectorImpl])
 trait PsaRemovalConnector {
-  def remove(psaToBeRemoved: PsaToBeRemovedFromScheme)(implicit hc: HeaderCarrier, ec: ExecutionContext) : Future[Unit]
+  def remove(psaToBeRemoved: PsaToBeRemovedFromScheme)
+            (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit]
 }
 
-class PsaRemovalConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) extends PsaRemovalConnector with HttpResponseHelper {
-  override def remove(psaToBeRemoved: PsaToBeRemovedFromScheme)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
-    http.POST[PsaToBeRemovedFromScheme, HttpResponse](config.removePsaUrl,psaToBeRemoved) map {
-      response => response.status match {
-        case NO_CONTENT => ()
-        case _ => handleErrorResponse("POST", config.removePsaUrl)(response)
-      }
+class PsaRemovalConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig)
+  extends PsaRemovalConnector
+    with HttpResponseHelper {
+
+  private val logger = Logger(classOf[PsaRemovalConnectorImpl])
+
+  override def remove(psaToBeRemoved: PsaToBeRemovedFromScheme)
+                     (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
+    http.POST[PsaToBeRemovedFromScheme, HttpResponse](config.removePsaUrl, psaToBeRemoved) map {
+      response =>
+        response.status match {
+          case NO_CONTENT => ()
+          case _ => handleErrorResponse("POST", config.removePsaUrl)(response)
+        }
     } andThen {
-      case Failure(t: Throwable) => Logger.warn("Unable to remove PSA from Scheme", t)
+      case Failure(t: Throwable) => logger.warn("Unable to remove PSA from Scheme", t)
     }
   }
 }

@@ -16,27 +16,19 @@
 
 package connectors.scheme
 
-import com.google.inject.ImplementedBy
-import com.google.inject.Inject
-import com.google.inject.Singleton
+import com.google.inject.{ImplementedBy, Inject, Singleton}
 import config.FrontendAppConfig
 import models.FeatureToggle.Enabled
 import models.FeatureToggleName.IntegrationFrameworkListSchemes
 import models.ListOfSchemes
 import play.api.Logger
 import play.api.http.Status._
-import play.api.libs.json.JsError
-import play.api.libs.json.JsResultException
-import play.api.libs.json.JsSuccess
-import play.api.libs.json.Json
+import play.api.libs.json.{JsError, JsResultException, JsSuccess, Json}
 import services.FeatureToggleService
 import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.HttpResponse
-import uk.gov.hmrc.http.HttpClient
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @ImplementedBy(classOf[ListOfSchemesConnectorImpl])
 trait ListOfSchemesConnector {
@@ -55,6 +47,8 @@ class ListOfSchemesConnectorImpl @Inject()(
                                             config: FrontendAppConfig,
                                             featureToggleService: FeatureToggleService
                                           ) extends ListOfSchemesConnector {
+
+  private val logger = Logger(classOf[ListOfSchemesConnectorImpl])
 
   def getListOfSchemes(psaId: String)
                       (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]] = {
@@ -84,7 +78,7 @@ class ListOfSchemesConnectorImpl @Inject()(
             case JsError(errors) => throw JsResultException(errors)
           }
         case _ =>
-          Logger.error(response.body)
+          logger.error(response.body)
           Left(response)
       }
     }

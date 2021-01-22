@@ -37,9 +37,13 @@ class MicroserviceCacheConnector @Inject()(
                                             http: WSClient
                                           ) extends UserAnswersCacheConnector {
 
-  protected def url(id: String) = s"${config.pensionsSchemeUrl}/pensions-scheme/journey-cache/scheme/$id"
+  private val logger = Logger(classOf[MicroserviceCacheConnector])
 
-  protected def lastUpdatedUrl(id: String) = s"${config.pensionsSchemeUrl}/pensions-scheme/journey-cache/scheme/$id/lastUpdated"
+  protected def url(id: String) =
+    s"${config.pensionsSchemeUrl}/pensions-scheme/journey-cache/scheme/$id"
+
+  protected def lastUpdatedUrl(id: String) =
+    s"${config.pensionsSchemeUrl}/pensions-scheme/journey-cache/scheme/$id/lastUpdated"
 
   override def save[A, I <: TypedIdentifier[A]](cacheId: String, id: I, value: A)
                                                (implicit
@@ -128,7 +132,7 @@ class MicroserviceCacheConnector @Inject()(
           case NOT_FOUND =>
             Future.successful(None)
           case OK =>
-            Logger.debug(s"connectors.MicroserviceCacheConnector.fetch: Successful response: ${response.body}")
+            logger.debug(s"connectors.MicroserviceCacheConnector.fetch: Successful response: ${response.body}")
             Future.successful(Some(Json.parse(response.body)))
           case _ =>
             Future.failed(new HttpException(response.body, response.status))
