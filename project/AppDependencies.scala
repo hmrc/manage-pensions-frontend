@@ -7,23 +7,23 @@ object AppDependencies {
   val compile: Seq[ModuleID] = Seq(
     play.sbt.PlayImport.ws,
     "uk.gov.hmrc"       %% "logback-json-logger"           % "4.9.0",
-    "uk.gov.hmrc"       %% "govuk-template"                % "5.61.0-play-26",
-    "uk.gov.hmrc"       %% "play-health"                   % "3.16.0-play-26",
-    "uk.gov.hmrc"       %% "play-ui"                       % "8.21.0-play-26",
-    "uk.gov.hmrc"       %% "http-caching-client"           % "9.2.0-play-26",
-    "uk.gov.hmrc"       %% "play-conditional-form-mapping" % "1.5.0-play-26",
-    "uk.gov.hmrc"       %% "bootstrap-frontend-play-26"    % "3.3.0",
-    "uk.gov.hmrc"       %% "play-language"                 % "4.9.0-play-26",
-    "uk.gov.hmrc"       %% "domain"                        % "5.10.0-play-26",
-    "uk.gov.hmrc"       %% "play-whitelist-filter"         % "3.4.0-play-26",
+    "uk.gov.hmrc"       %% "govuk-template"                % "5.61.0-play-27",
+    "uk.gov.hmrc"       %% "play-health"                   % "3.16.0-play-27",
+    "uk.gov.hmrc"       %% "play-ui"                       % "8.21.0-play-27",
+    "uk.gov.hmrc"       %% "http-caching-client"           % "9.2.0-play-27",
+    "uk.gov.hmrc"       %% "play-conditional-form-mapping" % "1.5.0-play-27",
+    "uk.gov.hmrc"       %% "bootstrap-frontend-play-27"    % "3.3.0",
+    "uk.gov.hmrc"       %% "play-language"                 % "4.9.0-play-27",
+    "uk.gov.hmrc"       %% "domain"                        % "5.10.0-play-27",
+    "uk.gov.hmrc"       %% "play-whitelist-filter"         % "3.4.0-play-27",
     "com.typesafe.play" %% "play-json-joda"                % "2.6.10",
-    "uk.gov.hmrc"       %% "play-partials"                 % "7.1.0-play-26"
+    "uk.gov.hmrc"       %% "play-partials"                 % "7.1.0-play-27"
   )
 
   val test: Seq[ModuleID] = Seq(
     "uk.gov.hmrc"            %% "hmrctest"                    % "3.10.0-play-26",
     "org.scalatest"          %% "scalatest"                   % "3.0.8",
-    "org.scalatestplus.play" %% "scalatestplus-play"          % "3.1.2",
+    "org.scalatestplus.play" %% "scalatestplus-play"          % "4.0.2",
     "org.scalacheck"         %% "scalacheck"                  % "1.14.0",
     "org.pegdown"            %  "pegdown"                     % "1.6.0",
     "org.jsoup"              %  "jsoup"                       % "1.12.1",

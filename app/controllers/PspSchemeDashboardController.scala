@@ -59,6 +59,8 @@ class PspSchemeDashboardController @Inject()(
     with I18nSupport
     with Retrievals {
 
+  private val logger = Logger(classOf[PspSchemeDashboardController])
+
   def onPageLoad(srn: String): Action[AnyContent] = authenticate(PSP).async {
     implicit request =>
       withUserAnswers(srn) { userAnswers =>
@@ -108,7 +110,7 @@ class PspSchemeDashboardController @Inject()(
             }
           }
         } else {
-          Logger.debug("PSP tried to access an unauthorised scheme")
+          logger.debug("PSP tried to access an unauthorised scheme")
           Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
         }
       }

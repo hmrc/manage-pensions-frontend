@@ -18,8 +18,7 @@ package utils
 
 import identifiers.TypedIdentifier
 import play.api.Logger
-import play.api.libs.json.JsResult
-import play.api.libs.json._
+import play.api.libs.json.{JsResult, _}
 import play.api.mvc.Result
 import play.api.mvc.Results._
 
@@ -28,6 +27,8 @@ import scala.concurrent.Future
 import scala.language.implicitConversions
 
 case class UserAnswers(json: JsValue = Json.obj()) {
+
+  private val logger = Logger(classOf[UserAnswers])
 
   def get[A](id: TypedIdentifier[A])(implicit rds: Reads[A]): Option[A] = {
     get[A](id.path)
@@ -109,7 +110,7 @@ case class UserAnswers(json: JsValue = Json.obj()) {
       .set(id)(value)
       .fold(
         errors => {
-          Logger.error("Unable to set user answer", JsResultException(errors))
+          logger.error("Unable to set user answer", JsResultException(errors))
           Future.successful(InternalServerError)
         },
         userAnswers => fn(userAnswers)

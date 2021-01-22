@@ -42,10 +42,14 @@ trait PspConnector {
 }
 
 abstract class DeAuthorisationException extends Exception
+
 class DuplicateSubmissionException extends DeAuthorisationException
 
-class PspConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) extends PspConnector with HttpResponseHelper {
+class PspConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig)
+  extends PspConnector
+    with HttpResponseHelper {
 
+  private val logger = Logger(classOf[PspConnectorImpl])
 
   override def authorisePsp(pstr: String, psaId: String, pspId: String, clientReference: Option[String])
                            (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
@@ -70,7 +74,7 @@ class PspConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) ex
           case _ => handleErrorResponse("POST", config.authorisePspUrl)(response)
         }
     } andThen {
-      case Failure(t: Throwable) => Logger.warn("Unable to authorise psp", t)
+      case Failure(t: Throwable) => logger.warn("Unable to authorise psp", t)
     }
   }
 
@@ -91,7 +95,7 @@ class PspConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) ex
           case _ => handleErrorResponse("POST", config.deAuthorisePspUrl)(response)
         }
     } andThen {
-      case Failure(t: Throwable) => Logger.warn("Unable to de-authorise psp", t)
+      case Failure(t: Throwable) => logger.warn("Unable to de-authorise psp", t)
     }
   }
 }

@@ -31,6 +31,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class FrontendConnector @Inject()(http: HttpClient, config: FrontendAppConfig) {
 
+  private val logger = Logger(classOf[FrontendConnector])
+
   def retrieveAftPartial[A](srn: String)
                            (implicit request: Request[A], ec: ExecutionContext): Future[Html] =
     retrievePartial(config.aftPartialHtmlUrl.format(srn))
@@ -85,7 +87,7 @@ class FrontendConnector @Inject()(http: HttpClient, config: FrontendAppConfig) {
       case HtmlPartial.Success(_, content) =>
         content
       case HtmlPartial.Failure(_, _) =>
-        Logger.warn("Failed to retrieve AFT partial")
+        logger.warn("Failed to retrieve AFT partial")
         Html("")
     }
   }

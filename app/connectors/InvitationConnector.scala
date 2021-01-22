@@ -34,26 +34,40 @@ import scala.util.Failure
 @ImplementedBy(classOf[InvitationConnectorImpl])
 trait InvitationConnector {
 
-  def invite(invitation: Invitation)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit]
+  def invite(invitation: Invitation)
+            (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit]
 
-  def acceptInvite(acceptedInvitation: AcceptedInvitation)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit]
+  def acceptInvite(acceptedInvitation: AcceptedInvitation)
+                  (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit]
 
 }
 
 abstract class InvitationException extends Exception
+
 class NameMatchingFailedException extends InvitationException
+
 class PsaAlreadyInvitedException extends InvitationException
 
 abstract class AcceptInvitationException extends Exception
+
 class PstrInvalidException extends AcceptInvitationException
+
 class InvalidInvitationPayloadException extends AcceptInvitationException
+
 class InviteePsaIdInvalidException extends AcceptInvitationException
+
 class InviterPsaIdInvalidException extends AcceptInvitationException
+
 class ActiveRelationshipExistsException extends AcceptInvitationException
 
-class InvitationConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) extends InvitationConnector with HttpResponseHelper {
+class InvitationConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig)
+  extends InvitationConnector
+    with HttpResponseHelper {
 
-  override def invite(invitation: Invitation)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
+  private val logger = Logger(classOf[InvitationConnectorImpl])
+
+  override def invite(invitation: Invitation)
+                     (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
     val nameMatchingFailedMessage = "The name and PSA Id do not match"
     val psaAlreadyInvitedMessage = "The invitation is to a PSA already associated with this scheme"
 
@@ -66,7 +80,7 @@ class InvitationConnectorImpl @Inject()(http: HttpClient, config: FrontendAppCon
           case _ => handleErrorResponse("POST", config.inviteUrl)(response)
         }
     } andThen {
-      case Failure(t: Throwable) => Logger.warn("Unable to invite PSA to administer scheme", t)
+      case Failure(t: Throwable) => logger.warn("Unable to invite PSA to administer scheme", t)
     }
   }
 
@@ -85,7 +99,8 @@ class InvitationConnectorImpl @Inject()(http: HttpClient, config: FrontendAppCon
     }
   }
 
-  override def acceptInvite(acceptedInvitation: AcceptedInvitation)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
+  override def acceptInvite(acceptedInvitation: AcceptedInvitation)
+                           (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
 
     http.POST[AcceptedInvitation, HttpResponse](config.acceptInvitationUrl, acceptedInvitation) map {
       response =>
@@ -96,7 +111,7 @@ class InvitationConnectorImpl @Inject()(http: HttpClient, config: FrontendAppCon
           case _ => handleErrorResponse("POST", config.acceptInvitationUrl)(response)
         }
     } andThen {
-      case Failure(t: Throwable) => Logger.warn("Unable to accept invitation to administer a scheme", t)
+      case Failure(t: Throwable) => logger.warn("Unable to accept invitation to administer a scheme", t)
     }
   }
 

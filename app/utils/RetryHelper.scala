@@ -31,6 +31,7 @@ import scala.concurrent.Future
 
 trait RetryHelper {
 
+  private val logger = Logger(classOf[RetryHelper])
 
   val as: ActorSystem = ActorSystem()
 
@@ -45,7 +46,7 @@ trait RetryHelper {
       case e: UpstreamErrorResponse if is5xx(e.statusCode) =>
         if (currentAttempt < config.retryAttempts) {
           val wait = Math.ceil(currentWait * config.retryWaitFactor).toInt
-          Logger.warn(s"Failure, retrying after $wait ms, attempt $currentAttempt")
+          logger.warn(s"Failure, retrying after $wait ms, attempt $currentAttempt")
           after(
             duration = wait.milliseconds,
             scheduler = as.scheduler,

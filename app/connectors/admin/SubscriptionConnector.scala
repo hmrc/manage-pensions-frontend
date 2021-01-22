@@ -16,40 +16,45 @@
 
 package connectors.admin
 
-import com.google.inject.ImplementedBy
-import com.google.inject.Inject
+import com.google.inject.{ImplementedBy, Inject}
 import config.FrontendAppConfig
 import models.SubscriptionDetails
 import play.api.Logger
 import play.api.http.Status._
 import play.api.libs.json._
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.HttpResponse
-import uk.gov.hmrc.http.HttpClient
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 import utils.HttpResponseHelper
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Failure
 
 abstract class SubscriptionException extends Exception
+
 class PsaIdInvalidSubscriptionException extends SubscriptionException
+
 class CorrelationIdInvalidSubscriptionException extends SubscriptionException
+
 class PsaIdNotFoundSubscriptionException extends SubscriptionException
 
 @ImplementedBy(classOf[SubscriptionConnectorImpl])
 trait SubscriptionConnector {
 
-  def getSubscriptionDetails(psaId:String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[SubscriptionDetails]
+  def getSubscriptionDetails(psaId: String)
+                            (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[SubscriptionDetails]
 }
 
-class SubscriptionConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig) extends SubscriptionConnector with HttpResponseHelper{
+class SubscriptionConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig)
+  extends SubscriptionConnector
+    with HttpResponseHelper {
 
-  override def getSubscriptionDetails(psaId:String) (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[SubscriptionDetails] = {
+  private val logger = Logger(classOf[SubscriptionConnectorImpl])
 
-    val psaIdHC = hc.withExtraHeaders("psaId"-> psaId)
+  override def getSubscriptionDetails(psaId: String)
+                                     (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[SubscriptionDetails] = {
 
-    val url  = config.subscriptionDetailsUrl
+    val psaIdHC = hc.withExtraHeaders("psaId" -> psaId)
+
+    val url = config.subscriptionDetailsUrl
 
     http.GET[HttpResponse](url)(implicitly, psaIdHC, implicitly) map { response =>
 
@@ -61,12 +66,12 @@ class SubscriptionConnectorImpl @Inject()(http: HttpClient, config: FrontendAppC
         case _ => handleErrorResponse("GET", config.subscriptionDetailsUrl)(response)
       }
     } andThen {
-      case Failure(t: Throwable) => Logger.warn("Unable to get PSA subscription details", t)
+      case Failure(t: Throwable) => logger.warn("Unable to get PSA subscription details", t)
     }
 
   }
 
-  private def validateJson(json: JsValue): SubscriptionDetails ={
+  private def validateJson(json: JsValue): SubscriptionDetails = {
     json.validate[SubscriptionDetails] match {
       case JsSuccess(value, _) => value
       case JsError(errors) => throw new JsResultException(errors)
