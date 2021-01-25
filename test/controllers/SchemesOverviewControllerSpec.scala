@@ -18,11 +18,12 @@ package controllers
 
 import config._
 import connectors.UserAnswersCacheConnector
+import controllers.Assets.Redirect
 import controllers.actions.{DataRetrievalAction, _}
 import controllers.routes.ListSchemesController
-import models.{Link, MinimalPSAPSP}
+import models.{MinimalPSAPSP, Link}
 import org.joda.time.format.DateTimeFormat
-import org.joda.time.{DateTime, DateTimeZone}
+import org.joda.time.{DateTimeZone, DateTime}
 import org.mockito.Matchers.{eq => eqTo, _}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
@@ -32,7 +33,7 @@ import play.api.test.Helpers.{contentAsString, _}
 import play.twirl.api.Html
 import services.SchemesOverviewService
 import viewmodels.{CardViewModel, Message}
-import viewmodels.{CardSubHeading, CardSubHeadingParam, CardViewModel, Message}
+import viewmodels.{CardSubHeading, CardViewModel, Message, CardSubHeadingParam}
 import views.html.schemesOverview
 
 import scala.concurrent.Future
@@ -56,12 +57,13 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
     tiles
   )(fakeRequest, messages).toString
 
-  private def minimalDetails(rlsFlag:Boolean = false) = MinimalPSAPSP(
+  private def minimalDetails(rlsFlag:Boolean = false, deceasedFlag:Boolean = false) = MinimalPSAPSP(
     email = "a@a.c",
     isPsaSuspended = false,
     organisationName = None,
     individualDetails = None,
-    rlsFlag = rlsFlag
+    rlsFlag = rlsFlag,
+    deceasedFlag = deceasedFlag
   )
 
   private val dummyURl = "/url"
@@ -95,6 +97,21 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(appConfig.psaUpdateContactDetailsUrl)
+      }
+
+      "redirect to contact HMRC page when deceased flag is set" in {
+        when(fakeSchemesOverviewService.getTiles(eqTo(psaId))(any(), any(), any())).thenReturn(Future.successful(Seq(adminCard, schemeCard)))
+        when(fakeSchemesOverviewService.getPsaName(eqTo(psaId))(any()))
+          .thenReturn(Future.successful(Some(psaName)))
+        when(fakeSchemesOverviewService.getPsaMinimalDetails(any())(any()))
+          .thenReturn(Future.successful(minimalDetails(deceasedFlag = true)))
+        when(fakeUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(Json.obj()))
+        when(appConfig.psaUpdateContactDetailsUrl).thenReturn(dummyURl)
+
+        val result = controller().onPageLoad(fakeRequest)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.routes.ContactHMRCController.onPageLoad().url)
       }
 
 

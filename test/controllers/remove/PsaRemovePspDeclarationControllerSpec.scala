@@ -230,7 +230,8 @@ object PsaRemovePspDeclarationControllerSpec {
     isPsaSuspended = false,
     organisationName  = None,
     individualDetails = Some(IndividualDetails(firstName = individualFirstName, middleName = None, lastName = individualLastName)),
-    rlsFlag = false
+    rlsFlag = false,
+    deceasedFlag = false
   )
 
   private val data = Json.obj(
