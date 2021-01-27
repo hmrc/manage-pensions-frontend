@@ -19,7 +19,6 @@ package controllers.remove
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.time.LocalDate
-
 import audit.AuditService
 import audit.PSPDeauthorisationEmailAuditEvent
 import config.FrontendAppConfig
@@ -36,8 +35,8 @@ import forms.remove.RemovePspDeclarationFormProvider
 import identifiers.invitations.PSTRId
 import identifiers.SchemeNameId
 import identifiers.SchemeSrnId
-import identifiers.remove.PsaRemovePspDeclarationId
-import identifiers.remove.PspDetailsId
+import identifiers.remove.{PsaRemovePspDeclarationId, PspDetailsId, PspRemovalDateId}
+
 import javax.inject.Inject
 import models.SendEmailRequest
 import models.invitations.psp.DeAuthorise
@@ -104,8 +103,8 @@ class PsaRemovePspDeclarationController @Inject()(
   def onSubmit(index: Index): Action[AnyContent] =
     (authenticate() andThen getData andThen requireData).async {
       implicit request =>
-        (SchemeSrnId and SchemeNameId and PspDetailsId(index) and PSTRId).retrieve.right.map {
-          case srn ~ schemeName ~ pspDetails ~ pstr =>
+        (SchemeSrnId and SchemeNameId and PspDetailsId(index) and PSTRId and PspRemovalDateId(index)).retrieve.right.map {
+          case srn ~ schemeName ~ pspDetails ~ pstr ~ removalDate =>
             if (pspDetails.authorisingPSAID == request.psaIdOrException.id) {
               form.bindFromRequest().fold(
                 (formWithErrors: Form[Boolean]) =>
@@ -121,7 +120,7 @@ class PsaRemovePspDeclarationController @Inject()(
                         ceaseNumber = pspDetails.id,
                         initiatedIDType = "PSAID",
                         initiatedIDNumber = request.psaIdOrException.id,
-                        ceaseDate = LocalDate.now().toString
+                        ceaseDate = removalDate.toString
                       )
                     )
                     minimalPSAPSP <- minimalConnector.getMinimalPsaDetails(psaId)

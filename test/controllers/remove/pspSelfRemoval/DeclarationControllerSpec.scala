@@ -17,12 +17,12 @@
 package controllers.remove.pspSelfRemoval
 
 import java.time.LocalDate
-
 import connectors.PspConnector
 import controllers.ControllerSpecBase
 import controllers.actions._
 import forms.remove.RemovePspDeclarationFormProvider
 import identifiers.invitations.PSTRId
+import identifiers.remove.pspSelfRemoval.RemovalDateId
 import identifiers.{SchemeNameId, SchemeSrnId}
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -53,7 +53,8 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar {
   private val data = Json.obj(
     PSTRId.toString -> pstr,
     SchemeNameId.toString -> schemeName,
-    SchemeSrnId.toString -> srn
+    SchemeSrnId.toString -> srn,
+    RemovalDateId.toString -> "2020-12-12"
   )
 
   private val view = injector.instanceOf[declaration]

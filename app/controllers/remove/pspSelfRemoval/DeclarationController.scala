@@ -17,13 +17,13 @@
 package controllers.remove.pspSelfRemoval
 
 import java.time.LocalDate
-
 import com.google.inject.Inject
 import connectors.PspConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.remove.RemovePspDeclarationFormProvider
 import identifiers.invitations.PSTRId
+import identifiers.remove.pspSelfRemoval.RemovalDateId
 import identifiers.{SchemeNameId, SchemeSrnId}
 import models.AuthEntity.PSP
 import models.invitations.psp.DeAuthorise
@@ -56,14 +56,14 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
 
   def onSubmit(): Action[AnyContent] = (auth(PSP) andThen getData andThen requireData).async {
       implicit request =>
-        (SchemeSrnId and SchemeNameId and PSTRId).retrieve.right.map {
-          case srn ~ schemeName ~ pstr =>
+        (SchemeSrnId and SchemeNameId and PSTRId and RemovalDateId).retrieve.right.map {
+          case srn ~ schemeName ~ pstr ~ removalDate =>
               form.bindFromRequest().fold(
                 (formWithErrors: Form[Boolean]) =>
                   Future.successful(BadRequest(view(formWithErrors, schemeName, srn))),
                 _ => {
                   val pspId = request.pspIdOrException.id
-                  val deAuthModel: DeAuthorise = DeAuthorise("PSPID", pspId, "PSPID", pspId, LocalDate.now().toString)
+                  val deAuthModel: DeAuthorise = DeAuthorise("PSPID", pspId, "PSPID", pspId, removalDate.toString)
                   pspConnector.deAuthorise(pstr, deAuthModel).map { _ =>
                     Redirect(controllers.remove.pspSelfRemoval.routes.ConfirmationController.onPageLoad())
                   }
