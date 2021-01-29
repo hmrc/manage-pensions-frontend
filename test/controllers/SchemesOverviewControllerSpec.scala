@@ -18,7 +18,6 @@ package controllers
 
 import config._
 import connectors.UserAnswersCacheConnector
-import controllers.Assets.Redirect
 import controllers.actions.{DataRetrievalAction, _}
 import controllers.routes.ListSchemesController
 import models.{MinimalPSAPSP, Link}
@@ -32,7 +31,6 @@ import play.api.libs.json.Json
 import play.api.test.Helpers.{contentAsString, _}
 import play.twirl.api.Html
 import services.SchemesOverviewService
-import viewmodels.{CardViewModel, Message}
 import viewmodels.{CardSubHeading, CardViewModel, Message, CardSubHeadingParam}
 import views.html.schemesOverview
 
@@ -55,7 +53,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
   def viewAsString(): String = view(
     psaName,
     tiles,
-    Html("")
+    html
   )(fakeRequest, messages).toString
 
   private def minimalDetails(rlsFlag:Boolean = false, deceasedFlag:Boolean = false) = MinimalPSAPSP(
@@ -77,9 +75,8 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
           .thenReturn(Future.successful(Some(psaName)))
         when(fakeSchemesOverviewService.getPsaMinimalDetails(any())(any()))
           .thenReturn(Future.successful(minimalDetails()))
-        // TODO: this when claus
         when(fakeSchemesOverviewService.retrievePenaltiesUrlPartial(any(), any()))
-          .thenReturn(Future.successful())
+          .thenReturn(Future.successful(html))
         when(fakeUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(Json.obj()))
 
         val result = controller().onPageLoad(fakeRequest)
