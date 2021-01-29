@@ -21,18 +21,15 @@ import connectors._
 import connectors.admin.MinimalConnector
 import controllers.routes._
 import javax.inject.Inject
-import models.Link
-import models.MinimalPSAPSP
+import models.{Link, MinimalPSAPSP}
 import models.requests.OptionalDataRequest
 import play.api.i18n.Messages
-import play.api.mvc.AnyContent
-import play.api.mvc.Request
+import play.api.mvc.{AnyContent, Request}
 import play.twirl.api.Html
 import uk.gov.hmrc.http.HeaderCarrier
-import viewmodels.{CardSubHeading, CardSubHeadingParam, CardViewModel, Message}
+import viewmodels.{CardSubHeading, CardViewModel, Message, CardSubHeadingParam}
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
                                        minimalPsaConnector: MinimalConnector,
@@ -43,14 +40,16 @@ class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
   def getTiles(psaId: String)(implicit request: OptionalDataRequest[AnyContent], hc: HeaderCarrier, messages: Messages): Future[Seq[CardViewModel]] =
     for {
       invitationLink <- invitationsLink
-      adminHtml <- retrievePenaltiesUrlPartial
       schemeHtml <- frontendConnector.retrieveSchemeUrlsPartial
     } yield {
       Seq(
-        adminCard(invitationLink, psaId, adminHtml),
+        adminCard(invitationLink, psaId),
         schemeCard(schemeHtml)
       )
     }
+
+  def retrievePenaltiesUrlPartial[A](implicit request: Request[A], ec: ExecutionContext): Future[Html] =
+    frontendConnector.retrievePenaltiesUrlPartial
 
   def getPsaName(psaId: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
     minimalPsaConnector.getPsaNameFromPsaID(psaId).map(identity)
@@ -59,15 +58,7 @@ class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
     minimalPsaConnector.getMinimalPsaDetails(psaId)
 
   //TILES HELPER METHODS
-
-  private def retrievePenaltiesUrlPartial[A](implicit request: Request[A]): Future[Html] = {
-    if(appConfig.isFSEnabled) {
-      frontendConnector.retrievePenaltiesUrlPartial
-    } else {
-      Future.successful(Html(""))
-    }
-  }
-  private def adminCard(invitationLink: Seq[Link], psaId: String, html: Html)
+  private def adminCard(invitationLink: Seq[Link], psaId: String)
                        (implicit messages: Messages): CardViewModel =
 
     CardViewModel(
@@ -82,7 +73,7 @@ class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
       links = Seq(
         Link("psaLink", appConfig.registeredPsaDetailsUrl, Message("messages__schemeOverview__psa_change"))
       ) ++ invitationLink ++ deregisterLink,
-      html = Some(html)
+      html = None
     )
 
   private def schemeCard(html: Html)(implicit messages: Messages): CardViewModel =

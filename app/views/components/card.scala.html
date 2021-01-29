@@ -33,7 +33,6 @@
             </h3>
         }
 
-
     </div>
     <div class="card-action">
     @if(cardModel.links.nonEmpty){
@@ -44,9 +43,13 @@
                 </li>
             }
 
-            @if(cardModel.html.nonEmpty){
-                @cardModel.html
-            }
+
+        </ul>
+    }
+
+    @if(cardModel.html.nonEmpty){
+        <ul>
+            @cardModel.html
         </ul>
     }
 

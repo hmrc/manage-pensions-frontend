@@ -162,6 +162,7 @@ messages__schemesOverview__pagination__last__ariaLabel = Last page
 messages__schemesOverview__pagination__pageNumber__ariaLabel = page {0} of {1}
 messages__schemesOverview__pagination__pageNumberCurrent__ariaLabel = current page, page {0} of {1}
 
+messages__schemeOverview__penalties_heading = Penalties
 
 messages__schemeOverview__psa_id = Administrator ID:
 messages__schemeOverview__psa_heading = Administrator details
