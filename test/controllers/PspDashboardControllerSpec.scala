@@ -56,6 +56,7 @@ class PspDashboardControllerSpec
 
   private val view: schemesOverview = app.injector.instanceOf[schemesOverview]
   private val dummyUrl = "dummy"
+  private val dummyHtml = Html("")
 
   def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyDataPsp): PspDashboardController =
     new PspDashboardController(
@@ -72,7 +73,7 @@ class PspDashboardControllerSpec
   def viewAsString(): String = view(
     name = pspName,
     cards = tiles,
-    Html(""),
+    dummyHtml,
     subHeading = Some(subHeading),
     returnLink = Some(returnLink)
   )(

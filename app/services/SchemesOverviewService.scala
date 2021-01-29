@@ -49,7 +49,11 @@ class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
     }
 
   def retrievePenaltiesUrlPartial[A](implicit request: Request[A], ec: ExecutionContext): Future[Html] =
-    frontendConnector.retrievePenaltiesUrlPartial
+    if(appConfig.isFSEnabled) {
+      frontendConnector.retrievePenaltiesUrlPartial
+    } else {
+      Future.successful(Html(""))
+    }
 
   def getPsaName(psaId: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
     minimalPsaConnector.getPsaNameFromPsaID(psaId).map(identity)

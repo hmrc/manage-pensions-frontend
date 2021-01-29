@@ -66,7 +66,7 @@ class PspDashboardController @Inject()(
             Ok(view(
               name = details.name,
               cards = service.getTiles(pspId, details),
-              Html(""),
+              Html(""), // Penalties tile does not, as yet, exist for PSP dashboard: only PSA dashboard.
               subHeading = Some(subHeading),
               returnLink = returnLink
             ))
