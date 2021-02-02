@@ -17,7 +17,6 @@
 package controllers.remove
 
 import java.time.LocalDate
-
 import audit.AuditService
 import audit.PSPDeauthorisationEmailAuditEvent
 import connectors.EmailConnector
@@ -30,7 +29,7 @@ import controllers.actions.FakeDataRetrievalAction
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.remove.RemovePspDeclarationFormProvider
 import identifiers.invitations.PSTRId
-import identifiers.remove.PsaRemovePspDeclarationId
+import identifiers.remove.{PsaRemovePspDeclarationId, PspRemovalDateId}
 import identifiers.SchemeNameId
 import identifiers.SchemeSrnId
 import identifiers.SeqAuthorisedPractitionerId
@@ -238,7 +237,8 @@ object PsaRemovePspDeclarationControllerSpec {
     SchemeSrnId.toString -> srn,
     SchemeNameId.toString -> schemeName,
     SeqAuthorisedPractitionerId.toString -> practitioners,
-    PSTRId.toString -> pstr
+    PSTRId.toString -> pstr,
+    PspRemovalDateId(0).toString -> "2020-05-01"
   )
 
   private val sessionData: FakeDataRetrievalAction =
