@@ -53,10 +53,6 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
                                            (implicit request: Request[A]): Future[Html] =
     frontendConnector.retrievePspDashboardAftReturnsCard(srn, pspId, authorisingPsaId)
 
-  def retrievePspDashboardUpcomingAftChargesCard[A](srn: String)
-                                                   (implicit request: Request[A]): Future[Html] =
-    frontendConnector.retrievePspDashboardUpcomingAftChargesCard(srn)
-
   def retrievePspDashboardOverdueAftChargesCard[A](srn: String)
                                                   (implicit request: Request[A]): Future[Html] =
     frontendConnector.retrievePspDashboardOverdueAftChargesCard(srn)

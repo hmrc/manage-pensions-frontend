@@ -80,7 +80,6 @@ class PspSchemeDashboardController @Inject()(
 
           for {
             aftReturnsCard <- aftReturnsCard(schemeStatus, srn, pspDetails.authorisingPSAID)
-            upcomingAftCharges <- schemeDetailsService.retrievePspDashboardUpcomingAftChargesCard(srn)
             overdueAftCharges <- schemeDetailsService.retrievePspDashboardOverdueAftChargesCard(srn)
             listOfSchemes <- listSchemesConnector.getListOfSchemesForPsp(request.pspIdOrException.id)
             _ <- userAnswersCacheConnector.upsert(request.externalId, userAnswers.json)
@@ -90,7 +89,6 @@ class PspSchemeDashboardController @Inject()(
                 Ok(view(
                   schemeName = (userAnswers.json \ "schemeName").as[String],
                   aftReturnsCard = aftReturnsCard,
-                  upcomingAftCharges = upcomingAftCharges,
                   overdueAftCharges = overdueAftCharges,
                   cards = service.getTiles(
                     srn = srn,

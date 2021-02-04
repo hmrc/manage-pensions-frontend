@@ -58,14 +58,6 @@ class FrontendConnector @Inject()(http: HttpClient, config: FrontendAppConfig) {
     retrievePartial(config.pspDashboardAftReturnsCardUrl, extraHeaders)
   }
 
-  def retrievePspDashboardUpcomingAftChargesCard[A](srn: String)
-                                                   (implicit request: Request[A], ec: ExecutionContext): Future[Html] = {
-    val extraHeaders: Seq[(String, String)] = Seq(
-      ("idNumber", srn)
-    )
-    retrievePartial(config.pspDashboardUpcomingAftChargesUrl, extraHeaders)
-  }
-
   def retrievePspDashboardOverdueAftChargesCard[A](srn: String)
                                                   (implicit request: Request[A], ec: ExecutionContext): Future[Html] = {
     val extraHeaders: Seq[(String, String)] = Seq(
