@@ -25,10 +25,15 @@ $(document).ready(function() {
     }
 
     if(document.querySelectorAll('select').length > 0){
-        openregisterLocationPicker({
+        accessibleAutocomplete({
+            element: document.getElementById('country'),
+            id: 'country',
+            source: '/manage-pension-schemes/assets/javascripts/autocomplete/location-autocomplete-graph.json'
+        })
+
+        accessibleAutocomplete.enhanceSelectElement({
             defaultValue: '',
-            selectElement: document.querySelector('select'),
-            url: '/manage-pension-schemes/assets/javascripts/autocomplete/location-autocomplete-graph.json'
+            selectElement: document.querySelector('select')
         })
 
         // temporary fix for IE not registering clicks on the text of the results list for the country autocomplete

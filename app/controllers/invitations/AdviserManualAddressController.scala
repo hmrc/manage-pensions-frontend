@@ -16,41 +16,28 @@
 
 package controllers.invitations
 
-import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
-import controllers.actions.AuthAction
-import controllers.actions.DataRequiredAction
-import controllers.actions.DataRetrievalAction
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.invitations.AdviserManualAddressFormProvider
-import identifiers.invitations.AdviserAddressId
-import identifiers.invitations.AdviserAddressListId
-import identifiers.invitations.AdviserAddressPostCodeLookupId
-import identifiers.invitations.AdviserNameId
-import javax.inject.Inject
-import models.Address
-import models.Mode
+import identifiers.invitations.{AdviserAddressId, AdviserAddressListId, AdviserAddressPostCodeLookupId, AdviserNameId}
+import models.{Address, Mode}
 import play.api.data.Form
-import play.api.i18n.I18nSupport
-import play.api.i18n.MessagesApi
-import play.api.mvc.Action
-import play.api.mvc.AnyContent
-import play.api.mvc.MessagesControllerComponents
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.{Navigator, UserAnswers}
 import utils.annotations.AcceptInvitation
 import utils.countryOptions.CountryOptions
-import utils.Navigator
-import utils.UserAnswers
 import views.html.invitations.adviserAddress
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class AdviserManualAddressController @Inject()(
                                                 authenticate: AuthAction,
                                                 getData: DataRetrievalAction,
                                                 requireData: DataRequiredAction,
-                                                appConfig: FrontendAppConfig,
                                                 formProvider: AdviserManualAddressFormProvider,
                                                 override val messagesApi: MessagesApi,
                                                 countryOptions: CountryOptions,
