@@ -123,10 +123,8 @@ class PspSchemeDashboardControllerSpec
                             aftReturnsCard: Html = aftReturnsCard
                           ): String = view(
     schemeName = schemeName,
-    aftReturnsCard = aftReturnsCard,
-    upcomingAftCharges = upcomingAftChargesCard,
-    overdueAftCharges = overdueAftChargesCard,
     cards = cards(clientReference, openDate),
+    aftReturnsCard = aftReturnsCard,
     returnLink = Some(returnLink)
   )(
     fakeRequest,
@@ -148,10 +146,6 @@ class PspSchemeDashboardControllerSpec
       .thenReturn(Future.successful(Ok("")))
     when(schemeDetailsService.retrievePspDashboardAftReturnsCard(any(), any(), any())(any()))
       .thenReturn(Future.successful(aftReturnsCard))
-    when(schemeDetailsService.retrievePspDashboardUpcomingAftChargesCard(any())(any()))
-      .thenReturn(Future.successful(upcomingAftChargesCard))
-    when(schemeDetailsService.retrievePspDashboardOverdueAftChargesCard(any())(any()))
-      .thenReturn(Future.successful(overdueAftChargesCard))
     when(userAnswersCacheConnector.upsert(any(), any())(any(), any()))
       .thenReturn(Future.successful(JsBoolean(true)))
     when(appConfig.pspTaskListUrl)

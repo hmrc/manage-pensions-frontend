@@ -28,7 +28,6 @@
 @(
         schemeName: String,
         aftReturnsCard: Html,
-        overdueAftCharges: Html,
         cards: Seq[PspSchemeDashboardCardViewModel],
         returnLink: Option[Link] = None
 )(
@@ -45,7 +44,6 @@
 
     <div class="flex-container grid-row">
         @aftReturnsCard
-        @overdueAftCharges
         @for(card <- cards) {
             @components.pspSchemeDashboardCard(card)
         }
