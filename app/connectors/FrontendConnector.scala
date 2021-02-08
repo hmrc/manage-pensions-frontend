@@ -47,7 +47,7 @@ class FrontendConnector @Inject()(http: HttpClient, config: FrontendAppConfig) {
   def retrievePenaltiesUrlPartial[A](implicit request: Request[A], ec: ExecutionContext): Future[Html] =
     retrievePartial(config.penaltiesUrlPartialHtmlUrl)
 
-  def retrievePspDashboardAftReturnsCard[A](srn: String, pspId: String, authorisingPsaId: String)
+  def retrievePspSchemeDashboardCards[A](srn: String, pspId: String, authorisingPsaId: String)
                                            (implicit request: Request[A], ec: ExecutionContext): Future[Html] = {
     val extraHeaders: Seq[(String, String)] = Seq(
       ("idNumber", srn),
@@ -55,7 +55,7 @@ class FrontendConnector @Inject()(http: HttpClient, config: FrontendAppConfig) {
       ("authorisingPsaId", authorisingPsaId),
       ("psaId", pspId)
     )
-    retrievePartial(config.pspDashboardAftReturnsCardUrl, extraHeaders)
+    retrievePartial(config.pspSchemeDashboardCardsUrl, extraHeaders)
   }
 
   private def retrievePartial[A](url: String, extraHeaders: Seq[(String, String)] = Seq.empty)
