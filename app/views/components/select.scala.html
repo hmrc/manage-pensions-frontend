@@ -15,14 +15,18 @@
  *@
 
 @import utils.InputOption
-@(field: Field,
+@(
+        field: Field,
         label: String,
         hint: Option[String] = None,
         placeholder: Option[String] = None,
         options: Seq[InputOption],
         formGroupClasses: Set[String] = Set.empty,
         labelClasses: Set[String] = Set("form-label-bold"),
-        selectClasses: Set[String] = Set.empty)(implicit messages: Messages)
+        selectClasses: Set[String] = Set.empty
+)(
+        implicit messages: Messages
+)
 
 <div id="@{field.id}-form" class="form-group @formGroupClasses.mkString(" ") @if(field.hasErrors) {form-field--error}">
     <label for="@field.id">
@@ -33,19 +37,26 @@
 
         @field.errors.headOption.map { error =>
             <span class="error-message">
-                <span class="visually-hidden">@messages("site.error")</span> @messages(error.message, error.args: _*)</span>
+                <span class="visually-hidden">@messages("site.error")</span> @messages(error.message, error.args: _*)
+            </span>
         }
     </label>
     <div class="form-control-wrapper">
         <select
-        class="form-control @selectClasses.mkString(" ")"
-        id="@field.id" name="@field.name">
+            class="form-control @selectClasses.mkString(" ")"
+            id="@field.id"
+            name="@field.name">
             @placeholder.map { ph =>
                 <option value="">@messages(ph)</option>
             }
             @options.map { valueOption =>
-                <option id="value-@{valueOption.value}" value="@valueOption.value"
-            @if(field.value.contains(valueOption.value)) {selected}>@messages(valueOption.label)</option>}
+                <option
+                    id="value-@{valueOption.value}"
+                    value="@valueOption.value"
+                    @if(field.value.contains(valueOption.value)) {selected}>
+                        @messages(valueOption.label)
+                </option>
+            }
         </select>
     </div>
 </div>
