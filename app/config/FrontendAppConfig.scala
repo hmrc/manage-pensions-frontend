@@ -129,12 +129,8 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
 
   lazy val aftPartialHtmlUrl: String = s"${servicesConfig.baseUrl("aft-frontend")}${runModeConfiguration.underlying
     .getString("urls.aftPartialHtml")}"
-  lazy val pspDashboardAftReturnsCardUrl: String = s"${servicesConfig.baseUrl("aft-frontend")}${runModeConfiguration.underlying
-    .getString("urls.pspDashboardAftReturnsCardUrl")}"
-  lazy val pspDashboardUpcomingAftChargesUrl: String = s"${servicesConfig.baseUrl("aft-frontend")}${runModeConfiguration.underlying
-    .getString("urls.pspDashboardUpcomingAftChargesUrl")}"
-  lazy val pspDashboardOverdueAftChargesUrl: String = s"${servicesConfig.baseUrl("aft-frontend")}${runModeConfiguration.underlying
-    .getString("urls.pspDashboardOverdueAftChargesUrl")}"
+  lazy val pspSchemeDashboardCardsUrl: String = s"${servicesConfig.baseUrl("aft-frontend")}${runModeConfiguration.underlying
+    .getString("urls.pspSchemeDashboardCardsUrl")}"
   lazy val paymentsAndChargesPartialHtmlUrl: String = s"${servicesConfig.baseUrl("aft-frontend")}${runModeConfiguration.underlying
     .getString("urls.paymentsAndChargesPartialHtml")}"
 

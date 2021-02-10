@@ -120,13 +120,11 @@ class PspSchemeDashboardControllerSpec
   private def viewAsString(
                             clientReference: Option[String] = None,
                             openDate: Option[String] = None,
-                            aftReturnsCard: Html = aftReturnsCard
+                            aftReturnsCard: Html = aftPspSchemeDashboardCards
                           ): String = view(
     schemeName = schemeName,
-    aftReturnsCard = aftReturnsCard,
-    upcomingAftCharges = upcomingAftChargesCard,
-    overdueAftCharges = overdueAftChargesCard,
     cards = cards(clientReference, openDate),
+    aftPspSchemeDashboardCards = aftReturnsCard,
     returnLink = Some(returnLink)
   )(
     fakeRequest,
@@ -146,12 +144,8 @@ class PspSchemeDashboardControllerSpec
     )
     when(userAnswersCacheConnector.removeAll(any())(any(), any()))
       .thenReturn(Future.successful(Ok("")))
-    when(schemeDetailsService.retrievePspDashboardAftReturnsCard(any(), any(), any())(any()))
-      .thenReturn(Future.successful(aftReturnsCard))
-    when(schemeDetailsService.retrievePspDashboardUpcomingAftChargesCard(any())(any()))
-      .thenReturn(Future.successful(upcomingAftChargesCard))
-    when(schemeDetailsService.retrievePspDashboardOverdueAftChargesCard(any())(any()))
-      .thenReturn(Future.successful(overdueAftChargesCard))
+    when(schemeDetailsService.retrievePspSchemeDashboardCards(any(), any(), any())(any()))
+      .thenReturn(Future.successful(aftPspSchemeDashboardCards))
     when(userAnswersCacheConnector.upsert(any(), any())(any(), any()))
       .thenReturn(Future.successful(JsBoolean(true)))
     when(appConfig.pspTaskListUrl)
@@ -295,8 +289,6 @@ object PspSchemeDashboardControllerSpec {
       url = "/foo",
       linkText = "View the registered scheme details"
     )
-  private val aftReturnsCard = Html("aft-returns-html")
-  private val upcomingAftChargesCard = Html("aft-upcoming-html")
-  private val overdueAftChargesCard = Html("aft-overdue-html")
+  private val aftPspSchemeDashboardCards = Html("psp-scheme-dashboard-cards-html")
 
 }
