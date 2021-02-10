@@ -137,9 +137,10 @@ class PspSchemeDashboardController @Inject()(
       (userAnswers, minPspDetails)
     }
 
-
     requiredDetails.flatMap { case (userAnswers, minPspDetails) =>
-      if (minPspDetails.rlsFlag) {
+      if (minPspDetails.deceasedFlag) {
+        Future.successful(Redirect(controllers.routes.ContactHMRCController.onPageLoad()))
+      } else if (minPspDetails.rlsFlag) {
         Future.successful(Redirect(config.pspUpdateContactDetailsUrl))
       } else {
         val ua =
