@@ -20,22 +20,22 @@ import java.time.LocalDate
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
-import identifiers.{ListOfPSADetailsId, SchemeStatusId, SeqAuthorisedPractitionerId}
+import identifiers.{SeqAuthorisedPractitionerId, SchemeStatusId, ListOfPSADetailsId}
 import models.FeatureToggle.Enabled
 import models.FeatureToggleName.PSPAuthorisation
-import models.{AuthorisedPractitioner, Link, ListOfSchemes, Lock, PsaDetails, VarianceLock}
+import models._
 import play.api.i18n.Messages
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.DateHelper._
 import utils.UserAnswers
-import viewmodels.{CardSubHeading, CardSubHeadingParam, CardViewModel, Message}
+import viewmodels.{CardSubHeading, CardViewModel, Message, CardSubHeadingParam}
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{Future, ExecutionContext}
 
 class PsaSchemeDashboardService @Inject()(
                                            appConfig: FrontendAppConfig,
                                            featureToggleService: FeatureToggleService
-                                         )(implicit ec: ExecutionContext) {
+                                         ) {
 
   def cards(srn: String, lock: Option[Lock], list: ListOfSchemes, ua: UserAnswers)
            (implicit hc: HeaderCarrier,
@@ -145,10 +145,7 @@ class PsaSchemeDashboardService @Inject()(
     }
 
   private def latestPsa(ua: UserAnswers): Option[PsaDetails] =
-    ua.get(ListOfPSADetailsId) flatMap { seqPsa =>
-      implicit val localDateOrdering: Ordering[LocalDate] = _ compareTo _
-      seqPsa.sortBy(_.relationshipDate).reverse.headOption
-    }
+    ua.get(ListOfPSADetailsId) flatMap(_.sortBy(_.relationshipDate).reverse.headOption)
 
   //PSP card
   def pspCard(ua: UserAnswers)

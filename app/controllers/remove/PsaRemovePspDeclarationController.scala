@@ -18,49 +18,32 @@ package controllers.remove
 
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
-import java.time.LocalDate
-import audit.AuditService
-import audit.PSPDeauthorisationEmailAuditEvent
+
+import audit.{AuditService, PSPDeauthorisationEmailAuditEvent}
 import config.FrontendAppConfig
-import connectors.EmailConnector
-import connectors.EmailNotSent
 import connectors.admin.MinimalConnector
-import connectors.PspConnector
-import connectors.UserAnswersCacheConnector
+import connectors.{EmailConnector, EmailNotSent, PspConnector, UserAnswersCacheConnector}
 import controllers.Retrievals
-import controllers.actions.AuthAction
-import controllers.actions.DataRequiredAction
-import controllers.actions.DataRetrievalAction
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.remove.RemovePspDeclarationFormProvider
 import identifiers.invitations.PSTRId
-import identifiers.SchemeNameId
-import identifiers.SchemeSrnId
-import identifiers.remove.{PsaRemovePspDeclarationId, PspDetailsId, PspRemovalDateId}
-
+import identifiers.{SchemeNameId, SchemeSrnId}
+import identifiers.remove.{PsaRemovePspDeclarationId, PspRemovalDateId, PspDetailsId}
 import javax.inject.Inject
-import models.SendEmailRequest
 import models.invitations.psp.DeAuthorise
-import models.Index
-import models.MinimalPSAPSP
-import models.NormalMode
+import models.{SendEmailRequest, Index, MinimalPSAPSP, NormalMode}
 import models.requests.DataRequest
 import play.api.Logger
 import play.api.data.Form
-import play.api.i18n.I18nSupport
-import play.api.i18n.MessagesApi
-import play.api.mvc.Action
-import play.api.mvc.AnyContent
-import play.api.mvc.MessagesControllerComponents
-import uk.gov.hmrc.crypto.ApplicationCrypto
-import uk.gov.hmrc.crypto.PlainText
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.crypto.{ApplicationCrypto, PlainText}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.Navigator
-import utils.UserAnswers
+import utils.{Navigator, UserAnswers}
 import utils.annotations.RemovePSP
 import views.html.remove.psaRemovePspDeclaration
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class PsaRemovePspDeclarationController @Inject()(
                                                    override val messagesApi: MessagesApi,

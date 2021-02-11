@@ -18,18 +18,13 @@ package utils
 
 import identifiers.Identifier
 import models.requests.IdentifiedRequest
-import models.CheckMode
-import models.NormalMode
+import models.{CheckMode, NormalMode}
 import org.scalatest.exceptions.TableDrivenPropertyCheckFailedException
 import org.scalatest.prop.TableFor4
-import org.scalatest.MustMatchers
-import org.scalatest.OptionValues
-import org.scalatest.WordSpec
+import org.scalatest.{MustMatchers, OptionValues, WordSpec}
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import play.api.mvc.Call
 import uk.gov.hmrc.http.HeaderCarrier
-
-import scala.concurrent.ExecutionContext.Implicits.global
 
 trait NavigatorBehaviour extends ScalaCheckPropertyChecks with OptionValues {
   this: WordSpec with MustMatchers =>

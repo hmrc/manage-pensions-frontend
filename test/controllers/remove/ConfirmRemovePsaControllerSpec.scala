@@ -16,18 +16,16 @@
 
 package controllers.remove
 
-import connectors.FakeUserAnswersCacheConnector
-import connectors.UserAnswersCacheConnector
+import connectors.{FakeUserAnswersCacheConnector, UserAnswersCacheConnector}
 import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.remove.ConfirmRemovePsaFormProvider
 import identifiers.remove.ConfirmRemovePsaId
 import play.api.data.Form
 import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{AnyContent, Action}
 import play.api.test.FakeRequest
-import utils.UserAnswerOps
-import utils.UserAnswers
+import utils.{UserAnswerOps, UserAnswers}
 import views.html.remove.confirmRemovePsa
 
 class ConfirmRemovePsaControllerSpec extends ControllerWithQuestionPageBehaviours {
@@ -48,11 +46,11 @@ class ConfirmRemovePsaControllerSpec extends ControllerWithQuestionPageBehaviour
     controller(dataRetrievalAction, fakeAuth).onSubmit()
   }
 
-  private def onSaveAction(userAnswersConnector: UserAnswersCacheConnector = FakeUserAnswersCacheConnector): Action[AnyContent] = {
+  private def onSaveAction(userAnswersConnector: UserAnswersCacheConnector): Action[AnyContent] = {
     controller(userAnswersCacheConnector = userAnswersConnector).onSubmit()
   }
 
-  private def viewAsString(form: Form[Boolean] = form) = view(form, schemeName,
+  private def viewAsString(form: Form[Boolean]) = view(form, schemeName,
     srn, psaName)(fakeRequest, messages).toString
 
   behave like controllerWithOnPageLoadMethod(onPageLoadAction,

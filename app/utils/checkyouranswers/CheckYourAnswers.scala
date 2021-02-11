@@ -21,8 +21,6 @@ import play.api.libs.json.Reads
 import utils.UserAnswers
 import viewmodels.AnswerRow
 
-import scala.language.implicitConversions
-
 trait CheckYourAnswers[I <: TypedIdentifier.PathDependent] {
   def row(id: I)(changeUrl: String, userAnswers: UserAnswers): Seq[AnswerRow]
 }

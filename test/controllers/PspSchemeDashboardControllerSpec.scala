@@ -19,10 +19,10 @@ package controllers
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import connectors.admin.MinimalConnector
-import connectors.scheme.{ListOfSchemesConnector, SchemeDetailsConnector}
+import connectors.scheme.{SchemeDetailsConnector, ListOfSchemesConnector}
 import controllers.actions.{AuthAction, FakeAuthAction}
 import handlers.ErrorHandler
-import models.{IndividualDetails, Link, MinimalPSAPSP}
+import models.{MinimalPSAPSP, Link, IndividualDetails}
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
@@ -166,7 +166,7 @@ class PspSchemeDashboardControllerSpec
         .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false, deceasedFlag = false)))
       when(listSchemesConnector.getListOfSchemesForPsp(any())(any(), any()))
         .thenReturn(Future.successful(Right(listOfSchemesResponse)))
-      when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any())(any(), any()))
+      when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any())(any()))
         .thenReturn(cards(None, None))
 
 
@@ -183,7 +183,7 @@ class PspSchemeDashboardControllerSpec
         .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false, deceasedFlag = false)))
       when(listSchemesConnector.getListOfSchemesForPsp(any())(any(), any()))
         .thenReturn(Future.successful(Right(listOfSchemesResponse)))
-      when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any())(any(), any()))
+      when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any())(any()))
         .thenReturn(cards(None, None))
 
 
@@ -200,7 +200,7 @@ class PspSchemeDashboardControllerSpec
         .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false, deceasedFlag = false)))
       when(listSchemesConnector.getListOfSchemesForPsp(any())(any(), any()))
         .thenReturn(Future.successful(Right(listOfSchemesResponse)))
-      when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any())(any(), any()))
+      when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any())(any()))
         .thenReturn(cards(Some(clientRef), Some(authDate)))
 
       val result = controller().onPageLoad(srn)(fakeRequest)

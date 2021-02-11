@@ -24,7 +24,6 @@ import play.api.mvc.Results._
 
 import scala.annotation.tailrec
 import scala.concurrent.Future
-import scala.language.implicitConversions
 
 case class UserAnswers(json: JsValue = Json.obj()) {
 
