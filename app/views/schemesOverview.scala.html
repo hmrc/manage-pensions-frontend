@@ -26,6 +26,7 @@
 @(
         name: String,
         cards: Seq[CardViewModel],
+        penaltiesCardHtml: Html,
         subHeading: Option[String] = None,
         returnLink: Option[Link] = None
 )(
@@ -35,15 +36,16 @@
 
     @main_template(
         title = name,
-        mainContentContainerClasses = None
+        mainContentContainerClasses = Some("full-width")
     ) {
 
         @components.heading(name, secondaryHeaderKey = subHeading)
 
         <div class="flex-container grid-row">
-        @for(card <- cards) {
-            @components.card(card)
-        }
+            @penaltiesCardHtml
+            @for(card <- cards) {
+                @components.card(card)
+            }
         </div>
 
         @returnLink.map { ret =>

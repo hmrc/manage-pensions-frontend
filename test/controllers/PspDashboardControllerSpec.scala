@@ -19,15 +19,16 @@ package controllers
 import config._
 import connectors.UserAnswersCacheConnector
 import controllers.actions.{DataRetrievalAction, _}
-import models.{IndividualDetails, Link, MinimalPSAPSP}
+import models.{MinimalPSAPSP, Link, IndividualDetails}
 import org.mockito.Matchers.{eq => eqTo, _}
 import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
 import play.api.test.Helpers.{contentAsString, _}
+import play.twirl.api.Html
 import services.PspDashboardService
-import viewmodels.{CardSubHeading, CardSubHeadingParam, CardViewModel, Message}
+import viewmodels.{CardSubHeading, CardViewModel, Message, CardSubHeadingParam}
 import views.html.schemesOverview
 
 import scala.concurrent.Future
@@ -55,6 +56,7 @@ class PspDashboardControllerSpec
 
   private val view: schemesOverview = app.injector.instanceOf[schemesOverview]
   private val dummyUrl = "dummy"
+  private val dummyHtml = Html("")
 
   def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyDataPsp): PspDashboardController =
     new PspDashboardController(
@@ -71,6 +73,7 @@ class PspDashboardControllerSpec
   def viewAsString(): String = view(
     name = pspName,
     cards = tiles,
+    dummyHtml,
     subHeading = Some(subHeading),
     returnLink = Some(returnLink)
   )(

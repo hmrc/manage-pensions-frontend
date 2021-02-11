@@ -51,10 +51,12 @@ class SchemesOverviewController @Inject()(
         } else {
           service.getPsaName(psaId).flatMap {
             case Some(name) =>
-              service.getTiles(psaId).flatMap { cards =>
-                userAnswersCacheConnector.save(request.externalId, PSANameId, name).map { _ =>
-                  Ok(view(name, cards, None))
-                }
+              for {
+                cards <- service.getTiles(psaId)
+                penaltiesHtml <- service.retrievePenaltiesUrlPartial
+                _ <- userAnswersCacheConnector.save(request.externalId, PSANameId, name)
+              } yield {
+                Ok(view(name, cards, penaltiesHtml, None))
               }
             case _ => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
           }

@@ -52,7 +52,8 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
 
   def viewAsString(): String = view(
     psaName,
-    tiles
+    tiles,
+    html
   )(fakeRequest, messages).toString
 
   private def minimalDetails(rlsFlag:Boolean = false, deceasedFlag:Boolean = false) = MinimalPSAPSP(
@@ -74,6 +75,8 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
           .thenReturn(Future.successful(Some(psaName)))
         when(fakeSchemesOverviewService.getPsaMinimalDetails(any())(any()))
           .thenReturn(Future.successful(minimalDetails()))
+        when(fakeSchemesOverviewService.retrievePenaltiesUrlPartial(any(), any()))
+          .thenReturn(Future.successful(html))
         when(fakeUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(Json.obj()))
 
         val result = controller().onPageLoad(fakeRequest)

@@ -49,17 +49,9 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
       Future.successful(Html(""))
     }
 
-  def retrievePspDashboardAftReturnsCard[A](srn: String, pspId: String, authorisingPsaId: String)
+  def retrievePspSchemeDashboardCards[A](srn: String, pspId: String, authorisingPsaId: String)
                                            (implicit request: Request[A]): Future[Html] =
-    frontendConnector.retrievePspDashboardAftReturnsCard(srn, pspId, authorisingPsaId)
-
-  def retrievePspDashboardUpcomingAftChargesCard[A](srn: String)
-                                                   (implicit request: Request[A]): Future[Html] =
-    frontendConnector.retrievePspDashboardUpcomingAftChargesCard(srn)
-
-  def retrievePspDashboardOverdueAftChargesCard[A](srn: String)
-                                                  (implicit request: Request[A]): Future[Html] =
-    frontendConnector.retrievePspDashboardOverdueAftChargesCard(srn)
+    frontendConnector.retrievePspSchemeDashboardCards(srn, pspId, authorisingPsaId)
 
   def retrievePaymentsAndChargesHtml[A](srn: String)
                                        (implicit request: Request[A]): Future[Html] =

@@ -79,9 +79,7 @@ class PspSchemeDashboardController @Inject()(
             schemeStatus.equalsIgnoreCase("open")
 
           for {
-            aftReturnsCard <- aftReturnsCard(schemeStatus, srn, pspDetails.authorisingPSAID)
-            upcomingAftCharges <- schemeDetailsService.retrievePspDashboardUpcomingAftChargesCard(srn)
-            overdueAftCharges <- schemeDetailsService.retrievePspDashboardOverdueAftChargesCard(srn)
+            aftPspSchemeDashboardCards <- aftPspSchemeDashboardCards(schemeStatus, srn, pspDetails.authorisingPSAID)
             listOfSchemes <- listSchemesConnector.getListOfSchemesForPsp(request.pspIdOrException.id)
             _ <- userAnswersCacheConnector.upsert(request.externalId, userAnswers.json)
           } yield {
@@ -89,9 +87,7 @@ class PspSchemeDashboardController @Inject()(
               case Right(list) =>
                 Ok(view(
                   schemeName = (userAnswers.json \ "schemeName").as[String],
-                  aftReturnsCard = aftReturnsCard,
-                  upcomingAftCharges = upcomingAftCharges,
-                  overdueAftCharges = overdueAftCharges,
+                  aftPspSchemeDashboardCards = aftPspSchemeDashboardCards,
                   cards = service.getTiles(
                     srn = srn,
                     pstr = (userAnswers.json \ "pstr").as[String],
@@ -116,16 +112,17 @@ class PspSchemeDashboardController @Inject()(
       }
   }
 
-  private def aftReturnsCard(schemeStatus: String, srn: String, authorisingPsaId: String)
+  private def aftPspSchemeDashboardCards(schemeStatus: String, srn: String, authorisingPsaId: String)
                             (implicit request: AuthenticatedRequest[AnyContent]): Future[Html] =
     if (
       schemeStatus.equalsIgnoreCase("open") ||
       schemeStatus.equalsIgnoreCase("wound-up") ||
       schemeStatus.equalsIgnoreCase("deregistered")
-    )
-      schemeDetailsService.retrievePspDashboardAftReturnsCard(srn, request.pspIdOrException.id, authorisingPsaId)
-    else
+    ) {
+      schemeDetailsService.retrievePspSchemeDashboardCards(srn, request.pspIdOrException.id, authorisingPsaId)
+    } else {
       Future.successful(Html(""))
+    }
 
   private def withUserAnswers(srn: String)(block: UserAnswers => Future[Result])
                              (implicit request: AuthenticatedRequest[AnyContent]): Future[Result] = {
