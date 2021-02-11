@@ -43,14 +43,14 @@ class PspDashboardControllerSpec
   private val mockUserAnswersCacheConnector: UserAnswersCacheConnector = mock[UserAnswersCacheConnector]
   private val mockAppConfig: FrontendAppConfig = mock[FrontendAppConfig]
 
-  private def minimalPsaDetails(rlsFlag: Boolean): MinimalPSAPSP =
+  private def minimalPsaDetails(rlsFlag: Boolean, deceasedFlag: Boolean): MinimalPSAPSP =
     MinimalPSAPSP(
       email = "test@test.com",
       isPsaSuspended = false,
       organisationName = None,
       individualDetails = Some(IndividualDetails("Test", None, "Psp Name")),
       rlsFlag = rlsFlag,
-      deceasedFlag = false
+      deceasedFlag = deceasedFlag
     )
 
   private val view: schemesOverview = app.injector.instanceOf[schemesOverview]
@@ -126,7 +126,7 @@ class PspDashboardControllerSpec
         when(mockPspDashboardService.getTiles(eqTo(pspId), any())(any()))
           .thenReturn(tiles)
         when(mockPspDashboardService.getPspDetails(eqTo(pspId))(any()))
-          .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false)))
+          .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false, deceasedFlag = false)))
         when(mockUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(Json.obj()))
 
@@ -140,7 +140,7 @@ class PspDashboardControllerSpec
         when(mockPspDashboardService.getTiles(eqTo(pspId), any())(any()))
           .thenReturn(tiles)
         when(mockPspDashboardService.getPspDetails(eqTo(pspId))(any()))
-          .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = true)))
+          .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = true, deceasedFlag = false)))
         when(mockUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(Json.obj()))
         when(mockAppConfig.pspUpdateContactDetailsUrl) thenReturn dummyUrl
@@ -149,6 +149,20 @@ class PspDashboardControllerSpec
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(dummyUrl)
+      }
+
+      "redirect to contact hmrc page when both deceased flag and rls flag are true" in {
+        when(mockPspDashboardService.getTiles(eqTo(pspId), any())(any()))
+          .thenReturn(tiles)
+        when(mockPspDashboardService.getPspDetails(eqTo(pspId))(any()))
+          .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = true, deceasedFlag = true)))
+        when(mockUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any()))
+          .thenReturn(Future.successful(Json.obj()))
+
+        val result = controller().onPageLoad(fakeRequest)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.routes.ContactHMRCController.onPageLoad().url)
       }
 
     }

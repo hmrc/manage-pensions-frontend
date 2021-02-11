@@ -163,7 +163,7 @@ class PspSchemeDashboardControllerSpec
       when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
         .thenReturn(Future.successful(ua()))
       when(minimalConnector.getMinimalPspDetails(any())(any(), any()))
-        .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false)))
+        .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false, deceasedFlag = false)))
       when(listSchemesConnector.getListOfSchemesForPsp(any())(any(), any()))
         .thenReturn(Future.successful(Right(listOfSchemesResponse)))
       when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any())(any(), any()))
@@ -180,7 +180,7 @@ class PspSchemeDashboardControllerSpec
       when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
         .thenReturn(Future.successful(ua("pending")))
       when(minimalConnector.getMinimalPspDetails(any())(any(), any()))
-        .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false)))
+        .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false, deceasedFlag = false)))
       when(listSchemesConnector.getListOfSchemesForPsp(any())(any(), any()))
         .thenReturn(Future.successful(Right(listOfSchemesResponse)))
       when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any())(any(), any()))
@@ -197,7 +197,7 @@ class PspSchemeDashboardControllerSpec
       when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
         .thenReturn(Future.successful(ua()))
       when(minimalConnector.getMinimalPspDetails(any())(any(), any()))
-        .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false)))
+        .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false, deceasedFlag = false)))
       when(listSchemesConnector.getListOfSchemesForPsp(any())(any(), any()))
         .thenReturn(Future.successful(Right(listOfSchemesResponse)))
       when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any())(any(), any()))
@@ -213,7 +213,7 @@ class PspSchemeDashboardControllerSpec
       when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
         .thenReturn(Future.successful(ua()))
       when(minimalConnector.getMinimalPspDetails(any())(any(), any()))
-        .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false)))
+        .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false, deceasedFlag = false)))
       when(listSchemesConnector.getListOfSchemesForPsp(any())(any(), any()))
         .thenReturn(Future.successful(Left(HttpResponse(404, "Not found"))))
       when(errorHandler.notFoundTemplate(any()))
@@ -224,22 +224,37 @@ class PspSchemeDashboardControllerSpec
       status(result) mustBe NOT_FOUND
     }
 
-    "return see other when RLS flag true" in {
+    "return redirect to update contact details page when RLS flag true" in {
       when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
         .thenReturn(Future.successful(ua()))
       when(minimalConnector.getMinimalPspDetails(any())(any(), any()))
-        .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = true)))
+        .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = true, deceasedFlag = false)))
+      when(appConfig.pspUpdateContactDetailsUrl)
+        .thenReturn("/update-contact-details")
 
       val result = controller().onPageLoad(srn)(fakeRequest)
 
       status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(appConfig.pspUpdateContactDetailsUrl)
+    }
+
+    "return redirect to contact hmrc page when both RLS flag and deceased flag are true" in {
+      when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
+        .thenReturn(Future.successful(ua()))
+      when(minimalConnector.getMinimalPspDetails(any())(any(), any()))
+        .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = true, deceasedFlag = true)))
+
+      val result = controller().onPageLoad(srn)(fakeRequest)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(controllers.routes.ContactHMRCController.onPageLoad().url)
     }
 
     "return see other if pspDetails id does match psp id from request" in {
       when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
         .thenReturn(Future.successful(ua()))
       when(minimalConnector.getMinimalPspDetails(any())(any(), any()))
-        .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false)))
+        .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false, deceasedFlag = false)))
 
       val result = controller(PspId("00000001")).onPageLoad(srn)(fakeRequest)
 
@@ -257,14 +272,14 @@ object PspSchemeDashboardControllerSpec {
   private val authDate = "2020-01-01"
   private val clientRef = "123"
 
-  private def minimalPsaDetails(rlsFlag: Boolean): MinimalPSAPSP =
+  private def minimalPsaDetails(rlsFlag: Boolean, deceasedFlag: Boolean): MinimalPSAPSP =
     MinimalPSAPSP(
       email = "test@test.com",
       isPsaSuspended = false,
       organisationName = None,
       individualDetails = Some(IndividualDetails("Test", None, "Psp Name")),
       rlsFlag = rlsFlag,
-      deceasedFlag = false
+      deceasedFlag = deceasedFlag
     )
 
   private def ua(schemeStatus: String = "open"): UserAnswers =

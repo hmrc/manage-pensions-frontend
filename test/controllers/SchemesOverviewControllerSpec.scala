@@ -18,7 +18,6 @@ package controllers
 
 import config._
 import connectors.UserAnswersCacheConnector
-import controllers.Assets.Redirect
 import controllers.actions.{DataRetrievalAction, _}
 import controllers.routes.ListSchemesController
 import models.{MinimalPSAPSP, Link}
@@ -32,7 +31,6 @@ import play.api.libs.json.Json
 import play.api.test.Helpers.{contentAsString, _}
 import play.twirl.api.Html
 import services.SchemesOverviewService
-import viewmodels.{CardViewModel, Message}
 import viewmodels.{CardSubHeading, CardViewModel, Message, CardSubHeadingParam}
 import views.html.schemesOverview
 
@@ -99,12 +97,12 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
         redirectLocation(result) mustBe Some(appConfig.psaUpdateContactDetailsUrl)
       }
 
-      "redirect to contact HMRC page when deceased flag is set" in {
+      "redirect to contact HMRC page when both rls and deceased flag are set" in {
         when(fakeSchemesOverviewService.getTiles(eqTo(psaId))(any(), any(), any())).thenReturn(Future.successful(Seq(adminCard, schemeCard)))
         when(fakeSchemesOverviewService.getPsaName(eqTo(psaId))(any()))
           .thenReturn(Future.successful(Some(psaName)))
         when(fakeSchemesOverviewService.getPsaMinimalDetails(any())(any()))
-          .thenReturn(Future.successful(minimalDetails(deceasedFlag = true)))
+          .thenReturn(Future.successful(minimalDetails(rlsFlag = true, deceasedFlag = true)))
         when(fakeUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(Json.obj()))
         when(appConfig.psaUpdateContactDetailsUrl).thenReturn(dummyURl)
 
