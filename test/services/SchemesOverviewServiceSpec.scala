@@ -139,7 +139,7 @@ object SchemesOverviewServiceSpec extends SpecBase with MockitoSugar  {
     links = Seq(
       Link("psaLink", frontendAppConfig.registeredPsaDetailsUrl, Message("messages__schemeOverview__psa_change"))
     ) ++ invitation ++ deregistration,
-    html = Some(html))
+    html = None)
 
   private def schemeCard = CardViewModel(
     id = "scheme-card",
@@ -162,7 +162,8 @@ object SchemesOverviewServiceSpec extends SpecBase with MockitoSugar  {
   private val oneInvitationsLink = Seq(Link("invitations-received", controllers.invitations.routes.YourInvitationsController.onPageLoad().url,
     Message("messages__schemeOverview__psa_view_one_invitation")))
 
-  private def tiles(admin: CardViewModel = adminCard(), scheme: CardViewModel = schemeCard): Seq[CardViewModel] = Seq(admin, scheme)
+  private def tiles(admin: CardViewModel = adminCard(), scheme: CardViewModel = schemeCard): Seq[CardViewModel] =
+    Seq(admin, scheme)
 }
 
 

@@ -25,6 +25,7 @@ import models.AuthEntity.PSP
 import models.Link
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{AnyContent, MessagesControllerComponents, Action}
+import play.twirl.api.Html
 import services.PspDashboardService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.Message
@@ -65,6 +66,7 @@ class PspDashboardController @Inject()(
             Ok(view(
               name = details.name,
               cards = service.getTiles(pspId, details),
+              Html(""), // Penalties tile does not, as yet, exist for PSP dashboard: only PSA dashboard.
               subHeading = Some(subHeading),
               returnLink = returnLink
             ))

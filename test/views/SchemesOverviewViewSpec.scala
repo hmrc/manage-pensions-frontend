@@ -31,6 +31,7 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
 
   val variationSchemeName = "Scheme being changed"
   val variationDeleteDate = "deletionDate"
+  val penaltiesTileHtml = Html("<p>test admin html</p>")
   val psaName = "John Doe"
   val messageKeyPrefix = "schemeOverview"
   val schemeName = "Test Scheme Name"
@@ -70,9 +71,10 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
   private val schemesOverviewView = injector.instanceOf[schemesOverview]
 
   def createView: () => HtmlFormat.Appendable = () =>
-    schemesOverviewView(psaName, Seq(adminCard, schemeCard))(fakeRequest, messages)
+    schemesOverviewView(psaName, Seq(adminCard, schemeCard), penaltiesTileHtml)(fakeRequest, messages)
 
-  def createFreshView: () => HtmlFormat.Appendable = () => schemesOverviewView(psaName, Seq(adminCard, schemeCard))(fakeRequest, messages)
+  def createFreshView: () => HtmlFormat.Appendable = () => schemesOverviewView(psaName,
+    Seq(adminCard, schemeCard), penaltiesTileHtml)(fakeRequest, messages)
 
   "SchemesOverview view when a scheme has been partially defined and which has no scheme variation" must {
     behave like normalPageWithoutBrowserTitle(
