@@ -77,7 +77,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
 
   def controller(dataRetrievalAction: DataRetrievalAction = new FakeDataRetrievalAction(Some(data), pspId = pspId)): DeclarationController =
     new DeclarationController(messagesApi, formProvider, FakeAuthAction, dataRetrievalAction,
-      new DataRequiredActionImpl, mockPspConnector, crypto, frontendAppConfig,
+      new DataRequiredActionImpl, mockPspConnector,
       mockMinimalConnector, mockEmailConnector, controllerComponents, view)
 
   private def viewAsString(form: Form[Boolean] = form) = view(form, schemeName, srn)(fakeRequest, messages).toString
@@ -131,7 +131,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
           "schemeName" -> schemeName
         )
 
-        actualSendEmailRequest.eventUrl.isDefined mustBe true
+        actualSendEmailRequest.eventUrl.isDefined mustBe false
       }
 
       "save the data, redirect to the next page if valid data is submitted and send email to PSP using correct template for an individual" in {
@@ -158,7 +158,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
           "schemeName" -> schemeName
         )
 
-        actualSendEmailRequest.eventUrl.isDefined mustBe true
+        actualSendEmailRequest.eventUrl.isDefined mustBe false
       }
 
       "return a Bad Request and errors if invalid data is submitted" in {

@@ -58,10 +58,6 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
     s"$practitionerUrl${runModeConfiguration.get[String](path = "urls.pspAuthEmailCallback")
       .format(encryptedPsaId, encryptedPspId, encryptedPstr, encryptedEmail)}"
 
-  def pspSelfDeauthEmailCallback(encryptedPspId: String, encryptedPstr: String, encryptedEmail: String) =
-    s"$practitionerUrl${runModeConfiguration.get[String](path = "urls.pspSelfDeauthEmailCallback")
-      .format(encryptedPspId, encryptedPstr, encryptedEmail)}"
-
   def pspDeauthEmailCallback(encryptedPsaId: String, encryptedPspId: String, encryptedPstr: String, encryptedEmail: String) =
     s"$practitionerUrl${runModeConfiguration.get[String](path = "urls.pspDeauthEmailCallback")
       .format(encryptedPsaId, encryptedPspId, encryptedPstr, encryptedEmail)}"

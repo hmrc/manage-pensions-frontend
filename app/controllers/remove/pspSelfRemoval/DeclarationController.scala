@@ -16,11 +16,7 @@
 
 package controllers.remove.pspSelfRemoval
 
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
-
 import com.google.inject.Inject
-import config.FrontendAppConfig
 import connectors.admin.MinimalConnector
 import connectors.{EmailConnector, EmailNotSent, PspConnector}
 import controllers.Retrievals
@@ -37,7 +33,6 @@ import play.api.Logger
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{AnyContent, MessagesControllerComponents, Action}
-import uk.gov.hmrc.crypto.{ApplicationCrypto, PlainText}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.remove.pspSelfRemoval.declaration
 
@@ -49,8 +44,6 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
                                       getData: DataRetrievalAction,
                                       requireData: DataRequiredAction,
                                       pspConnector: PspConnector,
-                                      crypto: ApplicationCrypto,
-                                      appConfig: FrontendAppConfig,
                                       minimalConnector: MinimalConnector,
                                       emailConnector: EmailConnector,
                                       val controllerComponents: MessagesControllerComponents,
@@ -80,7 +73,7 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
                   val deAuthModel: DeAuthorise = DeAuthorise("PSPID", pspId, "PSPID", pspId, removalDate.toString)
                   pspConnector.deAuthorise(pstr, deAuthModel).flatMap { _ =>
                     minimalConnector.getMinimalPspDetails(pspId).flatMap { minimalPSAPSP =>
-                      sendEmail(pspId, pstr, minimalPSAPSP, authorisedPractitioner.authorisingPSA.name, schemeName).map { _ =>
+                      sendEmail(minimalPSAPSP, authorisedPractitioner.authorisingPSA.name, schemeName).map { _ =>
                         Redirect(controllers.remove.pspSelfRemoval.routes.ConfirmationController.onPageLoad())
                       }
                     }
@@ -90,19 +83,7 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
         }
   }
 
-  private def encodeAndEncrypt(s: String): String =
-    URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(s)).value, StandardCharsets.UTF_8.toString)
-
-  private def callBackUrl(
-    pspId: String,
-    pstr: String,
-    email: String
-  ): String =
-    appConfig.pspSelfDeauthEmailCallback(encodeAndEncrypt(pspId), encodeAndEncrypt(pstr), encodeAndEncrypt(email))
-
   private def sendEmail(
-    pspId: String,
-    pstr: String,
     minimalPSP: MinimalPSAPSP,
     psaName: String,
     schemeName: String
@@ -118,7 +99,7 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
         "schemeName" -> schemeName
       ),
       force = false,
-      eventUrl = Some(callBackUrl(pspId, pstr, minimalPSP.email))
+      eventUrl = None
     )
 
     emailConnector.sendEmail(sendEmailRequest).map { emailStatus =>
