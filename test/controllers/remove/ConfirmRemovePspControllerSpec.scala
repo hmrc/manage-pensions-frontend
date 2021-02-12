@@ -21,11 +21,11 @@ import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.remove.ConfirmRemovePspFormProvider
 import identifiers.remove.ConfirmRemovePspId
-import identifiers.{SchemeNameId, SchemeSrnId, SeqAuthorisedPractitionerId}
+import identifiers.{SchemeNameId, SeqAuthorisedPractitionerId, SchemeSrnId}
 import models.Index
 import play.api.data.Form
 import play.api.libs.json.{JsArray, Json}
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{AnyContent, Action}
 import play.api.test.FakeRequest
 import views.html.psp.confirmRemovePsp
 
@@ -59,11 +59,11 @@ class ConfirmRemovePspControllerSpec extends ControllerWithQuestionPageBehaviour
     controller(dataRetrievalAction, fakeAuth).onSubmit(Index(0))
   }
 
-  private def onSaveAction(userAnswersCacheConnector: UserAnswersCacheConnector = FakeUserAnswersCacheConnector): Action[AnyContent] = {
+  private def onSaveAction(userAnswersCacheConnector: UserAnswersCacheConnector): Action[AnyContent] = {
     controller(userAnswersCacheConnector = userAnswersCacheConnector).onSubmit(Index(0))
   }
 
-  private def viewAsString(form: Form[_] = form) = view(
+  private def viewAsString(form: Form[_]) = view(
     form = form,
     schemeName = schemeName,
     srn = srn,

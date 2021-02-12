@@ -52,10 +52,10 @@ class InviteController @Inject()(
       minimalPsaConnector.getMinimalPsaDetails(request.psaIdOrException.id).flatMap { minimalPsaDetails =>
         if (minimalPsaDetails.isPsaSuspended) {
           Future.successful(Redirect(controllers.invitations.routes.YouCannotSendAnInviteController.onPageLoad()))
-        } else if (minimalPsaDetails.rlsFlag) {
-          Future.successful(Redirect(appConfig.psaUpdateContactDetailsUrl))
         } else if (minimalPsaDetails.deceasedFlag) {
           Future.successful(Redirect(controllers.routes.ContactHMRCController.onPageLoad()))
+        } else if (minimalPsaDetails.rlsFlag) {
+          Future.successful(Redirect(appConfig.psaUpdateContactDetailsUrl))
         } else {
           getSchemeDetails(srn) flatMap {
             case Some(schemeDetails) =>

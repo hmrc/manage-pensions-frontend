@@ -22,29 +22,19 @@ import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import connectors.admin.MinimalConnector
 import controllers.Retrievals
-import controllers.actions.AuthAction
-import controllers.actions.DataRequiredAction
-import controllers.actions.DataRetrievalAction
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import identifiers.MinimalSchemeDetailId
-import identifiers.invitations.InvitationSuccessId
-import identifiers.invitations.InviteeNameId
-import identifiers.invitations.InviteePSAId
+import identifiers.invitations.{InvitationSuccessId, InviteeNameId, InviteePSAId}
 import javax.inject.Inject
-import models.NormalMode
-import models.SchemeReferenceNumber
-import play.api.i18n.I18nSupport
-import play.api.i18n.MessagesApi
-import play.api.mvc.Action
-import play.api.mvc.AnyContent
-import play.api.mvc.MessagesControllerComponents
+import models.{NormalMode, SchemeReferenceNumber}
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{AnyContent, MessagesControllerComponents, Action}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.annotations.Invitation
-import utils.Navigator
-import utils.UserAnswers
+import utils.{Navigator, UserAnswers}
 import views.html.invitations.invitation_success
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class InvitationSuccessController @Inject()(
                                              override val messagesApi: MessagesApi,
@@ -84,8 +74,6 @@ class InvitationSuccessController @Inject()(
   }
 
   def onSubmit(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate().async {
-    implicit request =>
-      Future.successful(Redirect(navigator.nextPage(InvitationSuccessId(srn), NormalMode, UserAnswers())))
+     _ => Future.successful(Redirect(navigator.nextPage(InvitationSuccessId(srn), NormalMode, UserAnswers())))
   }
-
 }

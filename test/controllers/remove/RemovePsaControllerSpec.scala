@@ -173,13 +173,22 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
       redirectLocation(result) mustBe Some(controllers.remove.routes.CanNotBeRemovedController.onPageLoadWhereSuspended().url)
     }
 
-    "redirect to update contact address page if PSA has RLS flag set" in {
+    "redirect to update contact address page if PSA has RLS flag set and deceased flag is false" in {
 
       val result = controller(psaMinimalDetails = psaMinimalSubscription.copy(rlsFlag = true),
         schemeDetailsConnector = fakeSchemeDetailsConnector()).onPageLoad(fakeRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(frontendAppConfig.psaUpdateContactDetailsUrl)
+    }
+
+    "redirect to contact hmrc page if PSA has both deceased and RLS flags set" in {
+
+      val result = controller(psaMinimalDetails = psaMinimalSubscription.copy(rlsFlag = true, deceasedFlag = true),
+        schemeDetailsConnector = fakeSchemeDetailsConnector()).onPageLoad(fakeRequest)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(controllers.routes.ContactHMRCController.onPageLoad().url)
     }
 
     "redirect to contact HMRC page if PSA has deceased flag set" in {

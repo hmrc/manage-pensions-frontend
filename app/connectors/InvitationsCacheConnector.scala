@@ -21,14 +21,11 @@ import config.FrontendAppConfig
 import models.Invitation
 import play.api.http.Status._
 import play.api.libs.json._
-import play.api.libs.ws.WSClient
-import play.api.libs.ws.WSRequest
+import play.api.libs.ws.{WSClient, WSRequest}
 import uk.gov.hmrc.domain.PsaId
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.HttpException
+import uk.gov.hmrc.http.{HeaderCarrier, HttpException}
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 trait InvitationsCacheConnector {
   def add(invitation: Invitation)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[Unit]
@@ -92,8 +89,7 @@ class InvitationsCacheConnectorImpl @Inject()(
   }
 
   private def getCommon(wsRequest: WSRequest)(implicit
-                                              ec: ExecutionContext,
-                                              hc: HeaderCarrier
+                                              ec: ExecutionContext
   ): Future[List[Invitation]] = {
     wsRequest
       .get()

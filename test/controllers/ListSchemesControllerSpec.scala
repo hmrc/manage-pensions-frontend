@@ -19,20 +19,16 @@ package controllers
 import config.FrontendAppConfig
 import connectors.FakeUserAnswersCacheConnector
 import connectors.admin.MinimalConnector
-import controllers.actions.AuthAction
-import controllers.actions.FakeAuthAction
+import controllers.actions.{AuthAction, FakeAuthAction}
 import forms.ListSchemesFormProvider
-import models.SchemeDetails
-import models.SchemeStatus
+import models.{SchemeDetails, MinimalPSAPSP, SchemeStatus}
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.test.Helpers._
-import services.PaginationService
-import services.SchemeSearchService
-//import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
+import services.{PaginationService, SchemeSearchService}
 import views.html.list_schemes
 
 import scala.concurrent.Future
@@ -46,10 +42,8 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar wit
   }
 
   "onPageLoad" when {
-
-    when(mockMinimalPsaConnector.getPsaNameFromPsaID(any())(any(), any())).thenReturn(Future.successful(Some(psaName)))
-
     "return OK and the correct view when there are no schemes" in {
+      when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
       when(mockSchemeSearchService.search(any(), any())(any(), any())).thenReturn(Future.successful(Nil))
       val pagination: Int = 10
 
@@ -75,7 +69,36 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar wit
       )
     }
 
+    "rlsFlag is true and deceasedFlag is false return redirect to update contact page" in {
+      when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any()))
+        .thenReturn(Future.successful(minimalPSAPSP(rlsFlag = true)))
+      when(mockSchemeSearchService.search(any(), any())(any(), any())).thenReturn(Future.successful(Nil))
+
+      when(mockAppConfig.psaUpdateContactDetailsUrl).thenReturn(dummyUrl)
+
+      val fixture = testFixture(psaIdNoSchemes)
+
+      val result = fixture.controller.onPageLoad(fakeRequest)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(dummyUrl)
+    }
+
+    "rlsFlag is true and deceasedFlag is true return redirect to contact hmrc page" in {
+      when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any()))
+        .thenReturn(Future.successful(minimalPSAPSP(rlsFlag = true, deceasedFlag = true)))
+      when(mockSchemeSearchService.search(any(), any())(any(), any())).thenReturn(Future.successful(Nil))
+
+      val fixture = testFixture(psaIdNoSchemes)
+
+      val result = fixture.controller.onPageLoad(fakeRequest)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(controllers.routes.ContactHMRCController.onPageLoad().url)
+    }
+
     "return OK and the correct view when there are schemes without pagination" in {
+      when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
       when(mockSchemeSearchService.search(any(), any())(any(), any())).thenReturn(Future.successful(fullSchemes))
       val pagination: Int = 10
 
@@ -102,6 +125,7 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar wit
     }
 
     "return OK and the correct view when there are schemes with pagination" in {
+      when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
       when(mockSchemeSearchService.search(any(), any())(any(), any())).thenReturn(Future.successful(fullSchemes))
       val pageNumber: Int = 1
 
@@ -132,6 +156,7 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar wit
     }
 
     "return OK and the correct view when using page number" in {
+      when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
       when(mockSchemeSearchService.search(any(), any())(any(), any())).thenReturn(Future.successful(fullSchemes))
       val pageNumber: Int = 2
 
@@ -163,11 +188,8 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar wit
   }
 
   "onSearch" when {
-
-    when(mockMinimalPsaConnector.getPsaNameFromPsaID(any())(any(), any()))
-      .thenReturn(Future.successful(Some(psaName)))
-
     "return OK and the correct view when there are schemes without pagination and search on non empty string" in {
+      when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
       val searchText = "24000001IN"
       when(mockSchemeSearchService.search(any(), Matchers.eq(Some(searchText)))(any(), any())).thenReturn(Future.successful(fullSchemes))
       val pagination: Int = 10
@@ -198,6 +220,7 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar wit
     }
 
     "return BADREQUEST and error when no value is entered into search" in {
+      when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
       when(mockSchemeSearchService.search(any(), Matchers.eq(None))(any(), any())).thenReturn(Future.successful(fullSchemes))
 
       val pagination: Int = 10
@@ -227,7 +250,7 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar wit
     }
 
     "return OK and the correct view with correct no matches message when unrecognised format is entered into search" in {
-
+      when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
       val incorrectSearchText = "24000001IN"
       when(mockSchemeSearchService.search(any(), Matchers.eq(Some(incorrectSearchText)))(any(), any())).thenReturn(Future.successful(Nil))
 
@@ -269,6 +292,14 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
   private val psaIdNoSchemes: String = "A0000001"
   private val psaIdWithSchemes: String = "A0000002"
   private val psaName: String = "Test Psa Name"
+  private def minimalPSAPSP(rlsFlag: Boolean = false, deceasedFlag: Boolean = false) = MinimalPSAPSP(
+    email = "",
+    isPsaSuspended = false,
+    organisationName = Some(psaName),
+    individualDetails = None,
+    rlsFlag = rlsFlag,
+    deceasedFlag = deceasedFlag
+  )
   private val emptySchemes: List[SchemeDetails] = List.empty[SchemeDetails]
   private val mockMinimalPsaConnector: MinimalConnector =
     mock[MinimalConnector]
@@ -398,5 +429,7 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
       noResultsMessageKey = noResultsMessageKey
     )(fakeRequest, messages).toString()
   }
+
+  private val dummyUrl = "dummyURL"
 }
 

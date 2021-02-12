@@ -86,19 +86,12 @@ class MinimalConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig
 
   override def getPsaNameFromPsaID(psaId: String)
                                   (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] =
-    getMinimalPsaDetails(psaId).map(getNameFromId)
+    getMinimalPsaDetails(psaId).map(MinimalPSAPSP.getNameFromId)
 
   override def getNameFromPspID(pspId: String)
                                (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] =
-    getMinimalPspDetails(pspId).map(getNameFromId) recoverWith {
+    getMinimalPspDetails(pspId).map(MinimalPSAPSP.getNameFromId) recoverWith {
       case _: NotFoundException => Future.successful(None)
-    }
-
-  private def getNameFromId(minDetails: MinimalPSAPSP): Option[String] =
-    (minDetails.individualDetails, minDetails.organisationName) match {
-      case (Some(individual), None) => Some(individual.fullName)
-      case (None, Some(org)) => Some(s"$org")
-      case _ => None
     }
 
 }
