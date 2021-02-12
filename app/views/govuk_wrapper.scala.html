@@ -81,14 +81,6 @@
         <!--[if gt IE 8]><!-->
         <script src='@routes.Assets.versioned("javascripts/autocomplete/location-autocomplete.min.js")'> </script>
         <!--<![endif]-->
-        <script>
-          window.GOVUK.timeoutDialog({
-            timeout: @appConfig.timeout,
-            countdown: @appConfig.countdown,
-            keepAliveUrl: location.href,
-            signOutUrl: "@routes.LogoutController.onPageLoad"
-          });
-        </script>
 }
 
 @footerTop = {}

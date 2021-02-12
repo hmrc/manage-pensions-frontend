@@ -13,6 +13,16 @@ $(document).ready(function() {
     numberInputs();
 
     // =====================================================
+    // timeout dialog
+    // =====================================================
+    window.GOVUK.timeoutDialog({
+        timeout: 900,
+        countdown: 120,
+        keepAliveUrl: location.href,
+        signOutUrl: "/manage-pension-schemes/logout"
+    });
+
+    // =====================================================
     // Back link mimics browser back functionality
     // =====================================================
     $('#back-link').on('click', function(e){
