@@ -71,12 +71,13 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
                 _ => {
                   val pspId = request.pspIdOrException.id
                   val deAuthModel: DeAuthorise = DeAuthorise("PSPID", pspId, "PSPID", pspId, removalDate.toString)
-                  pspConnector.deAuthorise(pstr, deAuthModel).flatMap { _ =>
-                    minimalConnector.getMinimalPspDetails(pspId).flatMap { minimalPSAPSP =>
-                      sendEmail(minimalPSAPSP, authorisedPractitioner.authorisingPSA.name, schemeName).map { _ =>
-                        Redirect(controllers.remove.pspSelfRemoval.routes.ConfirmationController.onPageLoad())
-                      }
-                    }
+
+                  for {
+                    _ <- pspConnector.deAuthorise(pstr, deAuthModel)
+                    minimalPSP <- minimalConnector.getMinimalPspDetails(pspId)
+                    _ <- sendEmail(minimalPSP, authorisedPractitioner.authorisingPSA.name, schemeName)
+                  } yield {
+                    Redirect(controllers.remove.pspSelfRemoval.routes.ConfirmationController.onPageLoad())
                   }
                 }
               )
