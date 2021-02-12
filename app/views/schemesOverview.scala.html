@@ -25,6 +25,7 @@
 
 @(
         name: String,
+        title: String,
         cards: Seq[CardViewModel],
         penaltiesCardHtml: Html,
         subHeading: Option[String] = None,
@@ -35,7 +36,7 @@
 )
 
     @main_template(
-        title = name,
+        title = messages(title),
         mainContentContainerClasses = Some("full-width")
     ) {
 
