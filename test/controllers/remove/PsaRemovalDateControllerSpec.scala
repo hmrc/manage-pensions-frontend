@@ -19,22 +19,16 @@ package controllers.remove
 import java.time.LocalDate
 
 import connectors.admin.PsaRemovalConnector
-import connectors.scheme.PensionSchemeVarianceLockConnector
-import connectors.scheme.UpdateSchemeCacheConnector
-import connectors.FakeUserAnswersCacheConnector
-import connectors.UserAnswersCacheConnector
+import connectors.scheme.{PensionSchemeVarianceLockConnector, UpdateSchemeCacheConnector}
+import connectors.{FakeUserAnswersCacheConnector, UserAnswersCacheConnector}
 import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.remove.RemovalDateFormProvider
 import identifiers.remove.PsaRemovalDateId
-import models.PsaToBeRemovedFromScheme
-import models.SchemeVariance
+import models.{PsaToBeRemovedFromScheme, SchemeVariance}
 import org.mockito.Matchers
 import org.mockito.Matchers.any
-import org.mockito.Mockito.reset
-import org.mockito.Mockito.times
-import org.mockito.Mockito.verify
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito._
 import play.api.data.Form
@@ -42,16 +36,13 @@ import play.api.libs.json.Json
 import play.api.mvc.AnyContentAsJson
 import play.api.mvc.Results.Ok
 import play.api.test.FakeRequest
-import play.api.test.Helpers.redirectLocation
-import play.api.test.Helpers.status
-import play.api.test.Helpers._
+import play.api.test.Helpers.{redirectLocation, status, _}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.DateHelper._
 import utils.UserAnswers
 import views.html.remove.removalDate
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class PsaRemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours with MockitoSugar with BeforeAndAfterEach{
 
@@ -76,7 +67,7 @@ class PsaRemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours 
     controller(dataRetrievalAction, fakeAuth).onSubmit()
   }
 
-  private def onSaveAction(userAnswersConnector: UserAnswersCacheConnector = FakeUserAnswersCacheConnector) = {
+  private def onSaveAction(userAnswersConnector: UserAnswersCacheConnector) = {
     controller(userAnswersCacheConnector = userAnswersConnector).onSubmit()
   }
 
@@ -86,8 +77,7 @@ class PsaRemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours 
     view(form, psaName, schemeName, srn, formatDate(associationDate))(postRequest, messages).toString
 
   override def beforeEach(): Unit = {
-    reset(mockedPensionSchemeVarianceLockConnector)
-    reset(mockedUpdateSchemeCacheConnector)
+    reset(mockedPensionSchemeVarianceLockConnector, mockedUpdateSchemeCacheConnector)
     when(mockedPensionSchemeVarianceLockConnector.getLockByPsa(any())(any(),any())).thenReturn(Future.successful(None))
   }
 
@@ -112,6 +102,7 @@ class PsaRemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(onwardRoute.url)
 
+      verify(mockedUpdateSchemeCacheConnector, times(1)).removeAll(any())(any(),any())
       verify(mockedPensionSchemeVarianceLockConnector, times(1)).releaseLock(Matchers.eq("A0000000"), Matchers.eq(srn))(any(),any())
       verify(mockedUpdateSchemeCacheConnector, times(1)).removeAll(Matchers.eq(srn))(any(),any())
     }

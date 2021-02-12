@@ -49,5 +49,11 @@ case class MinimalPSAPSP(
 
 object MinimalPSAPSP {
   implicit val format: Format[MinimalPSAPSP] = Json.format[MinimalPSAPSP]
-}
 
+  def getNameFromId(minDetails: MinimalPSAPSP): Option[String] =
+    (minDetails.individualDetails, minDetails.organisationName) match {
+      case (Some(individual), None) => Some(individual.fullName)
+      case (None, Some(org)) => Some(s"$org")
+      case _ => None
+    }
+}

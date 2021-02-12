@@ -16,22 +16,24 @@
 
 package controllers
 
+import config.FrontendAppConfig
 import connectors._
-import connectors.scheme.{ListOfSchemesConnector, PensionSchemeVarianceLockConnector, SchemeDetailsConnector}
+import connectors.admin.MinimalConnector
+import connectors.scheme.{PensionSchemeVarianceLockConnector, SchemeDetailsConnector, ListOfSchemesConnector}
 import controllers.actions._
-import identifiers.{SchemeNameId, SchemeSrnId, SchemeStatusId}
+import identifiers.{SchemeNameId, SchemeStatusId, SchemeSrnId}
 import javax.inject.Inject
 import models._
 import models.requests.AuthenticatedRequest
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{AnyContent, MessagesControllerComponents, Action}
 import play.twirl.api.Html
 import services.PsaSchemeDashboardService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.UserAnswers
 import views.html.psaSchemeDashboard
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{Future, ExecutionContext}
 
 class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesApi,
                                              schemeDetailsConnector: SchemeDetailsConnector,
@@ -42,26 +44,38 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
                                              val controllerComponents: MessagesControllerComponents,
                                              psaSchemeDashboardService: PsaSchemeDashboardService,
                                              view: psaSchemeDashboard,
-                                             frontendConnector: FrontendConnector
+                                             frontendConnector: FrontendConnector,
+                                             minimalPsaConnector: MinimalConnector,
+                                             val appConfig: FrontendAppConfig
                                             )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate().async {
     implicit request =>
-      getSchemeAndLock(srn).flatMap { case (userAnswers, lock, listOfSchemes) =>
 
-        val schemeName = userAnswers.get(SchemeNameId).getOrElse("")
-        val schemeStatus = userAnswers.get(SchemeStatusId).getOrElse("")
+      minimalPsaConnector.getMinimalPsaDetails(request.psaIdOrException.id).flatMap { minimalDetails =>
+        (minimalDetails.deceasedFlag, minimalDetails.rlsFlag) match {
+          case (true, _) => Future.successful(Redirect(controllers.routes.ContactHMRCController.onPageLoad()))
+          case (_, true) => Future.successful(Redirect(appConfig.psaUpdateContactDetailsUrl))
+          case _ =>
+            getSchemeAndLock(srn).flatMap { case (userAnswers, lock, listOfSchemes) =>
 
-        val updatedUa = userAnswers.set(SchemeSrnId)(srn.id).flatMap(_.set(SchemeNameId)(schemeName)).asOpt.getOrElse(userAnswers)
+              val schemeName = userAnswers.get(SchemeNameId).getOrElse("")
+              val schemeStatus = userAnswers.get(SchemeStatusId).getOrElse("")
 
-        for {
-          aftHtml <- retrieveAftTilesHtml(srn, schemeStatus)
-          _ <- userAnswersCacheConnector.upsert(request.externalId, updatedUa.json)
-          cards <- psaSchemeDashboardService.cards(srn, lock, listOfSchemes, userAnswers)
-        } yield {
-          Ok(view(schemeName, aftHtml, cards))
+              val updatedUa = userAnswers.set(SchemeSrnId)(srn.id).flatMap(_.set(SchemeNameId)(schemeName)).asOpt.getOrElse(userAnswers)
+
+              for {
+                aftHtml <- retrieveAftTilesHtml(srn, schemeStatus)
+                  _ <- userAnswersCacheConnector.upsert(request.externalId, updatedUa.json)
+                  cards <- psaSchemeDashboardService.cards(srn, lock, listOfSchemes, userAnswers)
+              } yield {
+                Ok(view(schemeName, aftHtml, cards))
+              }
+            }
         }
       }
+
+
   }
 
   private def retrieveAftTilesHtml(

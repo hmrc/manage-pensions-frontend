@@ -17,13 +17,8 @@
 package utils
 
 import identifiers.Identifier
-import models.requests.IdentifiedRequest
-import models.Mode
-import models.NormalMode
+import models.{Mode, NormalMode}
 import play.api.mvc.Call
-import uk.gov.hmrc.http.HeaderCarrier
-
-import scala.concurrent.ExecutionContext
 
 class FakeNavigator(val desiredRoute: Call, mode: Mode = NormalMode) extends Navigator {
 
@@ -31,8 +26,7 @@ class FakeNavigator(val desiredRoute: Call, mode: Mode = NormalMode) extends Nav
 
   def lastUserAnswers: Option[UserAnswers] = userAnswers
 
-  override def nextPage(id: Identifier, mode: Mode, answers: UserAnswers)
-                       (implicit ex: IdentifiedRequest, ec: ExecutionContext, hc: HeaderCarrier): Call = {
+  override def nextPage(id: Identifier, mode: Mode, answers: UserAnswers): Call = {
     userAnswers = Some(answers)
     desiredRoute
   }

@@ -19,13 +19,13 @@ package services
 import config.FrontendAppConfig
 import connectors.admin.MinimalConnector
 import javax.inject.Inject
-import models.{AuthorisedPractitioner, Link, MinimalPSAPSP}
+import models.{MinimalPSAPSP, Link, AuthorisedPractitioner}
 import play.api.i18n.Messages
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.DateHelper
 import viewmodels.{Message, PspSchemeDashboardCardViewModel}
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{Future, ExecutionContext}
 
 class PspSchemeDashboardService @Inject()(
                                            appConfig: FrontendAppConfig,
@@ -42,7 +42,7 @@ class PspSchemeDashboardService @Inject()(
                 openDate: Option[String],
                 loggedInPsp: AuthorisedPractitioner,
                 clientReference: Option[String]
-              )(implicit messages: Messages, hc: HeaderCarrier): Seq[PspSchemeDashboardCardViewModel] =
+              )(implicit messages: Messages): Seq[PspSchemeDashboardCardViewModel] =
     Seq(
       schemeCard(srn, pstr, openDate),
       practitionerCard(loggedInPsp, clientReference)
@@ -51,7 +51,7 @@ class PspSchemeDashboardService @Inject()(
   private def practitionerCard(
                                 loggedInPsp: AuthorisedPractitioner,
                                 clientReference: Option[String]
-                              )(implicit messages: Messages, hc: HeaderCarrier): PspSchemeDashboardCardViewModel = {
+                              )(implicit messages: Messages): PspSchemeDashboardCardViewModel = {
 
     val authedBy: String = loggedInPsp.authorisingPSA.name
     val relationshipStartDate: String = loggedInPsp.relationshipStartDate.format(DateHelper.formatter)

@@ -103,12 +103,12 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
         redirectLocation(result) mustBe Some(appConfig.psaUpdateContactDetailsUrl)
       }
 
-      "redirect to contact HMRC page when deceased flag is set" in {
+      "redirect to contact HMRC page when both rls and deceased flag are set" in {
         when(fakeSchemesOverviewService.getTiles(eqTo(psaId))(any(), any(), any())).thenReturn(Future.successful(Seq(adminCard, schemeCard)))
         when(fakeSchemesOverviewService.getPsaName(eqTo(psaId))(any()))
           .thenReturn(Future.successful(Some(psaName)))
         when(fakeSchemesOverviewService.getPsaMinimalDetails(any())(any()))
-          .thenReturn(Future.successful(minimalDetails(deceasedFlag = true)))
+          .thenReturn(Future.successful(minimalDetails(rlsFlag = true, deceasedFlag = true)))
         when(fakeUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(Json.obj()))
         when(appConfig.psaUpdateContactDetailsUrl).thenReturn(dummyURl)
 

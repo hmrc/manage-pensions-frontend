@@ -25,8 +25,7 @@ import controllers.actions.DataRetrievalAction
 import forms.ListSchemesFormProvider
 import identifiers.PSANameId
 import models.requests.OptionalDataRequest
-import models.Index
-import models.SchemeDetails
+import models.{Index, SchemeDetails, MinimalPSAPSP}
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.i18n.MessagesApi
@@ -73,37 +72,35 @@ class ListSchemesController @Inject()(
                         )(implicit hc: HeaderCarrier,
                           request: OptionalDataRequest[AnyContent]): Future[Result] = {
     val status = if (form.hasErrors) BadRequest else Ok
-    minimalPsaConnector
-      .getPsaNameFromPsaID(request.psaIdOrException.id)
-      .flatMap(_.map {
-        name =>
-          userAnswersCacheConnector
-            .save(request.externalId, PSANameId, name)
-            .map { _ =>
-              status(
-                view(
-                  form,
-                  schemes = schemeDetails,
-                  psaName = name,
-                  numberOfSchemes = numberOfSchemes,
-                  pagination = pagination,
-                  pageNumber = pageNumber,
-                  pageNumberLinks = paginationService.pageNumberLinks(
-                    pageNumber,
-                    numberOfSchemes,
-                    pagination,
-                    numberOfPages
-                  ),
-                  numberOfPages = numberOfPages,
-                  noResultsMessageKey
-                )
+
+    minimalPsaConnector.getMinimalPsaDetails(request.psaIdOrException.id).flatMap{ minimalDetails =>
+      (minimalDetails, MinimalPSAPSP.getNameFromId(minimalDetails)) match {
+        case (md, _) if md.deceasedFlag => Future.successful(Redirect(controllers.routes.ContactHMRCController.onPageLoad()))
+        case (md, _) if md.rlsFlag => Future.successful(Redirect(appConfig.psaUpdateContactDetailsUrl))
+        case (_, Some(name)) =>
+          userAnswersCacheConnector.save(request.externalId, PSANameId, name).map { _ =>
+            status(
+              view(
+                form,
+                schemes = schemeDetails,
+                psaName = name,
+                numberOfSchemes = numberOfSchemes,
+                pagination = pagination,
+                pageNumber = pageNumber,
+                pageNumberLinks = paginationService.pageNumberLinks(
+                  pageNumber,
+                  numberOfSchemes,
+                  pagination,
+                  numberOfPages
+                ),
+                numberOfPages = numberOfPages,
+                noResultsMessageKey
               )
-            }
-      }.getOrElse {
-        Future.successful(
-          Redirect(controllers.routes.SessionExpiredController.onPageLoad())
-        )
-      })
+            )
+          }
+        case (_, None) => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+      }
+    }
   }
 
   private def searchAndRenderView(

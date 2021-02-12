@@ -16,12 +16,14 @@
 
 package controllers
 
-import connectors.scheme.{ListOfSchemesConnector, PensionSchemeVarianceLockConnector, SchemeDetailsConnector}
-import connectors.{FakeUserAnswersCacheConnector, FrontendConnector}
+import config.FrontendAppConfig
+import connectors.admin.MinimalConnector
+import connectors.scheme.{PensionSchemeVarianceLockConnector, SchemeDetailsConnector, ListOfSchemesConnector}
+import connectors.{FrontendConnector, FakeUserAnswersCacheConnector}
 import controllers.actions.FakeAuthAction
 import identifiers.SchemeStatusId
 import models.SchemeStatus.Rejected
-import models.{SchemeReferenceNumber, VarianceLock}
+import models.{MinimalPSAPSP, SchemeReferenceNumber, VarianceLock}
 import org.mockito.Matchers.{any, eq => eqTo}
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
@@ -48,6 +50,10 @@ class PsaSchemeDashboardControllerSpec extends ControllerSpecBase with MockitoSu
   private val srn = SchemeReferenceNumber("S1000000456")
   private val aftHtml = Html("test-aft-html")
 
+  private val mockMinimalPsaConnector: MinimalConnector =
+    mock[MinimalConnector]
+  private val mockAppConfig: FrontendAppConfig = mock[FrontendAppConfig]
+
   def controller(): PsaSchemeDashboardController = {
     new PsaSchemeDashboardController(
       messagesApi,
@@ -59,9 +65,23 @@ class PsaSchemeDashboardControllerSpec extends ControllerSpecBase with MockitoSu
       controllerComponents,
       mockService,
       psaSchemeDashboardView,
-      mockFrontendConnector
+      mockFrontendConnector,
+      mockMinimalPsaConnector,
+      mockAppConfig
     )
   }
+
+  private val dummyUrl = "dummy"
+  private val psaName: String = "Test Psa Name"
+
+  private def minimalPSAPSP(rlsFlag: Boolean = false, deceasedFlag: Boolean = false) = MinimalPSAPSP(
+    email = "",
+    isPsaSuspended = false,
+    organisationName = Some(psaName),
+    individualDetails = None,
+    rlsFlag = rlsFlag,
+    deceasedFlag = deceasedFlag
+  )
 
   override def beforeEach(): Unit = {
     reset(fakeSchemeDetailsConnector, fakeListOfSchemesConnector, fakeSchemeLockConnector, mockService)
@@ -71,6 +91,7 @@ class PsaSchemeDashboardControllerSpec extends ControllerSpecBase with MockitoSu
 
    "PsaSchemeDashboardController" must {
     "return OK and the correct view for a GET and NO financial info html if status is NOT open" in {
+      when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
       val ua = userAnswers.set(SchemeStatusId)(Rejected.value).asOpt.get
       when(fakeSchemeDetailsConnector.getSchemeDetails(eqTo("A0000000"), any(), any())(any(), any()))
         .thenReturn(Future.successful(ua))
@@ -87,7 +108,25 @@ class PsaSchemeDashboardControllerSpec extends ControllerSpecBase with MockitoSu
       contentAsString(result) mustBe expected
     }
 
+     "return redirect to update contact page when rls flag is true but deceased flag is false" in {
+       when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any()))
+         .thenReturn(Future.successful(minimalPSAPSP(rlsFlag = true)))
+       when(mockAppConfig.psaUpdateContactDetailsUrl).thenReturn(dummyUrl)
+       val result = controller().onPageLoad(srn)(fakeRequest)
+       status(result) mustBe SEE_OTHER
+       redirectLocation(result) mustBe Some(dummyUrl)
+     }
+
+     "return redirect to contact hmrc page when rls flag is true and deceased flag is true" in {
+       when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any()))
+         .thenReturn(Future.successful(minimalPSAPSP(rlsFlag = true, deceasedFlag = true)))
+       val result = controller().onPageLoad(srn)(fakeRequest)
+       status(result) mustBe SEE_OTHER
+       redirectLocation(result) mustBe Some(controllers.routes.ContactHMRCController.onPageLoad().url)
+     }
+
     "return OK and the correct view for a GET and scheme is open" in {
+      when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
       when(fakeSchemeDetailsConnector.getSchemeDetails(eqTo("A0000000"), any(), any())(any(), any()))
         .thenReturn(Future.successful(userAnswers))
       when(fakeListOfSchemesConnector.getListOfSchemes(any())(any(), any()))

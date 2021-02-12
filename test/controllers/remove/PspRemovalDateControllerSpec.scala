@@ -66,7 +66,7 @@ class PspRemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours 
     controller(dataRetrievalAction, fakeAuth).onSubmit(0)
   }
 
-  private def onSaveAction(userAnswersConnector: UserAnswersCacheConnector = FakeUserAnswersCacheConnector): Action[AnyContent] = {
+  private def onSaveAction(userAnswersConnector: UserAnswersCacheConnector): Action[AnyContent] = {
     controller(userAnswersCacheConnector = userAnswersConnector).onSubmit(0)
   }
 

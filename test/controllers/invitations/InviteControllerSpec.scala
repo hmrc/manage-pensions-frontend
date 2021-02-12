@@ -55,10 +55,20 @@ class InviteControllerSpec extends SpecBase {
 
       when(mockAppConfig.psaUpdateContactDetailsUrl).thenReturn(dummyUrl)
 
-      val result = controller(isSuspended = false, rlsFlag = true).onPageLoad(srn)(fakeRequest)
+      val result = controller(isSuspended = false, rlsFlag = true, deceasedFlag = false).onPageLoad(srn)(fakeRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(dummyUrl)
+    }
+
+    "redirect to contact hmrc page if both rls flag and deceased flag are true" in {
+
+      when(mockAppConfig.psaUpdateContactDetailsUrl).thenReturn(dummyUrl)
+
+      val result = controller(isSuspended = false, rlsFlag = true, deceasedFlag = true).onPageLoad(srn)(fakeRequest)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(controllers.routes.ContactHMRCController.onPageLoad().url)
     }
 
     "redirect to contact HMRC page if deceased flag is true" in {

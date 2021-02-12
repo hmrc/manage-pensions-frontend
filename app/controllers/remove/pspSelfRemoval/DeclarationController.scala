@@ -16,11 +16,10 @@
 
 package controllers.remove.pspSelfRemoval
 
-import java.time.LocalDate
 import com.google.inject.Inject
 import connectors.PspConnector
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import controllers.actions.{DataRequiredAction, AuthAction, DataRetrievalAction}
 import forms.remove.RemovePspDeclarationFormProvider
 import identifiers.invitations.PSTRId
 import identifiers.remove.pspSelfRemoval.RemovalDateId
@@ -29,11 +28,11 @@ import models.AuthEntity.PSP
 import models.invitations.psp.DeAuthorise
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{AnyContent, MessagesControllerComponents, Action}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.remove.pspSelfRemoval.declaration
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{Future, ExecutionContext}
 
 class DeclarationController @Inject()(override val messagesApi: MessagesApi,
                                       formProvider: RemovePspDeclarationFormProvider,
