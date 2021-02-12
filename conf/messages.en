@@ -12,6 +12,8 @@ site.return_to_overview = Return to manage and register your pension schemes
 site.return_to_psp_overview = Return to your practitioner overview
 site.return_to_scheme_overview = Return to pension scheme overview
 site.error = Error:
+site.psa = Pension scheme administrator
+site.psp = Pension scheme practitioner
 
 checkYourAnswers.title = Check your answers
 checkYourAnswers.heading = Check your answers

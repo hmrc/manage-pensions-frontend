@@ -73,7 +73,8 @@ class PspDashboardControllerSpec
   def viewAsString(): String = view(
     name = pspName,
     cards = tiles,
-    dummyHtml,
+    title = "site.psp",
+    penaltiesCardHtml = dummyHtml,
     subHeading = Some(subHeading),
     returnLink = Some(returnLink)
   )(

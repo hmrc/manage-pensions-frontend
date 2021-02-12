@@ -65,8 +65,9 @@ class PspDashboardController @Inject()(
           ).map { _ =>
             Ok(view(
               name = details.name,
+              title = "site.psp",
               cards = service.getTiles(pspId, details),
-              Html(""), // Penalties tile does not, as yet, exist for PSP dashboard: only PSA dashboard.
+              penaltiesCardHtml = Html(""), // Penalties tile does not, as yet, exist for PSP dashboard: only PSA dashboard.
               subHeading = Some(subHeading),
               returnLink = returnLink
             ))
