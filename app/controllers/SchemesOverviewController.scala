@@ -56,9 +56,10 @@ class SchemesOverviewController @Inject()(
                 penaltiesHtml <- service.retrievePenaltiesUrlPartial
                 _ <- userAnswersCacheConnector.save(request.externalId, PSANameId, name)
               } yield {
-                Ok(view(name, cards, penaltiesHtml, None))
+                Ok(view(name, "site.psa", cards, penaltiesHtml, None))
               }
-            case _ => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+            case _ =>
+              Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
           }
         }
       }

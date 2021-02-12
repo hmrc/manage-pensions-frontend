@@ -71,9 +71,9 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
   private val schemesOverviewView = injector.instanceOf[schemesOverview]
 
   def createView: () => HtmlFormat.Appendable = () =>
-    schemesOverviewView(psaName, Seq(adminCard, schemeCard), penaltiesTileHtml)(fakeRequest, messages)
+    schemesOverviewView(psaName, "site.psa", Seq(adminCard, schemeCard), penaltiesTileHtml)(fakeRequest, messages)
 
-  def createFreshView: () => HtmlFormat.Appendable = () => schemesOverviewView(psaName,
+  def createFreshView: () => HtmlFormat.Appendable = () => schemesOverviewView(psaName,"site.psa",
     Seq(adminCard, schemeCard), penaltiesTileHtml)(fakeRequest, messages)
 
   "SchemesOverview view when a scheme has been partially defined and which has no scheme variation" must {

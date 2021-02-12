@@ -42,7 +42,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
 
   val fakeSchemesOverviewService: SchemesOverviewService = mock[SchemesOverviewService]
   val fakeUserAnswersCacheConnector: UserAnswersCacheConnector = mock[UserAnswersCacheConnector]
-  val appConfig: FrontendAppConfig = mock[FrontendAppConfig] //app.injector.instanceOf[FrontendAppConfig]
+  val appConfig: FrontendAppConfig = mock[FrontendAppConfig]
 
   private val view: schemesOverview = app.injector.instanceOf[schemesOverview]
 
@@ -51,12 +51,15 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
       dataRetrievalAction, fakeUserAnswersCacheConnector, controllerComponents, appConfig, view)
 
   def viewAsString(): String = view(
-    psaName,
-    tiles,
-    html
+    name = psaName,
+    title = "site.psa",
+    cards = tiles,
+    penaltiesCardHtml = html,
+    subHeading = None,
+    returnLink = None
   )(fakeRequest, messages).toString
 
-  private def minimalDetails(rlsFlag:Boolean = false, deceasedFlag:Boolean = false) = MinimalPSAPSP(
+  private def minimalDetails(rlsFlag: Boolean = false, deceasedFlag: Boolean = false) = MinimalPSAPSP(
     email = "a@a.c",
     isPsaSuspended = false,
     organisationName = None,
@@ -118,17 +121,17 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
 
     }
 
-  "onRedirect" must {
+    "onRedirect" must {
 
-    "redirect to overview page" in {
+      "redirect to overview page" in {
 
-      val result = controller().redirect(fakeRequest)
+        val result = controller().redirect(fakeRequest)
 
-            status(result) mustBe SEE_OTHER
-            redirectLocation(result).value mustBe controllers.routes.SchemesOverviewController.onPageLoad().url
-          }
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).value mustBe controllers.routes.SchemesOverviewController.onPageLoad().url
       }
     }
+  }
 }
 
 object SchemesOverviewControllerSpec extends ControllerSpecBase {
