@@ -18,7 +18,6 @@ package controllers.remove.pspSelfRemoval
 
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
-import java.time.LocalDate
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
@@ -30,9 +29,9 @@ import forms.remove.RemovePspDeclarationFormProvider
 import identifiers.invitations.PSTRId
 import identifiers.invitations.psp.PspNameId
 import identifiers.remove.pspSelfRemoval.RemovalDateId
-import identifiers.{SchemeNameId, SchemeSrnId}
+import identifiers.{SchemeNameId, SchemeSrnId, AuthorisedPractitionerId}
 import models.AuthEntity.PSP
-import models.{MinimalPSAPSP, SendEmailRequest}
+import models.SendEmailRequest
 import models.invitations.psp.DeAuthorise
 import models.requests.DataRequest
 import play.api.Logger
@@ -72,8 +71,8 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
 
   def onSubmit(): Action[AnyContent] = (auth(PSP) andThen getData andThen requireData).async {
       implicit request =>
-        (SchemeSrnId and SchemeNameId and PSTRId and RemovalDateId and PspNameId).retrieve.right.map {
-          case srn ~ schemeName ~ pstr ~ removalDate ~ pspName =>
+        (SchemeSrnId and SchemeNameId and PSTRId and RemovalDateId and PspNameId and AuthorisedPractitionerId).retrieve.right.map {
+          case srn ~ schemeName ~ pstr ~ removalDate ~ pspName ~ authorisedPractitioner =>
               form.bindFromRequest().fold(
                 (formWithErrors: Form[Boolean]) =>
                   Future.successful(BadRequest(view(formWithErrors, schemeName, srn))),
@@ -82,7 +81,7 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
                   val deAuthModel: DeAuthorise = DeAuthorise("PSPID", pspId, "PSPID", pspId, removalDate.toString)
                   pspConnector.deAuthorise(pstr, deAuthModel).flatMap { _ =>
                     minimalConnector.getMinimalPspDetails(pspId).flatMap { minimalPSAPSP =>
-                      sendEmail(pspId, pstr, minimalPSAPSP.email, "psaname", pspName, schemeName).map { _ =>
+                      sendEmail(pspId, pstr, minimalPSAPSP.email, authorisedPractitioner.authorisingPSA.name, pspName, schemeName).map { _ =>
                         Redirect(controllers.remove.pspSelfRemoval.routes.ConfirmationController.onPageLoad())
                       }
                     }

@@ -26,7 +26,7 @@ import forms.remove.RemovePspDeclarationFormProvider
 import identifiers.invitations.PSTRId
 import identifiers.invitations.psp.PspNameId
 import identifiers.remove.pspSelfRemoval.RemovalDateId
-import identifiers.{SchemeNameId, SchemeSrnId}
+import identifiers.{SchemeNameId, SchemeSrnId, AuthorisedPractitionerId}
 import models.{MinimalPSAPSP, SendEmailRequest}
 import org.mockito.ArgumentCaptor
 import org.mockito.Matchers.any
@@ -37,6 +37,7 @@ import play.api.libs.json.Json
 import play.api.mvc.AnyContentAsJson
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import testhelpers.CommonBuilders.pspDetails
 import uk.gov.hmrc.domain.PspId
 import uk.gov.hmrc.http.HttpResponse
 import views.html.remove.pspSelfRemoval.declaration
@@ -60,13 +61,13 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar {
   private val pspName: String = "psp-name"
   private val minPsp: MinimalPSAPSP =
     MinimalPSAPSP("z@z.z", isPsaSuspended = false, Some("ABC Corps"), None, rlsFlag = false, deceasedFlag = false)
-
   private val data = Json.obj(
     PSTRId.toString -> pstr,
     SchemeNameId.toString -> schemeName,
     SchemeSrnId.toString -> srn,
     RemovalDateId.toString -> "2020-12-12",
-    PspNameId.toString -> pspName
+    PspNameId.toString -> pspName,
+    AuthorisedPractitionerId.toString -> pspDetails
   )
 
   private val view = injector.instanceOf[declaration]
@@ -118,12 +119,12 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar {
         actualSendEmailRequest.to mustBe List(minPsp.email)
         actualSendEmailRequest.templateId mustBe "pods_psp_de_auth_psp_company_partnership"
         actualSendEmailRequest.parameters mustBe Map(
-          "authorisingPsaName" -> "psa name",
+          "authorisingPsaName" -> pspDetails.authorisingPSA.name,
           "pspName" -> pspName,
           "schemeName" -> schemeName
         )
 
-        //actualSendEmailRequest.eventUrl.isDefined mustBe true
+        actualSendEmailRequest.eventUrl.isDefined mustBe true
       }
 
       "return a Bad Request and errors if invalid data is submitted" in {
