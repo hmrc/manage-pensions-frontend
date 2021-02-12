@@ -27,11 +27,10 @@ import controllers.Retrievals
 import controllers.actions.{DataRequiredAction, AuthAction, DataRetrievalAction}
 import forms.remove.RemovePspDeclarationFormProvider
 import identifiers.invitations.PSTRId
-import identifiers.invitations.psp.PspNameId
 import identifiers.remove.pspSelfRemoval.RemovalDateId
 import identifiers.{SchemeNameId, SchemeSrnId, AuthorisedPractitionerId}
 import models.AuthEntity.PSP
-import models.SendEmailRequest
+import models.{MinimalPSAPSP, SendEmailRequest}
 import models.invitations.psp.DeAuthorise
 import models.requests.DataRequest
 import play.api.Logger
@@ -71,8 +70,8 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
 
   def onSubmit(): Action[AnyContent] = (auth(PSP) andThen getData andThen requireData).async {
       implicit request =>
-        (SchemeSrnId and SchemeNameId and PSTRId and RemovalDateId and PspNameId and AuthorisedPractitionerId).retrieve.right.map {
-          case srn ~ schemeName ~ pstr ~ removalDate ~ pspName ~ authorisedPractitioner =>
+        (SchemeSrnId and SchemeNameId and PSTRId and RemovalDateId and AuthorisedPractitionerId).retrieve.right.map {
+          case srn ~ schemeName ~ pstr ~ removalDate ~ authorisedPractitioner =>
               form.bindFromRequest().fold(
                 (formWithErrors: Form[Boolean]) =>
                   Future.successful(BadRequest(view(formWithErrors, schemeName, srn))),
@@ -81,7 +80,7 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
                   val deAuthModel: DeAuthorise = DeAuthorise("PSPID", pspId, "PSPID", pspId, removalDate.toString)
                   pspConnector.deAuthorise(pstr, deAuthModel).flatMap { _ =>
                     minimalConnector.getMinimalPspDetails(pspId).flatMap { minimalPSAPSP =>
-                      sendEmail(pspId, pstr, minimalPSAPSP.email, authorisedPractitioner.authorisingPSA.name, pspName, schemeName).map { _ =>
+                      sendEmail(pspId, pstr, minimalPSAPSP, authorisedPractitioner.authorisingPSA.name, schemeName).map { _ =>
                         Redirect(controllers.remove.pspSelfRemoval.routes.ConfirmationController.onPageLoad())
                       }
                     }
@@ -104,21 +103,22 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
   private def sendEmail(
     pspId: String,
     pstr: String,
-    email: String,
+    minimalPSP: MinimalPSAPSP,
     psaName: String,
-    pspName: String,
     schemeName: String
   )(implicit request: DataRequest[AnyContent], ec: ExecutionContext): Future[Unit] = {
+    val emailTemplateId =
+      s"pods_psp_de_auth_psp_${minimalPSP.individualDetails.fold("company_partnership")(_=>"individual")}"
     val sendEmailRequest = SendEmailRequest(
-      List(email),
-      "pods_psp_de_auth_psp_company_partnership",
+      List(minimalPSP.email),
+      emailTemplateId,
       Map(
         "authorisingPsaName" -> psaName,
-        "pspName" -> pspName,
+        "pspName" -> minimalPSP.name,
         "schemeName" -> schemeName
       ),
       force = false,
-      eventUrl = Some(callBackUrl(pspId, pstr, email))
+      eventUrl = Some(callBackUrl(pspId, pstr, minimalPSP.email))
     )
 
     emailConnector.sendEmail(sendEmailRequest).map { emailStatus =>
