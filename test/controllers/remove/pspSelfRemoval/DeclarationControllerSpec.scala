@@ -17,40 +17,32 @@
 package controllers.remove.pspSelfRemoval
 
 import java.time.LocalDate
-
-import connectors.admin.MinimalConnector
-import connectors.{EmailSent, EmailConnector, PspConnector}
+import connectors.PspConnector
 import controllers.ControllerSpecBase
 import controllers.actions._
 import forms.remove.RemovePspDeclarationFormProvider
 import identifiers.invitations.PSTRId
 import identifiers.remove.pspSelfRemoval.RemovalDateId
-import identifiers.{SchemeNameId, SchemeSrnId, AuthorisedPractitionerId}
-import models.{MinimalPSAPSP, SendEmailRequest, IndividualDetails}
-import org.mockito.ArgumentCaptor
+import identifiers.{SchemeNameId, SchemeSrnId}
 import org.mockito.Matchers.any
-import org.mockito.Mockito.{times, reset, when, verify}
-import org.scalatest.BeforeAndAfterEach
+import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.mvc.AnyContentAsJson
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import testhelpers.CommonBuilders.pspDetails
 import uk.gov.hmrc.domain.PspId
 import uk.gov.hmrc.http.HttpResponse
 import views.html.remove.pspSelfRemoval.declaration
 
 import scala.concurrent.Future
 
-class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar with BeforeAndAfterEach {
+class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar {
 
   private val formProvider = new RemovePspDeclarationFormProvider()
   private val form = formProvider()
   private val mockPspConnector: PspConnector = mock[PspConnector]
-  private val mockEmailConnector = mock[EmailConnector]
-  private val mockMinimalConnector = mock[MinimalConnector]
 
   private def onwardRoute = controllers.remove.pspSelfRemoval.routes.ConfirmationController.onPageLoad()
   private val schemeName = "test-scheme"
@@ -58,33 +50,20 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
   private val pstr = "pstr"
   private val pspId = Some(PspId("00000000"))
 
-  private val minPspOrganisation: MinimalPSAPSP =
-    MinimalPSAPSP("z@z.z", isPsaSuspended = false,
-      Some("psp-name-org"), None, rlsFlag = false, deceasedFlag = false)
-  private val minPspIndividual: MinimalPSAPSP =
-    MinimalPSAPSP("z@z.z", isPsaSuspended = false, None,
-      Some(IndividualDetails("Test", None, "Psp Name")), rlsFlag = false, deceasedFlag = false)
-
   private val data = Json.obj(
     PSTRId.toString -> pstr,
     SchemeNameId.toString -> schemeName,
     SchemeSrnId.toString -> srn,
-    RemovalDateId.toString -> "2020-12-12",
-    AuthorisedPractitionerId.toString -> pspDetails
+    RemovalDateId.toString -> "2020-12-12"
   )
 
   private val view = injector.instanceOf[declaration]
 
   def controller(dataRetrievalAction: DataRetrievalAction = new FakeDataRetrievalAction(Some(data), pspId = pspId)): DeclarationController =
     new DeclarationController(messagesApi, formProvider, FakeAuthAction, dataRetrievalAction,
-      new DataRequiredActionImpl, mockPspConnector,
-      mockMinimalConnector, mockEmailConnector, controllerComponents, view)
+      new DataRequiredActionImpl, mockPspConnector, controllerComponents, view)
 
   private def viewAsString(form: Form[Boolean] = form) = view(form, schemeName, srn)(fakeRequest, messages).toString
-
-  override def beforeEach(): Unit = {
-    reset(mockPspConnector, mockMinimalConnector, mockEmailConnector)
-  }
 
   "Declaration Controller" when {
     "on a GET" must {
@@ -107,58 +86,14 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
     }
 
     "on a POST" must {
-      "save the data, redirect to the next page if valid data is submitted and send email to PSP using correct template for a company" in {
+      "save the data and redirect to the next page if valid data is submitted" in {
         when(mockPspConnector.deAuthorise(any(), any())(any(), any()))
           .thenReturn(Future.successful(HttpResponse.apply(OK, Json.stringify(Json.obj("processingDate" -> LocalDate.now)))))
-        when(mockMinimalConnector.getMinimalPspDetails(any())(any(), any()))
-          .thenReturn(Future.successful(minPspOrganisation))
-        when(mockEmailConnector.sendEmail(any())(any(), any())).thenReturn(Future.successful(EmailSent))
         val postRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.obj("value" -> true))
         val result = controller().onSubmit()(postRequest)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(onwardRoute.url)
-
-        val emailRequestCaptor = ArgumentCaptor.forClass(classOf[SendEmailRequest])
-        verify(mockEmailConnector, times(1)).sendEmail(emailRequestCaptor.capture())(any(), any())
-        val actualSendEmailRequest = emailRequestCaptor.getValue
-
-        actualSendEmailRequest.to mustBe List(minPspOrganisation.email)
-        actualSendEmailRequest.templateId mustBe "pods_psp_de_auth_psp_company_partnership"
-        actualSendEmailRequest.parameters mustBe Map(
-          "authorisingPsaName" -> pspDetails.authorisingPSA.name,
-          "pspName" -> minPspOrganisation.name,
-          "schemeName" -> schemeName
-        )
-
-        actualSendEmailRequest.eventUrl.isDefined mustBe false
-      }
-
-      "save the data, redirect to the next page if valid data is submitted and send email to PSP using correct template for an individual" in {
-        when(mockPspConnector.deAuthorise(any(), any())(any(), any()))
-          .thenReturn(Future.successful(HttpResponse.apply(OK, Json.stringify(Json.obj("processingDate" -> LocalDate.now)))))
-        when(mockMinimalConnector.getMinimalPspDetails(any())(any(), any()))
-          .thenReturn(Future.successful(minPspIndividual))
-        when(mockEmailConnector.sendEmail(any())(any(), any())).thenReturn(Future.successful(EmailSent))
-        val postRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.obj("value" -> true))
-        val result = controller().onSubmit()(postRequest)
-
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(onwardRoute.url)
-
-        val emailRequestCaptor = ArgumentCaptor.forClass(classOf[SendEmailRequest])
-        verify(mockEmailConnector, times(1)).sendEmail(emailRequestCaptor.capture())(any(), any())
-        val actualSendEmailRequest = emailRequestCaptor.getValue
-
-        actualSendEmailRequest.to mustBe List(minPspOrganisation.email)
-        actualSendEmailRequest.templateId mustBe "pods_psp_de_auth_psp_individual"
-        actualSendEmailRequest.parameters mustBe Map(
-          "authorisingPsaName" -> pspDetails.authorisingPSA.name,
-          "pspName" -> minPspIndividual.name,
-          "schemeName" -> schemeName
-        )
-
-        actualSendEmailRequest.eventUrl.isDefined mustBe false
       }
 
       "return a Bad Request and errors if invalid data is submitted" in {
