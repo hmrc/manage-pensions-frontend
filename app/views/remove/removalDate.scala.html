@@ -32,7 +32,7 @@
     title = titleWithErrors(form, messages("messages__removalDate__title"))
 ) {
 
-    @formHelper(action = PsaRemovalDateController.onSubmit, 'autoComplete -> "off") {
+    @formHelper(action = PsaRemovalDateController.onSubmit, 'autoComplete -> "off",'novalidate -> "novalidate") {
 
         @components.back_link()
 
