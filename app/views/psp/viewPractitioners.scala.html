@@ -43,8 +43,9 @@
     @components.back_link()
 
     @components.heading(headingKey = messages("messages__viewPractitioners__heading"), secondaryHeaderKey = Some(schemeName))
-
-    <table id="practitioner-authorisation-table" class="hmrc-responsive-table" role="table">
+    <div role="region" aria-labelledby="practitionerList_table" tabindex="0">
+        <table id="practitioner-authorisation-table" class="govuk-table" role="table">
+        <caption id="practitionerList_table" class="visually-hidden">@messages("messages__listSchemes__title")</caption>
         <thead role="rowgroup">
             <tr role="row">
                 <th class="govuk-table__header" scope="col">
@@ -92,7 +93,7 @@
         }
         </tbody>
     </table>
-
+    </div>
     <p class="govuk-margin-top-5">
         <a id="authorise" href="@controllers.invitations.psp.routes.WhatYouWillNeedController.onPageLoad()">
             @messages("messages__pspAuthorise__link")
