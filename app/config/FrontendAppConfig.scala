@@ -46,9 +46,6 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val contactHost = baseUrl("contact-frontend")
 
   lazy val appName: String = runModeConfiguration.underlying.getString("appName")
-  lazy val googleTagManagerIdAvailable: Boolean = runModeConfiguration.underlying
-    .getBoolean(s"google-tag-manager.id-available")
-  lazy val googleTagManagerId: String = loadConfig(s"google-tag-manager.id")
 
   val reportAProblemPartialUrl = getConfigString("contact-frontend.report-problem-url.with-js")
   val reportAProblemNonJSUrl = getConfigString("contact-frontend.report-problem-url.non-js")
@@ -70,9 +67,6 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val pensionAdminUrl: String = servicesConfig.baseUrl("pension-administrator")
   lazy val aftUrl: String = servicesConfig.baseUrl("pension-scheme-accounting-for-tax")
   lazy val practitionerUrl: String = servicesConfig.baseUrl("pension-practitioner")
-
-  lazy val timeout: String = loadConfig("session._timeoutSeconds")
-  lazy val countdown: String = loadConfig("session._CountdownInSeconds")
 
   lazy val loginUrl: String = loadConfig("urls.login")
   lazy val loginContinueUrl: String = loadConfig("urls.loginContinue")
