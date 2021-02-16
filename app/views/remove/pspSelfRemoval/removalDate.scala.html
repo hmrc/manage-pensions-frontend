@@ -32,7 +32,7 @@
     title = titleWithErrors(form, messages("messages__pspSelfRemovalDate__title"))
 ) {
 
-    @formHelper(action = RemovalDateController.onSubmit, 'autoComplete -> "off") {
+    @formHelper(action = RemovalDateController.onSubmit, 'autoComplete -> "off", 'novalidate -> "novalidate") {
 
         @components.back_link()
 
