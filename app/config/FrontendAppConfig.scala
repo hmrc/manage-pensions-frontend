@@ -116,8 +116,6 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
     .getString("urls.subscriptionDetails")}"
   lazy val removePsaUrl : String = s"${servicesConfig.baseUrl("pension-administrator")}${runModeConfiguration.underlying
     .getString("urls.removePsa")}"
-  lazy val taxDeEnrolmentUrl: String = servicesConfig.baseUrl("tax-enrolments") + runModeConfiguration.underlying
-    .getString("urls.tax-de-enrolment")
   lazy val updateSchemeDetailsUrl: String = s"${servicesConfig.baseUrl("pensions-scheme")}${runModeConfiguration.underlying
     .getString("urls.updateSchemeDetails")}"
 
