@@ -53,7 +53,6 @@ This service does not have it's own backend, instead it the following backends f
 |Pensions Scheme            |DELETE|/update-scheme/release-lock | Release the edit lock on the scheme  |
 |Pension Scheme Accounting For Tax            |GET|/pension-scheme-accounting-for-tax/get-aft-versions | Return the data from all versions of aft returns of a scheme for a given quarter  |
 |Pension Scheme Accounting For Tax            |GET|/pension-scheme-accounting-for-tax/get-aft-overview | Return the data overview of all aft returns of a scheme for a given time range  |
-|Tax Enrolments            |DELETE|/tax-enrolments/users/{groupId}/enrolments/{enrolmentKey} | De-enrols a PSA from the service  |
 |Address Lookup            |GET|/v2/uk/addresses?postcode={postCode} | Returns all addresses at given postcode  |
 
 ## Running the service
