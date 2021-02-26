@@ -29,11 +29,11 @@ case class CardViewModel(
 
 case class CardSubHeading(
                            subHeading: String,
-                           subHeadingClasses: String,
+                           subHeadingClasses: Seq[String],
                            subHeadingParams: Seq[CardSubHeadingParam] = Seq.empty
                           )
 
 case class CardSubHeadingParam(
                                 subHeadingParam: String,
-                                subHeadingParamClasses: String
+                                subHeadingParamClasses: Seq[String]
                               )

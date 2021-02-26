@@ -25,17 +25,17 @@
         </h2>
 
         @cardModel.subHeadings.map { subHead =>
-            <h3 class="card-sub-heading @cardModel.subHeadingParam">
+            <p class="card-sub-heading @cardModel.subHeadingParam">
                 <span class="font-xsmall">@subHead._1</span>
                 @subHead._2
-            </h3>
+            </p>
         }
 
         @cardModel.optionalSubHeading.map { subHead =>
-            <h3 class="card-sub-heading">
+            <p class="card-sub-heading">
                 <span class="font-xsmall">@subHead._1</span>
                 @subHead._2
-            </h3>
+            </p>
         }
 
     </div>
