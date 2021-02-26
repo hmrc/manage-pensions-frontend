@@ -30,6 +30,7 @@ object DateHelper {
   def overriddenDate: Option[LocalDate] = mockDate.get()
 
   val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
+  val auditFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
   val startDateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMMM")
   val endDateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
   def formatDate(date: LocalDate): String = {

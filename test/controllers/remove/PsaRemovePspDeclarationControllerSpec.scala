@@ -147,6 +147,19 @@ class PsaRemovePspDeclarationControllerSpec extends ControllerWithQuestionPageBe
     emptyPostRequest = Some(emptyPostRequest)
   )
 
+  "send an audit event when psp successfully removed by the PSA" in {
+    val result = onSubmitAction(validData, FakeAuthAction)(postRequest)
+
+    when(mockMinimalConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minPsa))
+
+    status(result) mustBe SEE_OTHER
+
+    redirectLocation(result) mustBe Some(onwardRoute.url)
+
+    val expectedAuditEvent = ???
+
+    verify(mockAuditService, times(1)).sendEvent(Matchers.eq(expectedAuditEvent))(any(), any())
+  }
 
   "send an email to the PSA email address and send an audit event when psp successfully removed by the PSA" in {
     val result = onSubmitAction(validData, FakeAuthAction)(postRequest)
