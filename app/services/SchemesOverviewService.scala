@@ -70,10 +70,10 @@ class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
       heading = Message("messages__schemeOverview__psa_heading"),
       subHeadings = Seq(CardSubHeading(
         subHeading = Message("messages__schemeOverview__psa_id"),
-        subHeadingClasses = "heading-small card-sub-heading",
+        subHeadingClasses = "card-sub-heading",
         subHeadingParams = Seq(CardSubHeadingParam(
           subHeadingParam = psaId,
-          subHeadingParamClasses = "font-small")))),
+          subHeadingParamClasses = "font-small bold")))),
       links = Seq(
         Link("psaLink", appConfig.registeredPsaDetailsUrl, Message("messages__schemeOverview__psa_change"))
       ) ++ invitationLink ++ deregisterLink,

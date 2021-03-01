@@ -80,10 +80,10 @@ class PsaSchemeDashboardService @Inject()(
           if (currentScheme.nonEmpty && date.nonEmpty) {
             Some(CardSubHeading(
               subHeading = Message("messages__psaSchemeDash__regDate"),
-              subHeadingClasses = "heading-small card-sub-heading",
+              subHeadingClasses = "card-sub-heading",
               subHeadingParams = Seq(CardSubHeadingParam(
                 subHeadingParam = date.getOrElse(""),
-                subHeadingParamClasses = "font-small"))))
+                subHeadingParamClasses = "font-small bold"))))
           } else {
             None
           }
@@ -99,10 +99,10 @@ class PsaSchemeDashboardService @Inject()(
       if (currentScheme.nonEmpty && currentScheme.head.pstr.nonEmpty) {
         Some(CardSubHeading(
           subHeading = Message("messages__psaSchemeDash__pstr"),
-          subHeadingClasses = "heading-small card-sub-heading",
+          subHeadingClasses = "card-sub-heading",
           subHeadingParams = Seq(CardSubHeadingParam(
             subHeadingParam = currentScheme.head.pstr.head,
-            subHeadingParamClasses = "font-small"))))
+            subHeadingParamClasses = "font-small bold"))))
       } else {
         None
       }
@@ -138,10 +138,10 @@ class PsaSchemeDashboardService @Inject()(
       Seq(CardSubHeading(
         subHeading = psa.relationshipDate.fold(messages("messages__psaSchemeDash__added"))(date =>
           messages("messages__psaSchemeDash__addedOn", LocalDate.parse(date).format(formatter))),
-        subHeadingClasses = "heading-small card-sub-heading",
+        subHeadingClasses = "card-sub-heading",
         subHeadingParams = Seq(CardSubHeadingParam(
           subHeadingParam = psa.getPsaName.getOrElse(throw PsaNameCannotBeRetrievedException),
-          subHeadingParamClasses = "font-small"))))
+          subHeadingParamClasses = "font-small bold"))))
     }
 
   private def latestPsa(ua: UserAnswers): Option[PsaDetails] =
@@ -184,10 +184,10 @@ class PsaSchemeDashboardService @Inject()(
     latestPsp(ua).fold[Seq[CardSubHeading]](Nil) { psp =>
       Seq(CardSubHeading(
         subHeading = Message("messages__psaSchemeDash__addedOn", psp.relationshipStartDate.format(formatter)),
-        subHeadingClasses = "heading-small card-sub-heading",
+        subHeadingClasses = "card-sub-heading",
         subHeadingParams = Seq(CardSubHeadingParam(
           subHeadingParam = psp.name,
-          subHeadingParamClasses = "font-small"))))
+          subHeadingParamClasses = "font-small bold"))))
     }
 
   private def isSchemeOpen(ua: UserAnswers): Boolean = ua.get(SchemeStatusId).getOrElse("").equalsIgnoreCase("open")
