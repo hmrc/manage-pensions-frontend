@@ -118,7 +118,7 @@ class PsaRemovePspDeclarationController @Inject()(
                       )
                     )
                     auditService.sendEvent(
-                      PSPDeauthorisationAuditEvent(removalDate, psaId, pspDetails.id)
+                      PSPDeauthorisationAuditEvent(removalDate, psaId, pspDetails.id, pstr)
                     )
                     Redirect(navigator.nextPage(PsaRemovePspDeclarationId(index), NormalMode, UserAnswers(cacheMap)))
                   }

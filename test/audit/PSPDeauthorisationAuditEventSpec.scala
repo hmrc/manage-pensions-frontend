@@ -29,13 +29,15 @@ class PSPDeauthorisationAuditEventSpec extends WordSpec with MustMatchers {
 
   private val pspId = "pspId"
   private val psaId = "psaId"
+  private val pstr = "pstr"
 
   "details" must {
     "format in a valid way" in {
       val event = PSPDeauthorisationAuditEvent(
         ceaseDate = ceaseDate,
         psaId = psaId,
-        pspId = pspId
+        pspId = pspId,
+        pstr = pstr
       )
 
 
@@ -45,6 +47,7 @@ class PSPDeauthorisationAuditEventSpec extends WordSpec with MustMatchers {
           "initiatedIDType" -> "PSAID",
           "ceaseNumber" -> pspId,
           "ceaseIDType"-> "PSPID",
+          "pensionSchemeTaxReference" -> pstr,
           "declarationCeasePensionSchemePractitionerDetails" ->
             Json.stringify(Json.obj("declarationBox1" -> true))
         )

@@ -23,7 +23,8 @@ import utils.DateHelper
 case class PSPDeauthorisationAuditEvent(
                                          ceaseDate: LocalDate,
                                          psaId: String,
-                                         pspId: String
+                                         pspId: String,
+                                         pstr: String
                                        ) extends AuditEvent {
   override def auditType: String = "PensionSchemeAdministratorDeauthorisePractitioner"
 
@@ -34,6 +35,7 @@ case class PSPDeauthorisationAuditEvent(
       "initiatedIDType" -> "PSAID",
       "initiatedIDNumber" -> psaId,
       "ceaseIDType"-> "PSPID",
+      "pensionSchemeTaxReference" -> pstr,
       "declarationCeasePensionSchemePractitionerDetails" ->
         Json.stringify(Json.obj("declarationBox1" -> true))
     )

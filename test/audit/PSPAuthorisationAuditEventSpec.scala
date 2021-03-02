@@ -24,12 +24,14 @@ class PSPAuthorisationAuditEventSpec extends WordSpec with MustMatchers {
 
   private val pspId = "pspId"
   private val psaId = "psaId"
+  private val pstr = "pstr"
 
   "details" must {
     "format in a valid way" in {
       val event = PSPAuthorisationAuditEvent(
         psaId = psaId,
-        pspId = pspId
+        pspId = pspId,
+        pstr = pstr
       )
 
       val expected = Map(
@@ -37,6 +39,7 @@ class PSPAuthorisationAuditEventSpec extends WordSpec with MustMatchers {
           "initiatedIDNumber" -> psaId,
           "authoriseIDType"-> "PSPID",
           "authoriseIDNumber" -> pspId,
+          "pensionSchemeTaxReference" -> pstr,
           "declarationAuthorisePensionSchemePractitionerDetails" ->
             Json.stringify(Json.obj("declarationBox1" -> true))
         )

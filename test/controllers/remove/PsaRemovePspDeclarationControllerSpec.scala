@@ -17,49 +17,28 @@
 package controllers.remove
 
 import java.time.LocalDate
-import audit.{AuditService, PSPDeauthorisationEmailAuditEvent, PSPDeauthorisationAuditEvent}
-import connectors.EmailConnector
-import connectors.EmailSent
-import connectors.PspConnector
-import controllers.actions.AuthAction
-import controllers.actions.DataRetrievalAction
-import controllers.actions.FakeAuthAction
-import controllers.actions.FakeDataRetrievalAction
+import audit.{PSPDeauthorisationAuditEvent, PSPDeauthorisationEmailAuditEvent, AuditService}
+import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.remove.RemovePspDeclarationFormProvider
 import identifiers.invitations.PSTRId
 import identifiers.remove.{PspRemovalDateId, PsaRemovePspDeclarationId}
-import identifiers.SchemeNameId
-import identifiers.SchemeSrnId
-import identifiers.SeqAuthorisedPractitionerId
+import identifiers.{SchemeNameId, SchemeSrnId, SeqAuthorisedPractitionerId}
 import org.mockito.Matchers.any
-import org.mockito.Mockito.reset
-import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.libs.json.JsArray
-import play.api.libs.json.Json
-import play.api.mvc.Action
-import play.api.mvc.AnyContent
-import play.api.mvc.AnyContentAsJson
-import play.api.test.Helpers.redirectLocation
-import play.api.test.Helpers.status
+import play.api.libs.json.{JsArray, Json}
+import play.api.mvc.{Action, AnyContent, AnyContentAsJson}
 import uk.gov.hmrc.http.HttpResponse
 import views.html.remove.psaRemovePspDeclaration
-import connectors.FakeUserAnswersCacheConnector
-import connectors.UserAnswersCacheConnector
+import connectors._
 import connectors.admin.MinimalConnector
-import models.IndividualDetails
-import models.MinimalPSAPSP
-import models.SendEmailRequest
-import org.mockito.ArgumentCaptor
-import org.mockito.Matchers
-import org.mockito.Mockito.doNothing
-import org.mockito.Mockito.times
-import org.mockito.Mockito.verify
+import models.{IndividualDetails, MinimalPSAPSP, SendEmailRequest}
+import org.mockito.{ArgumentCaptor, Matchers}
+import org.mockito.Mockito._
 import play.api.data.Form
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.{redirectLocation, status, _}
 
 import scala.concurrent.Future
 
@@ -156,7 +135,7 @@ class PsaRemovePspDeclarationControllerSpec extends ControllerWithQuestionPageBe
     redirectLocation(result) mustBe Some(onwardRoute.url)
 
     // scalastyle:off magic.number
-    val expectedAuditEvent = PSPDeauthorisationAuditEvent(LocalDate.of(2020,5,1), "A0000000", "A2200005")
+    val expectedAuditEvent = PSPDeauthorisationAuditEvent(LocalDate.of(2020,5,1), "A0000000", "A2200005", pstr)
 
     verify(mockAuditService, times(1)).sendEvent(Matchers.eq(expectedAuditEvent))(any(), any())
   }

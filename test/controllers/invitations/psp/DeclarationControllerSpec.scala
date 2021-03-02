@@ -16,7 +16,7 @@
 
 package controllers.invitations.psp
 
-import audit.{AuditService, PSPAuthorisationEmailAuditEvent, PSPAuthorisationAuditEvent}
+import audit.{PSPAuthorisationEmailAuditEvent, PSPAuthorisationAuditEvent, AuditService}
 import base.JsonFileReader
 import connectors.admin.MinimalConnector
 import connectors.{EmailSent, ActiveRelationshipExistsException, EmailConnector, PspConnector}
@@ -26,12 +26,10 @@ import controllers.actions.{DataRetrievalAction, FakeAuthAction, DataRequiredAct
 import forms.invitations.psp.DeclarationFormProvider
 import identifiers.{SchemeNameId, SchemeSrnId}
 import identifiers.invitations.psp.{PspNameId, PspId, PspClientReferenceId}
-import models.SendEmailRequest
-import models.{ListOfSchemes, MinimalPSAPSP}
+import models.{SendEmailRequest, ListOfSchemes, MinimalPSAPSP}
 import models.invitations.psp.ClientReference
 import models.invitations.psp.ClientReference.HaveClientReference
-import org.mockito.ArgumentCaptor
-import org.mockito.Matchers
+import org.mockito.{ArgumentCaptor, Matchers}
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.scalatest.{BeforeAndAfterEach, RecoverMethods}
@@ -165,7 +163,8 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
 
         val expectedAuditEvent = PSPAuthorisationAuditEvent(
           psaId = "A0000000",
-          pspId = pspId
+          pspId = pspId,
+          pstr = pstr
         )
         verify(mockAuditService, times(1)).sendEvent(Matchers.eq(expectedAuditEvent))(any(), any())
 

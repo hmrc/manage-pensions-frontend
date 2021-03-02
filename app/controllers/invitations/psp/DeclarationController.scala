@@ -102,7 +102,8 @@ class DeclarationController @Inject()(
                   auditService.sendEvent(
                     PSPAuthorisationAuditEvent(
                       psaId = request.psaIdOrException.id,
-                      pspId = pspId
+                      pspId = pspId,
+                      pstr = pstr
                     )
                   )
                   Redirect(routes.ConfirmationController.onPageLoad())

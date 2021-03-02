@@ -20,7 +20,8 @@ import play.api.libs.json.Json
 
 case class PSPAuthorisationAuditEvent(
                                          psaId: String,
-                                         pspId: String
+                                         pspId: String,
+                                         pstr: String
                                        ) extends AuditEvent {
   override def auditType: String = "PensionSchemeAdministratorAuthorisePractitioner"
 
@@ -30,6 +31,7 @@ case class PSPAuthorisationAuditEvent(
       "initiatedIDNumber" -> psaId,
       "authoriseIDType"-> "PSPID",
       "authoriseIDNumber" -> pspId,
+      "pensionSchemeTaxReference" -> pstr,
       "declarationAuthorisePensionSchemePractitionerDetails" ->
         Json.stringify(Json.obj("declarationBox1" -> true))
     )
