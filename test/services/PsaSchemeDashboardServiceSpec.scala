@@ -179,17 +179,17 @@ object PsaSchemeDashboardServiceSpec {
 
   private def pstrSubHead(implicit messages: Messages): Seq[CardSubHeading] = Seq(CardSubHeading(
       subHeading = Message("messages__psaSchemeDash__pstr"),
-      subHeadingClasses = "heading-small card-sub-heading",
+      subHeadingClasses = "card-sub-heading",
       subHeadingParams = Seq(CardSubHeadingParam(
         subHeadingParam = pstr,
-        subHeadingParamClasses = "font-small"))))
+        subHeadingParamClasses = "font-small bold"))))
 
   private def dateSubHead(implicit messages: Messages): Seq[CardSubHeading] = Seq(CardSubHeading(
     subHeading = Message("messages__psaSchemeDash__regDate"),
-    subHeadingClasses = "heading-small card-sub-heading",
+    subHeadingClasses = "card-sub-heading",
     subHeadingParams = Seq(CardSubHeadingParam(
       subHeadingParam = LocalDate.parse(date).format(formatter),
-      subHeadingParamClasses = "font-small"))))
+      subHeadingParamClasses = "font-small bold"))))
 
   def psaCard(inviteLink: Seq[Link] = inviteLink)
                      (implicit messages: Messages): CardViewModel = CardViewModel(
@@ -197,10 +197,10 @@ object PsaSchemeDashboardServiceSpec {
     heading = Message("messages__psaSchemeDash__psa_list_head"),
     subHeadings = Seq(CardSubHeading(
       subHeading = messages("messages__psaSchemeDash__addedOn", LocalDate.parse("2018-07-01").format(formatter)),
-      subHeadingClasses = "heading-small card-sub-heading",
+      subHeadingClasses = "card-sub-heading",
       subHeadingParams = Seq(CardSubHeadingParam(
         subHeadingParam = "Tony A Smith",
-        subHeadingParamClasses = "font-small")))),
+        subHeadingParamClasses = "font-small bold")))),
     links = inviteLink ++ Seq(
       Link("view-psa-list",
         controllers.routes.ViewAdministratorsController.onPageLoad(srn).url,
@@ -219,10 +219,10 @@ object PsaSchemeDashboardServiceSpec {
     heading = Message("messages__psaSchemeDash__psp_heading"),
     subHeadings = Seq(CardSubHeading(
       subHeading = Message("messages__psaSchemeDash__addedOn", LocalDate.parse("2019-02-01").format(formatter)),
-      subHeadingClasses = "heading-small card-sub-heading",
+      subHeadingClasses = "card-sub-heading",
       subHeadingParams = Seq(CardSubHeadingParam(
         subHeadingParam = "Practitioner Individual",
-        subHeadingParamClasses = "font-small")))),
+        subHeadingParamClasses = "font-small bold")))),
     links = Seq(
       Link("authorise", controllers.invitations.psp.routes.WhatYouWillNeedController.onPageLoad().url,
         Message("messages__pspAuthorise__link")),

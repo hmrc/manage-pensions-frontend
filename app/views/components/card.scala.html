@@ -25,10 +25,10 @@
         </h2>
 
         @for(sh <- cardModel.subHeadings) {
-            <p class=@sh.subHeadingClasses>
-                @sh.subHeading
+            <p class='@sh.subHeadingClasses'>
+                <span>@sh.subHeading</span>
                 @for(shParam <- sh.subHeadingParams) {
-                    <span class =@shParam.subHeadingParamClasses>@shParam.subHeadingParam</span>
+                    <span class ='@shParam.subHeadingParamClasses'>@shParam.subHeadingParam</span>
                 }
             </p>
         }
