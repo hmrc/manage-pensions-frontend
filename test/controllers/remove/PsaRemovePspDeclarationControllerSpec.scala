@@ -17,8 +17,7 @@
 package controllers.remove
 
 import java.time.LocalDate
-import audit.AuditService
-import audit.PSPDeauthorisationEmailAuditEvent
+import audit.{AuditService, PSPDeauthorisationEmailAuditEvent, PSPDeauthorisationAuditEvent}
 import connectors.EmailConnector
 import connectors.EmailSent
 import connectors.PspConnector
@@ -29,7 +28,7 @@ import controllers.actions.FakeDataRetrievalAction
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.remove.RemovePspDeclarationFormProvider
 import identifiers.invitations.PSTRId
-import identifiers.remove.{PsaRemovePspDeclarationId, PspRemovalDateId}
+import identifiers.remove.{PspRemovalDateId, PsaRemovePspDeclarationId}
 import identifiers.SchemeNameId
 import identifiers.SchemeSrnId
 import identifiers.SeqAuthorisedPractitionerId
@@ -147,7 +146,7 @@ class PsaRemovePspDeclarationControllerSpec extends ControllerWithQuestionPageBe
     emptyPostRequest = Some(emptyPostRequest)
   )
 
-  "send an audit event when psp successfully removed by the PSA" in {
+  "send a deauthorise practitioner audit event when psp successfully removed by the PSA" in {
     val result = onSubmitAction(validData, FakeAuthAction)(postRequest)
 
     when(mockMinimalConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minPsa))
@@ -156,12 +155,13 @@ class PsaRemovePspDeclarationControllerSpec extends ControllerWithQuestionPageBe
 
     redirectLocation(result) mustBe Some(onwardRoute.url)
 
-    val expectedAuditEvent = ???
+    // scalastyle:off magic.number
+    val expectedAuditEvent = PSPDeauthorisationAuditEvent(LocalDate.of(2020,5,1), "A0000000", "A2200005")
 
     verify(mockAuditService, times(1)).sendEvent(Matchers.eq(expectedAuditEvent))(any(), any())
   }
 
-  "send an email to the PSA email address and send an audit event when psp successfully removed by the PSA" in {
+  "send an email to the PSA email address and send an email audit event when psp successfully removed by the PSA" in {
     val result = onSubmitAction(validData, FakeAuthAction)(postRequest)
 
     when(mockMinimalConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minPsa))

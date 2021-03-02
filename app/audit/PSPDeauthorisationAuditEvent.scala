@@ -17,28 +17,25 @@
 package audit
 
 import java.time.LocalDate
-
 import play.api.libs.json.Json
 import utils.DateHelper
 
 case class PSPDeauthorisationAuditEvent(
                                          ceaseDate: LocalDate,
                                          psaId: String,
-                                         pspId: String,
-                                         pstr: String
+                                         pspId: String
                                        ) extends AuditEvent {
   override def auditType: String = "PensionSchemeAdministratorDeauthorisePractitioner"
 
   override def details: Map[String, String] = {
     Map(
       "ceaseDate" -> ceaseDate.format(DateHelper.auditFormatter),
-      "initiatedIDNumber" -> psaId,
-      "initiatedIDType" -> "PSAID",
       "ceaseNumber" -> pspId,
+      "initiatedIDType" -> "PSAID",
+      "initiatedIDNumber" -> psaId,
       "ceaseIDType"-> "PSPID",
-      "pensionSchemeTaxReference" -> pstr,
       "declarationCeasePensionSchemePractitionerDetails" ->
-      Json.stringify(Json.obj("declarationBox1" -> true))
+        Json.stringify(Json.obj("declarationBox1" -> true))
     )
   }
 }

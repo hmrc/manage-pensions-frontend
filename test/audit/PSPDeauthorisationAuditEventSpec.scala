@@ -17,7 +17,6 @@
 package audit
 
 import java.time.LocalDate
-
 import org.scalatest.{MustMatchers, WordSpec}
 import play.api.libs.json.Json
 import utils.DateHelper
@@ -25,33 +24,32 @@ import utils.DateHelper
 
 class PSPDeauthorisationAuditEventSpec extends WordSpec with MustMatchers {
 
+  // scalastyle:off magic.number
   private val ceaseDate = LocalDate.of(2021, 3, 25)
-  private val pspId = "pensionSchemePractitionerId"
-  private val psaId 
+
+  private val pspId = "pspId"
+  private val psaId = "psaId"
 
   "details" must {
     "format in a valid way" in {
       val event = PSPDeauthorisationAuditEvent(
         ceaseDate = ceaseDate,
-        psaId = "pensionSchemeAdministratorId",
-        pspId = "pensionSchemePractitionerId",
-        pstr = "pensionSchemeTaxReference"
+        psaId = psaId,
+        pspId = pspId
       )
 
 
       val expected = Map(
-          "ceaseDate" -> ceaseDate,
-          "initiatedIDNumber" -> "pensionSchemeAdministratorId",
+          "ceaseDate" -> ceaseDate.format(DateHelper.auditFormatter),
+          "initiatedIDNumber" -> psaId,
           "initiatedIDType" -> "PSAID",
-          "ceaseNumber" -> "pensionSchemePractitionerId",
+          "ceaseNumber" -> pspId,
           "ceaseIDType"-> "PSPID",
-          "pensionSchemeTaxReference" -> pstr,
           "declarationCeasePensionSchemePractitionerDetails" ->
             Json.stringify(Json.obj("declarationBox1" -> true))
         )
 
-
+      event.details mustBe expected
     }
   }
-
 }
