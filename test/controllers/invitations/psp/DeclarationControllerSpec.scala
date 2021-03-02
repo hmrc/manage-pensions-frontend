@@ -16,17 +16,16 @@
 
 package controllers.invitations.psp
 
-import audit.AuditService
-import audit.PSPAuthorisationEmailAuditEvent
+import audit.{AuditService, PSPAuthorisationEmailAuditEvent, PSPAuthorisationAuditEvent}
 import base.JsonFileReader
 import connectors.admin.MinimalConnector
-import connectors.{ActiveRelationshipExistsException, EmailConnector, EmailSent, PspConnector}
+import connectors.{EmailSent, ActiveRelationshipExistsException, EmailConnector, PspConnector}
 import connectors.scheme.ListOfSchemesConnector
 import controllers.ControllerSpecBase
-import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
+import controllers.actions.{DataRetrievalAction, FakeAuthAction, DataRequiredActionImpl, FakeDataRetrievalAction}
 import forms.invitations.psp.DeclarationFormProvider
 import identifiers.{SchemeNameId, SchemeSrnId}
-import identifiers.invitations.psp.{PspClientReferenceId, PspId, PspNameId}
+import identifiers.invitations.psp.{PspNameId, PspId, PspClientReferenceId}
 import models.SendEmailRequest
 import models.{ListOfSchemes, MinimalPSAPSP}
 import models.invitations.psp.ClientReference
@@ -156,13 +155,20 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
         )
         actualSendEmailRequest.eventUrl.isDefined mustBe true
 
-        val expectedAuditEvent = PSPAuthorisationEmailAuditEvent(
+        val expectedEmailAuditEvent = PSPAuthorisationEmailAuditEvent(
           psaId = "A0000000",
           pspId = pspId,
           pstr = pstr,
           emailAddress = minPsa.email
         )
+        verify(mockAuditService, times(1)).sendEvent(Matchers.eq(expectedEmailAuditEvent))(any(), any())
+
+        val expectedAuditEvent = PSPAuthorisationAuditEvent(
+          psaId = "A0000000",
+          pspId = pspId
+        )
         verify(mockAuditService, times(1)).sendEvent(Matchers.eq(expectedAuditEvent))(any(), any())
+
       }
 
       "return Bad Request if invalid data is submitted" in {
