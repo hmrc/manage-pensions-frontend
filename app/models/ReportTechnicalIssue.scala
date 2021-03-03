@@ -29,5 +29,6 @@ case class ReportTechnicalIssue(
 
 object ReportTechnicalIssue {
 
-  implicit def jsonFormats: OFormat[ReportTechnicalIssue] = Json.using[Json.WithDefaultValues].format[ReportTechnicalIssue]
+  implicit def jsonFormats: OFormat[ReportTechnicalIssue] =
+    Json.using[Json.WithDefaultValues].format[ReportTechnicalIssue]
 }
