@@ -24,6 +24,7 @@ import play.api.{Configuration, Environment, Mode}
 import play.api.i18n.Lang
 import play.api.mvc.Call
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import models.ReportTechnicalIssue
 
 @Singleton
 class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environment: Environment, servicesConfig: ServicesConfig) {
@@ -49,6 +50,7 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
 
   val reportAProblemPartialUrl = getConfigString("contact-frontend.report-problem-url.with-js")
   val reportAProblemNonJSUrl = getConfigString("contact-frontend.report-problem-url.non-js")
+  val reportTechnicalIssues = ReportTechnicalIssue(serviceId = "PODS")
   val betaFeedbackUrl = getConfigString("contact-frontend.beta-feedback-url.authenticated")
   val betaFeedbackUnauthenticatedUrl = getConfigString("contact-frontend.beta-feedback-url.unauthenticated")
   def pspAuthEmailCallback(encryptedPsaId: String, encryptedPspId: String, encryptedPstr: String, encryptedEmail: String) =
