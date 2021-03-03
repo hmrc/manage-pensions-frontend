@@ -18,28 +18,28 @@ package controllers.remove
 
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
-
-import audit.{AuditService, PSPDeauthorisationEmailAuditEvent}
+import audit.{PSPDeauthorisationAuditEvent, PSPDeauthorisationEmailAuditEvent, AuditService}
 import config.FrontendAppConfig
 import connectors.admin.MinimalConnector
-import connectors.{EmailConnector, EmailNotSent, PspConnector, UserAnswersCacheConnector}
+import connectors.{EmailNotSent, EmailConnector, UserAnswersCacheConnector, PspConnector}
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import controllers.actions.{DataRetrievalAction, DataRequiredAction, AuthAction}
 import forms.remove.RemovePspDeclarationFormProvider
 import identifiers.invitations.PSTRId
 import identifiers.{SchemeNameId, SchemeSrnId}
-import identifiers.remove.{PsaRemovePspDeclarationId, PspRemovalDateId, PspDetailsId}
+import identifiers.remove.{PspRemovalDateId, PsaRemovePspDeclarationId, PspDetailsId}
+
 import javax.inject.Inject
 import models.invitations.psp.DeAuthorise
-import models.{SendEmailRequest, Index, MinimalPSAPSP, NormalMode}
+import models.{MinimalPSAPSP, Index, NormalMode, SendEmailRequest}
 import models.requests.DataRequest
 import play.api.Logger
 import play.api.data.Form
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.{MessagesApi, I18nSupport}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.crypto.{ApplicationCrypto, PlainText}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.{Navigator, UserAnswers}
+import utils.{UserAnswers, Navigator}
 import utils.annotations.RemovePSP
 import views.html.remove.psaRemovePspDeclaration
 
@@ -116,6 +116,9 @@ class PsaRemovePspDeclarationController @Inject()(
                         pstr = pstr,
                         minimalPSAPSP.email
                       )
+                    )
+                    auditService.sendEvent(
+                      PSPDeauthorisationAuditEvent(removalDate, psaId, pspDetails.id, pstr)
                     )
                     Redirect(navigator.nextPage(PsaRemovePspDeclarationId(index), NormalMode, UserAnswers(cacheMap)))
                   }
