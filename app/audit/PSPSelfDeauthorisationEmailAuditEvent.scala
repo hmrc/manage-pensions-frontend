@@ -16,19 +16,15 @@
 
 package audit
 
-// TODO Rename this as this is for PSA deauthorising
-
-case class PSPDeauthorisationEmailAuditEvent(
-  psaId: String,
+case class PSPSelfDeauthorisationEmailAuditEvent(
   pspId: String,
   pstr: String,
   emailAddress: String
 ) extends AuditEvent {
-  override def auditType: String = "PensionSchemePractitionerDeauthorisedEmailEvent"
+  override def auditType: String = "PensionSchemePractitionerSelfDeauthorisationEmailAuditEvent"
 
   override def details: Map[String, String] = {
     Map(
-      "pensionSchemeAdministratorId" -> psaId,
       "pensionSchemePractitionerId" -> pspId,
       "pensionSchemeTaxReference" -> pstr,
       "emailAddress" -> emailAddress,

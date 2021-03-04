@@ -16,15 +16,16 @@
 
 package controllers.remove.pspSelfRemoval
 
+import audit.{AuditService, PSPSelfDeauthorisationEmailAuditEvent}
 import com.google.inject.Inject
 import connectors.admin.MinimalConnector
 import connectors.{EmailConnector, EmailNotSent, PspConnector}
 import controllers.Retrievals
-import controllers.actions.{DataRequiredAction, AuthAction, DataRetrievalAction}
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.remove.RemovePspDeclarationFormProvider
 import identifiers.invitations.PSTRId
 import identifiers.remove.pspSelfRemoval.RemovalDateId
-import identifiers.{SchemeNameId, SchemeSrnId, AuthorisedPractitionerId}
+import identifiers.{AuthorisedPractitionerId, SchemeNameId, SchemeSrnId}
 import models.AuthEntity.PSP
 import models.{MinimalPSAPSP, SendEmailRequest}
 import models.invitations.psp.DeAuthorise
@@ -32,11 +33,11 @@ import models.requests.DataRequest
 import play.api.Logger
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{AnyContent, MessagesControllerComponents, Action}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.remove.pspSelfRemoval.declaration
 
-import scala.concurrent.{Future, ExecutionContext}
+import scala.concurrent.{ExecutionContext, Future}
 
 class DeclarationController @Inject()(override val messagesApi: MessagesApi,
                                       formProvider: RemovePspDeclarationFormProvider,
@@ -46,6 +47,7 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
                                       pspConnector: PspConnector,
                                       minimalConnector: MinimalConnector,
                                       emailConnector: EmailConnector,
+                                      auditService: AuditService,
                                       val controllerComponents: MessagesControllerComponents,
                                       view: declaration
                                      )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
@@ -77,6 +79,7 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
                     minimalPSP <- minimalConnector.getMinimalPspDetails(pspId)
                     _ <- sendEmail(minimalPSP, authorisedPractitioner.authorisingPSA.name, schemeName)
                   } yield {
+                    auditService.sendEvent(PSPSelfDeauthorisationEmailAuditEvent(pspId, pstr, minimalPSP.email))
                     Redirect(controllers.remove.pspSelfRemoval.routes.ConfirmationController.onPageLoad())
                   }
                 }

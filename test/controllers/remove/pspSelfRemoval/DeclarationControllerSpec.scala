@@ -16,20 +16,20 @@
 
 package controllers.remove.pspSelfRemoval
 
-import java.time.LocalDate
-
+import audit.{AuditService, PSPSelfDeauthorisationEmailAuditEvent}
 import connectors.admin.MinimalConnector
-import connectors.{EmailSent, EmailConnector, PspConnector}
+import connectors.{EmailConnector, EmailSent, PspConnector}
 import controllers.ControllerSpecBase
 import controllers.actions._
 import forms.remove.RemovePspDeclarationFormProvider
 import identifiers.invitations.PSTRId
 import identifiers.remove.pspSelfRemoval.RemovalDateId
-import identifiers.{SchemeNameId, SchemeSrnId, AuthorisedPractitionerId}
-import models.{MinimalPSAPSP, SendEmailRequest, IndividualDetails}
-import org.mockito.ArgumentCaptor
+import identifiers.{AuthorisedPractitionerId, SchemeNameId, SchemeSrnId}
+import models.{IndividualDetails, MinimalPSAPSP, SendEmailRequest}
+import org.jsoup.select.Evaluator.Matches
+import org.mockito.{ArgumentCaptor, Matchers}
 import org.mockito.Matchers.any
-import org.mockito.Mockito.{times, reset, when, verify}
+import org.mockito.Mockito.{doNothing, reset, times, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.data.Form
@@ -42,6 +42,7 @@ import uk.gov.hmrc.domain.PspId
 import uk.gov.hmrc.http.HttpResponse
 import views.html.remove.pspSelfRemoval.declaration
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar with BeforeAndAfterEach {
@@ -51,12 +52,16 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
   private val mockPspConnector: PspConnector = mock[PspConnector]
   private val mockEmailConnector = mock[EmailConnector]
   private val mockMinimalConnector = mock[MinimalConnector]
+  private val mockAuditService = mock[AuditService]
 
   private def onwardRoute = controllers.remove.pspSelfRemoval.routes.ConfirmationController.onPageLoad()
   private val schemeName = "test-scheme"
   private val srn = "srn"
   private val pstr = "pstr"
-  private val pspId = Some(PspId("00000000"))
+  private val pspId = "00000000"
+  private val optionalPspId = Some(PspId(pspId))
+  private val emailAddress = "z@z.z"
+  private val expectedPspSelfDeauthorisationEmailAuditEvent = PSPSelfDeauthorisationEmailAuditEvent(pspId, pstr, emailAddress)
 
   private val minPspOrganisation: MinimalPSAPSP =
     MinimalPSAPSP("z@z.z", isPsaSuspended = false,
@@ -75,15 +80,16 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
 
   private val view = injector.instanceOf[declaration]
 
-  def controller(dataRetrievalAction: DataRetrievalAction = new FakeDataRetrievalAction(Some(data), pspId = pspId)): DeclarationController =
+  def controller(dataRetrievalAction: DataRetrievalAction = new FakeDataRetrievalAction(Some(data), pspId = optionalPspId)): DeclarationController =
     new DeclarationController(messagesApi, formProvider, FakeAuthAction, dataRetrievalAction,
       new DataRequiredActionImpl, mockPspConnector,
-      mockMinimalConnector, mockEmailConnector, controllerComponents, view)
+      mockMinimalConnector, mockEmailConnector, mockAuditService, controllerComponents, view)
 
   private def viewAsString(form: Form[Boolean] = form) = view(form, schemeName, srn)(fakeRequest, messages).toString
 
   override def beforeEach(): Unit = {
-    reset(mockPspConnector, mockMinimalConnector, mockEmailConnector)
+    reset(mockPspConnector, mockMinimalConnector, mockEmailConnector, mockAuditService)
+
   }
 
   "Declaration Controller" when {
@@ -113,6 +119,12 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
         when(mockMinimalConnector.getMinimalPspDetails(any())(any(), any()))
           .thenReturn(Future.successful(minPspOrganisation))
         when(mockEmailConnector.sendEmail(any())(any(), any())).thenReturn(Future.successful(EmailSent))
+
+        val emailAuditEventCaptor = ArgumentCaptor.forClass(classOf[PSPSelfDeauthorisationEmailAuditEvent])
+        doNothing().when(mockAuditService).sendEvent(emailAuditEventCaptor.capture())(any(), any())
+
+//        Matchers.eq(expectedPspSelfDeauthorisationEmailAuditEvent))(any(), any())
+
         val postRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.obj("value" -> true))
         val result = controller().onSubmit()(postRequest)
 
@@ -132,6 +144,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
         )
 
         actualSendEmailRequest.eventUrl.isDefined mustBe false
+        emailAuditEventCaptor.getValue mustBe expectedPspSelfDeauthorisationEmailAuditEvent
       }
 
       "save the data, redirect to the next page if valid data is submitted and send email to PSP using correct template for an individual" in {
