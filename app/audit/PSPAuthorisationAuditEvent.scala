@@ -16,22 +16,24 @@
 
 package audit
 
-case class PSPDeauthorisationEmailAuditEvent(
-  psaId: String,
-  pspId: String,
-  pstr: String,
-  emailAddress: String
-) extends AuditEvent {
-  override def auditType: String = "PensionSchemePractitionerDeauthorisedEmailEvent"
+import play.api.libs.json.Json
+
+case class PSPAuthorisationAuditEvent(
+                                         psaId: String,
+                                         pspId: String,
+                                         pstr: String
+                                       ) extends AuditEvent {
+  override def auditType: String = "PensionSchemeAdministratorAuthorisePractitioner"
 
   override def details: Map[String, String] = {
     Map(
-      "pensionSchemeAdministratorId" -> psaId,
-      "pensionSchemePractitionerId" -> pspId,
+      "initiatedIDType" -> "PSAID",
+      "initiatedIDNumber" -> psaId,
+      "authoriseIDType"-> "PSPID",
+      "authoriseIDNumber" -> pspId,
       "pensionSchemeTaxReference" -> pstr,
-      "emailAddress" -> emailAddress,
-      "event" -> "Sent"
+      "declarationAuthorisePensionSchemePractitionerDetails" ->
+        Json.stringify(Json.obj("declarationBox1" -> true))
     )
   }
 }
-
