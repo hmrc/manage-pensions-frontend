@@ -65,24 +65,13 @@ class PspDashboardController @Inject()(
             id = PSPNameId,
             value = details.name
           ).map { _ =>
-            Ok(view(
-              name = details.name,
-              title = "site.psp",
-              cards = service.getTiles(pspId, details),
-              penaltiesCardHtml = Html(""), // Penalties tile does not, as yet, exist for PSP dashboard: only PSA dashboard.
-              subHeading = Some(subHeading),
-              returnLink = returnLink
-            ))
+            Ok(view(details.name, "site.psp", service.getTiles(pspId, details), Html(""), Some(subHeading), returnLink))
           }
         }
 
       }
   }
 
-  def link: Link = Link(
-    id = "switch-psa",
-    url = routes.SchemesOverviewController.onPageLoad().url,
-    linkText = Message("messages__pspDashboard__switch_psa")
-  )
+  def link: Link = Link("switch-psa", routes.SchemesOverviewController.onPageLoad().url, Message("messages__pspDashboard__switch_psa"))
 
 }
