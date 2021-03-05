@@ -32,6 +32,7 @@ import views.behaviours.ViewBehaviours
 import views.html.list_schemes
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
+import models.ReportTechnicalIssue
 
 class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours with MockitoSugar with BeforeAndAfterEach{
 
@@ -132,6 +133,7 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours with MockitoS
 
   override def beforeEach(): Unit = {
     when(mockAppConfig.minimumSchemeSearchResults) thenReturn 5
+    when(mockAppConfig.reportTechnicalIssues).thenReturn(ReportTechnicalIssue())
   }
 
   "list-schemes view" must {
