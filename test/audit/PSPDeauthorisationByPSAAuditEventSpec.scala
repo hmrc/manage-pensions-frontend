@@ -22,7 +22,7 @@ import play.api.libs.json.Json
 import utils.DateHelper
 
 
-class PSPDeauthorisationAuditEventSpec extends WordSpec with MustMatchers {
+class PSPDeauthorisationByPSAAuditEventSpec extends WordSpec with MustMatchers {
 
   // scalastyle:off magic.number
   private val ceaseDate = LocalDate.of(2021, 3, 25)
@@ -33,7 +33,7 @@ class PSPDeauthorisationAuditEventSpec extends WordSpec with MustMatchers {
 
   "details" must {
     "format in a valid way" in {
-      val event = PSPDeauthorisationAuditEvent(
+      val event = PSPDeauthorisationByPSAAuditEvent(
         ceaseDate = ceaseDate,
         psaId = psaId,
         pspId = pspId,

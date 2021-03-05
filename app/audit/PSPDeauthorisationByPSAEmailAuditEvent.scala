@@ -16,9 +16,7 @@
 
 package audit
 
-// TODO Rename this as this is for PSA deauthorising
-
-case class PSPDeauthorisationEmailAuditEvent(
+case class PSPDeauthorisationByPSAEmailAuditEvent(
   psaId: String,
   pspId: String,
   pstr: String,

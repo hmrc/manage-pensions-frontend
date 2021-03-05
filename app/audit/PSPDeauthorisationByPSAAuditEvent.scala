@@ -20,7 +20,7 @@ import java.time.LocalDate
 import play.api.libs.json.Json
 import utils.DateHelper
 
-case class PSPDeauthorisationAuditEvent(
+case class PSPDeauthorisationByPSAAuditEvent(
                                          ceaseDate: LocalDate,
                                          psaId: String,
                                          pspId: String,

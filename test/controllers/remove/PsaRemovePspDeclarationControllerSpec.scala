@@ -17,7 +17,7 @@
 package controllers.remove
 
 import java.time.LocalDate
-import audit.{PSPDeauthorisationAuditEvent, PSPDeauthorisationEmailAuditEvent, AuditService}
+import audit.{PSPDeauthorisationByPSAAuditEvent, PSPDeauthorisationByPSAEmailAuditEvent, AuditService}
 import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.remove.RemovePspDeclarationFormProvider
@@ -135,7 +135,7 @@ class PsaRemovePspDeclarationControllerSpec extends ControllerWithQuestionPageBe
     redirectLocation(result) mustBe Some(onwardRoute.url)
 
     // scalastyle:off magic.number
-    val expectedAuditEvent = PSPDeauthorisationAuditEvent(LocalDate.of(2020,5,1), "A0000000", "A2200005", pstr)
+    val expectedAuditEvent = PSPDeauthorisationByPSAAuditEvent(LocalDate.of(2020,5,1), "A0000000", "A2200005", pstr)
 
     verify(mockAuditService, times(1)).sendEvent(Matchers.eq(expectedAuditEvent))(any(), any())
   }
@@ -162,7 +162,7 @@ class PsaRemovePspDeclarationControllerSpec extends ControllerWithQuestionPageBe
     )
     actualSendEmailRequest.eventUrl.isDefined mustBe true
 
-    val expectedAuditEvent = PSPDeauthorisationEmailAuditEvent(
+    val expectedAuditEvent = PSPDeauthorisationByPSAEmailAuditEvent(
       psaId = "A0000000",
       pspId = "A2200005",
       pstr = pstr,
