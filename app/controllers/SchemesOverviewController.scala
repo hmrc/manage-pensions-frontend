@@ -20,14 +20,17 @@ import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import controllers.actions._
 import identifiers.PSANameId
+import models.Link
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{AnyContent, MessagesControllerComponents, Action}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SchemesOverviewService
+import uk.gov.hmrc.domain.PspId
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import viewmodels.Message
 import views.html.schemesOverview
-import javax.inject.Inject
 
-import scala.concurrent.{Future, ExecutionContext}
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class SchemesOverviewController @Inject()(
                                            override val messagesApi: MessagesApi,
@@ -56,7 +59,7 @@ class SchemesOverviewController @Inject()(
                 penaltiesHtml <- service.retrievePenaltiesUrlPartial
                 _ <- userAnswersCacheConnector.save(request.externalId, PSANameId, name)
               } yield {
-                Ok(view(name, "site.psa", cards, penaltiesHtml, None))
+                Ok(view(name, "site.psa", cards, penaltiesHtml, None, returnLink(request.pspId)))
               }
             case _ =>
               Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
@@ -67,5 +70,12 @@ class SchemesOverviewController @Inject()(
 
   def redirect: Action[AnyContent] =
     Action.async(Future.successful(Redirect(controllers.routes.SchemesOverviewController.onPageLoad())))
+
+  private def returnLink(pspId: Option[PspId]): Option[Link] =
+    if (pspId.nonEmpty) {
+      Some(Link("switch-psp", routes.PspDashboardController.onPageLoad().url, Message("messages__schemeOverview__switch_psp")))
+    } else {
+      None
+    }
 
 }
