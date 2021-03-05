@@ -27,9 +27,9 @@ import identifiers.invitations.PSTRId
 import identifiers.remove.pspSelfRemoval.RemovalDateId
 import identifiers.{AuthorisedPractitionerId, SchemeNameId, SchemeSrnId}
 import models.AuthEntity.PSP
-import models.{MinimalPSAPSP, SendEmailRequest}
 import models.invitations.psp.DeAuthorise
 import models.requests.DataRequest
+import models.{MinimalPSAPSP, SendEmailRequest}
 import play.api.Logger
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}

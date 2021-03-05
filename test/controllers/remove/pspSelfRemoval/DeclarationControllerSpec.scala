@@ -26,10 +26,9 @@ import identifiers.invitations.PSTRId
 import identifiers.remove.pspSelfRemoval.RemovalDateId
 import identifiers.{AuthorisedPractitionerId, SchemeNameId, SchemeSrnId}
 import models.{IndividualDetails, MinimalPSAPSP, SendEmailRequest}
-import org.jsoup.select.Evaluator.Matches
-import org.mockito.{ArgumentCaptor, Matchers}
+import org.mockito.ArgumentCaptor
 import org.mockito.Matchers.any
-import org.mockito.Mockito.{doNothing, reset, times, verify, when}
+import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.data.Form
@@ -113,7 +112,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
     }
 
     "on a POST" must {
-      "save the data, redirect to the next page if valid data is submitted and send email to PSP using correct template for a company" in {
+      "save data, redirect to next page if valid data is submitted, send email to PSP using correct template for a company and send splunk audit event" in {
         when(mockPspConnector.deAuthorise(any(), any())(any(), any()))
           .thenReturn(Future.successful(HttpResponse.apply(OK, Json.stringify(Json.obj("processingDate" -> LocalDate.now)))))
         when(mockMinimalConnector.getMinimalPspDetails(any())(any(), any()))
@@ -122,8 +121,6 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
 
         val emailAuditEventCaptor = ArgumentCaptor.forClass(classOf[PSPSelfDeauthorisationEmailAuditEvent])
         doNothing().when(mockAuditService).sendEvent(emailAuditEventCaptor.capture())(any(), any())
-
-//        Matchers.eq(expectedPspSelfDeauthorisationEmailAuditEvent))(any(), any())
 
         val postRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.obj("value" -> true))
         val result = controller().onSubmit()(postRequest)
@@ -147,7 +144,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
         emailAuditEventCaptor.getValue mustBe expectedPspSelfDeauthorisationEmailAuditEvent
       }
 
-      "save the data, redirect to the next page if valid data is submitted and send email to PSP using correct template for an individual" in {
+      "save data, redirect to next page if valid data is submitted, send email to PSP using correct template for an individual and send splunk audit event" in {
         when(mockPspConnector.deAuthorise(any(), any())(any(), any()))
           .thenReturn(Future.successful(HttpResponse.apply(OK, Json.stringify(Json.obj("processingDate" -> LocalDate.now)))))
         when(mockMinimalConnector.getMinimalPspDetails(any())(any(), any()))
@@ -155,6 +152,9 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
         when(mockEmailConnector.sendEmail(any())(any(), any())).thenReturn(Future.successful(EmailSent))
         val postRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.obj("value" -> true))
         val result = controller().onSubmit()(postRequest)
+
+        val emailAuditEventCaptor = ArgumentCaptor.forClass(classOf[PSPSelfDeauthorisationEmailAuditEvent])
+        doNothing().when(mockAuditService).sendEvent(emailAuditEventCaptor.capture())(any(), any())
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(onwardRoute.url)
@@ -172,6 +172,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
         )
 
         actualSendEmailRequest.eventUrl.isDefined mustBe false
+        emailAuditEventCaptor.getValue mustBe expectedPspSelfDeauthorisationEmailAuditEvent
       }
 
       "return a Bad Request and errors if invalid data is submitted" in {
