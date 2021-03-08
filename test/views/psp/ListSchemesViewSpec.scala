@@ -18,7 +18,7 @@ package views.psp
 
 import config.FrontendAppConfig
 import forms.psp.ListSchemesFormProvider
-import models.{SchemeDetails, SchemeStatus}
+import models.{ReportTechnicalIssue, SchemeDetails, SchemeStatus}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
@@ -82,6 +82,8 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours with MockitoS
 
   override def beforeEach(): Unit = {
     when(mockAppConfig.minimumSchemeSearchResults) thenReturn 5
+    when(mockAppConfig.reportTechnicalIssues).thenReturn(ReportTechnicalIssue())
+
   }
 
   "list-schemes view" must {
