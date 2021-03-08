@@ -82,7 +82,11 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
   def controller(dataRetrievalAction: DataRetrievalAction = new FakeDataRetrievalAction(Some(data), pspId = optionalPspId)): DeclarationController =
     new DeclarationController(messagesApi, formProvider, FakeAuthAction, dataRetrievalAction,
       new DataRequiredActionImpl, mockPspConnector,
-      mockMinimalConnector, mockEmailConnector, mockAuditService, controllerComponents, view)
+      mockMinimalConnector, mockEmailConnector, mockAuditService,
+      crypto,
+      appConfig = frontendAppConfig,
+      controllerComponents, view
+    )
 
   private def viewAsString(form: Form[Boolean] = form) = view(form, schemeName, srn)(fakeRequest, messages).toString
 
@@ -140,7 +144,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
           "schemeName" -> schemeName
         )
 
-        actualSendEmailRequest.eventUrl.isDefined mustBe false
+        actualSendEmailRequest.eventUrl.isDefined mustBe true
         emailAuditEventCaptor.getValue mustBe expectedPspSelfDeauthorisationEmailAuditEvent
       }
 
@@ -171,7 +175,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
           "schemeName" -> schemeName
         )
 
-        actualSendEmailRequest.eventUrl.isDefined mustBe false
+        actualSendEmailRequest.eventUrl.isDefined mustBe true
         emailAuditEventCaptor.getValue mustBe expectedPspSelfDeauthorisationEmailAuditEvent
       }
 

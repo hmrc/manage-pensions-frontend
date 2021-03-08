@@ -16,27 +16,31 @@
 
 package controllers.remove.pspSelfRemoval
 
-import audit.{AuditService, PSPSelfDeauthorisationEmailAuditEvent}
+import audit.{PSPSelfDeauthorisationEmailAuditEvent, AuditService}
 import com.google.inject.Inject
+import config.FrontendAppConfig
 import connectors.admin.MinimalConnector
-import connectors.{EmailConnector, EmailNotSent, PspConnector}
+import connectors.{EmailNotSent, EmailConnector, PspConnector}
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import controllers.actions.{DataRetrievalAction, DataRequiredAction, AuthAction}
 import forms.remove.RemovePspDeclarationFormProvider
 import identifiers.invitations.PSTRId
 import identifiers.remove.pspSelfRemoval.RemovalDateId
-import identifiers.{AuthorisedPractitionerId, SchemeNameId, SchemeSrnId}
+import identifiers.{SchemeNameId, AuthorisedPractitionerId, SchemeSrnId}
 import models.AuthEntity.PSP
 import models.invitations.psp.DeAuthorise
 import models.requests.DataRequest
 import models.{MinimalPSAPSP, SendEmailRequest}
 import play.api.Logger
 import play.api.data.Form
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.{MessagesApi, I18nSupport}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.crypto.{ApplicationCrypto, PlainText}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.remove.pspSelfRemoval.declaration
 
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import scala.concurrent.{ExecutionContext, Future}
 
 class DeclarationController @Inject()(override val messagesApi: MessagesApi,
@@ -48,6 +52,8 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
                                       minimalConnector: MinimalConnector,
                                       emailConnector: EmailConnector,
                                       auditService: AuditService,
+                                      crypto: ApplicationCrypto,
+                                      appConfig: FrontendAppConfig,
                                       val controllerComponents: MessagesControllerComponents,
                                       view: declaration
                                      )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
@@ -77,7 +83,7 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
                   for {
                     _ <- pspConnector.deAuthorise(pstr, deAuthModel)
                     minimalPSP <- minimalConnector.getMinimalPspDetails(pspId)
-                    _ <- sendEmail(minimalPSP, authorisedPractitioner.authorisingPSA.name, schemeName)
+                    _ <- sendEmail(minimalPSP, authorisedPractitioner.authorisingPSA.name, schemeName, pspId, pstr)
                   } yield {
                     auditService.sendEvent(PSPSelfDeauthorisationEmailAuditEvent(pspId, pstr, minimalPSP.email))
                     Redirect(controllers.remove.pspSelfRemoval.routes.ConfirmationController.onPageLoad())
@@ -87,10 +93,24 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
         }
   }
 
+  private def callBackUrl(
+    pspId: String,
+    pstr: String,
+    email: String
+  ): String = {
+    val encryptedPspId = URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(pspId)).value, StandardCharsets.UTF_8.toString)
+    val encryptedPstr = URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(pstr)).value, StandardCharsets.UTF_8.toString)
+    val encryptedEmail = URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(email)).value, StandardCharsets.UTF_8.toString)
+
+    appConfig.pspSelfDeauthEmailCallback(encryptedPspId, encryptedPstr, encryptedEmail)
+  }
+
   private def sendEmail(
     minimalPSP: MinimalPSAPSP,
     psaName: String,
-    schemeName: String
+    schemeName: String,
+    pspId: String,
+    pstr: String
   )(implicit request: DataRequest[AnyContent], ec: ExecutionContext): Future[Unit] = {
     val emailTemplateId =
       s"pods_psp_de_auth_psp_${minimalPSP.individualDetails.fold("company_partnership")(_=>"individual")}"
@@ -103,7 +123,7 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
         "schemeName" -> schemeName
       ),
       force = false,
-      eventUrl = None
+      eventUrl = Some(callBackUrl(pspId, pstr, minimalPSP.email))
     )
 
     emailConnector.sendEmail(sendEmailRequest).map { emailStatus =>
