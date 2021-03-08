@@ -173,6 +173,7 @@ messages__schemeOverview__psa_view_more_invitations = View your {0} scheme admin
 messages__schemeOverview__psa_deregister = Stop being a pension scheme administrator
 messages__schemeOverview__scheme_heading = Pension schemes
 messages__schemeOverview__scheme_view = View your pension schemes
+messages__schemeOverview__switch_psp = Switch to practitioner view
 
 messages__doYouHaveWorkingKnowledge__title = Do you have working knowledge of pensions and pensions tax legislation?
 messages__doYouHaveWorkingKnowledge__heading = Do you have working knowledge of pensions and pensions tax legislation?
