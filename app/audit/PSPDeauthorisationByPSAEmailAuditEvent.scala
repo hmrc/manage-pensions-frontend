@@ -16,7 +16,7 @@
 
 package audit
 
-case class PSPDeauthorisationEmailAuditEvent(
+case class PSPDeauthorisationByPSAEmailAuditEvent(
   psaId: String,
   pspId: String,
   pstr: String,

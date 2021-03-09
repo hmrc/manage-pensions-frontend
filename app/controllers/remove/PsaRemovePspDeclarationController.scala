@@ -18,7 +18,7 @@ package controllers.remove
 
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
-import audit.{PSPDeauthorisationAuditEvent, PSPDeauthorisationEmailAuditEvent, AuditService}
+import audit.{PSPDeauthorisationByPSAAuditEvent, PSPDeauthorisationByPSAEmailAuditEvent, AuditService}
 import config.FrontendAppConfig
 import connectors.admin.MinimalConnector
 import connectors.{EmailNotSent, EmailConnector, UserAnswersCacheConnector, PspConnector}
@@ -110,7 +110,7 @@ class PsaRemovePspDeclarationController @Inject()(
                     _ <- sendEmail(minimalPSAPSP, psaId, pspDetails.id, pstr, pspDetails.name, schemeName)
                   } yield {
                     auditService.sendEvent(
-                      PSPDeauthorisationEmailAuditEvent(
+                      PSPDeauthorisationByPSAEmailAuditEvent(
                         psaId = psaId,
                         pspId = pspDetails.id,
                         pstr = pstr,
@@ -118,7 +118,7 @@ class PsaRemovePspDeclarationController @Inject()(
                       )
                     )
                     auditService.sendEvent(
-                      PSPDeauthorisationAuditEvent(removalDate, psaId, pspDetails.id, pstr)
+                      PSPDeauthorisationByPSAAuditEvent(removalDate, psaId, pspDetails.id, pstr)
                     )
                     Redirect(navigator.nextPage(PsaRemovePspDeclarationId(index), NormalMode, UserAnswers(cacheMap)))
                   }
