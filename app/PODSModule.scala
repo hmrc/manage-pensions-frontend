@@ -67,6 +67,9 @@ class PODSModule extends AbstractModule {
       .annotatedWith(classOf[PspSelfRemoval])
       .to(classOf[PspSelfRemovalNavigator])
 
+    bind(classOf[Navigator])
+      .to(classOf[ManageNavigator])
+
     bind(classOf[CountryOptions])
       .annotatedWith(classOf[EUAndEEA])
       .to(classOf[CountryOptionsEUAndEEA])

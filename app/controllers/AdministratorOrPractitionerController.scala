@@ -28,7 +28,6 @@ import play.api.data.Form
 import play.api.i18n.{MessagesApi, Messages, I18nSupport}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.annotations.AcceptInvitation
 import utils.{UserAnswers, Navigator}
 import views.html.administratorOrPractitioner
 
@@ -38,7 +37,7 @@ class AdministratorOrPractitionerController @Inject()(
                                                      val appConfig: FrontendAppConfig,
                                                      val auth: AuthAction,
                                                      override val messagesApi: MessagesApi,
-                                                     @AcceptInvitation navigator: Navigator,
+                                                     navigator: Navigator,
                                                      val formProvider: AdministratorOrPractitionerFormProvider,
                                                      val dataCacheConnector: UserAnswersCacheConnector,
                                                      val getData: DataRetrievalAction,
@@ -60,8 +59,10 @@ class AdministratorOrPractitionerController @Inject()(
         (formWithErrors: Form[_]) =>
           Future.successful(BadRequest(view(formWithErrors))),
         value => {
-          val uaUpdated = UserAnswers().set(AdministratorOrPractitionerId)(value).asOpt.getOrElse(UserAnswers())
-          Future.successful(Redirect(navigator.nextPage(AdministratorOrPractitionerId, NormalMode, uaUpdated)))
+          dataCacheConnector.save(request.externalId, AdministratorOrPractitionerId, value).map(
+            json =>
+              Redirect(navigator.nextPage(AdministratorOrPractitionerId, NormalMode, UserAnswers(json)))
+          )
         }
       )
   }

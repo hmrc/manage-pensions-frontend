@@ -35,24 +35,22 @@ object AdministratorOrPractitioner {
 
   val options: Seq[InputOption] = values.map {
     value =>
-      InputOption(value.toString, s"messages__administratorOrPractitioner__${value.toString}", hint=Set(s"messages__administratorOrPractitioner__${value.toString}_hint"))
+      InputOption(value.toString, s"messages__administratorOrPractitioner__${value.toString}",
+        hint=Set(s"messages__administratorOrPractitioner__${value.toString}_hint"))
   }
 
   implicit val reads: Reads[AdministratorOrPractitioner] = {
-
-    (JsPath \ "name").read[String].flatMap {
-      case aop if mappings.keySet.contains(aop) =>
-        Reads(_ => JsSuccess(mappings.apply(aop)))
-
-      case _ => Reads(_ => JsError("Invalid Scheme Type"))
+    JsPath.read[String].flatMap {
+      case aop if mappings.keySet.contains(aop) => Reads(_ => JsSuccess(mappings.apply(aop)))
+      case _ => Reads(_ => JsError("Invalid administrator or practitioner type"))
     }
   }
 
-  implicit lazy val writes = new Writes[AdministratorOrPractitioner] {
+  implicit lazy val writes: Writes[AdministratorOrPractitioner] = new Writes[AdministratorOrPractitioner] {
     def writes(o: AdministratorOrPractitioner) = {
       o match {
         case s if mappings.keySet.contains(s.toString) =>
-          Json.obj("name" -> s.toString)
+          JsString(s.toString)
       }
     }
   }

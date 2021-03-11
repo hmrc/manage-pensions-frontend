@@ -18,37 +18,91 @@ package controllers.actions
 
 import base.SpecBase
 import controllers.routes
-import play.api.mvc.Action
-import play.api.mvc.AnyContent
-import play.api.mvc.BaseController
-import play.api.mvc.BodyParsers
-import play.api.mvc.MessagesControllerComponents
+import models.AuthEntity
+import models.AuthEntity.{PSP, PSA}
+import play.api.mvc._
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
-import uk.gov.hmrc.auth.core.retrieve.Retrieval
-import uk.gov.hmrc.auth.core.retrieve.~
+import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.http.HeaderCarrier
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class AuthActionSpec
   extends SpecBase {
 
   import AuthActionSpec._
 
-  class Harness(authAction: AuthAction, val controllerComponents: MessagesControllerComponents = controllerComponents)
+  private val enrolmentPSP = Enrolment(
+    key = "HMRC-PODSPP-ORG",
+    identifiers = Seq(EnrolmentIdentifier(key = "PSPID", value = "20000000")),
+    state = "",
+    delegatedAuthRule = None
+  )
+
+  private  val enrolmentPSA = Enrolment(
+    key = "HMRC-PODS-ORG",
+    identifiers = Seq(EnrolmentIdentifier(key = "PSAID", value = "A0000000")),
+    state = "",
+    delegatedAuthRule = None
+  )
+
+  class Harness(authAction: AuthAction, val controllerComponents: MessagesControllerComponents = controllerComponents,
+    authEntity: AuthEntity = PSA)
     extends BaseController {
-    def onPageLoad(): Action[AnyContent] = authAction.apply() { _ => Ok }
+    def onPageLoad(): Action[AnyContent] = authAction.apply(authEntity) { _ => Ok }
   }
 
   "Auth Action" when {
 
+    "the user has enrolled in PODS as a PSA" must {
+      "return OK" in {
+        val authAction = new AuthActionImpl(
+          authConnector = fakeAuthConnector(authRetrievals(Set(enrolmentPSA))),
+          config = frontendAppConfig,
+          parser = app.injector.instanceOf[BodyParsers.Default]
+        )
+        val controller = new Harness(authAction)
+
+        val result = controller.onPageLoad()(fakeRequest)
+        status(result) mustBe OK
+      }
+    }
+
+    "the user has enrolled in PODS as a PSP" must {
+      "return OK" in {
+        val authAction = new AuthActionImpl(
+          authConnector = fakeAuthConnector(authRetrievals(Set(enrolmentPSP))),
+          config = frontendAppConfig,
+          parser = app.injector.instanceOf[BodyParsers.Default]
+        )
+        val controller = new Harness(authAction, authEntity = PSP)
+
+        val result = controller.onPageLoad()(fakeRequest)
+        status(result) mustBe OK
+      }
+    }
+
+    "the user has enrolled in PODS as both a PSA AND a PSP" must {
+      "return redirect to administrator or practitioner page" in {
+        val authAction = new AuthActionImpl(
+          authConnector = fakeAuthConnector(authRetrievals(Set(enrolmentPSA, enrolmentPSP))),
+          config = frontendAppConfig,
+          parser = app.injector.instanceOf[BodyParsers.Default]
+        )
+        val controller = new Harness(authAction, authEntity = PSP)
+
+        val result = controller.onPageLoad()(fakeRequest)
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.routes.AdministratorOrPractitionerController.onPageLoad().url)
+      }
+    }
+
     "the user hasn't enrolled in PODS" must {
       "redirect the user to pension administrator frontend" in {
         val authAction = new AuthActionImpl(
-          authConnector = fakeAuthConnector(authRetrievals),
+          authConnector = fakeAuthConnector(authRetrievals()),
           config = frontendAppConfig,
           parser = app.injector.instanceOf[BodyParsers.Default]
         )
@@ -161,6 +215,6 @@ object AuthActionSpec {
       stubbedRetrievalResult.map(_.asInstanceOf[A])
   }
 
-  private def authRetrievals: Future[Some[String] ~ Enrolments ~ Some[AffinityGroup.Individual.type]] =
-    Future.successful(new ~(new ~(Some("id"), Enrolments(Set())), Some(AffinityGroup.Individual)))
+  private def authRetrievals(enrolments: Set[Enrolment] = Set()): Future[Some[String] ~ Enrolments ~ Some[AffinityGroup.Individual.type]] =
+    Future.successful(new ~(new ~(Some("id"), Enrolments(enrolments)), Some(AffinityGroup.Individual)))
 }
