@@ -35,7 +35,7 @@ object AdministratorOrPractitioner {
 
   val options: Seq[InputOption] = values.map {
     value =>
-      InputOption(value.toString, s"messages__administratorOrPractitioner__${value.toString}")
+      InputOption(value.toString, s"messages__administratorOrPractitioner__${value.toString}", hint=Set(s"messages__administratorOrPractitioner__${value.toString}_hint"))
   }
 
   implicit val reads: Reads[AdministratorOrPractitioner] = {

@@ -35,7 +35,7 @@
   <input id="@field.id-@value" type="radio" name="@field.name" value="@value" @if(field.value.contains(value)){ checked="checked" }
          @if(hint.nonEmpty){aria-describedby="@getId"}>
 
-  <label class="block-label" for="@field.id-@value" @if(labelClass.nonEmpty) { class=@labelClass }>
+  <label class="block-label @if(labelClass.nonEmpty) { @labelClass }" for="@field.id-@value" >
     @messages(label)
   </label>
 

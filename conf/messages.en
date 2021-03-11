@@ -609,3 +609,7 @@ messages__contactHMRC__address4 = United Kingdom
 messages__administratorOrPractitioner__title = Do you want to view pension schemes for which you are an administrator or a practitioner?
 messages__administratorOrPractitioner__heading = Do you want to view pension schemes for which you are an administrator or a practitioner?
 messages__administratorOrPractitioner__error__required = Select if you want an administrator or practitioner view
+messages__administratorOrPractitioner__administrator = Administrator view
+messages__administratorOrPractitioner__practitioner = Practitioner view
+messages__administratorOrPractitioner__administrator_hint = View data, submit returns and file reports for pension schemes for which you are an administrator
+messages__administratorOrPractitioner__practitioner_hint = View data, submit returns and file reports for pension schemes for which you are a practitioner
