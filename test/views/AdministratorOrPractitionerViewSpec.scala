@@ -38,7 +38,7 @@ class AdministratorOrPractitionerViewSpec extends ViewBehaviours {
 
   "AdministratorOrPractitioner view" must {
 
-    behave like normalPageWithTitle(createView, prefix, messages(s"messages__${prefix}__title"), messages(s"messages__${prefix}__heading"), "p1")
+    behave like normalPageWithTitle(createView, prefix, messages(s"messages__${prefix}__title"), messages(s"messages__${prefix}__heading"))
 
     behave like pageWithBackLink(createView)
 
