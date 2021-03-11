@@ -17,14 +17,17 @@
 package forms
 
 import forms.mappings.Mappings
+import models.AdministratorOrPractitioner
+import play.api.data.Form
+import play.api.i18n.Messages
 
 import javax.inject.Inject
-import play.api.data.Form
 
 class AdministratorOrPractitionerFormProvider @Inject()() extends Mappings {
 
-  def apply(): Form[Boolean] = Form(
-    "value" -> boolean(requiredKey = "messages__administratorOrPractitioner__error__required")
-  )
+  def apply()(implicit messages: Messages): Form[AdministratorOrPractitioner] =
+    Form(
+      "value" -> enumerable[AdministratorOrPractitioner](messages("messages__administratorOrPractitioner__error__required"))
+    )
 
 }

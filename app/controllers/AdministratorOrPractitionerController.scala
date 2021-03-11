@@ -18,18 +18,20 @@ package controllers
 
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
-import controllers.actions.{DataRetrievalAction, DataRequiredAction, AuthAction}
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.AdministratorOrPractitionerFormProvider
 import identifiers.AdministratorOrPractitionerId
+import identifiers.triage.DoesPSAStartWithATwoId
+import models.triage.DoesPSAStartWithATwo
 
 import javax.inject.Inject
-import models.NormalMode
+import models.{AdministratorOrPractitioner, NormalMode}
 import play.api.data.Form
-import play.api.i18n.{MessagesApi, I18nSupport}
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.annotations.AcceptInvitation
-import utils.{UserAnswers, Navigator}
+import utils.{Navigator, UserAnswers}
 import views.html.administratorOrPractitioner
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -47,30 +49,21 @@ class AdministratorOrPractitionerController @Inject()(
                                                      view: administratorOrPractitioner
                                                        )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
-  val form: Form[Boolean] = formProvider()
+  private def form(implicit messages: Messages): Form[AdministratorOrPractitioner] = formProvider()
 
-  def onPageLoad: Action[AnyContent] = (auth() andThen getData andThen requireData) {
+  def onPageLoad: Action[AnyContent] = Action.async {
     implicit request =>
-
-      val preparedForm = request.userAnswers.get(AdministratorOrPractitionerId) match {
-        case None => form
-        case Some(value) => form.fill(value)
-      }
-
-      Ok(view(preparedForm))
-
+      Future.successful(Ok(view(form)))
   }
 
-  def onSubmit: Action[AnyContent] = auth().async {
+  def onSubmit: Action[AnyContent] = Action.async {
     implicit request =>
       form.bindFromRequest().fold(
-        (formWithErrors: Form[Boolean]) =>
+        (formWithErrors: Form[_]) =>
           Future.successful(BadRequest(view(formWithErrors))),
         value => {
-          dataCacheConnector.save(request.externalId, AdministratorOrPractitionerId, value).map(
-            cacheMap =>
-              Redirect(navigator.nextPage(AdministratorOrPractitionerId, NormalMode, UserAnswers(cacheMap)))
-          )
+          val uaUpdated = UserAnswers().set(AdministratorOrPractitionerId)(value).asOpt.getOrElse(UserAnswers())
+          Future.successful(Redirect(navigator.nextPage(AdministratorOrPractitionerId, NormalMode, uaUpdated)))
         }
       )
   }

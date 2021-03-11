@@ -16,6 +16,8 @@
 
 package identifiers
 
-object AdministratorOrPractitionerId extends TypedIdentifier[Boolean] {
+import models.AdministratorOrPractitioner
+
+object AdministratorOrPractitionerId extends TypedIdentifier[AdministratorOrPractitioner] {
   override def toString: String = "administratorOrPractitioner"
 }

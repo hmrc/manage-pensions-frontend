@@ -17,37 +17,53 @@
 package views
 
 import forms.AdministratorOrPractitionerFormProvider
-import models.NormalMode
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
-import play.twirl.api.HtmlFormat
+import models.AdministratorOrPractitioner
+import play.api.data.Form
 import views.behaviours.ViewBehaviours
 import views.html.administratorOrPractitioner
 
 class AdministratorOrPractitionerViewSpec extends ViewBehaviours {
 
-  val form = new AdministratorOrPractitionerFormProvider()()
+  private val messageKeyPrefix = "administratorOrPractitioner"
+
+  private val form = new AdministratorOrPractitionerFormProvider()()
 
   private val administratorOrPractitionerView = injector.instanceOf[administratorOrPractitioner]
 
-  def createView: () => HtmlFormat.Appendable = () => administratorOrPractitionerView(form)(fakeRequest, messages)
+  private def createView() =
+    () => administratorOrPractitionerView(
+      form
+    )(fakeRequest, messages)
 
-  def doc: Document = Jsoup.parse(createView().toString)
+  private def createViewUsingForm =
+    (form: Form[_]) => administratorOrPractitionerView(
+      form
+    )(fakeRequest, messages)
 
-  val prefix = "administratorOrPractitioner"
+  "DoesPSTRStartWithTwoView" must {
+    behave like normalPageWithTitle(createView(), messageKeyPrefix,
+      messages(s"messages__${messageKeyPrefix}__title"), messages(s"messages__${messageKeyPrefix}__title"))
 
-  "AdministratorOrPractitioner view" must {
+    behave like pageWithSubmitButton(createView())
 
-    behave like normalPageWithTitle(createView, prefix, messages(s"messages__${prefix}__title"), messages(s"messages__${prefix}__heading"))
+    "contain radio buttons for the value" in {
+      val doc = asDocument(createViewUsingForm(form))
+      for (option <- AdministratorOrPractitioner.options) {
+        assertContainsRadioButton(doc, s"value-${option.value}", "value", option.value, isChecked = false)
+      }
+    }
 
-    behave like pageWithBackLink(createView)
+    for (option <- AdministratorOrPractitioner.options) {
+      s"rendered with a value of '${option.value}'" must {
+        s"have the '${option.value}' radio button selected" in {
+          val doc = asDocument(createViewUsingForm(form.bind(Map("value" -> s"${option.value}"))))
+          assertContainsRadioButton(doc, s"value-${option.value}", "value", option.value, isChecked = true)
 
-    behave like pageWithSubmitButton(createView)
-
-    "contain true option" in assertContainsRadioButton(doc, "value-yes", "value", "true", false)
-
-    "contain false option" in assertContainsRadioButton(doc, "value-no", "value", "false", false)
-
+          for (unselectedOption <- AdministratorOrPractitioner.options.filterNot(o => o == option)) {
+            assertContainsRadioButton(doc, s"value-${unselectedOption.value}", "value", unselectedOption.value, isChecked = false)
+          }
+        }
+      }
+    }
   }
-
 }
