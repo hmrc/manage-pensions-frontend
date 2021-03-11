@@ -41,3 +41,7 @@ GET         /:srn/view-administrators                     controllers.ViewAdmini
 GET         /view-practitioners                           controllers.psp.ViewPractitionersController.onPageLoad()
 
 GET         /you-must-contact-hmrc                        controllers.ContactHMRCController.onPageLoad()
+
+GET         /administrator-or-practitioner               controllers.AdministratorOrPractitionerController.onPageLoad()
+POST        /administrator-or-practitioner               controllers.AdministratorOrPractitionerController.onSubmit()
+
