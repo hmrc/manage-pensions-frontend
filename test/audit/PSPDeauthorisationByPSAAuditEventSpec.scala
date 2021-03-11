@@ -22,7 +22,9 @@ import play.api.libs.json.Json
 import utils.DateHelper
 
 
-class PSPDeauthorisationByPSAAuditEventSpec extends WordSpec with MustMatchers {
+class PSPDeauthorisationByPSAAuditEventSpec
+  extends WordSpec
+    with MustMatchers {
 
   // scalastyle:off magic.number
   private val ceaseDate = LocalDate.of(2021, 3, 25)
@@ -41,16 +43,16 @@ class PSPDeauthorisationByPSAAuditEventSpec extends WordSpec with MustMatchers {
       )
 
 
-      val expected = Map(
-          "ceaseDate" -> ceaseDate.format(DateHelper.auditFormatter),
-          "initiatedIDNumber" -> psaId,
-          "initiatedIDType" -> "PSAID",
-          "ceaseNumber" -> pspId,
-          "ceaseIDType"-> "PSPID",
-          "pensionSchemeTaxReference" -> pstr,
-          "declarationCeasePensionSchemePractitionerDetails" ->
-            Json.stringify(Json.obj("declarationBox1" -> true))
-        )
+      val expected = Json.obj(
+        "ceaseDate" -> ceaseDate.format(DateHelper.auditFormatter),
+        "initiatedIDNumber" -> psaId,
+        "initiatedIDType" -> "PSAID",
+        "ceaseNumber" -> pspId,
+        "ceaseIDType" -> "PSPID",
+        "pensionSchemeTaxReference" -> pstr,
+        "declarationCeasePensionSchemePractitionerDetails" ->
+          Json.obj("declarationBox1" -> true)
+      )
 
       event.details mustBe expected
     }
