@@ -26,11 +26,14 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
+import play.api.libs.json.Json
 import play.api.test.CSRFTokenHelper.addCSRFToken
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import utils.Navigator
 import views.html.administratorOrPractitioner
+
+import scala.concurrent.Future
 
 class AdministratorOrPractitionerControllerSpec extends ControllerWithQuestionPageBehaviours with ScalaFutures with MockitoSugar {
   val appConfig: FrontendAppConfig = mock[FrontendAppConfig]
@@ -66,6 +69,8 @@ class AdministratorOrPractitionerControllerSpec extends ControllerWithQuestionPa
     }
 
     "redirect to the next page for a valid request" in {
+      when(mockUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any()))
+        .thenReturn(Future.successful(Json.obj()))
       when(mockNavigator.nextPage(any(), any(), any())).thenReturn(onwardRoute)
       val postRequest = FakeRequest(POST, routes.AdministratorOrPractitionerController.onSubmit().url).withFormUrlEncodedBody("value" ->
         AdministratorOrPractitioner.Administrator.toString)
