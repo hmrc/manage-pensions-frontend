@@ -16,32 +16,33 @@
 
 package forms
 
-import forms.behaviours.BooleanFieldBehaviours
-import play.api.data.FormError
+import forms.behaviours.FormBehaviours
+import models.{Field, Required, Invalid, AdministratorOrPractitioner}
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.i18n.{MessagesApi, Messages}
+import play.api.test.FakeRequest
 
-class AdministratorOrPractitionerFormProviderSpec extends BooleanFieldBehaviours {
+class AdministratorOrPractitionerFormProviderSpec extends FormBehaviours with GuiceOneAppPerSuite {
 
-  val requiredKey = "messages__administratorOrPractitioner__error__required"
-  val invalidKey = "error.boolean"
+  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  implicit val messages: Messages = messagesApi.preferred(FakeRequest())
 
-  val formProvider = new AdministratorOrPractitionerFormProvider()
-  val form = formProvider()
+  val validData: Map[String, String] = Map(
+    "value" -> AdministratorOrPractitioner.options.head.value
+  )
 
-  ".value" must {
+  val form = new AdministratorOrPractitionerFormProvider()()
 
-    val fieldName = "value"
+  "AdministratorOrPractitionerFormProvider" must {
 
-    behave like booleanField(
-      form,
-      fieldName,
-      invalidError = FormError(fieldName, invalidKey)
-    )
+    behave like questionForm[AdministratorOrPractitioner](AdministratorOrPractitioner.values.head)
 
-    behave like mandatoryField(
-      form,
-      fieldName,
-      requiredError = FormError(fieldName, requiredKey)
-    )
+    behave like formWithOptionField(
+      Field(
+        "value",
+        Required -> messages("messages__administratorOrPractitioner__error__required"),
+        Invalid -> "error.invalid"
+      ),
+      AdministratorOrPractitioner.options.map(_.value): _*)
   }
-
 }

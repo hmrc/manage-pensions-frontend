@@ -16,6 +16,7 @@
 
 package models
 
+import play.api.libs.json._
 import utils.{Enumerable, InputOption}
 
 sealed trait AdministratorOrPractitioner
@@ -30,9 +31,30 @@ object AdministratorOrPractitioner {
     Administrator, Practitioner
   )
 
+  val mappings: Map[String, AdministratorOrPractitioner] = values.map(v => (v.toString, v)).toMap
+
   val options: Seq[InputOption] = values.map {
     value =>
       InputOption(value.toString, s"messages__administratorOrPractitioner__${value.toString}")
+  }
+
+  implicit val reads: Reads[AdministratorOrPractitioner] = {
+
+    (JsPath \ "name").read[String].flatMap {
+      case aop if mappings.keySet.contains(aop) =>
+        Reads(_ => JsSuccess(mappings.apply(aop)))
+
+      case _ => Reads(_ => JsError("Invalid Scheme Type"))
+    }
+  }
+
+  implicit lazy val writes = new Writes[AdministratorOrPractitioner] {
+    def writes(o: AdministratorOrPractitioner) = {
+      o match {
+        case s if mappings.keySet.contains(s.toString) =>
+          Json.obj("name" -> s.toString)
+      }
+    }
   }
 
   implicit val enumerable: Enumerable[AdministratorOrPractitioner] =

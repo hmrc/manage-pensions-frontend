@@ -20,6 +20,7 @@
 @import views.html._
 @import viewmodels.Message
 @import utils.ViewHelper.titleWithErrors
+@import models.AdministratorOrPractitioner
 
 @this(
     main_template: main_template,
@@ -39,13 +40,15 @@
         @components.error_summary(form.errors)
 
         <div class="form-group @if(form.hasErrors){form-group--error}">
-        @components.heading(Message("messages__administratorOrPractitioner__heading"))
 
-        @components.input_yes_no(
+        @components.input_radio(
             field = form("value"),
-            label = messages("messages__administratorOrPractitioner__heading"),
-            labelClass = Some("visually-hidden")
+            legend = messages("messages__administratorOrPractitioner__heading"),
+            legendClass = Some("visually-hidden"),
+            inputs = AdministratorOrPractitioner.options,
+            headingIsLegend=true
         )
+
         </div>
         @components.submit_button()
 

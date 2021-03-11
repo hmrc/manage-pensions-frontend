@@ -18,20 +18,18 @@ package controllers
 
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import controllers.actions.{DataRetrievalAction, DataRequiredAction, AuthAction}
 import forms.AdministratorOrPractitionerFormProvider
 import identifiers.AdministratorOrPractitionerId
-import identifiers.triage.DoesPSAStartWithATwoId
-import models.triage.DoesPSAStartWithATwo
 
 import javax.inject.Inject
 import models.{AdministratorOrPractitioner, NormalMode}
 import play.api.data.Form
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.{MessagesApi, Messages, I18nSupport}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.annotations.AcceptInvitation
-import utils.{Navigator, UserAnswers}
+import utils.{UserAnswers, Navigator}
 import views.html.administratorOrPractitioner
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -51,12 +49,12 @@ class AdministratorOrPractitionerController @Inject()(
 
   private def form(implicit messages: Messages): Form[AdministratorOrPractitioner] = formProvider()
 
-  def onPageLoad: Action[AnyContent] = Action.async {
+  def onPageLoad: Action[AnyContent] = auth().async {
     implicit request =>
       Future.successful(Ok(view(form)))
   }
 
-  def onSubmit: Action[AnyContent] = Action.async {
+  def onSubmit: Action[AnyContent] = auth().async {
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[_]) =>

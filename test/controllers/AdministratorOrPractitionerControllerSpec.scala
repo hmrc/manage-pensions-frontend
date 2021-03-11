@@ -16,46 +16,68 @@
 
 package controllers
 
-import connectors.FakeUserAnswersCacheConnector
-import controllers.actions._
+import config.FrontendAppConfig
+import connectors.UserAnswersCacheConnector
+import controllers.actions.{DataRetrievalAction, FakeAuthAction}
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.AdministratorOrPractitionerFormProvider
-import play.api.data.Form
-import play.api.libs.json.Json
+import models.AdministratorOrPractitioner
+import org.scalatest.concurrent.ScalaFutures
+import org.scalatestplus.mockito.MockitoSugar
+import org.mockito.Matchers.any
+import org.mockito.Mockito.when
+import play.api.test.CSRFTokenHelper.addCSRFToken
 import play.api.test.FakeRequest
-import utils.{UserAnswers, UserAnswerOps}
+import play.api.test.Helpers._
+import utils.Navigator
 import views.html.administratorOrPractitioner
 
-class AdministratorOrPractitionerControllerSpec extends ControllerWithQuestionPageBehaviours {
+class AdministratorOrPractitionerControllerSpec extends ControllerWithQuestionPageBehaviours with ScalaFutures with MockitoSugar {
+  val appConfig: FrontendAppConfig = mock[FrontendAppConfig]
 
-  val formProvider = new AdministratorOrPractitionerFormProvider()
-  val form = formProvider()
-  val userAnswer = UserAnswers().administratorOrPractitionerId(true)
-  val postRequest = FakeRequest().withJsonBody(Json.obj("value" -> true))
-  val data = UserAnswers().administratorOrPractitionerId(true).dataRetrievalAction
+  private val mockNavigator = mock[Navigator]
+
   private val view = injector.instanceOf[administratorOrPractitioner]
+  private val formProvider = new AdministratorOrPractitionerFormProvider()
+  val mockUserAnswersCacheConnector: UserAnswersCacheConnector = mock[UserAnswersCacheConnector]
 
-  private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
-
+  def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): AdministratorOrPractitionerController =
     new AdministratorOrPractitionerController(
-      frontendAppConfig, fakeAuth, messagesApi, navigator, formProvider,
-      FakeUserAnswersCacheConnector, dataRetrievalAction, requiredDataAction, controllerComponents,
-      view).onPageLoad()
+      appConfig, FakeAuthAction, messagesApi, mockNavigator, formProvider,
+      mockUserAnswersCacheConnector, dataRetrievalAction, requiredDataAction, controllerComponents, view)
+
+  "AdministratorOrPractitionerController" must {
+
+    "return OK with the view when calling on page load" in {
+      val request = addCSRFToken(FakeRequest(GET, routes.AdministratorOrPractitionerController.onPageLoad().url))
+      val result = controller().onPageLoad(request)
+
+      status(result) mustBe OK
+      contentAsString(result) mustBe view(formProvider())(request, messages).toString
+    }
+
+    "return a Bad Request and errors when invalid data is submitted" in {
+      val postRequest = FakeRequest(POST, routes.AdministratorOrPractitionerController.onSubmit().url).withFormUrlEncodedBody("value" -> "invalid value")
+      val boundForm = formProvider().bind(Map("value" -> "invalid value"))
+      val result = controller().onSubmit(postRequest)
+
+      status(result) mustBe BAD_REQUEST
+      contentAsString(result) mustBe view(boundForm)(postRequest,messages).toString
+    }
+
+    "redirect to the next page for a valid request" in {
+      when(mockNavigator.nextPage(any(), any(), any())).thenReturn(onwardRoute)
+      val postRequest = FakeRequest(POST, routes.AdministratorOrPractitionerController.onSubmit().url).withFormUrlEncodedBody("value" ->
+        AdministratorOrPractitioner.Administrator.toString)
+      val result = controller().onSubmit(postRequest)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).value mustBe onwardRoute.url
+    }
   }
 
-  private def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
-
-    new AdministratorOrPractitionerController(
-      frontendAppConfig, fakeAuth, messagesApi, navigator, formProvider,
-      FakeUserAnswersCacheConnector, dataRetrievalAction, requiredDataAction, controllerComponents,
-      view).onSubmit()
-  }
-
-  def viewAsString(form: Form[Boolean] = form) = view(form)(fakeRequest, messages).toString
-
-  behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, userAnswer.dataRetrievalAction, form, form.fill(true), viewAsString)
-
-  behave like controllerWithOnSubmitMethod(onSubmitAction, data,
-    form.bind(Map("value" -> "")), viewAsString, postRequest)
 }
+
+
+
 

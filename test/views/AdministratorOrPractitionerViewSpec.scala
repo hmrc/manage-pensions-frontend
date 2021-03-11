@@ -40,9 +40,9 @@ class AdministratorOrPractitionerViewSpec extends ViewBehaviours {
       form
     )(fakeRequest, messages)
 
-  "DoesPSTRStartWithTwoView" must {
+  "Administrator or practitioner view" must {
     behave like normalPageWithTitle(createView(), messageKeyPrefix,
-      messages(s"messages__${messageKeyPrefix}__title"), messages(s"messages__${messageKeyPrefix}__title"))
+      messages(s"messages__${messageKeyPrefix}__title"), messages(s"messages__${messageKeyPrefix}__heading"))
 
     behave like pageWithSubmitButton(createView())
 

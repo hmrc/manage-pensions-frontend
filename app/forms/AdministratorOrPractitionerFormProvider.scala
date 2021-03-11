@@ -23,7 +23,7 @@ import play.api.i18n.Messages
 
 import javax.inject.Inject
 
-class AdministratorOrPractitionerFormProvider @Inject()() extends Mappings {
+class AdministratorOrPractitionerFormProvider @Inject() extends Mappings {
 
   def apply()(implicit messages: Messages): Form[AdministratorOrPractitioner] =
     Form(

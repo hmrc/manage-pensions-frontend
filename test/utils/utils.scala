@@ -15,12 +15,10 @@
  */
 
 import java.time.LocalDate
-import controllers.actions.DataRetrievalAction
-import controllers.actions.FakeDataRetrievalAction
+import controllers.actions.{DataRetrievalAction, FakeDataRetrievalAction}
 import identifiers.invitations._
-import identifiers.remove.ConfirmRemovePsaId
-import identifiers.remove.PsaRemovalDateId
-import identifiers.{AdministratorOrPractitionerId, MinimalSchemeDetailId, AssociatedDateId, PSANameId, SchemeSrnId}
+import identifiers.remove.{ConfirmRemovePsaId, PsaRemovalDateId}
+import identifiers.{AssociatedDateId, MinimalSchemeDetailId, PSANameId, SchemeSrnId}
 import models._
 import org.scalatest.OptionValues
 
@@ -87,10 +85,6 @@ package object utils {
 
     def employedPensionAdviserId(isChecked: Boolean): UserAnswers = {
       answers.set(DoYouHaveWorkingKnowledgeId)(isChecked).asOpt.value
-    }
-
-    def administratorOrPractitionerId(isChecked: Boolean): UserAnswers = {
-      answers.set(AdministratorOrPractitionerId)(isChecked).asOpt.value
     }
 
     def confirmRemovePsa(isChecked: Boolean): UserAnswers = {
