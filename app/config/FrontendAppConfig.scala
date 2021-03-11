@@ -61,6 +61,10 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
     s"$practitionerUrl${runModeConfiguration.get[String](path = "urls.pspDeauthEmailCallback")
       .format(encryptedPsaId, encryptedPspId, encryptedPstr, encryptedEmail)}"
 
+  def pspSelfDeauthEmailCallback(encryptedPspId: String, encryptedPstr: String, encryptedEmail: String) =
+    s"$practitionerUrl${runModeConfiguration.get[String](path = "urls.pspSelfDeauthEmailCallback")
+      .format(encryptedPspId, encryptedPstr, encryptedEmail)}"
+
   def featureToggleUrl(toggle:String) : String =
     s"${servicesConfig.baseUrl("pension-administrator")}${runModeConfiguration.underlying.getString("urls.featureToggle").format(toggle)}"
 
