@@ -16,32 +16,24 @@
 
 package controllers.triage
 
-import config.FrontendAppConfig
 import controllers.Retrievals
 import controllers.actions.TriageAction
 import forms.triage.WhatDoYouWantToDoFormProvider
-import identifiers.triage.WhatDoYouWantToDoId
-import javax.inject.Inject
+import identifiers.triage.{WhatDoYouWantToDoId, WhatRoleId}
 import models.NormalMode
-import models.triage.WhatDoYouWantToDo
+import models.triage.{WhatDoYouWantToDo, WhatRole}
 import play.api.data.Form
-import play.api.i18n.I18nSupport
-import play.api.i18n.MessagesApi
-import play.api.mvc.Action
-import play.api.mvc.AnyContent
-import play.api.mvc.MessagesControllerComponents
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.annotations.Triage
-import utils.Enumerable
-import utils.Navigator
-import utils.UserAnswers
+import utils.{Enumerable, Navigator, UserAnswers}
 import views.html.triage.whatDoYouWantToDo
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
-class WhatDoYouWantToDoController @Inject()(appConfig: FrontendAppConfig,
-                                            override val messagesApi: MessagesApi,
+class WhatDoYouWantToDoController @Inject()(override val messagesApi: MessagesApi,
                                             @Triage navigator: Navigator,
                                             triageAction: TriageAction,
                                             formProvider: WhatDoYouWantToDoFormProvider,
@@ -50,20 +42,21 @@ class WhatDoYouWantToDoController @Inject()(appConfig: FrontendAppConfig,
                                            )(implicit val executionContext: ExecutionContext
                                            ) extends FrontendBaseController with I18nSupport with Enumerable.Implicits with Retrievals {
 
-  private def form: Form[WhatDoYouWantToDo] = formProvider()
+  private def form(role: String): Form[WhatDoYouWantToDo] = formProvider(role)
 
-  def onPageLoad: Action[AnyContent] = triageAction.async {
+  def onPageLoad(role: String): Action[AnyContent] = triageAction.async {
     implicit request =>
-      Future.successful(Ok(view(form)))
+      Future.successful(Ok(view(form(role), role)))
   }
 
-  def onSubmit: Action[AnyContent] = triageAction.async {
+  def onSubmit(role: String): Action[AnyContent] = triageAction.async {
     implicit request =>
-      form.bindFromRequest().fold(
+      form(role).bindFromRequest().fold(
         (formWithErrors: Form[_]) =>
-          Future.successful(BadRequest(view(formWithErrors))),
+          Future.successful(BadRequest(view(formWithErrors, role))),
         value => {
-          val uaUpdated = UserAnswers().set(WhatDoYouWantToDoId)(value).asOpt.getOrElse(UserAnswers())
+          val uaUpdated = UserAnswers().set(WhatRoleId)(WhatRole.fromString(role))
+            .flatMap(_.set(WhatDoYouWantToDoId)(value)(writes(WhatDoYouWantToDo.enumerable(role)))).asOpt.getOrElse(UserAnswers())
           Future.successful(Redirect(navigator.nextPage(WhatDoYouWantToDoId, NormalMode, uaUpdated)))
         }
       )

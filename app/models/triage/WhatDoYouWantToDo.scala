@@ -17,8 +17,10 @@
 package models.triage
 
 import models.WithName
+import models.triage.WhatRole.PSA
 import utils.Enumerable
 import utils.InputOption
+import scala.language.implicitConversions
 
 sealed trait WhatDoYouWantToDo
 
@@ -26,28 +28,30 @@ sealed trait WhatDoYouWantToDo
 object WhatDoYouWantToDo {
 
   case object ManageExistingScheme extends WithName("opt1") with WhatDoYouWantToDo
-
   case object CheckTheSchemeStatus extends WithName("opt2") with WhatDoYouWantToDo
-
   case object Invite extends WithName("opt3") with WhatDoYouWantToDo
-
   case object BecomeAnAdmin extends WithName("opt4") with WhatDoYouWantToDo
+  case object AuthorisePsp extends WithName("opt5") with WhatDoYouWantToDo
+  case object UpdateSchemeInformation extends WithName("opt6") with WhatDoYouWantToDo
+  case object ChangeAdminDetails extends WithName("opt7") with WhatDoYouWantToDo
+  case object RegisterScheme extends WithName("opt8") with WhatDoYouWantToDo
+  case object ChangePspDetails extends WithName("opt9") with WhatDoYouWantToDo
+  case object DeauthYourself extends WithName("opt10") with WhatDoYouWantToDo
 
-  case object UpdateSchemeInformation extends WithName("opt5") with WhatDoYouWantToDo
+  def values(role: String): Seq[WhatDoYouWantToDo] =
+    if(role.equals("PSA")) {
+      Seq(ManageExistingScheme, CheckTheSchemeStatus, Invite, BecomeAnAdmin, AuthorisePsp, UpdateSchemeInformation, ChangeAdminDetails, RegisterScheme)
+    } else {
+      Seq(ManageExistingScheme, ChangePspDetails, DeauthYourself)
+    }
 
-  case object ChangeAdminDetails extends WithName("opt6") with WhatDoYouWantToDo
-
-  val values: Seq[WhatDoYouWantToDo] = Seq(
-    ManageExistingScheme, CheckTheSchemeStatus, Invite, BecomeAnAdmin, UpdateSchemeInformation, ChangeAdminDetails
-  )
-
-  val options: Seq[InputOption] = values.map {
+  def options(role: String): Seq[InputOption] = values(role).map {
     value =>
       InputOption(value.toString, s"messages__whatDoYouWantToDo__${value.toString}")
   }
 
-  implicit val enumerable: Enumerable[WhatDoYouWantToDo] =
-    Enumerable(values.map(v => v.toString -> v): _*)
+  implicit def enumerable(role: String): Enumerable[WhatDoYouWantToDo] =
+    Enumerable(values(role).map(v => v.toString -> v): _*)
 }
 
 

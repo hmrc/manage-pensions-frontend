@@ -75,6 +75,8 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val loginUrl: String = loadConfig("urls.login")
   lazy val loginContinueUrl: String = loadConfig("urls.loginContinue")
   lazy val loginToListSchemesUrl: String = loadConfig("urls.loginToListSchemes")
+  lazy val loginToListSchemesPspUrl: String = loadConfig("urls.pspLoginToListSchemes")
+  lazy val loginToAuthPspUrl: String = loadConfig("urls.loginToAuthPsp")
   lazy val serviceSignOut: String = loadConfig("urls.logout")
   lazy val registerSchemeAdministratorUrl: String = loadConfig("urls.registerSchemeAdministrator")
   lazy val registerSchemePractitionerUrl: String = loadConfig("urls.registerSchemePractitioner")
@@ -90,6 +92,10 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
     .getString("urls.pensionSchemesInvitationGuideGovUkLink")
   lazy val pensionSchemesAddToSchemeGuideGovUkLink: String = runModeConfiguration.underlying
     .getString("urls.pensionSchemesAddToSchemeGuideGovUkLink")
+   lazy val authorisePractitionerGuideGovUkLink: String = runModeConfiguration.underlying
+    .getString("urls.authorisePractitionerGuidance")
+  lazy val registerSchemeGuideGovUkLink: String = runModeConfiguration.underlying
+    .getString("urls.registerSchemeGuidance")
   lazy val govUkLink: String = runModeConfiguration.underlying.getString("urls.govUkLink")
   lazy val continueSchemeUrl = s"${loadConfig("urls.continueSchemeRegistration")}"
   lazy val userResearchUrl: String = runModeConfiguration.underlying.getString("urls.userResearch")

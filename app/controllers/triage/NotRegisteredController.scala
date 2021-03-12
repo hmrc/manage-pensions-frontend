@@ -14,24 +14,29 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.triage
 
+import com.google.inject.Inject
 import config.FrontendAppConfig
+import controllers.actions.TriageAction
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.youNeedToRegister
+import views.html.triage.notRegistered
 
-import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
-class YouNeedToRegisterController @Inject()(appConfig: FrontendAppConfig,
-                                            override val messagesApi: MessagesApi,
-                                            val controllerComponents: MessagesControllerComponents,
-                                            view: youNeedToRegister)(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+class NotRegisteredController @Inject()(
+                                          frontendAppConfig: FrontendAppConfig,
+                                          override val messagesApi: MessagesApi,
+                                          triageAction: TriageAction,
+                                          val controllerComponents: MessagesControllerComponents,
+                                          view: notRegistered
+                                        )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = Action {
+  def onPageLoad: Action[AnyContent] = triageAction.async {
     implicit request =>
-      Ok(view())
+
+      Future.successful(Ok(view()))
   }
 }

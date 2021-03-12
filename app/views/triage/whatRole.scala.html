@@ -18,7 +18,7 @@
 @import uk.gov.hmrc.play.views.html._
 @import controllers.triage.routes._
 @import models.{Mode}
-@import models.triage.WhatDoYouWantToDo
+@import models.triage.WhatRole
 @import utils.ViewHelper.titleWithErrors
 
 @this(
@@ -26,23 +26,27 @@
     formHelper: FormWithCSRF
 )
 
-@(form: Form[_], role: String)(implicit request: Request[_], messages: Messages)
+@(form: Form[_])(implicit request: Request[_], messages: Messages)
 
 @main_template(
-    title = titleWithErrors(form, messages("messages__whatDoYouWantToDo__title"))) {
+    title = titleWithErrors(form, messages("messages__whatRole__title"))) {
 
-    @formHelper(action = controllers.triage.routes.WhatDoYouWantToDoController.onSubmit(role), 'autoComplete -> "off") {
+    @formHelper(action = controllers.triage.routes.WhatRoleController.onSubmit(), 'autoComplete -> "off") {
 
         @components.back_link()
+
+        @components.heading(messages("messages__whatRole__title"))
+
+        @components.paragraph_text(messages("messages__whatRole__p1"))
 
         @components.error_summary(form.errors)
 
         @components.input_radio(
             field = form("value"),
-            legend = messages("messages__whatDoYouWantToDo__title"),
+            legend = messages("messages__whatRole__title"),
             legendClass = Some("visually-hidden"),
-            inputs = WhatDoYouWantToDo.options(role),
-            headingIsLegend=true
+            inputs = WhatRole.options,
+            headingIsLegend=false
         )
 
         @components.submit_button("site.continue")

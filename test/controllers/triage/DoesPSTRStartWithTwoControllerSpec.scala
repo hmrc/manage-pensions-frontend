@@ -35,14 +35,14 @@ class DoesPSTRStartWithTwoControllerSpec extends ControllerSpecBase with ScalaFu
   private val onwardRoute = Call("GET", "/dummy")
   private val application = applicationBuilder(Seq[GuiceableModule](bind[Navigator].
     qualifiedWith(classOf[Triage]).toInstance(new FakeNavigator(onwardRoute)))).build()
-  private def postCall: Call = controllers.triage.routes.DoesPSTRStartWithTwoController.onSubmit()
+  private def postCall: Call = controllers.triage.routes.DoesPSTRStartWithTwoController.onSubmit("PSA")
   private val view = injector.instanceOf[doesPSTRStartWithTwo]
   private val formProvider = new DoesPSTRStartWithTwoFormProvider()
 
   "WhatDoYouWantToDoController" must {
 
     "return OK with the view when calling on page load" in {
-      val request = addCSRFToken(FakeRequest(GET, routes.DoesPSTRStartWithTwoController.onPageLoad().url))
+      val request = addCSRFToken(FakeRequest(GET, routes.DoesPSTRStartWithTwoController.onPageLoad("PSA").url))
       val result = route(application, request).value
 
       status(result) mustBe OK
@@ -50,7 +50,7 @@ class DoesPSTRStartWithTwoControllerSpec extends ControllerSpecBase with ScalaFu
     }
 
     "return a Bad Request and errors when invalid data is submitted" in {
-      val postRequest = FakeRequest(POST, routes.DoesPSTRStartWithTwoController.onSubmit().url).withFormUrlEncodedBody("value" -> "invalid value")
+      val postRequest = FakeRequest(POST, routes.DoesPSTRStartWithTwoController.onSubmit("PSA").url).withFormUrlEncodedBody("value" -> "invalid value")
       val boundForm = formProvider().bind(Map("value" -> "invalid value"))
       val result = route(application, postRequest).value
 
@@ -59,7 +59,7 @@ class DoesPSTRStartWithTwoControllerSpec extends ControllerSpecBase with ScalaFu
     }
 
     "redirect to the next page for a valid request" in {
-      val postRequest = FakeRequest(POST, routes.DoesPSTRStartWithTwoController.onSubmit().url).withFormUrlEncodedBody("value" -> "opt1")
+      val postRequest = FakeRequest(POST, routes.DoesPSTRStartWithTwoController.onSubmit("PSA").url).withFormUrlEncodedBody("value" -> "opt1")
       val result = route(application, postRequest).value
 
       status(result) mustBe SEE_OTHER

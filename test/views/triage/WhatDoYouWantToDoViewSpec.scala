@@ -19,6 +19,7 @@ package views.triage
 import forms.triage.WhatDoYouWantToDoFormProvider
 import models.triage.WhatDoYouWantToDo
 import play.api.data.Form
+import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
 import views.html.triage.whatDoYouWantToDo
 
@@ -26,19 +27,15 @@ class WhatDoYouWantToDoViewSpec extends ViewBehaviours {
 
   private val messageKeyPrefix = "whatDoYouWantToDo"
 
-  private val form = new WhatDoYouWantToDoFormProvider()()
+  private val form = new WhatDoYouWantToDoFormProvider()("PSA")
 
   private val whatDoYouWantToDoView = injector.instanceOf[whatDoYouWantToDo]
 
-  private def createView() =
-    () => whatDoYouWantToDoView(
-      form
-    )(fakeRequest, messages)
+  private def createView(): () => HtmlFormat.Appendable =
+    () => whatDoYouWantToDoView(form, "PSA")(fakeRequest, messages)
 
-  private def createViewUsingForm =
-    (form: Form[_]) => whatDoYouWantToDoView(
-      form
-    )(fakeRequest, messages)
+  private def createViewUsingForm: Form[_] => HtmlFormat.Appendable =
+    (form: Form[_]) => whatDoYouWantToDoView(form, "PSA")(fakeRequest, messages)
 
   "WhatDoYouWantToDoView" must {
     behave like normalPage(createView(), messageKeyPrefix, messages(s"messages__${messageKeyPrefix}__title"))
@@ -47,18 +44,18 @@ class WhatDoYouWantToDoViewSpec extends ViewBehaviours {
 
     "contain radio buttons for the value" in {
       val doc = asDocument(createViewUsingForm(form))
-      for (option <- WhatDoYouWantToDo.options) {
+      for (option <- WhatDoYouWantToDo.options("PSA")) {
         assertContainsRadioButton(doc, s"value-${option.value}", "value", option.value, isChecked = false)
       }
     }
 
-    for (option <- WhatDoYouWantToDo.options) {
+    for (option <- WhatDoYouWantToDo.options("PSA")) {
       s"rendered with a value of '${option.value}'" must {
         s"have the '${option.value}' radio button selected" in {
           val doc = asDocument(createViewUsingForm(form.bind(Map("value" -> s"${option.value}"))))
           assertContainsRadioButton(doc, s"value-${option.value}", "value", option.value, isChecked = true)
 
-          for (unselectedOption <- WhatDoYouWantToDo.options.filterNot(o => o == option)) {
+          for (unselectedOption <- WhatDoYouWantToDo.options("PSA").filterNot(o => o == option)) {
             assertContainsRadioButton(doc, s"value-${unselectedOption.value}", "value", unselectedOption.value, isChecked = false)
           }
         }

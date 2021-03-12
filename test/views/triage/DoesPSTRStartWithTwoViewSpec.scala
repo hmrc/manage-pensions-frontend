@@ -25,7 +25,7 @@ import views.html.triage.doesPSTRStartWithTwo
 class DoesPSTRStartWithTwoViewSpec extends ViewBehaviours {
 
   private val messageKeyPrefix = "doesPSTRStartWithTwo"
-  private val postCall = controllers.triage.routes.DoesPSTRStartWithTwoController.onPageLoad()
+  private val postCall = controllers.triage.routes.DoesPSTRStartWithTwoController.onPageLoad("PSA")
 
   private val hint = Some("opt1")
 
