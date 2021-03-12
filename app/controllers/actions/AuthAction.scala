@@ -19,9 +19,12 @@ package controllers.actions
 import com.google.inject.ImplementedBy
 import com.google.inject.Inject
 import config.FrontendAppConfig
+import connectors.UserAnswersCacheConnector
 import controllers.routes
+import identifiers.AdministratorOrPractitionerId
+import models.AdministratorOrPractitioner.{Practitioner, Administrator}
 import models.AuthEntity
-import models.AuthEntity.PSA
+import models.AuthEntity.{PSA, PSP}
 import models.requests.AuthenticatedRequest
 import models.OtherUser
 import models.UserType
@@ -36,12 +39,14 @@ import uk.gov.hmrc.domain.PsaId
 import uk.gov.hmrc.domain.PspId
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.HeaderCarrierConverter
+import utils.UserAnswers
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
 class AuthImpl(
                 override val authConnector: AuthConnector,
+                userAnswersCacheConnector: UserAnswersCacheConnector,
                 config: FrontendAppConfig,
                 val parser: BodyParsers.Default,
                 authEntity: AuthEntity
@@ -84,13 +89,32 @@ class AuthImpl(
                                     request: Request[A],
                                     block: AuthenticatedRequest[A] => Future[Result]
                                   ): Future[Result] = {
+    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
+    userAnswersCacheConnector.fetch(id).flatMap { optionJsValue =>
+      val ua = optionJsValue.map(UserAnswers).getOrElse(UserAnswers())
+      ua.get(AdministratorOrPractitionerId) match {
+        case None => Future.successful(Redirect(controllers.routes.AdministratorOrPractitionerController.onPageLoad()))
+        case Some(aop) =>
+          val (psaId, pspId) = (aop, authEntity) match {
+            case (Administrator, PSA) => (getPsaId(isMandatory = true, enrolments), None)
+            case (Administrator, PSP) => (
+          }
+          //val (psaId, pspId)= aop match {
+          //  case Administrator => (getPsaId(isMandatory = true, enrolments), None)
+          //  case Practitioner => (None, getPspId(isMandatory = true, enrolments))
+          //}
+          //val (psaId, pspId) = if (authEntity == PSA) {
+          //  (getPsaId(isMandatory = true, enrolments), getPspId(isMandatory = false, enrolments))
+          //} else {
+          //  (getPsaId(isMandatory = false, enrolments), getPspId(isMandatory = true, enrolments))
+          //}
+          block(AuthenticatedRequest(request, id, psaId, pspId, userType(affinityGroup)))
+      }
 
-    val (psaId, pspId) = if (authEntity == PSA) {
-      (getPsaId(isMandatory = true, enrolments), getPspId(isMandatory = false, enrolments))
-    } else {
-      (getPsaId(isMandatory = false, enrolments), getPspId(isMandatory = true, enrolments))
     }
-    block(AuthenticatedRequest(request, id, psaId, pspId, userType(affinityGroup)))
+
+
+
   }
 
   private def getPsaId(isMandatory: Boolean, enrolments: Enrolments): Option[PsaId] = {
@@ -129,13 +153,14 @@ case class IdNotFound(msg: String = "PsaIdNotFound") extends AuthorisationExcept
 
 class AuthActionImpl @Inject()(
                                 authConnector: AuthConnector,
+                                userAnswersCacheConnector: UserAnswersCacheConnector,
                                 config: FrontendAppConfig,
                                 val parser: BodyParsers.Default
                               )(implicit ec: ExecutionContext)
   extends AuthAction {
 
   override def apply(authEntity: AuthEntity): Auth =
-    new AuthImpl(authConnector, config, parser, authEntity)
+    new AuthImpl(authConnector, userAnswersCacheConnector, config, parser, authEntity)
 }
 
 @ImplementedBy(classOf[AuthActionImpl])

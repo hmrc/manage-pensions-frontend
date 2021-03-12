@@ -17,20 +17,28 @@
 package controllers.actions
 
 import base.SpecBase
+import connectors.UserAnswersCacheConnector
 import controllers.routes
-import models.AuthEntity
+import identifiers.AdministratorOrPractitionerId
+import models.{AuthEntity, AdministratorOrPractitioner}
+import org.mockito.Matchers
+import org.mockito.Matchers.any
+import org.mockito.Mockito.when
 import models.AuthEntity.{PSP, PSA}
+import org.scalatestplus.mockito.MockitoSugar
+import play.api.libs.json.Json
 import play.api.mvc._
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.http.HeaderCarrier
+import utils.UserAnswers
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class AuthActionSpec
-  extends SpecBase {
+  extends SpecBase with MockitoSugar{
 
   import AuthActionSpec._
 
@@ -48,6 +56,8 @@ class AuthActionSpec
     delegatedAuthRule = None
   )
 
+  private val mockUserAnswersCacheConnector = mock[UserAnswersCacheConnector]
+
   class Harness(authAction: AuthAction, val controllerComponents: MessagesControllerComponents = controllerComponents,
     authEntity: AuthEntity = PSA)
     extends BaseController {
@@ -60,6 +70,7 @@ class AuthActionSpec
       "return OK" in {
         val authAction = new AuthActionImpl(
           authConnector = fakeAuthConnector(authRetrievals(Set(enrolmentPSA))),
+          mockUserAnswersCacheConnector,
           config = frontendAppConfig,
           parser = app.injector.instanceOf[BodyParsers.Default]
         )
@@ -74,6 +85,7 @@ class AuthActionSpec
       "return OK" in {
         val authAction = new AuthActionImpl(
           authConnector = fakeAuthConnector(authRetrievals(Set(enrolmentPSP))),
+          mockUserAnswersCacheConnector,
           config = frontendAppConfig,
           parser = app.injector.instanceOf[BodyParsers.Default]
         )
@@ -85,9 +97,48 @@ class AuthActionSpec
     }
 
     "the user has enrolled in PODS as both a PSA AND a PSP" must {
-      "return redirect to administrator or practitioner page" in {
+      "and has chosen to act as a PSA" in {
+        val optionUAJson = UserAnswers()
+          .set(AdministratorOrPractitionerId)(AdministratorOrPractitioner.Administrator).asOpt.map(_.json)
+        when(mockUserAnswersCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(optionUAJson))
         val authAction = new AuthActionImpl(
           authConnector = fakeAuthConnector(authRetrievals(Set(enrolmentPSA, enrolmentPSP))),
+          mockUserAnswersCacheConnector,
+          config = frontendAppConfig,
+          parser = app.injector.instanceOf[BodyParsers.Default]
+        )
+        val controller = new Harness(authAction, authEntity = PSP)
+
+        val result = controller.onPageLoad()(fakeRequest)
+        status(result) mustBe OK
+      }
+    }
+
+    "the user has enrolled in PODS as both a PSA AND a PSP" must {
+      "and has chosen to act as a PSP" in {
+        val optionUAJson = UserAnswers()
+          .set(AdministratorOrPractitionerId)(AdministratorOrPractitioner.Practitioner).asOpt.map(_.json)
+        when(mockUserAnswersCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(optionUAJson))
+        val authAction = new AuthActionImpl(
+          authConnector = fakeAuthConnector(authRetrievals(Set(enrolmentPSA, enrolmentPSP))),
+          mockUserAnswersCacheConnector,
+          config = frontendAppConfig,
+          parser = app.injector.instanceOf[BodyParsers.Default]
+        )
+        val controller = new Harness(authAction, authEntity = PSP)
+
+        val result = controller.onPageLoad()(fakeRequest)
+        status(result) mustBe OK
+      }
+    }
+
+    "the user has enrolled in PODS as both a PSA AND a PSP" must {
+      "and has NOT chosen to act as either a PSA or a PSP" in {
+        val optionUAJson = Some(UserAnswers().json)
+        when(mockUserAnswersCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(optionUAJson))
+        val authAction = new AuthActionImpl(
+          authConnector = fakeAuthConnector(authRetrievals(Set(enrolmentPSA, enrolmentPSP))),
+          mockUserAnswersCacheConnector,
           config = frontendAppConfig,
           parser = app.injector.instanceOf[BodyParsers.Default]
         )
@@ -99,10 +150,12 @@ class AuthActionSpec
       }
     }
 
+
     "the user hasn't enrolled in PODS" must {
       "redirect the user to pension administrator frontend" in {
         val authAction = new AuthActionImpl(
           authConnector = fakeAuthConnector(authRetrievals()),
+          mockUserAnswersCacheConnector,
           config = frontendAppConfig,
           parser = app.injector.instanceOf[BodyParsers.Default]
         )
@@ -118,6 +171,7 @@ class AuthActionSpec
       "redirect the user to log in " in {
         val authAction = new AuthActionImpl(
           fakeAuthConnector(Future.failed(new MissingBearerToken)),
+          mockUserAnswersCacheConnector,
           frontendAppConfig, app.injector.instanceOf[BodyParsers.Default]
         )
         val controller = new Harness(authAction)
@@ -131,6 +185,7 @@ class AuthActionSpec
       "redirect the user to log in " in {
         val authAction = new AuthActionImpl(
           fakeAuthConnector(Future.failed(new BearerTokenExpired)),
+          mockUserAnswersCacheConnector,
           frontendAppConfig, app.injector.instanceOf[BodyParsers.Default]
         )
         val controller = new Harness(authAction)
@@ -144,6 +199,7 @@ class AuthActionSpec
       "redirect the user to the unauthorised page" in {
         val authAction = new AuthActionImpl(
           fakeAuthConnector(Future.failed(new InsufficientEnrolments)),
+          mockUserAnswersCacheConnector,
           frontendAppConfig, app.injector.instanceOf[BodyParsers.Default]
         )
         val controller = new Harness(authAction)
@@ -157,6 +213,7 @@ class AuthActionSpec
       "redirect the user to the unauthorised page" in {
         val authAction = new AuthActionImpl(
           fakeAuthConnector(Future.failed(new InsufficientConfidenceLevel)),
+          mockUserAnswersCacheConnector,
           frontendAppConfig, app.injector.instanceOf[BodyParsers.Default]
         )
         val controller = new Harness(authAction)
@@ -170,6 +227,7 @@ class AuthActionSpec
       "redirect the user to the unauthorised page" in {
         val authAction = new AuthActionImpl(
           fakeAuthConnector(Future.failed(new UnsupportedAuthProvider)),
+          mockUserAnswersCacheConnector,
           frontendAppConfig, app.injector.instanceOf[BodyParsers.Default]
         )
         val controller = new Harness(authAction)
@@ -183,6 +241,7 @@ class AuthActionSpec
       "redirect the user to the unauthorised page" in {
         val authAction = new AuthActionImpl(
           fakeAuthConnector(Future.failed(new UnsupportedAffinityGroup)),
+          mockUserAnswersCacheConnector,
           frontendAppConfig, app.injector.instanceOf[BodyParsers.Default]
         )
         val controller = new Harness(authAction)
@@ -196,6 +255,7 @@ class AuthActionSpec
       "redirect the user to the unauthorised page" in {
         val authAction = new AuthActionImpl(
           fakeAuthConnector(Future.failed(new UnsupportedCredentialRole)),
+          mockUserAnswersCacheConnector,
           frontendAppConfig, app.injector.instanceOf[BodyParsers.Default]
         )
         val controller = new Harness(authAction)
