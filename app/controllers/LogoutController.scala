@@ -17,24 +17,38 @@
 package controllers
 
 import config.FrontendAppConfig
+import connectors.UserAnswersCacheConnector
 import connectors.aft.AftCacheConnector
+import identifiers.AdministratorOrPractitionerId
+
 import javax.inject.Inject
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
+import uk.gov.hmrc.auth.core.{AuthorisedFunctions, AuthConnector}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class LogoutController @Inject()(
+                                  override val authConnector: AuthConnector,
                                   appConfig: FrontendAppConfig,
                                   aftCacheConnector: AftCacheConnector,
-                                  val controllerComponents: MessagesControllerComponents
-                                )(implicit ec : ExecutionContext) extends FrontendBaseController with I18nSupport {
+                                  val controllerComponents: MessagesControllerComponents,
+                                  userAnswersCacheConnector: UserAnswersCacheConnector
+                                )(implicit ec : ExecutionContext) extends FrontendBaseController with I18nSupport with AuthorisedFunctions {
 
   def onPageLoad: Action[AnyContent] = Action.async {
     implicit request =>
-      aftCacheConnector.removeLock.map {_ =>
-        Redirect(appConfig.serviceSignOut).withNewSession
+      authorised().retrieve(Retrievals.externalId) {
+        case Some(id) =>
+          userAnswersCacheConnector.remove(id, AdministratorOrPractitionerId).flatMap{ _ =>
+            aftCacheConnector.removeLock.map {_ =>
+              Redirect(appConfig.serviceSignOut).withNewSession
+            }
+          }
+        case _ =>
+          Future.successful(Redirect(routes.UnauthorisedController.onPageLoad()))
       }
   }
 }

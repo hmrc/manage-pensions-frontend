@@ -49,7 +49,8 @@ class AuthImpl(
                 userAnswersCacheConnector: UserAnswersCacheConnector,
                 config: FrontendAppConfig,
                 val parser: BodyParsers.Default,
-                authEntity: AuthEntity
+                authEntity: AuthEntity,
+                administratorOrPractitionerCheck: Boolean
               )(implicit val executionContext: ExecutionContext)
   extends Auth
     with AuthorisedFunctions {
@@ -97,7 +98,7 @@ class AuthImpl(
     }
 
     (psaId, pspId) match {
-      case (Some(_), Some(_)) => handleWhereBothEnrolments(id, enrolments, affinityGroup, request, block)
+      case (Some(_), Some(_)) if administratorOrPractitionerCheck => handleWhereBothEnrolments(id, enrolments, affinityGroup, request, block)
       case _ => block(AuthenticatedRequest(request, id, psaId, pspId, userType(affinityGroup)))
     }
   }
@@ -166,10 +167,21 @@ class AuthActionImpl @Inject()(
   extends AuthAction {
 
   override def apply(authEntity: AuthEntity): Auth =
-    new AuthImpl(authConnector, userAnswersCacheConnector, config, parser, authEntity)
+    new AuthImpl(authConnector, userAnswersCacheConnector, config, parser, authEntity, administratorOrPractitionerCheck = true)
 }
 
-@ImplementedBy(classOf[AuthActionImpl])
+class AuthActionNoAdministratorOrPractitionerCheckImpl @Inject()(
+  authConnector: AuthConnector,
+  userAnswersCacheConnector: UserAnswersCacheConnector,
+  config: FrontendAppConfig,
+  val parser: BodyParsers.Default
+)(implicit ec: ExecutionContext)
+  extends AuthAction {
+
+  override def apply(authEntity: AuthEntity): Auth =
+    new AuthImpl(authConnector, userAnswersCacheConnector, config, parser, authEntity, administratorOrPractitionerCheck = false)
+}
+
 trait AuthAction {
   def apply(authEntity: AuthEntity = PSA): Auth
 }

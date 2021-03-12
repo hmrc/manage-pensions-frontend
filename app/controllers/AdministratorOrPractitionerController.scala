@@ -28,6 +28,7 @@ import play.api.data.Form
 import play.api.i18n.{MessagesApi, Messages, I18nSupport}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.annotations.NoAdministratorOrPractitionerCheck
 import utils.{UserAnswers, Navigator}
 import views.html.administratorOrPractitioner
 
@@ -35,7 +36,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class AdministratorOrPractitionerController @Inject()(
                                                      val appConfig: FrontendAppConfig,
-                                                     val auth: AuthAction,
+                                                     @NoAdministratorOrPractitionerCheck val auth: AuthAction,
                                                      override val messagesApi: MessagesApi,
                                                      navigator: Navigator,
                                                      val formProvider: AdministratorOrPractitionerFormProvider,
