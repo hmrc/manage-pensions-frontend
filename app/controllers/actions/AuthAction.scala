@@ -83,47 +83,54 @@ class AuthImpl(
   }
 
   private def createAuthRequest[A](
-                                    id: String,
-                                    enrolments: Enrolments,
-                                    affinityGroup: AffinityGroup,
-                                    request: Request[A],
-                                    block: AuthenticatedRequest[A] => Future[Result]
-                                  ): Future[Result] = {
-    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
-    userAnswersCacheConnector.fetch(id).flatMap { optionJsValue =>
-      val ua = optionJsValue.map(UserAnswers).getOrElse(UserAnswers())
-      ua.get(AdministratorOrPractitionerId) match {
-        case None => Future.successful(Redirect(controllers.routes.AdministratorOrPractitionerController.onPageLoad()))
-        case Some(aop) =>
-          val (psaId, pspId) = (aop, authEntity) match {
-            case (Administrator, PSA) => (getPsaId(isMandatory = true, enrolments), None)
-            case (Administrator, PSP) => (
-          }
-          //val (psaId, pspId)= aop match {
-          //  case Administrator => (getPsaId(isMandatory = true, enrolments), None)
-          //  case Practitioner => (None, getPspId(isMandatory = true, enrolments))
-          //}
-          //val (psaId, pspId) = if (authEntity == PSA) {
-          //  (getPsaId(isMandatory = true, enrolments), getPspId(isMandatory = false, enrolments))
-          //} else {
-          //  (getPsaId(isMandatory = false, enrolments), getPspId(isMandatory = true, enrolments))
-          //}
-          block(AuthenticatedRequest(request, id, psaId, pspId, userType(affinityGroup)))
-      }
+    id: String,
+    enrolments: Enrolments,
+    affinityGroup: AffinityGroup,
+    request: Request[A],
+    block: AuthenticatedRequest[A] => Future[Result]
+  ): Future[Result] = {
 
+    val (psaId, pspId) = if (authEntity == PSA) {
+      (getPsaId(isMandatory = true, enrolments), getPspId(isMandatory = false, enrolments))
+    } else {
+      (getPsaId(isMandatory = false, enrolments), getPspId(isMandatory = true, enrolments))
     }
 
+    (psaId, pspId) match {
+      case (Some(_), Some(_)) => handleWhereBothEnrolments(id, enrolments, affinityGroup, request, block)
+      case _ => block(AuthenticatedRequest(request, id, psaId, pspId, userType(affinityGroup)))
+    }
+  }
 
-
+  private def handleWhereBothEnrolments[A](
+    id: String,
+    enrolments: Enrolments,
+    affinityGroup: AffinityGroup,
+    request: Request[A],
+    block: AuthenticatedRequest[A] => Future[Result]
+  ):Future[Result] = {
+      implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
+      userAnswersCacheConnector.fetch(id).flatMap { optionJsValue =>
+        val ua = optionJsValue.map(UserAnswers).getOrElse(UserAnswers())
+        ua.get(AdministratorOrPractitionerId) match {
+          case None => Future.successful(Redirect(controllers.routes.AdministratorOrPractitionerController.onPageLoad()))
+          case Some(aop) =>
+            val (psaId, pspId) = (aop, authEntity) match {
+              case (Administrator, PSA) => (getPsaId(isMandatory = true, enrolments), getPspId(isMandatory = false, enrolments))
+              case (Administrator, PSP) => (getPsaId(isMandatory = false, enrolments), getPspId(isMandatory = true, enrolments))
+              case (Practitioner, PSA) => (getPsaId(isMandatory = true, enrolments), getPspId(isMandatory = false, enrolments))
+              case (Practitioner, PSP) => (getPsaId(isMandatory = false, enrolments), getPspId(isMandatory = true, enrolments))
+            }
+            block(AuthenticatedRequest(request, id, psaId, pspId, userType(affinityGroup)))
+        }
+      }
   }
 
   private def getPsaId(isMandatory: Boolean, enrolments: Enrolments): Option[PsaId] = {
     def failureResult: Option[PsaId] = if (isMandatory) throw IdNotFound() else None
-
     enrolments.getEnrolment("HMRC-PODS-ORG")
       .flatMap(_.getIdentifier("PSAID")).map(_.value)
       .fold[Option[PsaId]](failureResult)(id => Some(PsaId(id)))
-
   }
 
   private def getPspId(isMandatory: Boolean, enrolments: Enrolments): Option[PspId] = {

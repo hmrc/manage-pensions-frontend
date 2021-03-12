@@ -20,13 +20,11 @@ import base.SpecBase
 import connectors.UserAnswersCacheConnector
 import controllers.routes
 import identifiers.AdministratorOrPractitionerId
-import models.{AuthEntity, AdministratorOrPractitioner}
-import org.mockito.Matchers
+import models.{AdministratorOrPractitioner, AuthEntity}
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import models.AuthEntity.{PSP, PSA}
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.libs.json.Json
 import play.api.mvc._
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core._
@@ -97,7 +95,7 @@ class AuthActionSpec
     }
 
     "the user has enrolled in PODS as both a PSA AND a PSP" must {
-      "and has chosen to act as a PSA" in {
+      "have access to PSA page when he has chosen to act as a PSA" in {
         val optionUAJson = UserAnswers()
           .set(AdministratorOrPractitionerId)(AdministratorOrPractitioner.Administrator).asOpt.map(_.json)
         when(mockUserAnswersCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(optionUAJson))
@@ -107,15 +105,13 @@ class AuthActionSpec
           config = frontendAppConfig,
           parser = app.injector.instanceOf[BodyParsers.Default]
         )
-        val controller = new Harness(authAction, authEntity = PSP)
+        val controller = new Harness(authAction, authEntity = PSA)
 
         val result = controller.onPageLoad()(fakeRequest)
         status(result) mustBe OK
       }
-    }
 
-    "the user has enrolled in PODS as both a PSA AND a PSP" must {
-      "and has chosen to act as a PSP" in {
+      "have access to PSP page when he has chosen to act as a PSP" in {
         val optionUAJson = UserAnswers()
           .set(AdministratorOrPractitionerId)(AdministratorOrPractitioner.Practitioner).asOpt.map(_.json)
         when(mockUserAnswersCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(optionUAJson))
@@ -130,12 +126,24 @@ class AuthActionSpec
         val result = controller.onPageLoad()(fakeRequest)
         status(result) mustBe OK
       }
-    }
 
-    "the user has enrolled in PODS as both a PSA AND a PSP" must {
-      "and has NOT chosen to act as either a PSA or a PSP" in {
-        val optionUAJson = Some(UserAnswers().json)
-        when(mockUserAnswersCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(optionUAJson))
+      "not have access to a PSA page and be redirected to the administrator or practitioner page when he has NOT chosen to act as either a PSA or a PSP" in {
+        when(mockUserAnswersCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(Some(UserAnswers().json)))
+        val authAction = new AuthActionImpl(
+          authConnector = fakeAuthConnector(authRetrievals(Set(enrolmentPSA, enrolmentPSP))),
+          mockUserAnswersCacheConnector,
+          config = frontendAppConfig,
+          parser = app.injector.instanceOf[BodyParsers.Default]
+        )
+        val controller = new Harness(authAction, authEntity = PSA)
+
+        val result = controller.onPageLoad()(fakeRequest)
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.routes.AdministratorOrPractitionerController.onPageLoad().url)
+      }
+
+      "not have access to a PSP page and be redirected to the administrator or practitioner page when he has NOT chosen to act as either a PSA or a PSP" in {
+        when(mockUserAnswersCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(Some(UserAnswers().json)))
         val authAction = new AuthActionImpl(
           authConnector = fakeAuthConnector(authRetrievals(Set(enrolmentPSA, enrolmentPSP))),
           mockUserAnswersCacheConnector,
@@ -149,6 +157,7 @@ class AuthActionSpec
         redirectLocation(result) mustBe Some(controllers.routes.AdministratorOrPractitionerController.onPageLoad().url)
       }
     }
+
 
 
     "the user hasn't enrolled in PODS" must {
