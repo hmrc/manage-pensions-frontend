@@ -78,9 +78,9 @@ class PspDashboardController @Inject()(
     implicit request =>
       val ua = request.userAnswers.getOrElse(UserAnswers()).set(AdministratorOrPractitionerId)(Practitioner)
         .getOrElse(throw new RuntimeException("Unable to set role to PSP"))
-        userAnswersCacheConnector.upsert(request.externalId, ua.json).map { _ =>
-          Redirect(controllers.routes.PspDashboardController.onPageLoad())
-        }
+      userAnswersCacheConnector.upsert(request.externalId, ua.json).map { _ =>
+        Redirect(controllers.routes.PspDashboardController.onPageLoad())
+      }
   }
 
   private def link: Link = Link("switch-psa", routes.SchemesOverviewController.onPageLoad().url, Message("messages__pspDashboard__switch_psa"))
