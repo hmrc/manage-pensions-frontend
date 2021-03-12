@@ -76,7 +76,6 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val loginContinueUrl: String = loadConfig("urls.loginContinue")
   lazy val loginToListSchemesUrl: String = loadConfig("urls.loginToListSchemes")
   lazy val loginToListSchemesPspUrl: String = loadConfig("urls.pspLoginToListSchemes")
-  lazy val loginToAuthPspUrl: String = loadConfig("urls.loginToAuthPsp")
   lazy val serviceSignOut: String = loadConfig("urls.logout")
   lazy val registerSchemeAdministratorUrl: String = loadConfig("urls.registerSchemeAdministrator")
   lazy val registerSchemePractitionerUrl: String = loadConfig("urls.registerSchemePractitioner")
