@@ -36,31 +36,9 @@ import utils.UserAnswers
 import scala.concurrent.{ExecutionContext, Future}
 
 class AuthActionSpec
-  extends SpecBase with MockitoSugar{
+  extends SpecBase {
 
   import AuthActionSpec._
-
-  private val enrolmentPSP = Enrolment(
-    key = "HMRC-PODSPP-ORG",
-    identifiers = Seq(EnrolmentIdentifier(key = "PSPID", value = "20000000")),
-    state = "",
-    delegatedAuthRule = None
-  )
-
-  private  val enrolmentPSA = Enrolment(
-    key = "HMRC-PODS-ORG",
-    identifiers = Seq(EnrolmentIdentifier(key = "PSAID", value = "A0000000")),
-    state = "",
-    delegatedAuthRule = None
-  )
-
-  private val mockUserAnswersCacheConnector = mock[UserAnswersCacheConnector]
-
-  class Harness(authAction: AuthAction, val controllerComponents: MessagesControllerComponents = controllerComponents,
-    authEntity: AuthEntity = PSA)
-    extends BaseController {
-    def onPageLoad(): Action[AnyContent] = authAction.apply(authEntity) { _ => Ok }
-  }
 
   "Auth Action" when {
 
@@ -127,7 +105,7 @@ class AuthActionSpec
         status(result) mustBe OK
       }
 
-      "not have access to a PSA page and be redirected to the administrator or practitioner page when he has NOT chosen to act as either a PSA or a PSP" in {
+      "not have access to PSA page and be redirected to the administrator or practitioner page when he has NOT chosen to act as either a PSA or a PSP" in {
         when(mockUserAnswersCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(Some(UserAnswers().json)))
         val authAction = new AuthActionImpl(
           authConnector = fakeAuthConnector(authRetrievals(Set(enrolmentPSA, enrolmentPSP))),
@@ -142,7 +120,7 @@ class AuthActionSpec
         redirectLocation(result) mustBe Some(controllers.routes.AdministratorOrPractitionerController.onPageLoad().url)
       }
 
-      "not have access to a PSP page and be redirected to the administrator or practitioner page when he has NOT chosen to act as either a PSA or a PSP" in {
+      "not have access to PSP page and be redirected to the administrator or practitioner page when he has NOT chosen to act as either a PSA or a PSP" in {
         when(mockUserAnswersCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(Some(UserAnswers().json)))
         val authAction = new AuthActionImpl(
           authConnector = fakeAuthConnector(authRetrievals(Set(enrolmentPSA, enrolmentPSP))),
@@ -276,12 +254,35 @@ class AuthActionSpec
   }
 }
 
-object AuthActionSpec {
+object AuthActionSpec extends SpecBase with MockitoSugar {
+
+  private val enrolmentPSP = Enrolment(
+    key = "HMRC-PODSPP-ORG",
+    identifiers = Seq(EnrolmentIdentifier(key = "PSPID", value = "20000000")),
+    state = "",
+    delegatedAuthRule = None
+  )
+
+  private  val enrolmentPSA = Enrolment(
+    key = "HMRC-PODS-ORG",
+    identifiers = Seq(EnrolmentIdentifier(key = "PSAID", value = "A0000000")),
+    state = "",
+    delegatedAuthRule = None
+  )
+
+  private val mockUserAnswersCacheConnector = mock[UserAnswersCacheConnector]
+
+  private class Harness(authAction: AuthAction, val controllerComponents: MessagesControllerComponents = controllerComponents,
+    authEntity: AuthEntity = PSA)
+    extends BaseController {
+    def onPageLoad(): Action[AnyContent] = authAction.apply(authEntity) { _ => Ok }
+  }
+
   private def fakeAuthConnector(stubbedRetrievalResult: Future[_]): AuthConnector = new AuthConnector {
 
     def authorise[A](predicate: Predicate, retrieval: Retrieval[A])
                     (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[A] =
-      stubbedRetrievalResult.map(_.asInstanceOf[A])
+      stubbedRetrievalResult.map(_.asInstanceOf[A])(ec)
   }
 
   private def authRetrievals(enrolments: Set[Enrolment] = Set()): Future[Some[String] ~ Enrolments ~ Some[AffinityGroup.Individual.type]] =

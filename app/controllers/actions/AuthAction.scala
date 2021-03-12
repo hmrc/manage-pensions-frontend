@@ -111,8 +111,7 @@ class AuthImpl(
   ):Future[Result] = {
       implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
       userAnswersCacheConnector.fetch(id).flatMap { optionJsValue =>
-        val ua = optionJsValue.map(UserAnswers).getOrElse(UserAnswers())
-        ua.get(AdministratorOrPractitionerId) match {
+        optionJsValue.map(UserAnswers).flatMap(_.get(AdministratorOrPractitionerId)) match {
           case None => Future.successful(Redirect(controllers.routes.AdministratorOrPractitionerController.onPageLoad()))
           case Some(aop) =>
             val (psaId, pspId) = (aop, authEntity) match {
