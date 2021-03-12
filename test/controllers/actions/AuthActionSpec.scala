@@ -134,6 +134,23 @@ class AuthActionSpec
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.AdministratorOrPractitionerController.onPageLoad().url)
       }
+
+      "for a PSP page be redirected to the NEW page when he has chosen to act as a PSA" in {
+        val optionUAJson = UserAnswers()
+          .set(AdministratorOrPractitionerId)(AdministratorOrPractitioner.Administrator).asOpt.map(_.json)
+        when(mockUserAnswersCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(optionUAJson))
+        val authAction = new AuthActionImpl(
+          authConnector = fakeAuthConnector(authRetrievals(Set(enrolmentPSA, enrolmentPSP))),
+          mockUserAnswersCacheConnector,
+          config = frontendAppConfig,
+          parser = app.injector.instanceOf[BodyParsers.Default]
+        )
+        val controller = new Harness(authAction, authEntity = PSP)
+
+        val result = controller.onPageLoad()(fakeRequest)
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.routes.NEW PAGE HERE.onPageLoad().url)
+      }
     }
 
 

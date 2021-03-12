@@ -117,9 +117,9 @@ class AuthImpl(
           case Some(aop) =>
             val (psaId, pspId) = (aop, authEntity) match {
               case (Administrator, PSA) => (getPsaId(isMandatory = true, enrolments), getPspId(isMandatory = false, enrolments))
-              case (Administrator, PSP) => (getPsaId(isMandatory = false, enrolments), getPspId(isMandatory = true, enrolments))
-              case (Practitioner, PSA) => (getPsaId(isMandatory = true, enrolments), getPspId(isMandatory = false, enrolments))
               case (Practitioner, PSP) => (getPsaId(isMandatory = false, enrolments), getPspId(isMandatory = true, enrolments))
+              case (Administrator, PSP) => (getPsaId(isMandatory = false, enrolments), getPspId(isMandatory = true, enrolments)) // TODO: Redirect to new page
+              case (Practitioner, PSA) => (getPsaId(isMandatory = true, enrolments), getPspId(isMandatory = false, enrolments)) // TODO: Redirect to new page
             }
             block(AuthenticatedRequest(request, id, psaId, pspId, userType(affinityGroup)))
         }
