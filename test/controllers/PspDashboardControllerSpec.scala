@@ -198,7 +198,7 @@ object PspDashboardControllerSpec {
   private val returnLink: Link =
     Link(
       id = "switch-psa",
-      url = routes.SchemesOverviewController.onPageLoad().url,
+      url = routes.SchemesOverviewController.changeRoleToPsaAndLoadPage().url,
       linkText = Message("messages__pspDashboard__switch_psa")
     )
 }

@@ -19,13 +19,16 @@ package controllers
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import controllers.actions._
-import identifiers.PSANameId
+import identifiers.{AdministratorOrPractitionerId, PSANameId}
+import models.AdministratorOrPractitioner.{Administrator, Practitioner}
+import models.AuthEntity.PSP
 import models.Link
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SchemesOverviewService
 import uk.gov.hmrc.domain.PspId
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.UserAnswers
 import viewmodels.Message
 import views.html.schemesOverview
 
@@ -71,6 +74,14 @@ class SchemesOverviewController @Inject()(
   def redirect: Action[AnyContent] =
     Action.async(Future.successful(Redirect(controllers.routes.SchemesOverviewController.onPageLoad())))
 
+  def changeRoleToPsaAndLoadPage: Action[AnyContent] = (authenticate() andThen getData).async {
+    implicit request =>
+      val ua = request.userAnswers.getOrElse(UserAnswers()).set(AdministratorOrPractitionerId)(Administrator)
+        .getOrElse(throw new RuntimeException("Unable to set role to PSA"))
+      userAnswersCacheConnector.upsert(request.externalId, ua.json).map { _ =>
+        Redirect(controllers.routes.SchemesOverviewController.onPageLoad())
+      }
+  }
   private def returnLink(pspId: Option[PspId]): Option[Link] =
     if (pspId.nonEmpty) {
       Some(Link("switch-psp", controllers.routes.PspDashboardController.changeRoleToPspAndLoadPage().url,

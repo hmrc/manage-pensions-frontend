@@ -120,7 +120,25 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
 
 
     }
+    "changeRoleToPsaAndLoadPage" must {
+      "redirect to overview page and update mongo" in {
+        when(fakeSchemesOverviewService.getTiles(eqTo(psaId))(any(), any(), any())).thenReturn(Future.successful(Seq(adminCard, schemeCard)))
+        when(fakeSchemesOverviewService.getPsaName(eqTo(psaId))(any()))
+          .thenReturn(Future.successful(Some(psaName)))
+        when(fakeSchemesOverviewService.getPsaMinimalDetails(any())(any()))
+          .thenReturn(Future.successful(minimalDetails()))
+        when(fakeSchemesOverviewService.retrievePenaltiesUrlPartial(any(), any()))
+          .thenReturn(Future.successful(html))
+        when(fakeUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(Json.obj()))
+        when(fakeUserAnswersCacheConnector.upsert(any(), any())(any(), any()))
+          .thenReturn(Future.successful(Json.obj()))
 
+        val result = controller().changeRoleToPsaAndLoadPage(fakeRequest)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.routes.SchemesOverviewController.onPageLoad().url)
+      }
+    }
     "onRedirect" must {
 
       "redirect to overview page" in {

@@ -83,5 +83,5 @@ class PspDashboardController @Inject()(
       }
   }
 
-  private def link: Link = Link("switch-psa", routes.SchemesOverviewController.onPageLoad().url, Message("messages__pspDashboard__switch_psa"))
+  private def link: Link = Link("switch-psa", routes.SchemesOverviewController.changeRoleToPsaAndLoadPage().url, Message("messages__pspDashboard__switch_psa"))
 }

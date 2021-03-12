@@ -32,6 +32,7 @@ POST        /your-pension-schemes                         controllers.ListScheme
 GET         /your-pension-schemes/page/:pageNumber        controllers.ListSchemesController.onPageLoadWithPageNumber(pageNumber: Int)
 
 GET         /overview                                     controllers.SchemesOverviewController.onPageLoad()
+GET         /psa-overview                                 controllers.SchemesOverviewController.changeRoleToPsaAndLoadPage()
 GET         /dashboard                                    controllers.PspDashboardController.onPageLoad()
 GET         /psp-dashboard                                controllers.PspDashboardController.changeRoleToPspAndLoadPage()
 GET         /:srn/dashboard/pension-scheme-details        controllers.PspSchemeDashboardController.onPageLoad(srn: String)
