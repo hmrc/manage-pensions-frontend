@@ -20,23 +20,23 @@ import com.google.inject.Inject
 import config.FrontendAppConfig
 import controllers.actions.TriageAction
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.triage.authorisePractitioner
+import views.html.triage.changePractitionerWithZero
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class AuthorisePractitionerController @Inject()(frontendAppConfig: FrontendAppConfig,
-                                                override val messagesApi: MessagesApi,
-                                                triageAction: TriageAction,
-                                                val controllerComponents: MessagesControllerComponents,
-                                                view: authorisePractitioner
+class ChangePractitionerWithZeroController @Inject()(frontendAppConfig: FrontendAppConfig,
+                                                     override val messagesApi: MessagesApi,
+                                                     triageAction: TriageAction,
+                                                     val controllerComponents: MessagesControllerComponents,
+                                                     view: changePractitionerWithZero
                                               )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = triageAction.async {
     implicit request =>
-
-      val continueLink = s"${frontendAppConfig.loginUrl}?continue=${frontendAppConfig.loginToListSchemesUrl}"
-      Future.successful(Ok(view(continueLink)))
+      val podsChangePspLink: String = s"${frontendAppConfig.loginUrl}?continue=${frontendAppConfig.pspDetailsUrl}"
+      val tpssChangePspLink: String = frontendAppConfig.tpssInitialQuestionsUrl
+      Future.successful(Ok(view(podsChangePspLink, tpssChangePspLink)))
   }
 }

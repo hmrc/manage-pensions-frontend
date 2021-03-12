@@ -22,21 +22,21 @@ import controllers.actions.TriageAction
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.triage.authorisePractitioner
+import views.html.triage.deAuthoriseYourself
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class AuthorisePractitionerController @Inject()(frontendAppConfig: FrontendAppConfig,
-                                                override val messagesApi: MessagesApi,
-                                                triageAction: TriageAction,
-                                                val controllerComponents: MessagesControllerComponents,
-                                                view: authorisePractitioner
+class DeAuthoriseYourselfController @Inject()(frontendAppConfig: FrontendAppConfig,
+                                              override val messagesApi: MessagesApi,
+                                              triageAction: TriageAction,
+                                              val controllerComponents: MessagesControllerComponents,
+                                              view: deAuthoriseYourself
                                               )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = triageAction.async {
     implicit request =>
 
-      val continueLink = s"${frontendAppConfig.loginUrl}?continue=${frontendAppConfig.loginToListSchemesUrl}"
+      val continueLink = s"${frontendAppConfig.loginUrl}?continue=${frontendAppConfig.loginToListSchemesPspUrl}"
       Future.successful(Ok(view(continueLink)))
   }
 }

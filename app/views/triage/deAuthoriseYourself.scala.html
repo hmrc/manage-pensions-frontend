@@ -1,4 +1,4 @@
-/*
+@*
  * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,20 +12,27 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *@
 
-package forms.triage
+@import config.FrontendAppConfig
 
-import forms.mappings.Mappings
-import javax.inject.Inject
-import models.triage.DoesPSTRStartWithATwo
-import play.api.data.Form
-import play.api.i18n.Messages
+@this(
+    main_template: main_template
+)
 
-class DoesPSTRStartWithTwoFormProvider @Inject() extends Mappings {
+@(continueLink: String)(implicit request: Request[_], messages: Messages)
 
-  def apply(errorKey: String = "messages__doesPSTRStartWithTwo__error__required")(implicit messages: Messages): Form[DoesPSTRStartWithATwo] =
-    Form(
-      "value" -> enumerable[DoesPSTRStartWithATwo](messages(errorKey))
-    )
+@main_template(
+    title = messages("messages__deAuthoriseYourself__title"),
+
+    bodyClasses = None
+) {
+    @components.back_link()
+    @components.heading(Messages("messages__deAuthoriseYourself__title"))
+
+    @components.paragraph_text(Messages("messages__deAuthoriseYourself__p1"))
+
+    @components.button_link("site.continue", continueLink, "continue")
+
+
 }

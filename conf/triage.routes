@@ -29,6 +29,16 @@ GET         /inviting-pstr-start-with-2                 controllers.triage.Invit
 GET         /does-psa-start-with-a2                     controllers.triage.DoesPSAStartWithATwoController.onPageLoad
 POST        /does-psa-start-with-a2                     controllers.triage.DoesPSAStartWithATwoController.onSubmit
 
+GET         /does-psp-start-with-2                      controllers.triage.DoesPSPStartWithTwoController.onPageLoad
+POST        /does-psp-start-with-2                      controllers.triage.DoesPSPStartWithTwoController.onSubmit
+
+GET         /does-pstr-start-with-2-deauthorise         controllers.triage.DoesPSTRStartWithTwoDeAuthController.onPageLoad
+POST        /does-pstr-start-with-2-deauthorise         controllers.triage.DoesPSTRStartWithTwoDeAuthController.onSubmit
+
+GET         /0-update-both                              controllers.triage.ChangePractitionerWithZeroController.onPageLoad
+
+GET         /de-authorise-yourself                      controllers.triage.DeAuthoriseYourselfController.onPageLoad
+
 GET         /updating-pstr-start-with-2                 controllers.triage.UpdatingPSTRStartWithTwoController.onPageLoad
 
 GET         /a2-and-a0-ids                              controllers.triage.ATwoAndAZeroIdsController.onPageLoad

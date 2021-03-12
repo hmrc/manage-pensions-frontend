@@ -42,7 +42,8 @@
             legend = messages("messages__whatDoYouWantToDo__title"),
             legendClass = Some("visually-hidden"),
             inputs = WhatDoYouWantToDo.options(role),
-            headingIsLegend=true
+            headingIsLegend=true,
+            hint = Some(messages("messages__whatDoYouWantToDo__hint"))
         )
 
         @components.submit_button("site.continue")

@@ -14,18 +14,11 @@
  * limitations under the License.
  */
 
-package forms.triage
+package identifiers.triage
 
-import forms.mappings.Mappings
-import javax.inject.Inject
+import identifiers.TypedIdentifier
 import models.triage.DoesPSTRStartWithATwo
-import play.api.data.Form
-import play.api.i18n.Messages
 
-class DoesPSTRStartWithTwoFormProvider @Inject() extends Mappings {
-
-  def apply(errorKey: String = "messages__doesPSTRStartWithTwo__error__required")(implicit messages: Messages): Form[DoesPSTRStartWithATwo] =
-    Form(
-      "value" -> enumerable[DoesPSTRStartWithATwo](messages(errorKey))
-    )
+case object DoesPSTRStartWithTwoDeAuthId extends TypedIdentifier[DoesPSTRStartWithATwo] {
+  override def toString: String = "doesPSTRStartWithTwoDeAuth"
 }
