@@ -33,7 +33,7 @@ GET         /your-pension-schemes/page/:pageNumber        controllers.ListScheme
 
 GET         /overview                                     controllers.SchemesOverviewController.onPageLoad()
 GET         /dashboard                                    controllers.PspDashboardController.onPageLoad()
-GET         /temp/dashboard                                    controllers.PspDashboardController.changeRoleToPspAndLoadPage()
+GET         /temp/dashboard                               controllers.PspDashboardController.changeRoleToPspAndLoadPage()
 GET         /:srn/dashboard/pension-scheme-details        controllers.PspSchemeDashboardController.onPageLoad(srn: String)
 
 GET         /pension-scheme-summary/:srn                  controllers.PsaSchemeDashboardController.onPageLoad(srn: SchemeReferenceNumber)

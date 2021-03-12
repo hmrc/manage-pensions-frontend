@@ -19,16 +19,18 @@ package controllers
 import config._
 import connectors.UserAnswersCacheConnector
 import controllers.actions.{DataRetrievalAction, _}
-import models.{MinimalPSAPSP, Link, IndividualDetails}
+import models.{MinimalPSAPSP, IndividualDetails, Link}
 import org.mockito.Matchers.{eq => eqTo, _}
 import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
+import org.mockito.Mockito.times
+import org.mockito.Mockito.verify
 import play.api.test.Helpers.{contentAsString, _}
 import play.twirl.api.Html
 import services.PspDashboardService
-import viewmodels.{CardSubHeading, CardViewModel, Message, CardSubHeadingParam}
+import viewmodels.{CardSubHeadingParam, Message, CardViewModel, CardSubHeading}
 import views.html.schemesOverview
 
 import scala.concurrent.Future
@@ -168,7 +170,24 @@ class PspDashboardControllerSpec
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.ContactHMRCController.onPageLoad().url)
       }
+    }
 
+    "changeRoleToPspAndLoadPage" must {
+      "redirect to onPageLoad after updating Mongo with PSP role" in {
+        when(mockPspDashboardService.getTiles(eqTo(pspId), any())(any())).thenReturn(tiles)
+        when(mockPspDashboardService.getPspDetails(eqTo(pspId))(any()))
+          .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false, deceasedFlag = false)))
+        when(mockUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any()))
+          .thenReturn(Future.successful(Json.obj()))
+        when(mockUserAnswersCacheConnector.upsert(any(), any())(any(), any()))
+          .thenReturn(Future.successful(Json.obj()))
+
+        val result = controller().changeRoleToPspAndLoadPage(fakeRequest)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.routes.PspDashboardController.onPageLoad().url)
+        verify(mockUserAnswersCacheConnector, times(1)).upsert(any(), any())(any(), any())
+      }
     }
   }
 }

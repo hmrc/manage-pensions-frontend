@@ -73,7 +73,8 @@ class SchemesOverviewController @Inject()(
 
   private def returnLink(pspId: Option[PspId]): Option[Link] =
     if (pspId.nonEmpty) {
-      Some(Link("switch-psp", routes.PspDashboardController.onPageLoad().url, Message("messages__schemeOverview__switch_psp")))
+      Some(Link("switch-psp", controllers.routes.PspDashboardController.changeRoleToPspAndLoadPage().url,
+        Message("messages__schemeOverview__switch_psp")))
     } else {
       None
     }
