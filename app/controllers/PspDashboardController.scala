@@ -20,16 +20,20 @@ import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import controllers.actions._
 import identifiers.PSPNameId
+
 import javax.inject.Inject
 import models.AuthEntity.PSP
 import models.Link
+import models.requests.OptionalDataRequest
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{AnyContent, MessagesControllerComponents, Action}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import play.twirl.api.Html
 import services.PspDashboardService
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.Message
 import views.html.schemesOverview
+import play.api.i18n.Messages
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
@@ -49,29 +53,38 @@ class PspDashboardController @Inject()(
 
   def onPageLoad: Action[AnyContent] = (authenticate(PSP) andThen getData).async {
     implicit request =>
-      val pspId: String = request.pspIdOrException.id
-      val subHeading: String = Message("messages__pspDashboard__sub_heading")
-
-      def returnLink: Option[Link] = if (request.psaId.nonEmpty) Some(link) else None
-
-      service.getPspDetails(pspId).flatMap { details =>
-        if (details.deceasedFlag) {
-          Future.successful(Redirect(controllers.routes.ContactHMRCController.onPageLoad()))
-        } else if (details.rlsFlag) {
-          Future.successful(Redirect(config.pspUpdateContactDetailsUrl))
-        } else {
-          userAnswersCacheConnector.save(
-            cacheId = request.externalId,
-            id = PSPNameId,
-            value = details.name
-          ).map { _ =>
-            Ok(view(details.name, "site.psp", service.getTiles(pspId, details), Html(""), Some(subHeading), returnLink))
-          }
-        }
-
-      }
+      renderPage(request)
   }
 
   def link: Link = Link("switch-psa", routes.SchemesOverviewController.onPageLoad().url, Message("messages__pspDashboard__switch_psa"))
 
+  def changeRoleToPspAndLoadPage: Action[AnyContent] = (authenticate(PSP) andThen getData).async {
+    implicit request =>
+      renderPage(request)
+
+  }
+  private def renderPage(request:OptionalDataRequest[_])(implicit hc: HeaderCarrier,messages: Messages ) = {
+    val pspId: String = request.pspIdOrException.id
+    val subHeading: String = Message("messages__pspDashboard__sub_heading")
+
+    def returnLink: Option[Link] = if (request.psaId.nonEmpty) Some(link) else None
+
+    service.getPspDetails(pspId).flatMap { details =>
+      if (details.deceasedFlag) {
+        Future.successful(Redirect(controllers.routes.ContactHMRCController.onPageLoad()))
+      } else if (details.rlsFlag) {
+        Future.successful(Redirect(config.pspUpdateContactDetailsUrl))
+      } else {
+        userAnswersCacheConnector.save(
+          cacheId = request.externalId,
+          id = PSPNameId,
+          value = details.name
+        ).map { _ =>
+          Ok(view(details.name, "site.psp", service.getTiles(pspId, details), Html(""), Some(subHeading), returnLink)(request.request, implicitly))
+        }
+      }
+
+    }
+
+  }
 }
