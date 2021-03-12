@@ -30,7 +30,7 @@ class ChangePractitionerWithZeroControllerSpec extends ControllerSpecBase with S
 
   private val view = injector.instanceOf[changePractitionerWithZero]
   val podsChangePspLink: String = s"${frontendAppConfig.loginUrl}?continue=${frontendAppConfig.pspDetailsUrl}"
-  val tpssChangePspLink: String = frontendAppConfig.tpssInitialQuestionsUrl
+  val tpssChangePspLink: String = frontendAppConfig.pensionPractitionerGovUkLink
 
   "ChangePractitionerWithZeroController" must {
 

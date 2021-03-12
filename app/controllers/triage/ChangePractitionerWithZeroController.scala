@@ -36,7 +36,7 @@ class ChangePractitionerWithZeroController @Inject()(frontendAppConfig: Frontend
   def onPageLoad: Action[AnyContent] = triageAction.async {
     implicit request =>
       val podsChangePspLink: String = s"${frontendAppConfig.loginUrl}?continue=${frontendAppConfig.pspDetailsUrl}"
-      val tpssChangePspLink: String = frontendAppConfig.tpssInitialQuestionsUrl
+      val tpssChangePspLink: String = frontendAppConfig.pensionPractitionerGovUkLink
       Future.successful(Ok(view(podsChangePspLink, tpssChangePspLink)))
   }
 }
