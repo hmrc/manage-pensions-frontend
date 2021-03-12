@@ -31,7 +31,7 @@ object AdministratorOrPractitioner {
     Administrator, Practitioner
   )
 
-  val mappings: Map[String, AdministratorOrPractitioner] = values.map(v => (v.toString, v)).toMap
+  private val mappings: Map[String, AdministratorOrPractitioner] = values.map(v => (v.toString, v)).toMap
 
   val options: Seq[InputOption] = values.map {
     value =>
@@ -39,28 +39,13 @@ object AdministratorOrPractitioner {
         hint=Set(s"messages__administratorOrPractitioner__${value.toString}_hint"))
   }
 
-  implicit val reads: Reads[AdministratorOrPractitioner] = {
+  implicit val reads: Reads[AdministratorOrPractitioner] =
     JsPath.read[String].flatMap {
       case aop if mappings.keySet.contains(aop) => Reads(_ => JsSuccess(mappings.apply(aop)))
-      case _ => Reads(_ => JsError("Invalid administrator or practitioner type"))
+      case invalidValue => Reads(_ => JsError(s"Invalid administrator or practitioner type: $invalidValue"))
     }
-  }
 
-  implicit lazy val writes: Writes[AdministratorOrPractitioner] = new Writes[AdministratorOrPractitioner] {
-    def writes(o: AdministratorOrPractitioner) = {
-      o match {
-        case s if mappings.keySet.contains(s.toString) =>
-          JsString(s.toString)
-      }
-    }
-  }
+  implicit lazy val writes: Writes[AdministratorOrPractitioner] = (aop: AdministratorOrPractitioner) => JsString(aop.toString)
 
-  implicit val enumerable: Enumerable[AdministratorOrPractitioner] =
-    Enumerable(values.map(v => v.toString -> v): _*)
+  implicit val enumerable: Enumerable[AdministratorOrPractitioner] = Enumerable(values.map(v => v.toString -> v): _*)
 }
-
-
-
-
-
-

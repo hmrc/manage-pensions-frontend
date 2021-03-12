@@ -29,7 +29,6 @@ class ManageNavigator @Inject()() extends Navigator with Enumerable.Implicits {
 
   override def routeMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
     case AdministratorOrPractitionerId =>
-      println("\n>>>dsds" + ua)
       ua.get(AdministratorOrPractitionerId) match {
         case Some(Administrator) => controllers.routes.SchemesOverviewController.onPageLoad()
         case Some(Practitioner) => controllers.routes.PspDashboardController.onPageLoad()
