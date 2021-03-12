@@ -37,8 +37,6 @@
 
         @components.heading(messages("messages__whatRole__title"))
 
-        @components.paragraph_text(messages("messages__whatRole__p1"))
-
         @components.error_summary(form.errors)
 
         @components.input_radio(
@@ -46,7 +44,8 @@
             legend = messages("messages__whatRole__title"),
             legendClass = Some("visually-hidden"),
             inputs = WhatRole.options,
-            headingIsLegend=false
+            headingIsLegend=false,
+            hint = Some(messages("messages__whatRole__p1"))
         )
 
         @components.submit_button("site.continue")

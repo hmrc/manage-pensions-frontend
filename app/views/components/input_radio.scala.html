@@ -45,14 +45,18 @@
 
         </legend>
 
-        @if(hint.nonEmpty){
-            <span id="@{field.id}-radio-hint" class="form-hint">@{hint.get}</span>
-        }
+        <p>
+            @if(hint.nonEmpty){
+                <span id="@{field.id}-radio-hint" class="form-hint">@{hint.get}</span>
+            }
+        </p>
+
         @field.errors.map { error =>
             <span class="error-notification" id="error-message-@{field.id}-input">
                 <span class="visually-hidden">@messages("site.error")</span> @messages(error.message, error.args: _*)
             </span>
         }
+
 
         @for((input, i) <- inputs.zipWithIndex){
             @components.radio(field, input.label, input.value, input.dataTarget, input.hint, Some(i.toString), labelClass)

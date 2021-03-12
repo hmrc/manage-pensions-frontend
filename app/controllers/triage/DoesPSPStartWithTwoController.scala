@@ -46,8 +46,6 @@ class DoesPSPStartWithTwoController @Inject()(
 
   private def form(implicit messages: Messages): Form[DoesPSTRStartWithATwo] = formProvider("messages__doesPSPStartWithTwo__error")
   private def postCall: Call = controllers.triage.routes.DoesPSPStartWithTwoController.onSubmit()
-  private def hint(implicit messages: Messages): Option[String] =
-    Some(messages("messages__doesPSTRStartWithTwo_authPsp__hint"))
 
   def onPageLoad: Action[AnyContent] = triageAction.async {
     implicit request =>

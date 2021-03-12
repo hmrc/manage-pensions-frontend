@@ -39,12 +39,11 @@
 
             @components.input_radio(
                 field = form("value"),
-                legend = messages("messages__doesPSTRStartWithTwo__title"),
+                legend = messages("messages__doesPSPStartWithTwo__title"),
                 legendClass = Some("visually-hidden"),
                 inputs = DoesPSTRStartWithATwo.options(noRadioHint),
                 headingIsLegend = true
             )
-
 
             @components.submit_button("site.continue")
     }
