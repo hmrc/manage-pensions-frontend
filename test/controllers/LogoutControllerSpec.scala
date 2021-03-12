@@ -18,15 +18,15 @@ package controllers
 
 import connectors.UserAnswersCacheConnector
 import connectors.aft.AftCacheConnector
-import controllers.actions.AuthActionSpec.{fakeAuthConnector, mock}
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.libs.json.JsNull
 import play.api.mvc.Results.Ok
 import play.api.test.Helpers._
-import uk.gov.hmrc.auth.core.{Enrolments, AffinityGroup, UnsupportedCredentialRole, AuthConnector, Enrolment}
+import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.auth.core.authorise.Predicate
-import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
+import uk.gov.hmrc.auth.core.retrieve.Retrieval
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -43,7 +43,7 @@ class LogoutControllerSpec extends ControllerSpecBase with MockitoSugar {
   }
 
   private def logoutController = new LogoutController(
-    fakeAuthConnector(Future.failed(new UnsupportedCredentialRole)),
+    fakeAuthConnector(Future.successful(Some("id"))),
     appConfig = frontendAppConfig,
     aftCacheConnector = mockAftCacheConnector,
     controllerComponents = controllerComponents,
@@ -52,13 +52,13 @@ class LogoutControllerSpec extends ControllerSpecBase with MockitoSugar {
 
   "Logout Controller" must {
 
-    //"redirect to feedback survey page for an Individual" in {
-    //
-    //  when(mockAftCacheConnector.removeLock(any(), any())).thenReturn(Future.successful(Ok))
-    //  val result = logoutController.onPageLoad(fakeRequest)
-    //
-    //  status(result) mustBe SEE_OTHER
-    //  redirectLocation(result) mustBe Some(frontendAppConfig.serviceSignOut)
-    //}
+    "redirect to feedback survey page for an Individual" in {
+      when(mockUserAnswersCacheConnector.remove(any(), any())(any(), any())).thenReturn(Future.successful(JsNull))
+      when(mockAftCacheConnector.removeLock(any(), any())).thenReturn(Future.successful(Ok))
+      val result = logoutController.onPageLoad(fakeRequest)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(frontendAppConfig.serviceSignOut)
+    }
   }
 }
