@@ -25,14 +25,14 @@ import models.Required
 class WhatDoYouWantToDoFormProviderSpec extends FormBehaviours {
 
   val validData: Map[String, String] = Map(
-    "value" -> WhatDoYouWantToDo.options.head.value
+    "value" -> WhatDoYouWantToDo.options("PSA").head.value
   )
 
-  val form = new WhatDoYouWantToDoFormProvider()()
+  val form = new WhatDoYouWantToDoFormProvider()("PSA")
 
   "WhatDoYouWantToDoFormProvider" must {
 
-    behave like questionForm[WhatDoYouWantToDo](WhatDoYouWantToDo.values.head)
+    behave like questionForm[WhatDoYouWantToDo](WhatDoYouWantToDo.values("PSA").head)
 
     behave like formWithOptionField(
       Field(
@@ -40,6 +40,6 @@ class WhatDoYouWantToDoFormProviderSpec extends FormBehaviours {
         Required -> "messages__whatDoYouWantToDo__error__required",
         Invalid -> "error.invalid"
       ),
-      WhatDoYouWantToDo.options.map(_.value): _*)
+      WhatDoYouWantToDo.options("PSA").map(_.value): _*)
   }
 }

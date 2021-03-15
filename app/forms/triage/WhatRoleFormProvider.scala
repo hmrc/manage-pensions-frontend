@@ -17,14 +17,12 @@
 package forms.triage
 
 import forms.mappings.Mappings
-import javax.inject.Inject
-import models.triage.WhatDoYouWantToDo
+import models.triage.WhatRole
 import play.api.data.Form
 
-class WhatDoYouWantToDoFormProvider @Inject() extends Mappings {
+import javax.inject.Inject
 
-  def apply(role: String): Form[WhatDoYouWantToDo] =
-    Form(
-      "value" -> enumerable[WhatDoYouWantToDo]("messages__whatDoYouWantToDo__error__required")(WhatDoYouWantToDo.enumerable(role))
-    )
+class WhatRoleFormProvider @Inject() extends Mappings {
+
+  def apply(): Form[WhatRole] = Form("value" -> enumerable[WhatRole]("messages__whatRole__error"))
 }

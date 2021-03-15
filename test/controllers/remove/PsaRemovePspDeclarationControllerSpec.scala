@@ -137,7 +137,7 @@ class PsaRemovePspDeclarationControllerSpec extends ControllerWithQuestionPageBe
     // scalastyle:off magic.number
     val expectedAuditEvent = PSPDeauthorisationByPSAAuditEvent(LocalDate.of(2020,5,1), "A0000000", "A2200005", pstr)
 
-    verify(mockAuditService, times(1)).sendEvent(Matchers.eq(expectedAuditEvent))(any(), any())
+    verify(mockAuditService, times(1)).sendExtendedEvent(Matchers.eq(expectedAuditEvent))(any(), any())
   }
 
   "send an email to the PSA email address and send an email audit event when psp successfully removed by the PSA" in {
