@@ -19,7 +19,6 @@ package controllers
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import connectors.aft.AftCacheConnector
-import identifiers.AdministratorOrPractitionerId
 
 import javax.inject.Inject
 import play.api.i18n.I18nSupport
@@ -42,8 +41,7 @@ class LogoutController @Inject()(
     implicit request =>
       authorised().retrieve(Retrievals.externalId) {
         case Some(id) =>
-          // TODO: PODS-4932 Can we just remove all here????
-          userAnswersCacheConnector.remove(id, AdministratorOrPractitionerId).flatMap{ _ =>
+          userAnswersCacheConnector.removeAll(id).flatMap{ _ =>
             aftCacheConnector.removeLock.map {_ =>
               Redirect(appConfig.serviceSignOut).withNewSession
             }

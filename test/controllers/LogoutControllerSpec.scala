@@ -21,7 +21,6 @@ import connectors.aft.AftCacheConnector
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.libs.json.JsNull
 import play.api.mvc.Results.Ok
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core.AuthConnector
@@ -52,8 +51,8 @@ class LogoutControllerSpec extends ControllerSpecBase with MockitoSugar {
 
   "Logout Controller" must {
 
-    "redirect to feedback survey page for an Individual" in {
-      when(mockUserAnswersCacheConnector.remove(any(), any())(any(), any())).thenReturn(Future.successful(JsNull))
+    "redirect to feedback survey page for an Individual and remove all items from mongo cache" in {
+      when(mockUserAnswersCacheConnector.removeAll(any())(any(), any())).thenReturn(Future.successful(Ok))
       when(mockAftCacheConnector.removeLock(any(), any())).thenReturn(Future.successful(Ok))
       val result = logoutController.onPageLoad(fakeRequest)
 
