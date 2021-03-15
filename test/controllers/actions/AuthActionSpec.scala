@@ -153,7 +153,7 @@ class AuthActionSpec
       }
       "for a PSA page be redirected to the InterruptToPractitioner page when he has chosen to act as a PSP" in {
         val optionUAJson = UserAnswers()
-          .set(AdministratorOrPractitionerId)(AdministratorOrPractitioner.Administrator).asOpt.map(_.json)
+          .set(AdministratorOrPractitionerId)(AdministratorOrPractitioner.Practitioner).asOpt.map(_.json)
         when(mockUserAnswersCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(optionUAJson))
         val authAction = new AuthActionImpl(
           authConnector = fakeAuthConnector(authRetrievals(Set(enrolmentPSA, enrolmentPSP))),
