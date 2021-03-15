@@ -115,11 +115,11 @@ class AuthImpl(
         optionJsValue.map(UserAnswers).flatMap(_.get(AdministratorOrPractitionerId)) match {
           case None => Future.successful(Redirect(controllers.routes.AdministratorOrPractitionerController.onPageLoad()))
           case Some(aop) =>
-            val (psaId, pspId) = (aop, authEntity) match {
+            val (psaId:Option[PsaId], pspId:Option[PspId]) = (aop, authEntity) match {
               case (Administrator, PSA) => (getPsaId(isMandatory = true, enrolments), getPspId(isMandatory = false, enrolments))
               case (Practitioner, PSP) => (getPsaId(isMandatory = false, enrolments), getPspId(isMandatory = true, enrolments))
-              case (Administrator, PSP) => (getPsaId(isMandatory = false, enrolments), getPspId(isMandatory = true, enrolments)) // TODO: Redirect to new page
-              case (Practitioner, PSA) => (getPsaId(isMandatory = true, enrolments), getPspId(isMandatory = false, enrolments)) // TODO: Redirect to new page
+              case (Administrator, PSP) => Future.successful(Redirect(controllers.routes.InterruptToAdministratorController.onPageLoad())) // TODO: Redirect to new page
+              case (Practitioner, PSA) => Future.successful(Redirect(controllers.routes.InterruptToPractitionerController.onPageLoad())) // TODO: Redirect to new page
             }
             block(AuthenticatedRequest(request, id, psaId, pspId, userType(affinityGroup)))
         }

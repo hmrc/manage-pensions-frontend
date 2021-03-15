@@ -135,7 +135,7 @@ class AuthActionSpec
         redirectLocation(result) mustBe Some(controllers.routes.AdministratorOrPractitionerController.onPageLoad().url)
       }
 
-      "for a PSP page be redirected to the NEW page when he has chosen to act as a PSA" in {
+      "for a PSP page be redirected to the InterruptToAdministrator page when he has chosen to act as a PSA" in {
         val optionUAJson = UserAnswers()
           .set(AdministratorOrPractitionerId)(AdministratorOrPractitioner.Administrator).asOpt.map(_.json)
         when(mockUserAnswersCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(optionUAJson))
@@ -149,7 +149,23 @@ class AuthActionSpec
 
         val result = controller.onPageLoad()(fakeRequest)
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.routes.NEW PAGE HERE.onPageLoad().url)
+        redirectLocation(result) mustBe Some(controllers.routes.InterruptToAdministratorController.onPageLoad().url)
+      }
+      "for a PSA page be redirected to the InterruptToPractitioner page when he has chosen to act as a PSP" in {
+        val optionUAJson = UserAnswers()
+          .set(AdministratorOrPractitionerId)(AdministratorOrPractitioner.Administrator).asOpt.map(_.json)
+        when(mockUserAnswersCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(optionUAJson))
+        val authAction = new AuthActionImpl(
+          authConnector = fakeAuthConnector(authRetrievals(Set(enrolmentPSA, enrolmentPSP))),
+          mockUserAnswersCacheConnector,
+          config = frontendAppConfig,
+          parser = app.injector.instanceOf[BodyParsers.Default]
+        )
+        val controller = new Harness(authAction, authEntity = PSA)
+
+        val result = controller.onPageLoad()(fakeRequest)
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(controllers.routes.InterruptToPractitionerController.onPageLoad().url)
       }
     }
 
