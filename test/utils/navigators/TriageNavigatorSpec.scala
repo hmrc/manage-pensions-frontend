@@ -22,6 +22,7 @@ import identifiers.triage._
 import models.triage.DoesPSAStartWithATwo.{No, Yes}
 import models.triage.{DoesPSAStartWithATwo, DoesPSTRStartWithATwo, WhatDoYouWantToDo}
 import models.triage.WhatDoYouWantToDo.{BecomeAnAdmin, ChangeAdminDetails, CheckTheSchemeStatus, Invite, ManageExistingScheme, UpdateSchemeInformation}
+import models.triage.WhatRole.PSA
 import org.scalatest.OptionValues
 import org.scalatest.prop.TableFor4
 import play.api.libs.json.Json
@@ -77,22 +78,24 @@ class TriageNavigatorSpec extends SpecBase with NavigatorBehaviour {
 object TriageNavigatorSpec extends OptionValues with Enumerable.Implicits {
 
   lazy val emptyAnswers: UserAnswers = UserAnswers(Json.obj())
+  lazy val whatRolePsaAnswers: UserAnswers = UserAnswers().set(WhatRoleId)(PSA).asOpt.value
 
-  private def whatDoYouWantToDoAnswers(answer: WhatDoYouWantToDo): UserAnswers = UserAnswers().set(WhatDoYouWantToDoId)(answer).asOpt.value
+  private def whatDoYouWantToDoAnswers(answer: WhatDoYouWantToDo): UserAnswers =
+    whatRolePsaAnswers.set(WhatDoYouWantToDoId)(answer)(writes(WhatDoYouWantToDo.enumerable("PSA"))).asOpt.value
 
   private def doesPSAStartWithATwoAnswers(answer: DoesPSAStartWithATwo): UserAnswers =
-    UserAnswers().set(DoesPSAStartWithATwoId)(answer).asOpt.value
+    whatRolePsaAnswers.set(DoesPSAStartWithATwoId)(answer).asOpt.value
 
   private def doesPSTRStartWithTwoAnswers(answer: DoesPSTRStartWithATwo): UserAnswers =
-    UserAnswers().set(DoesPSTRStartWithTwoId)(answer).asOpt.value
+    whatRolePsaAnswers.set(DoesPSTRStartWithTwoId)(answer).asOpt.value
 
   private def doesPSTRStartWithTwoInviteAnswers(answer: DoesPSTRStartWithATwo): UserAnswers =
-    UserAnswers().set(DoesPSTRStartWithTwoInviteId)(answer).asOpt.value
+    whatRolePsaAnswers.set(DoesPSTRStartWithTwoInviteId)(answer).asOpt.value
 
   private def doesPSTRStartWithTwoUpdateAnswers(answer: DoesPSTRStartWithATwo): UserAnswers =
     UserAnswers().set(DoesPSTRStartWithTwoUpdateId)(answer).asOpt.value
 
-  private def doesPSTRTStartWithTwoPage: Call = controllers.triage.routes.DoesPSTRStartWithTwoController.onPageLoad()
+  private def doesPSTRTStartWithTwoPage: Call = controllers.triage.routes.DoesPSTRStartWithTwoController.onPageLoad("PSA")
 
   private def doesPSTRTStartWithTwoInvitePage: Call = controllers.triage.routes.DoesPSTRStartWithTwoInviteController.onPageLoad()
 

@@ -17,12 +17,13 @@
 package controllers.triage
 
 import forms.triage.DoesPSTRStartWithTwoFormProvider
-import identifiers.triage.DoesPSTRStartWithTwoId
-import models.triage.DoesPSTRStartWithATwo
+import identifiers.triage.{DoesPSTRStartWithTwoId, WhatRoleId}
+import models.triage.{DoesPSTRStartWithATwo, WhatRole}
 import play.api.mvc.Call
 import views.html.triage.doesPSTRStartWithTwo
 import config.FrontendAppConfig
 import controllers.actions.TriageAction
+
 import javax.inject.Inject
 import models.NormalMode
 import play.api.data.Form
@@ -52,20 +53,21 @@ class DoesPSTRStartWithTwoController @Inject()(
                                               )(implicit val ec: ExecutionContext) extends FrontendBaseController with Enumerable.Implicits with I18nSupport {
 
   private def form(implicit messages: Messages): Form[DoesPSTRStartWithATwo] = formProvider()
-  private def postCall: Call = controllers.triage.routes.DoesPSTRStartWithTwoController.onSubmit()
+  private def postCall(role: String): Call = controllers.triage.routes.DoesPSTRStartWithTwoController.onSubmit(role)
 
-  def onPageLoad: Action[AnyContent] = triageAction.async {
+  def onPageLoad(role: String): Action[AnyContent] = triageAction.async {
     implicit request =>
-      Future.successful(Ok(view(form, postCall)))
+      Future.successful(Ok(view(form, postCall(role))))
   }
 
-  def onSubmit: Action[AnyContent] = triageAction.async {
+  def onSubmit(role: String): Action[AnyContent] = triageAction.async {
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[_]) =>
-          Future.successful(BadRequest(view(formWithErrors, postCall))),
+          Future.successful(BadRequest(view(formWithErrors, postCall(role)))),
         value => {
-          val uaUpdated = UserAnswers().set(DoesPSTRStartWithTwoId)(value).asOpt.getOrElse(UserAnswers())
+          val uaUpdated = UserAnswers().set(WhatRoleId)(WhatRole.fromString(role))
+            .flatMap(_.set(DoesPSTRStartWithTwoId)(value)).asOpt.getOrElse(UserAnswers())
           Future.successful(Redirect(navigator.nextPage(DoesPSTRStartWithTwoId, NormalMode, uaUpdated)))
         }
       )

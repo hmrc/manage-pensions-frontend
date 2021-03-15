@@ -20,6 +20,7 @@ import controllers.ControllerSpecBase
 import forms.triage.DoesPSTRStartWithTwoFormProvider
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.i18n.Messages
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
 import play.api.mvc.Call
@@ -30,36 +31,37 @@ import utils.{FakeNavigator, Navigator}
 import utils.annotations.Triage
 import views.html.triage.doesPSTRStartWithTwo
 
-class DoesPSTRStartWithTwoControllerSpec extends ControllerSpecBase with ScalaFutures with MockitoSugar {
+class DoesPSTRStartWithTwoAuthPspControllerSpec extends ControllerSpecBase with ScalaFutures with MockitoSugar {
 
   private val onwardRoute = Call("GET", "/dummy")
   private val application = applicationBuilder(Seq[GuiceableModule](bind[Navigator].
     qualifiedWith(classOf[Triage]).toInstance(new FakeNavigator(onwardRoute)))).build()
-  private def postCall: Call = controllers.triage.routes.DoesPSTRStartWithTwoController.onSubmit("PSA")
+  private def postCall: Call = controllers.triage.routes.DoesPSTRStartWithTwoAuthPspController.onSubmit()
   private val view = injector.instanceOf[doesPSTRStartWithTwo]
   private val formProvider = new DoesPSTRStartWithTwoFormProvider()
+  private val hint: Option[String] = Some(messages("messages__doesPSTRStartWithTwo_authPsp__hint"))
 
-  "WhatDoYouWantToDoController" must {
+  "DoesPSTRStartWithTwoAuthPspController" must {
 
     "return OK with the view when calling on page load" in {
-      val request = addCSRFToken(FakeRequest(GET, routes.DoesPSTRStartWithTwoController.onPageLoad("PSA").url))
+      val request = addCSRFToken(FakeRequest(GET, routes.DoesPSTRStartWithTwoAuthPspController.onPageLoad().url))
       val result = route(application, request).value
 
       status(result) mustBe OK
-      contentAsString(result) mustBe view(formProvider(), postCall)(request, messages).toString
+      contentAsString(result) mustBe view(formProvider(), postCall, hint)(request, messages).toString
     }
 
     "return a Bad Request and errors when invalid data is submitted" in {
-      val postRequest = FakeRequest(POST, routes.DoesPSTRStartWithTwoController.onSubmit("PSA").url).withFormUrlEncodedBody("value" -> "invalid value")
+      val postRequest = FakeRequest(POST, routes.DoesPSTRStartWithTwoAuthPspController.onSubmit().url).withFormUrlEncodedBody("value" -> "invalid value")
       val boundForm = formProvider().bind(Map("value" -> "invalid value"))
       val result = route(application, postRequest).value
 
       status(result) mustBe BAD_REQUEST
-      contentAsString(result) mustBe view(boundForm, postCall)(postRequest, messages).toString
+      contentAsString(result) mustBe view(boundForm, postCall, hint)(postRequest, messages).toString
     }
 
     "redirect to the next page for a valid request" in {
-      val postRequest = FakeRequest(POST, routes.DoesPSTRStartWithTwoController.onSubmit("PSA").url).withFormUrlEncodedBody("value" -> "opt1")
+      val postRequest = FakeRequest(POST, routes.DoesPSTRStartWithTwoAuthPspController.onSubmit().url).withFormUrlEncodedBody("value" -> "opt1")
       val result = route(application, postRequest).value
 
       status(result) mustBe SEE_OTHER
