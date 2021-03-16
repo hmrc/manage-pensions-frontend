@@ -400,14 +400,32 @@ messages__cannotDeregister__title = You must remove yourself from all schemes fi
 messages__cannotDeregister__p1 = You cannot stop being a pension scheme administrator until you remove yourself from any scheme you are currently an administrator for.
 messages__cannotDeregister__p2 = This includes any schemes that have a status of wound up.
 
+messages__whatRole__title = What role are you registered as?
+messages__whatRole__p1 = Even if you are registered in the Pensions Scheme Online service you will still need to register on the Managing Pension Schemes service to be able to manage pension schemes registered from 4 June 2018
+messages__whatRole__error = Select what role you are registered as
+messages__whatRole__PSA = Pension scheme administrator
+messages__whatRole__PSP = Pension scheme practitioner
+messages__whatRole__opt3 = I'm not registered yet
+
 messages__whatDoYouWantToDo__title = What do you want to do?
 messages__whatDoYouWantToDo__error__required = Select what you want to do
+messages__whatDoYouWantToDo__hint = You will need to know your Pension Scheme Tax Reference (PSTR)
 messages__whatDoYouWantToDo__opt1 = View and manage an existing pension scheme
 messages__whatDoYouWantToDo__opt2 = Check the status and details of any scheme that you have applied to register
 messages__whatDoYouWantToDo__opt3 = Invite other scheme administrators to your scheme
 messages__whatDoYouWantToDo__opt4 = Become a scheme administrator for another scheme
-messages__whatDoYouWantToDo__opt5 = Update your scheme information
-messages__whatDoYouWantToDo__opt6 = Change scheme administrator details
+messages__whatDoYouWantToDo__opt5 = Authorise or de-authorise a pension scheme practitioner to or from a scheme
+messages__whatDoYouWantToDo__opt6 = Update your scheme information
+messages__whatDoYouWantToDo__opt7 = Change scheme administrator details
+messages__whatDoYouWantToDo__opt8 = Apply to register a new pension scheme
+messages__whatDoYouWantToDo__opt9 = Change your pension scheme practitioner details
+messages__whatDoYouWantToDo__opt10 = De-authorise yourself from a scheme
+
+messages__notRegistered__title = Register as an administrator or practitioner
+messages__notRegistered__p1 = There are two pension scheme services currently in use - the Pension Schemes Online service and the new Managing Pension Schemes service.
+messages__notRegistered__p2 = The application date of the pension you want to manage will determine which service you need to register on.
+messages__notRegistered__reg_psa_link = Register as an administrator
+messages__notRegistered__reg_psp_link = Register as a practitioner
 
 messages__doesPSTRStartWithTwo__title = Does the scheme’s Pension Scheme Tax Reference (PSTR) start with a ''2'' or a ''0''?
 messages__doesPSTRStartWithTwo__error__required = Select if the scheme’s PSTR starts with a ''2'' or a ''0''
@@ -417,11 +435,24 @@ messages__doesPSTRStartWithATwo__opt2 = Starts with a ‘0’
 messages__doesPSTRStartWithTwo_invite__hint = We will show you how to invite (or associate) another scheme administrator to a scheme that has a PSTR starting with a ''0''.
 messages__doesPSTRStartWithTwo_invited__hint = We will show you how to add yourself to a scheme that has a PSTR starting with a ''0''. An existing scheme administrator will have to associate you with the scheme first.
 messages__doesPSTRStartWithTwo_update__hint = We will show you how to update a scheme that has a PSTR starting with a ''0''.
+messages__doesPSTRStartWithTwo_authPsp__hint = We will show you how to authorise or de-authorise a scheme practitioner to or from a scheme that has a PSTR starting with a '0'.
+
+messages__authorisePractitioner__title = Authorise or de-authorise a pension scheme practitioner to or from a scheme
+messages__authorisePractitioner__p1 = To authorise a practitioner to a pension scheme you are registered for, the practitioner must be registered with the Managing Pension Schemes service.
+messages__authorisePractitioner__p2 = You will need to tell us:
+messages__authorisePractitioner__p3 = After you have authorised the scheme practitioner they will have immediate access to the pension scheme.
+messages__authorisePractitioner__p4 = To de-authorise a practitioner you will need to provide the date that they stopped being a scheme practitioner for the scheme.
+messages__authorisePractitioner__li1 = the practitioner's name
+messages__authorisePractitioner__li2 = the practitioner's ID
+messages__authorisePractitioner__li3 = the client reference you have agreed with the practitioner (optional)
 
 messages__doesPSAStartWithATwo__title = Does your scheme administrator ID start ''A2'' or ''A0''?
 messages__doesPSAStartWithATwo__error__required = Select if your scheme administrator ID starts with ''A2'' or ''A0''
 messages__doesPSAStartWithATwo__opt1 = Starts with ''A2''
 messages__doesPSAStartWithATwo__opt2 = Starts with ''A0''
+
+messages__doesPSPStartWithTwo__title = Does your scheme practitioner ID start with '2' or '0'?
+messages__doesPSPStartWithTwo__error = Select if your scheme practitioner ID starts with '2' or '0'
 
 messages__invitingPSTRStartWithTwo__title = Inviting a scheme administrator when the PSTR starts with a ''2''
 messages__invitingPSTRStartWithTwo__p1 = You can only send an invitation to a scheme administrator that has already registered on the Managing Pension Schemes service. You will need the new scheme administrator’s admin ID and name.
@@ -451,6 +482,12 @@ messages__updateBoth__p2 = If you are also enrolled on the Managing Pension Sche
 messages__updateBoth__managePensionSchemesService__link = Manage Pension Schemes service
 messages__updateBoth__pensionSchemesOnlineService__link = Pension Schemes Online service
 
+messages__changePractitionerWithZero__title = Changing scheme practitioner details when the ID starts with '0'
+messages__changePractitionerWithZero__p1 = If you have a scheme practitioner ID starting with an '0', you need to update your details on the Pension Schemes Online service.
+messages__changePractitionerWithZero__p2 = If you are also enrolled on the Managing Pension Schemes service, you must update your details on both services.
+
+messages__deAuthoriseYourself__title = De-authorise yourself from a scheme
+messages__deAuthoriseYourself__p1 = To de-authorise yourself as a practitioner you will need to provide the date that you stopped being a practitioner for that scheme.
 
 messages__pspName__title = What is the name of the scheme practitioner you want to authorise?
 messages__pspName__p1 = This must match the name they used when they registered as a scheme practitioner.

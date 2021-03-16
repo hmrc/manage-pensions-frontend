@@ -17,15 +17,17 @@
 package utils.navigators
 
 import config.FrontendAppConfig
-import controllers.routes._
+import controllers.triage.routes._
 import identifiers.Identifier
 import identifiers.triage._
+
 import javax.inject.Inject
 import javax.inject.Singleton
-import models.triage.DoesPSAStartWithATwo.No
-import models.triage.DoesPSAStartWithATwo.Yes
-import models.triage.DoesPSTRStartWithATwo
+import models.triage.DoesPSTRStartWithATwo.No
+import models.triage.DoesPSTRStartWithATwo.Yes
+import models.triage.{DoesPSAStartWithATwo, DoesPSTRStartWithATwo, WhatDoYouWantToDo}
 import models.triage.WhatDoYouWantToDo._
+import models.triage.WhatRole.{PSA, PSP}
 import play.api.mvc.Call
 import utils.Enumerable
 import utils.Navigator
@@ -35,67 +37,109 @@ import utils.UserAnswers
 class TriageNavigator @Inject()(appConfig: FrontendAppConfig) extends Navigator with Enumerable.Implicits {
 
   override def routeMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
+    case WhatRoleId => whatRoleRoutes(ua)
     case WhatDoYouWantToDoId => whatDoYouWantToDoRoutes(ua)
     case DoesPSTRStartWithTwoId => doesPSTRStartWithTwoRoutes(ua)
     case DoesPSTRStartWithTwoInviteId => doesPSTRStartWithTwoInviteRoutes(ua)
     case DoesPSTRStartWithTwoInvitedId => doesPSTRStartWithTwoInvitedRoutes(ua)
+    case DoesPSTRStartWithTwoAuthPspId => doesPSTRStartWithTwoAuthPspRoutes(ua)
     case DoesPSTRStartWithTwoUpdateId => doesPSTRStartWithTwoUpdateRoutes(ua)
     case DoesPSAStartWithATwoId => doesPSAStartWithATwoRoutes(ua)
+    case DoesPSPStartWithTwoId => doesPSPStartWithATwoRoutes(ua)
+    case DoesPSTRStartWithTwoDeAuthId => doesPSTRStartWithTwoDeAuthRoutes(ua)
   }
 
-  private def whatDoYouWantToDoRoutes(ua: UserAnswers): Call = {
-    ua.get(WhatDoYouWantToDoId) match {
-      case Some(ManageExistingScheme) => controllers.triage.routes.DoesPSTRStartWithTwoController.onPageLoad()
-      case Some(CheckTheSchemeStatus) => Call("GET", s"${appConfig.loginUrl}?continue=${appConfig.loginToListSchemesUrl}")
-      case Some(Invite) => controllers.triage.routes.DoesPSTRStartWithTwoInviteController.onPageLoad()
-      case Some(BecomeAnAdmin) => controllers.triage.routes.DoesPSTRStartWithTwoInvitedController.onPageLoad()
-      case Some(UpdateSchemeInformation) => controllers.triage.routes.DoesPSTRStartWithTwoUpdateController.onPageLoad()
-      case Some(ChangeAdminDetails) => controllers.triage.routes.DoesPSAStartWithATwoController.onPageLoad()
-      case _ => controllers.routes.SessionExpiredController.onPageLoad()
+  private def whatRoleRoutes(ua: UserAnswers): Call =
+    ua.get(WhatRoleId) match {
+      case role@(Some(PSA) | Some(PSP)) => WhatDoYouWantToDoController.onPageLoad(role.get.toString)
+      case _ => NotRegisteredController.onPageLoad()
     }
+
+  private def whatDoYouWantToDoRoutes(ua: UserAnswers): Call =
+    ua.get(WhatRoleId) match {
+      case role@(Some(PSA) | Some(PSP)) =>
+          ua.get(WhatDoYouWantToDoId)(reads(WhatDoYouWantToDo.enumerable(role.get.toString))) match {
+            case Some(ManageExistingScheme) => DoesPSTRStartWithTwoController.onPageLoad(role.get.toString)
+            case Some(CheckTheSchemeStatus) => Call("GET", s"${appConfig.loginUrl}?continue=${appConfig.loginToListSchemesUrl}")
+            case Some(Invite) => DoesPSTRStartWithTwoInviteController.onPageLoad()
+            case Some(BecomeAnAdmin) => DoesPSTRStartWithTwoInvitedController.onPageLoad()
+            case Some(AuthorisePsp) => DoesPSTRStartWithTwoAuthPspController.onPageLoad()
+            case Some(UpdateSchemeInformation) => DoesPSTRStartWithTwoUpdateController.onPageLoad()
+            case Some(ChangeAdminDetails) => DoesPSAStartWithATwoController.onPageLoad()
+            case Some(RegisterScheme) => Call("GET", appConfig.registerSchemeGuideGovUkLink)
+            case Some(ChangePspDetails) => DoesPSPStartWithTwoController.onPageLoad()
+            case Some(DeauthYourself) => DoesPSTRStartWithTwoDeAuthController.onPageLoad()
+            case _ => controllers.routes.SessionExpiredController.onPageLoad()
+          }
+      case _ => controllers.routes.SessionExpiredController.onPageLoad()
   }
 
   private def doesPSAStartWithATwoRoutes(ua: UserAnswers): Call = {
     ua.get(DoesPSAStartWithATwoId) match {
-      case Some(Yes) => Call("GET", s"${appConfig.loginUrl}?continue=${appConfig.registeredPsaDetailsUrl}")
-      case Some(No) => controllers.triage.routes.UpdateBothController.onPageLoad()
+      case Some(DoesPSAStartWithATwo.Yes) => Call("GET", s"${appConfig.loginUrl}?continue=${appConfig.registeredPsaDetailsUrl}")
+      case Some(DoesPSAStartWithATwo.No) => UpdateBothController.onPageLoad()
       case _ => controllers.routes.SessionExpiredController.onPageLoad()
     }
   }
 
-  private def doesPSTRStartWithTwoRoutes(answers: UserAnswers): Call = {
-    answers.get(DoesPSTRStartWithTwoId) match {
-      case Some(DoesPSTRStartWithATwo.Yes) => Call("GET", s"${appConfig.loginUrl}?continue=${appConfig.loginToListSchemesUrl}")
-      case Some(DoesPSTRStartWithATwo.No) => Call("GET", appConfig.tpssWelcomeUrl)
+  private def doesPSPStartWithATwoRoutes(ua: UserAnswers): Call = {
+    ua.get(DoesPSPStartWithTwoId) match {
+      case Some(Yes) => Call("GET", s"${appConfig.loginUrl}?continue=${appConfig.pspDetailsUrl}")
+      case Some(No) => ChangePractitionerWithZeroController.onPageLoad()
+      case _ => controllers.routes.SessionExpiredController.onPageLoad()
+    }
+  }
+
+  private def doesPSTRStartWithTwoDeAuthRoutes(ua: UserAnswers): Call = {
+    ua.get(DoesPSTRStartWithTwoDeAuthId) match {
+      case Some(Yes) => DeAuthoriseYourselfController.onPageLoad()
+      case Some(No) => Call("GET", appConfig.authorisePractitionerGuideGovUkLink)
+      case _ => controllers.routes.SessionExpiredController.onPageLoad()
+    }
+  }
+
+  private def doesPSTRStartWithTwoRoutes(ua: UserAnswers): Call = {
+    (ua.get(DoesPSTRStartWithTwoId), ua.get(WhatRoleId)) match {
+      case (Some(Yes), Some(PSA)) => Call("GET", s"${appConfig.loginUrl}?continue=${appConfig.loginToListSchemesUrl}")
+      case (Some(Yes), Some(PSP)) => Call("GET", s"${appConfig.loginUrl}?continue=${appConfig.loginToListSchemesPspUrl}")
+      case (Some(No), _) => Call("GET", appConfig.tpssWelcomeUrl)
       case _ => controllers.routes.SessionExpiredController.onPageLoad()
     }
   }
 
   private def doesPSTRStartWithTwoInviteRoutes(answers: UserAnswers): Call = {
     answers.get(DoesPSTRStartWithTwoInviteId) match {
-      case Some(DoesPSTRStartWithATwo.Yes) => controllers.triage.routes.InvitingPSTRStartWithTwoController.onPageLoad()
-      case Some(DoesPSTRStartWithATwo.No) => Call("GET", appConfig.pensionSchemesInvitationGuideGovUkLink)
+      case Some(Yes) => InvitingPSTRStartWithTwoController.onPageLoad()
+      case Some(No) => Call("GET", appConfig.pensionSchemesInvitationGuideGovUkLink)
       case _ => controllers.routes.SessionExpiredController.onPageLoad()
     }
   }
 
   private def doesPSTRStartWithTwoInvitedRoutes(answers: UserAnswers): Call = {
     answers.get(DoesPSTRStartWithTwoInvitedId) match {
-      case Some(DoesPSTRStartWithATwo.Yes) => Call("GET", s"${appConfig.loginUrl}?continue=${appConfig.loginToListSchemesUrl}")
-      case Some(DoesPSTRStartWithATwo.No) => Call("GET", appConfig.pensionSchemesAddToSchemeGuideGovUkLink)
+      case Some(Yes) => Call("GET", s"${appConfig.loginUrl}?continue=${appConfig.loginToListSchemesUrl}")
+      case Some(No) => Call("GET", appConfig.pensionSchemesAddToSchemeGuideGovUkLink)
+      case _ => controllers.routes.SessionExpiredController.onPageLoad()
+    }
+  }
+
+  private def doesPSTRStartWithTwoAuthPspRoutes(answers: UserAnswers): Call = {
+    answers.get(DoesPSTRStartWithTwoAuthPspId) match {
+      case Some(Yes) => AuthorisePractitionerController.onPageLoad()
+      case Some(No) => Call("GET", appConfig.authorisePractitionerGuideGovUkLink)
       case _ => controllers.routes.SessionExpiredController.onPageLoad()
     }
   }
 
   private def doesPSTRStartWithTwoUpdateRoutes(answers: UserAnswers): Call = {
     answers.get(DoesPSTRStartWithTwoUpdateId) match {
-      case Some(DoesPSTRStartWithATwo.Yes) => controllers.triage.routes.UpdatingPSTRStartWithTwoController.onPageLoad()
-      case Some(DoesPSTRStartWithATwo.No) => Call("GET", appConfig.pensionSchemesGuideMandatoryOnlineFilingGovUkLink)
+      case Some(Yes) => UpdatingPSTRStartWithTwoController.onPageLoad()
+      case Some(No) => Call("GET", appConfig.pensionSchemesGuideMandatoryOnlineFilingGovUkLink)
       case _ => controllers.routes.SessionExpiredController.onPageLoad()
     }
   }
 
   override protected def editRouteMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
-    case _ => SessionExpiredController.onPageLoad()
+    case _ => controllers.routes.SessionExpiredController.onPageLoad()
   }
 }

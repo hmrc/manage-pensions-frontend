@@ -14,17 +14,11 @@
  * limitations under the License.
  */
 
-package forms.triage
+package identifiers.triage
 
-import forms.mappings.Mappings
-import javax.inject.Inject
-import models.triage.WhatDoYouWantToDo
-import play.api.data.Form
+import identifiers.TypedIdentifier
+import models.triage.WhatRole
 
-class WhatDoYouWantToDoFormProvider @Inject() extends Mappings {
-
-  def apply(role: String): Form[WhatDoYouWantToDo] =
-    Form(
-      "value" -> enumerable[WhatDoYouWantToDo]("messages__whatDoYouWantToDo__error__required")(WhatDoYouWantToDo.enumerable(role))
-    )
+case object WhatRoleId extends TypedIdentifier[WhatRole] {
+  override def toString: String = "whatRole"
 }

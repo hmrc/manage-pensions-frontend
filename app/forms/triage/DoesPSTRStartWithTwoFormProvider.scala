@@ -24,8 +24,8 @@ import play.api.i18n.Messages
 
 class DoesPSTRStartWithTwoFormProvider @Inject() extends Mappings {
 
-  def apply()(implicit messages: Messages): Form[DoesPSTRStartWithATwo] =
+  def apply(errorKey: String = "messages__doesPSTRStartWithTwo__error__required")(implicit messages: Messages): Form[DoesPSTRStartWithATwo] =
     Form(
-      "value" -> enumerable[DoesPSTRStartWithATwo](messages("messages__doesPSTRStartWithTwo__error__required"))
+      "value" -> enumerable[DoesPSTRStartWithATwo](messages(errorKey))
     )
 }
