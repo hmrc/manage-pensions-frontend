@@ -17,13 +17,17 @@
 package controllers
 
 import config.FrontendAppConfig
+import identifiers.AdministratorOrPractitionerId
+import models.NormalMode
+import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.UserAnswers
 import views.html.interruptToPractitioner
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class InterruptToPractitionerController @Inject()(val appConfig: FrontendAppConfig,
                                                   override val messagesApi: MessagesApi,
@@ -32,5 +36,16 @@ class InterruptToPractitionerController @Inject()(val appConfig: FrontendAppConf
 
   def onPageLoad: Action[AnyContent] = Action { implicit request =>
     Ok(view())
+  }
+
+  def onSubmit: Action[AnyContent] = auth().async {
+    implicit request =>
+      form.bindFromRequest().fold(
+        (formWithErrors: Form[_]) =>
+          Future.successful(BadRequest(view(formWithErrors))),
+        value => {
+          Future.successful(ok)
+        }
+      )
   }
 }

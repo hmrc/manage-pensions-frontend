@@ -14,22 +14,44 @@
  * limitations under the License.
  *@
 
+@import play.api.data.Form
+@import config.FrontendAppConfig
+@import uk.gov.hmrc.play.views.html._
+@import views.html._
+@import viewmodels.Message
+@import utils.ViewHelper.titleWithErrors
+@import models.AdministratorOrPractitioner
+
 @this(
-    main_template: main_template
+    main_template: main_template,
+    formHelper: FormWithCSRF
 )
 
-@()(implicit request: Request[_], messages: Messages)
+@(form: Form[_])(implicit request: Request[_], messages: Messages)
 
 @main_template(
-    title = messages("messages__contactHMRC__title"),
+    title = titleWithErrors(form, messages("messages__interruptToPractitioner__title"))
+){
 
-    bodyClasses = None) {
+    @formHelper(action = controllers.routes.InterruptToPractitionerController.onSubmit(), 'autoComplete -> "off") {
 
         @components.back_link()
 
-        <h1 class="heading-xlarge">@messages("messages__contactHMRC__heading")</h1>
+        @components.error_summary(form.errors)
 
-        <p>@messages("messages__contactHMRC__p1")</p>
-        <p>@messages("messages__contactHMRC__p2")</p>
 
-    }
+        @components.input_radio(
+            field = form("value"),
+            legend = messages("messages__interruptToPractitioner__heading"),
+            legendClass = Some("visually-hidden"),
+            inputs = AdministratorOrPractitioner.options("interruptToPractitioner"),
+            labelClass = Some("form-label-bold"),
+            headingIsLegend=true
+        )
+
+        @components.submit_button("site.continue")
+
+        }
+
+}
+

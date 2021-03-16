@@ -650,3 +650,11 @@ messages__administratorOrPractitioner__administrator = Administrator view
 messages__administratorOrPractitioner__practitioner = Practitioner view
 messages__administratorOrPractitioner__administrator_hint = View data, submit returns and file reports for pension schemes for which you are an administrator
 messages__administratorOrPractitioner__practitioner_hint = View data, submit returns and file reports for pension schemes for which you are a practitioner
+
+messages__interruptToPractitioner__title = You cannot access this page whilst signed in as an administrator
+messages__interruptToPractitioner__heading = You cannot access this page whilst signed in as an administrator
+messages__interruptToPractitioner__error__required = Select if you want an administrator view
+messages__interruptToPractitioner__practitioner = Continue as a practitioner
+messages__interruptToPractitioner__administrator = Continue as an administrator
+messages__interruptToPractitioner__administrator_hint = View data, submit returns and file reports for pension schemes for which you are an administrator
+messages__interruptToPractitioner__practitioner_hint = View data, submit returns and file reports for pension schemes for which you are a practitioner
