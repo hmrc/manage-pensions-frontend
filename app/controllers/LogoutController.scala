@@ -26,6 +26,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{AuthorisedFunctions, AuthConnector}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.annotations.SessionDataCache
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -34,7 +35,7 @@ class LogoutController @Inject()(
                                   appConfig: FrontendAppConfig,
                                   aftCacheConnector: AftCacheConnector,
                                   val controllerComponents: MessagesControllerComponents,
-                                  userAnswersCacheConnector: UserAnswersCacheConnector
+                                  @SessionDataCache userAnswersCacheConnector: UserAnswersCacheConnector
                                 )(implicit ec : ExecutionContext) extends FrontendBaseController with I18nSupport with AuthorisedFunctions {
 
   def onPageLoad: Action[AnyContent] = Action.async {
