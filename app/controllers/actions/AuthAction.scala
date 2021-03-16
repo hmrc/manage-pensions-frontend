@@ -24,7 +24,7 @@ import controllers.routes
 import identifiers.AdministratorOrPractitionerId
 import models.AdministratorOrPractitioner.{Practitioner, Administrator}
 import models.AuthEntity
-import models.AuthEntity.{PSA, PSP}
+import models.AuthEntity.{PSP, PSA}
 import models.requests.AuthenticatedRequest
 import models.OtherUser
 import models.UserType
@@ -40,6 +40,7 @@ import uk.gov.hmrc.domain.PspId
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.HeaderCarrierConverter
 import utils.UserAnswers
+import utils.annotations.SessionDataCache
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
@@ -164,7 +165,7 @@ case class IdNotFound(msg: String = "PsaIdNotFound") extends AuthorisationExcept
 
 class AuthActionImpl @Inject()(
                                 authConnector: AuthConnector,
-                                userAnswersCacheConnector: UserAnswersCacheConnector,
+                                @SessionDataCache userAnswersCacheConnector: UserAnswersCacheConnector,
                                 config: FrontendAppConfig,
                                 val parser: BodyParsers.Default
                               )(implicit ec: ExecutionContext)
@@ -176,7 +177,7 @@ class AuthActionImpl @Inject()(
 
 class AuthActionNoAdministratorOrPractitionerCheckImpl @Inject()(
   authConnector: AuthConnector,
-  userAnswersCacheConnector: UserAnswersCacheConnector,
+  @SessionDataCache userAnswersCacheConnector: UserAnswersCacheConnector,
   config: FrontendAppConfig,
   val parser: BodyParsers.Default
 )(implicit ec: ExecutionContext)
