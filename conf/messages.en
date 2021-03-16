@@ -451,8 +451,8 @@ messages__doesPSAStartWithATwo__error__required = Select if your scheme administ
 messages__doesPSAStartWithATwo__opt1 = Starts with ''A2''
 messages__doesPSAStartWithATwo__opt2 = Starts with ''A0''
 
-messages__doesPSPStartWithTwo__title = Does your scheme practitioner ID start with '2' or '0'?
-messages__doesPSPStartWithTwo__error = Select if your scheme practitioner ID starts with '2' or '0'
+messages__doesPSPStartWithTwo__title = Does your scheme practitioner ID start with a ''2'' or a ''0''?
+messages__doesPSPStartWithTwo__error = Select if your scheme practitioner ID starts with a ''2'' or a ''0''
 
 messages__invitingPSTRStartWithTwo__title = Inviting a scheme administrator when the PSTR starts with a ''2''
 messages__invitingPSTRStartWithTwo__p1 = You can only send an invitation to a scheme administrator that has already registered on the Managing Pension Schemes service. You will need the new scheme administrator’s admin ID and name.
@@ -482,8 +482,8 @@ messages__updateBoth__p2 = If you are also enrolled on the Managing Pension Sche
 messages__updateBoth__managePensionSchemesService__link = Manage Pension Schemes service
 messages__updateBoth__pensionSchemesOnlineService__link = Pension Schemes Online service
 
-messages__changePractitionerWithZero__title = Changing scheme practitioner details when the ID starts with '0'
-messages__changePractitionerWithZero__p1 = If you have a scheme practitioner ID starting with an '0', you need to update your details on the Pension Schemes Online service.
+messages__changePractitionerWithZero__title = Changing scheme practitioner details when the ID starts with a ''0'
+messages__changePractitionerWithZero__p1 = If you have a scheme practitioner ID starting with a ''0'', you need to update your details on the Pension Schemes Online service.
 messages__changePractitionerWithZero__p2 = If you are also enrolled on the Managing Pension Schemes service, you must update your details on both services.
 
 messages__deAuthoriseYourself__title = De-authorise yourself from a scheme
