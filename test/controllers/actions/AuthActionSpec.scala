@@ -151,7 +151,7 @@ class AuthActionSpec
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.InterruptToAdministratorController.onPageLoad().url)
       }
-      "for a PSA page be redirected to the InterruptToPractitioner page when he has chosen to act as a PSP" in {
+      "for a PSA page be redirected to the CannotAccessPageAsPractitioner page when he has chosen to act as a PSP" in {
         val optionUAJson = UserAnswers()
           .set(AdministratorOrPractitionerId)(AdministratorOrPractitioner.Practitioner).asOpt.map(_.json)
         when(mockUserAnswersCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(optionUAJson))
@@ -165,7 +165,7 @@ class AuthActionSpec
 
         val result = controller.onPageLoad()(fakeRequest)
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.routes.InterruptToPractitionerController.onPageLoad().url)
+        redirectLocation(result) mustBe Some(controllers.routes.CannotAccessPageAsPractitionerController.onPageLoad().url)
       }
     }
 

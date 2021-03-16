@@ -33,10 +33,10 @@ object AdministratorOrPractitioner {
 
   private val mappings: Map[String, AdministratorOrPractitioner] = values.map(v => (v.toString, v)).toMap
 
-  def options(messageKey:String): Seq[InputOption] = values.map {
+  def options(messageKey:String, includeHints:Boolean): Seq[InputOption] = values.map {
     value =>
       InputOption(value.toString, s"messages__${messageKey}__${value.toString}",
-        hint=Set(s"messages__${messageKey}__${value.toString}_hint"))
+        hint=if(includeHints) Set(s"messages__${messageKey}__${value.toString}_hint") else Set())
   }
 
   implicit val reads: Reads[AdministratorOrPractitioner] =

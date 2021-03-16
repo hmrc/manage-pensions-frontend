@@ -30,21 +30,21 @@
 @(form: Form[_])(implicit request: Request[_], messages: Messages)
 
 @main_template(
-    title = titleWithErrors(form, messages("messages__interruptToPractitioner__title"))
+    title = titleWithErrors(form, messages("messages__cannotAccessPageAsPractitioner__title"))
 ){
 
-    @formHelper(action = controllers.routes.InterruptToPractitionerController.onSubmit(), 'autoComplete -> "off") {
+    @formHelper(action = controllers.routes.CannotAccessPageAsPractitionerController.onSubmit(), 'autoComplete -> "off") {
 
         @components.back_link()
 
         @components.error_summary(form.errors)
 
-
         @components.input_radio(
+            hint = Some(messages("messages__cannotAccessPageAsPractitioner__p1")),
             field = form("value"),
-            legend = messages("messages__interruptToPractitioner__heading"),
+            legend = messages("messages__cannotAccessPageAsPractitioner__heading"),
             legendClass = Some("visually-hidden"),
-            inputs = AdministratorOrPractitioner.options("interruptToPractitioner"),
+            inputs = AdministratorOrPractitioner.options("cannotAccessPageAsPractitioner",false),
             labelClass = Some("form-label-bold"),
             headingIsLegend=true
         )

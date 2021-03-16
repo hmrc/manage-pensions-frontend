@@ -17,25 +17,31 @@
 package controllers
 
 import config.FrontendAppConfig
-import identifiers.AdministratorOrPractitionerId
-import models.NormalMode
+import controllers.actions.AuthAction
+import forms.CannotAccessPageAsPractitionerFormProvider
+import models.AdministratorOrPractitioner
 import play.api.data.Form
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.{MessagesApi, Messages, I18nSupport}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.UserAnswers
-import views.html.interruptToPractitioner
+import utils.annotations.NoAdministratorOrPractitionerCheck
+import views.html.cannotAccessPageAsPractitioner
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class InterruptToPractitionerController @Inject()(val appConfig: FrontendAppConfig,
+class CannotAccessPageAsPractitionerController @Inject()(val appConfig: FrontendAppConfig,
+                                                  @NoAdministratorOrPractitionerCheck val auth: AuthAction,
                                                   override val messagesApi: MessagesApi,
+                                                  val formProvider: CannotAccessPageAsPractitionerFormProvider,
                                                   val controllerComponents: MessagesControllerComponents,
-                                                  view: interruptToPractitioner)(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+                                                  view: cannotAccessPageAsPractitioner)(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = Action { implicit request =>
-    Ok(view())
+  private def form(implicit messages: Messages): Form[AdministratorOrPractitioner] = formProvider()
+
+  def onPageLoad: Action[AnyContent] = auth().async {
+    implicit request =>
+      Future.successful(Ok(view(form)))
   }
 
   def onSubmit: Action[AnyContent] = auth().async {
@@ -44,7 +50,7 @@ class InterruptToPractitionerController @Inject()(val appConfig: FrontendAppConf
         (formWithErrors: Form[_]) =>
           Future.successful(BadRequest(view(formWithErrors))),
         value => {
-          Future.successful(ok)
+          Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
         }
       )
   }

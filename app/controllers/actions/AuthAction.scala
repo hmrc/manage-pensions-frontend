@@ -124,7 +124,7 @@ class AuthImpl(
               case (Administrator, PSP) =>
                 Future.successful(Redirect(controllers.routes.InterruptToAdministratorController.onPageLoad())) // TODO: Redirect to new page
               case (Practitioner, PSA) =>
-                Future.successful(Redirect(controllers.routes.InterruptToPractitionerController.onPageLoad())) // TODO: Redirect to new page
+                Future.successful(Redirect(controllers.routes.CannotAccessPageAsPractitionerController.onPageLoad())) // TODO: Redirect to new page
             }
 
         }
