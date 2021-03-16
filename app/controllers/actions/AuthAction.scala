@@ -47,7 +47,7 @@ import scala.concurrent.Future
 
 class AuthImpl(
                 override val authConnector: AuthConnector,
-                userAnswersCacheConnector: UserAnswersCacheConnector,
+                sessionDataCacheConnector: UserAnswersCacheConnector,
                 config: FrontendAppConfig,
                 val parser: BodyParsers.Default,
                 authEntity: AuthEntity,
@@ -112,7 +112,7 @@ class AuthImpl(
     block: AuthenticatedRequest[A] => Future[Result]
   ):Future[Result] = {
       implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
-      userAnswersCacheConnector.fetch(id).flatMap { optionJsValue =>
+      sessionDataCacheConnector.fetch(id).flatMap { optionJsValue =>
         optionJsValue.map(UserAnswers).flatMap(_.get(AdministratorOrPractitionerId)) match {
           case None => Future.successful(Redirect(controllers.routes.AdministratorOrPractitionerController.onPageLoad()))
           case Some(aop) =>
@@ -165,26 +165,26 @@ case class IdNotFound(msg: String = "PsaIdNotFound") extends AuthorisationExcept
 
 class AuthActionImpl @Inject()(
                                 authConnector: AuthConnector,
-                                @SessionDataCache userAnswersCacheConnector: UserAnswersCacheConnector,
+                                @SessionDataCache sessionDataCacheConnector: UserAnswersCacheConnector,
                                 config: FrontendAppConfig,
                                 val parser: BodyParsers.Default
                               )(implicit ec: ExecutionContext)
   extends AuthAction {
 
   override def apply(authEntity: AuthEntity): Auth =
-    new AuthImpl(authConnector, userAnswersCacheConnector, config, parser, authEntity, administratorOrPractitionerCheck = true)
+    new AuthImpl(authConnector, sessionDataCacheConnector, config, parser, authEntity, administratorOrPractitionerCheck = true)
 }
 
 class AuthActionNoAdministratorOrPractitionerCheckImpl @Inject()(
   authConnector: AuthConnector,
-  @SessionDataCache userAnswersCacheConnector: UserAnswersCacheConnector,
+  @SessionDataCache sessionDataCacheConnector: UserAnswersCacheConnector,
   config: FrontendAppConfig,
   val parser: BodyParsers.Default
 )(implicit ec: ExecutionContext)
   extends AuthAction {
 
   override def apply(authEntity: AuthEntity): Auth =
-    new AuthImpl(authConnector, userAnswersCacheConnector, config, parser, authEntity, administratorOrPractitionerCheck = false)
+    new AuthImpl(authConnector, sessionDataCacheConnector, config, parser, authEntity, administratorOrPractitionerCheck = false)
 }
 
 trait AuthAction {

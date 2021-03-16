@@ -35,14 +35,14 @@ class LogoutController @Inject()(
                                   appConfig: FrontendAppConfig,
                                   aftCacheConnector: AftCacheConnector,
                                   val controllerComponents: MessagesControllerComponents,
-                                  @SessionDataCache userAnswersCacheConnector: UserAnswersCacheConnector
+                                  @SessionDataCache sessionDataCacheConnector: UserAnswersCacheConnector
                                 )(implicit ec : ExecutionContext) extends FrontendBaseController with I18nSupport with AuthorisedFunctions {
 
   def onPageLoad: Action[AnyContent] = Action.async {
     implicit request =>
       authorised().retrieve(Retrievals.externalId) {
         case Some(id) =>
-          userAnswersCacheConnector.removeAll(id).flatMap{ _ =>
+          sessionDataCacheConnector.removeAll(id).flatMap{ _ =>
             aftCacheConnector.removeLock.map {_ =>
               Redirect(appConfig.serviceSignOut).withNewSession
             }
