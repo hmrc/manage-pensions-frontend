@@ -22,27 +22,27 @@ import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{MessagesApi, Messages}
 import play.api.test.FakeRequest
 
-class AdministratorOrPractitionerFormProviderSpec extends FormBehaviours with GuiceOneAppPerSuite {
+class CannotAccessPageAsAdministratorFormProviderSpec extends FormBehaviours with GuiceOneAppPerSuite {
 
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   implicit val messages: Messages = messagesApi.preferred(FakeRequest())
 
   val validData: Map[String, String] = Map(
-    "value" -> AdministratorOrPractitioner.optionsAdministratorOrPractitioner.head.value
+    "value" -> AdministratorOrPractitioner.optionsCannotAccessPageAsAdministrator.head.value
   )
 
-  val form = new AdministratorOrPractitionerFormProvider()()
+  val form = new CannotAccessPageAsAdministratorFormProvider()()
 
-  "AdministratorOrPractitionerFormProvider" must {
+  "CannotAccessPageAsAdministratorFormProvider" must {
 
     behave like questionForm[AdministratorOrPractitioner](AdministratorOrPractitioner.values.head)
 
     behave like formWithOptionField(
       Field(
         "value",
-        Required -> messages("messages__administratorOrPractitioner__error__required"),
+        Required -> messages("messages__cannotAccessPageAsAdministrator__error__required"),
         Invalid -> "error.invalid"
       ),
-      AdministratorOrPractitioner.optionsAdministratorOrPractitioner.map(_.value): _*)
+      AdministratorOrPractitioner.optionsCannotAccessPageAsAdministrator.map(_.value): _*)
   }
 }

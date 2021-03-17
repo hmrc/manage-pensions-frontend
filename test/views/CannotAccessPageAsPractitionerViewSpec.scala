@@ -16,27 +16,27 @@
 
 package views
 
-import forms.AdministratorOrPractitionerFormProvider
+import forms.CannotAccessPageAsPractitionerFormProvider
 import models.AdministratorOrPractitioner
 import play.api.data.Form
 import views.behaviours.ViewBehaviours
-import views.html.administratorOrPractitioner
+import views.html.cannotAccessPageAsPractitioner
 
-class AdministratorOrPractitionerViewSpec extends ViewBehaviours {
+class CannotAccessPageAsPractitionerViewSpec extends ViewBehaviours {
 
-  private val messageKeyPrefix = "administratorOrPractitioner"
+  private val messageKeyPrefix = "cannotAccessPageAsPractitioner"
 
-  private val form = new AdministratorOrPractitionerFormProvider()()
+  private val form = new CannotAccessPageAsPractitionerFormProvider()()
 
-  private val administratorOrPractitionerView = injector.instanceOf[administratorOrPractitioner]
+  private val cannotAccessPageAsPractitionerView = injector.instanceOf[cannotAccessPageAsPractitioner]
 
   private def createView() =
-    () => administratorOrPractitionerView(
+    () => cannotAccessPageAsPractitionerView(
       form
     )(fakeRequest, messages)
 
   private def createViewUsingForm =
-    (form: Form[_]) => administratorOrPractitionerView(
+    (form: Form[_]) => cannotAccessPageAsPractitionerView(
       form
     )(fakeRequest, messages)
 
@@ -48,18 +48,18 @@ class AdministratorOrPractitionerViewSpec extends ViewBehaviours {
 
     "contain radio buttons for the value" in {
       val doc = asDocument(createViewUsingForm(form))
-      for (option <- AdministratorOrPractitioner.optionsAdministratorOrPractitioner) {
+      for (option <- AdministratorOrPractitioner.optionsCannotAccessPageAsPractitioner) {
         assertContainsRadioButton(doc, s"value-${option.value}", "value", option.value, isChecked = false)
       }
     }
 
-    for (option <- AdministratorOrPractitioner.optionsAdministratorOrPractitioner) {
+    for (option <- AdministratorOrPractitioner.optionsCannotAccessPageAsPractitioner) {
       s"rendered with a value of '${option.value}'" must {
         s"have the '${option.value}' radio button selected" in {
           val doc = asDocument(createViewUsingForm(form.bind(Map("value" -> s"${option.value}"))))
           assertContainsRadioButton(doc, s"value-${option.value}", "value", option.value, isChecked = true)
 
-          for (unselectedOption <- AdministratorOrPractitioner.optionsAdministratorOrPractitioner.filterNot(o => o == option)) {
+          for (unselectedOption <- AdministratorOrPractitioner.optionsCannotAccessPageAsPractitioner.filterNot(o => o == option)) {
             assertContainsRadioButton(doc, s"value-${unselectedOption.value}", "value", unselectedOption.value, isChecked = false)
           }
         }
