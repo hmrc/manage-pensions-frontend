@@ -40,7 +40,7 @@
         @components.error_summary(form.errors)
 
         @components.input_radio(
-            hint = Some(messages("messages__cannotAccessPageAsAdministrator__p1")),
+            paragraphText = Some(messages("messages__cannotAccessPageAsAdministrator__p1")),
             field = form("value"),
             legend = messages("messages__cannotAccessPageAsAdministrator__heading"),
             legendClass = Some("visually-hidden"),

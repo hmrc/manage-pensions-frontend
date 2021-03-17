@@ -24,6 +24,7 @@
         hint: Option[String] = None,
         trackGa: Boolean = false,
         inputs: Seq[InputOption],
+        paragraphText: Option[String] = None,
         headingIsLegend: Boolean = false,
         labelClass: Option[String] = None
 )(implicit messages: Messages)
@@ -45,11 +46,15 @@
 
         </legend>
 
-        <p>
-            @if(hint.nonEmpty){
-                <span id="@{field.id}-radio-hint" class="form-hint">@{hint.get}</span>
-            }
-        </p>
+        @hint.map{hintText=>
+            <p>
+                <span id= "@{field.id}-radio-hint" class="form-hint">@hintText</span>
+            </p>
+        }
+
+        @paragraphText.map{para=>
+            <p>@para</p>
+        }
 
         @field.errors.map { error =>
             <span class="error-notification" id="error-message-@{field.id}-input">
