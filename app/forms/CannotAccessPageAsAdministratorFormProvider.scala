@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,24 +12,22 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@this(
-    main_template: main_template
-)
+package forms
 
-@()(implicit request: Request[_], messages: Messages)
+import forms.mappings.Mappings
+import models.AdministratorOrPractitioner
+import play.api.data.Form
+import play.api.i18n.Messages
 
-@main_template(
-    title = messages("messages__contactHMRC__title"),
+import javax.inject.Inject
 
-    bodyClasses = None) {
+class CannotAccessPageAsAdministratorFormProvider @Inject() extends Mappings {
 
-        @components.back_link()
+  def apply()(implicit messages: Messages): Form[AdministratorOrPractitioner] =
+    Form(
+      "value" -> enumerable[AdministratorOrPractitioner](messages("messages__cannotAccessPageAsAdministrator__error__required"))
+    )
 
-        <h1 class="heading-xlarge">@messages("messages__contactHMRC__heading")</h1>
-
-        <p>@messages("messages__contactHMRC__p1")</p>
-        <p>@messages("messages__contactHMRC__p2")</p>
-
-    }
+}

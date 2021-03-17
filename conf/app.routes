@@ -35,9 +35,10 @@ GET         /overview                                     controllers.SchemesOve
 GET         /psa-overview                                 controllers.SchemesOverviewController.changeRoleToPsaAndLoadPage()
 GET         /dashboard                                    controllers.PspDashboardController.onPageLoad()
 GET         /psp-dashboard                                controllers.PspDashboardController.changeRoleToPspAndLoadPage()
-GET         /cannot-access-page-as-practitioner                     controllers.CannotAccessPageAsPractitionerController.onPageLoad()
-POST        /cannot-access-page-as-practitioner                     controllers.CannotAccessPageAsPractitionerController.onSubmit()
-GET         /continue-as-administrator                    controllers.InterruptToAdministratorController.onPageLoad()
+GET         /cannot-access-page-as-practitioner           controllers.CannotAccessPageAsPractitionerController.onPageLoad()
+POST        /cannot-access-page-as-practitioner           controllers.CannotAccessPageAsPractitionerController.onSubmit()
+GET         /cannot-access-page-as-administrator          controllers.CannotAccessPageAsAdministratorController.onPageLoad()
+POST        /cannot-access-page-as-administrator          controllers.CannotAccessPageAsAdministratorController.onSubmit()
 
 GET         /:srn/dashboard/pension-scheme-details        controllers.PspSchemeDashboardController.onPageLoad(srn: String)
 
