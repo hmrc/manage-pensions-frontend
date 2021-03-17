@@ -25,7 +25,7 @@ import models.AdministratorOrPractitioner
 import models.AdministratorOrPractitioner.{Practitioner, Administrator}
 import play.api.data.Form
 import play.api.i18n.{MessagesApi, Messages, I18nSupport}
-import play.api.mvc.{Call, Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{AnyContent, MessagesControllerComponents, Result, Call, Action}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.UserAnswers
 import utils.annotations.NoAdministratorOrPractitionerCheck
@@ -58,6 +58,9 @@ class CannotAccessPageAsAdministratorController @Inject()(val appConfig: Fronten
         case _ => Future.successful(Redirect(controllers.routes.SchemesOverviewController.onPageLoad()))
       }
   }
+
+  private def futureSessionExpired:Future[Result] = Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+
   def onSubmit: Action[AnyContent] = auth().async {
     implicit request =>
       form.bindFromRequest().fold(
@@ -71,15 +74,15 @@ class CannotAccessPageAsAdministratorController @Inject()(val appConfig: Fronten
               case (Administrator, _) =>
                 Future.successful(Redirect(controllers.routes.SchemesOverviewController.onPageLoad()))
               case (Practitioner, Some(url)) =>
-                val updatedUA = optionUA
+                optionUA
                   .flatMap(_.remove(ContinueURLID).asOpt)
                   .flatMap(_.set(AdministratorOrPractitionerId)(Practitioner).asOpt)
-                  .getOrElse(UserAnswers())
-                cacheConnector.upsert(request.externalId, updatedUA.json).map { _ =>
-                  Redirect(Call("GET", url))
-                }
-              case (Practitioner, None) =>
-                Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+                  .fold(futureSessionExpired) { updatedUA =>
+                    cacheConnector.upsert(request.externalId, updatedUA.json).map { _ =>
+                      Redirect(Call("GET", url))
+                    }
+                  }
+              case (Practitioner, None) => futureSessionExpired
             }
           }
       )

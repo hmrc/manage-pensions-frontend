@@ -25,7 +25,7 @@ import models.AdministratorOrPractitioner
 import models.AdministratorOrPractitioner.{Practitioner, Administrator}
 import play.api.data.Form
 import play.api.i18n.{MessagesApi, Messages, I18nSupport}
-import play.api.mvc.{Call, Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{AnyContent, MessagesControllerComponents, Result, Call, Action}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.UserAnswers
 import utils.annotations.NoAdministratorOrPractitionerCheck
@@ -58,6 +58,9 @@ class CannotAccessPageAsPractitionerController @Inject()(val appConfig: Frontend
         case _ => Future.successful(Redirect(controllers.routes.PspDashboardController.onPageLoad()))
       }
   }
+
+  private def futureSessionExpired:Future[Result] = Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+
   def onSubmit: Action[AnyContent] = auth().async {
     implicit request =>
       form.bindFromRequest().fold(
@@ -71,15 +74,15 @@ class CannotAccessPageAsPractitionerController @Inject()(val appConfig: Frontend
               case (Practitioner, _) =>
                 Future.successful(Redirect(controllers.routes.PspDashboardController.onPageLoad()))
               case (Administrator, Some(url)) =>
-                val updatedUA = optionUA
+                optionUA
                   .flatMap(_.remove(ContinueURLID).asOpt)
                   .flatMap(_.set(AdministratorOrPractitionerId)(Administrator).asOpt)
-                  .getOrElse(UserAnswers())
-                cacheConnector.upsert(request.externalId, updatedUA.json).map { _ =>
-                  Redirect(Call("GET", url))
-                }
-              case (Administrator, None) =>
-                Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+                  .fold(futureSessionExpired) { updatedUA =>
+                    cacheConnector.upsert(request.externalId, updatedUA.json).map { _ =>
+                      Redirect(Call("GET", url))
+                    }
+                  }
+              case (Administrator, None) => futureSessionExpired
             }
           }
       )
