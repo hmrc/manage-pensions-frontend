@@ -35,7 +35,8 @@ class CannotAccessPageAsAdministratorController @Inject()(val appConfig: Fronten
                                                           override val messagesApi: MessagesApi,
                                                           val formProvider: CannotAccessPageAsAdministratorFormProvider,
                                                           val controllerComponents: MessagesControllerComponents,
-                                                          view: cannotAccessPageAsAdministrator)(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+                                                          view: cannotAccessPageAsAdministrator)(implicit
+  val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   private def form(implicit messages: Messages): Form[AdministratorOrPractitioner] = formProvider()
   def onPageLoad: Action[AnyContent] = auth().async {

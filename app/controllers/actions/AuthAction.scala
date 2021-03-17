@@ -122,9 +122,13 @@ class AuthImpl(
               case (Practitioner, PSP) =>
                 block(AuthenticatedRequest(request, id, None, getPspId(isMandatory = true, enrolments), userType(affinityGroup)))
               case (Administrator, PSP) =>
-                Future.successful(Redirect(controllers.routes.CannotAccessPageAsAdministratorController.onPageLoad())) // TODO: Redirect to new page
+                val c = Call("GET",
+                  s"${controllers.routes.CannotAccessPageAsAdministratorController.onPageLoad().url}?continue=${request.uri}")
+                Future.successful(Redirect(c))
               case (Practitioner, PSA) =>
-                Future.successful(Redirect(controllers.routes.CannotAccessPageAsPractitionerController.onPageLoad())) // TODO: Redirect to new page
+                val c = Call("GET",
+                  s"${controllers.routes.CannotAccessPageAsPractitionerController.onPageLoad().url}?continue=${request.uri}")
+                Future.successful(Redirect(c))
             }
 
         }

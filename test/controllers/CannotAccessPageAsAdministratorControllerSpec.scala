@@ -21,6 +21,7 @@ import connectors.UserAnswersCacheConnector
 import controllers.actions.FakeAuthAction
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.CannotAccessPageAsAdministratorFormProvider
+import models.AdministratorOrPractitioner
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.test.CSRFTokenHelper.addCSRFToken
@@ -52,31 +53,13 @@ class CannotAccessPageAsAdministratorControllerSpec
       contentAsString(result) mustBe view(formProvider())(request, messages).toString
     }
 
-    //"return a Bad Request and errors when invalid data is submitted" in {
-    //  val postRequest = FakeRequest(POST, routes.CannotAccessPageAsAdministratorController.onSubmit().url).withFormUrlEncodedBody("value" -> "invalid value")
-    //  val boundForm = formProvider().bind(Map("value" -> "invalid value"))
-    //  val result = controller.onSubmit(postRequest)
-    //
-    //  status(result) mustBe BAD_REQUEST
-    //  contentAsString(result) mustBe view(boundForm)(postRequest,messages).toString
-    //}
+    "redirect to the next page for a valid request" in {
+      val postRequest = FakeRequest(POST, routes.CannotAccessPageAsAdministratorController.onSubmit().url).withFormUrlEncodedBody("value" ->
+        AdministratorOrPractitioner.Administrator.toString)
+      val result = controller.onSubmit(postRequest)
 
-    //"redirect to the next page for a valid request" in {
-    //  when(mockUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any()))
-    //    .thenReturn(Future.successful(Json.obj()))
-    //  when(mockNavigator.nextPage(any(), any(), any())).thenReturn(onwardRoute)
-    //  val postRequest = FakeRequest(POST, routes.CannotAccessPageAsAdministratorController.onSubmit().url).withFormUrlEncodedBody("value" ->
-    //    CannotAccessPageAsAdministrator.Administrator.toString)
-    //  val result = controller.onSubmit(postRequest)
-    //
-    //  status(result) mustBe SEE_OTHER
-    //  redirectLocation(result).value mustBe onwardRoute.url
-    //}
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).value mustBe onwardRoute.url
+    }
   }
-
 }
-
-
-
-
-
