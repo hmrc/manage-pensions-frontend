@@ -20,6 +20,7 @@ import config.FrontendAppConfig
 import controllers.actions.AuthAction
 import forms.CannotAccessPageAsPractitionerFormProvider
 import models.AdministratorOrPractitioner
+import models.AdministratorOrPractitioner.{Practitioner, Administrator}
 import play.api.data.Form
 import play.api.i18n.{MessagesApi, Messages, I18nSupport}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -50,8 +51,10 @@ class CannotAccessPageAsPractitionerController @Inject()(val appConfig: Frontend
       form.bindFromRequest().fold(
         (formWithErrors: Form[_]) =>
           Future.successful(BadRequest(view(formWithErrors))),
-        value => {
-          Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+        { case Practitioner =>
+          Future.successful(Redirect(controllers.routes.PspDashboardController.onPageLoad()))
+        case Administrator =>
+          Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad())) // continue to url
         }
       )
   }

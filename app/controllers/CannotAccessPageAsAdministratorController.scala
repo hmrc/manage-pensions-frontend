@@ -20,8 +20,9 @@ import config.FrontendAppConfig
 import controllers.actions.AuthAction
 import forms.CannotAccessPageAsAdministratorFormProvider
 import models.AdministratorOrPractitioner
+import models.AdministratorOrPractitioner.{Practitioner, Administrator}
 import play.api.data.Form
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.{MessagesApi, Messages, I18nSupport}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.annotations.NoAdministratorOrPractitionerCheck
@@ -48,8 +49,10 @@ class CannotAccessPageAsAdministratorController @Inject()(val appConfig: Fronten
       form.bindFromRequest().fold(
         (formWithErrors: Form[_]) =>
           Future.successful(BadRequest(view(formWithErrors))),
-        value => {
-          Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+        { case Administrator =>
+            Future.successful(Redirect(controllers.routes.SchemesOverviewController.onPageLoad()))
+          case Practitioner =>
+            Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad())) // continue to url
         }
       )
   }

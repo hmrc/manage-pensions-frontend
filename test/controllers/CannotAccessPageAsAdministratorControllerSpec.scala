@@ -27,14 +27,11 @@ import org.scalatestplus.mockito.MockitoSugar
 import play.api.test.CSRFTokenHelper.addCSRFToken
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import utils.Navigator
 import views.html.cannotAccessPageAsAdministrator
 
 class CannotAccessPageAsAdministratorControllerSpec
   extends ControllerWithQuestionPageBehaviours with ScalaFutures with MockitoSugar {
   val appConfig: FrontendAppConfig = mock[FrontendAppConfig]
-
-  private val mockNavigator = mock[Navigator]
 
   private val view = injector.instanceOf[cannotAccessPageAsAdministrator]
   private val formProvider = new CannotAccessPageAsAdministratorFormProvider()
@@ -53,13 +50,24 @@ class CannotAccessPageAsAdministratorControllerSpec
       contentAsString(result) mustBe view(formProvider())(request, messages).toString
     }
 
-    "redirect to the next page for a valid request" in {
-      val postRequest = FakeRequest(POST, routes.CannotAccessPageAsAdministratorController.onSubmit().url).withFormUrlEncodedBody("value" ->
-        AdministratorOrPractitioner.Administrator.toString)
+    "redirect to the administrator dashboard page for a valid request where administrator chosen" in {
+      val postRequest = FakeRequest(POST, routes.CannotAccessPageAsAdministratorController.onSubmit().url).withFormUrlEncodedBody(
+        "value" -> AdministratorOrPractitioner.Administrator.toString
+      )
       val result = controller.onSubmit(postRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).value mustBe onwardRoute.url
+      redirectLocation(result) mustBe Some(controllers.routes.SchemesOverviewController.onPageLoad().url)
+    }
+
+    "redirect to the page in parameter for a valid request where practitioner chosen" in {
+      val postRequest = FakeRequest(POST, routes.CannotAccessPageAsAdministratorController.onSubmit().url).withFormUrlEncodedBody(
+        "value" -> AdministratorOrPractitioner.Practitioner.toString
+      )
+      val result = controller.onSubmit(postRequest)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)
     }
   }
 }
