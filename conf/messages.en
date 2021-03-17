@@ -482,7 +482,7 @@ messages__updateBoth__p2 = If you are also enrolled on the Managing Pension Sche
 messages__updateBoth__managePensionSchemesService__link = Manage Pension Schemes service
 messages__updateBoth__pensionSchemesOnlineService__link = Pension Schemes Online service
 
-messages__changePractitionerWithZero__title = Changing scheme practitioner details when the ID starts with a ''0'
+messages__changePractitionerWithZero__title = Changing scheme practitioner details when the ID starts with a ''0''
 messages__changePractitionerWithZero__p1 = If you have a scheme practitioner ID starting with a ''0'', you need to update your details on the Pension Schemes Online service.
 messages__changePractitionerWithZero__p2 = If you are also enrolled on the Managing Pension Schemes service, you must update your details on both services.
 
