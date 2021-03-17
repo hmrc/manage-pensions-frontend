@@ -42,7 +42,11 @@ class CannotAccessPageAsAdministratorController @Inject()(val appConfig: Fronten
   private def form(implicit messages: Messages): Form[AdministratorOrPractitioner] = formProvider()
   def onPageLoad: Action[AnyContent] = auth().async {
     implicit request =>
-      Future.successful(Ok(view(form)))
+      request.request.queryString.find(_._1=="continue").flatMap(_._2.headOption) match {
+        case Some(continueUrl) =>
+          Future.successful(Ok(view(form)))
+        case _ => Future.successful(Redirect(controllers.routes.SchemesOverviewController.onPageLoad()))
+      }
   }
   def onSubmit: Action[AnyContent] = auth().async {
     implicit request =>

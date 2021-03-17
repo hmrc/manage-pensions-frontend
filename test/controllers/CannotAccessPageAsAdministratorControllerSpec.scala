@@ -42,12 +42,20 @@ class CannotAccessPageAsAdministratorControllerSpec
 
   "CannotAccessPageAsAdministratorController" must {
 
-    "return OK with the view when calling on page load" in {
-      val request = addCSRFToken(FakeRequest(GET, routes.CannotAccessPageAsAdministratorController.onPageLoad().url))
+    "return OK with the view when calling on page load with continue parameter" in {
+      val request = addCSRFToken(FakeRequest(GET, s"${routes.CannotAccessPageAsAdministratorController.onPageLoad().url}?continue=/test" ))
       val result = controller.onPageLoad(request)
 
       status(result) mustBe OK
       contentAsString(result) mustBe view(formProvider())(request, messages).toString
+    }
+
+    "redirect when calling on page load with no continue parameter" in {
+      val request = addCSRFToken(FakeRequest(GET, routes.CannotAccessPageAsAdministratorController.onPageLoad().url))
+      val result = controller.onPageLoad(request)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(controllers.routes.SchemesOverviewController.onPageLoad().url)
     }
 
     "redirect to the administrator dashboard page for a valid request where administrator chosen" in {
