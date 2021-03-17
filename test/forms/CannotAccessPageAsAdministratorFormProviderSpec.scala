@@ -35,7 +35,7 @@ class CannotAccessPageAsAdministratorFormProviderSpec extends FormBehaviours wit
 
   "CannotAccessPageAsAdministratorFormProvider" must {
 
-    behave like questionForm[AdministratorOrPractitioner](AdministratorOrPractitioner.values.head)
+    behave like questionForm[AdministratorOrPractitioner](AdministratorOrPractitioner.values.reverse.head)
 
     behave like formWithOptionField(
       Field(

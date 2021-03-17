@@ -17,28 +17,49 @@
 package controllers
 
 import config.FrontendAppConfig
-import connectors.UserAnswersCacheConnector
+import connectors.SessionDataCacheConnector
 import controllers.actions.FakeAuthAction
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.CannotAccessPageAsAdministratorFormProvider
 import models.AdministratorOrPractitioner
+import org.mockito.ArgumentCaptor
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.test.CSRFTokenHelper.addCSRFToken
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.cannotAccessPageAsAdministrator
+import org.mockito.Matchers.any
+import org.mockito.Mockito.{times, verify, reset, when}
+import org.scalatest.BeforeAndAfterEach
+import play.api.libs.json.{JsNull, Json, JsValue}
+import utils.UserAnswers
+
+import scala.concurrent.Future
 
 class CannotAccessPageAsAdministratorControllerSpec
-  extends ControllerWithQuestionPageBehaviours with ScalaFutures with MockitoSugar {
+  extends ControllerWithQuestionPageBehaviours with ScalaFutures with MockitoSugar with BeforeAndAfterEach {
   val appConfig: FrontendAppConfig = mock[FrontendAppConfig]
 
   private val view = injector.instanceOf[cannotAccessPageAsAdministrator]
   private val formProvider = new CannotAccessPageAsAdministratorFormProvider()
-  val mockUserAnswersCacheConnector: UserAnswersCacheConnector = mock[UserAnswersCacheConnector]
+  private val mockSessionDataCacheConnector: SessionDataCacheConnector = mock[SessionDataCacheConnector]
 
   def controller: CannotAccessPageAsAdministratorController =
-    new CannotAccessPageAsAdministratorController(appConfig, FakeAuthAction, messagesApi, formProvider, controllerComponents, view)
+    new CannotAccessPageAsAdministratorController(appConfig, FakeAuthAction, messagesApi,
+      mockSessionDataCacheConnector, formProvider, controllerComponents, view)
+
+  override def beforeEach(): Unit = {
+    reset(mockSessionDataCacheConnector)
+    when(mockSessionDataCacheConnector.save(any(), any(), any())(any(), any(), any()))
+      .thenReturn(Future.successful(JsNull))
+    super.beforeEach()
+  }
+
+  private val continueUrl = "/test"
+
+  private val uaWithContinueUrl = UserAnswers()
+    .set(ContinueURLID)(continueUrl).asOpt
 
   "CannotAccessPageAsAdministratorController" must {
 
@@ -59,6 +80,9 @@ class CannotAccessPageAsAdministratorControllerSpec
     }
 
     "redirect to the administrator dashboard page for a valid request where administrator chosen" in {
+      when(mockSessionDataCacheConnector.fetch(any())(any(), any()))
+        .thenReturn(Future.successful(uaWithContinueUrl.map(_.json)))
+
       val postRequest = FakeRequest(POST, routes.CannotAccessPageAsAdministratorController.onSubmit().url).withFormUrlEncodedBody(
         "value" -> AdministratorOrPractitioner.Administrator.toString
       )
@@ -68,14 +92,22 @@ class CannotAccessPageAsAdministratorControllerSpec
       redirectLocation(result) mustBe Some(controllers.routes.SchemesOverviewController.onPageLoad().url)
     }
 
-    "redirect to the page in parameter for a valid request where practitioner chosen" in {
+    "redirect to the page in parameter for a valid request where practitioner chosen and update the role in mongo" in {
+      when(mockSessionDataCacheConnector.fetch(any())(any(), any()))
+        .thenReturn(Future.successful(uaWithContinueUrl.map(_.json)))
+      when(mockSessionDataCacheConnector.upsert(any(), any())(any(), any()))
+        .thenReturn(Future.successful(JsNull))
       val postRequest = FakeRequest(POST, routes.CannotAccessPageAsAdministratorController.onSubmit().url).withFormUrlEncodedBody(
         "value" -> AdministratorOrPractitioner.Practitioner.toString
       )
       val result = controller.onSubmit(postRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)
+      redirectLocation(result) mustBe Some(continueUrl)
+      val jsonCaptor = ArgumentCaptor.forClass(classOf[JsValue])
+      val expectedSessionCacheJson = Json.obj{"administratorOrPractitioner" -> "practitioner"}
+      verify(mockSessionDataCacheConnector, times(1)).upsert(any(), jsonCaptor.capture())(any(), any())
+      jsonCaptor.getValue mustBe expectedSessionCacheJson
     }
   }
 }
