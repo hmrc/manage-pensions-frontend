@@ -33,7 +33,7 @@ object AdministratorOrPractitioner {
 
   private val mappings: Map[String, AdministratorOrPractitioner] = values.map(v => (v.toString, v)).toMap
 
-  private def seqInputOption(messageKey:String, includeHints:Boolean): Seq[InputOption] = {
+  private def seqInputOption(messageKey:String, includeHints:Boolean, values: Seq[AdministratorOrPractitioner]): Seq[InputOption] = {
     values.map { value =>
       val optionHint = if(includeHints) Some(Set(s"messages__${messageKey}__${value.toString}_hint")) else None
       optionHint match {
@@ -44,15 +44,15 @@ object AdministratorOrPractitioner {
   }
 
   def optionsAdministratorOrPractitioner: Seq[InputOption] = seqInputOption(
-    messageKey = "administratorOrPractitioner", includeHints = true
+    messageKey = "administratorOrPractitioner", includeHints = true, values
   )
 
   def optionsCannotAccessPageAsAdministrator: Seq[InputOption] = seqInputOption(
-    messageKey = "cannotAccessPageAsAdministrator", includeHints = false
+    messageKey = "cannotAccessPageAsAdministrator", includeHints = false, values.reverse
   )
 
   def optionsCannotAccessPageAsPractitioner: Seq[InputOption] = seqInputOption(
-    messageKey = "cannotAccessPageAsPractitioner", includeHints = false
+    messageKey = "cannotAccessPageAsPractitioner", includeHints = false, values
   )
 
   implicit val reads: Reads[AdministratorOrPractitioner] =

@@ -17,14 +17,15 @@
 package controllers
 
 import config.FrontendAppConfig
-import connectors.UserAnswersCacheConnector
+import connectors.{SessionDataCacheConnector, UserAnswersCacheConnector}
 import controllers.actions.AuthAction
 import forms.CannotAccessPageAsAdministratorFormProvider
+import identifiers.AdministratorOrPractitionerId
 import models.AdministratorOrPractitioner
 import models.AdministratorOrPractitioner.{Practitioner, Administrator}
 import play.api.data.Form
 import play.api.i18n.{MessagesApi, Messages, I18nSupport}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Call}
+import play.api.mvc.{Call, Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.UserAnswers
 import utils.annotations.NoAdministratorOrPractitionerCheck
@@ -40,7 +41,7 @@ private object ContinueURLID extends identifiers.TypedIdentifier[String] {
 class CannotAccessPageAsAdministratorController @Inject()(val appConfig: FrontendAppConfig,
                                                           @NoAdministratorOrPractitionerCheck val auth: AuthAction,
                                                           override val messagesApi: MessagesApi,
-                                                          cacheConnector: UserAnswersCacheConnector,
+                                                          cacheConnector: SessionDataCacheConnector,
                                                           val formProvider: CannotAccessPageAsAdministratorFormProvider,
                                                           val controllerComponents: MessagesControllerComponents,
                                                           view: cannotAccessPageAsAdministrator)(implicit
@@ -63,16 +64,21 @@ class CannotAccessPageAsAdministratorController @Inject()(val appConfig: Fronten
         (formWithErrors: Form[_]) =>
           Future.successful(BadRequest(view(formWithErrors))),
          value =>
-           cacheConnector.fetch(request.externalId).map{ optionJsValue =>
-             val optionContinueUrl = optionJsValue.map(UserAnswers).flatMap(_.get(ContinueURLID))
-             (value, optionContinueUrl) match {
+           cacheConnector.fetch(request.externalId).flatMap{ optionJsValue =>
+             val optionUA = optionJsValue.map(UserAnswers)
+             val optionContinueUrl = optionUA.flatMap(_.get(ContinueURLID))
+              (value, optionContinueUrl) match {
               case (Administrator, _) =>
-                Redirect(controllers.routes.SchemesOverviewController.onPageLoad())
+                Future.successful(Redirect(controllers.routes.SchemesOverviewController.onPageLoad()))
               case (Practitioner, Some(url)) =>
-
-                Redirect(Call("GET", url))
+                val updatedUA = optionUA.getOrElse(UserAnswers())
+                  .remove(ContinueURLID).asOpt.getOrElse(UserAnswers())
+                  .set(AdministratorOrPractitionerId)(Practitioner).asOpt.getOrElse(UserAnswers())
+                cacheConnector.upsert(request.externalId, updatedUA.json).map { _ =>
+                  Redirect(Call("GET", url))
+                }
               case (Practitioner, None) =>
-                Redirect(controllers.routes.SessionExpiredController.onPageLoad())
+                Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
             }
           }
       )
