@@ -26,6 +26,7 @@ import org.mockito.Mockito.when
 import models.AuthEntity.{PSP, PSA}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.mvc._
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
@@ -37,6 +38,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class AuthActionSpec
   extends SpecBase {
+
+  override def fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/test-url")
 
   import AuthActionSpec._
 
@@ -149,7 +152,9 @@ class AuthActionSpec
 
         val result = controller.onPageLoad()(fakeRequest)
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.routes.CannotAccessPageAsAdministratorController.onPageLoad().url)
+        redirectLocation(result) mustBe Some(
+          controllers.routes.CannotAccessPageAsAdministratorController.onPageLoad().url + "?continue=http://localhost/test-url"
+        )
       }
       "for a PSA page be redirected to the CannotAccessPageAsPractitioner page when he has chosen to act as a PSP" in {
         val optionUAJson = UserAnswers()
@@ -165,7 +170,9 @@ class AuthActionSpec
 
         val result = controller.onPageLoad()(fakeRequest)
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.routes.CannotAccessPageAsPractitionerController.onPageLoad().url)
+        redirectLocation(result) mustBe Some(
+          controllers.routes.CannotAccessPageAsPractitionerController.onPageLoad().url + "?continue=http://localhost/test-url"
+        )
       }
     }
 
