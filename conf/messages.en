@@ -405,7 +405,7 @@ messages__whatRole__p1 = Even if you are registered in the Pensions Scheme Onlin
 messages__whatRole__error = Select what role you are registered as
 messages__whatRole__PSA = Pension scheme administrator
 messages__whatRole__PSP = Pension scheme practitioner
-messages__whatRole__opt3 = I'm not registered yet
+messages__whatRole__opt3 = I’m not registered yet
 
 messages__whatDoYouWantToDo__title = What do you want to do?
 messages__whatDoYouWantToDo__error__required = Select what you want to do
