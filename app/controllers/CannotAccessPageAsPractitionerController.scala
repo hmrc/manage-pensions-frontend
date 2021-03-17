@@ -35,7 +35,8 @@ class CannotAccessPageAsPractitionerController @Inject()(val appConfig: Frontend
                                                   override val messagesApi: MessagesApi,
                                                   val formProvider: CannotAccessPageAsPractitionerFormProvider,
                                                   val controllerComponents: MessagesControllerComponents,
-                                                  view: cannotAccessPageAsPractitioner)(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+                                                  view: cannotAccessPageAsPractitioner)(implicit
+                            val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   private def form(implicit messages: Messages): Form[AdministratorOrPractitioner] = formProvider()
 

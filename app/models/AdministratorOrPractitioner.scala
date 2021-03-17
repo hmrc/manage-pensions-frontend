@@ -33,11 +33,27 @@ object AdministratorOrPractitioner {
 
   private val mappings: Map[String, AdministratorOrPractitioner] = values.map(v => (v.toString, v)).toMap
 
-  def options(messageKey:String, includeHints:Boolean): Seq[InputOption] = values.map {
-    value =>
-      InputOption(value.toString, s"messages__${messageKey}__${value.toString}",
-        hint=if(includeHints) Set(s"messages__${messageKey}__${value.toString}_hint") else Set())
+  private def seqInputOption(messageKey:String, includeHints:Boolean): Seq[InputOption] = {
+    values.map { value =>
+      val optionHint = if(includeHints) Some(Set(s"messages__${messageKey}__${value.toString}_hint")) else None
+      optionHint match {
+        case None => InputOption(value.toString, s"messages__${messageKey}__${value.toString}")
+        case Some(h) => InputOption(value.toString, s"messages__${messageKey}__${value.toString}", hint = h)
+      }
+    }
   }
+
+  def optionsAdministratorOrPractitioner: Seq[InputOption] = seqInputOption(
+    messageKey = "administratorOrPractitioner", includeHints = true
+  )
+
+  def optionsCannotAccessPageAsAdministrator: Seq[InputOption] = seqInputOption(
+    messageKey = "cannotAccessPageAsAdministrator", includeHints = false
+  )
+
+  def optionsCannotAccessPageAsPractitioner: Seq[InputOption] = seqInputOption(
+    messageKey = "cannotAccessPageAsPractitioner", includeHints = false
+  )
 
   implicit val reads: Reads[AdministratorOrPractitioner] =
     JsPath.read[String].flatMap {
