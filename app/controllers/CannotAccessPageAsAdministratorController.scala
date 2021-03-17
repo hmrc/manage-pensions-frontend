@@ -17,23 +17,30 @@
 package controllers
 
 import config.FrontendAppConfig
+import connectors.UserAnswersCacheConnector
 import controllers.actions.AuthAction
 import forms.CannotAccessPageAsAdministratorFormProvider
 import models.AdministratorOrPractitioner
 import models.AdministratorOrPractitioner.{Practitioner, Administrator}
 import play.api.data.Form
 import play.api.i18n.{MessagesApi, Messages, I18nSupport}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Call}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.UserAnswers
 import utils.annotations.NoAdministratorOrPractitionerCheck
 import views.html.cannotAccessPageAsAdministrator
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
+private object ContinueURLID extends identifiers.TypedIdentifier[String] {
+  override def toString: String = "continueURL"
+}
+
 class CannotAccessPageAsAdministratorController @Inject()(val appConfig: FrontendAppConfig,
                                                           @NoAdministratorOrPractitionerCheck val auth: AuthAction,
                                                           override val messagesApi: MessagesApi,
+                                                          cacheConnector: UserAnswersCacheConnector,
                                                           val formProvider: CannotAccessPageAsAdministratorFormProvider,
                                                           val controllerComponents: MessagesControllerComponents,
                                                           view: cannotAccessPageAsAdministrator)(implicit
@@ -44,7 +51,9 @@ class CannotAccessPageAsAdministratorController @Inject()(val appConfig: Fronten
     implicit request =>
       request.request.queryString.find(_._1=="continue").flatMap(_._2.headOption) match {
         case Some(continueUrl) =>
-          Future.successful(Ok(view(form)))
+          cacheConnector.save(request.externalId, ContinueURLID, continueUrl).map { _ =>
+            Ok(view(form))
+          }
         case _ => Future.successful(Redirect(controllers.routes.SchemesOverviewController.onPageLoad()))
       }
   }
@@ -53,11 +62,19 @@ class CannotAccessPageAsAdministratorController @Inject()(val appConfig: Fronten
       form.bindFromRequest().fold(
         (formWithErrors: Form[_]) =>
           Future.successful(BadRequest(view(formWithErrors))),
-        { case Administrator =>
-            Future.successful(Redirect(controllers.routes.SchemesOverviewController.onPageLoad()))
-          case Practitioner =>
-            Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad())) // continue to url
-        }
+         value =>
+           cacheConnector.fetch(request.externalId).map{ optionJsValue =>
+             val optionContinueUrl = optionJsValue.map(UserAnswers).flatMap(_.get(ContinueURLID))
+             (value, optionContinueUrl) match {
+              case (Administrator, _) =>
+                Redirect(controllers.routes.SchemesOverviewController.onPageLoad())
+              case (Practitioner, Some(url)) =>
+
+                Redirect(Call("GET", url))
+              case (Practitioner, None) =>
+                Redirect(controllers.routes.SessionExpiredController.onPageLoad())
+            }
+          }
       )
   }
 }
