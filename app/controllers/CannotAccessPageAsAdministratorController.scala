@@ -34,10 +34,6 @@ import views.html.cannotAccessPageAsAdministrator
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-private object ContinueURLID extends identifiers.TypedIdentifier[String] {
-  override def toString: String = "continueURL"
-}
-
 class CannotAccessPageAsAdministratorController @Inject()(val appConfig: FrontendAppConfig,
                                                           @NoAdministratorOrPractitionerCheck val auth: AuthAction,
                                                           override val messagesApi: MessagesApi,
@@ -46,6 +42,10 @@ class CannotAccessPageAsAdministratorController @Inject()(val appConfig: Fronten
                                                           val controllerComponents: MessagesControllerComponents,
                                                           view: cannotAccessPageAsAdministrator)(implicit
   val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+
+  private object ContinueURLID extends identifiers.TypedIdentifier[String] {
+    override def toString: String = "continueURL"
+  }
 
   private def form(implicit messages: Messages): Form[AdministratorOrPractitioner] = formProvider()
   def onPageLoad: Action[AnyContent] = auth().async {

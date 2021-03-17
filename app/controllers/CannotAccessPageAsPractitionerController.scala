@@ -17,14 +17,17 @@
 package controllers
 
 import config.FrontendAppConfig
+import connectors.SessionDataCacheConnector
 import controllers.actions.AuthAction
 import forms.CannotAccessPageAsPractitionerFormProvider
+import identifiers.AdministratorOrPractitionerId
 import models.AdministratorOrPractitioner
 import models.AdministratorOrPractitioner.{Practitioner, Administrator}
 import play.api.data.Form
 import play.api.i18n.{MessagesApi, Messages, I18nSupport}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Call, Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.UserAnswers
 import utils.annotations.NoAdministratorOrPractitionerCheck
 import views.html.cannotAccessPageAsPractitioner
 
@@ -32,30 +35,52 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class CannotAccessPageAsPractitionerController @Inject()(val appConfig: FrontendAppConfig,
-                                                  @NoAdministratorOrPractitionerCheck val auth: AuthAction,
-                                                  override val messagesApi: MessagesApi,
-                                                  val formProvider: CannotAccessPageAsPractitionerFormProvider,
-                                                  val controllerComponents: MessagesControllerComponents,
-                                                  view: cannotAccessPageAsPractitioner)(implicit
-                            val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+  @NoAdministratorOrPractitionerCheck val auth: AuthAction,
+  override val messagesApi: MessagesApi,
+  cacheConnector: SessionDataCacheConnector,
+  val formProvider: CannotAccessPageAsPractitionerFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: cannotAccessPageAsPractitioner)(implicit
+  val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
-  private def form(implicit messages: Messages): Form[AdministratorOrPractitioner] = formProvider()
-
-  def onPageLoad: Action[AnyContent] = auth().async {
-    implicit request =>
-      Future.successful(Ok(view(form)))
+  private object ContinueURLID extends identifiers.TypedIdentifier[String] {
+    override def toString: String = "continueURL"
   }
 
+  private def form(implicit messages: Messages): Form[AdministratorOrPractitioner] = formProvider()
+  def onPageLoad: Action[AnyContent] = auth().async {
+    implicit request =>
+      request.request.queryString.find(_._1=="continue").flatMap(_._2.headOption) match {
+        case Some(continueUrl) =>
+          cacheConnector.save(request.externalId, ContinueURLID, continueUrl).map { _ =>
+            Ok(view(form))
+          }
+        case _ => Future.successful(Redirect(controllers.routes.PspDashboardController.onPageLoad()))
+      }
+  }
   def onSubmit: Action[AnyContent] = auth().async {
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[_]) =>
           Future.successful(BadRequest(view(formWithErrors))),
-        { case Practitioner =>
-          Future.successful(Redirect(controllers.routes.PspDashboardController.onPageLoad()))
-        case Administrator =>
-          Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad())) // continue to url
-        }
+        value =>
+          cacheConnector.fetch(request.externalId).flatMap{ optionJsValue =>
+            val optionUA = optionJsValue.map(UserAnswers)
+            val optionContinueUrl = optionUA.flatMap(_.get(ContinueURLID))
+            (value, optionContinueUrl) match {
+              case (Practitioner, _) =>
+                Future.successful(Redirect(controllers.routes.PspDashboardController.onPageLoad()))
+              case (Administrator, Some(url)) =>
+                val updatedUA = optionUA.getOrElse(UserAnswers())
+                  .remove(ContinueURLID).asOpt.getOrElse(UserAnswers())
+                  .set(AdministratorOrPractitionerId)(Administrator).asOpt.getOrElse(UserAnswers())
+                cacheConnector.upsert(request.externalId, updatedUA.json).map { _ =>
+                  Redirect(Call("GET", url))
+                }
+              case (Administrator, None) =>
+                Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+            }
+          }
       )
   }
 }

@@ -58,8 +58,7 @@ class CannotAccessPageAsAdministratorControllerSpec
 
   private val continueUrl = "/test"
 
-  private val uaWithContinueUrl = UserAnswers()
-    .set(ContinueURLID)(continueUrl).asOpt
+  private val uaWithContinueUrl = UserAnswers(Json.obj("continueURL" -> continueUrl))
 
   "CannotAccessPageAsAdministratorController" must {
 
@@ -81,7 +80,7 @@ class CannotAccessPageAsAdministratorControllerSpec
 
     "redirect to the administrator dashboard page for a valid request where administrator chosen" in {
       when(mockSessionDataCacheConnector.fetch(any())(any(), any()))
-        .thenReturn(Future.successful(uaWithContinueUrl.map(_.json)))
+        .thenReturn(Future.successful(Some(uaWithContinueUrl.json)))
 
       val postRequest = FakeRequest(POST, routes.CannotAccessPageAsAdministratorController.onSubmit().url).withFormUrlEncodedBody(
         "value" -> AdministratorOrPractitioner.Administrator.toString
@@ -94,7 +93,7 @@ class CannotAccessPageAsAdministratorControllerSpec
 
     "redirect to the page in parameter for a valid request where practitioner chosen and update the role in mongo" in {
       when(mockSessionDataCacheConnector.fetch(any())(any(), any()))
-        .thenReturn(Future.successful(uaWithContinueUrl.map(_.json)))
+        .thenReturn(Future.successful(Some(uaWithContinueUrl.json)))
       when(mockSessionDataCacheConnector.upsert(any(), any())(any(), any()))
         .thenReturn(Future.successful(JsNull))
       val postRequest = FakeRequest(POST, routes.CannotAccessPageAsAdministratorController.onSubmit().url).withFormUrlEncodedBody(
