@@ -71,9 +71,10 @@ class CannotAccessPageAsPractitionerController @Inject()(val appConfig: Frontend
               case (Practitioner, _) =>
                 Future.successful(Redirect(controllers.routes.PspDashboardController.onPageLoad()))
               case (Administrator, Some(url)) =>
-                val updatedUA = optionUA.getOrElse(UserAnswers())
-                  .remove(ContinueURLID).asOpt.getOrElse(UserAnswers())
-                  .set(AdministratorOrPractitionerId)(Administrator).asOpt.getOrElse(UserAnswers())
+                val updatedUA = optionUA
+                  .flatMap(_.remove(ContinueURLID).asOpt)
+                  .flatMap(_.set(AdministratorOrPractitionerId)(Administrator).asOpt)
+                  .getOrElse(UserAnswers())
                 cacheConnector.upsert(request.externalId, updatedUA.json).map { _ =>
                   Redirect(Call("GET", url))
                 }

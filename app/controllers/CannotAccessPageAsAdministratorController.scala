@@ -17,7 +17,7 @@
 package controllers
 
 import config.FrontendAppConfig
-import connectors.{SessionDataCacheConnector, UserAnswersCacheConnector}
+import connectors.SessionDataCacheConnector
 import controllers.actions.AuthAction
 import forms.CannotAccessPageAsAdministratorFormProvider
 import identifiers.AdministratorOrPractitionerId
@@ -71,9 +71,10 @@ class CannotAccessPageAsAdministratorController @Inject()(val appConfig: Fronten
               case (Administrator, _) =>
                 Future.successful(Redirect(controllers.routes.SchemesOverviewController.onPageLoad()))
               case (Practitioner, Some(url)) =>
-                val updatedUA = optionUA.getOrElse(UserAnswers())
-                  .remove(ContinueURLID).asOpt.getOrElse(UserAnswers())
-                  .set(AdministratorOrPractitionerId)(Practitioner).asOpt.getOrElse(UserAnswers())
+                val updatedUA = optionUA
+                  .flatMap(_.remove(ContinueURLID).asOpt)
+                  .flatMap(_.set(AdministratorOrPractitionerId)(Practitioner).asOpt)
+                  .getOrElse(UserAnswers())
                 cacheConnector.upsert(request.externalId, updatedUA.json).map { _ =>
                   Redirect(Call("GET", url))
                 }
