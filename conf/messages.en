@@ -661,7 +661,7 @@ messages__cannotAccessPageAsPractitioner__administrator = Switch to administrato
 
 messages__cannotAccessPageAsAdministrator__title = You cannot access this page from the administrator view
 messages__cannotAccessPageAsAdministrator__heading = You cannot access this page from the administrator view
-messages__cannotAccessPageAsAdministrator__p1 = You can only view this page as an practitioner. Do you want to switch to practitioner view or continue in administrator view?
+messages__cannotAccessPageAsAdministrator__p1 = You can only view this page as a practitioner. Do you want to switch to practitioner view or continue in administrator view?
 
 messages__cannotAccessPageAsAdministrator__error__required = Select if you want an administrator or practitioner view
 messages__cannotAccessPageAsAdministrator__practitioner = Switch to practitioner view
