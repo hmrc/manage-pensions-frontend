@@ -17,7 +17,7 @@
 package controllers
 
 import config.FrontendAppConfig
-import connectors.SessionDataCacheConnector
+import connectors.UserAnswersCacheConnector
 import controllers.actions.AuthAction
 import forms.CannotAccessPageAsPractitionerFormProvider
 import identifiers.AdministratorOrPractitionerId
@@ -25,10 +25,10 @@ import models.AdministratorOrPractitioner
 import models.AdministratorOrPractitioner.{Practitioner, Administrator}
 import play.api.data.Form
 import play.api.i18n.{MessagesApi, Messages, I18nSupport}
-import play.api.mvc.{AnyContent, MessagesControllerComponents, Result, Call, Action}
+import play.api.mvc._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.UserAnswers
-import utils.annotations.NoAdministratorOrPractitionerCheck
+import utils.annotations.{SessionDataCache, NoAdministratorOrPractitionerCheck}
 import views.html.cannotAccessPageAsPractitioner
 
 import javax.inject.Inject
@@ -37,7 +37,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class CannotAccessPageAsPractitionerController @Inject()(val appConfig: FrontendAppConfig,
   @NoAdministratorOrPractitionerCheck val auth: AuthAction,
   override val messagesApi: MessagesApi,
-  cacheConnector: SessionDataCacheConnector,
+  @SessionDataCache cacheConnector: UserAnswersCacheConnector,
   val formProvider: CannotAccessPageAsPractitionerFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: cannotAccessPageAsPractitioner)(implicit
