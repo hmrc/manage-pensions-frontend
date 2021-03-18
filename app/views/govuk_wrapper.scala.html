@@ -16,6 +16,7 @@
 
 @import uk.gov.hmrc.play.views.html.layouts._
 @import views.html.layouts.GovUkTemplate
+@import views.html.hmrcReportTechnicalIssue
 
 @this(
     appConfig: config.FrontendAppConfig,
@@ -26,8 +27,8 @@
     main_content_header: MainContentHeader,
     footer_links: FooterLinks,
     main_content: MainContent,
-    reportAProblemLink: ReportAProblemLink,
-    govuk_template: GovUkTemplate
+    govuk_template: GovUkTemplate,
+    hmrcReportTechnicalIssue: hmrcReportTechnicalIssue
 )
 
 @(
@@ -110,7 +111,10 @@
     }
 }
 
-@getHelpForm = @{reportAProblemLink(appConfig.reportAProblemPartialUrl, appConfig.reportAProblemNonJSUrl)}
+@getHelpForm = {<div class="grid-row">
+    <div class="column-full"><div class="govuk-margin-top-8"> @hmrcReportTechnicalIssue(appConfig.reportTechnicalIssues) </div> </div></div>}
+
+
 
 @content = {
     @main_content(
