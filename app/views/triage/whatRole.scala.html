@@ -35,8 +35,6 @@
 
         @components.back_link()
 
-        @components.heading(messages("messages__whatRole__title"))
-
         @components.error_summary(form.errors)
 
         @components.input_radio(
@@ -44,7 +42,7 @@
             legend = messages("messages__whatRole__title"),
             legendClass = Some("visually-hidden"),
             inputs = WhatRole.options,
-            headingIsLegend=false,
+            headingIsLegend=true,
             hint = Some(messages("messages__whatRole__p1"))
         )
 
