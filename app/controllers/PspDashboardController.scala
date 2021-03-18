@@ -17,13 +17,13 @@
 package controllers
 
 import config.FrontendAppConfig
-import connectors.UserAnswersCacheConnector
+import connectors.{UserAnswersCacheConnector, SessionDataCacheConnector}
 import controllers.actions._
 import identifiers.{PSPNameId, AdministratorOrPractitionerId}
 import models.AdministratorOrPractitioner.Practitioner
 
 import javax.inject.Inject
-import models.AuthEntity.PSP
+import models.AuthEntity.{PSP, PSA}
 import models.Link
 import play.api.i18n.{MessagesApi, I18nSupport}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -42,6 +42,7 @@ class PspDashboardController @Inject()(
                                         authenticate: AuthAction,
                                         getData: DataRetrievalAction,
                                         userAnswersCacheConnector: UserAnswersCacheConnector,
+                                        sessionDataCacheConnector: SessionDataCacheConnector,
                                         val controllerComponents: MessagesControllerComponents,
                                         view: schemesOverview,
                                         config: FrontendAppConfig
@@ -74,12 +75,15 @@ class PspDashboardController @Inject()(
       }
   }
 
-  def changeRoleToPspAndLoadPage: Action[AnyContent] = (authenticate(PSP) andThen getData).async {
+  def changeRoleToPspAndLoadPage: Action[AnyContent] = (authenticate(PSA) andThen getData).async {
     implicit request =>
-      val ua = request.userAnswers.getOrElse(UserAnswers()).set(AdministratorOrPractitionerId)(Practitioner)
-        .getOrElse(throw new RuntimeException("Unable to set role to PSP"))
-      userAnswersCacheConnector.upsert(request.externalId, ua.json).map { _ =>
-        Redirect(controllers.routes.PspDashboardController.onPageLoad())
+      sessionDataCacheConnector.fetch(request.externalId).flatMap { optionJsValue =>
+        optionJsValue.map(UserAnswers).getOrElse(UserAnswers()).set(AdministratorOrPractitionerId)(Practitioner).asOpt
+          .fold(Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))) { updatedUA =>
+            sessionDataCacheConnector.upsert(request.externalId, updatedUA.json).map { _ =>
+              Redirect(controllers.routes.PspDashboardController.onPageLoad())
+            }
+          }
       }
   }
 

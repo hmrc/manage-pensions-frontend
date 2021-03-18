@@ -17,19 +17,21 @@
 package controllers
 
 import config._
-import connectors.UserAnswersCacheConnector
+import connectors.{SessionDataCacheConnector, UserAnswersCacheConnector}
 import controllers.actions.{DataRetrievalAction, _}
+import identifiers.AdministratorOrPractitionerId
+import models.AdministratorOrPractitioner.Practitioner
 import models.{MinimalPSAPSP, IndividualDetails, Link}
+import org.mockito.ArgumentCaptor
 import org.mockito.Matchers.{eq => eqTo, _}
-import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.libs.json.Json
-import org.mockito.Mockito.times
-import org.mockito.Mockito.verify
+import play.api.libs.json.{JsNull, Json, JsValue}
+import org.mockito.Mockito.{when, times, verify}
 import play.api.test.Helpers.{contentAsString, _}
 import play.twirl.api.Html
 import services.PspDashboardService
+import utils.UserAnswers
 import viewmodels.{CardSubHeadingParam, Message, CardViewModel, CardSubHeading}
 import views.html.schemesOverview
 
@@ -44,6 +46,7 @@ class PspDashboardControllerSpec
 
   private val mockPspDashboardService: PspDashboardService = mock[PspDashboardService]
   private val mockUserAnswersCacheConnector: UserAnswersCacheConnector = mock[UserAnswersCacheConnector]
+  private val mockSessionDataCacheConnector: SessionDataCacheConnector = mock[SessionDataCacheConnector]
   private val mockAppConfig: FrontendAppConfig = mock[FrontendAppConfig]
 
   private def minimalPsaDetails(rlsFlag: Boolean, deceasedFlag: Boolean): MinimalPSAPSP =
@@ -67,6 +70,7 @@ class PspDashboardControllerSpec
       authenticate = FakeAuthAction,
       getData = dataRetrievalAction,
       userAnswersCacheConnector = mockUserAnswersCacheConnector,
+      sessionDataCacheConnector = mockSessionDataCacheConnector,
       controllerComponents = controllerComponents,
       view = view,
       config = mockAppConfig
@@ -181,12 +185,20 @@ class PspDashboardControllerSpec
           .thenReturn(Future.successful(Json.obj()))
         when(mockUserAnswersCacheConnector.upsert(any(), any())(any(), any()))
           .thenReturn(Future.successful(Json.obj()))
+        when(mockSessionDataCacheConnector.fetch(any())(any(), any()))
+          .thenReturn(Future.successful(None))
+        val jsonCaptor = ArgumentCaptor.forClass(classOf[JsValue])
+        when(mockSessionDataCacheConnector.upsert(any(), jsonCaptor.capture())(any(), any()))
+          .thenReturn(Future.successful(JsNull))
 
         val result = controller().changeRoleToPspAndLoadPage(fakeRequest)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.PspDashboardController.onPageLoad().url)
-        verify(mockUserAnswersCacheConnector, times(1)).upsert(any(), any())(any(), any())
+
+        verify(mockSessionDataCacheConnector, times(1)).upsert(any(), any())(any(), any())
+        UserAnswers(jsonCaptor.getValue).get(AdministratorOrPractitionerId) mustBe Some(Practitioner)
+
       }
     }
   }

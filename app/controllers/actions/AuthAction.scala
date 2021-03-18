@@ -16,34 +16,28 @@
 
 package controllers.actions
 
-import com.google.inject.ImplementedBy
-import com.google.inject.Inject
+import com.google.inject.{ImplementedBy, Inject}
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import controllers.routes
 import identifiers.AdministratorOrPractitionerId
 import models.AdministratorOrPractitioner.{Practitioner, Administrator}
-import models.AuthEntity
 import models.AuthEntity.{PSP, PSA}
 import models.requests.AuthenticatedRequest
-import models.OtherUser
-import models.UserType
+import models.{AuthEntity, OtherUser, UserType}
 import play.api.mvc.Results._
 import play.api.mvc._
-import uk.gov.hmrc.auth.core.AffinityGroup.Individual
-import uk.gov.hmrc.auth.core.AffinityGroup.Organisation
+import uk.gov.hmrc.auth.core.AffinityGroup.{Individual, Organisation}
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import uk.gov.hmrc.domain.PsaId
-import uk.gov.hmrc.domain.PspId
+import uk.gov.hmrc.domain.{PsaId, PspId}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.HeaderCarrierConverter
 import utils.UserAnswers
 import utils.annotations.SessionDataCache
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class AuthImpl(
                 override val authConnector: AuthConnector,
@@ -127,9 +121,11 @@ class AuthImpl(
           case Some(aop) =>
              (aop, authEntity) match {
               case (Administrator, PSA) =>
-                block(AuthenticatedRequest(request, id, getPsaId(isMandatory = true, enrolments), None, userType(affinityGroup)))
+                block(AuthenticatedRequest(request, id,
+                  getPsaId(isMandatory = true, enrolments), getPspId(isMandatory = false, enrolments), userType(affinityGroup)))
               case (Practitioner, PSP) =>
-                block(AuthenticatedRequest(request, id, None, getPspId(isMandatory = true, enrolments), userType(affinityGroup)))
+                block(AuthenticatedRequest(request, id,
+                  getPsaId(isMandatory = false, enrolments), getPspId(isMandatory = true, enrolments), userType(affinityGroup)))
               case (Administrator, PSP) =>
                 Future.successful(
                   Redirect(Call("GET",s"${controllers.routes.CannotAccessPageAsAdministratorController.onPageLoad().url}?continue=${fullPath(request)}"))

@@ -17,21 +17,25 @@
 package controllers
 
 import config._
-import connectors.UserAnswersCacheConnector
+import connectors.{SessionDataCacheConnector, UserAnswersCacheConnector}
 import controllers.actions.{DataRetrievalAction, _}
 import controllers.routes.ListSchemesController
+import identifiers.AdministratorOrPractitionerId
+import models.AdministratorOrPractitioner.Administrator
 import models.{MinimalPSAPSP, Link}
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTimeZone, DateTime}
+import org.mockito.ArgumentCaptor
 import org.mockito.Matchers.{eq => eqTo, _}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.libs.json.Json
+import play.api.libs.json.{JsNull, Json, JsValue}
 import play.api.test.Helpers.{contentAsString, _}
 import play.twirl.api.Html
 import services.SchemesOverviewService
-import viewmodels.{CardSubHeading, CardViewModel, Message, CardSubHeadingParam}
+import utils.UserAnswers
+import viewmodels.{CardSubHeadingParam, Message, CardViewModel, CardSubHeading}
 import views.html.schemesOverview
 
 import scala.concurrent.Future
@@ -43,12 +47,13 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
   val fakeSchemesOverviewService: SchemesOverviewService = mock[SchemesOverviewService]
   val fakeUserAnswersCacheConnector: UserAnswersCacheConnector = mock[UserAnswersCacheConnector]
   val appConfig: FrontendAppConfig = mock[FrontendAppConfig]
+  private val mockSessionDataCacheConnector: SessionDataCacheConnector = mock[SessionDataCacheConnector]
 
   private val view: schemesOverview = app.injector.instanceOf[schemesOverview]
 
   def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): SchemesOverviewController =
     new SchemesOverviewController(messagesApi, fakeSchemesOverviewService, FakeAuthAction,
-      dataRetrievalAction, fakeUserAnswersCacheConnector, controllerComponents, appConfig, view)
+      dataRetrievalAction, fakeUserAnswersCacheConnector, mockSessionDataCacheConnector, controllerComponents, appConfig, view)
 
   def viewAsString(): String = view(
     name = psaName,
@@ -132,11 +137,18 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
         when(fakeUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(Json.obj()))
         when(fakeUserAnswersCacheConnector.upsert(any(), any())(any(), any()))
           .thenReturn(Future.successful(Json.obj()))
+        when(mockSessionDataCacheConnector.fetch(any())(any(), any()))
+          .thenReturn(Future.successful(None))
+        val jsonCaptor = ArgumentCaptor.forClass(classOf[JsValue])
+        when(mockSessionDataCacheConnector.upsert(any(), jsonCaptor.capture())(any(), any()))
+          .thenReturn(Future.successful(JsNull))
 
         val result = controller().changeRoleToPsaAndLoadPage(fakeRequest)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.SchemesOverviewController.onPageLoad().url)
+        verify(mockSessionDataCacheConnector, times(1)).upsert(any(), any())(any(), any())
+        UserAnswers(jsonCaptor.getValue).get(AdministratorOrPractitionerId) mustBe Some(Administrator)
       }
     }
     "onRedirect" must {
