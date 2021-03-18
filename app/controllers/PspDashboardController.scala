@@ -17,7 +17,7 @@
 package controllers
 
 import config.FrontendAppConfig
-import connectors.{UserAnswersCacheConnector, SessionDataCacheConnector}
+import connectors.UserAnswersCacheConnector
 import controllers.actions._
 import identifiers.{PSPNameId, AdministratorOrPractitionerId}
 import models.AdministratorOrPractitioner.Practitioner
@@ -33,6 +33,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.Message
 import views.html.schemesOverview
 import utils.UserAnswers
+import utils.annotations.SessionDataCache
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -42,7 +43,7 @@ class PspDashboardController @Inject()(
                                         authenticate: AuthAction,
                                         getData: DataRetrievalAction,
                                         userAnswersCacheConnector: UserAnswersCacheConnector,
-                                        sessionDataCacheConnector: SessionDataCacheConnector,
+                                        @SessionDataCache sessionDataCacheConnector: UserAnswersCacheConnector,
                                         val controllerComponents: MessagesControllerComponents,
                                         view: schemesOverview,
                                         config: FrontendAppConfig

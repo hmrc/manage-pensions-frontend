@@ -17,7 +17,7 @@
 package controllers
 
 import config.FrontendAppConfig
-import connectors.{SessionDataCacheConnector, UserAnswersCacheConnector}
+import connectors.UserAnswersCacheConnector
 import controllers.actions._
 import identifiers.{PSANameId, AdministratorOrPractitionerId}
 import models.AdministratorOrPractitioner.Administrator
@@ -29,6 +29,7 @@ import services.SchemesOverviewService
 import uk.gov.hmrc.domain.PspId
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.UserAnswers
+import utils.annotations.SessionDataCache
 import viewmodels.Message
 import views.html.schemesOverview
 
@@ -41,7 +42,7 @@ class SchemesOverviewController @Inject()(
                                            authenticate: AuthAction,
                                            getData: DataRetrievalAction,
                                            userAnswersCacheConnector: UserAnswersCacheConnector,
-                                           sessionDataCacheConnector: SessionDataCacheConnector,
+                                           @SessionDataCache sessionDataCacheConnector: UserAnswersCacheConnector,
                                            val controllerComponents: MessagesControllerComponents,
                                            config: FrontendAppConfig,
                                            view: schemesOverview
