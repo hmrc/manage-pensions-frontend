@@ -19,13 +19,17 @@ package controllers
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import controllers.actions._
-import identifiers.PSANameId
+import identifiers.{PSANameId, AdministratorOrPractitionerId}
+import models.AdministratorOrPractitioner.Administrator
+import models.AuthEntity.PSP
 import models.Link
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.{MessagesApi, I18nSupport}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SchemesOverviewService
 import uk.gov.hmrc.domain.PspId
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.UserAnswers
+import utils.annotations.SessionDataCache
 import viewmodels.Message
 import views.html.schemesOverview
 
@@ -38,6 +42,7 @@ class SchemesOverviewController @Inject()(
                                            authenticate: AuthAction,
                                            getData: DataRetrievalAction,
                                            userAnswersCacheConnector: UserAnswersCacheConnector,
+                                           @SessionDataCache sessionDataCacheConnector: UserAnswersCacheConnector,
                                            val controllerComponents: MessagesControllerComponents,
                                            config: FrontendAppConfig,
                                            view: schemesOverview
@@ -71,9 +76,23 @@ class SchemesOverviewController @Inject()(
   def redirect: Action[AnyContent] =
     Action.async(Future.successful(Redirect(controllers.routes.SchemesOverviewController.onPageLoad())))
 
+  def changeRoleToPsaAndLoadPage: Action[AnyContent] = (authenticate(PSP) andThen getData).async {
+    implicit request =>
+      sessionDataCacheConnector.fetch(request.externalId).flatMap { optionJsValue =>
+        optionJsValue.map(UserAnswers).getOrElse(UserAnswers()).set(AdministratorOrPractitionerId)(Administrator).asOpt
+          .fold(Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))) { updatedUA =>
+            sessionDataCacheConnector.upsert(request.externalId, updatedUA.json).map { _ =>
+              Redirect(controllers.routes.SchemesOverviewController.onPageLoad())
+            }
+          }
+      }
+  }
+
+
   private def returnLink(pspId: Option[PspId]): Option[Link] =
     if (pspId.nonEmpty) {
-      Some(Link("switch-psp", routes.PspDashboardController.onPageLoad().url, Message("messages__schemeOverview__switch_psp")))
+      Some(Link("switch-psp", controllers.routes.PspDashboardController.changeRoleToPspAndLoadPage().url,
+        Message("messages__schemeOverview__switch_psp")))
     } else {
       None
     }

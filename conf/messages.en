@@ -643,3 +643,26 @@ messages__contactHMRC__address2 = HM Revenue and Customs
 messages__contactHMRC__address3 = BX9 1GH
 messages__contactHMRC__address4 = United Kingdom
 
+messages__administratorOrPractitioner__title = Do you want to view pension schemes for which you are an administrator or a practitioner?
+messages__administratorOrPractitioner__heading = Do you want to view pension schemes for which you are an administrator or a practitioner?
+messages__administratorOrPractitioner__error__required = Select if you want an administrator or practitioner view
+messages__administratorOrPractitioner__administrator = Administrator view
+messages__administratorOrPractitioner__practitioner = Practitioner view
+messages__administratorOrPractitioner__administrator_hint = View data, submit returns and file reports for pension schemes for which you are an administrator
+messages__administratorOrPractitioner__practitioner_hint = View data, submit returns and file reports for pension schemes for which you are a practitioner
+
+messages__cannotAccessPageAsPractitioner__title = You cannot access this page from the practitioner view
+messages__cannotAccessPageAsPractitioner__heading = You cannot access this page from the practitioner view
+messages__cannotAccessPageAsPractitioner__p1 = You can only view this page as an administrator. Do you want to switch to administrator view or continue in practitioner view?
+
+messages__cannotAccessPageAsPractitioner__error__required = Select if you want an administrator or practitioner view
+messages__cannotAccessPageAsPractitioner__practitioner = Continue in practitioner view
+messages__cannotAccessPageAsPractitioner__administrator = Switch to administrator view
+
+messages__cannotAccessPageAsAdministrator__title = You cannot access this page from the administrator view
+messages__cannotAccessPageAsAdministrator__heading = You cannot access this page from the administrator view
+messages__cannotAccessPageAsAdministrator__p1 = You can only view this page as a practitioner. Do you want to switch to practitioner view or continue in administrator view?
+
+messages__cannotAccessPageAsAdministrator__error__required = Select if you want an administrator or practitioner view
+messages__cannotAccessPageAsAdministrator__practitioner = Switch to practitioner view
+messages__cannotAccessPageAsAdministrator__administrator = Continue in administrator view

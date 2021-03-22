@@ -96,7 +96,6 @@ class MicroserviceCacheConnector @Inject()(
                                  ec: ExecutionContext,
                                  hc: HeaderCarrier
   ): Future[Option[JsValue]] = {
-
     http.url(url(id))
       .withHttpHeaders(hc.headers: _*)
       .get()

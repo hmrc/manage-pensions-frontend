@@ -19,20 +19,23 @@ package controllers
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import controllers.actions._
-import identifiers.PSPNameId
+import identifiers.{PSPNameId, AdministratorOrPractitionerId}
+import models.AdministratorOrPractitioner.Practitioner
+
 import javax.inject.Inject
-import models.AuthEntity.PSP
+import models.AuthEntity.{PSP, PSA}
 import models.Link
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{AnyContent, MessagesControllerComponents, Action}
+import play.api.i18n.{MessagesApi, I18nSupport}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import play.twirl.api.Html
 import services.PspDashboardService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.Message
 import views.html.schemesOverview
+import utils.UserAnswers
+import utils.annotations.SessionDataCache
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class PspDashboardController @Inject()(
                                         override val messagesApi: MessagesApi,
@@ -40,6 +43,7 @@ class PspDashboardController @Inject()(
                                         authenticate: AuthAction,
                                         getData: DataRetrievalAction,
                                         userAnswersCacheConnector: UserAnswersCacheConnector,
+                                        @SessionDataCache sessionDataCacheConnector: UserAnswersCacheConnector,
                                         val controllerComponents: MessagesControllerComponents,
                                         view: schemesOverview,
                                         config: FrontendAppConfig
@@ -72,6 +76,17 @@ class PspDashboardController @Inject()(
       }
   }
 
-  def link: Link = Link("switch-psa", routes.SchemesOverviewController.onPageLoad().url, Message("messages__pspDashboard__switch_psa"))
+  def changeRoleToPspAndLoadPage: Action[AnyContent] = (authenticate(PSA) andThen getData).async {
+    implicit request =>
+      sessionDataCacheConnector.fetch(request.externalId).flatMap { optionJsValue =>
+        optionJsValue.map(UserAnswers).getOrElse(UserAnswers()).set(AdministratorOrPractitionerId)(Practitioner).asOpt
+          .fold(Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))) { updatedUA =>
+            sessionDataCacheConnector.upsert(request.externalId, updatedUA.json).map { _ =>
+              Redirect(controllers.routes.PspDashboardController.onPageLoad())
+            }
+          }
+      }
+  }
 
+  private def link: Link = Link("switch-psa", routes.SchemesOverviewController.changeRoleToPsaAndLoadPage().url, Message("messages__pspDashboard__switch_psa"))
 }

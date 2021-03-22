@@ -31,6 +31,7 @@
  */
 
 import com.google.inject.AbstractModule
+import controllers.actions.{AuthActionImpl, AuthAction, AuthActionNoAdministratorOrPractitionerCheckImpl}
 import utils.Navigator
 import utils.annotations._
 import utils.countryOptions.{CountryOptions, CountryOptionsEUAndEEA}
@@ -66,6 +67,16 @@ class PODSModule extends AbstractModule {
     bind(classOf[Navigator])
       .annotatedWith(classOf[PspSelfRemoval])
       .to(classOf[PspSelfRemovalNavigator])
+
+    bind(classOf[Navigator])
+      .to(classOf[ManageNavigator])
+
+    bind(classOf[AuthAction])
+      .annotatedWith(classOf[NoAdministratorOrPractitionerCheck])
+      .to(classOf[AuthActionNoAdministratorOrPractitionerCheckImpl])
+
+    bind(classOf[AuthAction])
+      .to(classOf[AuthActionImpl])
 
     bind(classOf[CountryOptions])
       .annotatedWith(classOf[EUAndEEA])

@@ -32,7 +32,14 @@ POST        /your-pension-schemes                         controllers.ListScheme
 GET         /your-pension-schemes/page/:pageNumber        controllers.ListSchemesController.onPageLoadWithPageNumber(pageNumber: Int)
 
 GET         /overview                                     controllers.SchemesOverviewController.onPageLoad()
+GET         /psa-overview                                 controllers.SchemesOverviewController.changeRoleToPsaAndLoadPage()
 GET         /dashboard                                    controllers.PspDashboardController.onPageLoad()
+GET         /psp-dashboard                                controllers.PspDashboardController.changeRoleToPspAndLoadPage()
+GET         /cannot-access-page-as-practitioner           controllers.CannotAccessPageAsPractitionerController.onPageLoad()
+POST        /cannot-access-page-as-practitioner           controllers.CannotAccessPageAsPractitionerController.onSubmit()
+GET         /cannot-access-page-as-administrator          controllers.CannotAccessPageAsAdministratorController.onPageLoad()
+POST        /cannot-access-page-as-administrator          controllers.CannotAccessPageAsAdministratorController.onSubmit()
+
 GET         /:srn/dashboard/pension-scheme-details        controllers.PspSchemeDashboardController.onPageLoad(srn: String)
 
 GET         /pension-scheme-summary/:srn                  controllers.PsaSchemeDashboardController.onPageLoad(srn: SchemeReferenceNumber)
@@ -41,3 +48,7 @@ GET         /:srn/view-administrators                     controllers.ViewAdmini
 GET         /view-practitioners                           controllers.psp.ViewPractitionersController.onPageLoad()
 
 GET         /you-must-contact-hmrc                        controllers.ContactHMRCController.onPageLoad()
+
+GET         /administrator-or-practitioner               controllers.AdministratorOrPractitionerController.onPageLoad()
+POST        /administrator-or-practitioner               controllers.AdministratorOrPractitionerController.onSubmit()
+

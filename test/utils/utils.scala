@@ -15,16 +15,10 @@
  */
 
 import java.time.LocalDate
-
-import controllers.actions.DataRetrievalAction
-import controllers.actions.FakeDataRetrievalAction
+import controllers.actions.{DataRetrievalAction, FakeDataRetrievalAction}
 import identifiers.invitations._
-import identifiers.remove.ConfirmRemovePsaId
-import identifiers.remove.PsaRemovalDateId
-import identifiers.AssociatedDateId
-import identifiers.MinimalSchemeDetailId
-import identifiers.PSANameId
-import identifiers.SchemeSrnId
+import identifiers.remove.{ConfirmRemovePsaId, PsaRemovalDateId}
+import identifiers.{AssociatedDateId, MinimalSchemeDetailId, PSANameId, SchemeSrnId}
 import models._
 import org.scalatest.OptionValues
 
