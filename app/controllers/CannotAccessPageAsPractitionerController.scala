@@ -59,7 +59,7 @@ class CannotAccessPageAsPractitionerController @Inject()(val appConfig: Frontend
       }
   }
 
-  def sessionExpired:Result = Redirect(controllers.routes.SessionExpiredController.onPageLoad())
+  private def sessionExpired:Result = Redirect(controllers.routes.SessionExpiredController.onPageLoad())
 
   def onSubmit: Action[AnyContent] = auth().async {
     implicit request =>
