@@ -98,15 +98,6 @@ class AuthImpl(
     }
   }
 
-  //private def fullPath[A](request:Request[A]):String = {
-  //  val prefix = if(request.secure) {
-  //    "https://"
-  //  } else {
-  //    "http://"
-  //  }
-  //  prefix + request.host +  request.uri
-  //}
-
   private def handleWhereBothEnrolments[A](
     id: String,
     enrolments: Enrolments,
