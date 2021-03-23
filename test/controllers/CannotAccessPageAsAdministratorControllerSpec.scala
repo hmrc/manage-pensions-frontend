@@ -81,6 +81,8 @@ class CannotAccessPageAsAdministratorControllerSpec
     "redirect to the administrator dashboard page for a valid request where administrator chosen" in {
       when(mockSessionDataCacheConnector.fetch(any())(any(), any()))
         .thenReturn(Future.successful(Some(uaWithContinueUrl.json)))
+      when(mockSessionDataCacheConnector.upsert(any(), any())(any(), any()))
+        .thenReturn(Future.successful(JsNull))
 
       val postRequest = FakeRequest(POST, routes.CannotAccessPageAsAdministratorController.onSubmit().url).withFormUrlEncodedBody(
         "value" -> AdministratorOrPractitioner.Administrator.toString

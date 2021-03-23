@@ -81,6 +81,8 @@ class CannotAccessPageAsPractitionerControllerSpec
     "redirect to the practitioner dashboard page for a valid request where practitioner chosen" in {
       when(mockSessionDataCacheConnector.fetch(any())(any(), any()))
         .thenReturn(Future.successful(Some(uaWithContinueUrl.json)))
+      when(mockSessionDataCacheConnector.upsert(any(), any())(any(), any()))
+        .thenReturn(Future.successful(JsNull))
 
       val postRequest = FakeRequest(POST, routes.CannotAccessPageAsPractitionerController.onSubmit().url).withFormUrlEncodedBody(
         "value" -> AdministratorOrPractitioner.Practitioner.toString

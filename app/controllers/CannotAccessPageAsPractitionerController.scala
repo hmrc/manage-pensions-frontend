@@ -59,32 +59,34 @@ class CannotAccessPageAsPractitionerController @Inject()(val appConfig: Frontend
       }
   }
 
-  private def futureSessionExpired:Future[Result] = Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+  private def sessionExpired:Result = Redirect(controllers.routes.SessionExpiredController.onPageLoad())
 
   def onSubmit: Action[AnyContent] = auth().async {
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[_]) =>
           Future.successful(BadRequest(view(formWithErrors))),
-        value =>
-          cacheConnector.fetch(request.externalId).flatMap{ optionJsValue =>
+        value => {
+          cacheConnector.fetch(request.externalId).flatMap { optionJsValue =>
             val optionUA = optionJsValue.map(UserAnswers)
             val optionContinueUrl = optionUA.flatMap(_.get(ContinueURLID))
-            (value, optionContinueUrl) match {
+            val optionUAContinueURLRemoved = optionUA.flatMap(_.remove(ContinueURLID).asOpt)
+
+            val (finalOptionUA, finalResult) = (value, optionContinueUrl) match {
               case (Practitioner, _) =>
-                Future.successful(Redirect(controllers.routes.PspDashboardController.onPageLoad()))
+                (optionUAContinueURLRemoved, Redirect(controllers.routes.PspDashboardController.onPageLoad()))
               case (Administrator, Some(url)) =>
-                optionUA
-                  .flatMap(_.remove(ContinueURLID).asOpt)
+                optionUAContinueURLRemoved
                   .flatMap(_.set(AdministratorOrPractitionerId)(Administrator).asOpt)
-                  .fold(futureSessionExpired) { updatedUA =>
-                    cacheConnector.upsert(request.externalId, updatedUA.json).map { _ =>
-                      Redirect(Call("GET", url))
-                    }
-                  }
-              case (Administrator, None) => futureSessionExpired
+                  .fold(Tuple2(optionUAContinueURLRemoved, sessionExpired))( ua => Tuple2(Some(ua), Redirect(Call("GET", url))))
+              case (Administrator, None) => Tuple2(None, sessionExpired)
             }
+
+            finalOptionUA
+              .fold(Future.successful(()))(finalUA=> cacheConnector.upsert(request.externalId, finalUA.json).map { _ => ()})
+              .map( _ => finalResult)
           }
+        }
       )
   }
 }
