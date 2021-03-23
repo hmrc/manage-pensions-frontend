@@ -98,15 +98,6 @@ class AuthImpl(
     }
   }
 
-  private def fullPath[A](request:Request[A]):String = {
-    val prefix = if(request.secure) {
-      "https://"
-    } else {
-      "http://"
-    }
-    prefix + request.host +  request.uri
-  }
-
   private def handleWhereBothEnrolments[A](
     id: String,
     enrolments: Enrolments,
@@ -128,11 +119,11 @@ class AuthImpl(
                   getPsaId(isMandatory = false, enrolments), getPspId(isMandatory = true, enrolments), userType(affinityGroup)))
               case (Administrator, PSP) =>
                 Future.successful(
-                  Redirect(Call("GET",s"${controllers.routes.CannotAccessPageAsAdministratorController.onPageLoad().url}?continue=${fullPath(request)}"))
+                  Redirect(Call("GET",s"${controllers.routes.CannotAccessPageAsAdministratorController.onPageLoad().url}?continue=${request.uri}"))
                 )
               case (Practitioner, PSA) =>
                 Future.successful(
-                  Redirect(Call("GET",s"${controllers.routes.CannotAccessPageAsPractitionerController.onPageLoad().url}?continue=${fullPath(request)}"))
+                  Redirect(Call("GET",s"${controllers.routes.CannotAccessPageAsPractitionerController.onPageLoad().url}?continue=${request.uri}"))
                 )
             }
 
