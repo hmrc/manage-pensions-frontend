@@ -27,7 +27,7 @@ class PsaNameFormProvider @Inject() extends Mappings with Transforms {
       transform(standardTextTransform, noTransform).
       verifying(firstError(
         maxLength(PsaNameFormProvider.psaNameLength, "messages__error__psa__name__length"),
-        psaName("messages__error__psa__name__invalid")))
+        inviteeName("messages__error__psa__name__invalid")))
   )
 }
 
