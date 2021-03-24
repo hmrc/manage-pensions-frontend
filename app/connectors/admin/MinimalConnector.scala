@@ -16,23 +16,16 @@
 
 package connectors.admin
 
-import com.google.inject.ImplementedBy
-import com.google.inject.Inject
+import com.google.inject.{ImplementedBy, Inject}
 import config.FrontendAppConfig
 import models.MinimalPSAPSP
 import play.api.Logger
 import play.api.http.Status._
-import play.api.libs.json.JsError
-import play.api.libs.json.JsResultException
-import play.api.libs.json.JsSuccess
-import play.api.libs.json.Json
-import uk.gov.hmrc.http.NotFoundException
-import uk.gov.hmrc.http._
-import uk.gov.hmrc.http.HttpClient
+import play.api.libs.json.{JsError, JsResultException, JsSuccess, Json}
+import uk.gov.hmrc.http.{HttpClient, _}
 import utils.HttpResponseHelper
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Failure
 
 @ImplementedBy(classOf[MinimalConnectorImpl])
@@ -68,20 +61,27 @@ class MinimalConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig
     getMinimalDetails(hc.withExtraHeaders("pspId" -> pspId))
 
   private def getMinimalDetails(hc: HeaderCarrier)
-                               (implicit ec: ExecutionContext): Future[MinimalPSAPSP] =
-    http.GET[HttpResponse](config.minimalPsaDetailsUrl)(implicitly, hc, implicitly) map { response =>
+                               (implicit ec: ExecutionContext): Future[MinimalPSAPSP] = {
+    retrieveMinimalDetails(hc)(ec).map {
+      case None => throw new NoMatchFoundException
+      case Some(m) => m
+    } andThen {
+       case Failure(t: Throwable) => logger.warn("Unable to get minimal details", t)
+    }
+  }
 
+  private def retrieveMinimalDetails(hc: HeaderCarrier)
+    (implicit ec: ExecutionContext): Future[Option[MinimalPSAPSP]] =
+    http.GET[HttpResponse](config.minimalPsaDetailsUrl)(implicitly, hc, implicitly) map { response =>
       response.status match {
         case OK =>
           Json.parse(response.body).validate[MinimalPSAPSP] match {
-            case JsSuccess(value, _) => value
+            case JsSuccess(value, _) => Some(value)
             case JsError(errors) => throw JsResultException(errors)
           }
-        case NOT_FOUND if response.body.contains("no match found") => throw new NoMatchFoundException
+        case NOT_FOUND => None
         case _ => handleErrorResponse("GET", config.minimalPsaDetailsUrl)(response)
       }
-    } andThen {
-      case Failure(t: Throwable) => logger.warn("Unable to get minimal details", t)
     }
 
   override def getPsaNameFromPsaID(psaId: String)
@@ -89,9 +89,10 @@ class MinimalConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig
     getMinimalPsaDetails(psaId).map(MinimalPSAPSP.getNameFromId)
 
   override def getNameFromPspID(pspId: String)
-                               (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] =
-    getMinimalPspDetails(pspId).map(MinimalPSAPSP.getNameFromId) recoverWith {
-      case _: NotFoundException => Future.successful(None)
+                               (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = {
+    retrieveMinimalDetails(hc.withExtraHeaders("pspId" -> pspId))
+      .map(_.flatMap( MinimalPSAPSP.getNameFromId)) andThen {
+      case Failure(t: Throwable) => logger.warn("Unable to get minimal details", t)
     }
-
+  }
 }
