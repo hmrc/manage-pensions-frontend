@@ -17,9 +17,8 @@
 package models.triage
 
 import models.WithName
-import models.triage.WhatRole.PSA
-import utils.Enumerable
-import utils.InputOption
+import utils.{Enumerable, InputOption}
+
 import scala.language.implicitConversions
 
 sealed trait WhatDoYouWantToDo
