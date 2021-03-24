@@ -20,18 +20,14 @@ import config.FrontendAppConfig
 import controllers.triage.routes._
 import identifiers.Identifier
 import identifiers.triage._
-
-import javax.inject.Inject
-import javax.inject.Singleton
-import models.triage.DoesPSTRStartWithATwo.No
-import models.triage.DoesPSTRStartWithATwo.Yes
-import models.triage.{DoesPSAStartWithATwo, DoesPSTRStartWithATwo, WhatDoYouWantToDo}
+import models.triage.DoesPSTRStartWithATwo.{No, Yes}
 import models.triage.WhatDoYouWantToDo._
 import models.triage.WhatRole.{PSA, PSP}
+import models.triage.{DoesPSAStartWithATwo, WhatDoYouWantToDo}
 import play.api.mvc.Call
-import utils.Enumerable
-import utils.Navigator
-import utils.UserAnswers
+import utils.{Enumerable, Navigator, UserAnswers}
+
+import javax.inject.{Inject, Singleton}
 
 @Singleton
 class TriageNavigator @Inject()(appConfig: FrontendAppConfig) extends Navigator with Enumerable.Implicits {

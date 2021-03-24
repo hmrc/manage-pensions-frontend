@@ -20,15 +20,14 @@ import controllers.ControllerSpecBase
 import forms.triage.DoesPSTRStartWithTwoFormProvider
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.i18n.Messages
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
 import play.api.mvc.Call
 import play.api.test.CSRFTokenHelper.addCSRFToken
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import utils.{FakeNavigator, Navigator}
 import utils.annotations.Triage
+import utils.{FakeNavigator, Navigator}
 import views.html.triage.doesPSTRStartWithTwo
 
 class DoesPSTRStartWithTwoAuthPspControllerSpec extends ControllerSpecBase with ScalaFutures with MockitoSugar {

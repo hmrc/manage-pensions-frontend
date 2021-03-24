@@ -19,15 +19,14 @@ package controllers
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import connectors.aft.AftCacheConnector
-
-import javax.inject.Inject
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import uk.gov.hmrc.auth.core.{AuthorisedFunctions, AuthConnector}
+import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.annotations.SessionDataCache
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class LogoutController @Inject()(
@@ -36,14 +35,17 @@ class LogoutController @Inject()(
                                   aftCacheConnector: AftCacheConnector,
                                   val controllerComponents: MessagesControllerComponents,
                                   @SessionDataCache sessionDataCacheConnector: UserAnswersCacheConnector
-                                )(implicit ec : ExecutionContext) extends FrontendBaseController with I18nSupport with AuthorisedFunctions {
+                                )(implicit ec: ExecutionContext)
+  extends FrontendBaseController
+    with I18nSupport
+    with AuthorisedFunctions {
 
   def onPageLoad: Action[AnyContent] = Action.async {
     implicit request =>
       authorised().retrieve(Retrievals.externalId) {
         case Some(id) =>
-          sessionDataCacheConnector.removeAll(id).flatMap{ _ =>
-            aftCacheConnector.removeLock.map {_ =>
+          sessionDataCacheConnector.removeAll(id).flatMap { _ =>
+            aftCacheConnector.removeLock.map { _ =>
               Redirect(appConfig.serviceSignOut).withNewSession
             }
           }

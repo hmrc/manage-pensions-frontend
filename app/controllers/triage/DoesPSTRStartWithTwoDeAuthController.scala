@@ -18,7 +18,7 @@ package controllers.triage
 
 import controllers.actions.TriageAction
 import forms.triage.DoesPSTRStartWithTwoFormProvider
-import identifiers.triage.{DoesPSTRStartWithTwoDeAuthId, DoesPSTRStartWithTwoInvitedId}
+import identifiers.triage.DoesPSTRStartWithTwoDeAuthId
 import models.NormalMode
 import models.triage.DoesPSTRStartWithATwo
 import play.api.data.Form
