@@ -159,20 +159,20 @@ class ConstraintsSpec extends WordSpec with Matchers with Constraints with Regex
     }
   }
 
-  "psaName" must {
+  "inviteeName" must {
 
-    val validText = RegexpGen.from(Constraints.psaNameRegex)
+    val validText = RegexpGen.from(Constraints.inviteeNameRegex)
 
     val invalidText = Table(
-      "test<name",
-      "1234>",
+      "test<na~me",
+      "1~234>",
       "",
-      "{test name}"
+      "{test na~me}"
     )
 
     val invalidMsg = "Invalid text"
 
-    behave like regexWithValidAndInvalidExamples(psaName, validText, invalidText, invalidMsg, Constraints.psaNameRegex)
+    behave like regexWithValidAndInvalidExamples(inviteeName, validText, invalidText, invalidMsg, Constraints.inviteeNameRegex)
   }
 
   "PSAId" must {
