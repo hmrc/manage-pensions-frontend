@@ -27,10 +27,10 @@ class PspNameFormProvider @Inject() extends Mappings with Transforms {
       transform(standardTextTransform, noTransform).
       verifying(firstError(
         maxLength(PspNameFormProvider.pspNameLength, "messages__error__pspName__length"),
-        psaName("messages__error__pspName__invalid")))
+        inviteeName("messages__error__pspName__invalid")))
   )
 }
 
 object PspNameFormProvider {
-  val pspNameLength = 105
+  val pspNameLength = 160
 }
