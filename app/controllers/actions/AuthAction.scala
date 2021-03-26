@@ -16,7 +16,7 @@
 
 package controllers.actions
 
-import com.google.inject.{ImplementedBy, Inject}
+import com.google.inject.{Inject, ImplementedBy}
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import controllers.routes
@@ -24,10 +24,11 @@ import identifiers.AdministratorOrPractitionerId
 import models.AdministratorOrPractitioner.{Practitioner, Administrator}
 import models.AuthEntity.{PSP, PSA}
 import models.requests.AuthenticatedRequest
-import models.{AuthEntity, OtherUser, UserType}
+import models.{AuthEntity, UserType, OtherUser}
+import play.api.Logger
 import play.api.mvc.Results._
 import play.api.mvc._
-import uk.gov.hmrc.auth.core.AffinityGroup.{Individual, Organisation}
+import uk.gov.hmrc.auth.core.AffinityGroup.{Organisation, Individual}
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
@@ -49,6 +50,8 @@ class AuthImpl(
               )(implicit val executionContext: ExecutionContext)
   extends Auth
     with AuthorisedFunctions {
+
+  private val logger = Logger(classOf[AuthImpl])
 
   override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
@@ -107,6 +110,8 @@ class AuthImpl(
   ):Future[Result] = {
       implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
       sessionDataCacheConnector.fetch(id).flatMap { optionJsValue =>
+        logger.debug(s"Temporary request debug information:\npath=${request.path}\nsecure=${request.secure}\nuri=${request.uri}\nhost=${request.host}")
+
         optionJsValue.map(UserAnswers).flatMap(_.get(AdministratorOrPractitionerId)) match {
           case None => Future.successful(Redirect(controllers.routes.AdministratorOrPractitionerController.onPageLoad()))
           case Some(aop) =>
@@ -126,7 +131,6 @@ class AuthImpl(
                   Redirect(Call("GET",s"${controllers.routes.CannotAccessPageAsPractitionerController.onPageLoad().url}?continue=${request.uri}"))
                 )
             }
-
         }
       }
   }
