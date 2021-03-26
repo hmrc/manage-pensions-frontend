@@ -29,6 +29,8 @@ import models.ReportTechnicalIssue
 @Singleton
 class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environment: Environment, servicesConfig: ServicesConfig) {
 
+  def friendlyUrl(uri:String):String = loadConfig("host") + uri
+
   protected def mode: Mode = environment.mode
 
   private def baseUrl(serviceName: String) = {
