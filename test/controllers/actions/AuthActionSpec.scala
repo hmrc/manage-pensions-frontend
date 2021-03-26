@@ -153,7 +153,7 @@ class AuthActionSpec
         val result = controller.onPageLoad()(fakeRequest)
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(
-          controllers.routes.CannotAccessPageAsAdministratorController.onPageLoad().url + "?continue=/test-url"
+          controllers.routes.CannotAccessPageAsAdministratorController.onPageLoad().url + "?continue=http://localhost:8204/test-url"
         )
       }
       "for a PSA page be redirected to the CannotAccessPageAsPractitioner page when he has chosen to act as a PSP" in {
@@ -171,7 +171,7 @@ class AuthActionSpec
         val result = controller.onPageLoad()(fakeRequest)
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(
-          controllers.routes.CannotAccessPageAsPractitionerController.onPageLoad().url + "?continue=/test-url"
+          controllers.routes.CannotAccessPageAsPractitionerController.onPageLoad().url + "?continue=http://localhost:8204/test-url"
         )
       }
     }

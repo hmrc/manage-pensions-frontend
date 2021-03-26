@@ -110,8 +110,8 @@ class AuthImpl(
   ):Future[Result] = {
       implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
       sessionDataCacheConnector.fetch(id).flatMap { optionJsValue =>
-        logger.debug(s"Temporary request debug information:\npath=${request.path}\nsecure=${request.secure}\nuri=${request.uri}\nhost=${request.host}")
 
+        def friendlyUrl:String = config.friendlyUrl(request.uri)
         optionJsValue.map(UserAnswers).flatMap(_.get(AdministratorOrPractitionerId)) match {
           case None => Future.successful(Redirect(controllers.routes.AdministratorOrPractitionerController.onPageLoad()))
           case Some(aop) =>
@@ -124,11 +124,11 @@ class AuthImpl(
                   getPsaId(isMandatory = false, enrolments), getPspId(isMandatory = true, enrolments), userType(affinityGroup)))
               case (Administrator, PSP) =>
                 Future.successful(
-                  Redirect(Call("GET",s"${controllers.routes.CannotAccessPageAsAdministratorController.onPageLoad().url}?continue=${request.uri}"))
+                  Redirect(Call("GET",s"${controllers.routes.CannotAccessPageAsAdministratorController.onPageLoad().url}?continue=$friendlyUrl"))
                 )
               case (Practitioner, PSA) =>
                 Future.successful(
-                  Redirect(Call("GET",s"${controllers.routes.CannotAccessPageAsPractitionerController.onPageLoad().url}?continue=${request.uri}"))
+                  Redirect(Call("GET",s"${controllers.routes.CannotAccessPageAsPractitionerController.onPageLoad().url}?continue=$friendlyUrl"))
                 )
             }
         }
