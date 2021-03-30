@@ -32,8 +32,10 @@ case class AuthorisingPSA(
       orgName
     case (_, Some(first), Some(middle), Some(last)) =>
       s"$first $middle $last".replace("  ", " ")
+    case (_, Some(first), None, Some(last)) =>
+      s"$first $last".replace("  ", " ")
     case _ =>
-      throw new RuntimeException("No authorising psa name")
+      throw new RuntimeException("No authorising psa name:" + this)
   }
 }
 
