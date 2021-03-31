@@ -25,7 +25,6 @@ import models.AdministratorOrPractitioner.{Practitioner, Administrator}
 import models.AuthEntity.{PSP, PSA}
 import models.requests.AuthenticatedRequest
 import models.{AuthEntity, UserType, OtherUser}
-import play.api.Logger
 import play.api.mvc.Results._
 import play.api.mvc._
 import uk.gov.hmrc.auth.core.AffinityGroup.{Organisation, Individual}
@@ -50,8 +49,6 @@ class AuthImpl(
               )(implicit val executionContext: ExecutionContext)
   extends Auth
     with AuthorisedFunctions {
-
-  private val logger = Logger(classOf[AuthImpl])
 
   override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
@@ -111,7 +108,7 @@ class AuthImpl(
       implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
       sessionDataCacheConnector.fetch(id).flatMap { optionJsValue =>
 
-        def friendlyUrl:String = config.friendlyUrl(request.uri)
+        def friendlyUrl:String = config.localFriendlyUrl(request.uri)
         optionJsValue.map(UserAnswers).flatMap(_.get(AdministratorOrPractitionerId)) match {
           case None => Future.successful(Redirect(controllers.routes.AdministratorOrPractitionerController.onPageLoad()))
           case Some(aop) =>

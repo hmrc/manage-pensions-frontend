@@ -139,12 +139,15 @@ class DeclarationController @Inject()(
                            pstr: String,
                            email: String
                          ): String =
-    controllers.routes.EmailResponseController.retrieveStatusForPSPAuthorisation(
-      encodeAndEncrypt(psaId), encodeAndEncrypt(pspId), encodeAndEncrypt(pstr), encodeAndEncrypt(email)
-    ).url
+    appConfig.localFriendlyUrl(
+      controllers.routes.EmailResponseController.retrieveStatusForPSPAuthorisation(
+        encodeAndEncrypt(psaId), encodeAndEncrypt(pspId), encodeAndEncrypt(pstr), encodeAndEncrypt(email)
+      ).url
+    )
 
   private def encodeAndEncrypt(s: String): String =
     URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(s)).value, StandardCharsets.UTF_8.toString)
+
 
   private def sendEmail(
                          minimalPSAPSP: MinimalPSAPSP,
@@ -154,6 +157,7 @@ class DeclarationController @Inject()(
                          pspName: String,
                          schemeName: String
                        )(implicit request: DataRequest[AnyContent], ec: ExecutionContext): Future[Unit] = {
+    val callbackURL = callBackUrl(psaId, pspId, pstr, minimalPSAPSP.email)
     val email = SendEmailRequest(
       List(minimalPSAPSP.email),
       "pods_authorise_psp",
@@ -163,7 +167,7 @@ class DeclarationController @Inject()(
         "schemeName" -> schemeName
       ),
       force = false,
-      eventUrl = Some(callBackUrl(psaId, pspId, pstr, minimalPSAPSP.email))
+      eventUrl = Some(callbackURL)
     )
 
     emailConnector.sendEmail(email).map { emailStatus =>

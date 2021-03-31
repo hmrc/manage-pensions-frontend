@@ -23,7 +23,7 @@ import play.api.Logger
 import play.api.libs.json.JsValue
 import play.api.mvc._
 import uk.gov.hmrc.auth.core._
-import uk.gov.hmrc.crypto.{ApplicationCrypto, Crypted}
+import uk.gov.hmrc.crypto.ApplicationCrypto
 import uk.gov.hmrc.domain.{PsaId, PspId}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
@@ -125,10 +125,15 @@ class EmailResponseController @Inject()(
                                                             encryptedPstr: String,
                                                             encryptedEmail: String): Either[Result, (PsaId, PspId, String, String)] = {
 
-    val psaId = crypto.QueryParameterCrypto.decrypt(Crypted(encryptedPsaId)).value
-    val pspId = crypto.QueryParameterCrypto.decrypt(Crypted(encryptedPspId)).value
-    val pstr = crypto.QueryParameterCrypto.decrypt(Crypted(encryptedPstr)).value
-    val emailAddress = crypto.QueryParameterCrypto.decrypt(Crypted(encryptedEmail)).value
+    //val psaId = crypto.QueryParameterCrypto.decrypt(Crypted(encryptedPsaId)).value
+    //val pspId = crypto.QueryParameterCrypto.decrypt(Crypted(encryptedPspId)).value
+    //val pstr = crypto.QueryParameterCrypto.decrypt(Crypted(encryptedPstr)).value
+    //val emailAddress = crypto.QueryParameterCrypto.decrypt(Crypted(encryptedEmail)).value
+
+    val psaId = encryptedPsaId
+    val pspId = encryptedPspId
+    val pstr = encryptedPstr
+    val emailAddress = encryptedEmail
 
     try {
       require(emailAddress.matches(emailRegex))
@@ -143,9 +148,13 @@ class EmailResponseController @Inject()(
     encryptedPstr: String,
     encryptedEmail: String): Either[Result, (PspId, String, String)] = {
 
-    val pspId = crypto.QueryParameterCrypto.decrypt(Crypted(encryptedPspId)).value
-    val pstr = crypto.QueryParameterCrypto.decrypt(Crypted(encryptedPstr)).value
-    val emailAddress = crypto.QueryParameterCrypto.decrypt(Crypted(encryptedEmail)).value
+    val pspId = encryptedPspId
+    val pstr = encryptedPstr
+    val emailAddress = encryptedEmail
+
+    //val pspId = crypto.QueryParameterCrypto.decrypt(Crypted(encryptedPspId)).value
+    //val pstr = crypto.QueryParameterCrypto.decrypt(Crypted(encryptedPstr)).value
+    //val emailAddress = crypto.QueryParameterCrypto.decrypt(Crypted(encryptedEmail)).value
 
     try {
       require(emailAddress.matches(emailRegex))

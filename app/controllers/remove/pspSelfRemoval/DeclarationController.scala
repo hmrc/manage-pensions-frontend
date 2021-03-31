@@ -102,7 +102,10 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
     val encryptedPstr = URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(pstr)).value, StandardCharsets.UTF_8.toString)
     val encryptedEmail = URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(email)).value, StandardCharsets.UTF_8.toString)
 
-    controllers.routes.EmailResponseController.retrieveStatusForPSPSelfDeauthorisation(encryptedPspId, encryptedPstr, encryptedEmail).url
+    appConfig.localFriendlyUrl(
+      controllers.routes.EmailResponseController.retrieveStatusForPSPSelfDeauthorisation(encryptedPspId, encryptedPstr, encryptedEmail)
+        .url
+    )
   }
 
   private def sendEmail(
@@ -112,6 +115,7 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
     pspId: String,
     pstr: String
   )(implicit request: DataRequest[AnyContent], ec: ExecutionContext): Future[Unit] = {
+    val callbackURL = callBackUrl(pspId, pstr, minimalPSP.email)
     val emailTemplateId =
       s"pods_psp_de_auth_psp_${minimalPSP.individualDetails.fold("company_partnership")(_=>"individual")}"
     val sendEmailRequest = SendEmailRequest(
@@ -123,7 +127,7 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
         "schemeName" -> schemeName
       ),
       force = false,
-      eventUrl = Some(callBackUrl(pspId, pstr, minimalPSP.email))
+      eventUrl = Some(callbackURL)
     )
 
     emailConnector.sendEmail(sendEmailRequest).map { emailStatus =>

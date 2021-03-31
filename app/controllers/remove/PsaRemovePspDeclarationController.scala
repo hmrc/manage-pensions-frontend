@@ -18,7 +18,7 @@ package controllers.remove
 
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
-import audit.{PSPDeauthorisationByPSAAuditEvent, PSPDeauthorisationByPSAEmailAuditEvent, AuditService}
+import audit.{PSPDeauthorisationByPSAEmailAuditEvent, PSPDeauthorisationByPSAAuditEvent, AuditService}
 import config.FrontendAppConfig
 import connectors.admin.MinimalConnector
 import connectors.{EmailNotSent, EmailConnector, UserAnswersCacheConnector, PspConnector}
@@ -140,7 +140,10 @@ class PsaRemovePspDeclarationController @Inject()(
     val encryptedPspId = URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(pspId)).value, StandardCharsets.UTF_8.toString)
     val encryptedPstr = URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(pstr)).value, StandardCharsets.UTF_8.toString)
     val encryptedEmail = URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(email)).value, StandardCharsets.UTF_8.toString)
-    controllers.routes.EmailResponseController.retrieveStatusForPSPDeauthorisation(encryptedPsaId, encryptedPspId, encryptedPstr, encryptedEmail).url
+    appConfig.localFriendlyUrl(
+      controllers.routes.EmailResponseController.retrieveStatusForPSPDeauthorisation(encryptedPsaId, encryptedPspId, encryptedPstr, encryptedEmail)
+        .url
+    )
   }
 
   private def sendEmail(
@@ -151,6 +154,7 @@ class PsaRemovePspDeclarationController @Inject()(
                          pspName: String,
                          schemeName: String
                        )(implicit request: DataRequest[AnyContent], ec: ExecutionContext): Future[Unit] = {
+    val callbackURL = callBackUrl(psaId, pspId, pstr, minimalPSAPSP.email)
     emailConnector.sendEmail(
       SendEmailRequest(
         to = List(minimalPSAPSP.email),
@@ -161,7 +165,7 @@ class PsaRemovePspDeclarationController @Inject()(
           "schemeName" -> schemeName
         ),
         force = false,
-        eventUrl = Some(callBackUrl(psaId, pspId, pstr, minimalPSAPSP.email))
+        eventUrl = Some(callbackURL)
       )
     ).map { emailStatus =>
       if (emailStatus == EmailNotSent) {
