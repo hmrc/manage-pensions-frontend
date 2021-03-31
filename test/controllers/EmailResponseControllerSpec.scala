@@ -106,7 +106,6 @@ object EmailResponseControllerSpec {
   private val psp = "27654321"
   private val pstr = "121212"
   private val email = "test@test.com"
-  private val requestId = "test-request-id"
   private val fakeRequest = FakeRequest("", "")
   private val enrolments = Enrolments(Set(
     Enrolment("HMRC-PODS-ORG", Seq(
