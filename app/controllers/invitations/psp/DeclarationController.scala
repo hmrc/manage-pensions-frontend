@@ -139,9 +139,9 @@ class DeclarationController @Inject()(
                            pstr: String,
                            email: String
                          ): String =
-    appConfig.pspAuthEmailCallback(
+    controllers.routes.EmailResponseController.retrieveStatusForPSPAuthorisation(
       encodeAndEncrypt(psaId), encodeAndEncrypt(pspId), encodeAndEncrypt(pstr), encodeAndEncrypt(email)
-    )
+    ).url
 
   private def encodeAndEncrypt(s: String): String =
     URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(s)).value, StandardCharsets.UTF_8.toString)

@@ -140,8 +140,7 @@ class PsaRemovePspDeclarationController @Inject()(
     val encryptedPspId = URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(pspId)).value, StandardCharsets.UTF_8.toString)
     val encryptedPstr = URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(pstr)).value, StandardCharsets.UTF_8.toString)
     val encryptedEmail = URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(email)).value, StandardCharsets.UTF_8.toString)
-
-    appConfig.pspDeauthEmailCallback(encryptedPsaId, encryptedPspId, encryptedPstr, encryptedEmail)
+    controllers.routes.EmailResponseController.retrieveStatusForPSPDeauthorisation(encryptedPsaId, encryptedPspId, encryptedPstr, encryptedEmail).url
   }
 
   private def sendEmail(

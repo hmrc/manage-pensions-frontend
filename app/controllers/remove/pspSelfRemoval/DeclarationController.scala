@@ -102,7 +102,7 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
     val encryptedPstr = URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(pstr)).value, StandardCharsets.UTF_8.toString)
     val encryptedEmail = URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(email)).value, StandardCharsets.UTF_8.toString)
 
-    appConfig.pspSelfDeauthEmailCallback(encryptedPspId, encryptedPstr, encryptedEmail)
+    controllers.routes.EmailResponseController.retrieveStatusForPSPSelfDeauthorisation(encryptedPspId, encryptedPstr, encryptedEmail).url
   }
 
   private def sendEmail(
