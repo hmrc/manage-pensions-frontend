@@ -17,10 +17,9 @@
 package config
 
 import java.time.LocalDate
-
 import com.google.inject.{Inject, Singleton}
 import controllers.routes
-import play.api.{Configuration, Environment, Mode}
+import play.api.{Configuration, Mode, Environment}
 import play.api.i18n.Lang
 import play.api.mvc.Call
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
@@ -29,7 +28,7 @@ import models.ReportTechnicalIssue
 @Singleton
 class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environment: Environment, servicesConfig: ServicesConfig) {
 
-  def friendlyUrl(uri:String):String = loadConfig("host") + uri
+  def localFriendlyUrl(uri:String):String = loadConfig("host") + uri
 
   protected def mode: Mode = environment.mode
 

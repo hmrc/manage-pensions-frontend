@@ -16,10 +16,13 @@
 
 package audit
 
+import models.Event
+
 case class PSPSelfDeauthorisationEmailAuditEvent(
   pspId: String,
   pstr: String,
-  emailAddress: String
+  emailAddress: String,
+  event: Event
 ) extends AuditEvent {
   override def auditType: String = "PensionSchemePractitionerSelfDeauthorisationEmailEvent"
 
@@ -28,8 +31,7 @@ case class PSPSelfDeauthorisationEmailAuditEvent(
       "pensionSchemePractitionerId" -> pspId,
       "pensionSchemeTaxReference" -> pstr,
       "emailAddress" -> emailAddress,
-      "event" -> "Sent"
+      "event" -> event.toString
     )
   }
 }
-

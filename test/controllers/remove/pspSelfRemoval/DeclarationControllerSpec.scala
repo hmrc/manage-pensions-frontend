@@ -16,16 +16,16 @@
 
 package controllers.remove.pspSelfRemoval
 
-import audit.{AuditService, PSPSelfDeauthorisationEmailAuditEvent}
+import audit.{PSPSelfDeauthorisationEmailAuditEvent, AuditService}
 import connectors.admin.MinimalConnector
-import connectors.{EmailConnector, EmailSent, PspConnector}
+import connectors.{EmailSent, EmailConnector, PspConnector}
 import controllers.ControllerSpecBase
 import controllers.actions._
 import forms.remove.RemovePspDeclarationFormProvider
 import identifiers.invitations.PSTRId
 import identifiers.remove.pspSelfRemoval.RemovalDateId
-import identifiers.{AuthorisedPractitionerId, SchemeNameId, SchemeSrnId}
-import models.{IndividualDetails, MinimalPSAPSP, SendEmailRequest}
+import identifiers.{SchemeNameId, AuthorisedPractitionerId, SchemeSrnId}
+import models.{MinimalPSAPSP, IndividualDetails, SendEmailRequest, Sent}
 import org.mockito.ArgumentCaptor
 import org.mockito.Matchers.any
 import org.mockito.Mockito._
@@ -60,7 +60,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
   private val pspId = "00000000"
   private val optionalPspId = Some(PspId(pspId))
   private val emailAddress = "z@z.z"
-  private val expectedPspSelfDeauthorisationEmailAuditEvent = PSPSelfDeauthorisationEmailAuditEvent(pspId, pstr, emailAddress)
+  private val expectedPspSelfDeauthorisationEmailAuditEvent = PSPSelfDeauthorisationEmailAuditEvent(pspId, pstr, emailAddress, Sent)
 
   private val minPspOrganisation: MinimalPSAPSP =
     MinimalPSAPSP("z@z.z", isPsaSuspended = false,

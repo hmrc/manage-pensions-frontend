@@ -29,7 +29,7 @@ import controllers.actions.{DataRetrievalAction, DataRequiredAction, AuthAction}
 import forms.invitations.psp.DeclarationFormProvider
 import identifiers.{SchemeNameId, SchemeSrnId}
 import identifiers.invitations.psp.{PspNameId, PspId, PspClientReferenceId}
-import models.{MinimalPSAPSP, SendEmailRequest}
+import models.{MinimalPSAPSP, Sent, SendEmailRequest}
 import models.invitations.psp.ClientReference
 import models.requests.DataRequest
 import play.api.Logger
@@ -96,7 +96,8 @@ class DeclarationController @Inject()(
                       psaId = request.psaIdOrException.id,
                       pspId = pspId,
                       pstr = pstr,
-                      minimalPSAPSP.email
+                      minimalPSAPSP.email,
+                      Sent
                     )
                   )
                   auditService.sendEvent(
@@ -138,12 +139,15 @@ class DeclarationController @Inject()(
                            pstr: String,
                            email: String
                          ): String =
-    appConfig.pspAuthEmailCallback(
-      encodeAndEncrypt(psaId), encodeAndEncrypt(pspId), encodeAndEncrypt(pstr), encodeAndEncrypt(email)
+    appConfig.localFriendlyUrl(
+      controllers.routes.EmailResponseController.retrieveStatusForPSPAuthorisation(
+        encodeAndEncrypt(psaId), encodeAndEncrypt(pspId), encodeAndEncrypt(pstr), encodeAndEncrypt(email)
+      ).url
     )
 
   private def encodeAndEncrypt(s: String): String =
     URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(s)).value, StandardCharsets.UTF_8.toString)
+
 
   private def sendEmail(
                          minimalPSAPSP: MinimalPSAPSP,
@@ -153,6 +157,7 @@ class DeclarationController @Inject()(
                          pspName: String,
                          schemeName: String
                        )(implicit request: DataRequest[AnyContent], ec: ExecutionContext): Future[Unit] = {
+    val callbackURL = callBackUrl(psaId, pspId, pstr, minimalPSAPSP.email)
     val email = SendEmailRequest(
       List(minimalPSAPSP.email),
       "pods_authorise_psp",
@@ -162,7 +167,7 @@ class DeclarationController @Inject()(
         "schemeName" -> schemeName
       ),
       force = false,
-      eventUrl = Some(callBackUrl(psaId, pspId, pstr, minimalPSAPSP.email))
+      eventUrl = Some(callbackURL)
     )
 
     emailConnector.sendEmail(email).map { emailStatus =>

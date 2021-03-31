@@ -30,7 +30,7 @@ import identifiers.{SchemeNameId, AuthorisedPractitionerId, SchemeSrnId}
 import models.AuthEntity.PSP
 import models.invitations.psp.DeAuthorise
 import models.requests.DataRequest
-import models.{MinimalPSAPSP, SendEmailRequest}
+import models.{MinimalPSAPSP, Sent, SendEmailRequest}
 import play.api.Logger
 import play.api.data.Form
 import play.api.i18n.{MessagesApi, I18nSupport}
@@ -85,7 +85,7 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
                     minimalPSP <- minimalConnector.getMinimalPspDetails(pspId)
                     _ <- sendEmail(minimalPSP, authorisedPractitioner.authorisingPSA.name, schemeName, pspId, pstr)
                   } yield {
-                    auditService.sendEvent(PSPSelfDeauthorisationEmailAuditEvent(pspId, pstr, minimalPSP.email))
+                    auditService.sendEvent(PSPSelfDeauthorisationEmailAuditEvent(pspId, pstr, minimalPSP.email, Sent))
                     Redirect(controllers.remove.pspSelfRemoval.routes.ConfirmationController.onPageLoad())
                   }
                 }
@@ -102,7 +102,10 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
     val encryptedPstr = URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(pstr)).value, StandardCharsets.UTF_8.toString)
     val encryptedEmail = URLEncoder.encode(crypto.QueryParameterCrypto.encrypt(PlainText(email)).value, StandardCharsets.UTF_8.toString)
 
-    appConfig.pspSelfDeauthEmailCallback(encryptedPspId, encryptedPstr, encryptedEmail)
+    appConfig.localFriendlyUrl(
+      controllers.routes.EmailResponseController.retrieveStatusForPSPSelfDeauthorisation(encryptedPspId, encryptedPstr, encryptedEmail)
+        .url
+    )
   }
 
   private def sendEmail(
@@ -112,6 +115,7 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
     pspId: String,
     pstr: String
   )(implicit request: DataRequest[AnyContent], ec: ExecutionContext): Future[Unit] = {
+    val callbackURL = callBackUrl(pspId, pstr, minimalPSP.email)
     val emailTemplateId =
       s"pods_psp_de_auth_psp_${minimalPSP.individualDetails.fold("company_partnership")(_=>"individual")}"
     val sendEmailRequest = SendEmailRequest(
@@ -123,7 +127,7 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
         "schemeName" -> schemeName
       ),
       force = false,
-      eventUrl = Some(callBackUrl(pspId, pstr, minimalPSP.email))
+      eventUrl = Some(callbackURL)
     )
 
     emailConnector.sendEmail(sendEmailRequest).map { emailStatus =>
