@@ -30,7 +30,7 @@ import identifiers.{SchemeNameId, AuthorisedPractitionerId, SchemeSrnId}
 import models.AuthEntity.PSP
 import models.invitations.psp.DeAuthorise
 import models.requests.DataRequest
-import models.{MinimalPSAPSP, SendEmailRequest}
+import models.{MinimalPSAPSP, Sent, SendEmailRequest}
 import play.api.Logger
 import play.api.data.Form
 import play.api.i18n.{MessagesApi, I18nSupport}
@@ -85,7 +85,7 @@ class DeclarationController @Inject()(override val messagesApi: MessagesApi,
                     minimalPSP <- minimalConnector.getMinimalPspDetails(pspId)
                     _ <- sendEmail(minimalPSP, authorisedPractitioner.authorisingPSA.name, schemeName, pspId, pstr)
                   } yield {
-                    auditService.sendEvent(PSPSelfDeauthorisationEmailAuditEvent(pspId, pstr, minimalPSP.email))
+                    auditService.sendEvent(PSPSelfDeauthorisationEmailAuditEvent(pspId, pstr, minimalPSP.email, Sent))
                     Redirect(controllers.remove.pspSelfRemoval.routes.ConfirmationController.onPageLoad())
                   }
                 }

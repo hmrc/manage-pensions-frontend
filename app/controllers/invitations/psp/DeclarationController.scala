@@ -29,7 +29,7 @@ import controllers.actions.{DataRetrievalAction, DataRequiredAction, AuthAction}
 import forms.invitations.psp.DeclarationFormProvider
 import identifiers.{SchemeNameId, SchemeSrnId}
 import identifiers.invitations.psp.{PspNameId, PspId, PspClientReferenceId}
-import models.{MinimalPSAPSP, SendEmailRequest}
+import models.{MinimalPSAPSP, Sent, SendEmailRequest}
 import models.invitations.psp.ClientReference
 import models.requests.DataRequest
 import play.api.Logger
@@ -96,7 +96,8 @@ class DeclarationController @Inject()(
                       psaId = request.psaIdOrException.id,
                       pspId = pspId,
                       pstr = pstr,
-                      minimalPSAPSP.email
+                      minimalPSAPSP.email,
+                      Sent
                     )
                   )
                   auditService.sendEvent(

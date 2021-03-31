@@ -26,7 +26,7 @@ import controllers.actions.{DataRetrievalAction, FakeAuthAction, DataRequiredAct
 import forms.invitations.psp.DeclarationFormProvider
 import identifiers.{SchemeNameId, SchemeSrnId}
 import identifiers.invitations.psp.{PspNameId, PspId, PspClientReferenceId}
-import models.{SendEmailRequest, ListOfSchemes, MinimalPSAPSP}
+import models.{ListOfSchemes, MinimalPSAPSP, Sent, SendEmailRequest}
 import models.invitations.psp.ClientReference
 import models.invitations.psp.ClientReference.HaveClientReference
 import org.mockito.{ArgumentCaptor, Matchers}
@@ -157,7 +157,8 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
           psaId = "A0000000",
           pspId = pspId,
           pstr = pstr,
-          emailAddress = minPsa.email
+          emailAddress = minPsa.email,
+          Sent
         )
         verify(mockAuditService, times(1)).sendEvent(Matchers.eq(expectedEmailAuditEvent))(any(), any())
 
