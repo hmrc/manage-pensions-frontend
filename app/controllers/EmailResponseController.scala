@@ -27,6 +27,8 @@ import uk.gov.hmrc.crypto.{ApplicationCrypto, Crypted}
 import uk.gov.hmrc.domain.{PsaId, PspId}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class EmailResponseController @Inject()(
@@ -124,11 +126,10 @@ class EmailResponseController @Inject()(
                                                             encryptedPspId: String,
                                                             encryptedPstr: String,
                                                             encryptedEmail: String): Either[Result, (PsaId, PspId, String, String)] = {
-
-    val psaId = crypto.QueryParameterCrypto.decrypt(Crypted(encryptedPsaId)).value
-    val pspId = crypto.QueryParameterCrypto.decrypt(Crypted(encryptedPspId)).value
-    val pstr = crypto.QueryParameterCrypto.decrypt(Crypted(encryptedPstr)).value
-    val emailAddress = crypto.QueryParameterCrypto.decrypt(Crypted(encryptedEmail)).value
+    val psaId = crypto.QueryParameterCrypto.decrypt(Crypted(URLDecoder.decode(encryptedPsaId, StandardCharsets.UTF_8.toString))).value
+    val pspId = crypto.QueryParameterCrypto.decrypt(Crypted(URLDecoder.decode(encryptedPspId, StandardCharsets.UTF_8.toString))).value
+    val pstr = crypto.QueryParameterCrypto.decrypt(Crypted(URLDecoder.decode(encryptedPstr, StandardCharsets.UTF_8.toString))).value
+    val emailAddress = crypto.QueryParameterCrypto.decrypt(Crypted(URLDecoder.decode(encryptedEmail, StandardCharsets.UTF_8.toString))).value
 
     try {
       require(emailAddress.matches(emailRegex))
@@ -143,9 +144,9 @@ class EmailResponseController @Inject()(
     encryptedPstr: String,
     encryptedEmail: String): Either[Result, (PspId, String, String)] = {
 
-    val pspId = crypto.QueryParameterCrypto.decrypt(Crypted(encryptedPspId)).value
-    val pstr = crypto.QueryParameterCrypto.decrypt(Crypted(encryptedPstr)).value
-    val emailAddress = crypto.QueryParameterCrypto.decrypt(Crypted(encryptedEmail)).value
+    val pspId = crypto.QueryParameterCrypto.decrypt(Crypted(URLDecoder.decode(encryptedPspId, StandardCharsets.UTF_8.toString))).value
+    val pstr = crypto.QueryParameterCrypto.decrypt(Crypted(URLDecoder.decode(encryptedPstr, StandardCharsets.UTF_8.toString))).value
+    val emailAddress = crypto.QueryParameterCrypto.decrypt(Crypted(URLDecoder.decode(encryptedEmail, StandardCharsets.UTF_8.toString))).value
 
     try {
       require(emailAddress.matches(emailRegex))
