@@ -139,7 +139,7 @@ class DeclarationController @Inject()(
                            pstr: String,
                            email: String
                          ): String =
-    appConfig.localFriendlyUrl(
+    appConfig.urlInThisService(
       controllers.routes.EmailResponseController.retrieveStatusForPSPAuthorisation(
         encodeAndEncrypt(psaId), encodeAndEncrypt(pspId), encodeAndEncrypt(pstr), encodeAndEncrypt(email)
       ).url
