@@ -16,6 +16,8 @@
 
 package views.invitations.psp
 
+import controllers.invitations.psa.routes._
+import controllers.psa.routes._
 import forms.invitations.psp.PspNameFormProvider
 import models.CheckMode
 import models.NormalMode
@@ -36,7 +38,7 @@ class PspNameViewSpec extends QuestionViewBehaviours[String] {
 
   private val schemeName = "Test Scheme"
 
-  private val returnCall = controllers.routes.PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber("srn"))
+  private val returnCall = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber("srn"))
 
   def createView: () => HtmlFormat.Appendable = () => pspNameView(form, NormalMode, schemeName, returnCall)(fakeRequest, messages)
 
@@ -56,7 +58,7 @@ class PspNameViewSpec extends QuestionViewBehaviours[String] {
     behave like pageWithErrorOutsideLabel(
       createViewUsingForm,
       messageKeyPrefix,
-      controllers.invitations.routes.PsaNameController.onSubmit(NormalMode).url,
+      PsaNameController.onSubmit(NormalMode).url,
       "pspName"
     )
   }

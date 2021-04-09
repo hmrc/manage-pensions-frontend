@@ -19,7 +19,7 @@ package controllers.invitations
 import connectors.FakeUserAnswersCacheConnector
 import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
-import forms.invitations.DoYouHaveWorkingKnowledgeFormProvider
+import forms.invitations.psa.DoYouHaveWorkingKnowledgeFormProvider
 import models.NormalMode
 import play.api.data.Form
 import play.api.libs.json.Json

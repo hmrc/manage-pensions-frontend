@@ -17,9 +17,9 @@
 package forms.invitations.psp
 
 import forms.mappings.Constraints
+import models.ClientReference.HaveClientReference
 import play.api.data.FormError
 import views.behaviours.StringFieldBehaviours
-import models.invitations.psp.ClientReference.HaveClientReference
 
 class PspClientReferenceFormProviderSpec extends StringFieldBehaviours with Constraints {
   val validMaxLength = 11

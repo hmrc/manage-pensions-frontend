@@ -16,6 +16,7 @@
 
 package views.psp
 
+import controllers.psa.routes._
 import models.SchemeReferenceNumber
 import org.jsoup.Jsoup
 import play.api.mvc.Call
@@ -29,7 +30,7 @@ class ViewPractitionersViewSpec extends ViewBehaviours {
   private val messageKeyPrefix = "viewPractitioners"
   val schemeName  = "Test Scheme name"
   val schemeSrn  = "12345"
-  val returnCall: Call  = controllers.routes.PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(schemeSrn))
+  val returnCall: Call  = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(schemeSrn))
   val practitioners = Seq(AuthorisedPractitionerViewModel("Joe Bloggs", "Ann Bloggs", "02-01-2020", true))
   private val viewPractitionersView = injector.instanceOf[viewPractitioners]
 

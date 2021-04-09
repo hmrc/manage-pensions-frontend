@@ -16,13 +16,13 @@
 
 package views.invitations
 
-import forms.invitations.PensionAdviserAddressListFormProvider
-import models.NormalMode
-import models.TolerantAddress
+import controllers.invitations.psa.routes._
+import forms.invitations.psa.PensionAdviserAddressListFormProvider
+import models.{NormalMode, TolerantAddress}
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
-import views.html.invitations.pension_adviser_address_list
+import views.html.invitations.psa.pension_adviser_address_list
 
 class PensionAdviserAddressListViewSpec extends ViewBehaviours {
 
@@ -32,7 +32,8 @@ class PensionAdviserAddressListViewSpec extends ViewBehaviours {
 
   private val addresses = Seq(address("postcode 1"), address("postcode 2"))
   private val addressIndexes = Seq.range(0, 2)
-  private def call = controllers.invitations.routes.AdviserManualAddressController.onPageLoad(NormalMode, false)
+
+  private def call = AdviserManualAddressController.onPageLoad(NormalMode, false)
 
   private val view = injector.instanceOf[pension_adviser_address_list]
 

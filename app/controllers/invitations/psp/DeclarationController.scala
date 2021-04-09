@@ -18,23 +18,22 @@ package controllers.invitations.psp
 
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
-import audit.{PSPAuthorisationEmailAuditEvent, PSPAuthorisationAuditEvent, AuditService}
+import audit.{AuditService, PSPAuthorisationAuditEvent, PSPAuthorisationEmailAuditEvent}
 import com.google.inject.Inject
 import config.FrontendAppConfig
-import connectors.{EmailNotSent, ActiveRelationshipExistsException, EmailConnector, PspConnector}
+import connectors.{ActiveRelationshipExistsException, EmailConnector, EmailNotSent, PspConnector}
 import connectors.admin.MinimalConnector
 import connectors.scheme.ListOfSchemesConnector
 import controllers.Retrievals
-import controllers.actions.{DataRetrievalAction, DataRequiredAction, AuthAction}
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.invitations.psp.DeclarationFormProvider
 import identifiers.{SchemeNameId, SchemeSrnId}
-import identifiers.invitations.psp.{PspNameId, PspId, PspClientReferenceId}
-import models.{MinimalPSAPSP, Sent, SendEmailRequest}
-import models.invitations.psp.ClientReference
+import identifiers.invitations.psp.{PspClientReferenceId, PspId, PspNameId}
+import models.{ClientReference, MinimalPSAPSP, SendEmailRequest, Sent}
 import models.requests.DataRequest
 import play.api.Logger
 import play.api.data.Form
-import play.api.i18n.{MessagesApi, I18nSupport}
+import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.SchemeDetailsService
 import uk.gov.hmrc.crypto.{ApplicationCrypto, PlainText}

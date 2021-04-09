@@ -16,12 +16,13 @@
 
 package views.remove
 
-import controllers.remove._
-import forms.remove.ConfirmRemovePsaFormProvider
+import controllers.psa.routes._
+import controllers.remove.psa.routes._
+import forms.remove.psa.ConfirmRemovePsaFormProvider
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import views.behaviours.YesNoViewBehaviours
-import views.html.remove.confirmRemovePsa
+import views.html.remove.psa.confirmRemovePsa
 
 class ConfirmRemovePsaViewSpec extends YesNoViewBehaviours {
 
@@ -52,12 +53,12 @@ class ConfirmRemovePsaViewSpec extends YesNoViewBehaviours {
     behave like yesNoPage(
       createView = createViewUsingForm,
       messageKeyPrefix = prefix,
-      expectedFormAction = routes.ConfirmRemovePsaController.onSubmit().url
+      expectedFormAction = ConfirmRemovePsaController.onSubmit().url
     )
 
     behave like pageWithReturnLink(
       view = createView,
-      url = controllers.routes.PsaSchemeDashboardController.onPageLoad(srn).url,
+      url = PsaSchemeDashboardController.onPageLoad(srn).url,
       text = messages("messages__returnToSchemeDetails__link", schemeName)
     )
   }

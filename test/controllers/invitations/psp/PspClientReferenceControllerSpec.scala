@@ -19,26 +19,16 @@ package controllers.invitations.psp
 import connectors.FakeUserAnswersCacheConnector
 import controllers.ControllerSpecBase
 import controllers.actions._
+import controllers.psa.routes._
 import forms.invitations.psp.PspClientReferenceFormProvider
-import identifiers.{SchemeNameId, SchemeSrnId}
 import identifiers.invitations.psp.{PspClientReferenceId, PspNameId}
-import models.invitations.psp.ClientReference
-import models.{NormalMode, SchemeReferenceNumber}
-import identifiers.SchemeNameId
-import identifiers.SchemeSrnId
-import identifiers.invitations.psp.PspClientReferenceId
-import identifiers.invitations.psp.PspNameId
-import models.NormalMode
-import models.SchemeReferenceNumber
-import models.invitations.psp.ClientReference._
+import identifiers.{SchemeNameId, SchemeSrnId}
+import models.ClientReference.HaveClientReference
+import models.{ClientReference, NormalMode, SchemeReferenceNumber}
 import play.api.data.Form
 import play.api.mvc.Call
-import play.api.test.Helpers.contentAsString
-import play.api.test.Helpers.redirectLocation
-import play.api.test.Helpers.status
-import play.api.test.Helpers._
-import utils.FakeNavigator
-import utils.UserAnswers
+import play.api.test.Helpers.{contentAsString, redirectLocation, status, _}
+import utils.{FakeNavigator, UserAnswers}
 import views.html.invitations.psp.pspClientReference
 
 
@@ -56,7 +46,7 @@ class PspClientReferenceControllerSpec extends ControllerSpecBase {
   val userAnswerWithPspClientRef: UserAnswers = userAnswer.set(PspClientReferenceId)(HaveClientReference("A0000000")).asOpt.value
   val minimalData = new FakeDataRetrievalAction(Some(userAnswer.json))
 
-  private val returnCall = controllers.routes.PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber("srn"))
+  private val returnCall = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber("srn"))
 
 
   private val view = injector.instanceOf[pspClientReference]

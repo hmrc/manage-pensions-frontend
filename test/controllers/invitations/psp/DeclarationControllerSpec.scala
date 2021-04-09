@@ -16,22 +16,21 @@
 
 package controllers.invitations.psp
 
-import audit.{PSPAuthorisationEmailAuditEvent, PSPAuthorisationAuditEvent, AuditService}
+import audit.{AuditService, PSPAuthorisationAuditEvent, PSPAuthorisationEmailAuditEvent}
 import base.JsonFileReader
 import connectors.admin.MinimalConnector
-import connectors.{EmailSent, ActiveRelationshipExistsException, EmailConnector, PspConnector}
 import connectors.scheme.ListOfSchemesConnector
+import connectors.{ActiveRelationshipExistsException, EmailConnector, EmailSent, PspConnector}
 import controllers.ControllerSpecBase
-import controllers.actions.{DataRetrievalAction, FakeAuthAction, DataRequiredActionImpl, FakeDataRetrievalAction}
+import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
 import forms.invitations.psp.DeclarationFormProvider
+import identifiers.invitations.psp.{PspClientReferenceId, PspId, PspNameId}
 import identifiers.{SchemeNameId, SchemeSrnId}
-import identifiers.invitations.psp.{PspNameId, PspId, PspClientReferenceId}
-import models.{ListOfSchemes, MinimalPSAPSP, Sent, SendEmailRequest}
-import models.invitations.psp.ClientReference
-import models.invitations.psp.ClientReference.HaveClientReference
-import org.mockito.{ArgumentCaptor, Matchers}
+import models.ClientReference.HaveClientReference
+import models._
 import org.mockito.Matchers._
 import org.mockito.Mockito._
+import org.mockito.{ArgumentCaptor, Matchers}
 import org.scalatest.{BeforeAndAfterEach, RecoverMethods}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.Configuration

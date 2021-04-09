@@ -16,6 +16,8 @@
 
 package views.invitations.psp
 
+import controllers.invitations.psp.routes._
+import controllers.psa.routes._
 import forms.invitations.psp.PspIdFormProvider
 import models.NormalMode
 import models.SchemeReferenceNumber
@@ -35,7 +37,7 @@ class PspIdViewSpec extends QuestionViewBehaviours[String] {
 
   private val schemeName = "Test Scheme"
 
-  private val returnCall = controllers.routes.PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber("srn"))
+  private val returnCall = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber("srn"))
 
   def createView: () => HtmlFormat.Appendable = () => pspIdView(form, "pspName", NormalMode, schemeName, returnCall)(fakeRequest, messages)
 
@@ -54,7 +56,7 @@ class PspIdViewSpec extends QuestionViewBehaviours[String] {
     behave like pageWithErrorOutsideLabel(
       createViewUsingForm,
       messageKeyPrefix,
-      controllers.invitations.psp.routes.PspIdController.onSubmit(NormalMode).url,
+      PspIdController.onSubmit(NormalMode).url,
       "pspId"
     )
   }

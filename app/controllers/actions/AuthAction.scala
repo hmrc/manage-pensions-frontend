@@ -16,18 +16,20 @@
 
 package controllers.actions
 
-import com.google.inject.{Inject, ImplementedBy}
+import com.google.inject.{ImplementedBy, Inject}
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
-import controllers.routes
+import controllers.psa.routes._
+import controllers.psp.routes._
+import controllers.routes._
 import identifiers.AdministratorOrPractitionerId
-import models.AdministratorOrPractitioner.{Practitioner, Administrator}
-import models.AuthEntity.{PSP, PSA}
+import models.AdministratorOrPractitioner.{Administrator, Practitioner}
+import models.AuthEntity.{PSA, PSP}
 import models.requests.AuthenticatedRequest
-import models.{AuthEntity, UserType, OtherUser}
+import models.{AuthEntity, OtherUser, UserType}
 import play.api.mvc.Results._
 import play.api.mvc._
-import uk.gov.hmrc.auth.core.AffinityGroup.{Organisation, Individual}
+import uk.gov.hmrc.auth.core.AffinityGroup.{Individual, Organisation}
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
@@ -59,32 +61,32 @@ class AuthImpl(
       case Some(id) ~ enrolments ~ Some(affinityGroup) =>
         createAuthRequest(id, enrolments, affinityGroup, request, block)
       case _ =>
-        Future.successful(Redirect(routes.UnauthorisedController.onPageLoad()))
+        Future.successful(Redirect(UnauthorisedController.onPageLoad()))
     } recover {
       case _: NoActiveSession =>
         Redirect(config.loginUrl, Map("continue" -> Seq(config.loginContinueUrl)))
       case _: InsufficientEnrolments =>
-        Redirect(routes.UnauthorisedController.onPageLoad())
+        Redirect(UnauthorisedController.onPageLoad())
       case _: InsufficientConfidenceLevel =>
-        Redirect(routes.UnauthorisedController.onPageLoad())
+        Redirect(UnauthorisedController.onPageLoad())
       case _: UnsupportedAuthProvider =>
-        Redirect(routes.UnauthorisedController.onPageLoad())
+        Redirect(UnauthorisedController.onPageLoad())
       case _: UnsupportedAffinityGroup =>
-        Redirect(routes.UnauthorisedController.onPageLoad())
+        Redirect(UnauthorisedController.onPageLoad())
       case _: UnsupportedCredentialRole =>
-        Redirect(routes.UnauthorisedController.onPageLoad())
+        Redirect(UnauthorisedController.onPageLoad())
       case _: IdNotFound =>
-        Redirect(controllers.routes.YouNeedToRegisterController.onPageLoad())
+        Redirect(YouNeedToRegisterController.onPageLoad())
     }
   }
 
   private def createAuthRequest[A](
-    id: String,
-    enrolments: Enrolments,
-    affinityGroup: AffinityGroup,
-    request: Request[A],
-    block: AuthenticatedRequest[A] => Future[Result]
-  ): Future[Result] = {
+                                    id: String,
+                                    enrolments: Enrolments,
+                                    affinityGroup: AffinityGroup,
+                                    request: Request[A],
+                                    block: AuthenticatedRequest[A] => Future[Result]
+                                  ): Future[Result] = {
 
     val (psaId, pspId) = if (authEntity == PSA) {
       (getPsaId(isMandatory = true, enrolments), getPspId(isMandatory = false, enrolments))
@@ -93,47 +95,51 @@ class AuthImpl(
     }
 
     (psaId, pspId) match {
-      case (Some(_), Some(_)) if administratorOrPractitionerCheck => handleWhereBothEnrolments(id, enrolments, affinityGroup, request, block)
-      case _ => block(AuthenticatedRequest(request, id, psaId, pspId, userType(affinityGroup)))
+      case (Some(_), Some(_)) if administratorOrPractitionerCheck =>
+        handleWhereBothEnrolments(id, enrolments, affinityGroup, request, block)
+      case _ =>
+        block(AuthenticatedRequest(request, id, psaId, pspId, userType(affinityGroup)))
     }
   }
 
   private def handleWhereBothEnrolments[A](
-    id: String,
-    enrolments: Enrolments,
-    affinityGroup: AffinityGroup,
-    request: Request[A],
-    block: AuthenticatedRequest[A] => Future[Result]
-  ):Future[Result] = {
-      implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
-      sessionDataCacheConnector.fetch(id).flatMap { optionJsValue =>
+                                            id: String,
+                                            enrolments: Enrolments,
+                                            affinityGroup: AffinityGroup,
+                                            request: Request[A],
+                                            block: AuthenticatedRequest[A] => Future[Result]
+                                          ): Future[Result] = {
+    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
+    sessionDataCacheConnector.fetch(id).flatMap { optionJsValue =>
 
-        def friendlyUrl:String = config.localFriendlyUrl(request.uri)
-        optionJsValue.map(UserAnswers).flatMap(_.get(AdministratorOrPractitionerId)) match {
-          case None => Future.successful(Redirect(controllers.routes.AdministratorOrPractitionerController.onPageLoad()))
-          case Some(aop) =>
-             (aop, authEntity) match {
-              case (Administrator, PSA) =>
-                block(AuthenticatedRequest(request, id,
-                  getPsaId(isMandatory = true, enrolments), getPspId(isMandatory = false, enrolments), userType(affinityGroup)))
-              case (Practitioner, PSP) =>
-                block(AuthenticatedRequest(request, id,
-                  getPsaId(isMandatory = false, enrolments), getPspId(isMandatory = true, enrolments), userType(affinityGroup)))
-              case (Administrator, PSP) =>
-                Future.successful(
-                  Redirect(Call("GET",s"${controllers.routes.CannotAccessPageAsAdministratorController.onPageLoad().url}?continue=$friendlyUrl"))
-                )
-              case (Practitioner, PSA) =>
-                Future.successful(
-                  Redirect(Call("GET",s"${controllers.routes.CannotAccessPageAsPractitionerController.onPageLoad().url}?continue=$friendlyUrl"))
-                )
-            }
-        }
+      def friendlyUrl: String = config.localFriendlyUrl(request.uri)
+
+      optionJsValue.map(UserAnswers).flatMap(_.get(AdministratorOrPractitionerId)) match {
+        case None => Future.successful(Redirect(AdministratorOrPractitionerController.onPageLoad()))
+        case Some(aop) =>
+          (aop, authEntity) match {
+            case (Administrator, PSA) =>
+              block(AuthenticatedRequest(request, id,
+                getPsaId(isMandatory = true, enrolments), getPspId(isMandatory = false, enrolments), userType(affinityGroup)))
+            case (Practitioner, PSP) =>
+              block(AuthenticatedRequest(request, id,
+                getPsaId(isMandatory = false, enrolments), getPspId(isMandatory = true, enrolments), userType(affinityGroup)))
+            case (Administrator, PSP) =>
+              Future.successful(
+                Redirect(Call("GET", s"${CannotAccessPageAsAdministratorController.onPageLoad().url}?continue=$friendlyUrl"))
+              )
+            case (Practitioner, PSA) =>
+              Future.successful(
+                Redirect(Call("GET", s"${CannotAccessPageAsPractitionerController.onPageLoad().url}?continue=$friendlyUrl"))
+              )
+          }
       }
+    }
   }
 
   private def getPsaId(isMandatory: Boolean, enrolments: Enrolments): Option[PsaId] = {
     def failureResult: Option[PsaId] = if (isMandatory) throw IdNotFound() else None
+
     enrolments.getEnrolment("HMRC-PODS-ORG")
       .flatMap(_.getIdentifier("PSAID")).map(_.value)
       .fold[Option[PsaId]](failureResult)(id => Some(PsaId(id)))
@@ -177,11 +183,11 @@ class AuthActionImpl @Inject()(
 }
 
 class AuthActionNoAdministratorOrPractitionerCheckImpl @Inject()(
-  authConnector: AuthConnector,
-  @SessionDataCache sessionDataCacheConnector: UserAnswersCacheConnector,
-  config: FrontendAppConfig,
-  val parser: BodyParsers.Default
-)(implicit ec: ExecutionContext)
+                                                                  authConnector: AuthConnector,
+                                                                  @SessionDataCache sessionDataCacheConnector: UserAnswersCacheConnector,
+                                                                  config: FrontendAppConfig,
+                                                                  val parser: BodyParsers.Default
+                                                                )(implicit ec: ExecutionContext)
   extends AuthAction {
 
   override def apply(authEntity: AuthEntity): Auth =

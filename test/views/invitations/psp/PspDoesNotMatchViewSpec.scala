@@ -16,6 +16,7 @@
 
 package views.invitations.psp
 
+import controllers.psa.routes._
 import models.SchemeReferenceNumber
 import org.jsoup.Jsoup
 import play.api.mvc.Call
@@ -27,7 +28,7 @@ import views.html.invitations.psp.pspDoesNotMatch
 class PspDoesNotMatchViewSpec extends ViewBehaviours {
   private val testPspName: String = "Joe Bloggs"
   private val testSchemeName: String = "Test Scheme Ltd"
-  private val returnCall: Call = controllers.routes.PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber("srn"))
+  private val returnCall: Call = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber("srn"))
 
   private val messageKeyPrefix = "pspDoesNotMatch"
 

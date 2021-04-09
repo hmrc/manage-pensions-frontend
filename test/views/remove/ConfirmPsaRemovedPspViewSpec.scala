@@ -19,7 +19,7 @@ package views.remove
 import play.twirl.api.HtmlFormat
 import viewmodels.Message
 import views.behaviours.ViewBehaviours
-import views.html.remove.confirmPsaRemovedPsp
+import views.html.remove.psa.confirmPsaRemovedPsp
 
 class ConfirmPsaRemovedPspViewSpec extends ViewBehaviours {
   val messageKeyPrefix = "confirmPsaRemovedPsp"
@@ -28,7 +28,7 @@ class ConfirmPsaRemovedPspViewSpec extends ViewBehaviours {
   private val psaEmail = "a@b.com"
   private val view = injector.instanceOf[confirmPsaRemovedPsp]
 
-  lazy val returnLinkUrl: String = controllers.routes.ListSchemesController.onPageLoad().url
+  lazy val returnLinkUrl: String = controllers.psa.routes.ListSchemesController.onPageLoad().url
 
   def createView(): () => HtmlFormat.Appendable = () =>
     view(

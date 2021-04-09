@@ -23,6 +23,9 @@ import connectors.admin.MinimalConnector
 import connectors.FakeUserAnswersCacheConnector
 import connectors.scheme.SchemeDetailsConnector
 import controllers.actions.{FakeAuthAction, FakeUnAuthorisedAction}
+import controllers.invitations.psa.routes._
+import controllers.invitations.routes.YouCannotSendAnInviteController
+import controllers.routes._
 import identifiers.MinimalSchemeDetailId
 import models._
 import org.scalatestplus.mockito.MockitoSugar
@@ -46,7 +49,7 @@ class InviteControllerSpec extends SpecBase {
       val result = controller(isSuspended = true).onPageLoad(srn)(fakeRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.invitations.routes.YouCannotSendAnInviteController.onPageLoad().url)
+      redirectLocation(result) mustBe Some(YouCannotSendAnInviteController.onPageLoad().url)
 
       FakeUserAnswersCacheConnector.verifyNot(MinimalSchemeDetailId)
     }
@@ -68,7 +71,7 @@ class InviteControllerSpec extends SpecBase {
       val result = controller(isSuspended = false, rlsFlag = true, deceasedFlag = true).onPageLoad(srn)(fakeRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.routes.ContactHMRCController.onPageLoad().url)
+      redirectLocation(result) mustBe Some(ContactHMRCController.onPageLoad().url)
     }
 
     "redirect to contact HMRC page if deceased flag is true" in {
@@ -76,14 +79,14 @@ class InviteControllerSpec extends SpecBase {
       val result = controller(isSuspended = false, deceasedFlag = true).onPageLoad(srn)(fakeRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.routes.ContactHMRCController.onPageLoad().url)
+      redirectLocation(result) mustBe Some(ContactHMRCController.onPageLoad().url)
     }
 
     "save minimal scheme details and then redirect to psa name page if PSASuspension is false" in {
       val result = controller(isSuspended = false).onPageLoad(srn)(fakeRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.invitations.routes.WhatYouWillNeedController.onPageLoad().url)
+      redirectLocation(result) mustBe Some(WhatYouWillNeedController.onPageLoad().url)
 
       FakeUserAnswersCacheConnector.verify(MinimalSchemeDetailId, MinimalSchemeDetail(srn, Some(pstr), schemeName))
     }
@@ -96,7 +99,7 @@ class InviteControllerSpec extends SpecBase {
       val result = controller.onPageLoad(srn)(fakeRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)
+      redirectLocation(result) mustBe Some(UnauthorisedController.onPageLoad().url)
     }
   }
 }

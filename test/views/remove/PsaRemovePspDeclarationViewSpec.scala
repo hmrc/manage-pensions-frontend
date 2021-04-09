@@ -16,12 +16,12 @@
 
 package views.remove
 
-import forms.remove.RemovePspDeclarationFormProvider
+import forms.remove.psp.RemovePspDeclarationFormProvider
 import play.api.data.{Form, FormError}
 import play.twirl.api.HtmlFormat
 import viewmodels.Message
 import views.behaviours.QuestionViewBehaviours
-import views.html.remove.psaRemovePspDeclaration
+import views.html.remove.psa.psaRemovePspDeclaration
 
 class PsaRemovePspDeclarationViewSpec extends QuestionViewBehaviours[Boolean] {
 

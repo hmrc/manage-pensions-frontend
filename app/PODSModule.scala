@@ -41,7 +41,7 @@ class PODSModule extends AbstractModule {
 
   override def configure(): Unit = {
     bind(classOf[Navigator])
-      .annotatedWith(classOf[Invitation])
+      .annotatedWith(classOf[Invitations])
       .to(classOf[InvitationNavigator])
 
     bind(classOf[Navigator])

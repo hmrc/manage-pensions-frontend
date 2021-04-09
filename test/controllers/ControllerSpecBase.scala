@@ -18,8 +18,8 @@ package controllers
 
 import base.SpecBase
 import controllers.actions.FakeDataRetrievalAction
-import identifiers.PSANameId
-import identifiers.PSPNameId
+import identifiers.psa.PSANameId
+import identifiers.psp.PSPNameId
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.inject.guice.GuiceableModule
 import play.api.libs.json.Json

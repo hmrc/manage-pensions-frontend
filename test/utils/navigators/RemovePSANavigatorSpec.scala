@@ -18,9 +18,11 @@ package utils.navigators
 
 import base.SpecBase
 import connectors.FakeUserAnswersCacheConnector
+import controllers.psa.routes._
+import controllers.remove.psa.routes._
+import controllers.routes._
 import identifiers.Identifier
-import identifiers.remove.ConfirmRemovePsaId
-import identifiers.remove.PsaRemovalDateId
+import identifiers.remove.psa.{ConfirmRemovePsaId, PsaRemovalDateId}
 import org.scalatest.prop.TableFor4
 import play.api.libs.json.Json
 import play.api.mvc.Call
@@ -39,7 +41,7 @@ class RemovePSANavigatorSpec extends SpecBase with NavigatorBehaviour {
     (ConfirmRemovePsaId,   removePsa,           removalDatePage,           None),
     (ConfirmRemovePsaId,   dontRemovePsa,       schemeDetailsPage,         None),
     (ConfirmRemovePsaId,   emptyAnswers,        sessionExpiredPage,        None),
-    (PsaRemovalDateId,        emptyAnswers,        confirmRemovedPage,        None)
+    (PsaRemovalDateId,     emptyAnswers,        confirmRemovedPage,        None)
   )
 
   navigator.getClass.getSimpleName must {
@@ -57,10 +59,10 @@ object RemovePSANavigatorSpec {
 
   private def dataDescriber(answers: UserAnswers): String = answers.toString
 
-  private val sessionExpiredPage = controllers.routes.SessionExpiredController.onPageLoad()
-  private val schemeDetailsPage = controllers.routes.PsaSchemeDashboardController.onPageLoad(srn)
-  private val removalDatePage = controllers.remove.routes.PsaRemovalDateController.onPageLoad()
-  private val confirmRemovedPage = controllers.remove.routes.ConfirmRemovedController.onPageLoad()
+  private val sessionExpiredPage = SessionExpiredController.onPageLoad()
+  private val schemeDetailsPage = PsaSchemeDashboardController.onPageLoad(srn)
+  private val removalDatePage = PsaRemovalDateController.onPageLoad()
+  private val confirmRemovedPage = ConfirmRemovedController.onPageLoad()
 }
 
 

@@ -17,6 +17,7 @@
 @import config.FrontendAppConfig
 @import models.SchemeDetails
 @import controllers.psp.routes.ListSchemesController
+@import controllers.psp.routes._
 
 @this(
     main_template: main_template,
@@ -64,34 +65,35 @@
 
                 <p>@messages("messages__listSchemesPsp__lede")</p>
 
+                @components.input_search(
+                    field = form("searchText"),
+                    label = messages("messages__listSchemesPsp__searchText_label"),
+                    labelClass = Some("heading-medium"),
+                    inputClass = Some("form-control--width-two-thirds"),
+                    messageKey = messages(button_content)
+                )
 
-                    @components.input_search(
-                        field = form("searchText"),
-                        label = messages("messages__listSchemesPsp__searchText_label"),
-                        labelClass = Some("heading-medium"),
-                        inputClass = Some("form-control--width-two-thirds"),
-                        messageKey = messages(button_content)
-                    )
-
-
-                @if(form("searchText").value.exists(_.length > 0)) {
+                @if(form("searchText").value.exists(_.nonEmpty)) {
                     <p class="govuk-margin-bottom-3">
                         <a id="clear-search-link" href="@ListSchemesController.onPageLoad"> @messages("messages__listSchemes__searchText_clearlink")</a>
                     </p>
                 }
+
                 @if(form("searchText").value.isDefined && form.errors.isEmpty && schemes.isEmpty) {
-                @form("searchText").value.map{ searchText =>
-
-                    <p id="noSchemes">@messages("messages__listSchemesPsp__noMatchesLeft") <span class="bold">@searchText</span>
-                        @messages("messages__listSchemesPsp__noMatchesRight")</p>
-                    <p id="noMatchesCheck">@messages("messages__listSchemesPsp__noMatchesCheck")</p>
+                    @form("searchText").value.map{ searchText =>
+                        <p id="noSchemes">
+                            @messages("messages__listSchemesPsp__noMatchesLeft") <span class="bold">@searchText</span>
+                            @messages("messages__listSchemesPsp__noMatchesRight")
+                        </p>
+                        <p id="noMatchesCheck">@messages("messages__listSchemesPsp__noMatchesCheck")</p>
+                    }
                 }
-                }
 
-                @if(schemes.nonEmpty && (form("searchText").value.exists(_.length > 0))) {
+                @if(schemes.nonEmpty && (form("searchText").value.exists(_.nonEmpty))) {
                     @components.scheme_list_psp(schemes, appConfig)
                 }
-                @components.return_link(controllers.routes.PspDashboardController.onPageLoad(), Some(pspName))
+
+                @components.return_link(PspDashboardController.onPageLoad(), Some(pspName))
             </div>
         </div>
 

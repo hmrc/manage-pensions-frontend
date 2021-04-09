@@ -17,15 +17,16 @@
 package services
 
 import java.time.LocalDate
-
 import com.google.inject.Inject
 import config.FrontendAppConfig
 import connectors.FrontendConnector
 import connectors.admin.MinimalConnector
 import connectors.scheme.PensionSchemeVarianceLockConnector
-import identifiers.{ListOfPSADetailsId, SchemeStatusId}
+import identifiers.SchemeStatusId
+import identifiers.psa.ListOfPSADetailsId
 import models.SchemeStatus.{Deregistered, Open, WoundUp}
 import models._
+import models.psa.PsaSchemeDetails
 import models.requests.AuthenticatedRequest
 import play.api.mvc.{AnyContent, Request}
 import play.twirl.api.Html

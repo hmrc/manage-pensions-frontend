@@ -19,22 +19,23 @@ package services
 import config.FrontendAppConfig
 import connectors._
 import connectors.admin.MinimalConnector
-import controllers.routes._
-import javax.inject.Inject
-import models.{Link, MinimalPSAPSP}
+import controllers.psa.routes._
 import models.requests.OptionalDataRequest
+import models.{Link, MinimalPSAPSP}
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContent, Request}
 import play.twirl.api.Html
 import uk.gov.hmrc.http.HeaderCarrier
-import viewmodels.{CardSubHeading, CardViewModel, Message, CardSubHeadingParam}
+import viewmodels.{CardSubHeading, CardSubHeadingParam, CardViewModel, Message}
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
-                                       minimalPsaConnector: MinimalConnector,
-                                       invitationsCacheConnector: InvitationsCacheConnector,
-                                       frontendConnector: FrontendConnector
+class SchemesOverviewService @Inject()(
+                                        appConfig: FrontendAppConfig,
+                                        minimalPsaConnector: MinimalConnector,
+                                        invitationsCacheConnector: InvitationsCacheConnector,
+                                        frontendConnector: FrontendConnector
                                       )(implicit ec: ExecutionContext) {
 
   def getTiles(psaId: String)(implicit request: OptionalDataRequest[AnyContent], hc: HeaderCarrier, messages: Messages): Future[Seq[CardViewModel]] =
@@ -49,7 +50,7 @@ class SchemesOverviewService @Inject()(appConfig: FrontendAppConfig,
     }
 
   def retrievePenaltiesUrlPartial[A](implicit request: Request[A], ec: ExecutionContext): Future[Html] =
-    if(appConfig.isFSEnabled) {
+    if (appConfig.isFSEnabled) {
       frontendConnector.retrievePenaltiesUrlPartial
     } else {
       Future.successful(Html(""))

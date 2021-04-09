@@ -16,7 +16,7 @@
 
 package views.invitations
 
-import forms.invitations.DoYouHaveWorkingKnowledgeFormProvider
+import forms.invitations.psa.DoYouHaveWorkingKnowledgeFormProvider
 import models.NormalMode
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document

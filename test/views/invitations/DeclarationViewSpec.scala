@@ -16,13 +16,13 @@
 
 package views.invitations
 
-import forms.invitations.DeclarationFormProvider
+import forms.invitations.psa.DeclarationFormProvider
 import play.api.data.Form
 import play.api.data.FormError
 import play.twirl.api.HtmlFormat
 import viewmodels.Message
 import views.behaviours.QuestionViewBehaviours
-import views.html.invitations.declaration
+import views.html.invitations.psa.declaration
 
 class DeclarationViewSpec extends QuestionViewBehaviours[Boolean] {
 

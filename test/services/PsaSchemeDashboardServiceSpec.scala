@@ -16,10 +16,12 @@
 
 package services
 
-import java.time.LocalDate
-
 import base.SpecBase
 import config.FrontendAppConfig
+import controllers.invitations.psp.routes._
+import controllers.invitations.routes._
+import controllers.psa.routes._
+import controllers.psp.routes._
 import identifiers.invitations.PSTRId
 import identifiers.{SchemeNameId, SchemeStatusId}
 import models.FeatureToggle.{Disabled, Enabled}
@@ -38,9 +40,14 @@ import utils.DateHelper.formatter
 import utils.UserAnswers
 import viewmodels._
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
-class PsaSchemeDashboardServiceSpec extends SpecBase with MockitoSugar with BeforeAndAfterEach with ScalaFutures {
+class PsaSchemeDashboardServiceSpec
+  extends SpecBase
+    with MockitoSugar
+    with BeforeAndAfterEach
+    with ScalaFutures {
 
   import PsaSchemeDashboardServiceSpec._
 
@@ -87,12 +94,16 @@ class PsaSchemeDashboardServiceSpec extends SpecBase with MockitoSugar with Befo
   "pspCard" must {
     "return model when psps are present nad toggle is on" in {
       when(mockFeatureToggle.get(any())(any(), any())).thenReturn(Future.successful(Enabled(PSPAuthorisation)))
-      whenReady(service.pspCard(userAnswers)) { _ mustBe List(pspCard()) }
+      whenReady(service.pspCard(userAnswers)) {
+        _ mustBe List(pspCard())
+      }
     }
 
     "return empty list when psps are present & toggle is off" in {
       when(mockFeatureToggle.get(any())(any(), any())).thenReturn(Future.successful(Disabled(PSPAuthorisation)))
-      whenReady(service.pspCard(userAnswers)) { _ mustBe Nil }
+      whenReady(service.pspCard(userAnswers)) {
+        _ mustBe Nil
+      }
     }
   }
 
@@ -178,11 +189,11 @@ object PsaSchemeDashboardServiceSpec {
   )
 
   private def pstrSubHead(implicit messages: Messages): Seq[CardSubHeading] = Seq(CardSubHeading(
-      subHeading = Message("messages__psaSchemeDash__pstr"),
-      subHeadingClasses = "card-sub-heading",
-      subHeadingParams = Seq(CardSubHeadingParam(
-        subHeadingParam = pstr,
-        subHeadingParamClasses = "font-small bold"))))
+    subHeading = Message("messages__psaSchemeDash__pstr"),
+    subHeadingClasses = "card-sub-heading",
+    subHeadingParams = Seq(CardSubHeadingParam(
+      subHeadingParam = pstr,
+      subHeadingParamClasses = "font-small bold"))))
 
   private def dateSubHead(implicit messages: Messages): Seq[CardSubHeading] = Seq(CardSubHeading(
     subHeading = Message("messages__psaSchemeDash__regDate"),
@@ -192,7 +203,7 @@ object PsaSchemeDashboardServiceSpec {
       subHeadingParamClasses = "font-small bold"))))
 
   def psaCard(inviteLink: Seq[Link] = inviteLink)
-                     (implicit messages: Messages): CardViewModel = CardViewModel(
+             (implicit messages: Messages): CardViewModel = CardViewModel(
     id = "psa_list",
     heading = Message("messages__psaSchemeDash__psa_list_head"),
     subHeadings = Seq(CardSubHeading(
@@ -203,14 +214,14 @@ object PsaSchemeDashboardServiceSpec {
         subHeadingParamClasses = "font-small bold")))),
     links = inviteLink ++ Seq(
       Link("view-psa-list",
-        controllers.routes.ViewAdministratorsController.onPageLoad(srn).url,
+        ViewAdministratorsController.onPageLoad(srn).url,
         Message("messages__psaSchemeDash__view_psa"))
     )
   )
 
   private def inviteLink = Seq(Link(
     id = "invite",
-    url = controllers.invitations.routes.InviteController.onPageLoad(srn).url,
+    url = InviteController.onPageLoad(srn).url,
     linkText = Message("messages__psaSchemeDash__invite_link")
   ))
 
@@ -224,9 +235,9 @@ object PsaSchemeDashboardServiceSpec {
         subHeadingParam = "Practitioner Individual",
         subHeadingParamClasses = "font-small bold")))),
     links = Seq(
-      Link("authorise", controllers.invitations.psp.routes.WhatYouWillNeedController.onPageLoad().url,
+      Link("authorise", WhatYouWillNeedController.onPageLoad().url,
         Message("messages__pspAuthorise__link")),
-      Link("view-practitioners", controllers.psp.routes.ViewPractitionersController.onPageLoad().url,
+      Link("view-practitioners", ViewPractitionersController.onPageLoad().url,
         linkText = Message("messages__pspViewOrDeauthorise__link")
       ))
   )

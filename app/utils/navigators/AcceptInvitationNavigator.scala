@@ -16,15 +16,16 @@
 
 package utils.navigators
 
-import identifiers.Identifier
-import identifiers.SchemeSrnId
+import controllers.invitations.psa.routes._
+import controllers.invitations.routes._
+import identifiers.{Identifier, SchemeSrnId}
 import identifiers.invitations._
-import javax.inject.Inject
-import javax.inject.Singleton
+import identifiers.invitations.psa.{AdviserAddressId, AdviserAddressListId, AdviserAddressPostCodeLookupId, AdviserEmailId, AdviserNameId, CheckPensionAdviserAnswersId}
 import models.NormalMode
 import play.api.mvc.Call
-import utils.Navigator
-import utils.UserAnswers
+import utils.{Navigator, UserAnswers}
+
+import javax.inject.{Inject, Singleton}
 
 @Singleton
 class AcceptInvitationNavigator @Inject() extends Navigator {
@@ -32,23 +33,23 @@ class AcceptInvitationNavigator @Inject() extends Navigator {
   //scalastyle:off cyclomatic.complexity
   override def routeMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
     case SchemeSrnId =>
-      controllers.invitations.routes.DoYouHaveWorkingKnowledgeController.onPageLoad(NormalMode)
+      DoYouHaveWorkingKnowledgeController.onPageLoad(NormalMode)
     case DoYouHaveWorkingKnowledgeId =>
       doYouHaveWorkingKnowledgeRoutes(ua)
     case AdviserNameId =>
-      controllers.invitations.routes.AdviserEmailAddressController.onPageLoad(NormalMode)
+      AdviserEmailAddressController.onPageLoad(NormalMode)
     case AdviserEmailId =>
-      controllers.invitations.routes.AdviserAddressPostcodeLookupController.onPageLoad()
+      AdviserAddressPostcodeLookupController.onPageLoad()
     case AdviserAddressPostCodeLookupId =>
-      controllers.invitations.routes.PensionAdviserAddressListController.onPageLoad(NormalMode)
+      PensionAdviserAddressListController.onPageLoad(NormalMode)
     case AdviserAddressListId =>
-      controllers.invitations.routes.AdviserManualAddressController.onPageLoad(NormalMode, prepopulated = true)
+      AdviserManualAddressController.onPageLoad(NormalMode, prepopulated = true)
     case AdviserAddressId =>
-      controllers.invitations.routes.CheckPensionAdviserAnswersController.onPageLoad()
+      CheckPensionAdviserAnswersController.onPageLoad()
     case CheckPensionAdviserAnswersId =>
-      controllers.invitations.routes.DeclarationController.onPageLoad()
+      DeclarationController.onPageLoad()
     case DeclarationId =>
-      controllers.invitations.routes.InvitationAcceptedController.onPageLoad()
+      InvitationAcceptedController.onPageLoad()
   }
 
   //scalastyle:on cyclomatic.complexity
@@ -56,9 +57,9 @@ class AcceptInvitationNavigator @Inject() extends Navigator {
   private def doYouHaveWorkingKnowledgeRoutes(userAnswers: UserAnswers): Call = {
     userAnswers.get(DoYouHaveWorkingKnowledgeId) match {
       case Some(false) =>
-        controllers.invitations.routes.AdviserDetailsController.onPageLoad(NormalMode)
+        AdviserDetailsController.onPageLoad(NormalMode)
       case Some(true) =>
-        controllers.invitations.routes.DeclarationController.onPageLoad()
+        DeclarationController.onPageLoad()
       case _ =>
         controllers.routes.SessionExpiredController.onPageLoad()
     }
@@ -66,6 +67,6 @@ class AcceptInvitationNavigator @Inject() extends Navigator {
 
   override protected def editRouteMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
     case AdviserNameId | AdviserEmailId | AdviserAddressId =>
-      controllers.invitations.routes.CheckPensionAdviserAnswersController.onPageLoad()
+      CheckPensionAdviserAnswersController.onPageLoad()
   }
 }

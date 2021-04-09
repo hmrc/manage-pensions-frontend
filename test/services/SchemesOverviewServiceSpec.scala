@@ -145,7 +145,7 @@ object SchemesOverviewServiceSpec extends SpecBase with MockitoSugar  {
     id = "scheme-card",
     heading = Message("messages__schemeOverview__scheme_heading"),
     links = Seq(
-      Link("view-schemes", controllers.routes.ListSchemesController.onPageLoad().url, Message("messages__schemeOverview__scheme_view"))
+      Link("view-schemes", controllers.psa.routes.ListSchemesController.onPageLoad().url, Message("messages__schemeOverview__scheme_view"))
     ),
     html = Some(html)
   )

@@ -21,8 +21,9 @@ import connectors.UserAnswersCacheConnector
 import controllers.actions.AuthAction
 import controllers.actions.DataRequiredAction
 import controllers.actions.DataRetrievalAction
-import forms.invitations.DoYouHaveWorkingKnowledgeFormProvider
+import forms.invitations.psa.DoYouHaveWorkingKnowledgeFormProvider
 import identifiers.invitations.DoYouHaveWorkingKnowledgeId
+
 import javax.inject.Inject
 import models.Mode
 import play.api.data.Form

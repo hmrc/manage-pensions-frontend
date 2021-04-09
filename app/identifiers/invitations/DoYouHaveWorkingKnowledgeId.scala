@@ -17,6 +17,7 @@
 package identifiers.invitations
 
 import identifiers.TypedIdentifier
+import identifiers.invitations.psa.{AdviserAddressId, AdviserAddressListId, AdviserAddressPostCodeLookupId, AdviserEmailId, AdviserNameId}
 import play.api.libs.json.JsResult
 import utils.UserAnswers
 

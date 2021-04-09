@@ -20,7 +20,7 @@ import com.google.inject.ImplementedBy
 import com.google.inject.Inject
 import config.FrontendAppConfig
 import models.AcceptedInvitation
-import models.Invitation
+import models.invitations.psp.Invitation
 import play.api.Logger
 import play.api.http.Status._
 import uk.gov.hmrc.http._

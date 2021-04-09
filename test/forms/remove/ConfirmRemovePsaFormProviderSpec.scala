@@ -17,6 +17,7 @@
 package forms.remove
 
 import forms.behaviours.BooleanFieldBehaviours
+import forms.remove.psa.ConfirmRemovePsaFormProvider
 import play.api.data.FormError
 
 class ConfirmRemovePsaFormProviderSpec extends BooleanFieldBehaviours {

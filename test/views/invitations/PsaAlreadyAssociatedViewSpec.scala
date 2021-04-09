@@ -19,7 +19,7 @@ package views.invitations
 import play.twirl.api.HtmlFormat
 import viewmodels.Message
 import views.behaviours.ViewBehaviours
-import views.html.invitations.psa_already_associated
+import views.html.invitations.psa.psa_already_associated
 
 class PsaAlreadyAssociatedViewSpec extends ViewBehaviours {
   private val testInviteeName: String = "Joe Bloggs"

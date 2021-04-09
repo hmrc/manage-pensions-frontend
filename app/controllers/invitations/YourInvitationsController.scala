@@ -21,7 +21,8 @@ import connectors.InvitationsCacheConnector
 import connectors.UserAnswersCacheConnector
 import controllers.actions._
 import identifiers.SchemeSrnId
-import identifiers.PSANameId
+import identifiers.psa.PSANameId
+
 import javax.inject.Inject
 import models.NormalMode
 import models.SchemeReferenceNumber

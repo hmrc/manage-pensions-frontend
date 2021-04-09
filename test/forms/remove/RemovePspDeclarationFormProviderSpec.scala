@@ -17,6 +17,7 @@
 package forms.remove
 
 import forms.behaviours.CheckboxBehaviour
+import forms.remove.psp.RemovePspDeclarationFormProvider
 import play.api.data.Form
 
 class RemovePspDeclarationFormProviderSpec extends CheckboxBehaviour {

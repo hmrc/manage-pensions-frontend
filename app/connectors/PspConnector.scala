@@ -18,7 +18,7 @@ package connectors
 
 import com.google.inject.{ImplementedBy, Inject}
 import config.FrontendAppConfig
-import models.invitations.psp.DeAuthorise
+import models.DeAuthorise
 import play.api.Logger
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}

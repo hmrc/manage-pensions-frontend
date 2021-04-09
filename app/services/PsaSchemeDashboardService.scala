@@ -16,21 +16,26 @@
 
 package services
 
-import java.time.LocalDate
-
 import com.google.inject.Inject
 import config.FrontendAppConfig
-import identifiers.{SeqAuthorisedPractitionerId, SchemeStatusId, ListOfPSADetailsId}
+import controllers.invitations.psp.routes._
+import controllers.invitations.routes._
+import controllers.psa.routes._
+import controllers.psp.routes._
+import identifiers.psa.ListOfPSADetailsId
+import identifiers.{SchemeStatusId, SeqAuthorisedPractitionerId}
 import models.FeatureToggle.Enabled
 import models.FeatureToggleName.PSPAuthorisation
 import models._
+import models.psa.PsaDetails
 import play.api.i18n.Messages
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.DateHelper._
 import utils.UserAnswers
-import viewmodels.{CardSubHeading, CardViewModel, Message, CardSubHeadingParam}
+import viewmodels.{CardSubHeading, CardSubHeadingParam, CardViewModel, Message}
 
-import scala.concurrent.{Future, ExecutionContext}
+import java.time.LocalDate
+import scala.concurrent.{ExecutionContext, Future}
 
 class PsaSchemeDashboardService @Inject()(
                                            appConfig: FrontendAppConfig,
@@ -47,7 +52,7 @@ class PsaSchemeDashboardService @Inject()(
 
   //Scheme details card
   def schemeCard(srn: String, list: ListOfSchemes, lock: Option[Lock], ua: UserAnswers)
-                        (implicit messages: Messages): CardViewModel =
+                (implicit messages: Messages): CardViewModel =
     CardViewModel(
       id = "scheme_details",
       heading = Message("messages__psaSchemeDash__scheme_details_head"),
@@ -71,12 +76,14 @@ class PsaSchemeDashboardService @Inject()(
   }
 
   private def dateSubHead(srn: String, list: ListOfSchemes, ua: UserAnswers)
-                 (implicit messages: Messages): Option[CardSubHeading] =
+                         (implicit messages: Messages): Option[CardSubHeading] =
     if (isSchemeOpen(ua)) {
       list.schemeDetails.flatMap {
         listOfSchemes =>
           val currentScheme = listOfSchemes.filter(_.referenceNumber.contains(srn))
+
           def date: Option[String] = currentScheme.head.openDate.map(date => LocalDate.parse(date).format(formatter))
+
           if (currentScheme.nonEmpty && date.nonEmpty) {
             Some(CardSubHeading(
               subHeading = Message("messages__psaSchemeDash__regDate"),
@@ -110,23 +117,25 @@ class PsaSchemeDashboardService @Inject()(
 
   //PSA card
   def psaCard(srn: String, ua: UserAnswers)
-                     (implicit messages: Messages): CardViewModel =
+             (implicit messages: Messages): CardViewModel =
     CardViewModel(
       id = "psa_list",
       heading = Message("messages__psaSchemeDash__psa_list_head"),
       subHeadings = latestPsaSubHeading(ua),
       links = invitePsaLink(isSchemeOpen(ua), srn) ++ Seq(
-        Link("view-psa-list",
-          controllers.routes.ViewAdministratorsController.onPageLoad(srn).url,
-          Message("messages__psaSchemeDash__view_psa"))
+        Link(
+          id = "view-psa-list",
+          url = ViewAdministratorsController.onPageLoad(srn).url,
+          linkText = Message("messages__psaSchemeDash__view_psa")
+        )
       )
     )
 
   private def invitePsaLink(isSchemeOpen: Boolean, srn: String): Seq[Link] =
-    if(isSchemeOpen) {
+    if (isSchemeOpen) {
       Seq(Link(
         id = "invite",
-        url = controllers.invitations.routes.InviteController.onPageLoad(srn).url,
+        url = InviteController.onPageLoad(srn).url,
         linkText = Message("messages__psaSchemeDash__invite_link")
       ))
     } else {
@@ -145,11 +154,11 @@ class PsaSchemeDashboardService @Inject()(
     }
 
   private def latestPsa(ua: UserAnswers): Option[PsaDetails] =
-    ua.get(ListOfPSADetailsId) flatMap(_.sortBy(_.relationshipDate).reverse.headOption)
+    ua.get(ListOfPSADetailsId) flatMap (_.sortBy(_.relationshipDate).reverse.headOption)
 
   //PSP card
   def pspCard(ua: UserAnswers)
-             (implicit hc: HeaderCarrier, ec: ExecutionContext, messages: Messages):Future[Seq[CardViewModel]] =
+             (implicit hc: HeaderCarrier, ec: ExecutionContext, messages: Messages): Future[Seq[CardViewModel]] =
     featureToggleService.get(PSPAuthorisation).map {
       case Enabled(PSPAuthorisation) =>
         Seq(CardViewModel(
@@ -157,7 +166,7 @@ class PsaSchemeDashboardService @Inject()(
           heading = Message("messages__psaSchemeDash__psp_heading"),
           subHeadings = latestPspSubHeading(ua),
           links = Seq(
-            Link("authorise", controllers.invitations.psp.routes.WhatYouWillNeedController.onPageLoad().url, Message("messages__pspAuthorise__link"))
+            Link("authorise", WhatYouWillNeedController.onPageLoad().url, Message("messages__pspAuthorise__link"))
           ) ++ viewPspLink(ua)
         ))
       case _ =>
@@ -168,15 +177,15 @@ class PsaSchemeDashboardService @Inject()(
     latestPsp(ua).fold[Seq[Link]](Nil) { _ =>
       Seq(Link(
         id = "view-practitioners",
-        url = controllers.psp.routes.ViewPractitionersController.onPageLoad().url,
+        url = ViewPractitionersController.onPageLoad().url,
         linkText = Message("messages__pspViewOrDeauthorise__link")
       ))
     }
 
   private def latestPsp(ua: UserAnswers): Option[AuthorisedPractitioner] =
     ua.get(SeqAuthorisedPractitionerId) flatMap { seqPsp =>
-        implicit val localDateOrdering: Ordering[LocalDate] = _ compareTo _
-        seqPsp.sortBy(_.relationshipStartDate).reverse.headOption
+      implicit val localDateOrdering: Ordering[LocalDate] = _ compareTo _
+      seqPsp.sortBy(_.relationshipStartDate).reverse.headOption
     }
 
 

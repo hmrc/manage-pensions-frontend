@@ -17,8 +17,10 @@
 import java.time.LocalDate
 import controllers.actions.{DataRetrievalAction, FakeDataRetrievalAction}
 import identifiers.invitations._
-import identifiers.remove.{ConfirmRemovePsaId, PsaRemovalDateId}
-import identifiers.{AssociatedDateId, MinimalSchemeDetailId, PSANameId, SchemeSrnId}
+import identifiers.invitations.psa.{AdviserAddressId, AdviserAddressListId, AdviserAddressPostCodeLookupId, AdviserEmailId, AdviserNameId, InviteePSAId}
+import identifiers.psa.PSANameId
+import identifiers.remove.psa.{ConfirmRemovePsaId, PsaRemovalDateId}
+import identifiers.{AssociatedDateId, MinimalSchemeDetailId, SchemeSrnId}
 import models._
 import org.scalatest.OptionValues
 
