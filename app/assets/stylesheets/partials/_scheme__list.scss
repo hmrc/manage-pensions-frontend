@@ -278,14 +278,9 @@ table td:last-child, table th:last-child {
 }
 
 
- [role="region"][aria-labelledby][tabindex] {
+ [role="region"][aria-labelledby] {
     overflow: auto;
   }
-​
-  [role="region"][aria-labelledby][tabindex]:focus {
-    outline: .1em solid rgba(0, 0, 0, .1);
-  }
-
 
 .dl--label-value dd{
   font-weight: 400;
