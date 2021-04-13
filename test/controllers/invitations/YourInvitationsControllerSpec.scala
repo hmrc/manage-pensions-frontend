@@ -21,7 +21,7 @@ import connectors.InvitationsCacheConnector
 import controllers.ControllerSpecBase
 import controllers.actions._
 import identifiers.SchemeSrnId
-import identifiers.PSANameId
+import identifiers.psa.PSANameId
 import models.NormalMode
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when

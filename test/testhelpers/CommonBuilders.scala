@@ -17,8 +17,8 @@
 package testhelpers
 
 import java.time.LocalDate
-
 import models._
+import models.psa.{Name, PreviousAddressDetails, PsaDetails}
 
 object CommonBuilders {
 

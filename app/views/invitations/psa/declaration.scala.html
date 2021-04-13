@@ -1,0 +1,83 @@
+@*
+ * Copyright 2021 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import uk.gov.hmrc.play.views.html._
+@import views.html._
+@import viewmodels.Message
+@import controllers.invitations.psa.routes._
+@import utils.ViewHelper.titleWithErrors
+
+@this(
+    main_template: main_template,
+    formHelper: FormWithCSRF
+)
+
+@(haveWorkingKnowledge: Boolean, isMasterTrust: Boolean, form: Form[_])(implicit request: Request[_], messages: Messages)
+
+@main_template(
+    title = titleWithErrors(form, messages("messages__declaration__title")),
+    bodyClasses = None
+) {
+
+    @components.back_link()
+
+    @components.error_summary(form.errors)
+
+    @components.heading(Message("messages__declaration__title"))
+
+    @formHelper(action = DeclarationController.onSubmit(), 'autoComplete -> "off") {
+
+        @components.paragraph_text(messages("messages__declaration__continue") + ":")
+
+        <ol class="list list-number">
+
+            <li>@messages("messages__declaration__statement1")</li>
+
+            <li>@messages("messages__declaration__statement2")</li>
+
+            <li>@messages("messages__declaration__statement3")</li>
+
+            <li>@messages("messages__declaration__statement4")</li>
+
+            <li>
+                @if(haveWorkingKnowledge) {
+                    @messages("messages__declaration__statement5__no__adviser")
+                } else {
+                    @messages("messages__declaration__statement5__with__adviser")
+                }
+            </li>
+
+            <li>@messages("messages__declaration__statement6")</li>
+
+            @if(isMasterTrust) {
+                <li>@messages("messages__declaration__statement7")</li>
+            }
+        </ol>
+
+        @components.fieldSet(
+            field = form("agree"),
+            legend = Message("messages__declaration__title"),
+            hiddenLegend = true
+        ) {
+            <div class="multiple-choice">
+                <input id="consent" name="agree" type="checkbox" value="agreed">
+                <label for="consent">I agree</label>
+            </div>
+        }
+
+        @components.submit_button("site.continue")
+    }
+}

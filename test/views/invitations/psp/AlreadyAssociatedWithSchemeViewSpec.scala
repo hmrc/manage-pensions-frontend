@@ -45,7 +45,7 @@ class AlreadyAssociatedWithSchemeViewSpec extends ViewBehaviours {
 
     "have link to return to your scheme details" in {
       Jsoup.parse(createView().toString()).select("a[id=return-to-schemes]") must
-        haveLink(controllers.routes.ListSchemesController.onPageLoad.url)
+        haveLink(controllers.psa.routes.ListSchemesController.onPageLoad.url)
     }
   }
 }

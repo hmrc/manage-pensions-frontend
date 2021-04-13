@@ -16,6 +16,7 @@
 
 package identifiers.invitations
 
+import identifiers.invitations.psa.{AdviserAddressId, AdviserAddressListId, AdviserAddressPostCodeLookupId, AdviserEmailId, AdviserNameId}
 import models.Address
 import models.TolerantAddress
 import org.scalatest.MustMatchers

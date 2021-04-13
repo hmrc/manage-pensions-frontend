@@ -19,6 +19,7 @@ package controllers.psp
 import com.google.inject.Inject
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import controllers.psa.routes._
 import identifiers.{SchemeNameId, SchemeSrnId, SeqAuthorisedPractitionerId}
 import models.SchemeReferenceNumber
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -54,7 +55,7 @@ class ViewPractitionersController @Inject()(
               authorisedByLoggedInPsa = request.psaIdOrException.id == p.authorisingPSAID
             )
           )
-          val returnCall = controllers.routes.PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(srn))
+          val returnCall = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(srn))
           Future.successful(Ok(view(schemeName, returnCall, authorisedPractitionerViewModelSeq)))
       }
   }

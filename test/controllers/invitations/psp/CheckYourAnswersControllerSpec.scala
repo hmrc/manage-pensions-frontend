@@ -29,7 +29,7 @@ import identifiers.invitations.psp.PspClientReferenceId
 import identifiers.invitations.psp.PspId
 import identifiers.invitations.psp.PspNameId
 import models.CheckMode
-import models.invitations.psp.ClientReference.HaveClientReference
+import models.ClientReference.HaveClientReference
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar

@@ -19,6 +19,7 @@ package controllers.invitations.psp
 import connectors.FakeUserAnswersCacheConnector
 import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
+import controllers.psa.routes._
 import forms.invitations.psp.PspNameFormProvider
 import identifiers.SchemeNameId
 import identifiers.SchemeSrnId
@@ -50,20 +51,19 @@ class PspNameControllerSpec extends ControllerWithQuestionPageBehaviours {
   private val pspNameView = injector.instanceOf[pspName]
 
 
-  private val returnCall = controllers.routes.PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber("srn"))
+  private val returnCall = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber("srn"))
 
 
   def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
 
-    new PspNameController(
-      frontendAppConfig, messagesApi, FakeUserAnswersCacheConnector, navigator, fakeAuth,
+    new PspNameController(messagesApi, FakeUserAnswersCacheConnector, navigator, fakeAuth,
       dataRetrievalAction, requiredDataAction, formProvider, controllerComponents, pspNameView).onPageLoad(NormalMode)
   }
 
   def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
 
     new PspNameController(
-      frontendAppConfig, messagesApi, FakeUserAnswersCacheConnector, navigator, fakeAuth,
+      messagesApi, FakeUserAnswersCacheConnector, navigator, fakeAuth,
       dataRetrievalAction, requiredDataAction, formProvider, controllerComponents, pspNameView).onSubmit(NormalMode)
   }
 

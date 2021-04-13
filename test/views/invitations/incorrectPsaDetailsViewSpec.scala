@@ -16,10 +16,11 @@
 
 package views.invitations
 
+import controllers.psa.routes._
 import org.jsoup.Jsoup
 import play.twirl.api.HtmlFormat
 import views.behaviours.ViewBehaviours
-import views.html.invitations.incorrectPsaDetails
+import views.html.invitations.psa.incorrectPsaDetails
 
 class incorrectPsaDetailsViewSpec extends ViewBehaviours {
 
@@ -47,7 +48,7 @@ class incorrectPsaDetailsViewSpec extends ViewBehaviours {
     }
 
     "include a link to the scheme details page" in {
-      createView() must haveLink(controllers.routes.PsaSchemeDashboardController.onPageLoad(srn).url, "return-link")
+      createView() must haveLink(PsaSchemeDashboardController.onPageLoad(srn).url, "return-link")
     }
 
     "include dynamic text for the scheme details page" in {

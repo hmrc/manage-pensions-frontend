@@ -16,13 +16,14 @@
 
 package utils
 
+import controllers.invitations.psa.routes._
+import controllers.invitations.psp.routes._
 import identifiers.invitations._
+import identifiers.invitations.psa.{AdviserAddressId, AdviserEmailId, AdviserNameId, InviteePSAId}
 import identifiers.invitations.psp.PspClientReferenceId
 import identifiers.invitations.psp.PspId
 import identifiers.invitations.psp.PspNameId
-import models.invitations.psp.ClientReference
-import models.Address
-import models.CheckMode
+import models.{Address, CheckMode, ClientReference}
 import utils.countryOptions.CountryOptions
 import viewmodels.AnswerRow
 
@@ -33,35 +34,35 @@ class CheckYourAnswersHelper(userAnswers: UserAnswers, countryOptions: CountryOp
   def psaName: Option[AnswerRow] = {
     userAnswers.get(InviteeNameId) map { answer =>
       AnswerRow("messages__check__your__answer__psa__name__label", Seq(answer), true,
-        Some(controllers.invitations.routes.PsaNameController.onPageLoad(CheckMode).url))
+        Some(PsaNameController.onPageLoad(CheckMode).url))
     }
   }
 
   def psaId: Option[AnswerRow] = {
     userAnswers.get(InviteePSAId) map { answer =>
       AnswerRow("messages__check__your__answer__psa__id__label", Seq(answer), true,
-        Some(controllers.invitations.routes.PsaIdController.onPageLoad(CheckMode).url))
+        Some(PsaIdController.onPageLoad(CheckMode).url))
     }
   }
 
   def adviserName: Option[AnswerRow] = {
     userAnswers.get(AdviserNameId) map { answer =>
       AnswerRow("messages__check__your__answer__adviser__name__label", Seq(answer),
-        true, Some(controllers.invitations.routes.AdviserDetailsController.onPageLoad(CheckMode).url))
+        true, Some(AdviserDetailsController.onPageLoad(CheckMode).url))
     }
   }
 
   def adviserEmail(label: String): Option[AnswerRow] = {
     userAnswers.get(AdviserEmailId) map { answer =>
       AnswerRow(label, Seq(answer),
-        false, Some(controllers.invitations.routes.AdviserEmailAddressController.onPageLoad(CheckMode).url))
+        false, Some(AdviserEmailAddressController.onPageLoad(CheckMode).url))
     }
   }
 
   def adviserAddress(label: String): Option[AnswerRow] = {
     userAnswers.get(AdviserAddressId) map { answer =>
       AnswerRow(label, addressAnswer(answer),
-        false, Some(controllers.invitations.routes.AdviserManualAddressController.onPageLoad(CheckMode, true).url))
+        false, Some(AdviserManualAddressController.onPageLoad(CheckMode, true).url))
     }
   }
 
@@ -74,21 +75,21 @@ class CheckYourAnswersHelper(userAnswers: UserAnswers, countryOptions: CountryOp
   def pspName: Option[AnswerRow] = {
     userAnswers.get(PspNameId) map { answer =>
       AnswerRow("messages__check__your__answer__psp__name__label", Seq(answer), true,
-        Some(controllers.invitations.psp.routes.PspNameController.onPageLoad(CheckMode).url))
+        Some(PspNameController.onPageLoad(CheckMode).url))
     }
   }
 
   def pspId: Option[AnswerRow] = {
     userAnswers.get(PspId) map { answer =>
       AnswerRow("messages__check__your__answer__psp__id__label", Seq(answer), true,
-        Some(controllers.invitations.psp.routes.PspIdController.onPageLoad(CheckMode).url))
+        Some(PspIdController.onPageLoad(CheckMode).url))
     }
   }
 
   def pspClientReference: Option[AnswerRow] = {
     userAnswers.get(PspClientReferenceId) map { answer =>
       AnswerRow("messages__check__your__answer__psp_client_reference__label", Seq(getClientReference(answer)), true,
-        Some(controllers.invitations.psp.routes.PspClientReferenceController.onPageLoad(CheckMode).url))
+        Some(PspClientReferenceController.onPageLoad(CheckMode).url))
     }
   }
 

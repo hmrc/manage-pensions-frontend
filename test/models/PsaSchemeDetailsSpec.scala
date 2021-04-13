@@ -17,10 +17,10 @@
 package models
 
 import java.time.LocalDate
-
 import models.SchemeStatus.Deregistered
 import models.SchemeStatus.Rejected
 import models.SchemeStatus.WoundUp
+import models.psa.{PsaDetails, PsaSchemeDetails}
 import org.scalacheck.Gen
 import org.scalatest.MustMatchers
 import org.scalatest.WordSpec

@@ -16,12 +16,12 @@
 
 package views.invitations
 
-import forms.invitations.AdviserEmailFormProvider
+import forms.invitations.psa.AdviserEmailFormProvider
 import models.NormalMode
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import views.behaviours.QuestionViewBehaviours
-import views.html.invitations.adviserEmailAddress
+import views.html.invitations.psa.adviserEmailAddress
 
 class AdviserEmailAddressViewSpec extends QuestionViewBehaviours[String] {
 
@@ -44,7 +44,7 @@ class AdviserEmailAddressViewSpec extends QuestionViewBehaviours[String] {
   behave like pageWithErrorOutsideLabel(
     createViewWithForm,
     messageKeyPrefix,
-    controllers.invitations.routes.AdviserDetailsController.onSubmit(NormalMode).url,
+    controllers.invitations.psa.routes.AdviserDetailsController.onSubmit(NormalMode).url,
     "email"
   )
 

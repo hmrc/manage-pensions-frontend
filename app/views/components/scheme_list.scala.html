@@ -18,102 +18,86 @@
 @import config.FrontendAppConfig
 @import models.SchemeStatus
 
+@import controllers.psa.routes._
 @(schemes: List[SchemeDetails], appConfig: FrontendAppConfig)(implicit messages: Messages)
 
-@schemeNameHeaderID = @{
-s"schemeNameHeader"
-}
-
-@srnHeaderID = @{
-s"srnHeader"
-}
-
-@pstrHeaderID = @{
-s"pstrHeader"
-}
-
-@statusHeaderID = @{
-s"statusHeader"
-}
-
 @schemeNameId(index: Int) = @{
-s"schemeName-$index"
+    s"schemeName-$index"
 }
 
 @srnId(index: Int) = @{
-s"srn-$index"
+    s"srn-$index"
 }
 
 @pstrId(index: Int) = @{
-s"pstr-$index"
+    s"pstr-$index"
 }
 
 @statusId(index: Int) = @{
-s"schemeStatus-$index"
+    s"schemeStatus-$index"
 }
 
 @pstrValue(pstr: Option[String]) = @{
-pstr.getOrElse(messages("messages__listSchemes__pstr_not_assigned"))
+    pstr.getOrElse(messages("messages__listSchemes__pstr_not_assigned"))
 }
 
 @statusValue(status: String) = @{
-status match {
-case SchemeStatus.Pending.value             => messages("messages__listSchemes__status_pending")
-case SchemeStatus.PendingInfoRequired.value => messages("messages__listSchemes__status_pending_req")
-case SchemeStatus.PendingInfoReceived.value => messages("messages__listSchemes__status_pending_rec")
-case SchemeStatus.Rejected.value            => messages("messages__listSchemes__status_rejected")
-case SchemeStatus.Open.value                => messages("messages__listSchemes__status_open")
-case SchemeStatus.Deregistered.value        => messages("messages__listSchemes__status_deregistered")
-case SchemeStatus.WoundUp.value             => messages("messages__listSchemes__status_wound_up")
-case SchemeStatus.RejectedUnderAppeal.value => messages("messages__listSchemes__status_rejected_appeal")
-case _ => status
-}
+    status match {
+        case SchemeStatus.Pending.value             => messages("messages__listSchemes__status_pending")
+        case SchemeStatus.PendingInfoRequired.value => messages("messages__listSchemes__status_pending_req")
+        case SchemeStatus.PendingInfoReceived.value => messages("messages__listSchemes__status_pending_rec")
+        case SchemeStatus.Rejected.value            => messages("messages__listSchemes__status_rejected")
+        case SchemeStatus.Open.value                => messages("messages__listSchemes__status_open")
+        case SchemeStatus.Deregistered.value        => messages("messages__listSchemes__status_deregistered")
+        case SchemeStatus.WoundUp.value             => messages("messages__listSchemes__status_wound_up")
+        case SchemeStatus.RejectedUnderAppeal.value => messages("messages__listSchemes__status_rejected_appeal")
+        case _ => status
+    }
 }
 <div role="region" aria-labelledby="schemeList_table">
 <table id="schemeList" class="govuk-table" role="table">
     <caption id="schemeList_table" class="visually-hidden">@messages("messages__listSchemes__title")</caption>
     <thead>
-    <tr role="row">
-        <th role="columnheader" class="govuk-table__header" scope="col">
-            <span id="@schemeNameHeaderID" class="heading-small">@messages("messages__listSchemes__column_schemeName")</span>
-        </th>
-        <th role="columnheader" class="govuk-table__header" scope="col">
-            <span id="@srnHeaderID" class="heading-small">@messages("messages__listSchemes__column_srn")</span>
-        </th>
+        <tr role="row">
+            <th role="columnheader" class="govuk-table__header" scope="col">
+                <span id="schemeNameHeader" class="heading-small">@messages("messages__listSchemes__column_schemeName")</span>
+            </th>
+            <th role="columnheader" class="govuk-table__header" scope="col">
+                <span id="srnHeader" class="heading-small">@messages("messages__listSchemes__column_srn")</span>
+            </th>
 
-        <th role="columnheader" class="govuk-table__header" scope="col">
-            <span id="@pstrHeaderID" class="heading-small">@messages("messages__listSchemes__column_pstr")</span>
-        </th>
+            <th role="columnheader" class="govuk-table__header" scope="col">
+                <span id="pstrHeader" class="heading-small">@messages("messages__listSchemes__column_pstr")</span>
+            </th>
 
-        <th role="columnheader" class="govuk-table__header" scope="col">
-            <span id="@statusHeaderID" class="heading-small">@messages("messages__listSchemes__column_status")</span>
-        </th>
-    </tr>
+            <th role="columnheader" class="govuk-table__header" scope="col">
+                <span id="statusHeader" class="heading-small">@messages("messages__listSchemes__column_status")</span>
+            </th>
+        </tr>
     </thead>
 
     <tbody>
     @for((scheme, index) <- schemes.zipWithIndex) {
-
-    <tr class="member-details" role="row">
-        <td class="govuk-table__cell" role="cell">
-            <a id="@{schemeNameId(index)}" href="@{controllers.routes.PsaSchemeDashboardController.onPageLoad(scheme.referenceNumber).url}" target="_self" data-sso="false">
-                @{scheme.name}
-            </a>
-        </td>
-        <td class="govuk-table__cell" role="cell" id="@{srnId(index)}">
-            @{scheme.referenceNumber}
-        </td>
-        <td class="govuk-table__cell" role="cell" id="@{pstrId(index)}">
-            @if(scheme.pstr.nonEmpty) {
-            @pstrValue(scheme.pstr)
-            } else {
-            @messages("messages__listSchemes__pstr_not_assigned")
-            }
-        </td>
-        <td class="govuk-table__cell" role="cell" id="@{statusId(index)}">
-            @statusValue(scheme.schemeStatus)
-        </td>
-    </tr>
+        <tr class="member-details" role="row">
+            <td class="govuk-table__cell" role="cell">
+                <a id="@{schemeNameId(index)}" href="@{PsaSchemeDashboardController.onPageLoad(scheme.referenceNumber).url}" target="_self" data-sso="false">
+                    @{scheme.name}
+                </a>
+            </td>
+            <td class="govuk-table__cell" role="cell" id="@{srnId(index)}">
+                @{scheme.referenceNumber}
+            </td>
+            <td class="govuk-table__cell" role="cell" id="@{pstrId(index)}">
+                @if(scheme.pstr.nonEmpty) {
+                    @pstrValue(scheme.pstr)
+                } else {
+                    @messages("messages__listSchemes__pstr_not_assigned")
+                }
+            </td>
+            <td class="govuk-table__cell" role="cell" id="@{statusId(index)}">
+                @statusValue(scheme.schemeStatus)
+            </td>
+        </tr>
     }
     </tbody>
 </table>

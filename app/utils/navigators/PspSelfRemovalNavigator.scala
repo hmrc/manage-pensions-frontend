@@ -17,15 +17,19 @@
 package utils.navigators
 
 import connectors.UserAnswersCacheConnector
-import controllers.remove.pspSelfRemoval.routes._
+import controllers.psp.routes._
+import controllers.remove.psp.selfRemoval.routes._
+import controllers.routes._
+import identifiers.remove.psp.selfRemoval.{ConfirmRemovalId, RemovalDateId}
 import identifiers.{Identifier, SchemeSrnId}
-import identifiers.remove.pspSelfRemoval.{ConfirmRemovalId, RemovalDateId}
+
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.Call
 import utils.{Navigator, UserAnswers}
 
 @Singleton
-class PspSelfRemovalNavigator @Inject()(val dataCacheConnector: UserAnswersCacheConnector) extends Navigator {
+class PspSelfRemovalNavigator @Inject()(val dataCacheConnector: UserAnswersCacheConnector)
+  extends Navigator {
 
   override def routeMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
     case ConfirmRemovalId => confirmRemovePsaRoutes(ua)
@@ -34,13 +38,13 @@ class PspSelfRemovalNavigator @Inject()(val dataCacheConnector: UserAnswersCache
 
   private def confirmRemovePsaRoutes(userAnswers: UserAnswers): Call = {
     (userAnswers.get(ConfirmRemovalId), userAnswers.get(SchemeSrnId)) match {
-      case (Some(false), Some(srn)) => controllers.routes.PspSchemeDashboardController.onPageLoad(srn)
+      case (Some(false), Some(srn)) => PspSchemeDashboardController.onPageLoad(srn)
       case (Some(true), _) => RemovalDateController.onPageLoad()
-      case _ => controllers.routes.SessionExpiredController.onPageLoad()
+      case _ => SessionExpiredController.onPageLoad()
     }
   }
 
   override protected def editRouteMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
-    case _ => controllers.routes.SessionExpiredController.onPageLoad()
+    case _ => SessionExpiredController.onPageLoad()
   }
 }

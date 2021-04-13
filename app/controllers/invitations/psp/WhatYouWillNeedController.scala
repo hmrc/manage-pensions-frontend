@@ -17,45 +17,39 @@
 package controllers.invitations.psp
 
 import com.google.inject.Inject
-import config.FrontendAppConfig
 import controllers.Retrievals
-import controllers.actions.AuthAction
-import controllers.actions.DataRequiredAction
-import controllers.actions.DataRetrievalAction
-import identifiers.SchemeNameId
-import identifiers.SchemeSrnId
-import models.NormalMode
-import models.SchemeReferenceNumber
-import play.api.i18n.I18nSupport
-import play.api.i18n.MessagesApi
-import play.api.mvc.Action
-import play.api.mvc.AnyContent
-import play.api.mvc.MessagesControllerComponents
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import controllers.invitations.psp.routes.PspNameController
+import controllers.psa.routes._
+import identifiers.{SchemeNameId, SchemeSrnId}
+import models.{NormalMode, SchemeReferenceNumber}
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.invitations.psp.whatYouWillNeed
 
 import scala.concurrent.Future
 
-class WhatYouWillNeedController @Inject()(appConfig: FrontendAppConfig,
-                                          override val messagesApi: MessagesApi,
-                                          authenticate: AuthAction,
-                                          getData: DataRetrievalAction,
-                                          requireData: DataRequiredAction,
-                                          val controllerComponents: MessagesControllerComponents,
-                                          view: whatYouWillNeed
+class WhatYouWillNeedController @Inject()(
+                                           override val messagesApi: MessagesApi,
+                                           authenticate: AuthAction,
+                                           getData: DataRetrievalAction,
+                                           requireData: DataRequiredAction,
+                                           val controllerComponents: MessagesControllerComponents,
+                                           view: whatYouWillNeed
                                          ) extends FrontendBaseController with I18nSupport with Retrievals {
 
   def onPageLoad(): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
       (SchemeSrnId and SchemeNameId).retrieve.right.map {
         case srn ~ schemeName =>
-        val returnCall = controllers.routes.PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(srn))
-        Future.successful(Ok(view(schemeName, returnCall)))
+          val returnCall = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(srn))
+          Future.successful(Ok(view(schemeName, returnCall)))
       }
   }
 
   def onSubmit(): Action[AnyContent] = authenticate().async {
-    Future.successful(Redirect(controllers.invitations.psp.routes.PspNameController.onPageLoad(NormalMode)))
+    Future.successful(Redirect(PspNameController.onPageLoad(NormalMode)))
   }
 
 }

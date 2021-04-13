@@ -16,13 +16,14 @@
 
 package views.invitations
 
-import forms.invitations.PsaNameFormProvider
+import controllers.invitations.psa.routes._
+import forms.invitations.psa.PsaNameFormProvider
 import models.CheckMode
 import models.NormalMode
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import views.behaviours.QuestionViewBehaviours
-import views.html.invitations.psaName
+import views.html.invitations.psa.psaName
 
 class PsaNameViewSpec extends QuestionViewBehaviours[String] {
 
@@ -51,7 +52,7 @@ class PsaNameViewSpec extends QuestionViewBehaviours[String] {
     behave like pageWithErrorOutsideLabel(
       createViewUsingForm,
       messageKeyPrefix,
-      controllers.invitations.routes.PsaNameController.onSubmit(NormalMode).url,
+      PsaNameController.onSubmit(NormalMode).url,
       "psaName"
     )
   }

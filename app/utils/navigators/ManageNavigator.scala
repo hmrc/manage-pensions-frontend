@@ -16,13 +16,14 @@
 
 package utils.navigators
 
+import controllers.psp.routes._
 import controllers.routes._
-import identifiers.{Identifier, AdministratorOrPractitionerId}
-import models.AdministratorOrPractitioner.{Practitioner, Administrator}
+import identifiers.{AdministratorOrPractitionerId, Identifier}
+import models.AdministratorOrPractitioner.{Administrator, Practitioner}
 
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.Call
-import utils.{UserAnswers, Navigator, Enumerable}
+import utils.{Enumerable, Navigator, UserAnswers}
 
 @Singleton
 class ManageNavigator @Inject()() extends Navigator with Enumerable.Implicits {
@@ -30,8 +31,8 @@ class ManageNavigator @Inject()() extends Navigator with Enumerable.Implicits {
   override def routeMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
     case AdministratorOrPractitionerId =>
       ua.get(AdministratorOrPractitionerId) match {
-        case Some(Administrator) => controllers.routes.SchemesOverviewController.onPageLoad()
-        case Some(Practitioner) => controllers.routes.PspDashboardController.onPageLoad()
+        case Some(Administrator) => SchemesOverviewController.onPageLoad()
+        case Some(Practitioner) => PspDashboardController.onPageLoad()
         case _ => SessionExpiredController.onPageLoad()
       }
   }

@@ -61,7 +61,7 @@ class InviteController @Inject()(
             case Some(schemeDetails) =>
               val minimalSchemeDetail = MinimalSchemeDetail(srn, schemeDetails.pstr, schemeDetails.name)
               userAnswersCacheConnector.save(request.externalId, MinimalSchemeDetailId, minimalSchemeDetail).map { _ =>
-                Redirect(controllers.invitations.routes.WhatYouWillNeedController.onPageLoad())
+                Redirect(controllers.invitations.psa.routes.WhatYouWillNeedController.onPageLoad())
               }
             case None => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
           }

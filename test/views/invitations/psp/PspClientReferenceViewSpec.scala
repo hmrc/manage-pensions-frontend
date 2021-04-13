@@ -16,10 +16,9 @@
 
 package views.invitations.psp
 
+import controllers.psa.routes._
 import forms.invitations.psp.PspClientReferenceFormProvider
-import models.NormalMode
-import models.SchemeReferenceNumber
-import models.invitations.psp.ClientReference
+import models.{ClientReference, NormalMode, SchemeReferenceNumber}
 import play.api.data.Form
 import views.behaviours.ViewBehaviours
 import views.html.invitations.psp.pspClientReference
@@ -31,7 +30,7 @@ class PspClientReferenceViewSpec extends ViewBehaviours {
 
   private val schemeName = "Test Scheme"
 
-  private val returnCall = controllers.routes.PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber("srn"))
+  private val returnCall = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber("srn"))
 
   val formProvider = new PspClientReferenceFormProvider
   val form: Form[ClientReference] = formProvider()

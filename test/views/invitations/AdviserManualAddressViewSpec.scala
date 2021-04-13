@@ -16,15 +16,15 @@
 
 package views.invitations
 
-import controllers.invitations.routes._
-import forms.invitations.AdviserManualAddressFormProvider
+import controllers.invitations.psa.routes._
+import forms.invitations.psa.AdviserManualAddressFormProvider
 import models.Address
 import models.NormalMode
 import org.jsoup.Jsoup
 import play.api.data.Form
 import utils.FakeCountryOptions
 import views.behaviours.QuestionViewBehaviours
-import views.html.invitations.adviserAddress
+import views.html.invitations.psa.adviserAddress
 
 class AdviserManualAddressViewSpec extends QuestionViewBehaviours[Address] {
 

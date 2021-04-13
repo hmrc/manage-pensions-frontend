@@ -18,6 +18,7 @@ package controllers.invitations.psp
 
 import controllers.ControllerSpecBase
 import controllers.actions._
+import controllers.psa.routes._
 import identifiers.SchemeNameId
 import identifiers.SchemeSrnId
 import models.NormalMode
@@ -31,7 +32,7 @@ class WhatYouWillNeedControllerSpec extends ControllerSpecBase {
 
   val schemeName  = "Test Scheme name"
   val schemeSrn  = "12345"
-  val returnCall: Call  = controllers.routes.PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(schemeSrn))
+  val returnCall: Call  = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(schemeSrn))
 
   val validData = new FakeDataRetrievalAction(Some(Json.obj(
     SchemeSrnId.toString -> schemeSrn,
@@ -42,7 +43,6 @@ class WhatYouWillNeedControllerSpec extends ControllerSpecBase {
 
   def controller(dataRetrievalAction: DataRetrievalAction = validData): WhatYouWillNeedController =
     new WhatYouWillNeedController(
-      frontendAppConfig,
       messagesApi,
       FakeAuthAction,
       dataRetrievalAction,

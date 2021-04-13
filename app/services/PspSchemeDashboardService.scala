@@ -18,14 +18,15 @@ package services
 
 import config.FrontendAppConfig
 import connectors.admin.MinimalConnector
-import javax.inject.Inject
-import models.{MinimalPSAPSP, Link, AuthorisedPractitioner}
+import controllers.remove.psp.selfRemoval.routes._
+import models.{AuthorisedPractitioner, Link, MinimalPSAPSP}
 import play.api.i18n.Messages
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.DateHelper
 import viewmodels.{Message, PspSchemeDashboardCardViewModel}
 
-import scala.concurrent.{Future, ExecutionContext}
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class PspSchemeDashboardService @Inject()(
                                            appConfig: FrontendAppConfig,
@@ -33,7 +34,7 @@ class PspSchemeDashboardService @Inject()(
                                          )(implicit ec: ExecutionContext) {
 
   def getMinimalPspDetails(pspId: String)
-                   (implicit hc: HeaderCarrier): Future[MinimalPSAPSP] =
+                          (implicit hc: HeaderCarrier): Future[MinimalPSAPSP] =
     minimalConnector.getMinimalPspDetails(pspId)
 
   def getTiles(
@@ -70,7 +71,7 @@ class PspSchemeDashboardService @Inject()(
       links = Seq(
         Link(
           id = "deauthorise-yourself",
-          url = controllers.remove.pspSelfRemoval.routes.ConfirmRemovalController.onPageLoad().url,
+          url = ConfirmRemovalController.onPageLoad().url,
           linkText = Message("messages__pspSchemeDashboard__details__deAuth_Link"),
           hiddenText = Some(Message("messages__pspSchemeDashboard__details__deAuth_Link_screenReaderAlternative"))
         )

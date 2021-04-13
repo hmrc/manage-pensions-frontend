@@ -18,9 +18,14 @@ package utils.navigators
 
 import connectors.UserAnswersCacheConnector
 import controllers.routes._
-import controllers.remove.routes._
-import identifiers.remove.{ConfirmRemovePspId, PsaRemovePspDeclarationId, PspRemovalDateId}
+import controllers.remove.psa.routes._
+import controllers.psa.routes._
+import controllers.remove.psp.routes._
+import identifiers.remove.psp.{ConfirmRemovePspId, PspRemovalDateId}
+import identifiers.remove.psa.PsaRemovePspDeclarationId
+import identifiers.remove.psp
 import identifiers.{Identifier, SchemeSrnId}
+
 import javax.inject.{Inject, Singleton}
 import models.Index
 import play.api.mvc.Call
@@ -36,11 +41,11 @@ class RemovePSPNavigator @Inject()(val dataCacheConnector: UserAnswersCacheConne
     case PspRemovalDateId(index) =>
       PsaRemovePspDeclarationController.onPageLoad(index)
     case PsaRemovePspDeclarationId(index) =>
-      controllers.remove.routes.ConfirmPsaRemovedPspController.onPageLoad(index)
+      ConfirmPsaRemovedPspController.onPageLoad(index)
   }
 
   private def confirmRemovePspRoutes(userAnswers: UserAnswers, index: Index): Call = {
-    (userAnswers.get(ConfirmRemovePspId(index)), userAnswers.get(SchemeSrnId)) match {
+    (userAnswers.get(psp.ConfirmRemovePspId(index)), userAnswers.get(SchemeSrnId)) match {
       case (Some(false), Some(srn)) =>
         PsaSchemeDashboardController.onPageLoad(srn)
       case (Some(true), _) =>

@@ -17,7 +17,7 @@
 package identifiers.invitations.psp
 
 import identifiers.TypedIdentifier
-import models.invitations.psp.ClientReference
+import models.ClientReference
 
 object PspClientReferenceId extends TypedIdentifier[ClientReference] {
 

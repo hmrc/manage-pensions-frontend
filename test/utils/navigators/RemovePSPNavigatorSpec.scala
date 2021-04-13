@@ -18,8 +18,14 @@ package utils.navigators
 
 import base.SpecBase
 import connectors.FakeUserAnswersCacheConnector
+import controllers.psa.routes._
+import controllers.remove.psa.routes._
+import controllers.remove.psp.routes._
+import controllers.routes._
 import identifiers.Identifier
-import identifiers.remove.{ConfirmRemovePspId, PsaRemovePspDeclarationId, PspRemovalDateId}
+import identifiers.remove.psa.PsaRemovePspDeclarationId
+import identifiers.remove.psp
+import identifiers.remove.psp.PspRemovalDateId
 import org.scalatest.prop.TableFor4
 import play.api.libs.json.Json
 import play.api.mvc.Call
@@ -33,9 +39,9 @@ class RemovePSPNavigatorSpec extends SpecBase with NavigatorBehaviour {
 
   def routes(): TableFor4[Identifier, UserAnswers, Call, Option[Call]] = Table(
     ("Id",                        "User Answers",   "Next Page (NormalMode)",   "Next Page (CheckMode)"),
-    (ConfirmRemovePspId(0),         removePsp,           pspRemovalDatePage,           None),
-    (ConfirmRemovePspId(0),         dontRemovePsp,       schemeDetailsPage,            None),
-    (ConfirmRemovePspId(0),         emptyAnswers,        sessionExpiredPage,           None),
+    (psp.ConfirmRemovePspId(0),         removePsp,           pspRemovalDatePage,           None),
+    (psp.ConfirmRemovePspId(0),         dontRemovePsp,       schemeDetailsPage,            None),
+    (psp.ConfirmRemovePspId(0),         emptyAnswers,        sessionExpiredPage,           None),
     (PspRemovalDateId(0),           emptyAnswers,        psaRemovePspDeclarationPage,  None),
     (PsaRemovePspDeclarationId(0),  emptyAnswers,        psaRemovePspConfirmationPage, None)
   )
@@ -50,16 +56,16 @@ class RemovePSPNavigatorSpec extends SpecBase with NavigatorBehaviour {
 object RemovePSPNavigatorSpec {
   private val srn = "test srn"
   private lazy val emptyAnswers: UserAnswers = UserAnswers(Json.obj())
-  private lazy val removePsp: UserAnswers = UserAnswers().srn(srn).set(ConfirmRemovePspId(0))(true).asOpt.get
-  private lazy val dontRemovePsp: UserAnswers = UserAnswers().srn(srn).set(ConfirmRemovePspId(0))(false).asOpt.get
+  private lazy val removePsp: UserAnswers = UserAnswers().srn(srn).set(psp.ConfirmRemovePspId(0))(true).asOpt.get
+  private lazy val dontRemovePsp: UserAnswers = UserAnswers().srn(srn).set(psp.ConfirmRemovePspId(0))(false).asOpt.get
 
   private def dataDescriber(answers: UserAnswers): String = answers.toString
 
-  private val sessionExpiredPage = controllers.routes.SessionExpiredController.onPageLoad()
-  private val schemeDetailsPage = controllers.routes.PsaSchemeDashboardController.onPageLoad(srn)
-  private val pspRemovalDatePage = controllers.remove.routes.PspRemovalDateController.onPageLoad(0)
-  private val psaRemovePspDeclarationPage = controllers.remove.routes.PsaRemovePspDeclarationController.onPageLoad(0)
-  private val psaRemovePspConfirmationPage = controllers.remove.routes.ConfirmPsaRemovedPspController.onPageLoad(0)
+  private val sessionExpiredPage = SessionExpiredController.onPageLoad()
+  private val schemeDetailsPage = PsaSchemeDashboardController.onPageLoad(srn)
+  private val pspRemovalDatePage = PspRemovalDateController.onPageLoad(0)
+  private val psaRemovePspDeclarationPage = PsaRemovePspDeclarationController.onPageLoad(0)
+  private val psaRemovePspConfirmationPage = ConfirmPsaRemovedPspController.onPageLoad(0)
 }
 
 

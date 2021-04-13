@@ -19,7 +19,7 @@ package views.remove
 import play.twirl.api.HtmlFormat
 import viewmodels.Message
 import views.behaviours.ViewBehaviours
-import views.html.remove.confirmRemoved
+import views.html.remove.psa.confirmRemoved
 
 class ConfirmRemovedViewSpec extends ViewBehaviours {
   val messageKeyPrefix = "confirmRemoved"
@@ -27,7 +27,7 @@ class ConfirmRemovedViewSpec extends ViewBehaviours {
   val testSchemeName = "test-scheme-name"
   private val confirmRemovedView = injector.instanceOf[confirmRemoved]
 
-  lazy val returnLinkUrl: String = controllers.routes.ListSchemesController.onPageLoad().url
+  lazy val returnLinkUrl: String = controllers.psa.routes.ListSchemesController.onPageLoad().url
 
   def createView(): () => HtmlFormat.Appendable = () =>
     confirmRemovedView(

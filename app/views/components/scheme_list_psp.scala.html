@@ -17,60 +17,61 @@
 @import uk.gov.hmrc.urls.Link
 @import config.FrontendAppConfig
 @import models.SchemeStatus
+@import controllers.psp.routes._
 
 @(schemes: List[SchemeDetails], appConfig: FrontendAppConfig)(implicit messages: Messages)
 
 @pstrValue(pstr: Option[String]) = @{
-pstr.getOrElse(messages("messages__listSchemes__pstr_not_assigned"))
+    pstr.getOrElse(messages("messages__listSchemes__pstr_not_assigned"))
 }
 
 @statusValue(status: String) = @{
-status match {
-case SchemeStatus.Pending.value             => messages("messages__listSchemes__status_pending")
-case SchemeStatus.PendingInfoRequired.value => messages("messages__listSchemes__status_pending_req")
-case SchemeStatus.PendingInfoReceived.value => messages("messages__listSchemes__status_pending_rec")
-case SchemeStatus.Rejected.value            => messages("messages__listSchemes__status_rejected")
-case SchemeStatus.Open.value                => messages("messages__listSchemes__status_open")
-case SchemeStatus.Deregistered.value        => messages("messages__listSchemes__status_deregistered")
-case SchemeStatus.WoundUp.value             => messages("messages__listSchemes__status_wound_up")
-case SchemeStatus.RejectedUnderAppeal.value => messages("messages__listSchemes__status_rejected_appeal")
-case _ => status
-}
+    status match {
+        case SchemeStatus.Pending.value             => messages("messages__listSchemes__status_pending")
+        case SchemeStatus.PendingInfoRequired.value => messages("messages__listSchemes__status_pending_req")
+        case SchemeStatus.PendingInfoReceived.value => messages("messages__listSchemes__status_pending_rec")
+        case SchemeStatus.Rejected.value            => messages("messages__listSchemes__status_rejected")
+        case SchemeStatus.Open.value                => messages("messages__listSchemes__status_open")
+        case SchemeStatus.Deregistered.value        => messages("messages__listSchemes__status_deregistered")
+        case SchemeStatus.WoundUp.value             => messages("messages__listSchemes__status_wound_up")
+        case SchemeStatus.RejectedUnderAppeal.value => messages("messages__listSchemes__status_rejected_appeal")
+        case _ => status
+    }
 }
 
 <div id="scheme-list1" class="dl--margin-bottom">
     @for((scheme, index) <- schemes.zipWithIndex){
-    <dl class="dl--label-value">
-        <div class="row-group">
-            <dt class="bold">
-                @messages("messages__listSchemesPsp__column__schemeName")
-            </dt>
-            <dd class="dl--label-left">
-                @{scheme.name}
-            </dd>
+        <dl class="dl--label-value">
+            <div class="row-group">
+                <dt class="bold">
+                    @messages("messages__listSchemesPsp__column__schemeName")
+                </dt>
+                <dd class="dl--label-left">
+                    @{scheme.name}
+                </dd>
 
-        </div>
-        <div class="row-group">
-            <dt class="bold">
-                @messages("messages__listSchemesPsp__column__pstr")
-            </dt>
-            <dd class="dl--label-left">
-                @pstrValue(scheme.pstr)
-            </dd>
+            </div>
+            <div class="row-group">
+                <dt class="bold">
+                    @messages("messages__listSchemesPsp__column__pstr")
+                </dt>
+                <dd class="dl--label-left">
+                    @pstrValue(scheme.pstr)
+                </dd>
 
-        </div>
-        <div class="row-group">
-            <dt class="bold">
-                @messages("messages__listSchemesPsp__column__status")
-            </dt>
-            <dd class="dl--label-left">
-                @statusValue(scheme.schemeStatus)
-            </dd>
+            </div>
+            <div class="row-group">
+                <dt class="bold">
+                    @messages("messages__listSchemesPsp__column__status")
+                </dt>
+                <dd class="dl--label-left">
+                    @statusValue(scheme.schemeStatus)
+                </dd>
 
-        </div>
-
-    </dl>
-    <a id="view-scheme" href="@controllers.routes.PspSchemeDashboardController.onPageLoad(scheme.referenceNumber)">
-        @messages("messages__listSchemesPsp__viewScheme")</a>
+            </div>
+        </dl>
+        <a id="view-scheme" href="@PspSchemeDashboardController.onPageLoad(scheme.referenceNumber)">
+            @messages("messages__listSchemesPsp__viewScheme")
+        </a>
     }
 </div>

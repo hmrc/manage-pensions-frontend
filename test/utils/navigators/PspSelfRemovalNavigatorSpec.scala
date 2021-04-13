@@ -18,9 +18,11 @@ package utils.navigators
 
 import base.SpecBase
 import connectors.FakeUserAnswersCacheConnector
-import controllers.remove.pspSelfRemoval.routes._
+import controllers.psp.routes._
+import controllers.remove.psp.selfRemoval.routes._
+import controllers.routes._
 import identifiers.Identifier
-import identifiers.remove.pspSelfRemoval._
+import identifiers.remove.psp.selfRemoval.{ConfirmRemovalId, RemovalDateId}
 import org.scalatest.prop.TableFor4
 import play.api.libs.json.Json
 import play.api.mvc.Call
@@ -57,8 +59,8 @@ object PspSelfRemovalNavigatorSpec {
 
   private def dataDescriber(answers: UserAnswers): String = answers.toString
 
-  private val sessionExpiredPage = controllers.routes.SessionExpiredController.onPageLoad()
-  private val schemeDashboardPage = controllers.routes.PspSchemeDashboardController.onPageLoad(srn)
+  private val sessionExpiredPage = SessionExpiredController.onPageLoad()
+  private val schemeDashboardPage = PspSchemeDashboardController.onPageLoad(srn)
   private val removalDatePage = RemovalDateController.onPageLoad()
   private val declarationPage = DeclarationController.onPageLoad()
 }

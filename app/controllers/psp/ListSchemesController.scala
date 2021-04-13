@@ -23,7 +23,7 @@ import connectors.admin.MinimalConnector
 import controllers.actions.AuthAction
 import controllers.actions.DataRetrievalAction
 import forms.psp.ListSchemesFormProvider
-import identifiers.PSANameId
+import identifiers.psa.PSANameId
 import models.AuthEntity.PSP
 import models.SchemeDetails
 import models.requests.OptionalDataRequest

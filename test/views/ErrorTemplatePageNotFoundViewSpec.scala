@@ -46,7 +46,7 @@ class ErrorTemplatePageNotFoundViewSpec extends ViewBehaviours {
 
     "have link to return to your pension schemes" in {
       Jsoup.parse(createView().toString()).select("a[id=view-pension-schemes]") must
-        haveLink(controllers.routes.ListSchemesController.onPageLoad().url)
+        haveLink(controllers.psa.routes.ListSchemesController.onPageLoad().url)
     }
   }
 }

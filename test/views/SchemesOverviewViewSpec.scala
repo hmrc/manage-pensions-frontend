@@ -16,16 +16,15 @@
 
 package views
 
-import java.time.LocalDate
-
-import controllers.routes.ListSchemesController
+import controllers.psa.routes._
 import models.Link
 import org.jsoup.Jsoup
-import play.twirl.api.Html
-import play.twirl.api.HtmlFormat
+import play.twirl.api.{Html, HtmlFormat}
 import viewmodels.{CardSubHeading, CardSubHeadingParam, CardViewModel, Message}
 import views.behaviours.ViewBehaviours
 import views.html.schemesOverview
+
+import java.time.LocalDate
 
 class SchemesOverviewViewSpec extends ViewBehaviours {
 
@@ -103,7 +102,7 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
     }
 
     "have link to view all schemes" in {
-      createView must haveLink(controllers.routes.ListSchemesController.onPageLoad().url, "view-schemes")
+      createView must haveLink(ListSchemesController.onPageLoad().url, "view-schemes")
     }
 
     "have html partial retrieved from scheme frontend" in {

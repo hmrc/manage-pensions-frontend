@@ -16,15 +16,16 @@
 
 package views.remove
 
-import java.time.LocalDate
+import controllers.psa.routes._
+import forms.remove.psp.PspRemovalDateFormProvider
 
-import forms.remove.PspRemovalDateFormProvider
+import java.time.LocalDate
 import org.jsoup.Jsoup
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import utils.DateHelper._
 import views.behaviours.QuestionViewBehaviours
-import views.html.remove.pspRemovalDate
+import views.html.remove.psp.pspRemovalDate
 
 class PspRemovalDateViewSpec extends QuestionViewBehaviours[LocalDate] {
 
@@ -62,7 +63,7 @@ class PspRemovalDateViewSpec extends QuestionViewBehaviours[LocalDate] {
 
     behave like pageWithReturnLink(
       view = createView,
-      url = controllers.routes.PsaSchemeDashboardController.onPageLoad(srn).url,
+      url = PsaSchemeDashboardController.onPageLoad(srn).url,
       text = messages("messages__returnToSchemeDetails__link", schemeName)
     )
 

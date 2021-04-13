@@ -16,16 +16,14 @@
 
 package forms.invitations.psp
 
-import forms.mappings.Mappings
-import forms.mappings.Transforms
-import javax.inject.Inject
-import models.invitations.psp.ClientReference
-import models.invitations.psp.ClientReference.HaveClientReference
-import models.invitations.psp.ClientReference.NoClientReference
-import play.api.data.Form
-import play.api.data.Mapping
+import forms.mappings.{Mappings, Transforms}
+import models.ClientReference
+import models.ClientReference.{HaveClientReference, NoClientReference}
 import play.api.data.Forms.tuple
+import play.api.data.{Form, Mapping}
 import uk.gov.voa.play.form.ConditionalMappings.mandatoryIfTrue
+
+import javax.inject.Inject
 
 class PspClientReferenceFormProvider @Inject() extends Mappings with Transforms {
 

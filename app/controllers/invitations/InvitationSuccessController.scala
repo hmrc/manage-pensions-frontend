@@ -17,20 +17,21 @@
 package controllers.invitations
 
 import java.time.LocalDate
-
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import connectors.admin.MinimalConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import identifiers.MinimalSchemeDetailId
-import identifiers.invitations.{InvitationSuccessId, InviteeNameId, InviteePSAId}
+import identifiers.invitations.psa.InviteePSAId
+import identifiers.invitations.{InvitationSuccessId, InviteeNameId}
+
 import javax.inject.Inject
 import models.{NormalMode, SchemeReferenceNumber}
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{AnyContent, MessagesControllerComponents, Action}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.annotations.Invitation
+import utils.annotations.Invitations
 import utils.{Navigator, UserAnswers}
 import views.html.invitations.invitation_success
 
@@ -44,7 +45,7 @@ class InvitationSuccessController @Inject()(
                                              requireData: DataRequiredAction,
                                              userAnswersCacheConnector: UserAnswersCacheConnector,
                                              minimalPsaConnector: MinimalConnector,
-                                             @Invitation navigator: Navigator,
+                                             @Invitations navigator: Navigator,
                                              val controllerComponents: MessagesControllerComponents,
                                              view: invitation_success
                                            )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {

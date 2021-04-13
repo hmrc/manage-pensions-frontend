@@ -16,7 +16,7 @@
 
 package views.invitations.psp
 
-import forms.invitations.DeclarationFormProvider
+import forms.invitations.psa.DeclarationFormProvider
 import play.api.data.Form
 import play.api.data.FormError
 import play.twirl.api.HtmlFormat

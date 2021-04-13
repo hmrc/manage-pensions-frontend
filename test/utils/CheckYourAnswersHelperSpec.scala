@@ -17,18 +17,21 @@
 package utils
 
 import base.SpecBase
-import models.Address
-import models.CheckMode
+import controllers.invitations.psa.routes._
+import models.{Address, CheckMode}
 import org.scalatest.MustMatchers
 import utils.countryOptions.CountryOptions
 import viewmodels.AnswerRow
 
-class CheckYourAnswersHelperSpec extends SpecBase with MustMatchers {
+class CheckYourAnswersHelperSpec
+  extends SpecBase
+    with MustMatchers {
 
   val userAnswers = UserAnswers()
 
   private val countryOptions = new CountryOptions(environment, frontendAppConfig)
-  def getHelper(userAnswers : UserAnswers = userAnswers) = new CheckYourAnswersHelper(userAnswers, countryOptions)
+
+  def getHelper(userAnswers: UserAnswers = userAnswers) = new CheckYourAnswersHelper(userAnswers, countryOptions)
 
   "calling psaName" must {
 
@@ -40,7 +43,13 @@ class CheckYourAnswersHelperSpec extends SpecBase with MustMatchers {
     "return answer row if data present" in {
 
       getHelper(userAnswers.inviteeName("abc")).psaName mustBe Some(
-        AnswerRow("messages__check__your__answer__psa__name__label", Seq("abc"), true, Some(controllers.invitations.routes.PsaNameController.onPageLoad(CheckMode).url)))
+        AnswerRow(
+          label = "messages__check__your__answer__psa__name__label",
+          answer = Seq("abc"),
+          answerIsMessageKey = true,
+          changeUrl = Some(PsaNameController.onPageLoad(CheckMode).url)
+        )
+      )
     }
   }
 
@@ -54,7 +63,13 @@ class CheckYourAnswersHelperSpec extends SpecBase with MustMatchers {
     "return answer row if data present" in {
 
       getHelper(userAnswers.inviteeId("A0000000")).psaId mustBe Some(
-        AnswerRow("messages__check__your__answer__psa__id__label", Seq("A0000000"), true, Some(controllers.invitations.routes.PsaIdController.onPageLoad(CheckMode).url)))
+        AnswerRow(
+          label = "messages__check__your__answer__psa__id__label",
+          answer = Seq("A0000000"),
+          answerIsMessageKey = true,
+          changeUrl = Some(PsaIdController.onPageLoad(CheckMode).url)
+        )
+      )
     }
   }
 

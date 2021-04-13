@@ -16,7 +16,7 @@
 
 package views.invitations
 
-import models.Invitation
+import models.invitations.psp.Invitation
 import org.jsoup.Jsoup
 import play.twirl.api.HtmlFormat
 import testhelpers.InvitationBuilder._

@@ -16,13 +16,14 @@
 
 package views.invitations
 
-import forms.invitations.AdviserAddressPostcodeLookupFormProvider
+import controllers.invitations.psa.routes._
+import forms.invitations.psa.AdviserAddressPostcodeLookupFormProvider
 import models.NormalMode
 import org.jsoup.Jsoup
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import views.behaviours.StringViewBehaviours
-import views.html.invitations.adviserPostcode
+import views.html.invitations.psa.adviserPostcode
 
 class AdviserPostCodeLookupViewSpec extends StringViewBehaviours {
 
@@ -43,12 +44,12 @@ class AdviserPostCodeLookupViewSpec extends StringViewBehaviours {
 
     behave like pageWithBackLink(createView)
 
-    behave like stringPage(createViewUsingForm, messageKeyPrefix, controllers.invitations.routes.AdviserAddressPostcodeLookupController.onSubmit().url,
+    behave like stringPage(createViewUsingForm, messageKeyPrefix, AdviserAddressPostcodeLookupController.onSubmit().url,
       Some("messages__common__address_postcode"))
 
     "have link for enter address manually" in {
       Jsoup.parse(createView().toString()).select("a[id=manual-address-link]") must haveLink(
-        controllers.invitations.routes.AdviserManualAddressController.onPageLoad(NormalMode, false).url)
+        AdviserManualAddressController.onPageLoad(NormalMode, false).url)
     }
 
     behave like pageWithSubmitButton(createView)

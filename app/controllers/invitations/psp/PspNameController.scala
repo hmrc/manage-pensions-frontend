@@ -16,44 +16,39 @@
 
 package controllers.invitations.psp
 
-import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
 import controllers.actions._
+import controllers.psa.routes._
 import forms.invitations.psp.PspNameFormProvider
-import identifiers.SchemeNameId
-import identifiers.SchemeSrnId
+import identifiers.{SchemeNameId, SchemeSrnId}
 import identifiers.invitations.psp.PspNameId
-import javax.inject.Inject
-import models.Mode
-import models.SchemeReferenceNumber
+import models.{Mode, SchemeReferenceNumber}
 import play.api.data.Form
-import play.api.i18n.I18nSupport
-import play.api.i18n.MessagesApi
-import play.api.mvc.Action
-import play.api.mvc.AnyContent
-import play.api.mvc.Call
-import play.api.mvc.MessagesControllerComponents
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.{Navigator, UserAnswers}
 import utils.annotations.AuthorisePsp
-import utils.Navigator
-import utils.UserAnswers
 import views.html.invitations.psp.pspName
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
-class PspNameController @Inject()(appConfig: FrontendAppConfig,
-                                  override val messagesApi: MessagesApi,
-                                  dataCacheConnector: UserAnswersCacheConnector,
-                                  @AuthorisePsp navigator: Navigator,
-                                  authenticate: AuthAction,
-                                  getData: DataRetrievalAction,
-                                  requireData: DataRequiredAction,
-                                  formProvider: PspNameFormProvider,
-                                  val controllerComponents: MessagesControllerComponents,
-                                  view: pspName
-                                 )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
+class PspNameController @Inject()(
+                                   override val messagesApi: MessagesApi,
+                                   dataCacheConnector: UserAnswersCacheConnector,
+                                   @AuthorisePsp navigator: Navigator,
+                                   authenticate: AuthAction,
+                                   getData: DataRetrievalAction,
+                                   requireData: DataRequiredAction,
+                                   formProvider: PspNameFormProvider,
+                                   val controllerComponents: MessagesControllerComponents,
+                                   view: pspName
+                                 )(implicit val ec: ExecutionContext)
+  extends FrontendBaseController
+    with I18nSupport
+    with Retrievals {
 
   val form: Form[String] = formProvider()
 
@@ -61,12 +56,10 @@ class PspNameController @Inject()(appConfig: FrontendAppConfig,
     implicit request =>
       (SchemeNameId and SchemeSrnId).retrieve.right.map {
         case schemeName ~ srn =>
+          val value = request.userAnswers.get(PspNameId)
+          val preparedForm = value.fold(form)(form.fill)
 
-
-        val value = request.userAnswers.get(PspNameId)
-        val preparedForm = value.fold(form)(form.fill)
-
-        Future.successful(Ok(view(preparedForm, mode, schemeName, returnCall(srn))))
+          Future.successful(Ok(view(preparedForm, mode, schemeName, returnCall(srn))))
       }
   }
 
@@ -88,6 +81,6 @@ class PspNameController @Inject()(appConfig: FrontendAppConfig,
       )
   }
 
-  private def returnCall(srn:String):Call  = controllers.routes.PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(srn))
+  private def returnCall(srn: String): Call = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(srn))
 
 }

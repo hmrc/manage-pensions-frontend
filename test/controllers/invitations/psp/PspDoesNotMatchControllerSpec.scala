@@ -18,6 +18,7 @@ package controllers.invitations.psp
 
 import controllers.actions._
 import controllers.behaviours.ControllerWithNormalPageBehaviours
+import controllers.psa.routes._
 import identifiers.invitations.psp.PspNameId
 import identifiers.SchemeNameId
 import identifiers.SchemeSrnId
@@ -35,7 +36,7 @@ class PspDoesNotMatchControllerSpec extends ControllerWithNormalPageBehaviours {
   private val testSrn = "test-srn"
   private val testSchemeName = "test-scheme-name"
 
-  private lazy val continue: Call = controllers.routes.PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(testSrn))
+  private lazy val continue: Call = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(testSrn))
 
   private val userAnswer = UserAnswers()
     .set(SchemeNameId)(testSchemeName).asOpt.value

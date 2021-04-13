@@ -18,6 +18,7 @@ package forms.invitations
 
 import forms.FormSpec
 import forms.behaviours.FormBehaviours
+import forms.invitations.psa.AdviserManualAddressFormProvider
 import models.Address
 import utils.FakeCountryOptions
 import views.behaviours.AddressBehaviours

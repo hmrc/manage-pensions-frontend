@@ -16,12 +16,13 @@
 
 package views.invitations
 
-import forms.invitations.PsaIdFormProvider
+import controllers.invitations.psa.routes._
+import forms.invitations.psa.PsaIdFormProvider
 import models.NormalMode
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import views.behaviours.QuestionViewBehaviours
-import views.html.invitations.psaId
+import views.html.invitations.psa.psaId
 
 class PsaIdViewSpec extends QuestionViewBehaviours[String] {
 
@@ -41,7 +42,7 @@ class PsaIdViewSpec extends QuestionViewBehaviours[String] {
     behave like normalPage(
       createView,
       messageKeyPrefix,
-      messages(s"messages__${messageKeyPrefix}__heading",  "psaName")
+      messages(s"messages__${messageKeyPrefix}__heading", "psaName")
     )
 
     behave like pageWithBackLink(createView)
@@ -49,7 +50,7 @@ class PsaIdViewSpec extends QuestionViewBehaviours[String] {
     behave like pageWithErrorOutsideLabel(
       createViewUsingForm,
       messageKeyPrefix,
-      controllers.invitations.routes.PsaNameController.onSubmit(NormalMode).url,
+      PsaNameController.onSubmit(NormalMode).url,
       "psaId"
     )
   }

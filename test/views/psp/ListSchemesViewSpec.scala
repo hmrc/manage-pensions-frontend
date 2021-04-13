@@ -17,6 +17,7 @@
 package views.psp
 
 import config.FrontendAppConfig
+import controllers.psp.routes._
 import forms.psp.ListSchemesFormProvider
 import models.{ReportTechnicalIssue, SchemeDetails, SchemeStatus}
 import org.mockito.Mockito._
@@ -130,7 +131,7 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours with MockitoS
             schemes = emptyList,
             numberOfSchemes = emptyList.length,
             listSchemesFormProvider.apply()
-          ) must haveLink(controllers.routes.PspDashboardController.onPageLoad().url, "return-link")
+          ) must haveLink(PspDashboardController.onPageLoad().url, "return-link")
     }
 
   }

@@ -17,9 +17,8 @@
 package connectors
 
 import java.time.LocalDateTime
-
 import com.github.tomakehurst.wiremock.client.WireMock._
-import models.invitations.psp.DeAuthorise
+import models.DeAuthorise
 import org.scalatest.{AsyncFlatSpec, Matchers}
 import org.scalatestplus.scalacheck.Checkers
 import play.api.http.Status._
