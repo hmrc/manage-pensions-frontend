@@ -19,9 +19,9 @@ package utils
 import org.scalatest.FreeSpec
 import org.scalatest.MustMatchers
 
-class SchemeSearchFuzzyMatcherSpec extends FreeSpec with MustMatchers {
+class PsaSchemeSearchFuzzyMatcherSpec extends FreeSpec with MustMatchers {
 
-  private val fuzzyMatching = new SchemeSearchFuzzyMatcher
+  private val fuzzyMatching = new PsaSchemeSearchFuzzyMatcher
   private val inputString = "this can work at least for a single time for multiple inputs"
 
   "doFuzzyMatching" - {
