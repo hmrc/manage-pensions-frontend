@@ -21,7 +21,7 @@ import connectors.admin.MinimalConnector
 import connectors.{EmailConnector, EmailSent, PspConnector}
 import controllers.ControllerSpecBase
 import controllers.actions._
-import forms.remove.psp.RemovePspDeclarationFormProvider
+import forms.psp.deauthorise.RemovePspDeclarationFormProvider
 import identifiers.invitations.PSTRId
 import identifiers.remove.psp.selfRemoval.RemovalDateId
 import identifiers.{AuthorisedPractitionerId, SchemeNameId, SchemeSrnId}

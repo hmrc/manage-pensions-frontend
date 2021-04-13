@@ -20,7 +20,7 @@ import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
-import forms.remove.psp.ConfirmRemovePspFormProvider
+import forms.psp.deauthorise.ConfirmRemovePspFormProvider
 import identifiers.remove.psp
 import identifiers.remove.psp.{ConfirmRemovePspId, PspDetailsId}
 import identifiers.{SchemeNameId, SchemeSrnId}

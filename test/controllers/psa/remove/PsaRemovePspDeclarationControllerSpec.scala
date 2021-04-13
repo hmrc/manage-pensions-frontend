@@ -21,7 +21,7 @@ import connectors._
 import connectors.admin.MinimalConnector
 import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
-import forms.remove.psp.RemovePspDeclarationFormProvider
+import forms.psp.deauthorise.RemovePspDeclarationFormProvider
 import identifiers.invitations.PSTRId
 import identifiers.remove.psa
 import identifiers.remove.psp.PspRemovalDateId

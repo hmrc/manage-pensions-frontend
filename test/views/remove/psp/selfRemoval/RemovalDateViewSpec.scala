@@ -17,7 +17,7 @@
 package views.remove.psp.selfRemoval
 
 import controllers.psp.routes._
-import forms.remove.psp.PspRemovalDateFormProvider
+import forms.psp.deauthorise.PspRemovalDateFormProvider
 
 import java.time.LocalDate
 import org.jsoup.Jsoup

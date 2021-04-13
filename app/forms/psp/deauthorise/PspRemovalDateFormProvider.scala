@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package forms.remove.psp
+package forms.psp.deauthorise
 
 import forms.mappings._
 import play.api.data.Form

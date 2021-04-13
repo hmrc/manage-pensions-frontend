@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-package forms.remove
+package forms.psp.deauthorise
 
-import forms.behaviours.CheckboxBehaviour
-import forms.remove.psp.RemovePspDeclarationFormProvider
+import com.google.inject.Inject
+import forms.mappings.CheckboxMapping
 import play.api.data.Form
 
-class RemovePspDeclarationFormProviderSpec extends CheckboxBehaviour {
-
-  private val form: Form[Boolean] = new RemovePspDeclarationFormProvider()()
-  private val fieldName = "value"
-  private val trueValue = "true"
-  private val invalidKey = "messages__removePspDeclaration__required"
-
-  "PsaRemovePspDeclarationFormProvider" should {
-    behave like formWithCheckbox(form, fieldName, trueValue, acceptTrueOnly = true, invalidKey)
-  }
-
+class RemovePspDeclarationFormProvider @Inject()() extends CheckboxMapping {
+  def apply(): Form[Boolean] =
+    Form(
+      "value" -> checkboxMapping(
+        fieldName = "value",
+        trueValue = "true",
+        acceptTrueOnly = true,
+        invalidKey = "messages__removePspDeclaration__required"
+      )
+    )
 }

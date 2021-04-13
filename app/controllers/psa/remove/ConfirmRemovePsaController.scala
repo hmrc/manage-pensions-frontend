@@ -20,7 +20,7 @@ import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
-import forms.remove.psa.ConfirmRemovePsaFormProvider
+import forms.psa.remove.ConfirmRemovePsaFormProvider
 import identifiers.SchemeSrnId
 import identifiers.invitations.SchemeNameId
 import identifiers.psa.PSANameId

@@ -18,7 +18,7 @@ package views.remove
 
 import controllers.psa.routes._
 import controllers.psp.deauthorise.routes._
-import forms.remove.psp.ConfirmRemovePspFormProvider
+import forms.psp.deauthorise.ConfirmRemovePspFormProvider
 import models.Index
 import play.api.data.Form
 import play.twirl.api.HtmlFormat

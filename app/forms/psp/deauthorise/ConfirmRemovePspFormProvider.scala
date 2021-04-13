@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package forms.remove.psa
+package forms.psp.deauthorise
 
 import forms.mappings.Mappings
 import play.api.data.Form
 
 import javax.inject.Inject
 
-class ConfirmRemovePsaFormProvider @Inject()() extends Mappings {
+class ConfirmRemovePspFormProvider @Inject()() extends Mappings {
 
   def apply(): Form[Boolean] = Form(
-    "value" -> boolean("messages__confirmRemovePsa_required")
+    "value" -> boolean("messages__confirmRemovePsp_required")
   )
 }

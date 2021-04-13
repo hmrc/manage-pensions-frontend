@@ -19,7 +19,7 @@ package controllers.psa.remove
 import connectors.{FakeUserAnswersCacheConnector, UserAnswersCacheConnector}
 import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
-import forms.remove.psa.ConfirmRemovePsaFormProvider
+import forms.psa.remove.ConfirmRemovePsaFormProvider
 import identifiers.remove.psa.ConfirmRemovePsaId
 import play.api.data.Form
 import play.api.libs.json.Json

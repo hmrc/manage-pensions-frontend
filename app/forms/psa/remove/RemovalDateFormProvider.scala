@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package forms.remove.psa
+package forms.psa.remove
 
 import forms.mappings._
 import play.api.data.Form

@@ -23,7 +23,7 @@ import connectors.{EmailConnector, EmailNotSent, PspConnector, UserAnswersCacheC
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import controllers.routes._
-import forms.remove.psp.RemovePspDeclarationFormProvider
+import forms.psp.deauthorise.RemovePspDeclarationFormProvider
 import identifiers.invitations.PSTRId
 import identifiers.remove.psa.PsaRemovePspDeclarationId
 import identifiers.remove.{psa, psp}

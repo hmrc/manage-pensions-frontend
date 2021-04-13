@@ -20,7 +20,7 @@ import java.time.LocalDate
 import connectors.FakeUserAnswersCacheConnector
 import controllers.ControllerSpecBase
 import controllers.actions._
-import forms.remove.psp.PspRemovalDateFormProvider
+import forms.psp.deauthorise.PspRemovalDateFormProvider
 import identifiers.remove.psp.selfRemoval.RemovalDateId
 import identifiers.{AssociatedDateId, AuthorisedPractitionerId, SchemeNameId, SchemeSrnId}
 import play.api.data.Form

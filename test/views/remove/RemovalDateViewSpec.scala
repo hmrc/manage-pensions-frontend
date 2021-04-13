@@ -17,7 +17,7 @@
 package views.remove
 
 import controllers.psa.routes._
-import forms.remove.psa.RemovalDateFormProvider
+import forms.psa.remove.RemovalDateFormProvider
 
 import java.time.LocalDate
 import org.jsoup.Jsoup

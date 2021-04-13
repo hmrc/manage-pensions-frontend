@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package forms.remove
+package forms.psa.remove
 
 import forms.behaviours.BooleanFieldBehaviours
-import forms.remove.psa.ConfirmRemovePsaFormProvider
 import play.api.data.FormError
 
 class ConfirmRemovePsaFormProviderSpec extends BooleanFieldBehaviours {

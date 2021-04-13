@@ -21,7 +21,7 @@ import connectors.scheme.{PensionSchemeVarianceLockConnector, UpdateSchemeCacheC
 import connectors.{FakeUserAnswersCacheConnector, UserAnswersCacheConnector}
 import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
-import forms.remove.psa.RemovalDateFormProvider
+import forms.psa.remove.RemovalDateFormProvider
 import identifiers.remove.psa.PsaRemovalDateId
 import models.SchemeVariance
 import models.remove.psa.PsaToBeRemovedFromScheme

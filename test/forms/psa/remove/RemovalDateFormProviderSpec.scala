@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package forms.remove
+package forms.psa.remove
 
-import java.time.LocalDate
 import forms.mappings.Constraints
-import forms.remove.psa.RemovalDateFormProvider
 import org.scalatest.Matchers
 import play.api.data.FormError
 import views.behaviours.StringFieldBehaviours
+
+import java.time.LocalDate
 
 class RemovalDateFormProviderSpec extends StringFieldBehaviours with Constraints with Matchers {
 

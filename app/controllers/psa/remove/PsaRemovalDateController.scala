@@ -22,7 +22,7 @@ import connectors.admin.PsaRemovalConnector
 import connectors.scheme.{PensionSchemeVarianceLockConnector, UpdateSchemeCacheConnector}
 import controllers.Retrievals
 import controllers.actions._
-import forms.remove.psa.RemovalDateFormProvider
+import forms.psa.remove.RemovalDateFormProvider
 import identifiers.{AssociatedDateId, SchemeSrnId}
 import identifiers.invitations.{PSTRId, SchemeNameId}
 import identifiers.psa.PSANameId

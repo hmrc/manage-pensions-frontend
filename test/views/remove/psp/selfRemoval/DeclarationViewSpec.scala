@@ -16,7 +16,7 @@
 
 package views.remove.psp.selfRemoval
 
-import forms.remove.psp.RemovePspDeclarationFormProvider
+import forms.psp.deauthorise.RemovePspDeclarationFormProvider
 import play.api.data.{Form, FormError}
 import play.twirl.api.HtmlFormat
 import viewmodels.Message

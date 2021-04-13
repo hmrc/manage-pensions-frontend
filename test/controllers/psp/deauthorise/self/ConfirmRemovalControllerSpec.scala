@@ -19,7 +19,7 @@ package controllers.psp.deauthorise.self
 import connectors.FakeUserAnswersCacheConnector
 import controllers.ControllerSpecBase
 import controllers.actions._
-import forms.remove.psp.ConfirmRemovePspFormProvider
+import forms.psp.deauthorise.ConfirmRemovePspFormProvider
 import identifiers.psp.PSPNameId
 import identifiers.remove.psp.selfRemoval.ConfirmRemovalId
 import identifiers.{SchemeNameId, SchemeSrnId}

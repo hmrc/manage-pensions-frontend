@@ -20,7 +20,7 @@ import connectors.{FakeUserAnswersCacheConnector, UserAnswersCacheConnector}
 import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import controllers.psp.deauthorise.PspRemovalDateController
-import forms.remove.psp.PspRemovalDateFormProvider
+import forms.psp.deauthorise.PspRemovalDateFormProvider
 import identifiers.remove.psp
 import identifiers.remove.psp.PspRemovalDateId
 import identifiers.{SchemeNameId, SchemeSrnId, SeqAuthorisedPractitionerId}

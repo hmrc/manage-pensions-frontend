@@ -19,7 +19,7 @@ package controllers.psp.deauthorise
 import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
 import controllers.actions._
-import forms.remove.psp.PspRemovalDateFormProvider
+import forms.psp.deauthorise.PspRemovalDateFormProvider
 import identifiers.remove.psp
 import identifiers.remove.psp.{PspDetailsId, PspRemovalDateId}
 import identifiers.{SchemeNameId, SchemeSrnId}

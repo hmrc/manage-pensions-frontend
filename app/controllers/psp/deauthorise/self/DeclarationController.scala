@@ -25,7 +25,7 @@ import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import controllers.psp.deauthorise.self.routes._
 import controllers.routes._
-import forms.remove.psp.RemovePspDeclarationFormProvider
+import forms.psp.deauthorise.RemovePspDeclarationFormProvider
 import identifiers.invitations.PSTRId
 import identifiers.remove.psp.selfRemoval.RemovalDateId
 import identifiers.{AuthorisedPractitionerId, SchemeNameId, SchemeSrnId}
