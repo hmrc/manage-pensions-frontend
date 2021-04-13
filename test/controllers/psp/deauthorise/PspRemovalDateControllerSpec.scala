@@ -31,7 +31,7 @@ import play.api.libs.json.{JsArray, Json}
 import play.api.mvc.{Action, AnyContent, AnyContentAsJson}
 import play.api.test.FakeRequest
 import utils.DateHelper._
-import views.html.remove.psp.pspRemovalDate
+import views.html.psp.deauthorisation.pspRemovalDate
 
 import java.time.LocalDate
 

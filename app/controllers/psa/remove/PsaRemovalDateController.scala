@@ -37,7 +37,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateHelper._
 import utils.{Navigator, UserAnswers}
 import utils.annotations.RemovePSA
-import views.html.remove.psa.removalDate
+import views.html.psa.remove.removalDate
 
 import java.time.LocalDate
 import javax.inject.Inject

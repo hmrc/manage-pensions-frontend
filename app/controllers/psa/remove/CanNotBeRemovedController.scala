@@ -23,7 +23,7 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.RemovalViewModel
-import views.html.remove.psa.cannot_be_removed
+import views.html.psa.remove.cannot_be_removed
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}

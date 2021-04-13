@@ -26,7 +26,7 @@ import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent}
 import play.api.test.FakeRequest
 import utils.{UserAnswerOps, UserAnswers}
-import views.html.remove.psa.confirmRemovePsa
+import views.html.psa.remove.confirmRemovePsa
 
 class ConfirmRemovePsaControllerSpec extends ControllerWithQuestionPageBehaviours {
 

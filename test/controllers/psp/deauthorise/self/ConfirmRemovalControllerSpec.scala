@@ -21,14 +21,14 @@ import controllers.ControllerSpecBase
 import controllers.actions._
 import forms.psp.deauthorise.ConfirmRemovePspFormProvider
 import identifiers.psp.PSPNameId
-import identifiers.psp.deauthorise.selfRemoval.ConfirmRemovalId
+import identifiers.psp.deauthorise.self.ConfirmRemovalId
 import identifiers.{SchemeNameId, SchemeSrnId}
 import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.api.test.Helpers._
 import utils.FakeNavigator
-import views.html.remove.psp.selfRemoval.confirmRemoval
+import views.html.psp.deauthorisation.self.confirmRemoval
 
 class ConfirmRemovalControllerSpec extends ControllerSpecBase {
 

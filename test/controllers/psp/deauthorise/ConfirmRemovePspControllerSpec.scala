@@ -27,7 +27,7 @@ import play.api.data.Form
 import play.api.libs.json.{JsArray, Json}
 import play.api.mvc.{Action, AnyContent}
 import play.api.test.FakeRequest
-import views.html.remove.psp.confirmRemovePsp
+import views.html.psp.deauthorisation.confirmRemovePsp
 
 class ConfirmRemovePspControllerSpec extends ControllerWithQuestionPageBehaviours {
 

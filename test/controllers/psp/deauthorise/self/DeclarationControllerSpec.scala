@@ -23,7 +23,7 @@ import controllers.ControllerSpecBase
 import controllers.actions._
 import forms.psp.deauthorise.RemovePspDeclarationFormProvider
 import identifiers.invitations.PSTRId
-import identifiers.psp.deauthorise.selfRemoval.RemovalDateId
+import identifiers.psp.deauthorise.self.RemovalDateId
 import identifiers.{AuthorisedPractitionerId, SchemeNameId, SchemeSrnId}
 import models.{IndividualDetails, MinimalPSAPSP, SendEmailRequest, Sent}
 import org.mockito.ArgumentCaptor
@@ -39,7 +39,7 @@ import play.api.test.Helpers._
 import testhelpers.CommonBuilders.pspDetails
 import uk.gov.hmrc.domain.PspId
 import uk.gov.hmrc.http.HttpResponse
-import views.html.remove.psp.selfRemoval.declaration
+import views.html.psp.deauthorisation.self.declaration
 
 import java.time.LocalDate
 import scala.concurrent.Future

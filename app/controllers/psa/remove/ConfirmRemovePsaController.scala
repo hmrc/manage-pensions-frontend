@@ -32,7 +32,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.{Navigator, UserAnswers}
 import utils.annotations.RemovePSA
-import views.html.remove.psa.confirmRemovePsa
+import views.html.psa.remove.confirmRemovePsa
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}

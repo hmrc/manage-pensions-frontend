@@ -39,7 +39,7 @@ import play.api.test.Helpers.{redirectLocation, status, _}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.DateHelper._
 import utils.UserAnswers
-import views.html.remove.psa.removalDate
+import views.html.psa.remove.removalDate
 
 import java.time.LocalDate
 import scala.concurrent.{ExecutionContext, Future}

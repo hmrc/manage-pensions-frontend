@@ -29,7 +29,7 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.{JsArray, Json}
 import play.api.mvc.{Action, AnyContent}
-import views.html.remove.psa.confirmPsaRemovedPsp
+import views.html.psa.remove.confirmPsaRemovedPsp
 
 import scala.concurrent.Future
 

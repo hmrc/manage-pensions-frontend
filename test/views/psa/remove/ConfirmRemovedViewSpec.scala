@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package views.remove
+package views.psa.remove
 
 import play.twirl.api.HtmlFormat
 import viewmodels.Message
 import views.behaviours.ViewBehaviours
-import views.html.remove.psa.confirmRemoved
+import views.html.psa.remove.confirmRemoved
 
 class ConfirmRemovedViewSpec extends ViewBehaviours {
   val messageKeyPrefix = "confirmRemoved"

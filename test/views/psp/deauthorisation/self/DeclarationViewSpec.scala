@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package views.remove.psp.selfRemoval
+package views.psp.deauthorisation.self
 
 import forms.psp.deauthorise.RemovePspDeclarationFormProvider
 import play.api.data.{Form, FormError}
 import play.twirl.api.HtmlFormat
 import viewmodels.Message
 import views.behaviours.QuestionViewBehaviours
-import views.html.remove.psp.selfRemoval.declaration
+import views.html.psp.deauthorisation.self.declaration
 
 class DeclarationViewSpec extends QuestionViewBehaviours[Boolean] {
 

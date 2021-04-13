@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package views.remove
+package views.psa.remove
 
 import controllers.psa.routes._
 import forms.psa.remove.RemovalDateFormProvider
-
-import java.time.LocalDate
 import org.jsoup.Jsoup
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
-import views.behaviours.QuestionViewBehaviours
 import utils.DateHelper._
-import views.html.remove.psa.removalDate
+import views.behaviours.QuestionViewBehaviours
+import views.html.psa.remove.removalDate
+
+import java.time.LocalDate
 
 class RemovalDateViewSpec extends QuestionViewBehaviours[LocalDate] {
 

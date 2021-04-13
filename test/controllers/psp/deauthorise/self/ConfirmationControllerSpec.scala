@@ -29,7 +29,7 @@ import play.api.libs.json.Json
 import play.api.test.Helpers._
 import testhelpers.CommonBuilders._
 import uk.gov.hmrc.domain.PspId
-import views.html.remove.psp.selfRemoval.confirmation
+import views.html.psp.deauthorisation.self.confirmation
 
 import scala.concurrent.Future
 

@@ -39,7 +39,7 @@ import uk.gov.hmrc.crypto.{ApplicationCrypto, PlainText}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.annotations.RemovePSP
 import utils.{Navigator, UserAnswers}
-import views.html.remove.psa.psaRemovePspDeclaration
+import views.html.psa.remove.psaRemovePspDeclaration
 
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets

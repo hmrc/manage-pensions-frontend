@@ -27,7 +27,7 @@ import controllers.psp.deauthorise.self.routes._
 import controllers.routes._
 import forms.psp.deauthorise.RemovePspDeclarationFormProvider
 import identifiers.invitations.PSTRId
-import identifiers.psp.deauthorise.selfRemoval.RemovalDateId
+import identifiers.psp.deauthorise.self.RemovalDateId
 import identifiers.{AuthorisedPractitionerId, SchemeNameId, SchemeSrnId}
 import models.AuthEntity.PSP
 import models.requests.DataRequest
@@ -38,7 +38,7 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.crypto.{ApplicationCrypto, PlainText}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.remove.psp.selfRemoval.declaration
+import views.html.psp.deauthorisation.self.declaration
 
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets

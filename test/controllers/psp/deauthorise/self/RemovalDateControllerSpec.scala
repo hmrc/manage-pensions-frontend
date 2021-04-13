@@ -21,7 +21,7 @@ import connectors.FakeUserAnswersCacheConnector
 import controllers.ControllerSpecBase
 import controllers.actions._
 import forms.psp.deauthorise.PspRemovalDateFormProvider
-import identifiers.psp.deauthorise.selfRemoval.RemovalDateId
+import identifiers.psp.deauthorise.self.RemovalDateId
 import identifiers.{AssociatedDateId, AuthorisedPractitionerId, SchemeNameId, SchemeSrnId}
 import play.api.data.Form
 import play.api.libs.json.Json
@@ -32,7 +32,7 @@ import testhelpers.CommonBuilders._
 import uk.gov.hmrc.domain.PspId
 import utils.DateHelper.formatDate
 import utils.FakeNavigator
-import views.html.remove.psp.selfRemoval.removalDate
+import views.html.psp.deauthorisation.self.removalDate
 
 class RemovalDateControllerSpec extends ControllerSpecBase {
 

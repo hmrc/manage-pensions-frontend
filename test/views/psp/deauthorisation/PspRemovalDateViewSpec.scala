@@ -14,41 +14,42 @@
  * limitations under the License.
  */
 
-package views.remove.psp.selfRemoval
+package views.psp.deauthorisation
 
-import controllers.psp.routes._
+import controllers.psa.routes._
 import forms.psp.deauthorise.PspRemovalDateFormProvider
-
-import java.time.LocalDate
 import org.jsoup.Jsoup
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import utils.DateHelper._
 import views.behaviours.QuestionViewBehaviours
-import views.html.remove.psp.selfRemoval.removalDate
+import views.html.psp.deauthorisation.pspRemovalDate
 
-class RemovalDateViewSpec extends QuestionViewBehaviours[LocalDate] {
+import java.time.LocalDate
+
+class PspRemovalDateViewSpec extends QuestionViewBehaviours[LocalDate] {
 
   private val relationshipStartDate = LocalDate.parse("2020-04-01")
   val form = new PspRemovalDateFormProvider()(relationshipStartDate, "messages__pspRemoval_date_error__before_relationshipStartDate")
   private val schemeName = "test scheme name"
+  private val pspName = "test psp name"
   private val srn = "test srn"
-  val prefix = "pspSelfRemovalDate"
-  private val removalDateView = injector.instanceOf[removalDate]
+  val prefix = "pspRemovalDate"
+  private val removalDateView = injector.instanceOf[pspRemovalDate]
 
   private def createView: () => HtmlFormat.Appendable = () =>
-    removalDateView(form, schemeName, srn, formatDate(relationshipStartDate))(fakeRequest, messages)
+    removalDateView(form, pspName, schemeName, srn, formatDate(relationshipStartDate), 0)(fakeRequest, messages)
 
   private def createViewUsingForm: Form[_] => HtmlFormat.Appendable = (form: Form[_]) =>
-    removalDateView(form, schemeName, srn, formatDate(relationshipStartDate))(fakeRequest, messages)
+    removalDateView(form, pspName, schemeName, srn, formatDate(relationshipStartDate), 0)(fakeRequest, messages)
 
-  "RemovalDate" must {
+  "PspRemovalDate" must {
 
     behave like normalPageWithTitle(
       createView,
       prefix,
       messages(s"messages__${prefix}__title"),
-      messages(s"messages__${prefix}__heading", schemeName)
+      messages(s"messages__${prefix}__heading", pspName, schemeName)
     )
 
     behave like pageWithSubmitButton(createView)
@@ -62,13 +63,14 @@ class RemovalDateViewSpec extends QuestionViewBehaviours[LocalDate] {
 
     behave like pageWithReturnLink(
       view = createView,
-      url = PspSchemeDashboardController.onPageLoad(srn).url,
+      url = PsaSchemeDashboardController.onPageLoad(srn).url,
       text = messages("messages__returnToSchemeDetails__link", schemeName)
     )
 
     "display correct opening text" in {
       Jsoup.parse(createView().toString()) must haveDynamicText(
-        "messages__pspSelfRemovalDate__lede",
+        "messages__pspRemovalDate__lede",
+        pspName,
         formatDate(relationshipStartDate)
       )
     }

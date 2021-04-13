@@ -14,28 +14,25 @@
  * limitations under the License.
  */
 
-package views.remove
+package views.psp.deauthorisation.self
 
+import controllers.psp.routes._
 import play.twirl.api.HtmlFormat
 import viewmodels.Message
 import views.behaviours.ViewBehaviours
-import views.html.remove.psa.confirmPsaRemovedPsp
+import views.html.psp.deauthorisation.self.confirmation
 
-class ConfirmPsaRemovedPspViewSpec extends ViewBehaviours {
-  val messageKeyPrefix = "confirmPsaRemovedPsp"
-  private val pspName = "PSP Limited Company 1"
+class ConfirmationViewSpec extends ViewBehaviours {
+  val messageKeyPrefix = "pspRemovalConfirmation"
+  private val psaName = "PSA Limited Company 1"
   private val schemeName = "test-scheme-name"
-  private val psaEmail = "a@b.com"
-  private val view = injector.instanceOf[confirmPsaRemovedPsp]
+  private val email = "a@b.com"
+  private val view = injector.instanceOf[confirmation]
 
-  lazy val returnLinkUrl: String = controllers.psa.routes.ListSchemesController.onPageLoad().url
+  lazy val returnLinkUrl: String = PspDashboardController.onPageLoad().url
 
   def createView(): () => HtmlFormat.Appendable = () =>
-    view(
-      pspName = pspName,
-      schemeName = schemeName,
-      psaEmailAddress = psaEmail
-    )(fakeRequest, messages)
+    view(schemeName, psaName, email)(fakeRequest, messages)
 
   "Confirm Removed Page" must {
 
@@ -43,14 +40,14 @@ class ConfirmPsaRemovedPspViewSpec extends ViewBehaviours {
       view = createView(),
       messageKeyPrefix = messageKeyPrefix,
       pageHeader =
-        Message("messages__confirmPsaRemovedPsp__heading", pspName, schemeName).resolve + " " +
-          Message("messages__confirmPsaRemovedPsp__heading__screenReaderAlternative", pspName, schemeName).resolve
+        Message("messages__pspRemovalConfirmation__heading", schemeName).resolve + " " +
+          Message("messages__pspRemovalConfirmation__heading__screenReaderAlternative", schemeName).resolve
     )
 
     behave like pageWithReturnLink(
       view = createView(),
       url = returnLinkUrl,
-      text = messages("messages__confirmRemoved__return_link")
+      text = messages("site.return_to_psp_overview")
     )
 
   }

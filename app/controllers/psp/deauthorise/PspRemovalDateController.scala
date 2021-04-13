@@ -33,7 +33,7 @@ import utils.DateHelper._
 import utils.annotations.RemovePSP
 import utils.{Navigator, UserAnswers}
 import viewmodels.Message
-import views.html.remove.psp.pspRemovalDate
+import views.html.psp.deauthorisation.pspRemovalDate
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}

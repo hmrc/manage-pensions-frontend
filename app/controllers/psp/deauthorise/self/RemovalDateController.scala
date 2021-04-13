@@ -20,7 +20,7 @@ import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
 import controllers.actions._
 import forms.psp.deauthorise.PspRemovalDateFormProvider
-import identifiers.psp.deauthorise.selfRemoval.RemovalDateId
+import identifiers.psp.deauthorise.self.RemovalDateId
 import identifiers.{AuthorisedPractitionerId, SchemeNameId, SchemeSrnId}
 import models.AuthEntity.PSP
 import models.NormalMode
@@ -32,7 +32,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateHelper._
 import utils.annotations.PspSelfRemoval
 import utils.{Navigator, UserAnswers}
-import views.html.remove.psp.selfRemoval.removalDate
+import views.html.psp.deauthorisation.self.removalDate
 
 import java.time.LocalDate
 import javax.inject.Inject

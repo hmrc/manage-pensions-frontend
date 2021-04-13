@@ -22,7 +22,7 @@ import controllers.psp.routes._
 import controllers.psp.deauthorise.self.routes._
 import controllers.routes._
 import identifiers.Identifier
-import identifiers.psp.deauthorise.selfRemoval.{ConfirmRemovalId, RemovalDateId}
+import identifiers.psp.deauthorise.self.{ConfirmRemovalId, RemovalDateId}
 import org.scalatest.prop.TableFor4
 import play.api.libs.json.Json
 import play.api.mvc.Call

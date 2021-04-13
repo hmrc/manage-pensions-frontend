@@ -31,7 +31,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.annotations.RemovePSP
 import utils.{Navigator, UserAnswers}
-import views.html.remove.psp.confirmRemovePsp
+import views.html.psp.deauthorisation.confirmRemovePsp
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}

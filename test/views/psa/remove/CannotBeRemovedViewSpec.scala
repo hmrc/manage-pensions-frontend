@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package views.remove
+package views.psa.remove
 
 import org.jsoup.Jsoup
 import play.twirl.api.HtmlFormat
 import viewmodels.RemovalViewModel
 import views.behaviours.ViewBehaviours
-import views.html.remove.psa.cannot_be_removed
+import views.html.psa.remove.cannot_be_removed
 
 class CannotBeRemovedViewSpec extends ViewBehaviours {
 

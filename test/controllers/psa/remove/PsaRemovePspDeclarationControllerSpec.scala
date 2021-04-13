@@ -39,7 +39,7 @@ import play.api.mvc.{Action, AnyContent, AnyContentAsJson}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{redirectLocation, status, _}
 import uk.gov.hmrc.http.HttpResponse
-import views.html.remove.psa.psaRemovePspDeclaration
+import views.html.psa.remove.psaRemovePspDeclaration
 
 import java.time.LocalDate
 import scala.concurrent.Future

@@ -23,7 +23,7 @@ import controllers.actions.{AuthAction, DataRetrievalAction}
 import controllers.behaviours.ControllerWithNormalPageBehaviours
 import play.api.mvc.{Action, AnyContent}
 import utils.UserAnswers
-import views.html.remove.psa.confirmRemoved
+import views.html.psa.remove.confirmRemoved
 
 class ConfirmRemovedControllerSpec extends ControllerWithNormalPageBehaviours {
 

@@ -22,7 +22,7 @@ import controllers.behaviours.ControllerWithNormalPageBehaviours
 import models.{Individual, Organization, OtherUser}
 import play.api.test.Helpers.{status, _}
 import viewmodels.RemovalViewModel
-import views.html.remove.psa.cannot_be_removed
+import views.html.psa.remove.cannot_be_removed
 
 class CanNotBeRemovedControllerSpec extends ControllerWithNormalPageBehaviours {
 

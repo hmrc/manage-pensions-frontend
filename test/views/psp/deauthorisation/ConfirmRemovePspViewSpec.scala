@@ -14,38 +14,41 @@
  * limitations under the License.
  */
 
-package views.remove
+package views.psp.deauthorisation
 
 import controllers.psa.routes._
-import controllers.psa.remove.routes._
-import forms.psa.remove.ConfirmRemovePsaFormProvider
+import controllers.psp.deauthorise.routes._
+import forms.psp.deauthorise.ConfirmRemovePspFormProvider
+import models.Index
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
 import views.behaviours.YesNoViewBehaviours
-import views.html.remove.psa.confirmRemovePsa
+import views.html.psp.deauthorisation.confirmRemovePsp
 
-class ConfirmRemovePsaViewSpec extends YesNoViewBehaviours {
+class ConfirmRemovePspViewSpec extends YesNoViewBehaviours {
 
-  val form = new ConfirmRemovePsaFormProvider()()
+  val form = new ConfirmRemovePspFormProvider()()
   private val schemeName = "test scheme name"
   private val srn = "test srn"
-  private val psaName = "test psa name"
-  val prefix = "confirmRemovePsa"
-  private val confirmRemovePsaView = injector.instanceOf[confirmRemovePsa]
+  private val pspName = "test psa name"
+  val prefix = "confirmRemovePsp"
+  private val confirmRemovePspView = injector.instanceOf[confirmRemovePsp]
 
   private def createView: () => HtmlFormat.Appendable = () =>
-    confirmRemovePsaView(form, schemeName, srn, psaName)(fakeRequest, messages)
+    confirmRemovePspView(form, schemeName, srn, pspName, Index(0))(fakeRequest, messages)
 
   private def createViewUsingForm: Form[_] => HtmlFormat.Appendable = (form: Form[_]) =>
-    confirmRemovePsaView(form, schemeName, srn, psaName)(fakeRequest, messages)
+    confirmRemovePspView(form, schemeName, srn, pspName, Index(0))(fakeRequest, messages)
 
-  "ConfirmRemovePsa" must {
+  "ConfirmRemovePsp" must {
 
     behave like normalPageWithTitle(
       view = createView,
       messageKeyPrefix = prefix,
       title = messages(s"messages__${prefix}__title"),
-      pageHeader = messages(s"messages__${prefix}__heading", psaName, schemeName)
+      pageHeader =
+        messages(s"messages__${prefix}__heading", pspName, schemeName) +
+          messages(s"messages__${prefix}__heading__screenReaderAlternativeText", pspName, schemeName)
     )
 
     behave like pageWithSubmitButton(createView)
@@ -53,7 +56,7 @@ class ConfirmRemovePsaViewSpec extends YesNoViewBehaviours {
     behave like yesNoPage(
       createView = createViewUsingForm,
       messageKeyPrefix = prefix,
-      expectedFormAction = ConfirmRemovePsaController.onSubmit().url
+      expectedFormAction = ConfirmRemovePspController.onSubmit(Index(0)).url
     )
 
     behave like pageWithReturnLink(

@@ -21,7 +21,7 @@ import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.psp.deauthorise.ConfirmRemovePspFormProvider
 import identifiers.psp.PSPNameId
-import identifiers.psp.deauthorise.selfRemoval.ConfirmRemovalId
+import identifiers.psp.deauthorise.self.ConfirmRemovalId
 import identifiers.{SchemeNameId, SchemeSrnId}
 
 import javax.inject.Inject
@@ -33,7 +33,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.annotations.PspSelfRemoval
 import utils.{Navigator, UserAnswers}
-import views.html.remove.psp.selfRemoval.confirmRemoval
+import views.html.psp.deauthorisation.self.confirmRemoval
 
 import scala.concurrent.{ExecutionContext, Future}
 
