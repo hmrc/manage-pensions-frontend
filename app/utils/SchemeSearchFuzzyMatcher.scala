@@ -16,7 +16,7 @@
 
 package utils
 
-class FuzzyMatching {
+class SchemeSearchFuzzyMatcher {
 
   def doFuzzyMatching(searchString: String, inputString: String): Boolean = {
 
