@@ -21,7 +21,7 @@ import controllers.ControllerSpecBase
 import controllers.actions._
 import forms.psp.deauthorise.ConfirmRemovePspFormProvider
 import identifiers.psp.PSPNameId
-import identifiers.remove.psp.selfRemoval.ConfirmRemovalId
+import identifiers.psp.deauthorise.selfRemoval.ConfirmRemovalId
 import identifiers.{SchemeNameId, SchemeSrnId}
 import play.api.data.Form
 import play.api.libs.json.Json

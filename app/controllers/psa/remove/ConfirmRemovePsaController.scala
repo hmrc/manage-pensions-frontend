@@ -24,7 +24,7 @@ import forms.psa.remove.ConfirmRemovePsaFormProvider
 import identifiers.SchemeSrnId
 import identifiers.invitations.SchemeNameId
 import identifiers.psa.PSANameId
-import identifiers.remove.psa.ConfirmRemovePsaId
+import identifiers.psa.remove.ConfirmRemovePsaId
 import models.NormalMode
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}

@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package identifiers.remove.psa
+package identifiers.psa.remove
 
 import identifiers.TypedIdentifier
-import models.Index
 
-case class PsaRemovePspDeclarationId(index: Index) extends TypedIdentifier[Boolean] {
-  override def toString: String = "psaRemovePspDeclaration"
+object ConfirmRemovePsaId extends TypedIdentifier[Boolean] {
+  override def toString: String = "confirmRemovePsa"
 }

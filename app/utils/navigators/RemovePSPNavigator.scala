@@ -21,9 +21,8 @@ import controllers.routes._
 import controllers.psa.remove.routes._
 import controllers.psa.routes._
 import controllers.psp.deauthorise.routes._
-import identifiers.remove.psp.{ConfirmRemovePspId, PspRemovalDateId}
-import identifiers.remove.psa.PsaRemovePspDeclarationId
-import identifiers.remove.psp
+import identifiers.psa.remove.PsaRemovePspDeclarationId
+import identifiers.psp.deauthorise.{ConfirmRemovePspId, PspRemovalDateId}
 import identifiers.{Identifier, SchemeSrnId}
 
 import javax.inject.{Inject, Singleton}
@@ -45,7 +44,7 @@ class RemovePSPNavigator @Inject()(val dataCacheConnector: UserAnswersCacheConne
   }
 
   private def confirmRemovePspRoutes(userAnswers: UserAnswers, index: Index): Call = {
-    (userAnswers.get(psp.ConfirmRemovePspId(index)), userAnswers.get(SchemeSrnId)) match {
+    (userAnswers.get(ConfirmRemovePspId(index)), userAnswers.get(SchemeSrnId)) match {
       case (Some(false), Some(srn)) =>
         PsaSchemeDashboardController.onPageLoad(srn)
       case (Some(true), _) =>

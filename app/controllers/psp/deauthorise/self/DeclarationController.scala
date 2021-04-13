@@ -27,7 +27,7 @@ import controllers.psp.deauthorise.self.routes._
 import controllers.routes._
 import forms.psp.deauthorise.RemovePspDeclarationFormProvider
 import identifiers.invitations.PSTRId
-import identifiers.remove.psp.selfRemoval.RemovalDateId
+import identifiers.psp.deauthorise.selfRemoval.RemovalDateId
 import identifiers.{AuthorisedPractitionerId, SchemeNameId, SchemeSrnId}
 import models.AuthEntity.PSP
 import models.requests.DataRequest

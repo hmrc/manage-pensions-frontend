@@ -20,7 +20,7 @@ import connectors.UserAnswersCacheConnector
 import controllers.psp.routes._
 import controllers.psp.deauthorise.self.routes._
 import controllers.routes._
-import identifiers.remove.psp.selfRemoval.{ConfirmRemovalId, RemovalDateId}
+import identifiers.psp.deauthorise.selfRemoval.{ConfirmRemovalId, RemovalDateId}
 import identifiers.{Identifier, SchemeSrnId}
 
 import javax.inject.{Inject, Singleton}

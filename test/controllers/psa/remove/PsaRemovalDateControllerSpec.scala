@@ -22,7 +22,7 @@ import connectors.{FakeUserAnswersCacheConnector, UserAnswersCacheConnector}
 import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.psa.remove.RemovalDateFormProvider
-import identifiers.remove.psa.PsaRemovalDateId
+import identifiers.psa.remove.PsaRemovalDateId
 import models.SchemeVariance
 import models.remove.psa.PsaToBeRemovedFromScheme
 import org.mockito.Matchers

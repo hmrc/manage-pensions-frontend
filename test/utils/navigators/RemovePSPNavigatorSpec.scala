@@ -23,9 +23,9 @@ import controllers.psa.remove.routes._
 import controllers.psp.deauthorise.routes._
 import controllers.routes._
 import identifiers.Identifier
-import identifiers.remove.psa.PsaRemovePspDeclarationId
-import identifiers.remove.psp
-import identifiers.remove.psp.PspRemovalDateId
+import identifiers.psa.remove
+import identifiers.psp.deauthorise
+import identifiers.psp.deauthorise.ConfirmRemovePspId
 import org.scalatest.prop.TableFor4
 import play.api.libs.json.Json
 import play.api.mvc.Call
@@ -38,12 +38,12 @@ class RemovePSPNavigatorSpec extends SpecBase with NavigatorBehaviour {
   val navigator = new RemovePSPNavigator(FakeUserAnswersCacheConnector)
 
   def routes(): TableFor4[Identifier, UserAnswers, Call, Option[Call]] = Table(
-    ("Id",                        "User Answers",   "Next Page (NormalMode)",   "Next Page (CheckMode)"),
-    (psp.ConfirmRemovePspId(0),         removePsp,           pspRemovalDatePage,           None),
-    (psp.ConfirmRemovePspId(0),         dontRemovePsp,       schemeDetailsPage,            None),
-    (psp.ConfirmRemovePspId(0),         emptyAnswers,        sessionExpiredPage,           None),
-    (PspRemovalDateId(0),           emptyAnswers,        psaRemovePspDeclarationPage,  None),
-    (PsaRemovePspDeclarationId(0),  emptyAnswers,        psaRemovePspConfirmationPage, None)
+    ("Id",                                   "User Answers",      "Next Page (NormalMode)",    "Next Page (CheckMode)"),
+    (ConfirmRemovePspId(0),                   removePsp,           pspRemovalDatePage,           None),
+    (deauthorise.ConfirmRemovePspId(0),       dontRemovePsp,       schemeDetailsPage,            None),
+    (deauthorise.ConfirmRemovePspId(0),       emptyAnswers,        sessionExpiredPage,           None),
+    (deauthorise.PspRemovalDateId(0),         emptyAnswers,        psaRemovePspDeclarationPage,  None),
+    (remove.PsaRemovePspDeclarationId(0),     emptyAnswers,        psaRemovePspConfirmationPage, None)
   )
 
   navigator.getClass.getSimpleName must {
@@ -56,8 +56,8 @@ class RemovePSPNavigatorSpec extends SpecBase with NavigatorBehaviour {
 object RemovePSPNavigatorSpec {
   private val srn = "test srn"
   private lazy val emptyAnswers: UserAnswers = UserAnswers(Json.obj())
-  private lazy val removePsp: UserAnswers = UserAnswers().srn(srn).set(psp.ConfirmRemovePspId(0))(true).asOpt.get
-  private lazy val dontRemovePsp: UserAnswers = UserAnswers().srn(srn).set(psp.ConfirmRemovePspId(0))(false).asOpt.get
+  private lazy val removePsp: UserAnswers = UserAnswers().srn(srn).set(deauthorise.ConfirmRemovePspId(0))(true).asOpt.get
+  private lazy val dontRemovePsp: UserAnswers = UserAnswers().srn(srn).set(deauthorise.ConfirmRemovePspId(0))(false).asOpt.get
 
   private def dataDescriber(answers: UserAnswers): String = answers.toString
 

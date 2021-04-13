@@ -21,7 +21,7 @@ import connectors.FakeUserAnswersCacheConnector
 import controllers.ControllerSpecBase
 import controllers.actions._
 import forms.psp.deauthorise.PspRemovalDateFormProvider
-import identifiers.remove.psp.selfRemoval.RemovalDateId
+import identifiers.psp.deauthorise.selfRemoval.RemovalDateId
 import identifiers.{AssociatedDateId, AuthorisedPractitionerId, SchemeNameId, SchemeSrnId}
 import play.api.data.Form
 import play.api.libs.json.Json

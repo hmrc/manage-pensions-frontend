@@ -19,10 +19,8 @@ package controllers.psp.deauthorise
 import connectors.{FakeUserAnswersCacheConnector, UserAnswersCacheConnector}
 import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
-import controllers.psp.deauthorise.ConfirmRemovePspController
 import forms.psp.deauthorise.ConfirmRemovePspFormProvider
-import identifiers.remove.psp
-import identifiers.remove.psp.ConfirmRemovePspId
+import identifiers.psp.deauthorise
 import identifiers.{SchemeNameId, SchemeSrnId, SeqAuthorisedPractitionerId}
 import models.Index
 import play.api.data.Form
@@ -96,7 +94,7 @@ class ConfirmRemovePspControllerSpec extends ControllerWithQuestionPageBehaviour
   behave like controllerThatSavesUserAnswers(
     saveAction = onSaveAction,
     validRequest = postRequest,
-    id = ConfirmRemovePspId(0),
+    id = deauthorise.ConfirmRemovePspId(0),
     value = true
   )
 }
@@ -148,7 +146,7 @@ object ConfirmRemovePspControllerSpec {
   private val validData: FakeDataRetrievalAction =
     new FakeDataRetrievalAction(Some(
       data ++
-      Json.obj(psp.ConfirmRemovePspId(0).toString -> true)
+      Json.obj(deauthorise.ConfirmRemovePspId(0).toString -> true)
     ))
 }
 

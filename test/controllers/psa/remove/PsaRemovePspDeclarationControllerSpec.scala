@@ -23,8 +23,9 @@ import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction, Fak
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.psp.deauthorise.RemovePspDeclarationFormProvider
 import identifiers.invitations.PSTRId
-import identifiers.remove.psa
-import identifiers.remove.psp.PspRemovalDateId
+import identifiers.psa.remove
+import identifiers.psa.remove.PsaRemovePspDeclarationId
+import identifiers.psp.deauthorise
 import identifiers.{SchemeNameId, SchemeSrnId, SeqAuthorisedPractitionerId}
 import models.{IndividualDetails, MinimalPSAPSP, SendEmailRequest}
 import org.mockito.Matchers.any
@@ -178,7 +179,7 @@ class PsaRemovePspDeclarationControllerSpec
   behave like controllerThatSavesUserAnswers(
     saveAction = onSaveAction,
     validRequest = postRequest,
-    id = psa.PsaRemovePspDeclarationId(0),
+    id = PsaRemovePspDeclarationId(0),
     value = true
   )
 }
@@ -234,7 +235,7 @@ object PsaRemovePspDeclarationControllerSpec {
     SchemeNameId.toString -> schemeName,
     SeqAuthorisedPractitionerId.toString -> practitioners,
     PSTRId.toString -> pstr,
-    PspRemovalDateId(0).toString -> "2020-05-01"
+    deauthorise.PspRemovalDateId(0).toString -> "2020-05-01"
   )
 
   private val sessionData: FakeDataRetrievalAction =
@@ -244,7 +245,7 @@ object PsaRemovePspDeclarationControllerSpec {
     new FakeDataRetrievalAction(Some(
       data
         ++
-        Json.obj(psa.PsaRemovePspDeclarationId(0).toString -> "true")
+        Json.obj(remove.PsaRemovePspDeclarationId(0).toString -> "true")
     ))
 
   val postRequest: FakeRequest[AnyContentAsJson] =

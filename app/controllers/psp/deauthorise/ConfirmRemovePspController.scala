@@ -21,8 +21,8 @@ import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.psp.deauthorise.ConfirmRemovePspFormProvider
-import identifiers.remove.psp
-import identifiers.remove.psp.{ConfirmRemovePspId, PspDetailsId}
+import identifiers.psp.deauthorise
+import identifiers.psp.deauthorise.{ConfirmRemovePspId, PspDetailsId}
 import identifiers.{SchemeNameId, SchemeSrnId}
 import models.{Index, NormalMode}
 import play.api.data.Form
@@ -56,9 +56,9 @@ class ConfirmRemovePspController @Inject()(
 
   def onPageLoad(index: Index): Action[AnyContent] = (auth() andThen getData andThen requireData).async {
     implicit request =>
-      (SchemeSrnId and SchemeNameId and PspDetailsId(index)).retrieve.right.map {
+      (SchemeSrnId and SchemeNameId and deauthorise.PspDetailsId(index)).retrieve.right.map {
         case srn ~ schemeName ~ pspDetails =>
-          val preparedForm = request.userAnswers.get(ConfirmRemovePspId(index)).fold(form)(form.fill)
+          val preparedForm = request.userAnswers.get(deauthorise.ConfirmRemovePspId(index)).fold(form)(form.fill)
           if (pspDetails.authorisingPSAID == request.psaIdOrException.id) {
             Future.successful(Ok(view(preparedForm, schemeName, srn, pspDetails.name, index)))
           } else {
@@ -69,15 +69,15 @@ class ConfirmRemovePspController @Inject()(
 
   def onSubmit(index: Index): Action[AnyContent] = (auth() andThen getData andThen requireData).async {
     implicit request =>
-      (SchemeNameId and SchemeSrnId and psp.PspDetailsId(index)).retrieve.right.map {
+      (SchemeNameId and SchemeSrnId and PspDetailsId(index)).retrieve.right.map {
         case schemeName ~ srn ~ pspDetails =>
           form.bindFromRequest().fold(
             (formWithErrors: Form[Boolean]) =>
               Future.successful(BadRequest(view(formWithErrors, schemeName, srn, pspDetails.name, index))),
             value => {
-              userAnswersCacheConnector.save(request.externalId, psp.ConfirmRemovePspId(index), value).map(
+              userAnswersCacheConnector.save(request.externalId, ConfirmRemovePspId(index), value).map(
                 cacheMap =>
-                  Redirect(navigator.nextPage(psp.ConfirmRemovePspId(index), NormalMode, UserAnswers(cacheMap)))
+                  Redirect(navigator.nextPage(deauthorise.ConfirmRemovePspId(index), NormalMode, UserAnswers(cacheMap)))
               )
             }
           )

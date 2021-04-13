@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package identifiers.remove.psp.selfRemoval
+package identifiers.psp.deauthorise.selfRemoval
 
 import java.time.LocalDate
 

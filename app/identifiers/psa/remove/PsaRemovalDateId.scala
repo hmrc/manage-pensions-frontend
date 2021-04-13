@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package identifiers.remove.psp
+package identifiers.psa.remove
 
 import identifiers.TypedIdentifier
-import models.Index
 
-case class ConfirmRemovePspId(index: Index) extends TypedIdentifier[Boolean] {
-  override def toString: String = "confirmRemovePsp"
+import java.time.LocalDate
+
+case object PsaRemovalDateId extends TypedIdentifier[LocalDate] {
+  override def toString: String = "removal"
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package identifiers.remove.psp
+package identifiers.psp.deauthorise
 
 import identifiers.TypedIdentifier
 import models.{AuthorisedPractitioner, Index}

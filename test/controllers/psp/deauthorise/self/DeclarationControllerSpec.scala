@@ -23,7 +23,7 @@ import controllers.ControllerSpecBase
 import controllers.actions._
 import forms.psp.deauthorise.RemovePspDeclarationFormProvider
 import identifiers.invitations.PSTRId
-import identifiers.remove.psp.selfRemoval.RemovalDateId
+import identifiers.psp.deauthorise.selfRemoval.RemovalDateId
 import identifiers.{AuthorisedPractitionerId, SchemeNameId, SchemeSrnId}
 import models.{IndividualDetails, MinimalPSAPSP, SendEmailRequest, Sent}
 import org.mockito.ArgumentCaptor

@@ -22,7 +22,7 @@ import controllers.psa.routes._
 import controllers.psa.remove.routes._
 import controllers.routes._
 import identifiers.Identifier
-import identifiers.remove.psa.{ConfirmRemovePsaId, PsaRemovalDateId}
+import identifiers.psa.remove.{ConfirmRemovePsaId, PsaRemovalDateId}
 import org.scalatest.prop.TableFor4
 import play.api.libs.json.Json
 import play.api.mvc.Call

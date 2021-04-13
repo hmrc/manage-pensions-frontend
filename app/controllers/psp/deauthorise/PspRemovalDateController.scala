@@ -20,8 +20,8 @@ import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
 import controllers.actions._
 import forms.psp.deauthorise.PspRemovalDateFormProvider
-import identifiers.remove.psp
-import identifiers.remove.psp.{PspDetailsId, PspRemovalDateId}
+import identifiers.psp.deauthorise
+import identifiers.psp.deauthorise.{PspDetailsId, PspRemovalDateId}
 import identifiers.{SchemeNameId, SchemeSrnId}
 import models.{Index, NormalMode}
 import play.api.data.Form
@@ -59,7 +59,7 @@ class PspRemovalDateController @Inject()(
     (authenticate() andThen getData andThen requireData).async {
       implicit request =>
 
-        (SchemeSrnId and SchemeNameId and PspDetailsId(index)).retrieve.right.map {
+        (SchemeSrnId and SchemeNameId and deauthorise.PspDetailsId(index)).retrieve.right.map {
           case srn ~ schemeName ~ pspDetails =>
             if (pspDetails.authorisingPSAID == request.psaIdOrException.id) {
               Future.successful(Ok(view(
@@ -82,7 +82,7 @@ class PspRemovalDateController @Inject()(
   def onSubmit(index: Index): Action[AnyContent] =
     (authenticate() andThen getData andThen requireData).async {
       implicit request =>
-        (SchemeSrnId and SchemeNameId and psp.PspDetailsId(index)).retrieve.right.map {
+        (SchemeSrnId and SchemeNameId and PspDetailsId(index)).retrieve.right.map {
           case srn ~ schemeName ~ pspDetails =>
             formProvider(
               relationshipStartDate = pspDetails.relationshipStartDate,
@@ -98,9 +98,9 @@ class PspRemovalDateController @Inject()(
                   index = index
                 ))),
               value =>
-                userAnswersCacheConnector.save(request.externalId, PspRemovalDateId(index), value).map {
+                userAnswersCacheConnector.save(request.externalId, deauthorise.PspRemovalDateId(index), value).map {
                   cacheMap =>
-                    Redirect(navigator.nextPage(psp.PspRemovalDateId(index), NormalMode, UserAnswers(cacheMap)))
+                    Redirect(navigator.nextPage(PspRemovalDateId(index), NormalMode, UserAnswers(cacheMap)))
                 }
             )
         }

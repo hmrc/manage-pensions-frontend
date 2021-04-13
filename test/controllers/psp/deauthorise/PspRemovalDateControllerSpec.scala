@@ -21,8 +21,8 @@ import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import controllers.psp.deauthorise.PspRemovalDateController
 import forms.psp.deauthorise.PspRemovalDateFormProvider
-import identifiers.remove.psp
-import identifiers.remove.psp.PspRemovalDateId
+import identifiers.psp.deauthorise
+import identifiers.psp.deauthorise.PspRemovalDateId
 import identifiers.{SchemeNameId, SchemeSrnId, SeqAuthorisedPractitionerId}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito._
@@ -100,7 +100,7 @@ class PspRemovalDateControllerSpec
   behave like controllerThatSavesUserAnswers(
     saveAction = onSaveAction,
     validRequest = postRequest,
-    id = PspRemovalDateId(0),
+    id = deauthorise.PspRemovalDateId(0),
     value = date
   )
 }
@@ -158,7 +158,7 @@ object PspRemovalDateControllerSpec extends MockitoSugar {
   private val validData: FakeDataRetrievalAction =
     new FakeDataRetrievalAction(Some(
       data ++
-        Json.obj(psp.PspRemovalDateId(0).toString -> LocalDate.parse("2020-05-01"))
+        Json.obj(deauthorise.PspRemovalDateId(0).toString -> LocalDate.parse("2020-05-01"))
     ))
 
   val postRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.obj(

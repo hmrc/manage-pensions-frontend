@@ -21,7 +21,7 @@ import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.psp.deauthorise.ConfirmRemovePspFormProvider
 import identifiers.psp.PSPNameId
-import identifiers.remove.psp.selfRemoval.ConfirmRemovalId
+import identifiers.psp.deauthorise.selfRemoval.ConfirmRemovalId
 import identifiers.{SchemeNameId, SchemeSrnId}
 
 import javax.inject.Inject

@@ -20,7 +20,7 @@ import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
 import controllers.actions._
 import forms.psp.deauthorise.PspRemovalDateFormProvider
-import identifiers.remove.psp.selfRemoval.RemovalDateId
+import identifiers.psp.deauthorise.selfRemoval.RemovalDateId
 import identifiers.{AuthorisedPractitionerId, SchemeNameId, SchemeSrnId}
 import models.AuthEntity.PSP
 import models.NormalMode

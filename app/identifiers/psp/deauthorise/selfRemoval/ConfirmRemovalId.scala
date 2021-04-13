@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-package identifiers.remove.psp
+package identifiers.psp.deauthorise.selfRemoval
 
 import identifiers.TypedIdentifier
-import models.Index
 
-import java.time.LocalDate
-
-case class PspRemovalDateId(index: Index) extends TypedIdentifier[LocalDate] {
-  override def toString: String = "removalDate"
+object ConfirmRemovalId extends TypedIdentifier[Boolean] {
+  override def toString: String = "confirmPspSelfRemoval"
 }

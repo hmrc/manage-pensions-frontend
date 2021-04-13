@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package identifiers.remove.psp.selfRemoval
+package identifiers.psp.deauthorise
 
 import identifiers.TypedIdentifier
+import models.Index
 
-object ConfirmRemovalId extends TypedIdentifier[Boolean] {
-  override def toString: String = "confirmPspSelfRemoval"
+case class ConfirmRemovePspId(index: Index) extends TypedIdentifier[Boolean] {
+  override def toString: String = "confirmRemovePsp"
 }

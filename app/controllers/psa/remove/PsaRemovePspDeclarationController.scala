@@ -25,9 +25,9 @@ import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import controllers.routes._
 import forms.psp.deauthorise.RemovePspDeclarationFormProvider
 import identifiers.invitations.PSTRId
-import identifiers.remove.psa.PsaRemovePspDeclarationId
-import identifiers.remove.{psa, psp}
-import identifiers.remove.psp.{PspDetailsId, PspRemovalDateId}
+import identifiers.psa.remove
+import identifiers.psp.deauthorise
+import identifiers.psp.deauthorise.{PspDetailsId, PspRemovalDateId}
 import identifiers.{SchemeNameId, SchemeSrnId}
 import models.requests.DataRequest
 import models.{DeAuthorise, Index, MinimalPSAPSP, NormalMode, SendEmailRequest}
@@ -74,7 +74,7 @@ class PsaRemovePspDeclarationController @Inject()(
   def onPageLoad(index: Index): Action[AnyContent] =
     (authenticate() andThen getData andThen requireData).async {
       implicit request =>
-        (SchemeSrnId and SchemeNameId and PspDetailsId(index)).retrieve.right.map {
+        (SchemeSrnId and SchemeNameId and deauthorise.PspDetailsId(index)).retrieve.right.map {
           case srn ~ schemeName ~ pspDetails =>
             if (pspDetails.authorisingPSAID == request.psaIdOrException.id) {
               Future.successful(Ok(view(form, schemeName, srn, index)))
@@ -87,7 +87,7 @@ class PsaRemovePspDeclarationController @Inject()(
   def onSubmit(index: Index): Action[AnyContent] =
     (authenticate() andThen getData andThen requireData).async {
       implicit request =>
-        (SchemeSrnId and SchemeNameId and psp.PspDetailsId(index) and PSTRId and PspRemovalDateId(index)).retrieve.right.map {
+        (SchemeSrnId and SchemeNameId and PspDetailsId(index) and PSTRId and PspRemovalDateId(index)).retrieve.right.map {
           case srn ~ schemeName ~ pspDetails ~ pstr ~ removalDate =>
             if (pspDetails.authorisingPSAID == request.psaIdOrException.id) {
               form.bindFromRequest().fold(
@@ -96,7 +96,7 @@ class PsaRemovePspDeclarationController @Inject()(
                 value => {
                   val psaId = request.psaIdOrException.id
                   for {
-                    cacheMap <- userAnswersCacheConnector.save(request.externalId, PsaRemovePspDeclarationId(index), value)
+                    cacheMap <- userAnswersCacheConnector.save(request.externalId, remove.PsaRemovePspDeclarationId(index), value)
                     _ <- pspConnector.deAuthorise(
                       pstr = pstr,
                       deAuthorise = DeAuthorise(
@@ -121,7 +121,7 @@ class PsaRemovePspDeclarationController @Inject()(
                     auditService.sendExtendedEvent(
                       PSPDeauthorisationByPSAAuditEvent(removalDate, psaId, pspDetails.id, pstr)
                     )
-                    Redirect(navigator.nextPage(psa.PsaRemovePspDeclarationId(index), NormalMode, UserAnswers(cacheMap)))
+                    Redirect(navigator.nextPage(remove.PsaRemovePspDeclarationId(index), NormalMode, UserAnswers(cacheMap)))
                   }
                 }
               )

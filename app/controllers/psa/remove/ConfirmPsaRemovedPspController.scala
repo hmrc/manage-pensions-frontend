@@ -22,7 +22,7 @@ import connectors.admin.MinimalConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import identifiers.SchemeNameId
-import identifiers.remove.psp
+import identifiers.psp.deauthorise.PspDetailsId
 import models.Index
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -49,7 +49,7 @@ class ConfirmPsaRemovedPspController @Inject()(
     (authenticate() andThen getData andThen requireData).async {
       implicit request =>
 
-        (SchemeNameId and psp.PspDetailsId(index)).retrieve.right.map {
+        (SchemeNameId and PspDetailsId(index)).retrieve.right.map {
           case schemeName ~ pspDetails =>
             minimalPsaConnector.getMinimalPsaDetails(request.psaIdOrException.id) flatMap {
               psaDetails =>
