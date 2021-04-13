@@ -26,8 +26,8 @@ import controllers.invitations.psa.routes._
 import identifiers.MinimalSchemeDetailId
 import identifiers.invitations.psa.InviteePSAId
 import identifiers.invitations.{CheckYourAnswersId, InviteeNameId}
-import models.invitations.psp.Invitation
 import models.psa.PsaDetails
+import models.invitations.Invitation
 import models.requests.DataRequest
 import models.{MinimalSchemeDetail, NormalMode, SchemeReferenceNumber}
 import play.api.i18n.{I18nSupport, MessagesApi}

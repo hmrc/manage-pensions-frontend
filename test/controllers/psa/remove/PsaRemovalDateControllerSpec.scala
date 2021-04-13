@@ -24,7 +24,7 @@ import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.psa.remove.RemovalDateFormProvider
 import identifiers.psa.remove.PsaRemovalDateId
 import models.SchemeVariance
-import models.remove.psa.PsaToBeRemovedFromScheme
+import models.psa.remove.PsaToBeRemovedFromScheme
 import org.mockito.Matchers
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{reset, times, verify, when}

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package models.remove.psa
+package models.psp.deauthorisation
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json._
 
 import java.time.LocalDate
 
-case class PsaToBeRemovedFromScheme(psaId: String, pstr: String, removalDate: LocalDate)
+case class PspToBeRemovedFromScheme(psaId: String, pstr: String, removalDate: LocalDate)
 
-object PsaToBeRemovedFromScheme {
-  implicit val formats: OFormat[PsaToBeRemovedFromScheme] = Json.format[PsaToBeRemovedFromScheme]
+object PspToBeRemovedFromScheme {
+  implicit val formats: Format[PspToBeRemovedFromScheme] = Json.format[PspToBeRemovedFromScheme]
 }

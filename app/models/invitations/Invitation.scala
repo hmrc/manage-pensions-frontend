@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package models.invitations.psp
+package models.invitations
 
 import models.SchemeReferenceNumber
 import play.api.libs.json.{Format, Json}
