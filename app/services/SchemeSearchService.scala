@@ -20,12 +20,12 @@ import com.google.inject.Inject
 import connectors.scheme.ListOfSchemesConnector
 import models.SchemeDetails
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.PsaSchemeSearchFuzzyMatcher
+import utils.SchemeFuzzyMatcher
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
-class SchemeSearchService @Inject()(listSchemesConnector: ListOfSchemesConnector, fuzzyMatching: PsaSchemeSearchFuzzyMatcher) {
+class SchemeSearchService @Inject()(listSchemesConnector: ListOfSchemesConnector, fuzzyMatching: SchemeFuzzyMatcher) {
   private val srnRegex = "^S[0-9]{10}$".r
   private val pstrRegex = "^[0-9]{8}[A-Za-z]{2}$".r
 

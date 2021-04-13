@@ -28,7 +28,7 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.PsaSchemeSearchFuzzyMatcher
+import utils.SchemeFuzzyMatcher
 
 import scala.concurrent.Future
 
@@ -37,7 +37,7 @@ class SchemeSearchServiceSpec extends SpecBase with MockitoSugar with ScalaFutur
   import SchemeSearchServiceSpec._
 
   private val mockSchemesConnector = mock[ListOfSchemesConnector]
-  private val mockFuzzyMatching = mock[PsaSchemeSearchFuzzyMatcher]
+  private val mockFuzzyMatching = mock[SchemeFuzzyMatcher]
   private val pstr = "24000001IN"
   private val srn = "S2400000005"
   private val schemeSearchService = new SchemeSearchService(mockSchemesConnector, mockFuzzyMatching)
