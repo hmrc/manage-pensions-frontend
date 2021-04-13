@@ -18,7 +18,7 @@ package utils.navigators
 
 import connectors.UserAnswersCacheConnector
 import controllers.psa.routes._
-import controllers.remove.psa.routes._
+import controllers.psa.remove.routes._
 import controllers.routes._
 import identifiers.{Identifier, SchemeSrnId}
 import identifiers.remove.psa.{ConfirmRemovePsaId, PsaRemovalDateId}

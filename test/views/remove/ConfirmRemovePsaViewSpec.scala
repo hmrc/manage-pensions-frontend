@@ -17,7 +17,7 @@
 package views.remove
 
 import controllers.psa.routes._
-import controllers.remove.psa.routes._
+import controllers.psa.remove.routes._
 import forms.remove.psa.ConfirmRemovePsaFormProvider
 import play.api.data.Form
 import play.twirl.api.HtmlFormat

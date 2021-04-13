@@ -19,7 +19,7 @@ package utils.navigators
 import base.SpecBase
 import connectors.FakeUserAnswersCacheConnector
 import controllers.psp.routes._
-import controllers.remove.psp.selfRemoval.routes._
+import controllers.psp.deauthorise.self.routes._
 import controllers.routes._
 import identifiers.Identifier
 import identifiers.remove.psp.selfRemoval.{ConfirmRemovalId, RemovalDateId}

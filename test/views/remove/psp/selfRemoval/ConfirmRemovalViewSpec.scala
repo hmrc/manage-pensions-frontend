@@ -17,7 +17,7 @@
 package views.remove.psp.selfRemoval
 
 import controllers.psp.routes._
-import controllers.remove.psp.selfRemoval._
+import controllers.psp.deauthorise.self._
 import forms.remove.psa.ConfirmRemovePsaFormProvider
 import play.api.data.Form
 import play.twirl.api.HtmlFormat

@@ -18,7 +18,7 @@ package utils.navigators
 
 import connectors.UserAnswersCacheConnector
 import controllers.psp.routes._
-import controllers.remove.psp.selfRemoval.routes._
+import controllers.psp.deauthorise.self.routes._
 import controllers.routes._
 import identifiers.remove.psp.selfRemoval.{ConfirmRemovalId, RemovalDateId}
 import identifiers.{Identifier, SchemeSrnId}

@@ -18,7 +18,7 @@ package services
 
 import config.FrontendAppConfig
 import connectors.admin.MinimalConnector
-import controllers.remove.psp.selfRemoval.routes._
+import controllers.psp.deauthorise.self.routes._
 import models.{AuthorisedPractitioner, Link, MinimalPSAPSP}
 import play.api.i18n.Messages
 import uk.gov.hmrc.http.HeaderCarrier

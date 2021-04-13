@@ -19,7 +19,7 @@ package utils.navigators
 import base.SpecBase
 import connectors.FakeUserAnswersCacheConnector
 import controllers.psa.routes._
-import controllers.remove.psa.routes._
+import controllers.psa.remove.routes._
 import controllers.routes._
 import identifiers.Identifier
 import identifiers.remove.psa.{ConfirmRemovePsaId, PsaRemovalDateId}

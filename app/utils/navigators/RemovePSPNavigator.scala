@@ -18,9 +18,9 @@ package utils.navigators
 
 import connectors.UserAnswersCacheConnector
 import controllers.routes._
-import controllers.remove.psa.routes._
+import controllers.psa.remove.routes._
 import controllers.psa.routes._
-import controllers.remove.psp.routes._
+import controllers.psp.deauthorise.routes._
 import identifiers.remove.psp.{ConfirmRemovePspId, PspRemovalDateId}
 import identifiers.remove.psa.PsaRemovePspDeclarationId
 import identifiers.remove.psp
