@@ -71,7 +71,7 @@ class PspSchemeDashboardService @Inject()(
       links = Seq(
         Link(
           id = "deauthorise-yourself",
-          url = ConfirmRemovalController.onPageLoad().url,
+          url = ConfirmDeauthController.onPageLoad().url,
           linkText = Message("messages__pspSchemeDashboard__details__deAuth_Link"),
           hiddenText = Some(Message("messages__pspSchemeDashboard__details__deAuth_Link_screenReaderAlternative"))
         )

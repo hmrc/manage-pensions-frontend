@@ -14,58 +14,58 @@
  * limitations under the License.
  */
 
-package views.psp.deauthorisation.self
+package views.psp.deauthorisation
 
 import forms.psp.deauthorise.DeauthorisePspDeclarationFormProvider
 import play.api.data.{Form, FormError}
 import play.twirl.api.HtmlFormat
 import viewmodels.Message
 import views.behaviours.QuestionViewBehaviours
-import views.html.psp.deauthorisation.self.declaration
+import views.html.psp.deauthorisation.psaDeauthorisePspDeclaration
 
-class DeclarationViewSpec extends QuestionViewBehaviours[Boolean] {
+class PsaDeauthorisePspDeclarationViewSpec extends QuestionViewBehaviours[Boolean] {
 
-  private val messageKeyPrefix = "removePspDeclaration"
+  private val messageKeyPrefix = "deauthPspDeclaration"
   val form = new DeauthorisePspDeclarationFormProvider()()
   private val schemeName = "Test scheme"
   private val srn = "srn"
-  override val errorMessage: String = messages("messages__removePspDeclaration__required")
-  override val error: FormError = FormError("value", messages("messages__removePspDeclaration__required"))
+  override val errorMessage: String = messages("messages__deauthPspDeclaration__required")
+  override val error: FormError = FormError("value", messages("messages__deauthPspDeclaration__required"))
 
-  private val view = injector.instanceOf[declaration]
+  private val view = injector.instanceOf[psaDeauthorisePspDeclaration]
 
-  def declarationView(form: Form[Boolean] = form): () => HtmlFormat.Appendable = () =>
-    view(form, schemeName, srn)(fakeRequest, messages)
+  def psaDeauthPspDeclarationView(form: Form[Boolean] = form): () => HtmlFormat.Appendable = () =>
+    view(form, schemeName, srn, 0)(fakeRequest, messages)
 
-  def declarationViewWithForm(form: Form[Boolean] = form): HtmlFormat.Appendable =
-    view(form, schemeName, srn)(fakeRequest, messages)
+  def psaDeauthPspDeclarationViewWithForm(form: Form[Boolean] = form): HtmlFormat.Appendable =
+    view(form, schemeName, srn, 0)(fakeRequest, messages)
 
   "declaration view" must {
 
     behave like normalPage(
-      view = declarationView(),
+      view = psaDeauthPspDeclarationView(),
       messageKeyPrefix = messageKeyPrefix,
-      pageHeader = Message("messages__removePspDeclaration__title")
+      pageHeader = Message("messages__deauthPspDeclaration__title")
     )
 
-    behave like pageWithBackLink(declarationView())
+    behave like pageWithBackLink(psaDeauthPspDeclarationView())
 
-    behave like pageWithSubmitButton(declarationView())
+    behave like pageWithSubmitButton(psaDeauthPspDeclarationView())
 
     "display declaration text" in {
-      val doc = asDocument(declarationView()())
+      val doc = asDocument(psaDeauthPspDeclarationView()())
       doc.getElementById("para_id").text mustBe
-        messages("messages__removePspDeclaration__p_self") + " " +
-          messages("messages__removePspDeclaration__p_self__screenReaderAlternative")
+        messages("messages__deauthPspDeclaration__p") + " " +
+          messages("messages__deauthPspDeclaration__p__screenReaderAlternative")
     }
 
     "show an error summary when rendered with an error" in {
-      val doc = asDocument(declarationViewWithForm(form.withError(error)))
+      val doc = asDocument(psaDeauthPspDeclarationViewWithForm(form.withError(error)))
       assertRenderedById(doc, "error-summary-heading")
     }
 
     "show an error in the value field's label when rendered with an error" in {
-      val doc = asDocument(declarationViewWithForm(form.withError(error)))
+      val doc = asDocument(psaDeauthPspDeclarationViewWithForm(form.withError(error)))
       val errorSpan = doc.getElementsByClass("error-message")
       errorSpan.text mustBe s"${messages("site.error")} ${messages(errorMessage)}"
     }

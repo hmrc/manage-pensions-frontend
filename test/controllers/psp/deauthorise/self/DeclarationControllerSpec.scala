@@ -21,9 +21,9 @@ import connectors.admin.MinimalConnector
 import connectors.{EmailConnector, EmailSent, PspConnector}
 import controllers.ControllerSpecBase
 import controllers.actions._
-import forms.psp.deauthorise.RemovePspDeclarationFormProvider
+import forms.psp.deauthorise.DeauthorisePspDeclarationFormProvider
 import identifiers.invitations.PSTRId
-import identifiers.psp.deauthorise.self.RemovalDateId
+import identifiers.psp.deauthorise.self.DeauthDateId
 import identifiers.{AuthorisedPractitionerId, SchemeNameId, SchemeSrnId}
 import models.{IndividualDetails, MinimalPSAPSP, SendEmailRequest, Sent}
 import org.mockito.ArgumentCaptor
@@ -46,7 +46,7 @@ import scala.concurrent.Future
 
 class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar with BeforeAndAfterEach {
 
-  private val formProvider = new RemovePspDeclarationFormProvider()
+  private val formProvider = new DeauthorisePspDeclarationFormProvider()
   private val form = formProvider()
   private val mockPspConnector: PspConnector = mock[PspConnector]
   private val mockEmailConnector = mock[EmailConnector]
@@ -73,7 +73,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
     PSTRId.toString -> pstr,
     SchemeNameId.toString -> schemeName,
     SchemeSrnId.toString -> srn,
-    RemovalDateId.toString -> "2020-12-12",
+    DeauthDateId.toString -> "2020-12-12",
     AuthorisedPractitionerId.toString -> pspDetails
   )
 

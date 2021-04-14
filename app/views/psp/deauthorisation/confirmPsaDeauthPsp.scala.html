@@ -14,38 +14,44 @@
  * limitations under the License.
  *@
 
-@import controllers.psp.routes._
-
 @this(
     main_template: main_template
 )
 
-@(schemeName: String, authorisingPsa: String, emailAddress: String)(implicit request: Request[_],messages: Messages)
+@(
+        pspName: String,
+        schemeName: String,
+        psaEmailAddress: String
+)(
+        implicit
+        request: Request[_],
+        messages: Messages
+)
 
 @email = {
-    <span class="bold">@emailAddress</span>
+    <span class="bold">@psaEmailAddress</span>
 }
 
 @headingText = {
     <span aria-hidden="true">
-        @messages("messages__pspDeauthConfirmation__heading", schemeName)
+        @messages("messages__confirmPsaDeauthPsp__heading", pspName, schemeName)
     </span>
     <span class="visually-hidden">
-        @messages("messages__pspDeauthConfirmation__heading__screenReaderAlternative", schemeName)
+        @messages("messages__confirmPsaDeauthdPsp__heading__screenReaderAlternative", pspName, schemeName)
     </span>
 }
 
 @p2Text = {
     <span aria-hidden="true">
-        @messages("messages__pspDeauthConfirmation__p2", authorisingPsa, schemeName)
+        @messages("messages__confirmPsaDeauthdPsp__p2", pspName, schemeName)
     </span>
     <span class="visually-hidden">
-        @messages("messages__pspDeauthConfirmation__p2__screenReaderAlternative", authorisingPsa, schemeName)
+        @messages("messages__confirmPsaDeauthdPsp__p2__screenReaderAlternative", pspName, schemeName)
     </span>
 }
 
 @main_template(
-    title = messages("messages__pspDeauthConfirmation__title"),
+    title = messages("messages__confirmPsaDeauthdPsp__title"),
     bodyClasses = None
 ) {
 
@@ -54,17 +60,17 @@
     </div>
 
     <p>
-        @Html(messages("messages__pspDeauthConfirmation__p1", email.toString))
+        @Html(messages("messages__confirmPsaDeauthdPsp__p1", email.toString))
     </p>
 
     <h2>
-        @messages("messages__pspDeauthfConfirmation__h2")
+        @messages("messages__confirmPsaDeauthdPsp__h2")
     </h2>
 
     <p>@Html(p2Text.toString)</p>
 
-    <a id="return-link" href="@PspDashboardController.onPageLoad().url">
-        @messages("site.return_to_psp_overview")
+    <a id="return-link" href="@controllers.psa.routes.ListSchemesController.onPageLoad().url">
+        @messages("messages__confirmDeauthd__return_link")
     </a>
 
 }

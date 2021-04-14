@@ -14,25 +14,28 @@
  * limitations under the License.
  */
 
-package views.psp.deauthorisation.self
+package views.psp.deauthorisation
 
-import controllers.psp.routes._
 import play.twirl.api.HtmlFormat
 import viewmodels.Message
 import views.behaviours.ViewBehaviours
-import views.html.psp.deauthorisation.self.confirmation
+import views.html.psp.deauthorisation.confirmPsaDeauthPsp
 
-class ConfirmationViewSpec extends ViewBehaviours {
-  val messageKeyPrefix = "pspDeauthConfirmation"
-  private val psaName = "PSA Limited Company 1"
+class ConfirmPsaDeauthPspViewSpec extends ViewBehaviours {
+  val messageKeyPrefix = "confirmPsaDeauthorisedByPsp"
+  private val pspName = "PSP Limited Company 1"
   private val schemeName = "test-scheme-name"
-  private val email = "a@b.com"
-  private val view = injector.instanceOf[confirmation]
+  private val psaEmail = "a@b.com"
+  private val view = injector.instanceOf[confirmPsaDeauthPsp]
 
-  lazy val returnLinkUrl: String = PspDashboardController.onPageLoad().url
+  lazy val returnLinkUrl: String = controllers.psa.routes.ListSchemesController.onPageLoad().url
 
   def createView(): () => HtmlFormat.Appendable = () =>
-    view(schemeName, psaName, email)(fakeRequest, messages)
+    view(
+      pspName = pspName,
+      schemeName = schemeName,
+      psaEmailAddress = psaEmail
+    )(fakeRequest, messages)
 
   "Confirm Deauthorised Page" must {
 
@@ -40,14 +43,14 @@ class ConfirmationViewSpec extends ViewBehaviours {
       view = createView(),
       messageKeyPrefix = messageKeyPrefix,
       pageHeader =
-        Message("messages__pspDeauthConfirmation__heading", schemeName).resolve + " " +
-          Message("messages__pspDeauthConfirmation__heading__screenReaderAlternative", schemeName).resolve
+        Message("messages__confirmPsaDeauthorisedByPsp__heading", pspName, schemeName).resolve + " " +
+          Message("messages__confirmPsaDeauthorisedByPsp__heading__screenReaderAlternative", pspName, schemeName).resolve
     )
 
     behave like pageWithReturnLink(
       view = createView(),
       url = returnLinkUrl,
-      text = messages("site.return_to_psp_overview")
+      text = messages("messages__confirmRemoved__return_link")
     )
 
   }

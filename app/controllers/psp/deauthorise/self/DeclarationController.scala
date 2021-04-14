@@ -25,9 +25,9 @@ import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import controllers.psp.deauthorise.self.routes._
 import controllers.routes._
-import forms.psp.deauthorise.RemovePspDeclarationFormProvider
+import forms.psp.deauthorise.DeauthorisePspDeclarationFormProvider
 import identifiers.invitations.PSTRId
-import identifiers.psp.deauthorise.self.RemovalDateId
+import identifiers.psp.deauthorise.self.DeauthDateId
 import identifiers.{AuthorisedPractitionerId, SchemeNameId, SchemeSrnId}
 import models.AuthEntity.PSP
 import models.requests.DataRequest
@@ -46,7 +46,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class DeclarationController @Inject()(
                                        override val messagesApi: MessagesApi,
-                                       formProvider: RemovePspDeclarationFormProvider,
+                                       formProvider: DeauthorisePspDeclarationFormProvider,
                                        auth: AuthAction,
                                        getData: DataRetrievalAction,
                                        requireData: DataRequiredAction,
@@ -76,7 +76,7 @@ class DeclarationController @Inject()(
 
   def onSubmit(): Action[AnyContent] = (auth(PSP) andThen getData andThen requireData).async {
     implicit request =>
-      (SchemeSrnId and SchemeNameId and PSTRId and RemovalDateId and AuthorisedPractitionerId).retrieve.right.map {
+      (SchemeSrnId and SchemeNameId and PSTRId and DeauthDateId and AuthorisedPractitionerId).retrieve.right.map {
         case srn ~ schemeName ~ pstr ~ removalDate ~ authorisedPractitioner =>
           form.bindFromRequest().fold(
             (formWithErrors: Form[Boolean]) =>
