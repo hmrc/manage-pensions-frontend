@@ -17,25 +17,19 @@
 package controllers.invitations.psp
 
 import com.google.inject.Inject
-import connectors.admin.MinimalConnector
-import connectors.admin.NoMatchFoundException
+import connectors.admin.{MinimalConnector, NoMatchFoundException}
 import controllers.Retrievals
-import controllers.actions.AuthAction
-import controllers.actions.DataRequiredAction
-import controllers.actions.DataRetrievalAction
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import identifiers.SchemeNameId
-import identifiers.invitations.psp.PspId
-import identifiers.invitations.psp.PspNameId
-import play.api.i18n.I18nSupport
-import play.api.i18n.MessagesApi
+import identifiers.invitations.psp.{PspId, PspNameId}
+import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.CheckYourAnswersFactory
+import utils.{CheckYourAnswersFactory, PspAuthoriseFuzzyMatcher}
 import viewmodels.AnswerSection
 import views.html.check_your_answers
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class CheckYourAnswersController @Inject()(override val messagesApi: MessagesApi,
                                            authenticate: AuthAction,
@@ -43,6 +37,7 @@ class CheckYourAnswersController @Inject()(override val messagesApi: MessagesApi
                                            requireData: DataRequiredAction,
                                            checkYourAnswersFactory: CheckYourAnswersFactory,
                                            minimalConnector: MinimalConnector,
+                                           pspAuthoriseFuzzyMatcher: PspAuthoriseFuzzyMatcher,
                                            val controllerComponents: MessagesControllerComponents,
                                            view: check_your_answers
                                           )(implicit val ec: ExecutionContext) extends FrontendBaseController with Retrievals with I18nSupport {
@@ -65,7 +60,7 @@ class CheckYourAnswersController @Inject()(override val messagesApi: MessagesApi
             (PspNameId and PspId).retrieve.right.map {
                 case pspName ~ pspId =>
                     minimalConnector.getNameFromPspID(pspId).map {
-                        case Some(minPspName) if pspName.equalsIgnoreCase(minPspName) =>
+                        case Some(minPspName) if pspAuthoriseFuzzyMatcher.matches(pspName, minPspName) =>
                             Redirect(routes.DeclarationController.onPageLoad())
                         case _ => Redirect(routes.PspDoesNotMatchController.onPageLoad())
                     }.recoverWith{

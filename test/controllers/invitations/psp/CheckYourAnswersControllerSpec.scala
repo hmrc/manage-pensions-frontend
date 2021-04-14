@@ -36,8 +36,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import play.api.mvc.Call
 import play.api.test.Helpers._
 import utils.countryOptions.CountryOptions
-import utils.CheckYourAnswersFactory
-import utils.UserAnswers
+import utils.{CheckYourAnswersFactory, UserAnswers, PspAuthoriseFuzzyMatcher}
 import viewmodels.AnswerRow
 import viewmodels.AnswerSection
 import views.html.check_your_answers
@@ -49,9 +48,12 @@ class CheckYourAnswersControllerSpec extends ControllerSpecBase with MockitoSuga
     import CheckYourAnswersControllerSpec._
 
     private val mockMinConnector = mock[MinimalConnector]
+
+    private val mockPspAuthoriseFuzzyMatcher = mock[PspAuthoriseFuzzyMatcher]
+
     def controller(dataRetrievalAction: DataRetrievalAction = data) = new CheckYourAnswersController(
         messagesApi, FakeAuthAction, dataRetrievalAction, new DataRequiredActionImpl,
-        checkYourAnswersFactory, mockMinConnector, controllerComponents, view
+        checkYourAnswersFactory, mockMinConnector, mockPspAuthoriseFuzzyMatcher, controllerComponents, view
     )
 
     "Check Your Answers Controller Spec" must {
@@ -77,12 +79,14 @@ class CheckYourAnswersControllerSpec extends ControllerSpecBase with MockitoSuga
         "on a POST" must {
             "redirect to Declaration if pspName matches the one returned from minDetails API" in {
                 when(mockMinConnector.getNameFromPspID(any())(any(), any())).thenReturn(Future.successful(Some(pspName)))
+                when(mockPspAuthoriseFuzzyMatcher.matches(any(), any())).thenReturn(true)
                 val result = controller(data).onSubmit()(fakeRequest)
                 redirectLocation(result).value mustBe DeclarationController.onPageLoad().url
             }
 
             "redirect to interrupt if pspName does not match the one returned from minDetails API" in {
-                when(mockMinConnector.getNameFromPspID(any())(any(), any())).thenReturn(Future.successful(Some(testSchemeName)))
+                when(mockMinConnector.getNameFromPspID(any())(any(), any())).thenReturn(Future.successful(Some(pspName)))
+                when(mockPspAuthoriseFuzzyMatcher.matches(any(), any())).thenReturn(false)
                 val result = controller(data).onSubmit()(fakeRequest)
                 redirectLocation(result).get mustBe PspDoesNotMatchController.onPageLoad().url
             }
