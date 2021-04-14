@@ -30,7 +30,7 @@
 @(form: Form[_], schemeName: String, srn: String, pspName: String)(implicit request: Request[_], messages: Messages)
 
 @main_template(
-    title = titleWithErrors(form, messages("messages__confirmRemovePsp__title"))
+    title = titleWithErrors(form, messages("messages__confirmDeauthorisePsp__title"))
 ){
 
     @formHelper(action = ConfirmRemovalController.onSubmit(), 'autoComplete -> "off") {
@@ -45,11 +45,11 @@
 
             @components.input_yes_no(
                 field = form("value"),
-                label = messages("messages__confirmRemovePsp__heading", pspName, schemeName),
+                label = messages("messages__confirmDeauthorisePsp__heading", pspName, schemeName),
                 labelClass = Some("visually-hidden"),
                 headingIsLegend = true,
                 screenReaderAlternativeLabelText =
-                Some(messages("messages__confirmRemovePsp__heading__screenReaderAlternativeText", pspName, schemeName)),
+                Some(messages("messages__confirmDeauthorisePsp__heading__screenReaderAlternativeText", pspName, schemeName)),
                 screenReaderAlternativeErrorText = true
             )
         </div>

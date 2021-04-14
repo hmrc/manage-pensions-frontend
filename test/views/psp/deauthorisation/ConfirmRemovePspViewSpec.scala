@@ -31,7 +31,7 @@ class ConfirmRemovePspViewSpec extends YesNoViewBehaviours {
   private val schemeName = "test scheme name"
   private val srn = "test srn"
   private val pspName = "test psa name"
-  val prefix = "confirmRemovePsp"
+  val prefix = "confirmDeauthorisePsp"
   private val confirmRemovePspView = injector.instanceOf[confirmRemovePsp]
 
   private def createView: () => HtmlFormat.Appendable = () =>

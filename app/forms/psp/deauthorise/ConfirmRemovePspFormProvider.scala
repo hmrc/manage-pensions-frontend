@@ -24,6 +24,6 @@ import javax.inject.Inject
 class ConfirmRemovePspFormProvider @Inject()() extends Mappings {
 
   def apply(): Form[Boolean] = Form(
-    "value" -> boolean("messages__confirmRemovePsp_required")
+    "value" -> boolean("messages__confirmDeauthorisePsp_required")
   )
 }
