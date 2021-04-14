@@ -18,7 +18,6 @@ package views.psp.deauthorisation.self
 
 import controllers.psp.routes._
 import forms.psp.deauthorise.PspDeauthDateFormProvider
-
 import java.time.LocalDate
 import org.jsoup.Jsoup
 import play.api.data.Form
@@ -26,6 +25,7 @@ import play.twirl.api.HtmlFormat
 import utils.DateHelper._
 import views.behaviours.QuestionViewBehaviours
 import views.html.psp.deauthorisation.self.deauthDate
+
 
 class DeauthDateViewSpec extends QuestionViewBehaviours[LocalDate] {
 
@@ -56,8 +56,8 @@ class DeauthDateViewSpec extends QuestionViewBehaviours[LocalDate] {
     behave like pageWithDateFields(
       view = createViewUsingForm,
       form = form,
-      idkey = "pspDeauthalDate",
-      msgKey = "Deauthal_date"
+      idkey = "pspDeauthDate",
+      msgKey = "Deauth_date"
     )
 
     behave like pageWithReturnLink(
@@ -68,7 +68,7 @@ class DeauthDateViewSpec extends QuestionViewBehaviours[LocalDate] {
 
     "display correct opening text" in {
       Jsoup.parse(createView().toString()) must haveDynamicText(
-        "messages__pspSelfDeauthalDate__lede",
+        "messages__pspSelfDeauthDate__lede",
         formatDate(relationshipStartDate)
       )
     }

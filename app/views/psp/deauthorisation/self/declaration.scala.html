@@ -29,7 +29,7 @@
 @(form: Form[Boolean], schemeName: String, srn: String)(implicit request: Request[_], messages: Messages)
 
 @main_template(
-    title = titleWithErrors(form, messages("messages__removePspDeclaration__title")),
+    title = titleWithErrors(form, messages("messages__deauthPspDeclaration__title")),
     bodyClasses = None
 ) {
 
@@ -37,27 +37,27 @@
 
     @components.error_summary(form.errors)
 
-    @components.heading(Message("messages__removePspDeclaration__title"))
+    @components.heading(Message("messages__deauthPspDeclaration__title"))
 
     @formHelper(action = DeclarationController.onSubmit(), 'autoComplete -> "off") {
 
         <p id="para_id">
             <span aria-hidden="true">
-                @messages("messages__removePspDeclaration__p_self")
+                @messages("messages__deauthPspDeclaration__p_self")
             </span>
             <span class="visually-hidden">
-                @messages("messages__removePspDeclaration__p_self__screenReaderAlternative")
+                @messages("messages__deauthPspDeclaration__p_self__screenReaderAlternative")
             </span>
         </p>
 
         @components.fieldSet(
             field = form("value"),
-            legend = messages("messages__removePspDeclaration__title"),
+            legend = messages("messages__deauthPspDeclaration__title"),
             hiddenLegend = true
         ) {
             <div class="multiple-choice">
                 <input id="declaration" name="value" type="checkbox" value="true">
-                <label for="declaration">@messages("messages__removePspDeclaration__label")</label>
+                <label for="declaration">@messages("messages__deauthPspDeclaration__label")</label>
             </div>
         }
 

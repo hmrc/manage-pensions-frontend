@@ -22,7 +22,7 @@ import views.behaviours.ViewBehaviours
 import views.html.psp.deauthorisation.confirmPsaDeauthPsp
 
 class ConfirmPsaDeauthPspViewSpec extends ViewBehaviours {
-  val messageKeyPrefix = "confirmPsaDeauthorisedByPsp"
+  val messageKeyPrefix = "confirmPsaDeauthPsp"
   private val pspName = "PSP Limited Company 1"
   private val schemeName = "test-scheme-name"
   private val psaEmail = "a@b.com"
@@ -43,14 +43,14 @@ class ConfirmPsaDeauthPspViewSpec extends ViewBehaviours {
       view = createView(),
       messageKeyPrefix = messageKeyPrefix,
       pageHeader =
-        Message("messages__confirmPsaDeauthorisedByPsp__heading", pspName, schemeName).resolve + " " +
-          Message("messages__confirmPsaDeauthorisedByPsp__heading__screenReaderAlternative", pspName, schemeName).resolve
+        Message("messages__confirmPsaDeauthPsp__heading", pspName, schemeName).resolve + " " +
+          Message("messages__confirmPsaDeauthPsp__heading__screenReaderAlternative", pspName, schemeName).resolve
     )
 
     behave like pageWithReturnLink(
       view = createView(),
       url = returnLinkUrl,
-      text = messages("messages__confirmRemoved__return_link")
+      text = messages("messages__confirmDeauth__return_link")
     )
 
   }

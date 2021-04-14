@@ -37,21 +37,21 @@
         @messages("messages__confirmPsaDeauthPsp__heading", pspName, schemeName)
     </span>
     <span class="visually-hidden">
-        @messages("messages__confirmPsaDeauthdPsp__heading__screenReaderAlternative", pspName, schemeName)
+        @messages("messages__confirmPsaDeauthPsp__heading__screenReaderAlternative", pspName, schemeName)
     </span>
 }
 
 @p2Text = {
     <span aria-hidden="true">
-        @messages("messages__confirmPsaDeauthdPsp__p2", pspName, schemeName)
+        @messages("messages__confirmPsaDeauthPsp__p2", pspName, schemeName)
     </span>
     <span class="visually-hidden">
-        @messages("messages__confirmPsaDeauthdPsp__p2__screenReaderAlternative", pspName, schemeName)
+        @messages("messages__confirmPsaDeauthPsp__p2__screenReaderAlternative", pspName, schemeName)
     </span>
 }
 
 @main_template(
-    title = messages("messages__confirmPsaDeauthdPsp__title"),
+    title = messages("messages__confirmPsaDeauthPsp__title"),
     bodyClasses = None
 ) {
 
@@ -60,17 +60,17 @@
     </div>
 
     <p>
-        @Html(messages("messages__confirmPsaDeauthdPsp__p1", email.toString))
+        @Html(messages("messages__confirmPsaDeauthPsp__p1", email.toString))
     </p>
 
     <h2>
-        @messages("messages__confirmPsaDeauthdPsp__h2")
+        @messages("messages__confirmPsaDeauthPsp__h2")
     </h2>
 
     <p>@Html(p2Text.toString)</p>
 
     <a id="return-link" href="@controllers.psa.routes.ListSchemesController.onPageLoad().url">
-        @messages("messages__confirmDeauthd__return_link")
+        @messages("messages__confirmDeauth__return_link")
     </a>
 
 }

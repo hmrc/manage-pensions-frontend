@@ -25,12 +25,12 @@ import views.html.psp.deauthorisation.self.declaration
 
 class DeclarationViewSpec extends QuestionViewBehaviours[Boolean] {
 
-  private val messageKeyPrefix = "removePspDeclaration"
+  private val messageKeyPrefix = "deauthPspDeclaration"
   val form = new DeauthorisePspDeclarationFormProvider()()
   private val schemeName = "Test scheme"
   private val srn = "srn"
-  override val errorMessage: String = messages("messages__removePspDeclaration__required")
-  override val error: FormError = FormError("value", messages("messages__removePspDeclaration__required"))
+  override val errorMessage: String = messages("messages__deauthPspDeclaration__required")
+  override val error: FormError = FormError("value", messages("messages__deauthPspDeclaration__required"))
 
   private val view = injector.instanceOf[declaration]
 
@@ -45,7 +45,7 @@ class DeclarationViewSpec extends QuestionViewBehaviours[Boolean] {
     behave like normalPage(
       view = declarationView(),
       messageKeyPrefix = messageKeyPrefix,
-      pageHeader = Message("messages__removePspDeclaration__title")
+      pageHeader = Message("messages__deauthPspDeclaration__title")
     )
 
     behave like pageWithBackLink(declarationView())
@@ -55,8 +55,8 @@ class DeclarationViewSpec extends QuestionViewBehaviours[Boolean] {
     "display declaration text" in {
       val doc = asDocument(declarationView()())
       doc.getElementById("para_id").text mustBe
-        messages("messages__removePspDeclaration__p_self") + " " +
-          messages("messages__removePspDeclaration__p_self__screenReaderAlternative")
+        messages("messages__deauthPspDeclaration__p_self") + " " +
+          messages("messages__deauthPspDeclaration__p_self__screenReaderAlternative")
     }
 
     "show an error summary when rendered with an error" in {

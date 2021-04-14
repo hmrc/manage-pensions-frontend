@@ -21,5 +21,5 @@ import java.time.LocalDate
 import identifiers.TypedIdentifier
 
 case object DeauthDateId extends TypedIdentifier[LocalDate] {
-  override def toString: String = "pspSelfRemovalDate"
+  override def toString: String = "pspSelfDeauthDate"
 }

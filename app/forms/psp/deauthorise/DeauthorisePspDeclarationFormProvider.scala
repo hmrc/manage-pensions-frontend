@@ -21,13 +21,14 @@ import forms.mappings.CheckboxMapping
 import play.api.data.Form
 
 class DeauthorisePspDeclarationFormProvider @Inject()() extends CheckboxMapping {
+
   def apply(): Form[Boolean] =
     Form(
       "value" -> checkboxMapping(
         fieldName = "value",
         trueValue = "true",
         acceptTrueOnly = true,
-        invalidKey = "messages__removePspDeclaration__required"
+        invalidKey = "messages__deauthPspDeclaration__required"
       )
     )
 }
