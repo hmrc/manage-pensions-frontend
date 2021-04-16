@@ -98,8 +98,16 @@
     }
 }
 
+@heading = @{
+    if(form("searchText").value.exists(_.length > 0)){
+        "messages__listSchemes__search_result_title"
+    } else {
+        "messages__listSchemes__title"
+    }
+}
+
 @main_template(
-    title = messages("messages__listSchemes__title"),
+    title = messages(heading),
     bodyClasses = Some("full-width")
 ) {
 
@@ -108,7 +116,7 @@
 
         <div class="grid-row">
             <div class="column-two-thirds">
-                @components.heading(headingKey = messages("messages__listSchemes__title"))
+                @components.heading(headingKey = messages(heading))
 
                 @if(schemes.size >= appConfig.minimumSchemeSearchResults || form("searchText").value.isDefined){
 
@@ -137,7 +145,7 @@
             @if(schemes.nonEmpty){
                 <div class="grid-row">
                     <div class="column-two-thirds">
-                        <p class="govuk-margin-top-5 govuk-margin-bottom-0">
+                        <p class="govuk-margin-top-5 govuk-margin-bottom-0" role="status">
                             @{
                                 if(schemes.size == 1) {
                                     messages("messages__listSchemes__search_result")
@@ -154,7 +162,7 @@
         @noResultsMessageKey.map{ text =>
             <div class="grid-row">
                 <div class="column-two-thirds">
-                    <p id="noSchemes">@messages(text)</p>
+                    <p id="noSchemes" role="status">@messages(text)</p>
                 </div>
             </div>
         }

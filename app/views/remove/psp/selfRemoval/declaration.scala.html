@@ -54,12 +54,21 @@
             field = form("value"),
             legend = messages("messages__removePspDeclaration__title"),
             hiddenLegend = true
+<<<<<<< Updated upstream:app/views/remove/psp/selfRemoval/declaration.scala.html
         ) {
             <div class="multiple-choice">
                 <input id="declaration" name="value" type="checkbox" value="true">
                 <label for="declaration">@messages("messages__removePspDeclaration__label")</label>
             </div>
         }
+=======
+            ) {
+                <div class="multiple-choice">
+                    <input id="declaration" name="value" type="checkbox" value="true">
+                    <label for="declaration">@messages("messages__removePspDeclaration__label")</label>
+                </div>
+            }
+>>>>>>> Stashed changes:app/views/remove/pspSelfRemoval/declaration.scala.html
 
         @components.submit_button("site.save_and_continue")
 
