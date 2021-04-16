@@ -92,6 +92,8 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
     .getString("urls.pensionSchemesGuideMandatoryOnlineFilingGovUkLink")
   lazy val guidanceStartPageGovUkLink: String = runModeConfiguration.underlying
     .getString("urls.guidanceStartPageGovUkLink")
+  lazy val pensionSchemesInvitationGuideGovUkPractitionerDeauthLink: String = runModeConfiguration.underlying
+    .getString("urls.pensionSchemesInvitationGuideGovUkPractitionerDeauthLink")
   lazy val pensionSchemesInvitationGuideGovUkLink: String = runModeConfiguration.underlying
     .getString("urls.pensionSchemesInvitationGuideGovUkLink")
   lazy val pensionSchemesAddToSchemeGuideGovUkLink: String = runModeConfiguration.underlying
