@@ -114,8 +114,9 @@ messages__listSchemes__search_noMatches = We did not find any schemes that match
 messages__listSchemes__search_submit = Search
 messages__listSchemes__search_again = Search again
 messages__listSchemes__search_required = Enter an SRN or a PSTR
-messages__listSchemes__search_result = 1 result
-messages__listSchemes__search_multipleResults = {0} results
+messages__listSchemes__search_result = 1 result found
+messages__listSchemes__search_multipleResults = {0} results found
+messages__listSchemes__search_result_title = Your pension schemes search results
 
 messages__listSchemesPsp__search_invalid = PSTR must only include letters and numbers
 messages__listSchemesPsp__search_required = Enter a Pension Scheme Tax Reference
