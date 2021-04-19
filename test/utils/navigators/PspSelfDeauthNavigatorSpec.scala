@@ -29,10 +29,9 @@ import play.api.mvc.Call
 import utils.NavigatorBehaviour
 import utils.UserAnswerOps
 import utils.UserAnswers
+import utils.navigators.PspSelfDeauthNavigatorSpec._
 
-class PspSelfDeauthoriseNavigatorSpec extends SpecBase with NavigatorBehaviour {
-
-  import PspSelfDeauthoriseNavigatorSpec._
+class PspSelfDeauthNavigatorSpec extends SpecBase with NavigatorBehaviour {
 
   val navigator = new PspSelfDeauthoriseNavigator(FakeUserAnswersCacheConnector)
 
@@ -51,7 +50,7 @@ class PspSelfDeauthoriseNavigatorSpec extends SpecBase with NavigatorBehaviour {
   }
 }
 
-object PspSelfDeauthoriseNavigatorSpec {
+object PspSelfDeauthNavigatorSpec {
   private val srn = "test srn"
   private lazy val emptyAnswers = UserAnswers(Json.obj())
   private lazy val deauthPsp = UserAnswers().srn(srn).set(ConfirmDeauthId)(true).asOpt.get
