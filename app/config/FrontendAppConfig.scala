@@ -92,6 +92,8 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
     .getString("urls.pensionSchemesGuideMandatoryOnlineFilingGovUkLink")
   lazy val guidanceStartPageGovUkLink: String = runModeConfiguration.underlying
     .getString("urls.guidanceStartPageGovUkLink")
+  lazy val pensionSchemesInvitationGuideGovUkPractitionerDeauthLink: String = runModeConfiguration.underlying
+    .getString("urls.pensionSchemesInvitationGuideGovUkPractitionerDeauthLink")
   lazy val pensionSchemesInvitationGuideGovUkLink: String = runModeConfiguration.underlying
     .getString("urls.pensionSchemesInvitationGuideGovUkLink")
   lazy val pensionSchemesAddToSchemeGuideGovUkLink: String = runModeConfiguration.underlying
@@ -100,6 +102,10 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
     .getString("urls.authorisePractitionerGuidance")
   lazy val registerSchemeGuideGovUkLink: String = runModeConfiguration.underlying
     .getString("urls.registerSchemeGuidance")
+  lazy val pspUpdateDetailsTPSSLink: String = runModeConfiguration.underlying
+    .getString("urls.pspUpdateDetailsTPSS")
+
+
   lazy val govUkLink: String = runModeConfiguration.underlying.getString("urls.govUkLink")
   lazy val continueSchemeUrl = s"${loadConfig("urls.continueSchemeRegistration")}"
   lazy val userResearchUrl: String = runModeConfiguration.underlying.getString("urls.userResearch")
