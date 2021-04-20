@@ -18,6 +18,7 @@
 @import models.SchemeDetails
 @import controllers.routes._
 @import controllers.psa.routes._
+@import utils.ViewHelper.titleWithErrors
 
 @this(
     main_template: main_template,
@@ -107,7 +108,7 @@
 }
 
 @main_template(
-    title = messages(heading),
+    title = titleWithErrors(form, messages(heading)),
     bodyClasses = Some("full-width")
 ) {
 
