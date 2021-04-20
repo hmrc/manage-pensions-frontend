@@ -102,6 +102,10 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
     .getString("urls.authorisePractitionerGuidance")
   lazy val registerSchemeGuideGovUkLink: String = runModeConfiguration.underlying
     .getString("urls.registerSchemeGuidance")
+  lazy val pspUpdateDetailsTPSSLink: String = runModeConfiguration.underlying
+    .getString("urls.pspUpdateDetailsTPSS")
+
+
   lazy val govUkLink: String = runModeConfiguration.underlying.getString("urls.govUkLink")
   lazy val continueSchemeUrl = s"${loadConfig("urls.continueSchemeRegistration")}"
   lazy val userResearchUrl: String = runModeConfiguration.underlying.getString("urls.userResearch")
