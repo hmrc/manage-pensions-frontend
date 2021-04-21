@@ -21,13 +21,13 @@ GET         /remove-psa                                           controllers.ps
 GET         /unable-to-remove-scheme-administrator                controllers.psa.remove.CanNotBeRemovedController.onPageLoadWhereSuspended()
 GET         /cannot-remove-scheme-administrator                   controllers.psa.remove.CanNotBeRemovedController.onPageLoadWhereRemovalDelay()
 
-GET         /deauthorise-practitioner/yes-no                      controllers.psp.deauthorise.self.ConfirmDeauthController.onPageLoad()
-POST        /deauthorise-practitioner/yes-no                      controllers.psp.deauthorise.self.ConfirmDeauthController.onSubmit()
+GET         /practitioner-deauthorise-self/yes-no                 controllers.psp.deauthorise.self.ConfirmDeauthController.onPageLoad()
+POST        /practitioner-deauthorise-self/yes-no                 controllers.psp.deauthorise.self.ConfirmDeauthController.onSubmit()
 
-GET         /deauthorise-practitioner/date                        controllers.psp.deauthorise.self.DeauthDateController.onPageLoad()
-POST        /deauthorise-practitioner/date                        controllers.psp.deauthorise.self.DeauthDateController.onSubmit()
+GET         /practitioner-deauthorise-self/date                   controllers.psp.deauthorise.self.DeauthDateController.onPageLoad()
+POST        /practitioner-deauthorise-self/date                   controllers.psp.deauthorise.self.DeauthDateController.onSubmit()
 
-GET         /deauthorise-practitioner/declaration                 controllers.psp.deauthorise.self.DeclarationController.onPageLoad()
-POST        /deauthorise-practitioner/declaration                 controllers.psp.deauthorise.self.DeclarationController.onSubmit()
+GET         /practitioner-deauthorise-self/declaration            controllers.psp.deauthorise.self.DeclarationController.onPageLoad()
+POST        /practitioner-deauthorise-self/declaration            controllers.psp.deauthorise.self.DeclarationController.onSubmit()
 
-GET         /deauthorise-practitioner/confirmation                controllers.psp.deauthorise.self.ConfirmationController.onPageLoad()
+GET         /practitioner-deauthorise-self/confirmation           controllers.psp.deauthorise.self.ConfirmationController.onPageLoad()
