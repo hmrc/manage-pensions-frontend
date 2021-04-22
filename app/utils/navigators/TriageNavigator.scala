@@ -89,7 +89,7 @@ class TriageNavigator @Inject()(appConfig: FrontendAppConfig) extends Navigator 
   private def doesPSTRStartWithTwoDeAuthRoutes(ua: UserAnswers): Call = {
     ua.get(DoesPSTRStartWithTwoDeAuthId) match {
       case Some(Yes) => DeAuthoriseYourselfController.onPageLoad()
-      case Some(No) => Call("GET", appConfig.authorisePractitionerGuideGovUkLink)
+      case Some(No) => Call("GET", appConfig.pensionSchemesInvitationGuideGovUkPractitionerDeauthLink)
       case _ => controllers.routes.SessionExpiredController.onPageLoad()
     }
   }
@@ -122,7 +122,7 @@ class TriageNavigator @Inject()(appConfig: FrontendAppConfig) extends Navigator 
   private def doesPSTRStartWithTwoAuthPspRoutes(answers: UserAnswers): Call = {
     answers.get(DoesPSTRStartWithTwoAuthPspId) match {
       case Some(Yes) => AuthorisePractitionerController.onPageLoad()
-      case Some(No) => Call("GET", appConfig.authorisePractitionerGuideGovUkLink)
+      case Some(No) => Call("GET", appConfig.pensionSchemesInvitationGuideGovUkLink)
       case _ => controllers.routes.SessionExpiredController.onPageLoad()
     }
   }

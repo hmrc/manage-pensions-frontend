@@ -18,6 +18,7 @@
 @import models.SchemeDetails
 @import controllers.routes._
 @import controllers.psa.routes._
+@import utils.ViewHelper.titleWithErrors
 
 @this(
     main_template: main_template,
@@ -98,8 +99,16 @@
     }
 }
 
+@heading = @{
+    if(form("searchText").value.exists(_.length > 0)){
+        "messages__listSchemes__search_result_title"
+    } else {
+        "messages__listSchemes__title"
+    }
+}
+
 @main_template(
-    title = messages("messages__listSchemes__title"),
+    title = titleWithErrors(form, messages(heading)),
     bodyClasses = Some("full-width")
 ) {
 
@@ -108,7 +117,8 @@
 
         <div class="grid-row">
             <div class="column-two-thirds">
-                @components.heading(headingKey = messages("messages__listSchemes__title"))
+                @components.error_summary(form.errors)
+                @components.heading(headingKey = messages(heading))
 
                 @if(schemes.size >= appConfig.minimumSchemeSearchResults || form("searchText").value.isDefined){
 

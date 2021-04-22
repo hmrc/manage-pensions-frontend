@@ -113,8 +113,9 @@ messages__listSchemes__search_noMatches = We did not find any schemes that match
 messages__listSchemes__search_submit = Search
 messages__listSchemes__search_again = Search again
 messages__listSchemes__search_required = Enter an SRN or a PSTR
-messages__listSchemes__search_result = 1 result
-messages__listSchemes__search_multipleResults = {0} results
+messages__listSchemes__search_result = 1 result found
+messages__listSchemes__search_multipleResults = {0} results found
+messages__listSchemes__search_result_title = Search results for your pension schemes
 
 messages__listSchemesPsp__search_invalid = PSTR must only include letters and numbers
 messages__listSchemesPsp__search_required = Enter a Pension Scheme Tax Reference
@@ -400,7 +401,7 @@ messages__cannotDeregister__p1 = You cannot stop being a pension scheme administ
 messages__cannotDeregister__p2 = This includes any schemes that have a status of wound up.
 
 messages__whatRole__title = What role are you registered as?
-messages__whatRole__p1 = Even if you are registered in the Pensions Scheme Online service you will still need to register on the Managing Pension Schemes service to be able to manage pension schemes registered from 4 June 2018
+messages__whatRole__p1 = Even if you are registered in the Pension Schemes Online service you need to register on the Managing Pension Schemes service to manage pension schemes with a Pension Scheme Tax Reference (PSTR) starting with ‘2’
 messages__whatRole__error = Select what role you are registered as
 messages__whatRole__PSA = Pension scheme administrator
 messages__whatRole__PSP = Pension scheme practitioner
