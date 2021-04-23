@@ -19,7 +19,7 @@ package connectors.admin
 import com.google.inject.ImplementedBy
 import com.google.inject.Inject
 import config.FrontendAppConfig
-import models.remove.psa.PsaToBeRemovedFromScheme
+import models.psa.remove.PsaToBeRemovedFromScheme
 import play.api.Logger
 import play.api.http.Status._
 import uk.gov.hmrc.http.HeaderCarrier

@@ -17,7 +17,7 @@
 package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
-import models.invitations.psp
+import models.invitations.Invitation
 import models.{AcceptedInvitation, SchemeReferenceNumber}
 import org.scalatest.{AsyncFlatSpec, Matchers}
 import org.scalatestplus.scalacheck.Checkers
@@ -273,7 +273,7 @@ object InvitationsConnectorSpec {
   )
 
   private val invitation =
-    psp.Invitation(
+    Invitation(
       srn,
       pstr,
       schemeName,

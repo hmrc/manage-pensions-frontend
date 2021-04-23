@@ -297,7 +297,7 @@ object PspSchemeDashboardControllerSpec {
   private val deauthoriseLink: Link =
     Link(
       id = "deauthorise-yourself",
-      url = controllers.remove.psp.selfRemoval.routes.ConfirmRemovalController.onPageLoad().url,
+      url = controllers.psp.deauthorise.self.routes.ConfirmDeauthController.onPageLoad().url,
       linkText = "De Authorise yourself"
     )
   private val searchSchemeLink: Link =

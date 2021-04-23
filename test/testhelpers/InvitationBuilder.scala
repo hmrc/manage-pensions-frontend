@@ -16,9 +16,8 @@
 
 package testhelpers
 
-import models._
-import models.invitations.psp
-import models.invitations.psp.Invitation
+import models.{invitations, _}
+import models.invitations.Invitation
 import uk.gov.hmrc.domain.PsaId
 
 import java.time.LocalDate
@@ -34,7 +33,7 @@ object InvitationBuilder {
     val inviteeName1 = "Test Invitee1 Name"
     val expiryDate1 = LocalDate.parse("2018-11-10").atStartOfDay()
 
-    psp.Invitation(srn, pstr1, schemeName1, inviterPsaId1, inviteePsaId1, inviteeName1, expiryDate1)
+    invitations.Invitation(srn, pstr1, schemeName1, inviterPsaId1, inviteePsaId1, inviteeName1, expiryDate1)
 
   }
   val invitation2: Invitation = {
@@ -45,7 +44,7 @@ object InvitationBuilder {
     val inviteeName2 = "Test Invitee2 Name"
     val expiryDate2 = LocalDate.parse("2018-11-11").atStartOfDay()
 
-    psp.Invitation(srn, pstr2, schemeName2, inviterPsaId2, inviteePsaId2, inviteeName2, expiryDate2)
+    invitations.Invitation(srn, pstr2, schemeName2, inviterPsaId2, inviteePsaId2, inviteeName2, expiryDate2)
 
   }
   val address = Address("line 1", "line 2", Some("line 3"), Some("line 4"), postcode = Some("AB11AB"), country = "GB")

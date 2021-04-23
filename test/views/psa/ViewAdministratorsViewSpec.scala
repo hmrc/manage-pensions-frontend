@@ -17,7 +17,7 @@
 package views.psa
 
 import controllers.psa.routes._
-import controllers.remove.psa.routes._
+import controllers.psa.remove.routes._
 import org.jsoup.Jsoup
 import play.twirl.api.HtmlFormat
 import viewmodels.AssociatedPsa

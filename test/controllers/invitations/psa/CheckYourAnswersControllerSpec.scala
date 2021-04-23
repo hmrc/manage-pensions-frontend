@@ -22,7 +22,7 @@ import connectors.scheme.SchemeDetailsConnector
 import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction}
 import controllers.behaviours.ControllerWithNormalPageBehaviours
 import controllers.invitations.psa.routes._
-import models.invitations.psp.Invitation
+import models.invitations.Invitation
 import models.{AcceptedInvitation, MinimalSchemeDetail}
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when

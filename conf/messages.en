@@ -48,17 +48,16 @@ messages__removal_date_error__before_association = The date cannot be before whe
 messages__removal_date_error__before_earliest_date = Enter a date after 29 May 2018
 messages__removal_date_error__common = Enter a correct date using the example format for when the scheme administrator stopped for this scheme
 
-messages__pspRemoval_date_error__all_blank = Enter the date when the scheme practitioner stopped for this scheme using a day, month and year
-messages__pspRemoval_date_error__day_blank = Enter a day when the scheme practitioner stopped for this scheme
-messages__pspRemoval_date_error__month_blank = Enter a month when the scheme practitioner stopped for this scheme
-messages__pspRemoval_date_error__year_blank = Enter a year when the scheme practitioner stopped for this scheme
-messages__pspRemoval_date_error__day_month_blank = Enter a day and month when the scheme practitioner stopped for this scheme
-messages__pspRemoval_date_error__month_year_blank = Enter a month and year when the scheme practitioner stopped for this scheme
-messages__pspRemoval_date_error__future_date = The date when the scheme practitioner stopped for this scheme must be today or in the past
-messages__pspRemoval_date_error__before_relationshipStartDate = The date cannot be before when the scheme practitioner started managing the scheme
-messages__pspRemoval_date_error__before_earliest_date = Enter a date after {0}
-messages__pspRemoval_date_error__common = Enter a correct date using the example format for when the scheme practitioner stopped for this scheme
-
+messages__pspDeauth_date_error__all_blank = Enter the date when the scheme practitioner stopped for this scheme using a day, month and year
+messages__pspDeauth_date_error__day_blank = Enter a day when the scheme practitioner stopped for this scheme
+messages__pspDeauth_date_error__month_blank = Enter a month when the scheme practitioner stopped for this scheme
+messages__pspDeauth_date_error__year_blank = Enter a year when the scheme practitioner stopped for this scheme
+messages__pspDeauth_date_error__day_month_blank = Enter a day and month when the scheme practitioner stopped for this scheme
+messages__pspDeauth_date_error__month_year_blank = Enter a month and year when the scheme practitioner stopped for this scheme
+messages__pspDeauth_date_error__future_date = The date when the scheme practitioner stopped for this scheme must be today or in the past
+messages__pspDeauth_date_error__before_relationshipStartDate = The date cannot be before when the scheme practitioner started managing the scheme
+messages__pspDeauth_date_error__before_earliest_date = Enter a date after {0}
+messages__pspDeauth_date_error__common = Enter a correct date using the example format for when the scheme practitioner stopped for this scheme
 
 messages__error__common__email__no_at_sign = Enter an email address which includes an @ symbol
 messages__error__common__email__start_with_at_sign = Enter an email address which does not start with @
@@ -338,11 +337,11 @@ messages__confirmRemovePsa__heading = Are you sure you want to remove {0} as sch
 messages__confirmRemovePsa_required = Select yes if you are sure you want to remove the scheme administrator
 messages__returnToSchemeDetails__link = Return to {0}
 
-messages__confirmRemovePsp__title = Are you sure you want to de-authorise the scheme practitioner?
-messages__confirmRemovePsp__heading = Are you sure you want to de-authorise {0} as scheme practitioner for {1}?
-messages__confirmRemovePsp__heading__screenReaderAlternativeText = Are you sure you want to dee authorise {0} as scheme practitioner for {1}?
-messages__confirmRemovePsp_required = Select yes if you want to de-authorise this pension scheme practitioner
-messages__confirmRemovePsp_required__screenReaderAlternativeText = Select yes if you want to dee authorise this pension scheme practitioner
+messages__confirmDeauthorisePsp__title = Are you sure you want to de-authorise the scheme practitioner?
+messages__confirmDeauthorisePsp__heading = Are you sure you want to de-authorise {0} as scheme practitioner for {1}?
+messages__confirmDeauthorisePsp__heading__screenReaderAlternativeText = Are you sure you want to dee authorise {0} as scheme practitioner for {1}?
+messages__confirmDeauthorisePsp_required = Select yes if you want to de-authorise this pension scheme practitioner
+messages__confirmDeauthorisePsp_required__screenReaderAlternativeText = Select yes if you want to dee authorise this pension scheme practitioner
 
 messages__confirmRemoved__title = The scheme administrator has been removed
 messages__confirmRemoved__heading = {0} has been removed as scheme administrator of {1}
@@ -561,25 +560,25 @@ messages__viewPractitioners__deAuthoriseLinkText = De-authorise
 messages__viewPractitioners__deAuthoriseLinkText__hiddenText = De-authorise {0}
 messages__viewPractitioners__didNotAuthorise__hiddenText = Cannot de-authorise {0}
 
-messages__pspRemovalDate__title = When did they stop being a scheme practitioner?
-messages__pspRemovalDate__heading = When did {0} stop being a scheme practitioner for {1}?
-messages__pspRemovalDate__lede = {0} was authorised as a scheme practitioner on {1}. The date they stopped must be between {1} and today.
+messages__pspDeauthDate__title = When did they stop being a scheme practitioner?
+messages__pspDeauthDate__heading = When did {0} stop being a scheme practitioner for {1}?
+messages__pspDeauthDate__lede = {0} was authorised as a scheme practitioner on {1}. The date they stopped must be between {1} and today.
 
-messages__removePspDeclaration__title = Declaration
-messages__removePspDeclaration__p = I confirm I want to de-authorise this practitioner for this pension scheme.
-messages__removePspDeclaration__p__screenReaderAlternative = I confirm I want to dee authorise this practitioner for this pension scheme.
-messages__removePspDeclaration__p_self = I confirm I want to de-authorise myself as a practitioner for this pension scheme.
-messages__removePspDeclaration__p_self__screenReaderAlternative = I confirm I want to dee authorise myself as a practitioner for this pension scheme.
-messages__removePspDeclaration__label = Agree
-messages__removePspDeclaration__required = Select the agree box to confirm you accept the declaration
+messages__deauthPspDeclaration__title = Declaration
+messages__deauthPspDeclaration__p = I confirm I want to de-authorise this practitioner for this pension scheme.
+messages__deauthPspDeclaration__p__screenReaderAlternative = I confirm I want to dee authorise this practitioner for this pension scheme.
+messages__deauthPspDeclaration__p_self = I confirm I want to de-authorise myself as a practitioner for this pension scheme.
+messages__deauthPspDeclaration__p_self__screenReaderAlternative = I confirm I want to dee authorise myself as a practitioner for this pension scheme.
+messages__deauthPspDeclaration__label = Agree
+messages__deauthPspDeclaration__required = Select the agree box to confirm you accept the declaration
 
-messages__confirmPsaRemovedPsp__title = Practitioner has been de-authorised
-messages__confirmPsaRemovedPsp__heading = You have de-authorised {0} as a scheme practitioner for {1}
-messages__confirmPsaRemovedPsp__heading__screenReaderAlternative = You have dee authorised {0} as a scheme practitioner for {1}
-messages__confirmPsaRemovedPsp__p1 = We have sent a confirmation email to {0}
-messages__confirmPsaRemovedPsp__h2 = What happens next
-messages__confirmPsaRemovedPsp__p2 = A letter will be sent to {0} to confirm they have been de-authorised as a scheme practitioner for {1}.
-messages__confirmPsaRemovedPsp__p2__screenReaderAlternative = A letter will be sent to {0} to confirm they have been dee authorised as a scheme practitioner for {1}.
+messages__confirmPsaDeauthPsp__title = Practitioner has been de-authorised
+messages__confirmPsaDeauthPsp__heading = You have de-authorised {0} as a scheme practitioner for {1}
+messages__confirmPsaDeauthPsp__heading__screenReaderAlternative = You have dee authorised {0} as a scheme practitioner for {1}
+messages__confirmPsaDeauthPsp__p1 = We have sent a confirmation email to {0}
+messages__confirmPsaDeauthPsp__h2 = What happens next
+messages__confirmPsaDeauthPsp__p2 = A letter will be sent to {0} to confirm they have been de-authorised as a scheme practitioner for {1}.
+messages__confirmPsaDeauthPsp__p2__screenReaderAlternative = A letter will be sent to {0} to confirm they have been dee authorised as a scheme practitioner for {1}.
 
 messages__pspDashboard__sub_heading = Practitioner
 messages__pspDashboard__details_heading = Practitioner details
@@ -590,17 +589,17 @@ messages__pspDashboard__scheme_heading = Pension schemes
 messages__pspDashboard__search_scheme = Search for a pension scheme
 messages__pspDashboard__switch_psa = Switch to administrator view
 
-messages__pspSelfRemovalDate__title = When did they stop being a scheme practitioner
-messages__pspSelfRemovalDate__heading = When did you stop being a scheme practitioner for {0}?
-messages__pspSelfRemovalDate__lede = You were authorised as a pension scheme practitioner for this scheme on {0}. The date you stopped must be between {0} and today.
+messages__pspSelfDeauthDate__title = When did they stop being a scheme practitioner
+messages__pspSelfDeauthDate__heading = When did you stop being a scheme practitioner for {0}?
+messages__pspSelfDeauthDate__lede = You were authorised as a pension scheme practitioner for this scheme on {0}. The date you stopped must be between {0} and today.
 
-messages__pspRemovalConfirmation__title = Practitioner has been de-authorised
-messages__pspRemovalConfirmation__heading = You have de-authorised yourself as a scheme practitioner for {0}
-messages__pspRemovalConfirmation__heading__screenReaderAlternative = You have dee authorised yourself as a scheme practitioner for {0}
-messages__pspRemovalConfirmation__p1 = We have sent a confirmation email to {0}
-messages__pspRemovalConfirmation__h2 = What happens next
-messages__pspRemovalConfirmation__p2 = A letter will be sent to {0} to let them know that you have de-authorised yourself as a scheme practitioner for {1}.
-messages__pspRemovalConfirmation__p2__screenReaderAlternative = A letter will be sent to {0} to let them know that you have dee authorised yourself as a scheme practitioner for {1}.
+messages__pspDeauthConfirmation__title = Practitioner has been de-authorised
+messages__pspDeauthConfirmation__heading = You have de-authorised yourself as a scheme practitioner for {0}
+messages__pspDeauthConfirmation__heading__screenReaderAlternative = You have dee authorised yourself as a scheme practitioner for {0}
+messages__pspDeauthConfirmation__p1 = We have sent a confirmation email to {0}
+messages__pspDeauthConfirmation__h2 = What happens next
+messages__pspDeauthConfirmation__p2 = A letter will be sent to {0} to let them know that you have de-authorised yourself as a scheme practitioner for {1}.
+messages__pspDeauthConfirmation__p2__screenReaderAlternative = A letter will be sent to {0} to let them know that you have dee authorised yourself as a scheme practitioner for {1}.
 
 messages__pspSchemeDashboard__details_heading = Your practitioner details
 messages__pspSchemeDashboard__details__subHeading_authBy = Authorised by:

@@ -18,7 +18,7 @@ package services
 
 import config.FrontendAppConfig
 import connectors.admin.MinimalConnector
-import controllers.remove.psp.selfRemoval.routes._
+import controllers.psp.deauthorise.self.routes._
 import models.{AuthorisedPractitioner, Link, MinimalPSAPSP}
 import play.api.i18n.Messages
 import uk.gov.hmrc.http.HeaderCarrier
@@ -71,7 +71,7 @@ class PspSchemeDashboardService @Inject()(
       links = Seq(
         Link(
           id = "deauthorise-yourself",
-          url = ConfirmRemovalController.onPageLoad().url,
+          url = ConfirmDeauthController.onPageLoad().url,
           linkText = Message("messages__pspSchemeDashboard__details__deAuth_Link"),
           hiddenText = Some(Message("messages__pspSchemeDashboard__details__deAuth_Link_screenReaderAlternative"))
         )

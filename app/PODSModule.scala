@@ -61,12 +61,12 @@ class PODSModule extends AbstractModule {
       .to(classOf[RemovePSANavigator])
 
     bind(classOf[Navigator])
-      .annotatedWith(classOf[RemovePSP])
-      .to(classOf[RemovePSPNavigator])
+      .annotatedWith(classOf[DeauthorisePSP])
+      .to(classOf[DeauthorisePSPNavigator])
 
     bind(classOf[Navigator])
-      .annotatedWith(classOf[PspSelfRemoval])
-      .to(classOf[PspSelfRemovalNavigator])
+      .annotatedWith(classOf[PspSelfDeauth])
+      .to(classOf[PspSelfDeauthoriseNavigator])
 
     bind(classOf[Navigator])
       .to(classOf[ManageNavigator])

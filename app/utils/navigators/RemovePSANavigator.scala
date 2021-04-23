@@ -18,10 +18,10 @@ package utils.navigators
 
 import connectors.UserAnswersCacheConnector
 import controllers.psa.routes._
-import controllers.remove.psa.routes._
+import controllers.psa.remove.routes._
 import controllers.routes._
+import identifiers.psa.remove.{ConfirmRemovePsaId, PsaRemovalDateId}
 import identifiers.{Identifier, SchemeSrnId}
-import identifiers.remove.psa.{ConfirmRemovePsaId, PsaRemovalDateId}
 import play.api.mvc.Call
 import utils.{Navigator, UserAnswers}
 
