@@ -631,7 +631,7 @@ messages__pspSchemeDashboard__aftOverdueCharges__actions_view = View overdue pay
 
 messages__contactHMRC__title = We need to update your records
 messages__contactHMRC__heading = You cannot access this service
-messages__contactHMRC__p1 = We need to update your records before you can continue to use the Managing Pensions Schemes service.
+messages__contactHMRC__p1 = We need to update your records before you can continue to use the Managing Pension Schemes service.
 messages__contactHMRC__p2 = Please write to HMRC at:
 messages__contactHMRC__p3 = In your letter you must include:
 messages__contactHMRC__item1 = your scheme administrator name
