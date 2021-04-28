@@ -44,8 +44,7 @@ lazy val root = (project in file("."))
     evictionWarningOptions in update :=
       EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
     resolvers ++= Seq(
-      Resolver.jcenterRepo,
-      Resolver.bintrayRepo("wolfendale", "maven")
+      Resolver.jcenterRepo
     ),
     // concatenate js
     Concat.groups := Seq(
