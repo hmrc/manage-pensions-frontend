@@ -95,7 +95,7 @@ class PspSchemeDashboardService @Inject()(
           (Message("messages__pspSchemeDashboard__scheme__subHeading_regForTax"), date)
       },
       links = Seq(Link(
-        id = "search-schemes",
+        id = "scheme-card-detail",
         url = appConfig.pspTaskListUrl.format(srn),
         linkText = Message("messages__pspSchemeDashboard__view_details_link")
       ))
