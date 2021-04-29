@@ -21,12 +21,12 @@ import connectors._
 import connectors.admin.MinimalConnector
 import controllers.psa.routes._
 import models.requests.OptionalDataRequest
-import models.{Link, MinimalPSAPSP}
+import models.{MinimalPSAPSP, Link}
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContent, Request}
 import play.twirl.api.Html
 import uk.gov.hmrc.http.HeaderCarrier
-import viewmodels.{CardSubHeading, CardSubHeadingParam, CardViewModel, Message}
+import viewmodels.{CardSubHeadingParam, Message, CardViewModel, CardSubHeading}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -50,11 +50,7 @@ class SchemesOverviewService @Inject()(
     }
 
   def retrievePenaltiesUrlPartial[A](implicit request: Request[A], ec: ExecutionContext): Future[Html] =
-    if (appConfig.isFSEnabled) {
-      frontendConnector.retrievePenaltiesUrlPartial
-    } else {
-      Future.successful(Html(""))
-    }
+    frontendConnector.retrievePenaltiesUrlPartial
 
   def getPsaName(psaId: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
     minimalPsaConnector.getPsaNameFromPsaID(psaId).map(identity)

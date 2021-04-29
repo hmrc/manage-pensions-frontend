@@ -18,13 +18,12 @@ package services
 
 import java.time.LocalDate
 import com.google.inject.Inject
-import config.FrontendAppConfig
 import connectors.FrontendConnector
 import connectors.admin.MinimalConnector
 import connectors.scheme.PensionSchemeVarianceLockConnector
 import identifiers.SchemeStatusId
 import identifiers.psa.ListOfPSADetailsId
-import models.SchemeStatus.{Deregistered, Open, WoundUp}
+import models.SchemeStatus.{WoundUp, Deregistered, Open}
 import models._
 import models.psa.PsaSchemeDetails
 import models.requests.AuthenticatedRequest
@@ -36,8 +35,7 @@ import viewmodels.AssociatedPsa
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
-                                     frontendConnector: FrontendConnector,
+class SchemeDetailsService @Inject()(frontendConnector: FrontendConnector,
                                      schemeVarianceLockConnector: PensionSchemeVarianceLockConnector,
                                      minimalPsaConnector: MinimalConnector
                                     )(implicit ec: ExecutionContext) {
@@ -56,11 +54,7 @@ class SchemeDetailsService @Inject()(appConfig: FrontendAppConfig,
 
   def retrievePaymentsAndChargesHtml[A](srn: String)
                                        (implicit request: Request[A]): Future[Html] =
-    if (appConfig.isFSEnabled) {
-      frontendConnector.retrievePaymentsAndChargesPartial(srn)
-    } else {
-      Future.successful(Html(""))
-    }
+    frontendConnector.retrievePaymentsAndChargesPartial(srn)
 
   private def isCorrectSchemeStatus(ua: UserAnswers): Boolean = {
     val validStatus = Seq(Open.value, WoundUp.value, Deregistered.value)
