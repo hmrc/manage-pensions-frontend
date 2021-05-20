@@ -32,7 +32,7 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.DateHelper._
 import utils.UserAnswers
-import viewmodels.{CardSubHeading, CardSubHeadingParam, CardViewModel, Message}
+import viewmodels.{CardSubHeadingParam, Message, CardViewModel, CardSubHeading}
 
 import java.time.LocalDate
 import scala.concurrent.{ExecutionContext, Future}
@@ -45,16 +45,17 @@ class PsaSchemeDashboardService @Inject()(
   def cards(srn: String, lock: Option[Lock], list: ListOfSchemes, ua: UserAnswers)
            (implicit hc: HeaderCarrier,
             ec: ExecutionContext,
-            messages: Messages): Future[Seq[CardViewModel]] =
-    for {
-      pspCard <- pspCard(ua)
-    } yield Seq(schemeCard(srn, list, lock, ua)) ++ Seq(psaCard(srn, ua)) ++ pspCard
-
-  //Scheme details card
-  def schemeCard(srn: String, list: ListOfSchemes, lock: Option[Lock], ua: UserAnswers)
-                (implicit messages: Messages): CardViewModel = {
+            messages: Messages): Future[Seq[CardViewModel]] = {
     val currentScheme = getSchemeDetailsFromListOfSchemes(srn, list)
 
+    for {
+      pspCard <- pspCard(ua)
+    } yield Seq(schemeCard(srn, currentScheme, lock, ua)) ++ Seq(psaCard(srn, ua)) ++ pspCard
+  }
+
+  //Scheme details card
+  def schemeCard(srn: String, currentScheme:Option[SchemeDetails], lock: Option[Lock], ua: UserAnswers)
+                (implicit messages: Messages): CardViewModel = {
     CardViewModel(
       id = "scheme_details",
       heading = Message("messages__psaSchemeDash__scheme_details_head"),

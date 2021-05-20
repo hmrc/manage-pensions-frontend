@@ -23,8 +23,8 @@ import controllers.invitations.routes._
 import controllers.psa.routes._
 import controllers.psp.routes._
 import identifiers.invitations.PSTRId
-import identifiers.{SchemeNameId, SchemeStatusId}
-import models.FeatureToggle.{Disabled, Enabled}
+import identifiers.{SchemeStatusId, SchemeNameId}
+import models.FeatureToggle.{Enabled, Disabled}
 import models.FeatureToggleName.PSPAuthorisation
 import models.SchemeStatus.Rejected
 import models._
@@ -65,18 +65,18 @@ class PsaSchemeDashboardServiceSpec
 
   "schemeCard" must {
     "return model fron aft-frontend is Scheme status is open and psa holds the lock" in {
-      service.schemeCard(srn, listOfSchemes, Some(VarianceLock), userAnswers) mustBe
+      service.schemeCard(srn, currentScheme, Some(VarianceLock), userAnswers) mustBe
         schemeCard("messages__psaSchemeDash__view_change_details_link")
     }
 
     "return model with view-only link for scheme if psa does not hold lock" in {
-      service.schemeCard(srn, listOfSchemes, Some(SchemeLock), userAnswers) mustBe schemeCard()
+      service.schemeCard(srn, currentScheme, Some(SchemeLock), userAnswers) mustBe schemeCard()
     }
 
     "return not display subheadings if scheme is not open" in {
       val ua = UserAnswers().set(SchemeStatusId)(Rejected.value).asOpt.get
 
-      service.schemeCard(srn, listOfSchemes, Some(SchemeLock), ua) mustBe closedSchemeCard()
+      service.schemeCard(srn, currentScheme, Some(SchemeLock), ua) mustBe closedSchemeCard()
     }
   }
 
@@ -242,7 +242,7 @@ object PsaSchemeDashboardServiceSpec {
       ))
   )
 
-  val listOfSchemes: ListOfSchemes = ListOfSchemes("", "", Some(List(SchemeDetails(name, srn, "Open", Some(date), Some(pstr), None))))
+  private val currentScheme:Option[SchemeDetails] = Some(SchemeDetails(name, srn, "Open", Some(date), Some(pstr), None))
 
 }
 

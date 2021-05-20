@@ -18,13 +18,13 @@ package controllers.psa
 
 import config.FrontendAppConfig
 import connectors.admin.MinimalConnector
-import connectors.scheme.{ListOfSchemesConnector, PensionSchemeVarianceLockConnector, SchemeDetailsConnector}
-import connectors.{FakeUserAnswersCacheConnector, FrontendConnector}
+import connectors.scheme.{SchemeDetailsConnector, PensionSchemeVarianceLockConnector, ListOfSchemesConnector}
+import connectors.{FrontendConnector, FakeUserAnswersCacheConnector}
 import controllers.ControllerSpecBase
 import controllers.actions.FakeAuthAction
 import identifiers.SchemeStatusId
 import models.SchemeStatus.Rejected
-import models.{MinimalPSAPSP, SchemeReferenceNumber, VarianceLock}
+import models._
 import org.mockito.Matchers.{any, eq => eqTo}
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
@@ -57,6 +57,10 @@ class PsaSchemeDashboardControllerSpec
   private val mockMinimalPsaConnector: MinimalConnector =
     mock[MinimalConnector]
   private val mockAppConfig: FrontendAppConfig = mock[FrontendAppConfig]
+  private val name = "test-name"
+  private val date = "2020-01-01"
+  private val pstr = "pstr"
+  private val listOfSchemes: ListOfSchemes = ListOfSchemes("", "", Some(List(SchemeDetails(name, srn, "Open", Some(date), Some(pstr), None))))
 
   def controller(): PsaSchemeDashboardController = {
     new PsaSchemeDashboardController(
