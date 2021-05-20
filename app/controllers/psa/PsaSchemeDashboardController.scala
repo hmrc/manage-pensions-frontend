@@ -63,7 +63,6 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
               val schemeStatus = userAnswers.get(SchemeStatusId).getOrElse("")
 
               val updatedUa = userAnswers.set(SchemeSrnId)(srn.id).flatMap(_.set(SchemeNameId)(schemeName)).asOpt.getOrElse(userAnswers)
-
               for {
                 aftHtml <- retrieveAftTilesHtml(srn, schemeStatus)
                   _ <- userAnswersCacheConnector.upsert(request.externalId, updatedUa.json)

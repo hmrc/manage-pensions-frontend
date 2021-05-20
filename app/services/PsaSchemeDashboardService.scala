@@ -52,13 +52,16 @@ class PsaSchemeDashboardService @Inject()(
 
   //Scheme details card
   def schemeCard(srn: String, list: ListOfSchemes, lock: Option[Lock], ua: UserAnswers)
-                (implicit messages: Messages): CardViewModel =
+                (implicit messages: Messages): CardViewModel = {
+    val currentScheme = getSchemeDetailsFromListOfSchemes(srn, list)
+
     CardViewModel(
       id = "scheme_details",
       heading = Message("messages__psaSchemeDash__scheme_details_head"),
-      subHeadings = optToSeq(pstrSubHead(srn, list)) ++ optToSeq(dateSubHead(srn, list, ua)),
+      subHeadings = optToSeq(pstrSubHead(currentScheme)) ++ optToSeq(dateSubHead(currentScheme, ua)),
       links = Seq(schemeDetailsLink(srn, ua, lock))
     )
+  }
 
   private def schemeDetailsLink(srn: String, ua: UserAnswers, lock: Option[Lock])
                                (implicit messages: Messages): Link = {
@@ -75,35 +78,30 @@ class PsaSchemeDashboardService @Inject()(
     Link("view-details", appConfig.viewSchemeDetailsUrl.format(srn), linkText)
   }
 
-  private def dateSubHead(srn: String, list: ListOfSchemes, ua: UserAnswers)
-                         (implicit messages: Messages): Option[CardSubHeading] =
+  private def getSchemeDetailsFromListOfSchemes(srn:String, list: ListOfSchemes): Option[SchemeDetails] =
+    list.schemeDetails.flatMap( _.find(_.referenceNumber.contains(srn)))
+
+  private def dateSubHead(currentScheme: Option[SchemeDetails], ua: UserAnswers)
+    (implicit messages: Messages): Option[CardSubHeading] =
     if (isSchemeOpen(ua)) {
-      list.schemeDetails.flatMap {
-        listOfSchemes =>
-          val currentScheme = listOfSchemes.filter(_.referenceNumber.contains(srn))
-
-          def date: Option[String] = currentScheme.head.openDate.map(date => LocalDate.parse(date).format(formatter))
-
-          if (currentScheme.nonEmpty && date.nonEmpty) {
-            Some(CardSubHeading(
-              subHeading = Message("messages__psaSchemeDash__regDate"),
-              subHeadingClasses = "card-sub-heading",
-              subHeadingParams = Seq(CardSubHeadingParam(
-                subHeadingParam = date.getOrElse(""),
-                subHeadingParamClasses = "font-small bold"))))
-          } else {
-            None
-          }
+      def date: Option[String] = currentScheme.flatMap(_.openDate.map(LocalDate.parse(_).format(formatter)))
+      if (currentScheme.nonEmpty && date.nonEmpty) {
+        Some(CardSubHeading(
+          subHeading = Message("messages__psaSchemeDash__regDate"),
+          subHeadingClasses = "card-sub-heading",
+          subHeadingParams = Seq(CardSubHeadingParam(
+            subHeadingParam = date.getOrElse(""),
+            subHeadingParamClasses = "font-small bold"))))
+      } else {
+        None
       }
     }
     else {
       None
     }
 
-  private def pstrSubHead(srn: String, list: ListOfSchemes)(implicit messages: Messages): Option[CardSubHeading] =
-    list.schemeDetails.flatMap { listOfSchemes =>
-      val currentScheme = listOfSchemes.filter(_.referenceNumber.contains(srn))
-      if (currentScheme.nonEmpty && currentScheme.head.pstr.nonEmpty) {
+  private def pstrSubHead(currentScheme: Option[SchemeDetails])(implicit messages: Messages): Option[CardSubHeading] = {
+      if (currentScheme.exists(_.pstr.nonEmpty)) {
         Some(CardSubHeading(
           subHeading = Message("messages__psaSchemeDash__pstr"),
           subHeadingClasses = "card-sub-heading",
@@ -113,7 +111,7 @@ class PsaSchemeDashboardService @Inject()(
       } else {
         None
       }
-    }
+  }
 
   //PSA card
   def psaCard(srn: String, ua: UserAnswers)
