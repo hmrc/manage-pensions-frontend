@@ -26,8 +26,7 @@ import identifiers.invitations.PSTRId
 import identifiers.{SchemeStatusId, SchemeNameId}
 import models.FeatureToggle.{Enabled, Disabled}
 import models.FeatureToggleName.PSPAuthorisation
-import models.SchemeStatus.Rejected
-import models.SchemeStatus.Open
+import models.SchemeStatus.{Rejected, Open}
 import models._
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -66,18 +65,18 @@ class PsaSchemeDashboardServiceSpec
 
   "schemeCard" must {
     "return model fron aft-frontend is Scheme status is open and psa holds the lock" in {
-      service.schemeCard(srn, currentScheme, Some(VarianceLock), userAnswers(Open.value)) mustBe
+      service.schemeCard(srn, currentScheme(Open), Some(VarianceLock), userAnswers(Open.value)) mustBe
         schemeCard("messages__psaSchemeDash__view_change_details_link")
     }
 
     "return model with view-only link for scheme if psa does not hold lock" in {
-      service.schemeCard(srn, currentScheme, Some(SchemeLock), userAnswers(Open.value)) mustBe schemeCard()
+      service.schemeCard(srn, currentScheme(Open), Some(SchemeLock), userAnswers(Open.value)) mustBe schemeCard()
     }
 
     "return not display subheadings if scheme is not open" in {
       val ua = UserAnswers().set(SchemeStatusId)(Rejected.value).asOpt.get
 
-      service.schemeCard(srn, currentScheme, Some(SchemeLock), ua) mustBe closedSchemeCard()
+      service.schemeCard(srn, currentScheme(Open), Some(SchemeLock), ua) mustBe closedSchemeCard()
     }
   }
 
@@ -93,16 +92,23 @@ class PsaSchemeDashboardServiceSpec
   }
 
   "pspCard" must {
-    "return model when psps are present nad toggle is on" in {
+    "return model when psps are present and toggle is on and scheme status is open" in {
       when(mockFeatureToggle.get(any())(any(), any())).thenReturn(Future.successful(Enabled(PSPAuthorisation)))
-      whenReady(service.pspCard(userAnswers(Open.value))) {
+      whenReady(service.pspCard(userAnswers(Open.value), currentScheme(Open))) {
         _ mustBe List(pspCard())
+      }
+    }
+
+    "return empty list when psps are present and toggle is on and scheme status is not open" in {
+      when(mockFeatureToggle.get(any())(any(), any())).thenReturn(Future.successful(Enabled(PSPAuthorisation)))
+      whenReady(service.pspCard(userAnswers(Rejected.value), currentScheme(Rejected))) {
+        _ mustBe Nil
       }
     }
 
     "return empty list when psps are present & toggle is off" in {
       when(mockFeatureToggle.get(any())(any(), any())).thenReturn(Future.successful(Disabled(PSPAuthorisation)))
-      whenReady(service.pspCard(userAnswers(Open.value))) {
+      whenReady(service.pspCard(userAnswers(Open.value), currentScheme(Open))) {
         _ mustBe Nil
       }
     }
@@ -111,21 +117,12 @@ class PsaSchemeDashboardServiceSpec
 }
 
 object PsaSchemeDashboardServiceSpec {
-
   private val srn = "srn"
   private val pstr = "pstr"
   private val schemeName = "Benefits Scheme"
   private val name = "test-name"
   private val date = "2020-01-01"
   private val dummyUrl = "dummy"
-  private val minimalPsaName: Option[String] = Some("John Doe Doe")
-  private val administrators: Option[Seq[AssociatedPsa]] =
-    Some(
-      Seq(
-        AssociatedPsa("partnership name 2", canRemove = true),
-        AssociatedPsa("Tony A Smith", canRemove = false)
-      )
-    )
   private def userAnswers(schemeStatus: String): UserAnswers = UserAnswers(Json.obj(
     PSTRId.toString -> pstr,
     "schemeStatus" -> schemeStatus,
@@ -243,7 +240,7 @@ object PsaSchemeDashboardServiceSpec {
       ))
   )
 
-  private val currentScheme:Option[SchemeDetails] = Some(SchemeDetails(name, srn, "Open", Some(date), Some(pstr), None))
+  private def currentScheme(schemeStatus: SchemeStatus):Option[SchemeDetails] = Some(SchemeDetails(name, srn, schemeStatus.value, Some(date), Some(pstr), None))
 
 }
 

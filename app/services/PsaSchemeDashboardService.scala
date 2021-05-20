@@ -21,6 +21,7 @@ import config.FrontendAppConfig
 import controllers.invitations.psp.routes._
 import controllers.invitations.routes._
 import controllers.psa.routes._
+import models.SchemeStatus.Open
 import controllers.psp.routes._
 import identifiers.psa.ListOfPSADetailsId
 import identifiers.{SchemeStatusId, SeqAuthorisedPractitionerId}
@@ -49,7 +50,7 @@ class PsaSchemeDashboardService @Inject()(
     val currentScheme = getSchemeDetailsFromListOfSchemes(srn, list)
 
     for {
-      pspCard <- pspCard(ua)
+      pspCard <- pspCard(ua, currentScheme)
     } yield Seq(schemeCard(srn, currentScheme, lock, ua)) ++ Seq(psaCard(srn, ua)) ++ pspCard
   }
 
@@ -156,18 +157,23 @@ class PsaSchemeDashboardService @Inject()(
     ua.get(ListOfPSADetailsId) flatMap (_.sortBy(_.relationshipDate).reverse.headOption)
 
   //PSP card
-  def pspCard(ua: UserAnswers)
+  def pspCard(ua: UserAnswers, optionSchemeDetails: Option[SchemeDetails])
              (implicit hc: HeaderCarrier, ec: ExecutionContext, messages: Messages): Future[Seq[CardViewModel]] =
     featureToggleService.get(PSPAuthorisation).map {
       case Enabled(PSPAuthorisation) =>
-        Seq(CardViewModel(
-          id = "psp_list",
-          heading = Message("messages__psaSchemeDash__psp_heading"),
-          subHeadings = latestPspSubHeading(ua),
-          links = Seq(
-            Link("authorise", WhatYouWillNeedController.onPageLoad().url, Message("messages__pspAuthorise__link"))
-          ) ++ viewPspLink(ua)
-        ))
+        optionSchemeDetails match {
+          case Some(sd) if sd.schemeStatus == Open.value =>
+            Seq(CardViewModel(
+              id = "psp_list",
+              heading = Message("messages__psaSchemeDash__psp_heading"),
+              subHeadings = latestPspSubHeading(ua),
+              links = Seq(
+                Link("authorise", WhatYouWillNeedController.onPageLoad().url, Message("messages__pspAuthorise__link"))
+              ) ++ viewPspLink(ua)
+            ))
+          case _ =>
+            Nil
+        }
       case _ =>
         Nil
     }

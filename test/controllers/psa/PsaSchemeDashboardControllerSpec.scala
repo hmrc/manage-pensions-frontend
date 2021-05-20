@@ -52,7 +52,7 @@ class PsaSchemeDashboardControllerSpec
     with MockitoSugar
     with BeforeAndAfterEach {
 
-  val psaSchemeDashboardView: psaSchemeDashboard = app.injector.instanceOf[psaSchemeDashboard]
+  private val psaSchemeDashboardView: psaSchemeDashboard = app.injector.instanceOf[psaSchemeDashboard]
   private val fakeSchemeDetailsConnector: SchemeDetailsConnector = mock[SchemeDetailsConnector]
   private val mockFrontendConnector: FrontendConnector = mock[FrontendConnector]
   private val fakeListOfSchemesConnector: ListOfSchemesConnector = mock[ListOfSchemesConnector]
