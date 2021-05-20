@@ -27,6 +27,7 @@ import identifiers.{SchemeStatusId, SchemeNameId}
 import models.FeatureToggle.{Enabled, Disabled}
 import models.FeatureToggleName.PSPAuthorisation
 import models.SchemeStatus.Rejected
+import models.SchemeStatus.Open
 import models._
 import org.mockito.Matchers.any
 import org.mockito.Mockito.when
@@ -55,7 +56,7 @@ class PsaSchemeDashboardServiceSpec
   private val mockAppConfig = mock[FrontendAppConfig]
   private val mockFeatureToggle = mock[FeatureToggleService]
 
-  def service: PsaSchemeDashboardService =
+  private def service: PsaSchemeDashboardService =
     new PsaSchemeDashboardService(mockAppConfig, mockFeatureToggle)
 
   override def beforeEach(): Unit = {
@@ -65,12 +66,12 @@ class PsaSchemeDashboardServiceSpec
 
   "schemeCard" must {
     "return model fron aft-frontend is Scheme status is open and psa holds the lock" in {
-      service.schemeCard(srn, currentScheme, Some(VarianceLock), userAnswers) mustBe
+      service.schemeCard(srn, currentScheme, Some(VarianceLock), userAnswers(Open.value)) mustBe
         schemeCard("messages__psaSchemeDash__view_change_details_link")
     }
 
     "return model with view-only link for scheme if psa does not hold lock" in {
-      service.schemeCard(srn, currentScheme, Some(SchemeLock), userAnswers) mustBe schemeCard()
+      service.schemeCard(srn, currentScheme, Some(SchemeLock), userAnswers(Open.value)) mustBe schemeCard()
     }
 
     "return not display subheadings if scheme is not open" in {
@@ -82,11 +83,11 @@ class PsaSchemeDashboardServiceSpec
 
   "psaCard" must {
     "return model when scheme is open" in {
-      service.psaCard(srn, userAnswers) mustBe psaCard()
+      service.psaCard(srn, userAnswers(Open.value)) mustBe psaCard()
     }
 
     "return model when scheme is not open" in {
-      val ua = userAnswers.set(SchemeStatusId)(Rejected.value).asOpt.get
+      val ua = userAnswers(Rejected.value)
       service.psaCard(srn, ua) mustBe psaCard(Nil)
     }
   }
@@ -94,14 +95,14 @@ class PsaSchemeDashboardServiceSpec
   "pspCard" must {
     "return model when psps are present nad toggle is on" in {
       when(mockFeatureToggle.get(any())(any(), any())).thenReturn(Future.successful(Enabled(PSPAuthorisation)))
-      whenReady(service.pspCard(userAnswers)) {
+      whenReady(service.pspCard(userAnswers(Open.value))) {
         _ mustBe List(pspCard())
       }
     }
 
     "return empty list when psps are present & toggle is off" in {
       when(mockFeatureToggle.get(any())(any(), any())).thenReturn(Future.successful(Disabled(PSPAuthorisation)))
-      whenReady(service.pspCard(userAnswers)) {
+      whenReady(service.pspCard(userAnswers(Open.value))) {
         _ mustBe Nil
       }
     }
@@ -117,17 +118,17 @@ object PsaSchemeDashboardServiceSpec {
   private val name = "test-name"
   private val date = "2020-01-01"
   private val dummyUrl = "dummy"
-  val minimalPsaName: Option[String] = Some("John Doe Doe")
-  val administrators: Option[Seq[AssociatedPsa]] =
+  private val minimalPsaName: Option[String] = Some("John Doe Doe")
+  private val administrators: Option[Seq[AssociatedPsa]] =
     Some(
       Seq(
         AssociatedPsa("partnership name 2", canRemove = true),
         AssociatedPsa("Tony A Smith", canRemove = false)
       )
     )
-  val userAnswers: UserAnswers = UserAnswers(Json.obj(
+  private def userAnswers(schemeStatus: String): UserAnswers = UserAnswers(Json.obj(
     PSTRId.toString -> pstr,
-    "schemeStatus" -> "Open",
+    "schemeStatus" -> schemeStatus,
     SchemeNameId.toString -> schemeName,
     "psaDetails" -> JsArray(
       Seq(
@@ -174,14 +175,14 @@ object PsaSchemeDashboardServiceSpec {
     )
   ))
 
-  def schemeCard(linkText: String = "messages__psaSchemeDash__view_details_link")(implicit messages: Messages): CardViewModel = CardViewModel(
+  private def schemeCard(linkText: String = "messages__psaSchemeDash__view_details_link")(implicit messages: Messages): CardViewModel = CardViewModel(
     id = "scheme_details",
     heading = Message("messages__psaSchemeDash__scheme_details_head"),
     subHeadings = pstrSubHead ++ dateSubHead,
     links = Seq(Link("view-details", dummyUrl, messages(linkText)))
   )
 
-  def closedSchemeCard(linkText: String = "messages__psaSchemeDash__view_details_link")(implicit messages: Messages): CardViewModel = CardViewModel(
+  private def closedSchemeCard(linkText: String = "messages__psaSchemeDash__view_details_link")(implicit messages: Messages): CardViewModel = CardViewModel(
     id = "scheme_details",
     heading = Message("messages__psaSchemeDash__scheme_details_head"),
     subHeadings = pstrSubHead,
@@ -202,7 +203,7 @@ object PsaSchemeDashboardServiceSpec {
       subHeadingParam = LocalDate.parse(date).format(formatter),
       subHeadingParamClasses = "font-small bold"))))
 
-  def psaCard(inviteLink: Seq[Link] = inviteLink)
+  private def psaCard(inviteLink: Seq[Link] = inviteLink)
              (implicit messages: Messages): CardViewModel = CardViewModel(
     id = "psa_list",
     heading = Message("messages__psaSchemeDash__psa_list_head"),
@@ -225,7 +226,7 @@ object PsaSchemeDashboardServiceSpec {
     linkText = Message("messages__psaSchemeDash__invite_link")
   ))
 
-  def pspCard()(implicit messages: Messages): CardViewModel = CardViewModel(
+  private def pspCard()(implicit messages: Messages): CardViewModel = CardViewModel(
     id = "psp_list",
     heading = Message("messages__psaSchemeDash__psp_heading"),
     subHeadings = Seq(CardSubHeading(

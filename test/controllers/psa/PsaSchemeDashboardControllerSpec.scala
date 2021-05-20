@@ -22,26 +22,35 @@ import connectors.scheme.{SchemeDetailsConnector, PensionSchemeVarianceLockConne
 import connectors.{FrontendConnector, FakeUserAnswersCacheConnector}
 import controllers.ControllerSpecBase
 import controllers.actions.FakeAuthAction
-import identifiers.SchemeStatusId
-import models.SchemeStatus.Rejected
+import controllers.invitations.psp.routes.WhatYouWillNeedController
+import controllers.invitations.routes.InviteController
+import controllers.psa.routes.ViewAdministratorsController
+import controllers.psp.routes.ViewPractitionersController
+import identifiers.{SchemeStatusId, SchemeNameId}
+import identifiers.invitations.PSTRId
+import models.SchemeStatus.{Rejected, Open}
 import models._
 import org.mockito.Matchers.{any, eq => eqTo}
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.i18n.Messages
+import play.api.libs.json.{JsArray, Json}
 import play.api.test.Helpers.{contentAsString, _}
 import play.twirl.api.Html
 import services.PsaSchemeDashboardService
+import utils.DateHelper.formatter
+import utils.UserAnswers
+import viewmodels.{CardSubHeadingParam, Message, CardViewModel, CardSubHeading}
 import views.html.psa.psaSchemeDashboard
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class PsaSchemeDashboardControllerSpec
   extends ControllerSpecBase
     with MockitoSugar
     with BeforeAndAfterEach {
-
-  import services.PsaSchemeDashboardServiceSpec._
 
   val psaSchemeDashboardView: psaSchemeDashboard = app.injector.instanceOf[psaSchemeDashboard]
   private val fakeSchemeDetailsConnector: SchemeDetailsConnector = mock[SchemeDetailsConnector]
@@ -62,7 +71,68 @@ class PsaSchemeDashboardControllerSpec
   private val pstr = "pstr"
   private val listOfSchemes: ListOfSchemes = ListOfSchemes("", "", Some(List(SchemeDetails(name, srn, "Open", Some(date), Some(pstr), None))))
 
-  def controller(): PsaSchemeDashboardController = {
+  private def psaCard(inviteLink: Seq[Link] = inviteLink)
+    (implicit messages: Messages): CardViewModel = CardViewModel(
+    id = "psa_list",
+    heading = Message("messages__psaSchemeDash__psa_list_head"),
+    subHeadings = Seq(CardSubHeading(
+      subHeading = messages("messages__psaSchemeDash__addedOn", LocalDate.parse("2018-07-01").format(formatter)),
+      subHeadingClasses = "card-sub-heading",
+      subHeadingParams = Seq(CardSubHeadingParam(
+        subHeadingParam = "Tony A Smith",
+        subHeadingParamClasses = "font-small bold")))),
+    links = inviteLink ++ Seq(
+      Link("view-psa-list",
+        ViewAdministratorsController.onPageLoad(srn).url,
+        Message("messages__psaSchemeDash__view_psa"))
+    )
+  )
+
+  private def schemeCard(linkText: String = "messages__psaSchemeDash__view_details_link")(implicit messages: Messages): CardViewModel = CardViewModel(
+    id = "scheme_details",
+    heading = Message("messages__psaSchemeDash__scheme_details_head"),
+    subHeadings = pstrSubHead ++ dateSubHead,
+    links = Seq(Link("view-details", dummyUrl, messages(linkText)))
+  )
+
+  private def pspCard()(implicit messages: Messages): CardViewModel = CardViewModel(
+    id = "psp_list",
+    heading = Message("messages__psaSchemeDash__psp_heading"),
+    subHeadings = Seq(CardSubHeading(
+      subHeading = Message("messages__psaSchemeDash__addedOn", LocalDate.parse("2019-02-01").format(formatter)),
+      subHeadingClasses = "card-sub-heading",
+      subHeadingParams = Seq(CardSubHeadingParam(
+        subHeadingParam = "Practitioner Individual",
+        subHeadingParamClasses = "font-small bold")))),
+    links = Seq(
+      Link("authorise", WhatYouWillNeedController.onPageLoad().url,
+        Message("messages__pspAuthorise__link")),
+      Link("view-practitioners", ViewPractitionersController.onPageLoad().url,
+        linkText = Message("messages__pspViewOrDeauthorise__link")
+      ))
+  )
+
+  private def pstrSubHead(implicit messages: Messages): Seq[CardSubHeading] = Seq(CardSubHeading(
+    subHeading = Message("messages__psaSchemeDash__pstr"),
+    subHeadingClasses = "card-sub-heading",
+    subHeadingParams = Seq(CardSubHeadingParam(
+      subHeadingParam = pstr,
+      subHeadingParamClasses = "font-small bold"))))
+
+  private def dateSubHead(implicit messages: Messages): Seq[CardSubHeading] = Seq(CardSubHeading(
+    subHeading = Message("messages__psaSchemeDash__regDate"),
+    subHeadingClasses = "card-sub-heading",
+    subHeadingParams = Seq(CardSubHeadingParam(
+      subHeadingParam = LocalDate.parse(date).format(formatter),
+      subHeadingParamClasses = "font-small bold"))))
+
+  private def inviteLink = Seq(Link(
+    id = "invite",
+    url = InviteController.onPageLoad(srn).url,
+    linkText = Message("messages__psaSchemeDash__invite_link")
+  ))
+
+  private def controller(): PsaSchemeDashboardController = {
     new PsaSchemeDashboardController(
       messagesApi,
       fakeSchemeDetailsConnector,
@@ -78,6 +148,55 @@ class PsaSchemeDashboardControllerSpec
       mockAppConfig
     )
   }
+
+  private def userAnswers(schemeStatus: String): UserAnswers = UserAnswers(Json.obj(
+    PSTRId.toString -> pstr,
+    "schemeStatus" -> schemeStatus,
+    SchemeNameId.toString -> schemeName,
+    "psaDetails" -> JsArray(
+      Seq(
+        Json.obj(
+          "id" -> "A0000000",
+          "organisationOrPartnershipName" -> "partnership name 2",
+          "relationshipDate" -> "2018-07-01"
+        ),
+        Json.obj(
+          "id" -> "A0000001",
+          "individual" -> Json.obj(
+            "firstName" -> "Tony",
+            "middleName" -> "A",
+            "lastName" -> "Smith"
+          ),
+          "relationshipDate" -> "2018-07-01"
+        )
+      )
+    ),
+    "pspDetails" -> JsArray(
+      Seq(
+        Json.obj(
+          "id" -> "A0000000",
+          "organisationOrPartnershipName" -> "Practitioner Organisation",
+          "relationshipStartDate" -> "2019-02-01",
+          "authorisingPSAID" -> "123",
+          "authorisingPSA" -> Json.obj(
+            "organisationOrPartnershipName" -> "Tony A Smith"
+          )
+        ),
+        Json.obj(
+          "id" -> "A0000001",
+          "individual" -> Json.obj(
+            "firstName" -> "Practitioner",
+            "lastName" -> "Individual"
+          ),
+          "relationshipStartDate" -> "2019-02-01",
+          "authorisingPSAID" -> "123",
+          "authorisingPSA" -> Json.obj(
+            "organisationOrPartnershipName" -> "Tony A Smith"
+          )
+        )
+      )
+    )
+  ))
 
   private val dummyUrl = "dummy"
   private val psaName: String = "Test Psa Name"
@@ -100,7 +219,7 @@ class PsaSchemeDashboardControllerSpec
   "PsaSchemeDashboardController" must {
     "return OK and the correct view for a GET and NO financial info html if status is NOT open" in {
       when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
-      val ua = userAnswers.set(SchemeStatusId)(Rejected.value).asOpt.get
+      val ua = userAnswers(Open.value).set(SchemeStatusId)(Rejected.value).asOpt.get
       when(fakeSchemeDetailsConnector.getSchemeDetails(eqTo("A0000000"), any(), any())(any(), any()))
         .thenReturn(Future.successful(ua))
       when(fakeListOfSchemesConnector.getListOfSchemes(any())(any(), any()))
@@ -136,7 +255,7 @@ class PsaSchemeDashboardControllerSpec
     "return OK and the correct view for a GET and scheme is open" in {
       when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
       when(fakeSchemeDetailsConnector.getSchemeDetails(eqTo("A0000000"), any(), any())(any(), any()))
-        .thenReturn(Future.successful(userAnswers))
+        .thenReturn(Future.successful(userAnswers(Open.value)))
       when(fakeListOfSchemesConnector.getListOfSchemes(any())(any(), any()))
         .thenReturn(Future.successful(Right(listOfSchemes)))
       when(mockService.cards(any(), any(), any(), any())(any(), any(), any()))
