@@ -94,21 +94,21 @@ class PsaSchemeDashboardServiceSpec
   "pspCard" must {
     "return model when psps are present and toggle is on and scheme status is open" in {
       when(mockFeatureToggle.get(any())(any(), any())).thenReturn(Future.successful(Enabled(PSPAuthorisation)))
-      whenReady(service.pspCard(userAnswers(Open.value), currentScheme(Open))) {
+      whenReady(service.pspCard(userAnswers(Open.value), Some(Open.value))) {
         _ mustBe List(pspCard())
       }
     }
 
     "return empty list when psps are present and toggle is on and scheme status is not open" in {
       when(mockFeatureToggle.get(any())(any(), any())).thenReturn(Future.successful(Enabled(PSPAuthorisation)))
-      whenReady(service.pspCard(userAnswers(Rejected.value), currentScheme(Rejected))) {
+      whenReady(service.pspCard(userAnswers(Rejected.value), Some(Rejected.value))) {
         _ mustBe Nil
       }
     }
 
     "return empty list when psps are present & toggle is off" in {
       when(mockFeatureToggle.get(any())(any(), any())).thenReturn(Future.successful(Disabled(PSPAuthorisation)))
-      whenReady(service.pspCard(userAnswers(Open.value), currentScheme(Open))) {
+      whenReady(service.pspCard(userAnswers(Open.value), Some(Open.value))) {
         _ mustBe Nil
       }
     }
