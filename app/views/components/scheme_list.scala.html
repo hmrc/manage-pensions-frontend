@@ -54,6 +54,13 @@
         case _ => status
     }
 }
+
+@srnValue(status: String, srn: String) = @{
+    status match {
+        case SchemeStatus.Open.value                => <span class="visually-hidden">{messages("messages__listSchemes__srn_na")}</span>
+        case _ => srn
+    }
+}
 <div role="region" aria-labelledby="schemeList_table">
 <table id="schemeList" class="govuk-table" role="table">
     <caption id="schemeList_table" class="visually-hidden">@messages("messages__listSchemes__title")</caption>
@@ -85,7 +92,7 @@
                 </a>
             </td>
             <td class="govuk-table__cell" role="cell" id="@{srnId(index)}">
-                @{scheme.referenceNumber}
+                @srnValue(scheme.schemeStatus, scheme.referenceNumber)
             </td>
             <td class="govuk-table__cell" role="cell" id="@{pstrId(index)}">
                 @if(scheme.pstr.nonEmpty) {

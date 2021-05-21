@@ -105,6 +105,7 @@ messages__listSchemes__status_wound_up = Wound-up
 messages__listSchemes__status_rejected_appeal = Rejected under appeal
 messages__listSchemes__schemeName__screen_reader = The scheme name is: {0}
 messages__listSchemes__SRN__screen_reader = {0}’s Scheme Reference Number is {1}
+messages__listSchemes__srn_na = SRN not applicable for this scheme
 messages__listSchemes__PSTR__screen_reader = {0}’s Pension Scheme Tax Reference number is {1}
 messages__listSchemes__status__screen_reader = {0}’s status is {1}
 messages__listSchemes__searchText_label = Search by scheme name, SRN or PSTR

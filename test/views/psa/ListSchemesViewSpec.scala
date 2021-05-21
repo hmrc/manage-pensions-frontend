@@ -284,7 +284,6 @@ class ListSchemesViewSpec extends ViewSpecBase with ViewBehaviours with MockitoS
       assertEqualsValueOwnText(actual, "#srn-1", messages("reference-number-1"))
       assertEqualsValueOwnText(actual, "#srn-2", messages("reference-number-2"))
       assertEqualsValueOwnText(actual, "#srn-3", messages("reference-number-3"))
-      assertEqualsValueOwnText(actual, "#srn-4", messages("reference-number-4"))
       assertEqualsValueOwnText(actual, "#srn-5", messages("reference-number-5"))
       assertEqualsValueOwnText(actual, "#srn-6", messages("reference-number-6"))
       assertEqualsValueOwnText(actual, "#srn-7", messages("reference-number-7"))
