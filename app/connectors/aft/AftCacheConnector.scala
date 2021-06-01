@@ -18,6 +18,7 @@ package connectors.aft
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
+import connectors.CacheConnector
 import play.api.libs.ws.WSClient
 import play.api.mvc.Result
 import uk.gov.hmrc.http.HeaderCarrier
@@ -33,11 +34,13 @@ class AftCacheConnector @Inject()(
 
   private def url = s"${config.aftUrl}/pension-scheme-accounting-for-tax/journey-cache/aft/lock"
 
-  def removeLock(implicit ec: ExecutionContext,
-                 hc: HeaderCarrier): Future[Result] = {
-    http.url(url)
-      .withHttpHeaders(hc.headers: _*)
+  def removeLock(
+                  implicit ec: ExecutionContext,
+                  hc: HeaderCarrier
+                ): Future[Result] =
+    http
+      .url(url)
+      .withHttpHeaders(CacheConnector.headers(hc): _*)
       .delete()
       .map(_ => Ok)
-  }
 }

@@ -35,7 +35,7 @@ import uk.gov.hmrc.auth.core.retrieve._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.domain.{PsaId, PspId}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.HeaderCarrierConverter
+import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import utils.UserAnswers
 import utils.annotations.SessionDataCache
 
@@ -53,7 +53,7 @@ class AuthImpl(
     with AuthorisedFunctions {
 
   override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] = {
-    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
+    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
     authorised().retrieve(
       Retrievals.externalId and Retrievals.allEnrolments and Retrievals.affinityGroup
@@ -109,7 +109,7 @@ class AuthImpl(
                                             request: Request[A],
                                             block: AuthenticatedRequest[A] => Future[Result]
                                           ): Future[Result] = {
-    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
+    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
     sessionDataCacheConnector.fetch(id).flatMap { optionJsValue =>
 
       def friendlyUrl: String = config.localFriendlyUrl(request.uri)
