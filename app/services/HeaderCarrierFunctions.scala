@@ -27,7 +27,7 @@ object HeaderCarrierFunctions extends FrontendHeaderCarrierProvider {
 }
 
 object HCForPartialsConverter extends HeaderCarrierForPartialsConverter with SessionCookieCryptoFilterWrapper {
-  override val crypto: String => String = encryptCookieString
+  val crypto: String => String = encryptCookieString
 }
 
 trait SessionCookieCryptoFilterWrapper {

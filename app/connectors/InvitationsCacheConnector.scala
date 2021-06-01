@@ -28,15 +28,20 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpException}
 import scala.concurrent.{ExecutionContext, Future}
 
 trait InvitationsCacheConnector {
-  def add(invitation: Invitation)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[Unit]
+  def add(invitation: Invitation)
+         (implicit ec: ExecutionContext, hc: HeaderCarrier): Future[Unit]
 
-  def remove(pstr: String, inviteePsaId: PsaId)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[Unit]
+  def remove(pstr: String, inviteePsaId: PsaId)
+            (implicit ec: ExecutionContext, hc: HeaderCarrier): Future[Unit]
 
-  def get(pstr: String, inviteePsaId: PsaId)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[List[Invitation]]
+  def get(pstr: String, inviteePsaId: PsaId)
+         (implicit ec: ExecutionContext, hc: HeaderCarrier): Future[List[Invitation]]
 
-  def getForScheme(pstr: String)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[List[Invitation]]
+  def getForScheme(pstr: String)
+                  (implicit ec: ExecutionContext, hc: HeaderCarrier): Future[List[Invitation]]
 
-  def getForInvitee(inviteePsaId: PsaId)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[List[Invitation]]
+  def getForInvitee(inviteePsaId: PsaId)
+                   (implicit ec: ExecutionContext, hc: HeaderCarrier): Future[List[Invitation]]
 }
 
 class InvitationsCacheConnectorImpl @Inject()(
@@ -54,43 +59,45 @@ class InvitationsCacheConnectorImpl @Inject()(
 
   protected val removeUrl = s"${config.pensionAdminUrl}/pension-administrator/invitation"
 
-  def add(invitation: Invitation)(implicit
-                                  ec: ExecutionContext,
-                                  hc: HeaderCarrier
-  ): Future[Unit] = {
-    http.url(addUrl)
-      .withHttpHeaders(hc.withExtraHeaders(("content-type", "application/json")).headers: _*)
-      .post(Json.toJson(invitation)).flatMap {
-      response =>
-        response.status match {
-          case OK =>
-            Future.successful(())
-          case _ =>
-            Future.failed(new HttpException(response.body, response.status))
-        }
-    }
+  def add(invitation: Invitation)
+         (implicit ec: ExecutionContext, hc: HeaderCarrier): Future[Unit] = {
+    http
+      .url(addUrl)
+      .withHttpHeaders(CacheConnector.headers(hc): _*)
+      .post(Json.toJson(invitation))
+      .flatMap {
+        response =>
+          response.status match {
+            case OK =>
+              Future.successful(())
+            case _ =>
+              Future.failed(new HttpException(response.body, response.status))
+          }
+      }
   }
 
-  def remove(pstr: String, inviteePsaId: PsaId)(implicit
-                                                 ec: ExecutionContext,
-                                                 hc: HeaderCarrier
-  ): Future[Unit] = {
-    http.url(removeUrl)
-      .withHttpHeaders(hc.withExtraHeaders("content-type" -> "application/json", "pstr" -> pstr, "inviteePsaId" -> inviteePsaId.id).headers: _*)
-      .delete().flatMap {
-      response =>
-        response.status match {
-          case OK =>
-            Future.successful(())
-          case _ =>
-            Future.failed(new HttpException(response.body, response.status))
-        }
-    }
+  def remove(pstr: String, inviteePsaId: PsaId)
+            (implicit ec: ExecutionContext, hc: HeaderCarrier): Future[Unit] = {
+    http
+      .url(removeUrl)
+      .withHttpHeaders(CacheConnector.headers(hc.withExtraHeaders(
+        "pstr" -> pstr,
+        "inviteePsaId" -> inviteePsaId.id
+      )): _*)
+      .delete()
+      .flatMap {
+        response =>
+          response.status match {
+            case OK =>
+              Future.successful(())
+            case _ =>
+              Future.failed(new HttpException(response.body, response.status))
+          }
+      }
   }
 
-  private def getCommon(wsRequest: WSRequest)(implicit
-                                              ec: ExecutionContext
-  ): Future[List[Invitation]] = {
+  private def getCommon(wsRequest: WSRequest)
+                       (implicit ec: ExecutionContext): Future[List[Invitation]] = {
     wsRequest
       .get()
       .flatMap {
@@ -106,30 +113,34 @@ class InvitationsCacheConnectorImpl @Inject()(
       }
   }
 
-  def get(pstr: String, inviteePsaId: PsaId)(implicit
-                                              ec: ExecutionContext,
-                                              hc: HeaderCarrier
-  ): Future[List[Invitation]] =
+  def get(pstr: String, inviteePsaId: PsaId)
+         (implicit ec: ExecutionContext, hc: HeaderCarrier): Future[List[Invitation]] =
     getCommon(
-      http.url(getUrl)
-        .withHttpHeaders(hc.withExtraHeaders("pstr" -> pstr, "inviteePsaId" -> inviteePsaId.id).headers: _*)
+      http
+        .url(getUrl)
+        .withHttpHeaders(CacheConnector.headers(hc.withExtraHeaders(
+          "pstr" -> pstr,
+          "inviteePsaId" -> inviteePsaId.id
+        )): _*)
     )
 
-  def getForScheme(pstr: String)(implicit
-                                 ec: ExecutionContext,
-                                 hc: HeaderCarrier
-  ): Future[List[Invitation]] =
+  def getForScheme(pstr: String)
+                  (implicit ec: ExecutionContext, hc: HeaderCarrier): Future[List[Invitation]] =
     getCommon(
-      http.url(getForSchemeUrl)
-        .withHttpHeaders(hc.withExtraHeaders("pstr" -> pstr).headers: _*)
+      http
+        .url(getForSchemeUrl)
+        .withHttpHeaders(CacheConnector.headers(hc.withExtraHeaders(
+          "pstr" -> pstr
+        )): _*)
     )
 
-  def getForInvitee(inviteePsaId: PsaId)(implicit
-                                          ec: ExecutionContext,
-                                          hc: HeaderCarrier
-  ): Future[List[Invitation]] =
+  def getForInvitee(inviteePsaId: PsaId)
+                   (implicit ec: ExecutionContext, hc: HeaderCarrier): Future[List[Invitation]] =
     getCommon(
-      http.url(getForInviteeUrl)
-        .withHttpHeaders(hc.withExtraHeaders("inviteePsaId" -> inviteePsaId.id).headers: _*)
+      http
+        .url(getForInviteeUrl)
+        .withHttpHeaders(CacheConnector.headers(hc.withExtraHeaders(
+          "inviteePsaId" -> inviteePsaId.id
+        )): _*)
     )
 }

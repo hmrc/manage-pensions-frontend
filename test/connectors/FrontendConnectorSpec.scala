@@ -34,7 +34,7 @@ class FrontendConnectorSpec
   override protected def portConfigKey: String = "microservice.services.aft-frontend.port"
 
   implicit val headerCarrier: HeaderCarrierForPartials =
-    HeaderCarrierForPartials(hc = HeaderCarrier(), encodedCookies = "")
+    HeaderCarrierForPartials(hc = HeaderCarrier())
   private val aftPartialUrl = "/manage-pension-scheme-accounting-for-tax/srn/psa-scheme-dashboard-cards"
   private val paymentsAndChargesPartialHtmlUrl = "/manage-pension-scheme-accounting-for-tax/srn/payments-and-charges-partial"
   private val srn = "srn"
