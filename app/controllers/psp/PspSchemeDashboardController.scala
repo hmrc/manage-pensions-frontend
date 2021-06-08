@@ -97,7 +97,7 @@ class PspSchemeDashboardController @Inject()(
                     clientReference = clientReference
                   ),
                   returnLink = Some(Link(
-                    id = "search-schemes",
+                    id = "return-search-schemes",
                     url = controllers.psp.routes.ListSchemesController.onPageLoad().url,
                     linkText = Message("messages__psaSchemeDash__return_link").resolve
                   ))
