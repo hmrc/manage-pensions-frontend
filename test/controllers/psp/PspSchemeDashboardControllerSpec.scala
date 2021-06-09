@@ -290,7 +290,7 @@ object PspSchemeDashboardControllerSpec {
 
   private val returnLink: Link =
     Link(
-      id = "search-schemes",
+      id = "return-search-schemes",
       url = controllers.psp.routes.ListSchemesController.onPageLoad().url,
       linkText = "Return to your pension schemes"
     )
@@ -302,7 +302,7 @@ object PspSchemeDashboardControllerSpec {
     )
   private val searchSchemeLink: Link =
     Link(
-      id = "search-schemes",
+      id = "return-search-schemes",
       url = "/foo",
       linkText = "View the registered scheme details"
     )
