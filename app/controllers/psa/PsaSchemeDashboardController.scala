@@ -19,12 +19,12 @@ package controllers.psa
 import config.FrontendAppConfig
 import connectors._
 import connectors.admin.MinimalConnector
-import connectors.scheme.{ListOfSchemesConnector, PensionSchemeVarianceLockConnector, SchemeDetailsConnector}
+import connectors.scheme.{SchemeDetailsConnector, PensionSchemeVarianceLockConnector, ListOfSchemesConnector}
 import controllers.actions._
-import identifiers.{SchemeNameId, SchemeSrnId, SchemeStatusId}
+import identifiers.{SchemeStatusId, SchemeNameId, SchemeSrnId}
 import models._
 import models.requests.AuthenticatedRequest
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.{MessagesApi, I18nSupport}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import play.twirl.api.Html
 import services.PsaSchemeDashboardService
@@ -66,8 +66,8 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
               for {
                 aftHtml <- retrieveAftTilesHtml(srn, schemeStatus)
                   _ <- userAnswersCacheConnector.upsert(request.externalId, updatedUa.json)
-                  cards <- psaSchemeDashboardService.cards(srn, lock, listOfSchemes, userAnswers)
               } yield {
+                val cards = psaSchemeDashboardService.cards(srn, lock, listOfSchemes, userAnswers)
                 Ok(view(schemeName, aftHtml, cards))
               }
             }

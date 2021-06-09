@@ -33,14 +33,6 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
 
   protected def mode: Mode = environment.mode
 
-  private def baseUrl(serviceName: String) = {
-    val protocol = runModeConfiguration.getOptional[String](s"microservice.services.$serviceName.protocol")
-      .getOrElse("http")
-    val host = runModeConfiguration.get[String](s"microservice.services.$serviceName.host")
-    val port = runModeConfiguration.get[String](s"microservice.services.$serviceName.port")
-    s"$protocol://$host:$port"
-  }
-
   private def getConfigString(key: String) = servicesConfig.getConfString(key,
     throw new Exception(s"Could not find config '$key'"))
 

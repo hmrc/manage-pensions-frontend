@@ -25,33 +25,23 @@ import models.SchemeStatus.Open
 import controllers.psp.routes._
 import identifiers.psa.ListOfPSADetailsId
 import identifiers.{SchemeStatusId, SeqAuthorisedPractitionerId}
-import models.FeatureToggle.Enabled
-import models.FeatureToggleName.PSPAuthorisation
 import models._
 import models.psa.PsaDetails
 import play.api.i18n.Messages
-import uk.gov.hmrc.http.HeaderCarrier
 import utils.DateHelper._
 import utils.UserAnswers
 import viewmodels.{CardSubHeadingParam, Message, CardViewModel, CardSubHeading}
 
 import java.time.LocalDate
-import scala.concurrent.{ExecutionContext, Future}
 
 class PsaSchemeDashboardService @Inject()(
-                                           appConfig: FrontendAppConfig,
-                                           featureToggleService: FeatureToggleService
+                                           appConfig: FrontendAppConfig
                                          ) {
 
   def cards(srn: String, lock: Option[Lock], list: ListOfSchemes, ua: UserAnswers)
-           (implicit hc: HeaderCarrier,
-            ec: ExecutionContext,
-            messages: Messages): Future[Seq[CardViewModel]] = {
+           (implicit messages: Messages): Seq[CardViewModel] = {
     val currentScheme = getSchemeDetailsFromListOfSchemes(srn, list)
-
-    for {
-      pspCard <- pspCard(ua, currentScheme.map(_.schemeStatus))
-    } yield Seq(schemeCard(srn, currentScheme, lock, ua)) ++ Seq(psaCard(srn, ua)) ++ pspCard
+    Seq(schemeCard(srn, currentScheme, lock, ua)) ++ Seq(psaCard(srn, ua)) ++ pspCard(ua, currentScheme.map(_.schemeStatus))
   }
 
   //Scheme details card
@@ -158,22 +148,21 @@ class PsaSchemeDashboardService @Inject()(
 
   //PSP card
   def pspCard(ua: UserAnswers, schemeStatus: Option[String])
-             (implicit hc: HeaderCarrier, ec: ExecutionContext, messages: Messages): Future[Seq[CardViewModel]] =
-    featureToggleService.get(PSPAuthorisation).map { pspAuthorisationToggle =>
-      (pspAuthorisationToggle, schemeStatus) match {
-        case (Enabled(PSPAuthorisation), Some(Open.value)) =>
-          Seq(CardViewModel(
-            id = "psp_list",
-            heading = Message("messages__psaSchemeDash__psp_heading"),
-            subHeadings = latestPspSubHeading(ua),
-            links = Seq(
-              Link("authorise", WhatYouWillNeedController.onPageLoad().url, Message("messages__pspAuthorise__link"))
-            ) ++ viewPspLink(ua)
-          ))
-        case _ =>
-          Nil
-      }
+             (implicit messages: Messages): Seq[CardViewModel] =
+    schemeStatus match {
+      case Some(Open.value) =>
+        Seq(CardViewModel(
+          id = "psp_list",
+          heading = Message("messages__psaSchemeDash__psp_heading"),
+          subHeadings = latestPspSubHeading(ua),
+          links = Seq(
+            Link("authorise", WhatYouWillNeedController.onPageLoad().url, Message("messages__pspAuthorise__link"))
+          ) ++ viewPspLink(ua)
+        ))
+      case _ =>
+        Nil
     }
+
 
   private def viewPspLink(ua: UserAnswers): Seq[Link] =
     latestPsp(ua).fold[Seq[Link]](Nil) { _ =>

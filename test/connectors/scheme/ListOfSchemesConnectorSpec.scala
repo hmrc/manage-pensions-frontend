@@ -17,53 +17,25 @@
 package connectors.scheme
 
 import com.github.tomakehurst.wiremock.client.WireMock._
-import models.FeatureToggle.Disabled
-import models.FeatureToggleName.IntegrationFrameworkListSchemes
-import models.ListOfSchemes
-import models.SchemeDetails
-import models.SchemeStatus
-import org.mockito.Matchers.any
-import org.scalatest.AsyncFlatSpec
-import org.scalatest.BeforeAndAfterEach
-import org.scalatest.Matchers
-import org.scalatest.OptionValues
-import org.scalatestplus.mockito.MockitoSugar.mock
+import models.{SchemeStatus, ListOfSchemes, SchemeDetails}
+import org.scalatest.{AsyncFlatSpec, OptionValues, BeforeAndAfterEach, Matchers}
 import play.api.http.Status._
-import org.mockito.Mockito.reset
-import org.mockito.Mockito.when
-import play.api.inject.guice.GuiceableModule
 import play.api.libs.json.Json
-import services.FeatureToggleService
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.WireMockHelper
-import play.api.inject.bind
-
-import scala.concurrent.Future
 
 class ListOfSchemesConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper with BeforeAndAfterEach {
 
   import ListOfSchemesConnectorSpec._
 
-  private val mockFeatureToggleService = mock[FeatureToggleService]
-
-  override protected def bindings: Seq[GuiceableModule] =
-    Seq(
-      bind[FeatureToggleService].toInstance(mockFeatureToggleService)
-    )
-
-  override def beforeEach(): Unit = {
-    super.beforeEach()
-    reset(mockFeatureToggleService)
-    when(mockFeatureToggleService.get(any())(any(), any())).thenReturn(Future.successful(Disabled(IntegrationFrameworkListSchemes)))
-  }
-
   override protected def portConfigKey: String = "microservice.services.pensions-scheme.port"
 
-  "registerScheme" should "return the List of Schemes for a valid request/response" in {
+  "list of schemes connector" should "return the List of Schemes for a valid request/response" in {
 
     server.stubFor(
       get(urlEqualTo(listOfSchemesUrl))
-        .withHeader("psaId", equalTo(psaId))
+        .withHeader("idType", equalTo("psaid"))
+        .withHeader("idValue", equalTo(psaId))
         .willReturn(
           aResponse()
             .withStatus(OK)
@@ -125,7 +97,7 @@ class ListOfSchemesConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
 
 object ListOfSchemesConnectorSpec extends OptionValues {
 
-  private val listOfSchemesUrl = "/pensions-scheme/list-of-schemes"
+  private val listOfSchemesUrl = "/pensions-scheme/if-list-of-schemes"
 
   private implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 
