@@ -97,7 +97,7 @@ class ListOfSchemesConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
 
 object ListOfSchemesConnectorSpec extends OptionValues {
 
-  private val listOfSchemesUrl = "/pensions-scheme/if-list-of-schemes"
+  private val listOfSchemesUrl = "/pensions-scheme/list-of-schemes"
 
   private implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 
