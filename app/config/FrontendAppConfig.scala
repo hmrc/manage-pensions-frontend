@@ -105,7 +105,7 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val psaDeregisterUrl: String = loadConfig("urls.psaDeregister")
   lazy val languageTranslationEnabled: Boolean = runModeConfiguration.get[Boolean]("features.welsh-translation")
   lazy val registerSchemeUrl: String = runModeConfiguration.underlying.getString("urls.registerScheme")
-  lazy val listOfSchemesIFUrl: String = s"${servicesConfig.baseUrl("pensions-scheme")}${runModeConfiguration.underlying
+  lazy val listOfSchemesUrl: String = s"${servicesConfig.baseUrl("pensions-scheme")}${runModeConfiguration.underlying
     .getString("urls.listOfSchemes")}"
   lazy val inviteUrl: String = s"${servicesConfig.baseUrl("pension-administrator")}${runModeConfiguration.underlying
     .getString("urls.invite")}"
