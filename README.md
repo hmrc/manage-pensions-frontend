@@ -56,7 +56,7 @@ This service does not have it's own backend, instead it the following backends f
 |Address Lookup            |GET|/v2/uk/addresses?postcode={postCode} | Returns all addresses at given postcode  |
 
 ## Running the service
-
+ 
 Service Manager: PODS_ALL
 
 Port: 8204
