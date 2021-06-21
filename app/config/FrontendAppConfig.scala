@@ -33,14 +33,6 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
 
   protected def mode: Mode = environment.mode
 
-  private def baseUrl(serviceName: String) = {
-    val protocol = runModeConfiguration.getOptional[String](s"microservice.services.$serviceName.protocol")
-      .getOrElse("http")
-    val host = runModeConfiguration.get[String](s"microservice.services.$serviceName.host")
-    val port = runModeConfiguration.get[String](s"microservice.services.$serviceName.port")
-    s"$protocol://$host:$port"
-  }
-
   private def getConfigString(key: String) = servicesConfig.getConfString(key,
     throw new Exception(s"Could not find config '$key'"))
 
@@ -115,8 +107,6 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val registerSchemeUrl: String = runModeConfiguration.underlying.getString("urls.registerScheme")
   lazy val listOfSchemesUrl: String = s"${servicesConfig.baseUrl("pensions-scheme")}${runModeConfiguration.underlying
     .getString("urls.listOfSchemes")}"
-  lazy val listOfSchemesIFUrl: String = s"${servicesConfig.baseUrl("pensions-scheme")}${runModeConfiguration.underlying
-    .getString("urls.if-listOfSchemes")}"
   lazy val inviteUrl: String = s"${servicesConfig.baseUrl("pension-administrator")}${runModeConfiguration.underlying
     .getString("urls.invite")}"
   lazy val minimalPsaDetailsUrl: String = s"${servicesConfig.baseUrl("pension-administrator")}${runModeConfiguration.underlying

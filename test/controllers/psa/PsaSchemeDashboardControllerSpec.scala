@@ -224,8 +224,8 @@ class PsaSchemeDashboardControllerSpec
         .thenReturn(Future.successful(ua))
       when(fakeListOfSchemesConnector.getListOfSchemes(any())(any(), any()))
         .thenReturn(Future.successful(Right(listOfSchemes)))
-      when(mockService.cards(any(), any(), any(), any())(any(), any(), any()))
-        .thenReturn(Future.successful(Seq(schemeCard(), psaCard(), pspCard())))
+      when(mockService.cards(any(), any(), any(), any())(any()))
+        .thenReturn(Seq(schemeCard(), psaCard(), pspCard()))
 
       val result = controller().onPageLoad(srn)(fakeRequest)
       status(result) mustBe OK
@@ -258,8 +258,8 @@ class PsaSchemeDashboardControllerSpec
         .thenReturn(Future.successful(userAnswers(Open.value)))
       when(fakeListOfSchemesConnector.getListOfSchemes(any())(any(), any()))
         .thenReturn(Future.successful(Right(listOfSchemes)))
-      when(mockService.cards(any(), any(), any(), any())(any(), any(), any()))
-        .thenReturn(Future.successful(Seq(schemeCard(), psaCard(), pspCard())))
+      when(mockService.cards(any(), any(), any(), any())(any()))
+        .thenReturn(Seq(schemeCard(), psaCard(), pspCard()))
       when(mockFrontendConnector.retrieveAftPartial(any())(any(), any())).thenReturn(Future(aftHtml))
 
       val result = controller().onPageLoad(srn)(fakeRequest)
