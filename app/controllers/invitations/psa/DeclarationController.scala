@@ -66,9 +66,14 @@ class DeclarationController @Inject()(
             idNumber = srn,
             schemeIdType = "srn"
           ) flatMap { details =>
-            (details.get(GetSchemeNameId), details.get(SchemeTypeId)) match {
-              case (Some(name), Some(schemeType)) =>
-                val isMasterTrust = schemeType.equals(MasterTrust)
+            (details.get(GetSchemeNameId), details.get(SchemeTypeId), details.get(IsRacDacId)) match {
+              case (Some(name), someSchemeType, isRacDac) =>
+
+                val isMasterTrust = (someSchemeType, isRacDac) match {
+                  case (Some(schemeType), None | Some(false)) => schemeType.equals(MasterTrust)
+                  case (_, Some(true)) => false
+                  case _ => throw new IllegalArgumentException("Scheme Type missing for Non RacDac scheme")
+                }
 
                 for {
                   _ <- userAnswersCacheConnector.save(SchemeNameId, name)
@@ -77,7 +82,6 @@ class DeclarationController @Inject()(
                 } yield {
                   Ok(view(haveWorkingKnowledge, isMasterTrust, form))
                 }
-
               case _ => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
 
             }
