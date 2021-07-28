@@ -22,10 +22,13 @@ import connectors.{FakeUserAnswersCacheConnector, InvitationConnector, Invitatio
 import controllers.ControllerSpecBase
 import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
 import forms.invitations.psa.DeclarationFormProvider
-import identifiers.invitations.{IsMasterTrustId, PSTRId, SchemeNameId}
+import identifiers.invitations.{IsMasterTrustId, IsRacDacId, PSTRId, SchemeNameId}
+import identifiers.{SchemeNameId => GetSchemeNameId}
+import org.mockito.Matchers._
 import org.mockito.Matchers.{eq => eqTo, _}
 import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.BeforeAndAfterEach
+import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.Configuration
 import play.api.data.Form
@@ -74,13 +77,14 @@ class DeclarationControllerSpec
 
   val schemeDetailsResponse = UserAnswers(readJsonFromFile("/data/validSchemeDetailsUserAnswers.json"))
 
-  private def viewAsString(form: Form[_] = form) = view(hasAdviser, isMasterTrust, form)(fakeRequest, messages).toString
+  private def viewAsString(form: Form[_] = form, isItMasterTrust: Boolean = isMasterTrust, hasWkAdvisor: Boolean = hasAdviser) =
+    view(hasWkAdvisor, isItMasterTrust, form)(fakeRequest, messages).toString
 
   "Declaration Controller" when {
 
     "on a GET" must {
 
-      "return OK and the correct view when variations is on" in {
+      "return OK and the correct view with non rac dac master trust scheme" in {
         when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any()))
           .thenReturn(Future.successful(schemeDetailsResponse))
         val result = controller(data).onPageLoad()(fakeRequest)
@@ -91,6 +95,37 @@ class DeclarationControllerSpec
         FakeUserAnswersCacheConnector.verify(IsMasterTrustId, true)
         FakeUserAnswersCacheConnector.verify(PSTRId, "24000001IN")
         verify(fakeSchemeDetailsConnector, times(1)).getSchemeDetails(any(), any(), any())(any(), any())
+      }
+
+      "return OK and the correct view with racdac scheme" in {
+        val uaSchemeDetails = UserAnswers().set(IsRacDacId)(true).flatMap(_.set(GetSchemeNameId)("rac dac scheme")).flatMap(_.set(PSTRId)(pstr)).asOpt.get
+        val data = new FakeDataRetrievalAction(Some(UserAnswers().
+          haveWorkingKnowledge(true).srn(srn).pstr(pstr).json))
+
+        when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any()))
+          .thenReturn(Future.successful(uaSchemeDetails))
+        val result = controller(data).onPageLoad()(fakeRequest)
+
+        status(result) mustBe OK
+        contentAsString(result) mustBe viewAsString(isItMasterTrust = false, hasWkAdvisor = true)
+        FakeUserAnswersCacheConnector.verify(SchemeNameId, "rac dac scheme")
+        FakeUserAnswersCacheConnector.verify(IsMasterTrustId, false)
+        FakeUserAnswersCacheConnector.verify(PSTRId, pstr)
+        verify(fakeSchemeDetailsConnector, times(1)).getSchemeDetails(any(), any(), any())(any(), any())
+      }
+
+      "throw IllegalArgumentException if scheme type is missing for non rac dac scheme" in {
+        val uaSchemeDetails = UserAnswers().set(GetSchemeNameId)("rac dac scheme").flatMap(_.set(PSTRId)(pstr)).asOpt.get
+        val data = new FakeDataRetrievalAction(Some(UserAnswers().
+          haveWorkingKnowledge(true).srn(srn).pstr(pstr).json))
+        when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any()))
+          .thenReturn(Future.successful(uaSchemeDetails))
+        val result = controller(data).onPageLoad()(fakeRequest)
+
+        ScalaFutures.whenReady(result.failed) { e =>
+          e mustBe a[IllegalArgumentException]
+          e.getMessage mustEqual "Scheme Type missing for Non RacDac scheme"
+        }
       }
 
       "redirect to Session Expired page if there is no cached data" in {
