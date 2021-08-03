@@ -19,7 +19,7 @@ package controllers.invitations
 import com.google.inject.Inject
 import com.google.inject.Singleton
 import config.FrontendAppConfig
-import connectors.admin.MinimalConnector
+import connectors.admin.{DelimitedAdminException, MinimalConnector}
 import connectors.UserAnswersCacheConnector
 import connectors.scheme.SchemeDetailsConnector
 import controllers.actions.AuthAction
@@ -49,6 +49,7 @@ class InviteController @Inject()(
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate().async {
     implicit request =>
+      println("\n\n >>>>>>>>>>>>>>>>>>>>.. HERE \n\n")
       minimalPsaConnector.getMinimalPsaDetails(request.psaIdOrException.id).flatMap { minimalPsaDetails =>
         if (minimalPsaDetails.isPsaSuspended) {
           Future.successful(Redirect(controllers.invitations.routes.YouCannotSendAnInviteController.onPageLoad()))
@@ -66,6 +67,9 @@ class InviteController @Inject()(
             case None => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
           }
         }
+      } recoverWith {
+          case _: DelimitedAdminException =>
+                  Future.successful(Redirect(controllers.routes.DelimitedAdministratorController.onPageLoad()))
       }
   }
 

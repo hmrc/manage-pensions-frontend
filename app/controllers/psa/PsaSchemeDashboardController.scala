@@ -18,13 +18,13 @@ package controllers.psa
 
 import config.FrontendAppConfig
 import connectors._
-import connectors.admin.MinimalConnector
-import connectors.scheme.{SchemeDetailsConnector, PensionSchemeVarianceLockConnector, ListOfSchemesConnector}
+import connectors.admin.{DelimitedAdminException, MinimalConnector}
+import connectors.scheme.{ListOfSchemesConnector, PensionSchemeVarianceLockConnector, SchemeDetailsConnector}
 import controllers.actions._
-import identifiers.{SchemeStatusId, SchemeNameId, SchemeSrnId}
+import identifiers.{SchemeNameId, SchemeSrnId, SchemeStatusId}
 import models._
 import models.requests.AuthenticatedRequest
-import play.api.i18n.{MessagesApi, I18nSupport}
+import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import play.twirl.api.Html
 import services.PsaSchemeDashboardService
@@ -72,6 +72,9 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
               }
             }
         }
+      } recoverWith {
+        case _: DelimitedAdminException =>
+          Future.successful(Redirect(controllers.routes.DelimitedAdministratorController.onPageLoad()))
       }
 
 

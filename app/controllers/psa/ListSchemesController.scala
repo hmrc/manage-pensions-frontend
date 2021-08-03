@@ -19,7 +19,7 @@ package controllers.psa
 import com.google.inject.Inject
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
-import connectors.admin.MinimalConnector
+import connectors.admin.{DelimitedAdminException, MinimalConnector}
 import controllers.actions.{AuthAction, DataRetrievalAction}
 import forms.psa.ListSchemesFormProvider
 import identifiers.psa.PSANameId
@@ -93,6 +93,9 @@ class ListSchemesController @Inject()(
           }
         case (_, None) => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
       }
+    } recoverWith {
+      case _: DelimitedAdminException =>
+        Future.successful(Redirect(controllers.routes.DelimitedAdministratorController.onPageLoad()))
     }
   }
 
