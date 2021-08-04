@@ -32,8 +32,7 @@
     (hintId ++ errorId).mkString(" ")
 }
 
-<fieldset id="@{field.id}-form" class="form-field-group @groupClass @if(field.hasErrors){form-field--error}">
-
+    <div id="@{field.id}-form" class="form-group @groupClass @if(field.hasErrors){form-field--error}">
     @if(headingIsLegend){
     <h1>
         <label class="form-label" for="@{field.id}">
@@ -55,16 +54,15 @@
                 <span class="visually-hidden">@messages("site.error")</span> @messages(error.message, error.args:_*)
             </span>
     }
-    <div class="form-control-wrapper">
         <input
-        class="form-control govuk-margin-bottom-3 @inputClass"
-        type="text"
-        id="@{field.id}"
-        name="@{field.name}"
-        value="@{field.value}"
-        @if(field.hasErrors || hint.nonEmpty){aria-describedby="@{ariaDescribedBy}"}
+                class="form-control govuk-margin-bottom-3 @inputClass"
+                type="text"
+                id="@{field.id}"
+                name="@{field.name}"
+                value="@{field.value}"
+                @if(field.hasErrors || hint.nonEmpty){aria-describedby="@{ariaDescribedBy}"}
         />
         <button id="searchsubmit" class="button btn--inline-textbox govuk-margin-bottom-3" @if(disableSubmission) {disabled}>@messages(messageKey)</button>
-    </div>
-</fieldset>
 
+
+    </div>
