@@ -369,6 +369,7 @@ messages__haveWorkingKnowledge__error__required = Select yes if you have working
 messages__psa_cannot_be_removed_delay__p1 = The scheme administrator cannot be removed on the same day they were added to a scheme.
 messages__psa_cannot_be_removed_delay__p2 = Try again tomorrow.
 
+messages__confirmDeauth__return_link = Return to your administrator overview
 
 messages__pageNotFound404__title = Page not found
 messages__pageNotFound404__heading = Page not found
