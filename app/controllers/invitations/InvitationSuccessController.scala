@@ -16,7 +16,6 @@
 
 package controllers.invitations
 
-import java.time.LocalDate
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import connectors.admin.MinimalConnector
@@ -25,8 +24,6 @@ import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import identifiers.MinimalSchemeDetailId
 import identifiers.invitations.psa.InviteePSAId
 import identifiers.invitations.{InvitationSuccessId, InviteeNameId}
-
-import javax.inject.Inject
 import models.{NormalMode, SchemeReferenceNumber}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -35,6 +32,8 @@ import utils.annotations.Invitations
 import utils.{Navigator, UserAnswers}
 import views.html.invitations.invitation_success
 
+import java.time.LocalDate
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class InvitationSuccessController @Inject()(

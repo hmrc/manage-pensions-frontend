@@ -52,9 +52,10 @@ GET         /you-must-contact-hmrc                                              
 GET         /administrator-or-practitioner                                                                   controllers.AdministratorOrPractitionerController.onPageLoad()
 POST        /administrator-or-practitioner                                                                   controllers.AdministratorOrPractitionerController.onSubmit()
 
-+nocsrf
 POST        /email-response-psp-auth/:encryptedPsaId/:encryptedPspId/:encryptedPstr/:encryptedEmail          controllers.EmailResponseController.retrieveStatusForPSPAuthorisation(encryptedPsaId, encryptedPspId, encryptedPstr, encryptedEmail)
-+nocsrf
+
 POST        /email-response-psp-deauth/:encryptedPsaId/:encryptedPspId/:encryptedPstr/:encryptedEmail        controllers.EmailResponseController.retrieveStatusForPSPDeauthorisation(encryptedPsaId, encryptedPspId, encryptedPstr, encryptedEmail)
-+nocsrf
+
 POST        /email-response-psp-self-deauth/:encryptedPspId/:encryptedPstr/:encryptedEmail                   controllers.EmailResponseController.retrieveStatusForPSPSelfDeauthorisation(encryptedPspId, encryptedPstr, encryptedEmail)
+
+GET         /cannot-access-de-registered                                                                     controllers.DelimitedAdministratorController.onPageLoad

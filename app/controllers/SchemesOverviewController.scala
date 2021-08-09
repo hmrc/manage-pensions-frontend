@@ -38,6 +38,7 @@ import views.html.schemesOverview
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import connectors.admin.DelimitedAdminException
 
 class SchemesOverviewController @Inject()(
                                            override val messagesApi: MessagesApi,
@@ -73,6 +74,9 @@ class SchemesOverviewController @Inject()(
               Future.successful(Redirect(SessionExpiredController.onPageLoad()))
           }
         }
+      } recoverWith {
+        case _: DelimitedAdminException =>
+          Future.successful(Redirect(controllers.routes.DelimitedAdministratorController.onPageLoad()))
       }
   }
 

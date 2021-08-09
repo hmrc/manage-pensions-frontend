@@ -669,3 +669,7 @@ messages__cannotAccessPageAsAdministrator__p1 = You can only view this page as a
 messages__cannotAccessPageAsAdministrator__error__required = Select if you want an administrator or practitioner view
 messages__cannotAccessPageAsAdministrator__practitioner = Switch to practitioner view
 messages__cannotAccessPageAsAdministrator__administrator = Continue in administrator view
+
+messages__delimitedAdmin__title = You cannot access this service using this scheme administrator ID
+messages__delimitedAdmin__p = This scheme administrator ID is no longer valid as the administrator using it is no longer registered on this service.
+messages__delimitedAdmin__link = Contact HMRC for help
