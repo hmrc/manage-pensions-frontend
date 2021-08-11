@@ -28,7 +28,6 @@ import models.AuthEntity.{PSA, PSP}
 import models.Link
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import play.twirl.api.Html
 import services.PspDashboardService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.UserAnswers
@@ -71,7 +70,7 @@ class PspDashboardController @Inject()(
             id = PSPNameId,
             value = details.name
           ).map { _ =>
-            Ok(view(details.name, "site.psp", service.getTiles(pspId, details), Html(""), Some(subHeading), returnLink))
+            Ok(view(details.name, "site.psp", service.getTiles(pspId, details), None, None, Some(subHeading), returnLink))
           }
         }
 

@@ -19,7 +19,7 @@ package controllers.psp
 import config._
 import connectors.{SessionDataCacheConnector, UserAnswersCacheConnector}
 import controllers.ControllerSpecBase
-import controllers.actions.{DataRetrievalAction, _}
+import controllers.actions._
 import controllers.psp.routes._
 import controllers.routes._
 import identifiers.AdministratorOrPractitionerId
@@ -32,7 +32,6 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.{JsNull, JsValue, Json}
 import play.api.test.Helpers.{contentAsString, _}
-import play.twirl.api.Html
 import services.PspDashboardService
 import utils.UserAnswers
 import viewmodels.{CardSubHeading, CardSubHeadingParam, CardViewModel, Message}
@@ -64,7 +63,6 @@ class PspDashboardControllerSpec
 
   private val view: schemesOverview = app.injector.instanceOf[schemesOverview]
   private val dummyUrl = "dummy"
-  private val dummyHtml = Html("")
 
   def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyDataPsp): PspDashboardController =
     new PspDashboardController(
@@ -83,7 +81,8 @@ class PspDashboardControllerSpec
     name = pspName,
     cards = tiles,
     title = "site.psp",
-    penaltiesCardHtml = dummyHtml,
+    penaltiesCardHtml = None,
+    migrationHtml = None,
     subHeading = Some(subHeading),
     returnLink = Some(returnLink)
   )(

@@ -18,7 +18,9 @@ package services
 
 import base.SpecBase
 import connectors._
-import connectors.admin.MinimalConnector
+import connectors.admin.{FeatureToggleConnector, MinimalConnector}
+import models.FeatureToggle.Enabled
+import models.FeatureToggleName.Migration
 import models._
 import models.requests.OptionalDataRequest
 import org.mockito.Matchers.{any, eq => eqTo}
@@ -35,9 +37,9 @@ import uk.gov.hmrc.domain.PsaId
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.UserAnswers
 import viewmodels.{CardSubHeading, CardSubHeadingParam, CardViewModel, Message}
+
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDate, ZoneOffset}
-
 import scala.concurrent.Future
 
 class SchemesOverviewServiceSpec extends SpecBase with MockitoSugar with BeforeAndAfterEach with ScalaFutures {
@@ -47,12 +49,14 @@ class SchemesOverviewServiceSpec extends SpecBase with MockitoSugar with BeforeA
   private val minimalPsaConnector: MinimalConnector = mock[MinimalConnector]
   private val frontendConnector = mock[FrontendConnector]
   private val invitationsCacheConnector = mock[InvitationsCacheConnector]
+  private val featureToggleConnector = mock[FeatureToggleConnector]
 
   override def beforeEach(): Unit = {
     when(minimalPsaConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any()))
       .thenReturn(Future.successful(minimalPsaName))
     when(invitationsCacheConnector.getForInvitee(any())(any(), any()))
       .thenReturn(Future.successful(invitationList))
+    when(featureToggleConnector.get(any())(any(), any())).thenReturn(Future.successful(Enabled(Migration)))
     when(frontendConnector.retrieveSchemeUrlsPartial(any(), any())).thenReturn(Future.successful(html))
     when(frontendConnector.retrievePenaltiesUrlPartial(any(), any())).thenReturn(Future.successful(html))
     super.beforeEach()
@@ -60,7 +64,7 @@ class SchemesOverviewServiceSpec extends SpecBase with MockitoSugar with BeforeA
 
   def service: SchemesOverviewService =
     new SchemesOverviewService(frontendAppConfig, minimalPsaConnector,
-      invitationsCacheConnector, frontendConnector)
+      invitationsCacheConnector, frontendConnector, featureToggleConnector)
 
   "getTiles" must {
 

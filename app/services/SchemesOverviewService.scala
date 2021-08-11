@@ -18,15 +18,17 @@ package services
 
 import config.FrontendAppConfig
 import connectors._
-import connectors.admin.MinimalConnector
+import connectors.admin.{FeatureToggleConnector, MinimalConnector}
 import controllers.psa.routes._
+import models.FeatureToggle.Enabled
+import models.FeatureToggleName.Migration
 import models.requests.OptionalDataRequest
-import models.{MinimalPSAPSP, Link}
+import models.{Link, MinimalPSAPSP}
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContent, Request}
 import play.twirl.api.Html
 import uk.gov.hmrc.http.HeaderCarrier
-import viewmodels.{CardSubHeadingParam, Message, CardViewModel, CardSubHeading}
+import viewmodels.{CardSubHeading, CardSubHeadingParam, CardViewModel, Message}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -35,7 +37,8 @@ class SchemesOverviewService @Inject()(
                                         appConfig: FrontendAppConfig,
                                         minimalPsaConnector: MinimalConnector,
                                         invitationsCacheConnector: InvitationsCacheConnector,
-                                        frontendConnector: FrontendConnector
+                                        frontendConnector: FrontendConnector,
+                                        featureToggleConnector: FeatureToggleConnector
                                       )(implicit ec: ExecutionContext) {
 
   def getTiles(psaId: String)(implicit request: OptionalDataRequest[AnyContent], hc: HeaderCarrier, messages: Messages): Future[Seq[CardViewModel]] =
@@ -51,6 +54,12 @@ class SchemesOverviewService @Inject()(
 
   def retrievePenaltiesUrlPartial[A](implicit request: Request[A], ec: ExecutionContext): Future[Html] =
     frontendConnector.retrievePenaltiesUrlPartial
+
+  def retrieveMigrationTile[A](implicit request: Request[A], ec: ExecutionContext, hc: HeaderCarrier): Future[Option[Html]] =
+    featureToggleConnector.get(Migration.asString).flatMap {
+      case Enabled(_) => frontendConnector.retrieveMigrationUrlsPartial.map(Some(_))
+      case _ => Future.successful(None)
+    }
 
   def getPsaName(psaId: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
     minimalPsaConnector.getPsaNameFromPsaID(psaId).map(identity)

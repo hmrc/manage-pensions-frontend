@@ -59,7 +59,8 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
     name = psaName,
     title = "site.psa",
     cards = tiles,
-    penaltiesCardHtml = html,
+    penaltiesCardHtml = Some(html),
+    migrationHtml = Some(html),
     subHeading = None,
     returnLink = None
   )(fakeRequest, messages).toString
@@ -85,6 +86,8 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
           .thenReturn(Future.successful(minimalDetails()))
         when(fakeSchemesOverviewService.retrievePenaltiesUrlPartial(any(), any()))
           .thenReturn(Future.successful(html))
+        when(fakeSchemesOverviewService.retrieveMigrationTile(any(), any(), any()))
+          .thenReturn(Future.successful(Some(html)))
         when(fakeUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(Json.obj()))
 
         val result = controller().onPageLoad(fakeRequest)
