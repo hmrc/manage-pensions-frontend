@@ -167,7 +167,7 @@ object SchemesOverviewServiceSpec extends SpecBase with MockitoSugar  {
     Message("messages__schemeOverview__psa_view_one_invitation")))
 
   private def tiles(admin: CardViewModel = adminCard(), scheme: CardViewModel = schemeCard): Seq[CardViewModel] =
-    Seq(admin, scheme)
+    Seq(scheme,admin)
 }
 
 

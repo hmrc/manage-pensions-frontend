@@ -47,8 +47,8 @@ class SchemesOverviewService @Inject()(
       schemeHtml <- frontendConnector.retrieveSchemeUrlsPartial
     } yield {
       Seq(
-        adminCard(invitationLink, psaId),
-        schemeCard(schemeHtml)
+        schemeCard(schemeHtml),
+        adminCard(invitationLink, psaId)
       )
     }
 

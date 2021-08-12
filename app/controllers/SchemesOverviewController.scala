@@ -69,7 +69,7 @@ class SchemesOverviewController @Inject()(
                 migrationHtml <- service.retrieveMigrationTile
                 _ <- userAnswersCacheConnector.save(request.externalId, PSANameId, name)
               } yield {
-                Ok(view(name, "site.psa", cards, Some(penaltiesHtml), migrationHtml, None, returnLink(request.pspId)))
+                Ok(view(name, "site.psa", cards.head,cards(1), Some(penaltiesHtml), migrationHtml, None, returnLink(request.pspId)))
               }
             case _ =>
               Future.successful(Redirect(SessionExpiredController.onPageLoad()))

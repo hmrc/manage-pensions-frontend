@@ -35,7 +35,7 @@ import play.api.test.Helpers.{contentAsString, _}
 import services.PspDashboardService
 import utils.UserAnswers
 import viewmodels.{CardSubHeading, CardSubHeadingParam, CardViewModel, Message}
-import views.html.schemesOverview
+import views.html.pspDashboard
 
 import scala.concurrent.Future
 
@@ -61,7 +61,7 @@ class PspDashboardControllerSpec
       deceasedFlag = deceasedFlag
     )
 
-  private val view: schemesOverview = app.injector.instanceOf[schemesOverview]
+  private val view: pspDashboard = app.injector.instanceOf[pspDashboard]
   private val dummyUrl = "dummy"
 
   def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyDataPsp): PspDashboardController =
@@ -79,10 +79,8 @@ class PspDashboardControllerSpec
 
   def viewAsString(): String = view(
     name = pspName,
-    cards = tiles,
     title = "site.psp",
-    penaltiesCardHtml = None,
-    migrationHtml = None,
+    cards = tiles,
     subHeading = Some(subHeading),
     returnLink = Some(returnLink)
   )(
