@@ -19,7 +19,7 @@ package controllers.psp
 import config._
 import connectors.{SessionDataCacheConnector, UserAnswersCacheConnector}
 import controllers.ControllerSpecBase
-import controllers.actions.{DataRetrievalAction, _}
+import controllers.actions._
 import controllers.psp.routes._
 import controllers.routes._
 import identifiers.AdministratorOrPractitionerId
@@ -32,11 +32,10 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.{JsNull, JsValue, Json}
 import play.api.test.Helpers.{contentAsString, _}
-import play.twirl.api.Html
 import services.PspDashboardService
 import utils.UserAnswers
 import viewmodels.{CardSubHeading, CardSubHeadingParam, CardViewModel, Message}
-import views.html.schemesOverview
+import views.html.pspDashboard
 
 import scala.concurrent.Future
 
@@ -62,9 +61,8 @@ class PspDashboardControllerSpec
       deceasedFlag = deceasedFlag
     )
 
-  private val view: schemesOverview = app.injector.instanceOf[schemesOverview]
+  private val view: pspDashboard = app.injector.instanceOf[pspDashboard]
   private val dummyUrl = "dummy"
-  private val dummyHtml = Html("")
 
   def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyDataPsp): PspDashboardController =
     new PspDashboardController(
@@ -81,9 +79,8 @@ class PspDashboardControllerSpec
 
   def viewAsString(): String = view(
     name = pspName,
-    cards = tiles,
     title = "site.psp",
-    penaltiesCardHtml = dummyHtml,
+    cards = tiles,
     subHeading = Some(subHeading),
     returnLink = Some(returnLink)
   )(

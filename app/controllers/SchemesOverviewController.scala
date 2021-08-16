@@ -18,6 +18,7 @@ package controllers
 
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
+import connectors.admin.DelimitedAdminException
 import controllers.actions._
 import controllers.psp.routes._
 import controllers.routes.{ContactHMRCController, SchemesOverviewController, SessionExpiredController}
@@ -38,7 +39,6 @@ import views.html.schemesOverview
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import connectors.admin.DelimitedAdminException
 
 class SchemesOverviewController @Inject()(
                                            override val messagesApi: MessagesApi,
@@ -66,9 +66,10 @@ class SchemesOverviewController @Inject()(
               for {
                 cards <- service.getTiles(psaId)
                 penaltiesHtml <- service.retrievePenaltiesUrlPartial
+                migrationHtml <- service.retrieveMigrationTile
                 _ <- userAnswersCacheConnector.save(request.externalId, PSANameId, name)
               } yield {
-                Ok(view(name, "site.psa", cards, penaltiesHtml, None, returnLink(request.pspId)))
+                Ok(view(name, "site.psa", cards.head,cards(1), Some(penaltiesHtml), migrationHtml, None, returnLink(request.pspId)))
               }
             case _ =>
               Future.successful(Redirect(SessionExpiredController.onPageLoad()))

@@ -28,13 +28,12 @@ import models.AuthEntity.{PSA, PSP}
 import models.Link
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import play.twirl.api.Html
 import services.PspDashboardService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.UserAnswers
 import utils.annotations.SessionDataCache
 import viewmodels.Message
-import views.html.schemesOverview
+import views.html.pspDashboard
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -47,7 +46,7 @@ class PspDashboardController @Inject()(
                                         userAnswersCacheConnector: UserAnswersCacheConnector,
                                         @SessionDataCache sessionDataCacheConnector: UserAnswersCacheConnector,
                                         val controllerComponents: MessagesControllerComponents,
-                                        view: schemesOverview,
+                                        view: pspDashboard,
                                         config: FrontendAppConfig
                                       )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
@@ -71,7 +70,7 @@ class PspDashboardController @Inject()(
             id = PSPNameId,
             value = details.name
           ).map { _ =>
-            Ok(view(details.name, "site.psp", service.getTiles(pspId, details), Html(""), Some(subHeading), returnLink))
+            Ok(view(details.name, "site.psp", service.getTiles(pspId, details), Some(subHeading), returnLink))
           }
         }
 

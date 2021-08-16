@@ -28,16 +28,15 @@ import java.time.LocalDate
 
 class SchemesOverviewViewSpec extends ViewBehaviours {
 
-  val variationSchemeName = "Scheme being changed"
-  val variationDeleteDate = "deletionDate"
-  val penaltiesTileHtml = Html("<p>test admin html</p>")
-  val psaName = "John Doe"
-  val messageKeyPrefix = "schemeOverview"
-  val schemeName = "Test Scheme Name"
-  val lastDate: String = LocalDate.now.toString
-  val deleteDate: String = LocalDate.now.plusDays(frontendAppConfig.daysDataSaved).toString
+  private val penaltiesTileHtml = Html("<p>test admin html</p>")
+  private val migrationTileHtml = Html("<p>test migration html</p>")
+  private val psaName = "John Doe"
+  private val messageKeyPrefix = "schemeOverview"
+  private val schemeName = "Test Scheme Name"
+  private val lastDate: String = LocalDate.now.toString
+  private val deleteDate: String = LocalDate.now.plusDays(frontendAppConfig.daysDataSaved).toString
   private val psaId = "A0000000"
-  val html: Html = Html("test-html")
+  private val html: Html = Html("test-html")
 
   private val adminCard = CardViewModel(
     id = "administrator-card",
@@ -70,10 +69,10 @@ class SchemesOverviewViewSpec extends ViewBehaviours {
   private val schemesOverviewView = injector.instanceOf[schemesOverview]
 
   def createView: () => HtmlFormat.Appendable = () =>
-    schemesOverviewView(psaName, "site.psa", Seq(adminCard, schemeCard), penaltiesTileHtml)(fakeRequest, messages)
+    schemesOverviewView(psaName, "site.psa", schemeCard,adminCard, Some(penaltiesTileHtml), Some(migrationTileHtml))(fakeRequest, messages)
 
   def createFreshView: () => HtmlFormat.Appendable = () => schemesOverviewView(psaName,"site.psa",
-    Seq(adminCard, schemeCard), penaltiesTileHtml)(fakeRequest, messages)
+    schemeCard,adminCard, Some(penaltiesTileHtml), Some(migrationTileHtml))(fakeRequest, messages)
 
   "SchemesOverview view when a scheme has been partially defined and which has no scheme variation" must {
     behave like normalPageWithoutBrowserTitle(

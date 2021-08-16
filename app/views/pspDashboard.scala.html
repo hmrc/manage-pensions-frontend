@@ -26,10 +26,7 @@
 @(
         name: String,
         title: String,
-        schemeCard: CardViewModel,
-        adminCard:  CardViewModel,
-        penaltiesCardHtml: Option[Html],
-        migrationHtml: Option[Html],
+        cards: Seq[CardViewModel],
         subHeading: Option[String] = None,
         returnLink: Option[Link] = None
 )(
@@ -45,14 +42,10 @@
         @components.heading(name, secondaryHeaderKey = subHeading)
 
         <div class="flex-container grid-row">
-            @penaltiesCardHtml.map { penaltiesCard =>
-                @penaltiesCard
+            @for(card <- cards) {
+                @components.card(card)
             }
-            @components.card(schemeCard)
-            @migrationHtml.map { migrationTile =>
-                @migrationTile
-            }
-            @components.card(adminCard)
+
         </div>
 
         @returnLink.map { ret =>
