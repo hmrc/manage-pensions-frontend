@@ -23,7 +23,7 @@ import controllers.psp.routes._
 import controllers.routes
 import identifiers.AdministratorOrPractitionerId
 import models.{AdministratorOrPractitioner, AuthEntity}
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import models.AuthEntity.{PSA, PSP}
 import org.scalatestplus.mockito.MockitoSugar

@@ -23,7 +23,7 @@ import controllers.actions._
 import controllers.behaviours.ControllerWithNormalPageBehaviours
 import identifiers.{SchemeNameId, SeqAuthorisedPractitionerId}
 import models.MinimalPSAPSP
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar

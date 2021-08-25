@@ -17,9 +17,7 @@
 package connectors.scheme
 
 import com.github.tomakehurst.wiremock.client.WireMock._
-import models.PsaLock
-import models.SchemeVariance
-import models.VarianceLock
+import models.{Lock, PsaLock, SchemeVariance, VarianceLock}
 import org.scalatest.AsyncFlatSpec
 import org.scalatest.Matchers
 import play.api.http.Status
@@ -44,7 +42,7 @@ class PensionSchemeVarianceLockConnectorSpec extends AsyncFlatSpec with Matchers
           aResponse()
             .withStatus(Status.OK)
             .withHeader("Content-Type", "application/json")
-            .withBody(Json.toJson(VarianceLock).toString())
+            .withBody(Json.toJson(VarianceLock: Lock).toString())
         )
     )
 
@@ -66,7 +64,7 @@ class PensionSchemeVarianceLockConnectorSpec extends AsyncFlatSpec with Matchers
           aResponse()
             .withStatus(Status.OK)
             .withHeader("Content-Type", "application/json")
-            .withBody(Json.toJson(PsaLock).toString())
+            .withBody(Json.toJson(PsaLock: Lock).toString())
         )
     )
 

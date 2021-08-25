@@ -23,8 +23,8 @@ import controllers.ControllerSpecBase
 import controllers.actions.{AuthAction, FakeAuthAction}
 import forms.psa.ListSchemesFormProvider
 import models.{MinimalPSAPSP, SchemeDetails, SchemeStatus}
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
@@ -192,7 +192,7 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar wit
     "return OK and the correct view when there are schemes without pagination and search on non empty string" in {
       when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
       val searchText = "24000001IN"
-      when(mockSchemeSearchService.search(any(), Matchers.eq(Some(searchText)))(any(), any())).thenReturn(Future.successful(fullSchemes))
+      when(mockSchemeSearchService.search(any(), ArgumentMatchers.eq(Some(searchText)))(any(), any())).thenReturn(Future.successful(fullSchemes))
       val pagination: Int = 10
 
       val numberOfPages =
@@ -222,7 +222,7 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar wit
 
     "return BADREQUEST and error when no value is entered into search" in {
       when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
-      when(mockSchemeSearchService.search(any(), Matchers.eq(None))(any(), any())).thenReturn(Future.successful(fullSchemes))
+      when(mockSchemeSearchService.search(any(), ArgumentMatchers.eq(None))(any(), any())).thenReturn(Future.successful(fullSchemes))
 
       val pagination: Int = 10
 
@@ -253,7 +253,7 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar wit
     "return OK and the correct view with correct no matches message when unrecognised format is entered into search" in {
       when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
       val incorrectSearchText = "24000001IN"
-      when(mockSchemeSearchService.search(any(), Matchers.eq(Some(incorrectSearchText)))(any(), any())).thenReturn(Future.successful(Nil))
+      when(mockSchemeSearchService.search(any(), ArgumentMatchers.eq(Some(incorrectSearchText)))(any(), any())).thenReturn(Future.successful(Nil))
 
       val pagination: Int = 10
 

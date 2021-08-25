@@ -26,7 +26,7 @@ import identifiers.AdministratorOrPractitionerId
 import models.AdministratorOrPractitioner.Practitioner
 import models.{IndividualDetails, Link, MinimalPSAPSP}
 import org.mockito.ArgumentCaptor
-import org.mockito.Matchers.{eq => eqTo, _}
+import org.mockito.ArgumentMatchers.{eq => eqTo, _}
 import org.mockito.Mockito.{times, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar

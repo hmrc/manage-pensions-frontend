@@ -24,8 +24,8 @@ import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAut
 import forms.invitations.psa.DeclarationFormProvider
 import identifiers.invitations.{IsMasterTrustId, IsRacDacId, PSTRId, SchemeNameId}
 import identifiers.{SchemeNameId => GetSchemeNameId}
-import org.mockito.Matchers._
-import org.mockito.Matchers.{eq => eqTo, _}
+import org.mockito.ArgumentMatchers._
+import org.mockito.ArgumentMatchers.{eq => eqTo, _}
 import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures

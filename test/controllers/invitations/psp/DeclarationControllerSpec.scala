@@ -28,9 +28,9 @@ import identifiers.invitations.psp.{PspClientReferenceId, PspId, PspNameId}
 import identifiers.{SchemeNameId, SchemeSrnId}
 import models.ClientReference.HaveClientReference
 import models._
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
-import org.mockito.{ArgumentCaptor, Matchers}
+import org.mockito.{ArgumentCaptor, ArgumentMatchers}
 import org.scalatest.{BeforeAndAfterEach, RecoverMethods}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.Configuration
@@ -159,14 +159,14 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
           emailAddress = minPsa.email,
           Sent
         )
-        verify(mockAuditService, times(1)).sendEvent(Matchers.eq(expectedEmailAuditEvent))(any(), any())
+        verify(mockAuditService, times(1)).sendEvent(ArgumentMatchers.eq(expectedEmailAuditEvent))(any(), any())
 
         val expectedAuditEvent = PSPAuthorisationAuditEvent(
           psaId = "A0000000",
           pspId = pspId,
           pstr = pstr
         )
-        verify(mockAuditService, times(1)).sendEvent(Matchers.eq(expectedAuditEvent))(any(), any())
+        verify(mockAuditService, times(1)).sendEvent(ArgumentMatchers.eq(expectedAuditEvent))(any(), any())
 
       }
 

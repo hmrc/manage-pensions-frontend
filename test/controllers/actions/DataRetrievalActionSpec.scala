@@ -21,8 +21,8 @@ import connectors.UserAnswersCacheConnector
 import models.Individual
 import models.requests.AuthenticatedRequest
 import models.requests.OptionalDataRequest
-import org.mockito.Matchers.{eq => eqTo}
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers.{eq => eqTo}
+import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
