@@ -25,8 +25,8 @@ import controllers.actions.FakeAuthAction
 import forms.psp.ListSchemesFormProvider
 import models.SchemeDetails
 import models.SchemeStatus
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
@@ -71,7 +71,7 @@ import ListSchemesControllerSpec._
 
     "return OK and the correct view when there are schemes" in {
       val searchText = "24000001IN"
-      when(mockSchemeSearchService.searchPsp(any(), Matchers.eq(Some(searchText)))(any(), any())).thenReturn(Future.successful(fullSchemes))
+      when(mockSchemeSearchService.searchPsp(any(), ArgumentMatchers.eq(Some(searchText)))(any(), any())).thenReturn(Future.successful(fullSchemes))
 
       val fixture = testFixture(pspIdWithSchemes)
       val postRequest = fakeRequest.withFormUrlEncodedBody(("searchText", searchText))
@@ -89,7 +89,7 @@ import ListSchemesControllerSpec._
     }
 
     "return BADREQUEST and error when no value is entered into search" in {
-      when(mockSchemeSearchService.searchPsp(any(), Matchers.eq(None))(any(), any())).thenReturn(Future.successful(fullSchemes))
+      when(mockSchemeSearchService.searchPsp(any(), ArgumentMatchers.eq(None))(any(), any())).thenReturn(Future.successful(fullSchemes))
 
       val fixture = testFixture(pspIdWithSchemes)
       val postRequest = fakeRequest.withFormUrlEncodedBody(("searchText", ""))
@@ -109,7 +109,7 @@ import ListSchemesControllerSpec._
       "return OK and the correct view with correct no matches message when no match is made" in {
 
         val incorrectSearchText = "incorrect"
-        when(mockSchemeSearchService.searchPsp(any(), Matchers.eq(Some(incorrectSearchText)))(any(), any())).thenReturn(Future.successful(Nil))
+        when(mockSchemeSearchService.searchPsp(any(), ArgumentMatchers.eq(Some(incorrectSearchText)))(any(), any())).thenReturn(Future.successful(Nil))
 
         val fixture = testFixture(pspIdWithSchemes)
         val postRequest =

@@ -30,7 +30,7 @@ import identifiers.invitations.psp.PspId
 import identifiers.invitations.psp.PspNameId
 import models.CheckMode
 import models.ClientReference.HaveClientReference
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.mvc.Call

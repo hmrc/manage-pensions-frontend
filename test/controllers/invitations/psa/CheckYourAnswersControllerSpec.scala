@@ -24,7 +24,7 @@ import controllers.behaviours.ControllerWithNormalPageBehaviours
 import controllers.invitations.psa.routes._
 import models.invitations.Invitation
 import models.{AcceptedInvitation, MinimalSchemeDetail}
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.Configuration

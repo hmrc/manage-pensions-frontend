@@ -25,7 +25,7 @@ import controllers.psa.remove.routes._
 import identifiers.AssociatedDateId
 import identifiers.invitations.{PSTRId, SchemeNameId}
 import models._
-import org.mockito.Matchers
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
@@ -149,7 +149,8 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
       )
       val ua = UserAnswers(uaJson)
       val sdc = mock[SchemeDetailsConnector]
-      when(sdc.getSchemeDetails(Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+      when(sdc.getSchemeDetails(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+      (ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(ua))
 
       val result = controller(schemeDetailsConnector = sdc).onPageLoad(fakeRequest)

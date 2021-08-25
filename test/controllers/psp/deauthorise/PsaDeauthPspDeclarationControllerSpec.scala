@@ -26,9 +26,9 @@ import identifiers.invitations.PSTRId
 import identifiers.psp.deauthorise
 import identifiers.{SchemeNameId, SchemeSrnId, SeqAuthorisedPractitionerId}
 import models.{IndividualDetails, MinimalPSAPSP, SendEmailRequest}
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
-import org.mockito.{ArgumentCaptor, Matchers}
+import org.mockito.{ArgumentCaptor, ArgumentMatchers}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.data.Form
@@ -140,7 +140,7 @@ class PsaDeauthPspDeclarationControllerSpec
     // scalastyle:off magic.number
     val expectedAuditEvent = PSPDeauthorisationByPSAAuditEvent(LocalDate.of(2020, 5, 1), "A0000000", "A2200005", pstr)
 
-    verify(mockAuditService, times(1)).sendExtendedEvent(Matchers.eq(expectedAuditEvent))(any(), any())
+    verify(mockAuditService, times(1)).sendExtendedEvent(ArgumentMatchers.eq(expectedAuditEvent))(any(), any())
   }
 
   "send an email to the PSA email address and send an email audit event when psp successfully deauthorised by the PSA" in {
@@ -171,7 +171,7 @@ class PsaDeauthPspDeclarationControllerSpec
       pstr = pstr,
       emailAddress = minPsa.email
     )
-    verify(mockAuditService, times(1)).sendEvent(Matchers.eq(expectedAuditEvent))(any(), any())
+    verify(mockAuditService, times(1)).sendEvent(ArgumentMatchers.eq(expectedAuditEvent))(any(), any())
   }
 
   behave like controllerThatSavesUserAnswers(

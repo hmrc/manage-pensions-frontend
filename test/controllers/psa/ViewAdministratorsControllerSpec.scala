@@ -23,7 +23,7 @@ import handlers.ErrorHandler
 import identifiers.SchemeNameId
 import identifiers.invitations.PSTRId
 import models._
-import org.mockito.Matchers.{any, eq => eqTo}
+import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar

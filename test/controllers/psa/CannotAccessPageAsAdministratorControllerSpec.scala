@@ -25,7 +25,7 @@ import controllers.routes._
 import forms.psa.CannotAccessPageAsAdministratorFormProvider
 import models.AdministratorOrPractitioner
 import org.mockito.ArgumentCaptor
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures

@@ -25,8 +25,8 @@ import identifiers.{SchemeNameId, SchemeStatusId}
 import models.SchemeStatus.{Open, Rejected}
 import models._
 import models.requests.AuthenticatedRequest
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
@@ -142,9 +142,9 @@ class SchemeDetailsServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
 
   "lockingPsa" must {
     "return the name of the locking psa" in {
-      when(lockConnector.getLockByScheme(Matchers.any())(Matchers.any(), Matchers.any()))
+      when(lockConnector.getLockByScheme(any())(any(), any()))
         .thenReturn(Future.successful(Some(SchemeVariance("A0000001", srn))))
-      when(minimalPsaConnector.getPsaNameFromPsaID(Matchers.eq("A0000001"))(Matchers.any(), Matchers.any()))
+      when(minimalPsaConnector.getPsaNameFromPsaID(ArgumentMatchers.eq("A0000001"))(any(), any()))
         .thenReturn(Future.successful(Some("Locky Lockhart")))
       whenReady(service.lockingPsa(Some(SchemeLock), srn)(authReq, hc)) {
         _ mustBe Some("Locky Lockhart")
@@ -152,7 +152,7 @@ class SchemeDetailsServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
     }
 
     "return None when " in {
-      when(lockConnector.getLockByScheme(Matchers.any())(Matchers.any(), Matchers.any()))
+      when(lockConnector.getLockByScheme(any())(any(), any()))
         .thenReturn(Future.successful(Some(SchemeVariance(psaId, "S1000000456"))))
       whenReady(service.lockingPsa(Some(SchemeLock), srn)(authReq, hc)){
         _ mustBe None

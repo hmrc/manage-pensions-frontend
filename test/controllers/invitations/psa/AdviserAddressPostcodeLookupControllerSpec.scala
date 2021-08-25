@@ -22,7 +22,7 @@ import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction, Fak
 import forms.invitations.psa.AdviserAddressPostcodeLookupFormProvider
 import identifiers.invitations.psa.AdviserNameId
 import models.TolerantAddress
-import org.mockito.Matchers.{eq => eqTo, _}
+import org.mockito.ArgumentMatchers.{eq => eqTo, _}
 import org.mockito.Mockito._
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{MustMatchers, OptionValues, WordSpec}
@@ -132,7 +132,7 @@ class AdviserAddressPostcodeLookupControllerSpec
 
         val addressConnector: AddressLookupConnector = mock[AddressLookupConnector]
 
-        verifyZeroInteractions(addressConnector)
+        verifyNoMoreInteractions(addressConnector)
 
         running(_.overrides(
           bind[Navigator].toInstance(FakeNavigator),

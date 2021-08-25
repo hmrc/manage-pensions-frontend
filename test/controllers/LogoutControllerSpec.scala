@@ -18,7 +18,7 @@ package controllers
 
 import connectors.UserAnswersCacheConnector
 import connectors.aft.AftCacheConnector
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.mvc.Results.Ok
