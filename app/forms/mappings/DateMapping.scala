@@ -16,62 +16,39 @@
 
 package forms.mappings
 
-import java.time.DateTimeException
+import play.api.data.Forms.{of, tuple}
+import play.api.data.{FieldMapping, Mapping}
+
 import java.time.LocalDate
-
-import play.api.data.Forms.text
-import play.api.data.Forms.tuple
-import play.api.data.Mapping
-import play.api.data.validation.Constraint
-import play.api.data.validation.Invalid
-import play.api.data.validation.Valid
-
-import scala.util.Failure
-import scala.util.Success
 import scala.util.Try
 
-trait DateMapping extends Constraints {
+trait DateMapping extends Formatters with Constraints {
 
-  import DateMapping._
-
-  //scalastyle:off cyclomatic.complexity
-  def individualValidation(errors: DateErrors): Constraint[(String, String, String)] = Constraint {
-    case (day, month, year) if day.isEmpty && month.isEmpty && year.isEmpty => Invalid(errors.allBlank)
-    case (day, month, _) if day.isEmpty && month.isEmpty => Invalid(errors.dayMonthBlank)
-    case (_, month, year) if month.isEmpty && year.isEmpty => Invalid(errors.monthYearBlank)
-    case (day, _, _) if day.isEmpty => Invalid(errors.dayBlank)
-    case (_, month, _) if month.isEmpty => Invalid(errors.monthBlank)
-    case (_, _, year) if year.isEmpty => Invalid(errors.yearBlank)
-    case (_, month, _) if !month.matches(monthRegex) => Invalid(notRealDate)
-    case _ => Valid
-  }
-
-  def validDate(genericError: String): Constraint[(String, String, String)] = Constraint {
-    input =>
-      Try(toLocalDate(input)) match {
-        case Failure(ex) if ex.isInstanceOf[DateTimeException] =>
-          Invalid(notRealDate)
-        case Failure(_) =>
-          Invalid(genericError)
-        case Success(_) =>
-          Valid
-      }
+  def validDate(input: (Int, Int, Int)): Boolean = {
+    Try(toLocalDate(input)).isSuccess
   }
 
   def dateMapping(errors: DateErrors): Mapping[LocalDate] = tuple(
-    "day" -> text,
-    "month" -> text,
-    "year" -> text
-  ).verifying(firstError(individualValidation(errors), validDate(errors.genericError)))
+    "day" -> int(requiredKey = errors.dayBlank, wholeNumberKey = "error.date.day_invalid", nonNumericKey =
+      "error.date.day_invalid"),
+    "month" -> int(requiredKey = errors.monthBlank, wholeNumberKey = "error.date.month_invalid",
+      nonNumericKey = "error.date.month_invalid"),
+    "year" -> int(requiredKey = errors.yearBlank, wholeNumberKey = "error.date.year_invalid", nonNumericKey
+    = "error.date.year_invalid")
+  ).verifying("error.invalid_date",inputs => validDate(inputs))
     .transform[LocalDate](toLocalDate, fromLocalDate)
 
 
-  def toLocalDate(date: (String, String, String)): LocalDate =
-    LocalDate.of(date._3.toInt, date._2.toInt, date._1.toInt)
+  def toLocalDate(date: (Int, Int, Int)): LocalDate =
+    LocalDate.of(date._3, date._2, date._1)
 
-  def fromLocalDate(date: LocalDate): (String, String, String) =
-    (date.getDayOfMonth.toString, date.getMonthValue.toString, date.getYear.toString)
+  def fromLocalDate(date: LocalDate): (Int, Int, Int) =
+    (date.getDayOfMonth, date.getMonthValue, date.getYear)
 
+  protected def int(requiredKey: String = "error.required",
+                    wholeNumberKey: String = "error.wholeNumber",
+                    nonNumericKey: String = "error.nonNumeric"): FieldMapping[Int] =
+    of(intFormatter(requiredKey, wholeNumberKey, nonNumericKey))
 }
 
 object DateMapping {

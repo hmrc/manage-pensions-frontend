@@ -72,8 +72,10 @@ class DateMappingSpec extends WordSpec with DateMapping with MustMatchers with O
         )
       )
 
-      result.errors.size mustBe 1
-      result.errors must contain (FormError("date", dateErrors.allBlank))
+      result.errors.size mustBe 3
+      result.errors mustBe List(FormError("date.day", dateErrors.dayBlank),
+        FormError("date.month", dateErrors.monthBlank),
+        FormError("date.year", dateErrors.yearBlank))
     }
 
     "not bind blank day" in {
@@ -86,7 +88,7 @@ class DateMappingSpec extends WordSpec with DateMapping with MustMatchers with O
       )
 
       result.errors.size mustBe 1
-      result.errors must contain (FormError("date", dateErrors.dayBlank))
+      result.errors mustBe List(FormError("date.day", dateErrors.dayBlank))
     }
 
     "not bind blank month" in {
@@ -99,7 +101,7 @@ class DateMappingSpec extends WordSpec with DateMapping with MustMatchers with O
       )
 
       result.errors.size mustBe 1
-      result.errors must contain (FormError("date", dateErrors.monthBlank))
+      result.errors mustBe List(FormError("date.month", dateErrors.monthBlank))
     }
 
     "not bind blank year" in {
@@ -112,7 +114,7 @@ class DateMappingSpec extends WordSpec with DateMapping with MustMatchers with O
       )
 
       result.errors.size mustBe 1
-      result.errors must contain (FormError("date", dateErrors.yearBlank))
+      result.errors mustBe List(FormError("date.year", dateErrors.yearBlank))
     }
 
     "not bind blank day and month" in {
@@ -124,8 +126,8 @@ class DateMappingSpec extends WordSpec with DateMapping with MustMatchers with O
         )
       )
 
-      result.errors.size mustBe 1
-      result.errors must contain (FormError("date", dateErrors.dayMonthBlank))
+      result.errors.size mustBe 2
+      result.errors mustBe List(FormError("date.day", dateErrors.dayBlank),FormError("date.month", dateErrors.dayMonthBlank))
     }
 
     "not bind blank month and year" in {
@@ -137,8 +139,8 @@ class DateMappingSpec extends WordSpec with DateMapping with MustMatchers with O
         )
       )
 
-      result.errors.size mustBe 1
-      result.errors must contain (FormError("date", dateErrors.monthYearBlank))
+      result.errors.size mustBe 2
+      result.errors mustBe List(FormError("date.month", dateErrors.monthYearBlank),FormError("date.year", dateErrors.yearBlank))
     }
 
     "not bind non-numeric input" in {
@@ -151,7 +153,7 @@ class DateMappingSpec extends WordSpec with DateMapping with MustMatchers with O
       )
 
       result.errors.size mustBe 1
-      result.errors must contain (FormError("date", "messages__date_error__real_date"))
+      result.errors mustBe List(FormError("date", "messages__date_error__real_date"))
     }
 
     "not bind invalid day" in {
@@ -164,7 +166,7 @@ class DateMappingSpec extends WordSpec with DateMapping with MustMatchers with O
       )
 
       result.errors.size mustBe 1
-      result.errors must contain(FormError("date", "messages__date_error__real_date"))
+      result.errors mustBe List(FormError("date", "messages__date_error__real_date"))
     }
 
     "not bind invalid month" in {
@@ -177,7 +179,7 @@ class DateMappingSpec extends WordSpec with DateMapping with MustMatchers with O
       )
 
       result.errors.size mustBe 1
-      result.errors must contain(FormError("date", "messages__date_error__real_date"))
+      result.errors mustBe List(FormError("date", "messages__date_error__real_date"))
     }
 
     "fill correctly from model" in {

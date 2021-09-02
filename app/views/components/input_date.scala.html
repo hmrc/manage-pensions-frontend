@@ -41,6 +41,18 @@ headingIsLegend: Boolean = false
     seqIDs.mkString(" ")
 }
 
+@errorMessageAndId = @{
+    if (field("day").errors.nonEmpty || field("month").errors.nonEmpty || field("year").errors.nonEmpty) {
+        Seq(Tuple2("error-message-date", messages("messages__error__date")))
+    } else if (field.errors.nonEmpty) {
+        field.errors.map { error =>
+            Tuple2(s"error-message-${field.id}-input", messages(error.message, error.args: _*))
+        }
+    } else {
+        Seq.empty
+    }
+}
+
 <div class="form-field @if(Seq(field, field("day"), field("month"), field("year")).flatMap(_.errors).nonEmpty){form-field--error}">
 <fieldset id="@field.id" role="group" aria-describedby="@ariaDescribedBy">
 
@@ -60,11 +72,13 @@ headingIsLegend: Boolean = false
         <span class="form-hint" id="@{field.id}-date-hint">@hint</span>
     }
 
-    @field.errors.map { error =>
-        <span class="error-notification" id="error-notification-@{field.id}-input">
-            <span class="visually-hidden">@messages("site.error")</span>
-            @messages(error.message, error.args:_*)
-        </span>
+    @errorMessageAndId.map {
+    case (id, message) => {
+    <span class="error-notification" id="@id">
+               <span class="visually-hidden">@messages("site.error")</span>
+               @message
+            </span>
+        }
     }
 
     <div class="form-date">
