@@ -16,18 +16,32 @@
 
 package forms.mappings
 
+
+import forms.mappings.DateMapping.notRealDate
 import play.api.data.Forms.{of, tuple}
+import play.api.data.validation.Constraint
 import play.api.data.{FieldMapping, Mapping}
+import play.api.data.validation.Invalid
+import play.api.data.validation.Valid
 
-import java.time.LocalDate
+import java.time.{DateTimeException, LocalDate}
 import scala.util.Try
-
+import scala.util.Failure
+import scala.util.Success
+import scala.util.Try
 trait DateMapping extends Formatters with Constraints {
 
-  def validDate(input: (Int, Int, Int)): Boolean = {
-    Try(toLocalDate(input)).isSuccess
+  def validDate(genericError: String): Constraint[(Int, Int, Int)] = Constraint {
+    input =>
+      Try(toLocalDate(input)) match {
+        case Failure(ex) if ex.isInstanceOf[DateTimeException] =>
+          Invalid(notRealDate)
+        case Failure(_) =>
+          Invalid(genericError)
+        case Success(_) =>
+          Valid
+      }
   }
-
   def dateMapping(errors: DateErrors): Mapping[LocalDate] = tuple(
     "day" -> int(requiredKey = errors.dayBlank, wholeNumberKey = "error.date.day_invalid", nonNumericKey =
       "error.date.day_invalid"),
@@ -35,7 +49,7 @@ trait DateMapping extends Formatters with Constraints {
       nonNumericKey = "error.date.month_invalid"),
     "year" -> int(requiredKey = errors.yearBlank, wholeNumberKey = "error.date.year_invalid", nonNumericKey
     = "error.date.year_invalid")
-  ).verifying("error.invalid_date",inputs => validDate(inputs))
+  ).verifying(validDate(errors.genericError))
     .transform[LocalDate](toLocalDate, fromLocalDate)
 
 
