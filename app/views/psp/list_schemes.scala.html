@@ -18,6 +18,7 @@
 @import models.SchemeDetails
 @import controllers.psp.routes.ListSchemesController
 @import controllers.psp.routes._
+@import utils.ViewHelper.titleWithErrors
 
 @this(
     main_template: main_template,
@@ -50,9 +51,16 @@
         "messages__listSchemes__search_submit"
     }
 }
+@heading = @{
+    if(form("searchText").value.exists(_.length > 0)){
+    "messages__listSchemesPsp____search_result_title"
+    } else {
+    "messages__listSchemesPsp__title"
+    }
+}
 
 @main_template(
-    title = messages("messages__listSchemesPsp__title"),
+    title = titleWithErrors(form, messages(heading)),
     bodyClasses = Some("full-width")
 ) {
 
@@ -61,7 +69,8 @@
 
         <div class="grid-row">
             <div class="column-two-thirds">
-                @components.heading(headingKey = messages("messages__listSchemesPsp__heading"))
+                @components.error_summary(form.errors)
+                @components.heading(headingKey = messages(heading))
 
                 <p>@messages("messages__listSchemesPsp__lede")</p>
 

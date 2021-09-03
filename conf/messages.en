@@ -136,6 +136,7 @@ messages__listSchemesPsp__search_invalid = PSTR must only include letters and nu
 messages__listSchemesPsp__search_required = Enter a Pension Scheme Tax Reference
 messages__listSchemesPsp__searchText_label = Enter a Pension Scheme Tax Reference
 messages__listSchemesPsp__title = Search for a pension scheme
+messages__listSchemesPsp____search_result_title = Search results for your pension schemes
 messages__listSchemesPsp__heading = Search for a pension scheme
 messages__listSchemesPsp__lede = Only schemes you have been authorised to by a pension scheme administrator will show in the search results.
 messages__listSchemesPsp__column__schemeName = Name:
