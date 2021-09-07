@@ -44,12 +44,10 @@ headingIsLegend: Boolean = false
 @errorMessageAndId = @{
     if (field("day").errors.nonEmpty || field("month").errors.nonEmpty || field("year").errors.nonEmpty) {
         Seq(Tuple2("error-message-date", messages("messages__error__date")))
-    } else if (field.errors.nonEmpty) {
+    } else {
         field.errors.map { error =>
             Tuple2(s"error-message-${field.id}-input", messages(error.message, error.args: _*))
         }
-    } else {
-        Seq.empty
     }
 }
 
