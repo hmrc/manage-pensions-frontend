@@ -99,19 +99,19 @@ trait FieldBehaviours extends FormSpec with ScalaCheckDrivenPropertyChecks with 
 
     def keyBlank(dateField: String, requiredKey: String): Unit = {
       val result = form().bind(formKeys - dateField + (s"$dateField" -> ""))
-      result.errors shouldEqual Seq(FormError(fieldName, requiredKey))
+      result.errors shouldEqual Seq(FormError(dateField, requiredKey))
     }
 
     "not bind when day key is not present at all" in {
-      keyNotPresent(dayFieldName, s"error.required")
+      keyNotPresent(dayFieldName, s"messages__${key}_date_error__day_blank")
     }
 
     "not bind when month key is not present at all" in {
-      keyNotPresent(monthFieldName, s"error.required")
+      keyNotPresent(monthFieldName, s"messages__${key}_date_error__month_blank")
     }
 
     "not bind when year key is not present at all" in {
-      keyNotPresent(yearFieldName, s"error.required")
+      keyNotPresent(yearFieldName, s"messages__${key}_date_error__year_blank")
     }
 
     "not bind when day key is blank" in {
@@ -132,7 +132,9 @@ trait FieldBehaviours extends FormSpec with ScalaCheckDrivenPropertyChecks with 
         s"$monthFieldName" -> "",
         s"$yearFieldName" -> ""
       ))
-      result.errors shouldEqual Seq(FormError(fieldName, s"messages__${key}_date_error__all_blank"))
+      result.errors shouldEqual Seq(FormError(s"$dayFieldName", s"messages__${key}_date_error__day_blank"),
+        FormError(s"$monthFieldName", s"messages__${key}_date_error__month_blank"),
+        FormError(s"$yearFieldName", s"messages__${key}_date_error__year_blank"))
     }
   }
 

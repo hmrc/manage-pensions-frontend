@@ -31,8 +31,21 @@ date = Date
 date_day = Day
 date_month = Month
 date_year = Year
-messages__common__date_hint = For example, 31 3 2018
 
+error.invalid_date = Give a correct date
+error.date.day_blank = Enter a day
+error.date.day_invalid = Give a correct day using numbers 1 to 31
+error.date.month_blank = Enter a month
+error.date.month_invalid = Give a correct month using numbers 1 to 12
+error.date.year_blank = Enter a year
+error.date.year_invalid = Give a correct year
+error.integer = Give an answer in whole numbers
+error.non_numeric = Give a value using only numbers
+error.number = Please enter a valid number
+error.required = Please enter a value
+
+messages__common__date_hint = For example, 31 3 2018
+messages__error__date = Enter a valid date
 messages__date_error__any_blank = Enter the date using a day, month and year
 messages__date_error__common = Enter a correct date using the example format
 messages__date_error__real_date = Enter a real date
