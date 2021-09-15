@@ -16,18 +16,25 @@
 
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcLayout
 @import uk.gov.hmrc.hmrcfrontend.views.config.StandardBetaBanner
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcReportTechnicalIssueHelper
 @import views.html.helper.CSPNonce
 @import config.FrontendAppConfig
-@import app.routes
+@import controllers.routes
 
-@this(hmrcLayout: HmrcLayout, standardBetaBanner: StandardBetaBanner)
+@this(hmrcLayout: HmrcLayout, standardBetaBanner: StandardBetaBanner, hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper, appConfig: FrontendAppConfig)
 
 @(pageTitle: String)(contentBlock: Html)(implicit request: RequestHeader, messages: Messages)
+
+@content = {
+@contentBlock
+@hmrcReportTechnicalIssueHelper()
+}
 
 @hmrcLayout(
 pageTitle = Some(pageTitle),
 isWelshTranslationAvailable = false, /* or false if your service has not been translated */
 serviceUrl = Some(routes.IndexController.onPageLoad.url),
 signOutUrl = Some(routes.LogoutController.onPageLoad.url),
+phaseBanner = Some(standardBetaBanner(url = appConfig.betaFeedbackUnauthenticatedUrl)),
 nonce = CSPNonce.get,
-)(contentBlock)
+)(content)

@@ -17,18 +17,16 @@
 @import config.FrontendAppConfig
 
 @this(
-main_template: main_template,
+layout: templates.Layout,
 appConfig: FrontendAppConfig
 )
 
 @()(implicit request: Request[_], messages: Messages)
 
-@main_template(
-    title = messages("messages__index__title"),
+@layout(
+    pageTitle    =  messages("messages__index__title")) {
 
-    bodyClasses = None) {
+       <h1 class="govuk-heading-xl">@messages("messages__index__title")</h1>
 
-       <h1 class="heading-xlarge">@messages("messages__index__title")</h1>
-
-       <p>@messages("messages__index__guidance")</p>
+       <p class="govuk-body">@messages("messages__index__guidance")</p>
     }

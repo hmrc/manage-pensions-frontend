@@ -1,5 +1,5 @@
 # microservice specific routes
-->          /govuk-frontend                                                                                  govuk.Routes
+
 ->          /hmrc-frontend                                                                                   hmrcfrontend.Routes
 ->          /invitations                                                                                     invitations.Routes
 ->          /authorise-psp                                                                                   pspInvitations.Routes
