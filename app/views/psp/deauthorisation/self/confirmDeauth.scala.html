@@ -14,8 +14,11 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import play.api.data.Form
-@import uk.gov.hmrc.play.views.html._
 @import views.html._
 @import viewmodels.Message
 @import utils.ViewHelper.titleWithErrors
@@ -23,40 +26,55 @@
 @import controllers.psp.routes._
 
 @this(
-    main_template: main_template,
-    formHelper: FormWithCSRF
+    layout: templates.Layout,
+    govukRadios : GovukRadios,
+    formHelper: PlayFrontendFormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    govukButton : GovukButton
 )
 
-@(form: Form[_], schemeName: String, srn: String, pspName: String)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], schemeName: String, srn: String, pspName: String)(implicit request: Request[_],
+messages: Messages)
 
-@main_template(
-    title = titleWithErrors(form, messages("messages__confirmDeauthorisePsp__title"))
+@layout(
+    pageTitle = titleWithErrors(form, messages("messages__confirmDeauthorisePsp__title"))
 ){
 
     @formHelper(action = ConfirmDeauthController.onSubmit(), 'autoComplete -> "off") {
 
         @components.back_link()
 
-        @components.error_summary(
-        errors = form.errors,
-        screenReaderAlternativeText = true
-        )
-        <div class="form-group @if(form.hasErrors){form-group--error}">
+        @if(form.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
+        }
 
-            @components.input_yes_no(
-                field = form("value"),
-                label = messages("messages__confirmDeauthorisePsp__heading", pspName, schemeName),
-                labelClass = Some("visually-hidden"),
-                headingIsLegend = true,
-                screenReaderAlternativeLabelText =
-                Some(messages("messages__confirmDeauthorisePsp__heading__screenReaderAlternativeText", pspName, schemeName)),
-                screenReaderAlternativeErrorText = true
+            @govukRadios(Radios(
+            fieldset = Some(Fieldset(
+            legend = Some(Legend(
+            content = Text(messages("messages__confirmDeauthorisePsp__heading", pspName, schemeName)),
+            classes = "govuk-fieldset__legend--l",
+            isPageHeading = true
+            ))
+            )),
+            items = Seq(
+            RadioItem(
+            content = Text(messages("site.yes")),
+            value = Some(messages("site.true"))
+            ),
+            RadioItem(
+            content = Text(messages("site.no")),
+            value = Some(messages("site.false"))
             )
-        </div>
-        @components.submit_button()
+            )
+            ).withFormField(form("value"))
+            )
+
+        @govukButton(Button(
+        content = Text(messages("site.save_and_continue"))
+        ))
 
         <p>
-            <a id="return-link" href="@PspSchemeDashboardController.onPageLoad(srn)">
+            <a id="return-link" class="govuk_link" href="@PspSchemeDashboardController.onPageLoad(srn)">
                 @messages("messages__returnToSchemeDetails__link", schemeName)
             </a>
         </p>
