@@ -41,9 +41,6 @@ messages: Messages)
 ){
 
     @formHelper(action = ConfirmDeauthController.onSubmit(), 'autoComplete -> "off") {
-
-        @components.back_link()
-
         @if(form.errors.nonEmpty) {
         @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
         }

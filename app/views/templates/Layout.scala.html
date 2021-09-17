@@ -31,7 +31,9 @@
 }
 
 @hmrcLayout(
+serviceName = Some(messages("site.service_name")),
 pageTitle = Some(pageTitle),
+backLinkUrl = Some("javascript:history.back()"),
 isWelshTranslationAvailable = false, /* or false if your service has not been translated */
 serviceUrl = Some(routes.IndexController.onPageLoad.url),
 signOutUrl = Some(routes.LogoutController.onPageLoad.url),
