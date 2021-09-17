@@ -42,10 +42,10 @@ messages: Messages)
 
     @formHelper(action = ConfirmDeauthController.onSubmit(), 'autoComplete -> "off") {
         @if(form.errors.nonEmpty) {
-        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
         }
 
-            @govukRadios(Radios(
+        @govukRadios(Radios(
             fieldset = Some(Fieldset(
             legend = Some(Legend(
             content = Text(messages("messages__confirmDeauthorisePsp__heading", pspName, schemeName)),
@@ -64,7 +64,7 @@ messages: Messages)
             )
             )
             ).withFormField(form("value"))
-            )
+        )
 
         @govukButton(Button(
         content = Text(messages("site.save_and_continue"))

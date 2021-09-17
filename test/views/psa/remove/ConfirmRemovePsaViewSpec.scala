@@ -16,8 +16,6 @@
 
 package views.psa.remove
 
-import controllers.psa.remove.routes._
-import controllers.psa.routes._
 import forms.psa.remove.ConfirmRemovePsaFormProvider
 import play.api.data.Form
 import play.twirl.api.HtmlFormat
@@ -48,18 +46,18 @@ class ConfirmRemovePsaViewSpec extends YesNoViewBehaviours {
       pageHeader = messages(s"messages__${prefix}__heading", psaName, schemeName)
     )
 
-    behave like pageWithSubmitButton(createView)
-
-    behave like yesNoPage(
-      createView = createViewUsingForm,
-      messageKeyPrefix = prefix,
-      expectedFormAction = ConfirmRemovePsaController.onSubmit().url
-    )
-
-    behave like pageWithReturnLink(
-      view = createView,
-      url = PsaSchemeDashboardController.onPageLoad(srn).url,
-      text = messages("messages__returnToSchemeDetails__link", schemeName)
-    )
+//    behave like pageWithSubmitButton(createView)
+//
+//    behave like yesNoPage(
+//      createView = createViewUsingForm,
+//      messageKeyPrefix = prefix,
+//      expectedFormAction = ConfirmRemovePsaController.onSubmit().url
+//    )
+//
+//    behave like pageWithReturnLink(
+//      view = createView,
+//      url = PsaSchemeDashboardController.onPageLoad(srn).url,
+//      text = messages("messages__returnToSchemeDetails__link", schemeName)
+//    )
   }
 }
