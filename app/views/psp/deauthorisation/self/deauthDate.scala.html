@@ -42,28 +42,31 @@
 
     @formHelper(action = DeauthDateController.onSubmit, 'autoComplete -> "off", 'novalidate -> "novalidate") {
 
+
+
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
         }
 
-        <div class="form-group @if(form.hasErrors){form-group--error}">
 
-        @govukDateInput(DateInput(
-                id = "removal-date",
-                namePrefix = Some("removal-date"),
-                hint = Some(Hint(
-                    content = Text(messages("messages__common__date_hint"))
-                )),
-                fieldset = Some(Fieldset(
-                    legend = Some(Legend(
-                        content = Text(messages("messages__pspSelfDeauthDate__heading", schemeName)),
-                        classes = "govuk-fieldset__legend--l",
-                        isPageHeading = true
+            <h1 class="govuk-heading-l">@messages("messages__pspSelfDeauthDate__heading", schemeName)</h1>
+
+            @components.paragraph_text(messages("messages__pspSelfDeauthDate__lede", authorisationDate))
+
+            @govukDateInput(DateInput(
+                    id = "removal-date",
+                    namePrefix = Some("removal-date"),
+                    hint = Some(Hint(
+                        content = Text(messages("messages__common__date_hint"))
+                    )),
+                    fieldset = Some(Fieldset(
+                        legend = Some(Legend(
+                            content = Text(messages("messages__pspSelfDeauthDate__heading", schemeName)),
+                            classes = "govuk-visually-hidden",
+                            isPageHeading = true
+                    ))
                 ))
             ))
-        ))
-
-        </div>
 
         @govukButton(Button(
             content = Text(messages("site.save_and_continue"))
