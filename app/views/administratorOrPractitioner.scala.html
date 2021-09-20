@@ -16,41 +16,62 @@
 
 @import play.api.data.Form
 @import config.FrontendAppConfig
-@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import views.html._
 @import viewmodels.Message
 @import utils.ViewHelper.titleWithErrors
 @import models.AdministratorOrPractitioner
 
 @this(
-    main_template: main_template,
-    formHelper: FormWithCSRF
+    layout: templates.Layout,
+    govukRadios : GovukRadios,
+    formHelper: PlayFrontendFormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    govukButton : GovukButton
 )
 
 @(form: Form[_])(implicit request: Request[_], messages: Messages)
 
-@main_template(
-    title = titleWithErrors(form, messages("messages__administratorOrPractitioner__title"))
+@layout(
+    pageTitle = titleWithErrors(form, messages("messages__administratorOrPractitioner__title"))
 ){
 
     @formHelper(action = controllers.routes.AdministratorOrPractitionerController.onSubmit(), 'autoComplete -> "off") {
 
-        @components.back_link()
+    @if(form.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
+    }
 
-        @components.error_summary(form.errors)
+    @govukRadios(Radios(
+        fieldset = Some(Fieldset(
+        legend = Some(Legend(
+        content = Text(messages("messages__administratorOrPractitioner__heading")),
+        classes = "govuk-fieldset__legend--l",
+        isPageHeading = true
+        ))
+        )),
+        items = Seq(
+        RadioItem(
+            content = Text(messages("messages__administratorOrPractitioner__administrator")),
+            value = Some(messages("messages__administrator")),
+            hint = Some(Hint(
+            content = Text(messages("messages__administratorOrPractitioner__administrator_hint"))
+        ))),
+        RadioItem(
+            content = Text(messages("messages__administratorOrPractitioner__practitioner")),
+            value = Some(messages("messages__practitioner")),
+            hint = Some(Hint(
+            content = Text(messages("messages__administratorOrPractitioner__practitioner_hint"))
+            )))
+        )).withFormField(form("value"))
+    )
 
+    @govukButton(Button(
+        content = Text(messages("site.save_and_continue"))
+    ))
 
-        @components.input_radio(
-            field = form("value"),
-            legend = messages("messages__administratorOrPractitioner__heading"),
-            legendClass = Some("visually-hidden"),
-            inputs = AdministratorOrPractitioner.optionsAdministratorOrPractitioner,
-            labelClass = Some("form-label-bold"),
-            headingIsLegend=true
-        )
-
-        @components.submit_button("site.continue")
-
-        }
-
+    }
 }
