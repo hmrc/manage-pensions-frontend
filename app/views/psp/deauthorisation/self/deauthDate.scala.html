@@ -48,17 +48,6 @@
 
         <div class="form-group @if(form.hasErrors){form-group--error}">
 
-
-            @components.input_date(
-            field = form("pspDeauthDate"),
-            label = messages("messages__pspSelfDeauthDate__heading", schemeName),
-            labelClass = "visuallyhidden",
-            secondaryLabel = Some(messages("messages__pspSelfDeauthDate__lede", authorisationDate)),
-            hint = Some(messages("messages__common__date_hint")),
-            headingIsLegend = true
-            )
-
-
         @govukDateInput(DateInput(
                 id = "removal-date",
                 namePrefix = Some("removal-date"),
