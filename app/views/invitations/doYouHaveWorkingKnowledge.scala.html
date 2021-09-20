@@ -40,8 +40,6 @@
 
     @formHelper(action = controllers.invitations.routes.DoYouHaveWorkingKnowledgeController.onSubmit(mode), 'autoComplete -> "off") {
 
-        @components.back_link()
-
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
         }

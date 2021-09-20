@@ -52,8 +52,6 @@
 
     @formHelper(action = ConfirmDeauthorisePspController.onSubmit(index), 'autoComplete -> "off") {
 
-        @components.back_link()
-
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
         }
