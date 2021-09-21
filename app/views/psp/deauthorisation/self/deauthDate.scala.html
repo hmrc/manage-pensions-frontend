@@ -54,6 +54,11 @@
             @components.paragraph_text(messages("messages__pspSelfDeauthDate__lede", authorisationDate))
 
             @govukDateInput(DateInput(
+                    items = Seq(
+                        InputItem(id = "pspDeauthDate.day", name = "day", classes = "govuk-input--width-2"),
+                        InputItem(id = "pspDeauthDate.month", name = "month", classes = "govuk-input--width-2"),
+                        InputItem(id = "pspDeauthDate.year", name = "year", classes = "govuk-input--width-4")
+                    ),
                     id = "removal-date",
                     namePrefix = Some("removal-date"),
                     hint = Some(Hint(
