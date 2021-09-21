@@ -42,7 +42,7 @@
 
     @formHelper(action = DeauthDateController.onSubmit, 'autoComplete -> "off", 'novalidate -> "novalidate") {
         @if(form.errors.nonEmpty) {
-            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form, mapping = Map("pspDeauthDate" -> "pspDeauthDate.day")))
         }
 
         <h1 class="govuk-heading-l">@messages("messages__pspSelfDeauthDate__heading", schemeName)</h1>
