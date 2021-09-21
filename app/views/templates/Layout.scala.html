@@ -32,7 +32,7 @@
 
 @hmrcLayout(
 serviceName = Some(messages("site.service_name")),
-pageTitle = Some(pageTitle),
+pageTitle = Some(pageTitle + " - " + Messages("messages__manage_pension_schemes__title")),
 backLinkUrl = Some("javascript:history.back()"),
 isWelshTranslationAvailable = false, /* or false if your service has not been translated */
 serviceUrl = Some(routes.IndexController.onPageLoad.url),

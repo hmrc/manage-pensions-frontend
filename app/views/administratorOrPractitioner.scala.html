@@ -56,13 +56,13 @@
         items = Seq(
         RadioItem(
             content = Text(messages("messages__administratorOrPractitioner__administrator")),
-            value = Some(messages("messages__administrator")),
+            value = Some(AdministratorOrPractitioner.Administrator.toString),
             hint = Some(Hint(
             content = Text(messages("messages__administratorOrPractitioner__administrator_hint"))
         ))),
         RadioItem(
             content = Text(messages("messages__administratorOrPractitioner__practitioner")),
-            value = Some(messages("messages__practitioner")),
+            value = Some(AdministratorOrPractitioner.Practitioner.toString),
             hint = Some(Hint(
             content = Text(messages("messages__administratorOrPractitioner__practitioner_hint"))
             )))
