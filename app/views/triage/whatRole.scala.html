@@ -15,37 +15,64 @@
  *@
 
 @import config.FrontendAppConfig
-@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import controllers.triage.routes._
 @import models.{Mode}
 @import models.triage.WhatRole
 @import utils.ViewHelper.titleWithErrors
 
 @this(
-    main_template: main_template,
-    formHelper: FormWithCSRF
+    layout: templates.Layout,
+    govukRadios : GovukRadios,
+    formHelper: PlayFrontendFormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    govukButton : GovukButton
 )
 
 @(form: Form[_])(implicit request: Request[_], messages: Messages)
 
-@main_template(
-    title = titleWithErrors(form, messages("messages__whatRole__title"))) {
+@layout(
+    pageTitle = titleWithErrors(form, messages("messages__whatRole__title"))) {
 
     @formHelper(action = controllers.triage.routes.WhatRoleController.onSubmit(), 'autoComplete -> "off") {
 
-        @components.back_link()
+    @if(form.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
+    }
 
-        @components.error_summary(form.errors)
+    @govukRadios(Radios(
+        fieldset = Some(Fieldset(
+        legend = Some(Legend(
+        content = Text(messages("messages__whatRole__title")),
+        classes = "govuk-fieldset__legend--l",
+        isPageHeading = true
+        ))
+        )),
+        hint = Some(Hint(
+            content = Text(messages("messages__whatRole__p1"))
+        )),
+        items = Seq(
+            RadioItem(
+                content = Text(messages("messages__whatRole__PSA")),
+                value = Some(WhatRole.PSA.toString)
+            ),
+            RadioItem(
+                content = Text(messages("messages__whatRole__PSP")),
+                value = Some(WhatRole.PSP.toString)
+            ),
+            RadioItem(
+                content = Text(messages("messages__whatRole__opt3")),
+                value = Some(WhatRole.NotRegistered.toString)
+            )
+        )).withFormField(form("value"))
+    )
 
-        @components.input_radio(
-            field = form("value"),
-            legend = messages("messages__whatRole__title"),
-            legendClass = Some("visually-hidden"),
-            inputs = WhatRole.options,
-            headingIsLegend=true,
-            hint = Some(messages("messages__whatRole__p1"))
-        )
+    @govukButton(Button(
+        content = Text(messages("site.continue"))
+    ))
 
-        @components.submit_button("site.continue")
     }
 }
