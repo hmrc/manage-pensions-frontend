@@ -17,8 +17,10 @@
 package models.triage
 
 import models.WithName
+import play.api.i18n.Messages
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
+import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import utils.Enumerable
-import utils.InputOption
 
 sealed trait DoesPSAStartWithATwo
 
@@ -32,9 +34,11 @@ object DoesPSAStartWithATwo {
     Yes, No
   )
 
-  val options: Seq[InputOption] = values.map {
+  def options(implicit messages: Messages): Seq[RadioItem] = values.map {
     value =>
-      InputOption(value.toString, s"messages__doesPSAStartWithATwo__${value.toString}")
+      RadioItem(
+        content = Text(messages(s"messages__doesPSAStartWithATwo__${value.toString}")),
+        value=Some(value.toString))
   }
 
   implicit val enumerable: Enumerable[DoesPSAStartWithATwo] =

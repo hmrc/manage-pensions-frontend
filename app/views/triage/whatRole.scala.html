@@ -25,54 +25,44 @@
 @import utils.ViewHelper.titleWithErrors
 
 @this(
-    layout: templates.Layout,
-    govukRadios : GovukRadios,
-    formHelper: PlayFrontendFormWithCSRF,
-    govukErrorSummary: GovukErrorSummary,
-    govukButton : GovukButton
+layout: templates.Layout,
+govukRadios : GovukRadios,
+formHelper: PlayFrontendFormWithCSRF,
+govukErrorSummary: GovukErrorSummary,
+govukButton : GovukButton
 )
 
 @(form: Form[_])(implicit request: Request[_], messages: Messages)
 
 @layout(
-    pageTitle = titleWithErrors(form, messages("messages__whatRole__title"))) {
+pageTitle = titleWithErrors(form, messages("messages__whatRole__title"))) {
+@formHelper(action = controllers.triage.routes.WhatRoleController.onSubmit(), 'autoComplete -> "off") {
 
-    @formHelper(action = controllers.triage.routes.WhatRoleController.onSubmit(), 'autoComplete -> "off") {
+@if(form.errors.nonEmpty) {
+@govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
+}
 
-    @if(form.errors.nonEmpty) {
-        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
-    }
+@govukRadios(
+Radios(
+fieldset = Some(Fieldset(
+legend = Some(Legend(
+content = Text(messages("messages__whatRole__title")),
+classes = "govuk-fieldset__legend--l",
+isPageHeading = true
+))
+)),
+hint = Some(Hint(
+content = Text(messages("messages__whatRole__p1"))
+)),
+items = WhatRole.options,
+).withFormField(form("value"))
+)
 
-    @govukRadios(Radios(
-        fieldset = Some(Fieldset(
-        legend = Some(Legend(
-        content = Text(messages("messages__whatRole__title")),
-        classes = "govuk-fieldset__legend--l",
-        isPageHeading = true
-        ))
-        )),
-        hint = Some(Hint(
-            content = Text(messages("messages__whatRole__p1"))
-        )),
-        items = Seq(
-            RadioItem(
-                content = Text(messages("messages__whatRole__PSA")),
-                value = Some(WhatRole.PSA.toString)
-            ),
-            RadioItem(
-                content = Text(messages("messages__whatRole__PSP")),
-                value = Some(WhatRole.PSP.toString)
-            ),
-            RadioItem(
-                content = Text(messages("messages__whatRole__opt3")),
-                value = Some(WhatRole.NotRegistered.toString)
-            )
-        )).withFormField(form("value"))
-    )
+@govukButton(
+Button(
+content = Text(messages("site.continue"))
+)
+)
 
-    @govukButton(Button(
-        content = Text(messages("site.continue"))
-    ))
-
-    }
+}
 }
