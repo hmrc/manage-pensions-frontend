@@ -15,37 +15,55 @@
  *@
 
 @import config.FrontendAppConfig
-@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import controllers.triage.routes._
 @import models.{Mode}
 @import models.triage.WhatDoYouWantToDo
 @import utils.ViewHelper.titleWithErrors
 
 @this(
-    main_template: main_template,
-    formHelper: FormWithCSRF
+layout: templates.Layout,
+govukRadios : GovukRadios,
+formHelper: PlayFrontendFormWithCSRF,
+govukErrorSummary: GovukErrorSummary,
+govukButton : GovukButton
 )
 
 @(form: Form[_], role: String)(implicit request: Request[_], messages: Messages)
 
-@main_template(
-    title = titleWithErrors(form, messages("messages__whatDoYouWantToDo__title"))) {
+@layout(
+pageTitle = titleWithErrors(form, messages("messages__whatDoYouWantToDo__title"))) {
 
-    @formHelper(action = controllers.triage.routes.WhatDoYouWantToDoController.onSubmit(role), 'autoComplete -> "off") {
+@formHelper(action = controllers.triage.routes.WhatDoYouWantToDoController.onSubmit(role), 'autoComplete -> "off") {
 
-        @components.back_link()
+@if(form.errors.nonEmpty) {
+@govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
+}
 
-        @components.error_summary(form.errors)
 
-        @components.input_radio(
-            field = form("value"),
-            legend = messages("messages__whatDoYouWantToDo__title"),
-            legendClass = Some("visually-hidden"),
-            inputs = WhatDoYouWantToDo.options(role),
-            headingIsLegend=true,
-            hint = Some(messages("messages__whatDoYouWantToDo__hint"))
-        )
+@govukRadios(
+Radios(
+fieldset = Some(Fieldset(
+legend = Some(Legend(
+content = Text(messages("messages__whatDoYouWantToDo__title")),
+classes = "govuk-fieldset__legend--l",
+isPageHeading = true
+))
+)),
+hint = Some(Hint(
+content = Text(messages("messages__whatDoYouWantToDo__hint"))
+)),
+items = WhatDoYouWantToDo.options(role)
+).withFormField(form("value")
+))
 
-        @components.submit_button("site.continue")
-    }
+
+@govukButton(Button(
+content = Text(messages("site.continue"))
+))
+
+}
 }

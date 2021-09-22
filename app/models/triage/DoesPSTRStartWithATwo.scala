@@ -17,8 +17,11 @@
 package models.triage
 
 import models.WithName
+import play.api.i18n.Messages
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
+import uk.gov.hmrc.govukfrontend.views.viewmodels.hint.Hint
+import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import utils.Enumerable
-import utils.InputOption
 
 sealed trait DoesPSTRStartWithATwo
 
@@ -32,13 +35,16 @@ object DoesPSTRStartWithATwo {
     Yes, No
   )
 
-  def options(noHint: Option[String]): Seq[InputOption] = values.map {
+  def options(noHint: Option[String])(implicit messages: Messages): Seq[RadioItem] = values.map {
     value =>
-      val hintText: Set[String] = (value, noHint) match {
-        case (No, Some(hint)) => Set(hint)
-        case _ => Set.empty
+      val hintText: Option[Hint] = (value, noHint) match {
+        case (No, Some(hint)) => Some(Hint(content = Text(hint)))
+        case _ => None
       }
-      InputOption(value.toString, s"messages__doesPSTRStartWithATwo__${value.toString}", hint = hintText)
+      RadioItem(
+        content = Text(messages(s"messages__doesPSTRStartWithATwo__${value.toString}")),
+        value=Some(value.toString),
+        hint = hintText)
   }
 
   implicit val enumerable: Enumerable[DoesPSTRStartWithATwo] =

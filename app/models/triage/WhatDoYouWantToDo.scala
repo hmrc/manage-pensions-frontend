@@ -17,7 +17,10 @@
 package models.triage
 
 import models.WithName
-import utils.{Enumerable, InputOption}
+import play.api.i18n.Messages
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
+import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
+import utils.Enumerable
 
 import scala.language.implicitConversions
 
@@ -44,9 +47,12 @@ object WhatDoYouWantToDo {
       Seq(ManageExistingScheme, ChangePspDetails, DeauthYourself)
     }
 
-  def options(role: String): Seq[InputOption] = values(role).map {
+  def options(role: String)(implicit messages: Messages): Seq[RadioItem] = values(role).map {
     value =>
-      InputOption(value.toString, s"messages__whatDoYouWantToDo__${value.toString}")
+      RadioItem(
+        content = Text(messages(s"messages__whatDoYouWantToDo__${value.toString}")),
+        value = Some(value.toString)
+      )
   }
 
   implicit def enumerable(role: String): Enumerable[WhatDoYouWantToDo] =
