@@ -19,7 +19,7 @@
 @import models.Link
 
 @this(
-        layout: templates.Layout,
+        main_template: main_template,
         appConfig: FrontendAppConfig
 )
 
@@ -37,8 +37,9 @@
         messages: Messages
 )
 
-    @layout(
-        pageTitle = messages(title)
+    @main_template(
+        title = messages(title),
+        mainContentContainerClasses = Some("full-width")
     ) {
 
         @components.heading(name, secondaryHeaderKey = subHeading)
@@ -55,7 +56,7 @@
         </div>
 
         @returnLink.map { ret =>
-            <a id="@ret.id" class="govuk-link" href="@ret.url">@messages(ret.linkText)</a>
+            <a id="@ret.id" href="@ret.url">@messages(ret.linkText)</a>
         }
 
     }
