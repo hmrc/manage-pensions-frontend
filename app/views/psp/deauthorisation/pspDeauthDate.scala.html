@@ -21,10 +21,17 @@
 @import controllers.psa.routes._
 @import models.Mode
 @import utils.ViewHelper.titleWithErrors
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 
 @this(
-        main_template: main_template,
-        formHelper: FormWithCSRF
+    layout: templates.Layout,
+    govukDateInput : GovukDateInput,
+    formHelper: PlayFrontendFormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    govukButton : GovukButton
 )
 
 @(
@@ -40,31 +47,45 @@
         messages: Messages
 )
 
-@main_template(
-    title = titleWithErrors(form, messages("messages__pspDeauthDate__title"))
+@layout(
+    pageTitle = titleWithErrors(form, messages("messages__pspDeauthDate__title"))
 ) {
 
     @formHelper(action = PspDeauthDateController.onSubmit(index), 'autoComplete -> "off",'novalidate -> "novalidate") {
 
-        @components.back_link()
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form, mapping = Map("pspDeauthDate" -> "pspDeauthDate.day")))
+        }
 
-        @components.error_summary(form.errors)
 
-        <div class="form-group @if(form.hasErrors){form-group--error}">
-            @components.input_date(
-                field = form("pspDeauthDate"),
-                label = messages("messages__pspDeauthDate__heading", pspName, schemeName),
-                labelClass = "visuallyhidden",
-                secondaryLabel = Some(messages("messages__pspDeauthDate__lede", pspName, relationshipStartDate)),
-                hint = Some(messages("messages__common__date_hint")),
-                headingIsLegend = true
-            )
-        </div>
+        <h1 class="govuk-heading-l">@messages("messages__pspDeauthDate__heading", pspName, schemeName)</h1>
 
-        @components.submit_button()
+        @components.paragraph_text(messages("messages__pspDeauthDate__lede", pspName, relationshipStartDate))
 
-        <p>
-            <a id="return-link" href="@PsaSchemeDashboardController.onPageLoad(srn)">
+        @govukDateInput(
+            DateInput(
+                id = "removal-date",
+                hint = Some(Hint(content = Text(messages("messages__common__date_hint")))),
+                fieldset = Some(
+                    Fieldset(
+                        legend = Some(
+                            Legend(
+                                content = Text(messages("messages__pspDeauthDate__heading", pspName, schemeName)),
+                                classes = "govuk-visually-hidden",
+                                isPageHeading = true
+                            )
+                        )
+                    )
+                )
+            ).withFormField(form("pspDeauthDate"))
+        )
+
+        @govukButton(Button(
+            content = Text(messages("site.save_and_continue"))
+        ))
+
+        <p class="govuk-body">
+            <a id="return-link" class="govuk-link" href="@PsaSchemeDashboardController.onPageLoad(srn)">
                 @messages("messages__returnToSchemeDetails__link", schemeName)
             </a>
         </p>
