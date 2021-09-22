@@ -21,11 +21,16 @@ import models.triage.WhatDoYouWantToDo
 import models.Field
 import models.Invalid
 import models.Required
+import play.api.i18n.{Messages, MessagesApi}
+import play.api.test.FakeRequest
 
 class WhatDoYouWantToDoFormProviderSpec extends FormBehaviours {
 
+  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  implicit val messages: Messages = messagesApi.preferred(FakeRequest())
+
   val validData: Map[String, String] = Map(
-    "value" -> WhatDoYouWantToDo.options("PSA").head.value
+    "value" -> WhatDoYouWantToDo.options("PSA").head.value.get
   )
 
   val form = new WhatDoYouWantToDoFormProvider()("PSA")
@@ -40,6 +45,6 @@ class WhatDoYouWantToDoFormProviderSpec extends FormBehaviours {
         Required -> "messages__whatDoYouWantToDo__error__required",
         Invalid -> "error.invalid"
       ),
-      WhatDoYouWantToDo.options("PSA").map(_.value): _*)
+      WhatDoYouWantToDo.options("PSA").map(_.value.get): _*)
   }
 }
