@@ -46,7 +46,7 @@
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form, mapping = Map("removalDate" -> "removalDate.day")))
         }
 
-        <h1 class="govuk-heading-l">@messages("messages__removalDate__heading", psaName, schemeName)</h1>
+        <h1 class="govuk-heading-xl">@messages("messages__removalDate__heading", psaName, schemeName)</h1>
 
         @components.paragraph_text(messages("messages__removalDate__lede", psaName, associationDate))
 
