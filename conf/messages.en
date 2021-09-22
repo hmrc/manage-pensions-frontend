@@ -662,8 +662,6 @@ messages__contactHMRC__address2 = HM Revenue and Customs
 messages__contactHMRC__address3 = BX9 1GH
 messages__contactHMRC__address4 = United Kingdom
 
-messages__administrator = administrator
-messages__practitioner = practitioner
 messages__administratorOrPractitioner__title = Do you want to view pension schemes for which you are an administrator or a practitioner?
 messages__administratorOrPractitioner__heading = Do you want to view pension schemes for which you are an administrator or a practitioner?
 messages__administratorOrPractitioner__error__required = Select if you want an administrator or practitioner view

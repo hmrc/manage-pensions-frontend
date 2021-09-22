@@ -42,7 +42,7 @@
 
     @formHelper(action = DeauthDateController.onSubmit, 'autoComplete -> "off", 'novalidate -> "novalidate") {
         @if(form.errors.nonEmpty) {
-            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form, mapping = Map("pspDeauthDate" -> "pspDeauthDate.day")))
         }
 
         <h1 class="govuk-heading-l">@messages("messages__pspSelfDeauthDate__heading", schemeName)</h1>
@@ -71,8 +71,8 @@
             content = Text(messages("site.save_and_continue"))
         ))
 
-        <p>
-            <a id="return-link" class="govuk_link" href="@PspSchemeDashboardController.onPageLoad(srn)">
+        <p class="govuk-body">
+            <a id="return-link" class="govuk-link" href="@PspSchemeDashboardController.onPageLoad(srn)">
                 @messages("messages__returnToSchemeDetails__link", schemeName)
             </a>
         </p>

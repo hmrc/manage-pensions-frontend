@@ -70,8 +70,8 @@
                 content = Text(messages("site.save_and_continue"))
             ))
 
-        <p>
-            <a id="return-link" class="govuk_link" href="@PsaSchemeDashboardController.onPageLoad(srn)">
+        <p class="govuk-body">
+            <a id="return-link" class="govuk-link" href="@PsaSchemeDashboardController.onPageLoad(srn)">
                 @messages("messages__returnToSchemeDetails__link", schemeName)
             </a>
         </p>
