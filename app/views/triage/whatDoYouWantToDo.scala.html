@@ -29,7 +29,7 @@ layout: templates.Layout,
 govukRadios : GovukRadios,
 formHelper: PlayFrontendFormWithCSRF,
 govukErrorSummary: GovukErrorSummary,
-govukButton : GovukButton
+button: components.govuk_button
 )
 
 @(form: Form[_], role: String)(implicit request: Request[_], messages: Messages)
@@ -61,9 +61,7 @@ items = WhatDoYouWantToDo.options(role)
 ))
 
 
-@govukButton(Button(
-content = Text(messages("site.continue"))
-))
+@button(messages("site.continue"))
 
 }
 }

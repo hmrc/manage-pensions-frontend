@@ -27,7 +27,7 @@ layout: templates.Layout,
 govukRadios : GovukRadios,
 formHelper: PlayFrontendFormWithCSRF,
 govukErrorSummary: GovukErrorSummary,
-govukButton : GovukButton
+button: components.govuk_button
 )
 
 @(form: Form[_], postCall: Call, noRadioHint: Option[String] = None)(implicit request: Request[_], messages: Messages)
@@ -54,11 +54,7 @@ items = DoesPSTRStartWithATwo.options(noRadioHint),
 ).withFormField(form("value"))
 )
 
-@govukButton(
-Button(
-content = Text(messages("site.continue"))
-)
-)
+@button(messages("site.continue"))
 
 }
 }

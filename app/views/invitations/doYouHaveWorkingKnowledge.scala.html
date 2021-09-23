@@ -29,7 +29,7 @@
     govukRadios : GovukRadios,
     formHelper: PlayFrontendFormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
-    govukButton : GovukButton
+    button: components.govuk_button
 )
 
 @(form: Form[Boolean], mode: Mode)(implicit request: Request[_], messages: Messages)
@@ -75,9 +75,7 @@
         ).withFormField(form("value"))
         )
 
-        @govukButton(Button(
-            content = Text(messages("site.save_and_continue"))
-        ))
+        @button(messages("site.save_and_continue"))
 
     }
 

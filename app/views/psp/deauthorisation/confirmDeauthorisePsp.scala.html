@@ -31,7 +31,7 @@
         govukRadios : GovukRadios,
         formHelper: PlayFrontendFormWithCSRF,
         govukErrorSummary: GovukErrorSummary,
-        govukButton : GovukButton
+        button: components.govuk_button
 )
 
 @(
@@ -77,9 +77,7 @@
                 ).withFormField(form("value"))
                 )
 
-            @govukButton(Button(
-                content = Text(messages("site.save_and_continue"))
-            ))
+        @button(messages("site.save_and_continue"))
 
         <p class="govuk-body">
             <a id="return-link" class="govuk-link" href="@PsaSchemeDashboardController.onPageLoad(srn)">

@@ -31,7 +31,7 @@
     govukDateInput : GovukDateInput,
     formHelper: PlayFrontendFormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
-    govukButton : GovukButton
+    button: components.govuk_button
 )
 
 @(form: Form[_], psaName: String, schemeName: String, srn: String, associationDate: String)(implicit request: Request[_], messages: Messages)
@@ -68,9 +68,7 @@
             ).withFormField(form("removalDate"))
         )
 
-        @govukButton(Button(
-            content = Text(messages("site.save_and_continue"))
-        ))
+        @button(messages("site.save_and_continue"))
 
         <p class="govuk-body">
             <a id="return-link" class="govuk_link" href="@PsaSchemeDashboardController.onPageLoad(srn)">

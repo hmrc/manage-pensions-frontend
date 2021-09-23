@@ -28,7 +28,7 @@ layout: templates.Layout,
 govukRadios : GovukRadios,
 formHelper: PlayFrontendFormWithCSRF,
 govukErrorSummary: GovukErrorSummary,
-govukButton : GovukButton
+button: components.govuk_button
 )
 
 @(form: Form[_])(implicit request: Request[_], messages: Messages)
@@ -55,11 +55,7 @@ items = DoesPSAStartWithATwo.options,
 ).withFormField(form("value"))
 )
 
-@govukButton(
-Button(
-content = Text(messages("site.continue"))
-)
-)
+@button(messages("site.continue"))
 
 }
 }

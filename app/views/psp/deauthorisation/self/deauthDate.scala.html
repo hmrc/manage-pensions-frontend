@@ -31,7 +31,7 @@
     govukDateInput : GovukDateInput,
     formHelper: PlayFrontendFormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
-    govukButton : GovukButton
+    button: components.govuk_button
 )
 
 @(form: Form[_], schemeName: String, srn: String, authorisationDate: String)(implicit request: Request[_], messages: Messages)
@@ -67,9 +67,7 @@
             ).withFormField(form("pspDeauthDate"))
         )
 
-        @govukButton(Button(
-            content = Text(messages("site.save_and_continue"))
-        ))
+        @button(messages("site.save_and_continue"))
 
         <p class="govuk-body">
             <a id="return-link" class="govuk-link" href="@PspSchemeDashboardController.onPageLoad(srn)">
