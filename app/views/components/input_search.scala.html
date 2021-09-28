@@ -46,7 +46,7 @@
     }
 
     @hint.map{hintText=>
-        <span id= "hint-@{field.id}">@hintText</span>
+        <span id= "hint-@{field.id}" class="form-hint">@hintText</span>
     }
 
     @field.errors.map { error =>
