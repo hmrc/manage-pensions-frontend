@@ -23,7 +23,12 @@ case class Address(addressLine1: String,
                    addressLine3: Option[String],
                    addressLine4: Option[String],
                    postcode: Option[String],
-                   country: String)
+                   country: String){
+  def toTolerantAddress: TolerantAddress ={
+    TolerantAddress(Some(addressLine1),Some(addressLine2),addressLine3,addressLine4,postcode,Some(country))
+  }
+
+}
 
 object Address {
   implicit val formatsAddress: Format[Address] = Json.format[Address]
