@@ -23,38 +23,42 @@
 @import models.triage.DoesPSTRStartWithATwo
 
 @this(
-layout: templates.Layout,
-govukRadios : GovukRadios,
-formHelper: PlayFrontendFormWithCSRF,
-govukErrorSummary: GovukErrorSummary,
-button: components.govuk_button
+   layout: templates.Layout,
+   govukRadios : GovukRadios,
+   formHelper: PlayFrontendFormWithCSRF,
+   govukErrorSummary: GovukErrorSummary,
+   button: components.govuk_button
 )
 
 @(form: Form[_], postCall: Call, noRadioHint: Option[String] = None)(implicit request: Request[_], messages: Messages)
 
 @layout(
-pageTitle = titleWithErrors(form, messages("messages__doesPSTRStartWithTwo__title"))) {
+   pageTitle = titleWithErrors(form, messages("messages__doesPSTRStartWithTwo__title"))) {
 
-@formHelper(action = postCall, 'autoComplete -> "off") {
+   @formHelper(action = postCall, 'autoComplete -> "off") {
 
-@if(form.errors.nonEmpty) {
-@govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
-}
+      @if(form.errors.nonEmpty) {
+         @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
+      }
 
-@govukRadios(
-Radios(
-fieldset = Some(Fieldset(
-legend = Some(Legend(
-content = Text(messages("messages__doesPSTRStartWithTwo__title")),
-classes = "govuk-fieldset__legend--xl",
-isPageHeading = true
-))
-)),
-items = DoesPSTRStartWithATwo.options(noRadioHint),
-).withFormField(form("value"))
-)
+      @govukRadios(
+         Radios(
+            fieldset = Some(
+               Fieldset(
+                  legend = Some(
+                     Legend(
+                        content = Text(messages("messages__doesPSTRStartWithTwo__title")),
+                        classes = "govuk-fieldset__legend--xl",
+                        isPageHeading = true
+                     )
+                  )
+               )
+            ),
+            items = DoesPSTRStartWithATwo.options(noRadioHint),
+         ).withFormField(form("value"))
+      )
 
-@button(messages("site.continue"))
+      @button(messages("site.continue"))
 
-}
+   }
 }

@@ -45,28 +45,40 @@
         @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
     }
 
-    @govukRadios(Radios(
-        fieldset = Some(Fieldset(
-        legend = Some(Legend(
-        content = Text(messages("messages__administratorOrPractitioner__heading")),
-        classes = "govuk-fieldset__legend--xl",
-        isPageHeading = true
-        ))
-        )),
-        items = Seq(
-        RadioItem(
-            content = Text(messages("messages__administratorOrPractitioner__administrator")),
-            value = Some(AdministratorOrPractitioner.Administrator.toString),
-            hint = Some(Hint(
-            content = Text(messages("messages__administratorOrPractitioner__administrator_hint"))
-        ))),
-        RadioItem(
-            content = Text(messages("messages__administratorOrPractitioner__practitioner")),
-            value = Some(AdministratorOrPractitioner.Practitioner.toString),
-            hint = Some(Hint(
-            content = Text(messages("messages__administratorOrPractitioner__practitioner_hint"))
-            )))
-        )).withFormField(form("value"))
+    @govukRadios(
+        Radios(
+            fieldset = Some(
+                Fieldset(
+                    legend = Some(
+                        Legend(
+                            content = Text(messages("messages__administratorOrPractitioner__heading")),
+                            classes = "govuk-fieldset__legend--xl",
+                            isPageHeading = true
+                        )
+                    )
+                )
+            ),
+            items = Seq(
+                RadioItem(
+                    content = Text(messages("messages__administratorOrPractitioner__administrator")),
+                    value = Some(AdministratorOrPractitioner.Administrator.toString),
+                    hint = Some(
+                        Hint(
+                            content = Text(messages("messages__administratorOrPractitioner__administrator_hint"))
+                        )
+                    )
+                ),
+                RadioItem(
+                    content = Text(messages("messages__administratorOrPractitioner__practitioner")),
+                    value = Some(AdministratorOrPractitioner.Practitioner.toString),
+                    hint = Some(
+                        Hint(
+                            content = Text(messages("messages__administratorOrPractitioner__practitioner_hint"))
+                        )
+                    )
+                )
+            )
+        ).withFormField(form("value"))
     )
 
     @button(messages("site.continue"))

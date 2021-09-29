@@ -25,43 +25,48 @@
 @import utils.ViewHelper.titleWithErrors
 
 @this(
-layout: templates.Layout,
-govukRadios : GovukRadios,
-formHelper: PlayFrontendFormWithCSRF,
-govukErrorSummary: GovukErrorSummary,
-button: components.govuk_button
+   layout: templates.Layout,
+   govukRadios : GovukRadios,
+   formHelper: PlayFrontendFormWithCSRF,
+   govukErrorSummary: GovukErrorSummary,
+   button: components.govuk_button
 )
 
 @(form: Form[_], role: String)(implicit request: Request[_], messages: Messages)
 
 @layout(
-pageTitle = titleWithErrors(form, messages("messages__whatDoYouWantToDo__title"))) {
+   pageTitle = titleWithErrors(form, messages("messages__whatDoYouWantToDo__title"))) {
 
-@formHelper(action = controllers.triage.routes.WhatDoYouWantToDoController.onSubmit(role), 'autoComplete -> "off") {
+      @formHelper(action = controllers.triage.routes.WhatDoYouWantToDoController.onSubmit(role), 'autoComplete -> "off") {
 
-@if(form.errors.nonEmpty) {
-@govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
-}
+         @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
+         }
 
+         @govukRadios(
+            Radios(
+               fieldset = Some(
+                  Fieldset(
+                     legend = Some(
+                        Legend(
+                           content = Text(messages("messages__whatDoYouWantToDo__title")),
+                           classes = "govuk-fieldset__legend--xl",
+                           isPageHeading = true
+                        )
+                     )
+                  )
+               ),
+               hint = Some(
+                  Hint(
+                     content = Text(messages("messages__whatDoYouWantToDo__hint"))
+                  )
+               ),
+               items = WhatDoYouWantToDo.options(role)
+            ).withFormField(form("value")
+         )
+      )
 
-@govukRadios(
-Radios(
-fieldset = Some(Fieldset(
-legend = Some(Legend(
-content = Text(messages("messages__whatDoYouWantToDo__title")),
-classes = "govuk-fieldset__legend--xl",
-isPageHeading = true
-))
-)),
-hint = Some(Hint(
-content = Text(messages("messages__whatDoYouWantToDo__hint"))
-)),
-items = WhatDoYouWantToDo.options(role)
-).withFormField(form("value")
-))
+      @button(messages("site.continue"))
 
-
-@button(messages("site.continue"))
-
-}
+   }
 }

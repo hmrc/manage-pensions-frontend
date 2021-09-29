@@ -54,25 +54,30 @@
 
         @components.paragraph_text(messages("messages__doYouHaveWorkingKnowledge_p4"))
 
-        @govukRadios(Radios(
-            fieldset = Some(Fieldset(
-            legend = Some(Legend(
-            content = Text(messages("messages__doYouHaveWorkingKnowledge__heading")),
-            classes = "govuk-fieldset__legend--xl govuk-visually-hidden",
-            isPageHeading = true
-            ))
-            )),
-            items = Seq(
-            RadioItem(
-            content = Text(messages("site.yes")),
-            value = Some(messages("site.true"))
-            ),
-            RadioItem(
-            content = Text(messages("site.no")),
-            value = Some(messages("site.false"))
-            )
-            )
-        ).withFormField(form("value"))
+        @govukRadios(
+            Radios(
+                fieldset = Some(
+                    Fieldset(
+                        legend = Some(
+                            Legend(
+                                content = Text(messages("messages__doYouHaveWorkingKnowledge__heading")),
+                                classes = "govuk-fieldset__legend--xl govuk-visually-hidden",
+                                isPageHeading = true
+                            )
+                        )
+                    )
+                ),
+                items = Seq(
+                    RadioItem(
+                        content = Text(messages("site.yes")),
+                        value = Some("true")
+                    ),
+                    RadioItem(
+                        content = Text(messages("site.no")),
+                        value = Some("false")
+                    )
+                )
+            ).withFormField(form("value"))
         )
 
         @button(messages("site.save_and_continue"))

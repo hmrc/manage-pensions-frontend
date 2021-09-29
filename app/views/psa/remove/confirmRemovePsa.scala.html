@@ -45,28 +45,31 @@
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
         }
 
-            @govukRadios(Radios(
-                fieldset = Some(Fieldset(
-                legend = Some(Legend(
-                content = Text(messages("messages__confirmRemovePsa__heading", psaName, schemeName)),
-                classes = "govuk-fieldset__legend--xl",
-                isPageHeading = true
-                ))
-                )),
-                items = Seq(
-                RadioItem(
-                content = Text(messages("site.yes")),
-                value = Some(messages("site.true"))
-                ),
-                RadioItem(
-                content = Text(messages("site.no")),
-                value = Some(messages("site.false"))
+        @govukRadios(Radios(
+            fieldset = Some(
+                Fieldset(
+                    legend = Some(
+                        Legend(
+                            content = Text(messages("messages__confirmRemovePsa__heading", psaName, schemeName)),
+                            classes = "govuk-fieldset__legend--xl",
+                            isPageHeading = true
+                        )
+                    )
                 )
-                )
-            ).withFormField(form("value"))
+            ),
+            items = Seq(
+                 RadioItem(
+                     content = Text(messages("site.yes")),
+                     value = Some("true")
+                 ),
+                 RadioItem(
+                     content = Text(messages("site.no")),
+                     value = Some("false")
+                 )
             )
+        ).withFormField(form("value")))
 
-            @button(messages("site.save_and_continue"))
+        @button(messages("site.save_and_continue"))
 
         <p class="govuk-body">
             <a id="return-link" class="govuk-link" href="@PsaSchemeDashboardController.onPageLoad(srn)">
