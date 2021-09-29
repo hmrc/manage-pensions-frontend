@@ -21,10 +21,17 @@
 @import controllers.psp.routes._
 @import controllers.psa.routes._
 @import controllers.psp.deauthorise.routes._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 
 @this(
-        main_template: main_template,
-        formHelper: FormWithCSRF
+        layout: templates.Layout,
+        govukRadios : GovukRadios,
+        formHelper: PlayFrontendFormWithCSRF,
+        govukErrorSummary: GovukErrorSummary,
+        button: components.govuk_button
 )
 
 @(
@@ -39,35 +46,46 @@
         messages: Messages
 )
 
-@main_template(
-    title = titleWithErrors(form, messages("messages__confirmDeauthorisePsp__title"))
+@layout(
+        pageTitle = titleWithErrors(form, messages("messages__confirmDeauthorisePsp__title"))
 ) {
 
     @formHelper(action = ConfirmDeauthorisePspController.onSubmit(index), 'autoComplete -> "off") {
 
-        @components.back_link()
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
+        }
 
-        @components.error_summary(
-            errors = form.errors,
-            screenReaderAlternativeText = true
+        @govukRadios(
+            Radios(
+                fieldset = Some(
+                    Fieldset(
+                        legend = Some(
+                            Legend(
+                                 content = Text(messages("messages__confirmDeauthorisePsp__heading", pspName, schemeName)),
+                                 classes = "govuk-fieldset__legend--xl",
+                                 isPageHeading = true
+                            )
+                        )
+                    )
+                ),
+                items = Seq(
+                     RadioItem(
+                         content = Text(messages("site.yes")),
+                         value = Some("true")
+                     ),
+                     RadioItem(
+                         content = Text(messages("site.no")),
+                         value = Some("false")
+                     )
+                )
+            ).withFormField(form("value"))
         )
 
-        <div class="form-group @if(form.hasErrors){form-group--error}">
-            @components.input_yes_no(
-                field = form("value"),
-                label = messages("messages__confirmDeauthorisePsp__heading", pspName, schemeName),
-                labelClass = Some("visually-hidden"),
-                headingIsLegend = true,
-                screenReaderAlternativeLabelText =
-                        Some(messages("messages__confirmDeauthorisePsp__heading__screenReaderAlternativeText", pspName, schemeName)),
-                screenReaderAlternativeErrorText = true
-            )
-        </div>
+        @button(messages("site.save_and_continue"))
 
-        @components.submit_button()
-
-        <p>
-            <a id="return-link" href="@PsaSchemeDashboardController.onPageLoad(srn)">
+        <p class="govuk-body">
+            <a id="return-link" class="govuk-link" href="@PsaSchemeDashboardController.onPageLoad(srn)">
                 @messages("messages__returnToSchemeDetails__link", schemeName)
             </a>
         </p>

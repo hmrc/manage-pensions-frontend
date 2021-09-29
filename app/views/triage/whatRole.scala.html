@@ -15,37 +15,56 @@
  *@
 
 @import config.FrontendAppConfig
-@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import controllers.triage.routes._
 @import models.{Mode}
 @import models.triage.WhatRole
 @import utils.ViewHelper.titleWithErrors
 
 @this(
-    main_template: main_template,
-    formHelper: FormWithCSRF
+   layout: templates.Layout,
+   govukRadios : GovukRadios,
+   formHelper: PlayFrontendFormWithCSRF,
+   govukErrorSummary: GovukErrorSummary,
+   button: components.govuk_button
 )
 
 @(form: Form[_])(implicit request: Request[_], messages: Messages)
 
-@main_template(
-    title = titleWithErrors(form, messages("messages__whatRole__title"))) {
+@layout(
+   pageTitle = titleWithErrors(form, messages("messages__whatRole__title"))) {
+     @formHelper(action = controllers.triage.routes.WhatRoleController.onSubmit(), 'autoComplete -> "off") {
 
-    @formHelper(action = controllers.triage.routes.WhatRoleController.onSubmit(), 'autoComplete -> "off") {
+      @if(form.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
+      }
 
-        @components.back_link()
+      @govukRadios(
+         Radios(
+            fieldset = Some(
+               Fieldset(
+                  legend = Some(
+                     Legend(
+                        content = Text(messages("messages__whatRole__title")),
+                        classes = "govuk-fieldset__legend--xl",
+                        isPageHeading = true
+                     )
+                  )
+               )
+            ),
+            hint = Some(
+               Hint(
+                  content = Text(messages("messages__whatRole__p1"))
+               )
+            ),
+            items = WhatRole.options,
+         ).withFormField(form("value"))
+      )
 
-        @components.error_summary(form.errors)
+      @button(messages("site.continue"))
 
-        @components.input_radio(
-            field = form("value"),
-            legend = messages("messages__whatRole__title"),
-            legendClass = Some("visually-hidden"),
-            inputs = WhatRole.options,
-            headingIsLegend=true,
-            hint = Some(messages("messages__whatRole__p1"))
-        )
-
-        @components.submit_button("site.continue")
-    }
+   }
 }

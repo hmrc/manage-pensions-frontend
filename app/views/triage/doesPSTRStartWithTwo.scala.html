@@ -14,38 +14,51 @@
  * limitations under the License.
  *@
 
-@import views.html._
 @import play.api.mvc.Call
-@import views.html._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import utils.ViewHelper.titleWithErrors
 @import models.triage.DoesPSTRStartWithATwo
 
 @this(
-    main_template: main_template,
-    formHelper: FormWithCSRF
+   layout: templates.Layout,
+   govukRadios : GovukRadios,
+   formHelper: PlayFrontendFormWithCSRF,
+   govukErrorSummary: GovukErrorSummary,
+   button: components.govuk_button
 )
 
 @(form: Form[_], postCall: Call, noRadioHint: Option[String] = None)(implicit request: Request[_], messages: Messages)
 
-@main_template(
-    title = titleWithErrors(form, messages("messages__doesPSTRStartWithTwo__title"))
-) {
+@layout(
+   pageTitle = titleWithErrors(form, messages("messages__doesPSTRStartWithTwo__title"))) {
 
-    @formHelper(action = postCall, 'autoComplete -> "off") {
+   @formHelper(action = postCall, 'autoComplete -> "off") {
 
-        @components.back_link()
+      @if(form.errors.nonEmpty) {
+         @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
+      }
 
-        @components.error_summary(form.errors)
+      @govukRadios(
+         Radios(
+            fieldset = Some(
+               Fieldset(
+                  legend = Some(
+                     Legend(
+                        content = Text(messages("messages__doesPSTRStartWithTwo__title")),
+                        classes = "govuk-fieldset__legend--xl",
+                        isPageHeading = true
+                     )
+                  )
+               )
+            ),
+            items = DoesPSTRStartWithATwo.options(noRadioHint),
+         ).withFormField(form("value"))
+      )
 
-            @components.input_radio(
-                field = form("value"),
-                legend = messages("messages__doesPSTRStartWithTwo__title"),
-                legendClass = Some("visually-hidden"),
-                inputs = DoesPSTRStartWithATwo.options(noRadioHint),
-                headingIsLegend = true
-            )
+      @button(messages("site.continue"))
 
-
-            @components.submit_button("site.continue")
-    }
+   }
 }

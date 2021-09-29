@@ -34,7 +34,7 @@ class DoesPSTRStartWithTwoFormProviderSpec extends FormBehaviours with GuiceOneA
   implicit val messages: Messages = messagesApi.preferred(FakeRequest())
 
   val validData: Map[String, String] = Map(
-    "value" -> DoesPSTRStartWithATwo.options(hint).head.value
+    "value" -> DoesPSTRStartWithATwo.options(hint).head.value.get
   )
 
   private val requiredKey = messages("messages__doesPSTRStartWithTwo__error__required")
@@ -54,7 +54,7 @@ class DoesPSTRStartWithTwoFormProviderSpec extends FormBehaviours with GuiceOneA
         Required -> requiredKey,
         Invalid -> "error.invalid"
       ),
-      DoesPSTRStartWithATwo.options(hint).map(_.value): _*)
+      DoesPSTRStartWithATwo.options(hint).map(_.value.get): _*)
 
   }
 

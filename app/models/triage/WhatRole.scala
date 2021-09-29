@@ -17,8 +17,10 @@
 package models.triage
 
 import models.WithName
+import play.api.i18n.Messages
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
+import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import utils.Enumerable
-import utils.InputOption
 
 sealed trait WhatRole
 
@@ -39,9 +41,11 @@ object WhatRole {
 
   val values: Seq[WhatRole] = Seq(PSA, PSP, NotRegistered)
 
-  val options: Seq[InputOption] = values.map {
+  def options(implicit messages: Messages): Seq[RadioItem] = values.map {
     value =>
-      InputOption(value.toString, s"messages__whatRole__${value.toString}")
+      RadioItem(
+        content = Text(messages(s"messages__whatRole__${value.toString}")),
+        value=Some(value.toString))
   }
 
   implicit val enumerable: Enumerable[WhatRole] =

@@ -21,39 +21,56 @@
 @import models.Mode
 @import utils.ViewHelper.titleWithErrors
 @import controllers.psp.routes._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 
 @this(
-    main_template: main_template,
-    formHelper: FormWithCSRF
+    layout: templates.Layout,
+    govukDateInput : GovukDateInput,
+    formHelper: PlayFrontendFormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    button: components.govuk_button
 )
 
 @(form: Form[_], schemeName: String, srn: String, authorisationDate: String)(implicit request: Request[_], messages: Messages)
 
-@main_template(
-    title = titleWithErrors(form, messages("messages__pspSelfDeauthDate__title"))
+@layout(
+    pageTitle = titleWithErrors(form, messages("messages__pspSelfDeauthDate__title"))
 ) {
 
     @formHelper(action = DeauthDateController.onSubmit, 'autoComplete -> "off", 'novalidate -> "novalidate") {
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form, mapping = Map("pspDeauthDate" -> "pspDeauthDate.day")))
+        }
 
-        @components.back_link()
+        <h1 class="govuk-heading-xl">@messages("messages__pspSelfDeauthDate__heading", schemeName)</h1>
 
-        @components.error_summary(form.errors)
+        @components.paragraph_text(messages("messages__pspSelfDeauthDate__lede", authorisationDate))
 
-        <div class="form-group @if(form.hasErrors){form-group--error}">
-
-        @components.input_date(
-            field = form("pspDeauthDate"),
-            label = messages("messages__pspSelfDeauthDate__heading", schemeName),
-            labelClass = "visuallyhidden",
-            secondaryLabel = Some(messages("messages__pspSelfDeauthDate__lede", authorisationDate)),
-            hint = Some(messages("messages__common__date_hint")),
-            headingIsLegend = true
+        @govukDateInput(
+            DateInput(
+                id = "removal-date",
+                hint = Some(Hint(content = Text(messages("messages__common__date_hint")))),
+                fieldset = Some(
+                    Fieldset(
+                        legend = Some(
+                            Legend(
+                                content = Text(messages("messages__pspSelfDeauthDate__heading", schemeName)),
+                                classes = "govuk-visually-hidden",
+                                isPageHeading = true
+                            )
+                        )
+                    )
+                )
+            ).withFormField(form("pspDeauthDate"))
         )
-        </div>
-        @components.submit_button()
 
-        <p>
-            <a id="return-link" href="@PspSchemeDashboardController.onPageLoad(srn)">
+        @button(messages("site.save_and_continue"))
+
+        <p class="govuk-body">
+            <a id="return-link" class="govuk-link" href="@PspSchemeDashboardController.onPageLoad(srn)">
                 @messages("messages__returnToSchemeDetails__link", schemeName)
             </a>
         </p>

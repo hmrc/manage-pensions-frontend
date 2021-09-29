@@ -21,38 +21,60 @@
 @import models.Mode
 @import utils.ViewHelper.titleWithErrors
 @import controllers.psa.routes._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 
 @this(
-    main_template: main_template,
-    formHelper: FormWithCSRF
+    layout: templates.Layout,
+    govukDateInput : GovukDateInput,
+    formHelper: PlayFrontendFormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    button: components.govuk_button
 )
 
 @(form: Form[_], psaName: String, schemeName: String, srn: String, associationDate: String)(implicit request: Request[_], messages: Messages)
 
-@main_template(
-    title = titleWithErrors(form, messages("messages__removalDate__title"))
+@layout(
+    pageTitle = titleWithErrors(form, messages("messages__removalDate__title"))
 ) {
 
     @formHelper(action = PsaRemovalDateController.onSubmit, 'autoComplete -> "off",'novalidate -> "novalidate") {
 
-        @components.back_link()
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form, mapping = Map("removalDate" -> "removalDate.day")))
+        }
 
-        @components.error_summary(form.errors)
+        <h1 class="govuk-heading-xl">@messages("messages__removalDate__heading", psaName, schemeName)</h1>
 
-        <div class="form-group @if(form.hasErrors){form-group--error}">
+        @components.paragraph_text(messages("messages__removalDate__lede", psaName, associationDate))
 
-        @components.input_date(
-            field = form("removalDate"),
-            label = messages("messages__removalDate__heading", psaName, schemeName),
-            labelClass = "visuallyhidden",
-            secondaryLabel = Some(messages("messages__removalDate__lede", psaName, associationDate)),
-            hint = Some(messages("messages__common__date_hint")),
-            headingIsLegend = true
+        @govukDateInput(
+            DateInput(
+                id = "removal-date",
+                hint = Some(Hint(content = Text(messages("messages__common__date_hint")))),
+                fieldset = Some(
+                    Fieldset(
+                        legend = Some(
+                            Legend(
+                                content = Text(messages("messages__removalDate__heading", psaName, schemeName)),
+                                classes = "govuk-visually-hidden",
+                                isPageHeading = true
+                            )
+                        )
+                    )
+                )
+            ).withFormField(form("removalDate"))
         )
-        </div>
-        @components.submit_button()
 
-        <p><a id="return-link" href="@PsaSchemeDashboardController.onPageLoad(srn)">@messages("messages__returnToSchemeDetails__link", schemeName)</a></p>
+        @button(messages("site.save_and_continue"))
+
+        <p class="govuk-body">
+            <a id="return-link" class="govuk_link" href="@PsaSchemeDashboardController.onPageLoad(srn)">
+                @messages("messages__returnToSchemeDetails__link", schemeName)
+            </a>
+        </p>
 
     }
 }

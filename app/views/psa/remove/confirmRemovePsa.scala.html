@@ -15,7 +15,10 @@
  *@
 
 @import play.api.data.Form
-@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import views.html._
 @import viewmodels.Message
 @import utils.ViewHelper.titleWithErrors
@@ -23,34 +26,53 @@
 @import controllers.psa.remove.routes._
 
 @this(
-    main_template: main_template,
-    formHelper: FormWithCSRF
+    layout: templates.Layout,
+    govukRadios : GovukRadios,
+    formHelper: PlayFrontendFormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    button: components.govuk_button
 )
 
 @(form: Form[_], schemeName: String, srn: String, psaName: String)(implicit request: Request[_], messages: Messages)
 
-@main_template(
-    title = titleWithErrors(form, messages("messages__confirmRemovePsa__title"))
+@layout(
+    pageTitle = titleWithErrors(form, messages("messages__confirmRemovePsa__title"))
 ){
 
     @formHelper(action = ConfirmRemovePsaController.onSubmit(), 'autoComplete -> "off") {
 
-        @components.back_link()
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
+        }
 
-        @components.error_summary(form.errors)
-        <div class="form-group @if(form.hasErrors){form-group--error}">
-
-            @components.input_yes_no(
-                field = form("value"),
-                label = messages("messages__confirmRemovePsa__heading", psaName, schemeName),
-                labelClass = Some("visually-hidden"),
-                headingIsLegend = true
+        @govukRadios(Radios(
+            fieldset = Some(
+                Fieldset(
+                    legend = Some(
+                        Legend(
+                            content = Text(messages("messages__confirmRemovePsa__heading", psaName, schemeName)),
+                            classes = "govuk-fieldset__legend--xl",
+                            isPageHeading = true
+                        )
+                    )
+                )
+            ),
+            items = Seq(
+                 RadioItem(
+                     content = Text(messages("site.yes")),
+                     value = Some("true")
+                 ),
+                 RadioItem(
+                     content = Text(messages("site.no")),
+                     value = Some("false")
+                 )
             )
-        </div>
-        @components.submit_button()
+        ).withFormField(form("value")))
 
-        <p>
-            <a id="return-link" href="@PsaSchemeDashboardController.onPageLoad(srn)">
+        @button(messages("site.save_and_continue"))
+
+        <p class="govuk-body">
+            <a id="return-link" class="govuk-link" href="@PsaSchemeDashboardController.onPageLoad(srn)">
                 @messages("messages__returnToSchemeDetails__link", schemeName)
             </a>
         </p>

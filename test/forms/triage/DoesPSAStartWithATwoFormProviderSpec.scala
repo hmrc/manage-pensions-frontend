@@ -32,7 +32,7 @@ class DoesPSAStartWithATwoFormProviderSpec extends FormBehaviours with GuiceOneA
   implicit val messages: Messages = messagesApi.preferred(FakeRequest())
 
   val validData: Map[String, String] = Map(
-    "value" -> DoesPSAStartWithATwo.options.head.value
+    "value" -> DoesPSAStartWithATwo.options.head.value.get
   )
 
   val form = new DoesPSAStartWithATwoFormProvider()()
@@ -47,6 +47,6 @@ class DoesPSAStartWithATwoFormProviderSpec extends FormBehaviours with GuiceOneA
         Required -> messages("messages__doesPSAStartWithATwo__error__required"),
         Invalid -> "error.invalid"
       ),
-      DoesPSAStartWithATwo.options.map(_.value): _*)
+      DoesPSAStartWithATwo.options.map(_.value.get): _*)
   }
 }
