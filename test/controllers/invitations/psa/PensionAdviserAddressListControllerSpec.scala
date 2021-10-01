@@ -101,6 +101,31 @@ class PensionAdviserAddressListControllerSpec
       }
 
     }
+    "save the user answer on submission of valid data when address is incomplete and redirect to manualInput page" in {
+      //      running(_.overrides(
+      //        bind[CountryOptions].to[FakeCountryOptions],
+      //        bind[UserAnswersCacheConnector].to(FakeUserAnswersCacheConnector),
+      //        bind[Navigator].qualifiedWith(classOf[AcceptInvitation]).to(FakeNavigator),
+      //        bind[DataRetrievalAction].toInstance(dataRetrieval()),
+      //        bind[AuthAction].toInstance(FakeAuthAction)
+      //      )) {
+      //        app =>
+      //
+      //          val controller = app.injector.instanceOf[AdviserManualAddressController]
+      //          val result = controller.onSubmit(NormalMode, false)(FakeRequest().withFormUrlEncodedBody(
+      //            ("addressLine1", "value 1"),
+      //            ("postCode", "AB1 1AB"),
+      //            "country" -> "GB")
+      //          )
+      //
+      //          status(result) mustEqual SEE_OTHER
+      //          redirectLocation(result).get mustEqual FakeNavigator.desiredRoute.url
+      //          val address = TolerantAddress(Some("value 1"), None, None, None, Some("AB1 1AB"), Some("GB"))
+      //          FakeUserAnswersCacheConnector.verify(AdviserAddressListId, address)
+      //
+      //      }
+      //
+      //    }
 
     "save the user answer on submission of valid data" in {
 
