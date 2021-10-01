@@ -61,15 +61,16 @@ class PensionAdviserAddressListController @Inject()(
     implicit request =>
       AdviserAddressPostCodeLookupId.retrieve.right.map { addresses =>
         formProvider(addresses).bindFromRequest().fold(
-          formWithErrors =>
-            Future.successful(BadRequest(view(formWithErrors, addresses, mode))),
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, addresses, mode))),
           addressIndex => {
             val address = addresses(addressIndex).copy(countryOpt = Some("GB"))
             address.toAddress.map(_.toTolerantAddress) match {
-              case None => cacheConnector.save(request.externalId, AdviserAddressListId, address).map { json =>
+              case None =>
+                cacheConnector.save(request.externalId, AdviserAddressListId, address).map { json =>
                 Redirect(controllers.invitations.psa.routes.AdviserManualAddressController.onPageLoad(mode, false))
               }
-              case Some(t) => cacheConnector.save(request.externalId, AdviserAddressListId, t).map { json =>
+              case Some(t) =>
+                cacheConnector.save(request.externalId, AdviserAddressListId, t).map { json =>
                 Redirect(navigator.nextPage(AdviserAddressListId, NormalMode, UserAnswers(json)))
               }
 
