@@ -16,11 +16,11 @@
 
 package controllers.invitations.psa
 
-import connectors.{FakeUserAnswersCacheConnector, UserAnswersCacheConnector}
-import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
+import connectors.{UserAnswersCacheConnector, FakeUserAnswersCacheConnector}
+import controllers.actions.{DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction, AuthAction}
 import forms.invitations.psa.PensionAdviserAddressListFormProvider
-import identifiers.invitations.psa.{AdviserAddressId, AdviserAddressListId, AdviserAddressPostCodeLookupId}
-import models.{NormalMode, TolerantAddress}
+import identifiers.invitations.psa.{AdviserAddressPostCodeLookupId, AdviserAddressId, AdviserAddressListId}
+import models.{TolerantAddress, NormalMode}
 import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
 import play.api.Application
 import play.api.i18n.MessagesApi
@@ -29,7 +29,7 @@ import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import utils.annotations.AcceptInvitation
-import utils.{FakeNavigator, Navigator}
+import utils.{Navigator, FakeNavigator}
 import views.html.invitations.psa.pension_adviser_address_list
 
 class PensionAdviserAddressListControllerSpec
@@ -100,6 +100,46 @@ class PensionAdviserAddressListControllerSpec
         redirectLocation(result) shouldBe Some(onwardRoute.url)
       }
 
+    }
+
+    "save the user answer on submission of valid data when address is incomplete and redirect to manualInput page" in {
+      val addresses = Seq(
+        TolerantAddress(
+          Some("Address 1 Line 1"),
+          None,
+          None,
+          None,
+          Some("A1 1PC"),
+          Some("GB")
+        ),
+        TolerantAddress(
+          Some("Address 2 Line 1"),
+          Some("Address 2 Line 2"),
+          Some("Address 2 Line 3"),
+          Some("Address 2 Line 4"),
+          Some("123"),
+          Some("GB")
+        )
+      )
+      def dataRetrievalAction = new FakeDataRetrievalAction(Some(Json.obj(
+        AdviserAddressPostCodeLookupId.toString -> addresses
+      )))
+
+      val onwardRoute = controllers.routes.IndexController.onPageLoad()
+      running(_.overrides(
+        bind[Navigator].qualifiedWith(classOf[AcceptInvitation]).toInstance(new FakeNavigator(onwardRoute)),
+        bind[AuthAction].toInstance(FakeAuthAction),
+        bind[DataRetrievalAction].toInstance(dataRetrievalAction),
+        bind[UserAnswersCacheConnector].toInstance(FakeUserAnswersCacheConnector)
+      )) { app =>
+        val controller = app.injector.instanceOf[PensionAdviserAddressListController]
+
+        val result = controller.onSubmit(NormalMode)(FakeRequest().withFormUrlEncodedBody("value" -> "0"))
+
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result) shouldBe Some(
+          controllers.invitations.psa.routes.AdviserManualAddressController.onPageLoad(NormalMode, false).url)
+      }
     }
 
     "save the user answer on submission of valid data" in {

@@ -63,7 +63,7 @@ class AdviserManualAddressController @Inject()(
 
         val preparedForm = request.userAnswers.get(AdviserAddressId) map form.fill getOrElse {
           request.userAnswers.get(AdviserAddressListId) map { value =>
-            form.fill(value.toAddress)
+            form.fill(value.toPrepopAddress)
           } getOrElse form
         }
 
