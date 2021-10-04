@@ -20,7 +20,6 @@ import connectors.{FakeUserAnswersCacheConnector, UserAnswersCacheConnector}
 import controllers.ControllerSpecBase
 import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
 import forms.invitations.psa.AdviserManualAddressFormProvider
-import identifiers.invitations.psa.AdviserNameId
 import identifiers.invitations.psa.{AdviserAddressId, AdviserAddressListId, AdviserAddressPostCodeLookupId, AdviserNameId}
 import models.{Address, NormalMode, TolerantAddress}
 import org.scalatest.concurrent.ScalaFutures
@@ -68,7 +67,7 @@ class AdviserManualAddressControllerSpec
             val result = controller.onPageLoad(NormalMode, false)(FakeRequest())
 
             status(result) mustEqual OK
-            contentAsString(result) mustEqual viewAsString(Some(address), form())
+            contentAsString(result) mustEqual viewAsString(address, form())
 
         }
 
@@ -88,7 +87,7 @@ class AdviserManualAddressControllerSpec
             val result = controller.onPageLoad(NormalMode, true)(FakeRequest())
 
             status(result) mustEqual OK
-            contentAsString(result) mustEqual viewAsString(Some(address), form().fill(address), true, "adviser__address__confirm")
+            contentAsString(result) mustEqual viewAsString(address, form().fill(address), true, "adviser__address__confirm")
 
         }
       }
@@ -108,7 +107,7 @@ class AdviserManualAddressControllerSpec
             val result = controller.onPageLoad(NormalMode, true)(FakeRequest())
 
             status(result) mustEqual OK
-            contentAsString(result) mustEqual viewAsString(Some(address), form().fill(tolerantAddress.toAddress), true, "adviser__address__confirm")
+            contentAsString(result) mustEqual viewAsString(address, form().fill(address), true, "adviser__address__confirm")
 
         }
 
@@ -164,7 +163,6 @@ class AdviserManualAddressControllerSpec
           val result = controller.onSubmit(NormalMode, false)(FakeRequest().withFormUrlEncodedBody())
 
           status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual viewAsString(None, form().bind(Map.empty[String, String]))
       }
 
     }
@@ -176,7 +174,12 @@ class AdviserManualAddressControllerSpec
 object AdviserManualAddressControllerSpec extends ControllerSpecBase {
 
   val name = "Pension Adviser"
-
+  private val incompleteAddresses = TolerantAddress(
+      Some("Address 1 Line 1"),
+      None, None, None,
+      Some("A1 1PC"),
+      Some("GB")
+    )
   val tolerantAddress = TolerantAddress(
     Some("address line 1"),
     Some("address line 2"),
@@ -186,7 +189,7 @@ object AdviserManualAddressControllerSpec extends ControllerSpecBase {
     Some("GB")
   )
 
-  val address = tolerantAddress.toAddress
+  val address = tolerantAddress.toAddress.get
 
   val addressData: Map[String, String] = Map(
     "addressLine1" -> "address line 1",
@@ -196,13 +199,22 @@ object AdviserManualAddressControllerSpec extends ControllerSpecBase {
     "postCode" -> "AB1 1AP",
     "country" -> "GB"
   )
-
+  private val fixableAddress = Seq(
+    TolerantAddress(
+      Some("Address 2 Line 1"),
+      None,
+      None,
+      Some("Address 2 Line 4"),
+      Some("123"),
+      Some("GB")
+    )
+  )
   val messageKeyPrefix = "adviser__address"
 
   private val countryOptions = FakeCountryOptions.fakeCountries
   private val view = injector.instanceOf[adviserAddress]
 
-  def viewAsString(value: Option[Address], form: Form[Address], prepopulated: Boolean = false, prefix: String = messageKeyPrefix)
+  def viewAsString(value: Address, form: Form[Address], prepopulated: Boolean = false, prefix: String = messageKeyPrefix)
                   (implicit app: Application): String = {
 
     val messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
