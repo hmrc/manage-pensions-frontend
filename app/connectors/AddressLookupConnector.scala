@@ -21,7 +21,7 @@ import config.FrontendAppConfig
 import models.TolerantAddress
 import play.api.Logger
 import play.api.http.Status._
-import play.api.libs.json.Reads
+import play.api.libs.json.{JsObject, Json, Reads}
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HttpClient, _}
 
@@ -36,12 +36,13 @@ class AddressLookupConnectorImpl @Inject()(http: HttpClient, config: FrontendApp
                                       (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Seq[TolerantAddress]] = {
     val schemeHc = hc.withExtraHeaders("X-Hmrc-Origin" -> "PODS")
 
-    val addressLookupUrl = s"${config.addressLookUp}/v2/uk/addresses?postcode=$postCode"
+    val addressLookupUrl = s"${config.addressLookUp}/lookup"
 
     implicit val reads: Reads[Seq[TolerantAddress]] = TolerantAddress.postCodeLookupReads
-
-    http.GET[HttpResponse](addressLookupUrl)(implicitly, schemeHc, implicitly) flatMap {
-      case response if response.status equals OK => Future.successful {
+    val lookupAddressByPostcode =Json.obj("postcode"->postCode)
+    http.POST[JsObject , HttpResponse](addressLookupUrl , lookupAddressByPostcode)(implicitly , implicitly, schemeHc, implicitly) flatMap {
+      case response if response.status equals OK =>
+        Future.successful {
         response.json.as[Seq[TolerantAddress]]
           .filterNot(a => a.addressLine1.isEmpty && a.addressLine2.isEmpty && a.addressLine3.isEmpty && a.addressLine4.isEmpty)
       }
