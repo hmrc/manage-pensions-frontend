@@ -23,7 +23,7 @@
 
 @this(hmrcLayout: HmrcLayout, standardBetaBanner: StandardBetaBanner, hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper, appConfig: FrontendAppConfig)
 
-@(pageTitle: String)(contentBlock: Html)(implicit request: RequestHeader, messages: Messages)
+@(pageTitle: String,backLinkUrl:Option[String]=Some("javascript:history.back()"))(contentBlock: Html)(implicit request: RequestHeader, messages: Messages)
 
 @content = {
 @contentBlock
@@ -33,7 +33,7 @@
 @hmrcLayout(
 serviceName = Some(messages("site.service_name")),
 pageTitle = Some(pageTitle + " - " + Messages("messages__manage_pension_schemes__title")),
-backLinkUrl = Some("javascript:history.back()"),
+backLinkUrl = backLinkUrl,
 isWelshTranslationAvailable = false, /* or false if your service has not been translated */
 serviceUrl = Some(routes.IndexController.onPageLoad.url),
 signOutUrl = Some(routes.LogoutController.onPageLoad.url),

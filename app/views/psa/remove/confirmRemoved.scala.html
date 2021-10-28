@@ -14,22 +14,24 @@
  * limitations under the License.
  *@
 
-@this(
-    main_template: main_template
-)
+@import uk.gov.hmrc.govukfrontend.views.html.components._
 
+@this(
+layout: templates.Layout,
+govukPanel : GovukPanel
+)
 @(psaName: String, schemeName: String)(implicit request: Request[_], messages: Messages)
 
-@main_template(
-    title = messages("messages__confirmRemoved__title"),
-
-    bodyClasses = None
+@layout(
+    pageTitle = messages("messages__confirmRemoved__title"),
+    backLinkUrl = None
 ) {
-
-    <div class="govuk-box-highlight">
-        @components.heading(Messages("messages__confirmRemoved__heading", psaName, schemeName))
-    </div>
-
-    <a id="return-link" href="@controllers.psa.routes.ListSchemesController.onPageLoad().url">@messages("messages__confirmRemoved__return_link")</a>
+    @govukPanel(Panel(
+    title = Text(messages("messages__confirmRemoved__heading", psaName, schemeName)),
+    content = HtmlContent("")
+    ))
+    <p class="govuk-body">
+        <a id="return-link" href="@controllers.psa.routes.ListSchemesController.onPageLoad().url">@messages("messages__confirmRemoved__return_link")</a>
+    </p>
 
 }
