@@ -70,7 +70,7 @@ class PspConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig)
       response =>
         response.status match {
           case OK => ()
-          case FORBIDDEN if response.body.contains("ACTIVE_RELATIONSHIP_EXISTS") => throw new ActiveRelationshipExistsException
+          case BAD_REQUEST if response.body.contains("ACTIVE_RELATIONSHIP_EXISTS") => throw new ActiveRelationshipExistsException
           case _ => handleErrorResponse("POST", config.authorisePspUrl)(response)
         }
     } andThen {
