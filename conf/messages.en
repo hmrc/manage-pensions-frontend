@@ -525,6 +525,7 @@ messages__pspViewOrDeauthorise__link = View or de-authorise a pension scheme pra
 
 messages__pspId__title = What is their practitioner ID?
 messages__pspId__heading = What is the practitioner ID for {0}?
+messages__pspId__hint = This is an 8-digit number, for example 01234567
 
 messages__error__pspId__required = Enter the practitioner ID
 messages__error__pspId__nonNumeric = Practitioner ID must only include numbers
