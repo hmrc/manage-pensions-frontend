@@ -56,7 +56,7 @@ class PspConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper w
         .withRequestBody(equalToJson(Json.stringify(Json.toJson(pspAuthJson))))
         .willReturn(
           aResponse()
-            .withStatus(FORBIDDEN)
+            .withStatus(BAD_REQUEST)
             .withBody(Json.stringify(activeRelationshipJson))
         )
     )
