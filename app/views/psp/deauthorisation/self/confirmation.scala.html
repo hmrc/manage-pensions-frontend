@@ -57,15 +57,15 @@
         content = HtmlContent("")
     ))
 
-    <p>
+    <p class="govuk-body">
         @Html(messages("messages__pspDeauthConfirmation__p1", email.toString))
     </p>
 
-    <h2>
+    <h2 class="govuk-heading-m">
         @messages("messages__pspDeauthConfirmation__h2")
     </h2>
 
-    <p>@Html(p2Text.toString)</p>
+    <p class="govuk-body">@Html(p2Text.toString)</p>
 
     <p class="govuk-body">
         <a id="return-link" class="govuk-link" href="@PspDashboardController.onPageLoad().url">

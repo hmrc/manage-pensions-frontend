@@ -27,8 +27,8 @@ govukPanel : GovukPanel
     backLinkUrl = None
 ) {
     @govukPanel(Panel(
-    title = Text(messages("messages__confirmRemoved__heading", psaName, schemeName)),
-    content = HtmlContent("")
+        title = Text(messages("messages__confirmRemoved__heading", psaName, schemeName)),
+        content = HtmlContent("")
     ))
     <p class="govuk-body">
         <a id="return-link" href="@controllers.psa.routes.ListSchemesController.onPageLoad().url">@messages("messages__confirmRemoved__return_link")</a>
