@@ -15,9 +15,13 @@
  *@
 
 @import controllers.psp.routes._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 
 @this(
-    main_template: main_template
+    layout: templates.Layout,
+    govukPanel : GovukPanel
 )
 
 @(schemeName: String, authorisingPsa: String, emailAddress: String)(implicit request: Request[_],messages: Messages)
@@ -44,14 +48,14 @@
     </span>
 }
 
-@main_template(
-    title = messages("messages__pspDeauthConfirmation__title"),
-    bodyClasses = None
+@layout(
+    pageTitle = messages("messages__pspDeauthConfirmation__title")
 ) {
 
-    <div class="govuk-box-highlight">
-        @components.heading(headingText.toString)
-    </div>
+    @govukPanel(Panel(
+        title = Text(messages(messages("messages__pspDeauthConfirmation__heading", schemeName))),
+        content = HtmlContent("")
+    ))
 
     <p>
         @Html(messages("messages__pspDeauthConfirmation__p1", email.toString))
@@ -63,8 +67,10 @@
 
     <p>@Html(p2Text.toString)</p>
 
-    <a id="return-link" href="@PspDashboardController.onPageLoad().url">
-        @messages("site.return_to_psp_overview")
-    </a>
+    <p class="govuk-body">
+        <a id="return-link" class="govuk-link" href="@PspDashboardController.onPageLoad().url">
+            @messages("site.return_to_psp_overview")
+        </a>
+    </p>
 
 }

@@ -20,15 +20,15 @@ import com.google.inject.Inject
 import connectors.UserAnswersCacheConnector
 import connectors.admin.MinimalConnector
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
-import identifiers.{AuthorisedPractitionerId, SchemeNameId}
+import controllers.actions.{DataRetrievalAction, DataRequiredAction, AuthAction}
+import identifiers.{SchemeNameId, AuthorisedPractitionerId}
 import models.AuthEntity.PSP
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.{MessagesApi, I18nSupport}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.psp.deauthorisation.self.confirmation
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class ConfirmationController @Inject()(override val messagesApi: MessagesApi,
                                        auth: AuthAction,
@@ -49,9 +49,9 @@ class ConfirmationController @Inject()(override val messagesApi: MessagesApi,
       (SchemeNameId and AuthorisedPractitionerId).retrieve.right.map {
         case schemeName ~ psp =>
           minimalConnector.getMinimalPspDetails(request.pspIdOrException.id) flatMap { pspDetails =>
-            userAnswersCacheConnector.removeAll(request.externalId) map { _ =>
-              Ok(view(schemeName, psp.authorisingPSA.name, pspDetails.email))
-            }
+           // userAnswersCacheConnector.removeAll(request.externalId) map { _ =>
+             Future.successful(Ok(view(schemeName, psp.authorisingPSA.name, pspDetails.email)))
+           // }
           }
       }
   }

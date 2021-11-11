@@ -20,26 +20,30 @@
 @import controllers.psp.deauthorise.self.routes._
 @import utils.ViewHelper.titleWithErrors
 @import controllers.psp.routes._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 
 @this(
-    main_template: main_template,
-    formHelper: FormWithCSRF
+    layout: templates.Layout,
+    formHelper: PlayFrontendFormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    button: components.govuk_button
 )
 
 @(form: Form[Boolean], schemeName: String, srn: String)(implicit request: Request[_], messages: Messages)
 
-@main_template(
-    title = titleWithErrors(form, messages("messages__deauthPspDeclaration__title")),
-    bodyClasses = None
+@layout(
+    pageTitle = titleWithErrors(form, messages("messages__deauthPspDeclaration__title"))
 ) {
 
-    @components.back_link()
+    @formHelper(action = DeclarationController.onSubmit(), 'autoComplete -> "off", 'novalidate -> "novalidate") {
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
+        }
 
-    @components.error_summary(form.errors)
-
-    @components.heading(Message("messages__deauthPspDeclaration__title"))
-
-    @formHelper(action = DeclarationController.onSubmit(), 'autoComplete -> "off") {
+        <h1 class="govuk-heading-xl">@messages("messages__deauthPspDeclaration__title")</h1>
 
         <p id="para_id">
             <span aria-hidden="true">
@@ -61,7 +65,7 @@
             </div>
         }
 
-        @components.submit_button("site.save_and_continue")
+        @button(messages("site.save_and_continue"))
 
         <p>
             <a id="return-link" href="@PspSchemeDashboardController.onPageLoad(srn)">
