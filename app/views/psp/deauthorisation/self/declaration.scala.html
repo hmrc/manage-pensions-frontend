@@ -45,11 +45,11 @@
 
         <h1 class="govuk-heading-xl">@messages("messages__deauthPspDeclaration__title")</h1>
 
-        <p id="para_id">
+        <p id="para_id" class="govuk-body">
             <span aria-hidden="true">
                 @messages("messages__deauthPspDeclaration__p_self")
             </span>
-            <span class="visually-hidden">
+            <span class="govuk-visually-hidden">
                 @messages("messages__deauthPspDeclaration__p_self__screenReaderAlternative")
             </span>
         </p>
@@ -67,7 +67,7 @@
 
         @button(messages("site.save_and_continue"))
 
-        <p>
+        <p class="govuk-body">
             <a id="return-link" href="@PspSchemeDashboardController.onPageLoad(srn)">
                 @messages("messages__returnToSchemeDetails__link", schemeName)
             </a>
