@@ -24,12 +24,14 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
 
 @this(
     layout: templates.Layout,
     formHelper: PlayFrontendFormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
-    button: components.govuk_button
+    button: components.govuk_button,
+    govukCheckboxes : GovukCheckboxes
 )
 
 @(form: Form[Boolean], schemeName: String, srn: String)(implicit request: Request[_], messages: Messages)
@@ -54,16 +56,20 @@
             </span>
         </p>
 
-        @components.fieldSet(
-            field = form("value"),
-            legend = messages("messages__deauthPspDeclaration__title"),
-            hiddenLegend = true
-        ) {
-            <div class="multiple-choice">
-                <input id="declaration" name="value" type="checkbox" value="true">
-                <label for="declaration">@messages("messages__deauthPspDeclaration__label")</label>
-            </div>
-        }
+        @govukCheckboxes(Checkboxes(
+            fieldset = Some(Fieldset(
+              legend = None
+            )),
+            idPrefix = Some("declaration"),
+            name = "declaration",
+            items = Seq(
+              CheckboxItem(
+                content = Text(messages("messages__deauthPspDeclaration__label")),
+                value = "true"
+              )
+            )
+          ))
+
 
         @button(messages("site.save_and_continue"))
 
