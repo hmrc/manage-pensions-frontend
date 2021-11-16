@@ -24,14 +24,13 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
-@import uk.gov.hmrc.govukfrontend.views.html.components._
 
 @this(
     layout: templates.Layout,
     formHelper: PlayFrontendFormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
-    button: components.govuk_button,
-    govukCheckboxes : GovukCheckboxes
+    govukCheckboxes : GovukCheckboxes,
+    button: components.govuk_button
 )
 
 @(form: Form[Boolean], schemeName: String, srn: String)(implicit request: Request[_], messages: Messages)
@@ -41,9 +40,9 @@
 ) {
 
     @formHelper(action = DeclarationController.onSubmit(), 'autoComplete -> "off", 'novalidate -> "novalidate") {
-        @if(form.errors.nonEmpty) {
-            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
-        }
+    @if(form.errors.nonEmpty) {
+    @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form, mapping = Map("declaration" -> "declaration")))
+    }
 
         <h1 class="govuk-heading-xl">@messages("messages__deauthPspDeclaration__title")</h1>
 
@@ -56,27 +55,31 @@
             </span>
         </p>
 
-        @govukCheckboxes(Checkboxes(
-            fieldset = Some(Fieldset(
-              legend = None
-            )),
-            idPrefix = Some("declaration"),
-            name = "value",
-            items = Seq(
-              CheckboxItem(
-                content = Text(messages("messages__deauthPspDeclaration__label")),
-                value = "true"
-              )
-            )
-          ))
+    @govukCheckboxes(Checkboxes(
+        fieldset = Some(Fieldset(
+        legend = Some(Legend(
+        content = Text(messages("messages__deauthPspDeclaration__title")),
+        classes = "govuk-visually-hidden",
+        isPageHeading = false
+        ))
+        )),
+        idPrefix = Some("declaration"),
+        name = "declaration",
+        items = Seq(
+        CheckboxItem(
+        content = Text(messages("messages__deauthPspDeclaration__label")),
+        value ="true"
+        )
+        )
+        ).withFormField(form("declaration")
+        )
+        )
+    @button(messages("site.save_and_continue"))
 
-
-        @button(messages("site.save_and_continue"))
-
-        <p class="govuk-body">
-            <a id="return-link" href="@PspSchemeDashboardController.onPageLoad(srn)">
-                @messages("messages__returnToSchemeDetails__link", schemeName)
-            </a>
-        </p>
-    }
+<p class="govuk-body">
+    <a id="return-link" class="govuk-link" href="@PspSchemeDashboardController.onPageLoad(srn)">
+        @messages("messages__returnToSchemeDetails__link", schemeName)
+    </a>
+</p>
+}
 }
