@@ -248,11 +248,11 @@ object PsaDeauthPspDeclarationControllerSpec {
 
   val postRequest: FakeRequest[AnyContentAsJson] =
     FakeRequest().withJsonBody(Json.obj(
-      "value" -> "true"
+      "declaration" -> "true"
     ))
 
   val emptyPostRequest: FakeRequest[AnyContentAsJson] =
     FakeRequest().withJsonBody(Json.obj(
-      "value" -> ""
+      "declaration" -> ""
     ))
 }
