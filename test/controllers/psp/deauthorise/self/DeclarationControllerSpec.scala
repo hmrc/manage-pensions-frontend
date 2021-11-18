@@ -126,7 +126,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
         val emailAuditEventCaptor = ArgumentCaptor.forClass(classOf[PSPSelfDeauthorisationEmailAuditEvent])
         doNothing().when(mockAuditService).sendEvent(emailAuditEventCaptor.capture())(any(), any())
 
-        val postRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.obj("value" -> true))
+        val postRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.obj("declaration" -> true))
         val result = controller().onSubmit()(postRequest)
 
         status(result) mustBe SEE_OTHER
@@ -154,7 +154,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
         when(mockMinimalConnector.getMinimalPspDetails(any())(any(), any()))
           .thenReturn(Future.successful(minPspIndividual))
         when(mockEmailConnector.sendEmail(any())(any(), any())).thenReturn(Future.successful(EmailSent))
-        val postRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.obj("value" -> true))
+        val postRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.obj("declaration" -> true))
         val result = controller().onSubmit()(postRequest)
 
         val emailAuditEventCaptor = ArgumentCaptor.forClass(classOf[PSPSelfDeauthorisationEmailAuditEvent])

@@ -22,7 +22,7 @@ import play.api.data.Form
 class DeauthorisePspDeclarationFormProviderSpec extends CheckboxBehaviour {
 
   private val form: Form[Boolean] = new DeauthorisePspDeclarationFormProvider()()
-  private val fieldName = "value"
+  private val fieldName = "declaration"
   private val trueValue = "true"
   private val invalidKey = "messages__deauthPspDeclaration__required"
 

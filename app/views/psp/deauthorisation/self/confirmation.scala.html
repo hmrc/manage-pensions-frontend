@@ -15,9 +15,13 @@
  *@
 
 @import controllers.psp.routes._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 
 @this(
-    main_template: main_template
+    layout: templates.Layout,
+    govukPanel : GovukPanel
 )
 
 @(schemeName: String, authorisingPsa: String, emailAddress: String)(implicit request: Request[_],messages: Messages)
@@ -26,45 +30,44 @@
     <span class="bold">@emailAddress</span>
 }
 
-@headingText = {
-    <span aria-hidden="true">
-        @messages("messages__pspDeauthConfirmation__heading", schemeName)
-    </span>
-    <span class="visually-hidden">
-        @messages("messages__pspDeauthConfirmation__heading__screenReaderAlternative", schemeName)
-    </span>
-}
-
 @p2Text = {
     <span aria-hidden="true">
         @messages("messages__pspDeauthConfirmation__p2", authorisingPsa, schemeName)
     </span>
-    <span class="visually-hidden">
+    <span class="govuk-visually-hidden">
         @messages("messages__pspDeauthConfirmation__p2__screenReaderAlternative", authorisingPsa, schemeName)
     </span>
 }
 
-@main_template(
-    title = messages("messages__pspDeauthConfirmation__title"),
-    bodyClasses = None
+@layout(
+    pageTitle = messages("messages__pspDeauthConfirmation__title")
 ) {
 
-    <div class="govuk-box-highlight">
-        @components.heading(headingText.toString)
-    </div>
+    <span aria-hidden="true">
+        @govukPanel(Panel(
+            title = Text(messages(messages("messages__pspDeauthConfirmation__heading", schemeName))),
+            content = HtmlContent("")
+        ))
+    </span>
 
-    <p>
+    <span class="govuk-visually-hidden">
+        @messages("messages__pspDeauthConfirmation__heading__screenReaderAlternative", schemeName)
+    </span>
+
+    <p class="govuk-body">
         @Html(messages("messages__pspDeauthConfirmation__p1", email.toString))
     </p>
 
-    <h2>
+    <h2 class="govuk-heading-m">
         @messages("messages__pspDeauthConfirmation__h2")
     </h2>
 
-    <p>@Html(p2Text.toString)</p>
+    <p class="govuk-body">@Html(p2Text.toString)</p>
 
-    <a id="return-link" href="@PspDashboardController.onPageLoad().url">
-        @messages("site.return_to_psp_overview")
-    </a>
+    <p class="govuk-body">
+        <a id="return-link" class="govuk-link" href="@PspDashboardController.onPageLoad().url">
+            @messages("site.return_to_psp_overview")
+        </a>
+    </p>
 
 }

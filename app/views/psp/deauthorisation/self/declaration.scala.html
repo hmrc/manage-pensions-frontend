@@ -20,53 +20,66 @@
 @import controllers.psp.deauthorise.self.routes._
 @import utils.ViewHelper.titleWithErrors
 @import controllers.psp.routes._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 
 @this(
-    main_template: main_template,
-    formHelper: FormWithCSRF
+    layout: templates.Layout,
+    formHelper: PlayFrontendFormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    govukCheckboxes : GovukCheckboxes,
+    button: components.govuk_button
 )
 
 @(form: Form[Boolean], schemeName: String, srn: String)(implicit request: Request[_], messages: Messages)
 
-@main_template(
-    title = titleWithErrors(form, messages("messages__deauthPspDeclaration__title")),
-    bodyClasses = None
+@layout(
+    pageTitle = titleWithErrors(form, messages("messages__deauthPspDeclaration__title"))
 ) {
 
-    @components.back_link()
+    @formHelper(action = DeclarationController.onSubmit(), 'autoComplete -> "off", 'novalidate -> "novalidate") {
+    @if(form.errors.nonEmpty) {
+    @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form, mapping = Map("declaration" -> "declaration")))
+    }
 
-    @components.error_summary(form.errors)
+        <h1 class="govuk-heading-xl">@messages("messages__deauthPspDeclaration__title")</h1>
 
-    @components.heading(Message("messages__deauthPspDeclaration__title"))
-
-    @formHelper(action = DeclarationController.onSubmit(), 'autoComplete -> "off") {
-
-        <p id="para_id">
+        <p id="para_id" class="govuk-body">
             <span aria-hidden="true">
                 @messages("messages__deauthPspDeclaration__p_self")
             </span>
-            <span class="visually-hidden">
+            <span class="govuk-visually-hidden">
                 @messages("messages__deauthPspDeclaration__p_self__screenReaderAlternative")
             </span>
         </p>
 
-        @components.fieldSet(
-            field = form("value"),
-            legend = messages("messages__deauthPspDeclaration__title"),
-            hiddenLegend = true
-        ) {
-            <div class="multiple-choice">
-                <input id="declaration" name="value" type="checkbox" value="true">
-                <label for="declaration">@messages("messages__deauthPspDeclaration__label")</label>
-            </div>
-        }
+    @govukCheckboxes(Checkboxes(
+        fieldset = Some(Fieldset(
+        legend = Some(Legend(
+        content = Text(messages("messages__deauthPspDeclaration__title")),
+        classes = "govuk-visually-hidden",
+        isPageHeading = false
+        ))
+        )),
+        idPrefix = Some("declaration"),
+        name = "declaration",
+        items = Seq(
+        CheckboxItem(
+        content = Text(messages("messages__deauthPspDeclaration__label")),
+        value ="true"
+        )
+        )
+        ).withFormField(form("declaration")
+        )
+        )
+    @button(messages("site.save_and_continue"))
 
-        @components.submit_button("site.save_and_continue")
-
-        <p>
-            <a id="return-link" href="@PspSchemeDashboardController.onPageLoad(srn)">
-                @messages("messages__returnToSchemeDetails__link", schemeName)
-            </a>
-        </p>
-    }
+<p class="govuk-body">
+    <a id="return-link" class="govuk-link" href="@PspSchemeDashboardController.onPageLoad(srn)">
+        @messages("messages__returnToSchemeDetails__link", schemeName)
+    </a>
+</p>
+}
 }
