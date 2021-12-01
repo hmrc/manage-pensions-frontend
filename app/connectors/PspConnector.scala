@@ -16,14 +16,13 @@
 
 package connectors
 
-import com.google.inject.{ImplementedBy, Inject}
+import com.google.inject.{Inject, ImplementedBy}
 import config.FrontendAppConfig
 import models.DeAuthorise
 import play.api.Logger
 import play.api.http.Status._
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{Json, JsValue}
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.http.HttpClient
 import utils.HttpResponseHelper
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -70,7 +69,7 @@ class PspConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig)
       response =>
         response.status match {
           case OK => ()
-          case BAD_REQUEST if response.body.contains("ACTIVE_RELATIONSHIP_EXISTS") => throw new ActiveRelationshipExistsException
+          case FORBIDDEN if response.body.contains("ACTIVE_RELATIONSHIP_EXISTS") => throw new ActiveRelationshipExistsException
           case _ => handleErrorResponse("POST", config.authorisePspUrl)(response)
         }
     } andThen {

@@ -23,7 +23,7 @@ import org.scalatest.{AsyncFlatSpec, Matchers}
 import org.scalatestplus.scalacheck.Checkers
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, Json}
-import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{UpstreamErrorResponse, BadRequestException, HeaderCarrier}
 import utils.WireMockHelper
 
 class PspConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper with Checkers {
@@ -56,7 +56,7 @@ class PspConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper w
         .withRequestBody(equalToJson(Json.stringify(Json.toJson(pspAuthJson))))
         .willReturn(
           aResponse()
-            .withStatus(BAD_REQUEST)
+            .withStatus(FORBIDDEN)
             .withBody(Json.stringify(activeRelationshipJson))
         )
     )
