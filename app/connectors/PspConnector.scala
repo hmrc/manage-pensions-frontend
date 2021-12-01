@@ -68,9 +68,11 @@ class PspConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig)
 
     http.POST[JsValue, HttpResponse](config.authorisePspUrl, json)(implicitly, implicitly, headerCarrier, implicitly) map {
       response =>
+        println("\n>>>RERERE" + response)
+        println("\n>>>RERERE2" + response.body)
         response.status match {
           case OK => ()
-          case BAD_REQUEST if response.body.contains("ACTIVE_RELATIONSHIP_EXISTS") => throw new ActiveRelationshipExistsException
+          case FORBIDDEN if response.body.contains("ACTIVE_RELATIONSHIP_EXISTS") => throw new ActiveRelationshipExistsException
           case _ => handleErrorResponse("POST", config.authorisePspUrl)(response)
         }
     } andThen {
