@@ -16,6 +16,7 @@
 
 @import config.FrontendAppConfig
 @import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.hmrcfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
@@ -24,87 +25,118 @@
 @import controllers.psp.deauthorise.routes._
 @import controllers.invitations.psp.routes._
 
+
 @this(
-layout: templates.Layout,
-formHelper: PlayFrontendFormWithCSRF,
-govukErrorSummary: GovukErrorSummary,
-appConfig: FrontendAppConfig,
-govukTable : GovukTable
+    layout: templates.Layout,
+    formHelper: PlayFrontendFormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    appConfig: FrontendAppConfig,
+    govukTable : GovukTable,
+    hmrcPageHeading : HmrcPageHeading
 )
+
 @(
-schemeName: String,
-returnCall: Call,
-practitioners: Seq[AuthorisedPractitionerViewModel]
+        schemeName: String,
+        returnCall: Call,
+        practitioners: Seq[AuthorisedPractitionerViewModel]
 )(
-implicit
-request: Request[_],
-messages: Messages
+        implicit
+        request: Request[_],
+        messages: Messages
 )
 
 @deauthorisedLink(pspName: String, index: Index, authorisedByLoggedInPsa:Boolean) = {
-
-@if(authorisedByLoggedInPsa){
-<a class="govuk-link" href="@ConfirmDeauthorisePspController.onPageLoad(index)">
-        <span aria-hidden="true">
-            @messages("messages__viewPractitioners__deAuthoriseLinkText")
+    @if(authorisedByLoggedInPsa){
+        <a class="govuk-link" href="@ConfirmDeauthorisePspController.onPageLoad(index)">
+            <span aria-hidden="true">
+                @messages("messages__viewPractitioners__deAuthoriseLinkText")
+            </span>
+            <span class="govuk-visually-hidden">
+                @messages("messages__viewPractitioners__deAuthoriseLinkText__hiddenText", pspName)
+            </span>
+        </a>
+    } else{
+        <span class="govuk-visually-hidden">
+            messages("messages__viewPractitioners__didNotAuthorise__hiddenText", pspName)
         </span>
-    <span class="govuk-visually-hidden">
-            @messages("messages__viewPractitioners__deAuthoriseLinkText__hiddenText", pspName)
-        </span>
-</a>
-} else{
-                    <span class="govuk-visually-hidden">
-                        @messages("messages__viewPractitioners__didNotAuthorise__hiddenText", pspName)
-                    </span>
+    }
 }
 
+@hiddenHeader = {
+    <span class="govuk-visually-hidden">
+        @messages("messages__summary_list_action")
+    </span>
 }
 
 @layout(
-pageTitle = s"${messages("messages__viewPractitioners__title")}"
+    pageTitle = s"${messages("messages__viewPractitioners__title")}"
 ) {
 
-
-
-
-
-
-
-@govukTable(Table(
-rows =
-    for((practitioner, index) <- practitioners.zipWithIndex) yield {
-
-Seq(
-                TableRow(
-                content = Text(practitioner.pspName)
-                ),
-                TableRow(
-                content = Text(practitioner.authorisedBy)
-                ),
-                TableRow(
-                content = Text(practitioner.dateAuthorised)
-                ),
-
-                TableRow(
-                attributes = Map("id" -> "deAuthoriseLink-","role"-> "tabke"),
-                content = HtmlContent(deauthorisedLink(practitioner.pspName,index,practitioner.authorisedByLoggedInPsa))
-                )
-
+@hmrcPageHeading(
+    PageHeading(
+        text = messages("messages__viewPractitioners__heading"),
+        section = Some(schemeName)
+    )
 )
-    }
-,
-caption = Some("Month you apply")
 
-))
+<div role="region" aria-labelledby="practitionerList_table">
+@govukTable(
+Table(
+    rows =
+        for((practitioner, index) <- practitioners.zipWithIndex) yield {
+            Seq(
+                TableRow(
+                    attributes = Map("id" -> ("pspName-"+index), "role"-> "cell"),
+                    content = Text(practitioner.pspName),
+                    classes="govuk-table__cell"
+                ),
+                TableRow(
+                    attributes = Map("id" -> ("authorisedBy-"+index), "role"-> "cell"),
+                    content = Text(practitioner.authorisedBy),
+                    classes="govuk-table__cell"
+                ),
+                TableRow(
+                    attributes = Map("id" -> ("dateAuthorised-"+index), "role"-> "cell"),
+                    content = Text(practitioner.dateAuthorised),
+                    classes="govuk-table__cell"
+                ),
+                TableRow(
+                    attributes = Map("id" -> ("deAuthoriseLink-"+index), "role"-> "cell"),
+                    content = HtmlContent(deauthorisedLink(practitioner.pspName,index,practitioner.authorisedByLoggedInPsa)),
+                    classes="govuk-table__cell"
+                )
+            )
+        },
+        head = Some(
+            Seq(
+                HeadCell(
+                    content = Text(messages("messages__viewPractitioners__practitionerNameHeader"))
+                ),
+                HeadCell(
+                    content = Text(messages("messages__viewPractitioners__authorisedByHeader"))
+                ),
+                HeadCell(
+                    content = Text(messages("messages__viewPractitioners__dateAuthorisedHeader"))
+                ),
+                HeadCell(
+                    content = HtmlContent(hiddenHeader)
+                )
+            )
+        ),
+        caption = Some(messages("messages__listSchemes__title")),
+        captionClasses = "govuk-visually-hidden",
+        attributes = Map("id" -> "practitioner-authorisation-table", "role"-> "table"),
+    )
+)
+</div>
 
-
-
-<p class="govuk-body">
+<p class="govuk-body govuk-margin-top-5">
     <a id="authorise" class="govuk_link" href="@WhatYouWillNeedController.onPageLoad()">
         @messages("messages__pspAuthorise__link")
     </a>
 </p>
-<p class="govuk-body">
+
+<p class="govuk-body govuk-margin-top-5">
     <a id="return-link" class="govuk_link" href=@returnCall>
         @messages("site.return_to", schemeName)
     </a>
