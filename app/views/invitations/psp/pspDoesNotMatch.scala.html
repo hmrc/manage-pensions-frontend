@@ -15,7 +15,10 @@
  *@
 
 @import config.FrontendAppConfig
-@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import views.html._
 @import java.time.LocalDate
 @import utils.DateHelper
@@ -23,27 +26,27 @@
 @import play.api.mvc.Call
 
 @this(
-main_template: main_template,
-formHelper: FormWithCSRF
+layout: templates.Layout
 )
 
 @(schemeName: String, pspName: String, returnCall: Call)(implicit request: Request[_], messages: Messages)
 
-@main_template(
-    title = messages("messages__pspDoesNotMatch__title"),
-    bodyClasses = None
+@layout(
+pageTitle = messages("messages__pspDoesNotMatch__title")
 ) {
 
-    @components.back_link()
+<h1 class="govuk-heading-xl">@messages("messages__pspDoesNotMatch__title")</h1>
 
-    @components.heading(messages("messages__pspDoesNotMatch__title"))
+    <p class="govuk-body">@messages("messages__pspDoesNotMatch__psp", pspName)</p>
 
-    <p>@messages("messages__pspDoesNotMatch__psp", pspName)</p>
+    <p class="govuk-body">@messages("messages__pspDoesNotMatch__p1")</p>
 
-    <p>@messages("messages__pspDoesNotMatch__p1")</p>
+    <p class="govuk-body">@messages("messages__pspDoesNotMatch__p2", pspName)</p>
 
-    <p>@messages("messages__pspDoesNotMatch__p2", pspName)</p>
-
-    @components.return_link(returnCall, Some(schemeName))
+    <p class="govuk-body">
+        <a id="return-link" class="govuk-link" href=returnCall>
+            @messages("messages__returnToSchemeDetails__link", schemeName)
+        </a>
+    </p>
 
 }
