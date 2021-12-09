@@ -15,7 +15,10 @@
  *@
 
 @import config.FrontendAppConfig
-@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import views.html._
 @import controllers.invitations.psp.routes._
 @import models.ClientReference
@@ -24,37 +27,80 @@
 
 
 @this(
-main_template: main_template,
-formHelper: FormWithCSRF,
-appConfig: FrontendAppConfig
+layout: templates.Layout,
+govukRadios : GovukRadios,
+formHelper: PlayFrontendFormWithCSRF,
+govukErrorSummary: GovukErrorSummary,
+button: components.govuk_button,
+govukInput : GovukInput
 )
+
+
 
 @(form: Form[_], pspName: String, mode: Mode, schemeName:String, returnCall: Call)(implicit request: Request[_], messages: Messages)
 
-@main_template(
-    title = titleWithErrors(form, messages("messages__psp_client_ref__title")),
-
-    bodyClasses = None) {
+@clientReferenceHtml = {
+@govukInput(Input(
+id = "have-reference",
+name = "have-reference",
+inputType = "yes-reference",
+label = Label(
+content = Text("Client Reference")
+),
+classes = "govuk-!-width-one-third",
+spellcheck = Some(false)
+))
+}
+@layout(
+    pageTitle = titleWithErrors(form, messages("messages__psp_client_ref__title"))) {
 
     @formHelper(action = PspClientReferenceController.onSubmit(mode), 'autoComplete -> "off") {
 
-        @components.back_link()
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
+        }
 
-        @components.error_summary(form.errors)
 
-        @components.input_radio(
-            field = form("value.hasReference"),
-            hiddenFieldAndLabel = Some(form("value.reference"), messages("messages__psp_client_ref__label")),
-            legend = messages("messages__psp_client_ref__heading", pspName),
-            legendClass = Some("visually-hidden"),
-            inputs = ClientReference.options,
-            labelClass = Some("form-label-bold"),
-            headingIsLegend = true
+        @govukRadios(Radios(
+            fieldset = Some(Fieldset(
+                legend = Some(Legend(
+                    content = Text(messages("messages__psp_client_ref__heading", pspName)),
+                    classes = "govuk-fieldset__legend--l",
+                    isPageHeading = true
+                    ))
+                )),
+                idPrefix = Some("value.hasReference"),
+                name = "value.hasReference",
+                items = Seq(
+                    RadioItem(
+                        content = Text(messages("site.yes")),
+                        value = Some("true"),
+                        conditionalHtml = Some(govukInput(Input(
+                            id = "value.reference",
+                            name = "value.reference",
+                            label = Label(
+                            content = Text("Client Reference")
+                            ),
+                            classes = "govuk-!-width-one-third",
+                            spellcheck = Some(false)
+                            ).withFormField(form("value.reference"))))
+                    ),
+                    RadioItem(
+                        content = Text(messages("site.no")),
+                        value = Some("false")
+                    )
+                )
+            ).withFormField(form("value.hasReference"))
         )
 
-        @components.submit_button()
+        @button(messages("site.save_and_continue"))
 
-        @components.return_link(returnCall, Some(schemeName))
+<p class="govuk-body">
+    <a id="return-link" class="govuk-link" href=returnCall>
+        @messages("messages__returnToSchemeDetails__link", schemeName)
+    </a>
+</p>
 
-    }
+
+}
 }
