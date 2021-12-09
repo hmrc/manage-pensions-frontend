@@ -39,18 +39,6 @@ govukInput : GovukInput
 
 @(form: Form[_], pspName: String, mode: Mode, schemeName:String, returnCall: Call)(implicit request: Request[_], messages: Messages)
 
-@clientReferenceHtml = {
-@govukInput(Input(
-id = "have-reference",
-name = "have-reference",
-inputType = "yes-reference",
-label = Label(
-content = Text("Client Reference")
-),
-classes = "govuk-!-width-one-third",
-spellcheck = Some(false)
-))
-}
 @layout(
     pageTitle = titleWithErrors(form, messages("messages__psp_client_ref__title"))) {
 
@@ -60,46 +48,43 @@ spellcheck = Some(false)
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
         }
 
-
         @govukRadios(Radios(
             fieldset = Some(Fieldset(
                 legend = Some(Legend(
                     content = Text(messages("messages__psp_client_ref__heading", pspName)),
-                    classes = "govuk-fieldset__legend--l",
+                    classes = "govuk-fieldset__legend--xl",
                     isPageHeading = true
                     ))
                 )),
-                idPrefix = Some("value.hasReference"),
-                name = "value.hasReference",
+                idPrefix = Some("hasReference"),
+                name = "hasReference",
                 items = Seq(
                     RadioItem(
                         content = Text(messages("site.yes")),
                         value = Some("true"),
                         conditionalHtml = Some(govukInput(Input(
-                            id = "value.reference",
-                            name = "value.reference",
                             label = Label(
-                            content = Text("Client Reference")
+                            content = Text(messages("messages__check__your__answer__psp_client_reference__label"))
                             ),
                             classes = "govuk-!-width-one-third",
                             spellcheck = Some(false)
-                            ).withFormField(form("value.reference"))))
+                            ).withFormField(form("reference"))))
                     ),
                     RadioItem(
                         content = Text(messages("site.no")),
                         value = Some("false")
                     )
                 )
-            ).withFormField(form("value.hasReference"))
+            ).withFormField(form("hasReference"))
         )
 
         @button(messages("site.save_and_continue"))
 
-<p class="govuk-body">
-    <a id="return-link" class="govuk-link" href=returnCall>
-        @messages("messages__returnToSchemeDetails__link", schemeName)
-    </a>
-</p>
+        <p class="govuk-body">
+            <a id="return-link" class="govuk-link" href=returnCall>
+                @messages("messages__returnToSchemeDetails__link", schemeName)
+            </a>
+        </p>
 
 
 }

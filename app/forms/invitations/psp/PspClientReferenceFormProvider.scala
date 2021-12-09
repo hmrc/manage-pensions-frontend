@@ -28,7 +28,7 @@ import javax.inject.Inject
 class PspClientReferenceFormProvider @Inject() extends Mappings with Transforms {
 
   def apply(): Form[ClientReference] = Form(
-    "value" -> clientReferenceMapping
+    clientReferenceMapping
   )
 
   protected def clientReferenceMapping: Mapping[ClientReference] = {
@@ -49,7 +49,7 @@ class PspClientReferenceFormProvider @Inject() extends Mappings with Transforms 
 
     tuple(
       "hasReference" -> boolean("messages__clientReference_yes_no_required"),
-      "reference" -> mandatoryIfTrue("value.hasReference", text("messages__clientReference_required")
+      "reference" -> mandatoryIfTrue("hasReference", text("messages__clientReference_required")
         .transform(strip, noTransform)
         .verifying(firstError(
           maxLength(clientRefMaxLength, "messages__clientReference_maxLength"),

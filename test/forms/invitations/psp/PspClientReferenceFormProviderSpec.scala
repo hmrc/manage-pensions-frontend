@@ -26,7 +26,7 @@ class PspClientReferenceFormProviderSpec extends StringFieldBehaviours with Cons
   val form = new PspClientReferenceFormProvider()()
 
   ".value.hasReference" must {
-    val fieldName = "value.hasReference"
+    val fieldName = "hasReference"
     val requiredKey = "messages__clientReference_yes_no_required"
     val invalidKey = "messages__clientReference_invalid"
 
@@ -43,12 +43,12 @@ class PspClientReferenceFormProviderSpec extends StringFieldBehaviours with Cons
     )
 
     "not bind string invalidated by regex" in {
-      val result = form.bind(Map("value.hasReference" -> "true", "value.reference" -> "$&^"))
-      result.errors shouldEqual Seq(FormError("value.reference", invalidKey, Seq(Constraints.clientRefRegx)))
+      val result = form.bind(Map("hasReference" -> "true", "reference" -> "$&^"))
+      result.errors shouldEqual Seq(FormError("reference", invalidKey, Seq(Constraints.clientRefRegx)))
     }
 
     "bind string with spaces, removing the spaces" in {
-      val result = form.bind(Map("value.hasReference" -> "true", "value.reference" -> "A B C"))
+      val result = form.bind(Map("hasReference" -> "true", "reference" -> "A B C"))
       result.errors shouldBe empty
       result.value shouldBe Some(HaveClientReference("ABC"))
     }
