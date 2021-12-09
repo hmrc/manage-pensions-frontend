@@ -33,7 +33,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.UserAnswers
 import utils.annotations.SessionDataCache
 import viewmodels.Message
-import views.html.pspDashboard
+import views.html.pspDashboard1
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -46,7 +46,7 @@ class PspDashboardController @Inject()(
                                         userAnswersCacheConnector: UserAnswersCacheConnector,
                                         @SessionDataCache sessionDataCacheConnector: UserAnswersCacheConnector,
                                         val controllerComponents: MessagesControllerComponents,
-                                        view: pspDashboard,
+                                        view: pspDashboard1,
                                         config: FrontendAppConfig
                                       )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
