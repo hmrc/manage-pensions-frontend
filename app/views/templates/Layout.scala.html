@@ -46,6 +46,7 @@ showBackLink: Boolean = true,
 @if(timeoutEnabled) {
 @hmrcTimeoutDialogHelper(
 signOutUrl = routes.LogoutController.onPageLoad.url,
+keepAliveUrl= Some(routes.LogoutController.keepAlive.url),
 timeout = Some(900),
 countdown = Some(120)
 )
