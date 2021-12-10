@@ -20,20 +20,20 @@
 
 <div class="card" id="@cardModel.id">
     <div class="card-body">
-        <h2 class="card-heading heading-small">
+        <h2 class="card-heading govuk-heading-m">
             @cardModel.heading
         </h2>
 
         @cardModel.subHeadings.map { subHead =>
-            <h3 class="card-sub-heading @cardModel.subHeadingParam">
-                <span class="font-xsmall">@subHead._1</span>
+            <h3 class="card-sub-heading @cardModel.subHeadingParam govuk-heading-s">
+                <span>@subHead._1</span>
                 @subHead._2
             </h3>
         }
 
         @cardModel.optionalSubHeading.map { subHead =>
-            <h3 class="card-sub-heading">
-                <span class="font-xsmall">@subHead._1</span>
+            <h3 class="card-sub-heading govuk-heading-s">
+                <span>@subHead._1</span>
                 @subHead._2
             </h3>
         }
@@ -42,16 +42,16 @@
 
     <div class="card-action">
         @if(cardModel.links.nonEmpty){
-            <ul>
+            <ul class="govuk-list">
                 @for(link <- cardModel.links) {
                     <li>
                         @if(link.hiddenText.nonEmpty) {
-                            <a id="@link.id" href="@link.url">
+                            <a id="@link.id" class="govuk-link" href="@link.url">
                                 <span aria-hidden="true">@messages(link.linkText)</span>
-                                <span class="visually-hidden">@messages(link.hiddenText.get)</span>
+                                <span class="govuk-visually-hidden">@messages(link.hiddenText.get)</span>
                             </a>
                         }else{
-                            <a id="@link.id" href="@link.url">@messages(link.linkText)</a>
+                            <a id="@link.id" class="govuk-link" href="@link.url">@messages(link.linkText)</a>
                         }
                     </li>
                 }
