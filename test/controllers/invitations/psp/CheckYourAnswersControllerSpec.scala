@@ -19,15 +19,11 @@ package controllers.invitations.psp
 import base.JsonFileReader
 import connectors.admin.MinimalConnector
 import controllers.ControllerSpecBase
-import controllers.actions.DataRequiredActionImpl
-import controllers.actions.DataRetrievalAction
-import controllers.actions.FakeAuthAction
+import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction}
 import controllers.behaviours.ControllerWithNormalPageBehaviours
 import controllers.invitations.psp.routes._
 import identifiers.SchemeNameId
-import identifiers.invitations.psp.PspClientReferenceId
-import identifiers.invitations.psp.PspId
-import identifiers.invitations.psp.PspNameId
+import identifiers.invitations.psp.{PspClientReferenceId, PspId, PspNameId}
 import models.CheckMode
 import models.ClientReference.HaveClientReference
 import org.mockito.ArgumentMatchers._
@@ -35,11 +31,11 @@ import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.mvc.Call
 import play.api.test.Helpers._
+import uk.gov.hmrc.govukfrontend.views.Aliases.Text
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist._
 import utils.countryOptions.CountryOptions
-import utils.{CheckYourAnswersFactory, UserAnswers, PspAuthoriseFuzzyMatcher}
-import viewmodels.AnswerRow
-import viewmodels.AnswerSection
-import views.html.check_your_answers
+import utils.{CheckYourAnswersFactory, PspAuthoriseFuzzyMatcher, UserAnswers}
+import views.html.check_your_answers_view
 
 import scala.concurrent.Future
 
@@ -105,24 +101,36 @@ object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours
             .set(SchemeNameId)(testSchemeName).asOpt.value
             .dataRetrievalAction
 
-    private val expectedValues = List(AnswerSection(None,List(AnswerRow("messages__check__your__answer__psp__name__label",
-        List(pspName),answerIsMessageKey = true,Some(PspNameController.onPageLoad(CheckMode).url)),
-        AnswerRow("messages__check__your__answer__psp__id__label",List("A1231231"),answerIsMessageKey = true,
-            Some(PspIdController.onPageLoad(CheckMode).url)),
-        AnswerRow("messages__check__your__answer__psp_client_reference__label",List("1234567"),answerIsMessageKey = true,
-            Some(PspClientReferenceController.onPageLoad(CheckMode).url)))))
-
-
+    private val expectedValues = Seq(
+        SummaryListRow(
+            key = Key(Text(messages("messages__check__your__answer__psp__name__label")), classes = "govuk-!-width-one-half"),
+            value = Value(Text(pspName)),
+            actions = Some(Actions("", items = Seq(ActionItem(href = PspNameController.onPageLoad(CheckMode).url,
+                content = Text(messages("site.change")), visuallyHiddenText = Some(messages("messages__check__your__answer__psp__name__label"))))))
+        ),
+        SummaryListRow(
+            key = Key(Text(messages("messages__check__your__answer__psp__id__label")), classes = "govuk-!-width-one-half"),
+            value = Value(Text("A1231231")),
+            actions = Some(Actions("", items = Seq(ActionItem(href = PspIdController.onPageLoad(CheckMode).url,
+                content = Text(messages("site.change")), visuallyHiddenText = Some(messages("messages__check__your__answer__psp__id__label"))))))
+        ),
+        SummaryListRow(
+            key = Key(Text(messages("messages__check__your__answer__psp_client_reference__label")), classes = "govuk-!-width-one-half"),
+            value = Value(Text("1234567")),
+            actions = Some(Actions("", items = Seq(ActionItem(href = PspClientReferenceController.onPageLoad(CheckMode).url,
+                content = Text(messages("site.change")), visuallyHiddenText = Some(messages("messages__check__your__answer__psp_client_reference__label"))))))
+        )
+    )
 
     private val countryOptions = new CountryOptions(environment, frontendAppConfig)
     private val checkYourAnswersFactory = new CheckYourAnswersFactory(countryOptions)
 
-    private val view = injector.instanceOf[check_your_answers]
+    private val view = injector.instanceOf[check_your_answers_view]
 
     def call: Call = controllers.invitations.psp.routes.CheckYourAnswersController.onSubmit()
 
-    def viewAsString(): String = view(expectedValues, None, call, Some("messages__check__your__answer__psp__label"),
-        Some(testSchemeName), Some("site.save_and_continue"))(fakeRequest, messages).toString
+    def viewAsString(): String = view(expectedValues, call, Some("messages__check__your__answer__psp__label"),
+        Some(testSchemeName))(fakeRequest, messages).toString
 
 
 

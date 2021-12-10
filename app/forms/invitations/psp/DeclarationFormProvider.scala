@@ -22,13 +22,12 @@ import play.api.data.Form
 
 class DeclarationFormProvider @Inject()() extends CheckboxMapping {
 
-  private val fieldName = "agree"
-  private val trueValue = "agreed"
+  private val fieldName = "declaration"
+  private val trueValue = "true"
   private val invalidKey = "messages__error__psp_declaration__required"
 
   def apply(): Form[Boolean] =
     Form(
-      fieldName -> checkboxMapping(fieldName, trueValue, acceptTrueOnly = true, invalidKey)
+      fieldName -> checkboxMapping("value", trueValue, acceptTrueOnly = true, invalidKey)
     )
-
 }

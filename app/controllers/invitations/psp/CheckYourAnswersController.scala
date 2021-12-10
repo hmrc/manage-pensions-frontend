@@ -26,8 +26,7 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.{CheckYourAnswersFactory, PspAuthoriseFuzzyMatcher}
-import viewmodels.AnswerSection
-import views.html.check_your_answers
+import views.html.check_your_answers_view
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -39,7 +38,7 @@ class CheckYourAnswersController @Inject()(override val messagesApi: MessagesApi
                                            minimalConnector: MinimalConnector,
                                            pspAuthoriseFuzzyMatcher: PspAuthoriseFuzzyMatcher,
                                            val controllerComponents: MessagesControllerComponents,
-                                           view: check_your_answers
+                                           view: check_your_answers_view
                                           )(implicit val ec: ExecutionContext) extends FrontendBaseController with Retrievals with I18nSupport {
 
     def onPageLoad(): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
@@ -47,10 +46,9 @@ class CheckYourAnswersController @Inject()(override val messagesApi: MessagesApi
 
             SchemeNameId.retrieve.right.map { schemeName =>
                 val checkYourAnswersHelper = checkYourAnswersFactory.checkYourAnswersHelper(request.userAnswers)
-                val sections = Seq(AnswerSection(None, Seq(checkYourAnswersHelper.pspName, checkYourAnswersHelper.pspId,
-                    checkYourAnswersHelper.pspClientReference).flatten))
-                Future.successful(Ok(view(sections, None, controllers.invitations.psp.routes.CheckYourAnswersController.onSubmit(),
-                    Some("messages__check__your__answer__psp__label"), Some(schemeName), Some("site.save_and_continue"))))
+                val sections = Seq(checkYourAnswersHelper.pspName, checkYourAnswersHelper.pspId, checkYourAnswersHelper.pspClientReference).flatten
+                Future.successful(Ok(view(sections, controllers.invitations.psp.routes.CheckYourAnswersController.onSubmit(),
+                    Some("messages__check__your__answer__psp__label"), Some(schemeName))))
 
             }
     }

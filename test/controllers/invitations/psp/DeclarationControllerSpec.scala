@@ -134,7 +134,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
         when(mockMinimalConnector.getMinimalPsaDetails(any())(any(), any()))
           .thenReturn(Future.successful(minPsa))
 
-        val result = controller(data).onSubmit()(fakeRequest.withFormUrlEncodedBody("agree" -> "agreed"))
+        val result = controller(data).onSubmit()(fakeRequest.withFormUrlEncodedBody("declaration" -> "true"))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).value mustBe onwardRoute.url
 
@@ -171,7 +171,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
       }
 
       "return Bad Request if invalid data is submitted" in {
-        val formWithErrors = form.withError("agree", messages("messages__error__psp_declaration__required"))
+        val formWithErrors = form.withError("declaration", messages("messages__error__psp_declaration__required"))
         val result = controller().onSubmit()(fakeRequest)
         status(result) mustBe BAD_REQUEST
         contentAsString(result) mustBe viewAsString(formWithErrors)
@@ -192,7 +192,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
         when(mockMinimalConnector.getMinimalPsaDetails(any())(any(), any()))
           .thenReturn(Future.successful(minPsa))
 
-        val result = controller(data).onSubmit()(fakeRequest.withFormUrlEncodedBody("agree" -> "agreed"))
+        val result = controller(data).onSubmit()(fakeRequest.withFormUrlEncodedBody("declaration" -> "true"))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).value mustBe controllers.invitations.psp.routes.AlreadyAssociatedWithSchemeController.onPageLoad().url
       }

@@ -24,6 +24,9 @@ import identifiers.invitations.psp.PspClientReferenceId
 import identifiers.invitations.psp.PspId
 import identifiers.invitations.psp.PspNameId
 import models.{Address, CheckMode, ClientReference}
+import play.api.i18n.Messages
+import uk.gov.hmrc.govukfrontend.views.Aliases.Text
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListRow, Value, Actions, ActionItem}
 import utils.countryOptions.CountryOptions
 import viewmodels.AnswerRow
 
@@ -72,24 +75,36 @@ class CheckYourAnswersHelper(userAnswers: UserAnswers, countryOptions: CountryOp
       address.addressLine4, address.postcode, Some(country)).flatten
   }
 
-  def pspName: Option[AnswerRow] = {
+  def pspName(implicit messages: Messages): Option[SummaryListRow] = {
     userAnswers.get(PspNameId) map { answer =>
-      AnswerRow("messages__check__your__answer__psp__name__label", Seq(answer), true,
-        Some(PspNameController.onPageLoad(CheckMode).url))
+      SummaryListRow(
+        key = Key(Text(messages("messages__check__your__answer__psp__name__label")), classes = "govuk-!-width-one-half"),
+        value = Value(Text(answer)),
+        actions = Some(Actions("", items = Seq(ActionItem(href = PspNameController.onPageLoad(CheckMode).url,
+          content = Text(messages("site.change")), visuallyHiddenText = Some(messages("messages__check__your__answer__psp__name__label"))))))
+      )
     }
   }
 
-  def pspId: Option[AnswerRow] = {
+  def pspId(implicit messages: Messages): Option[SummaryListRow] = {
     userAnswers.get(PspId) map { answer =>
-      AnswerRow("messages__check__your__answer__psp__id__label", Seq(answer), true,
-        Some(PspIdController.onPageLoad(CheckMode).url))
+      SummaryListRow(
+        key = Key(Text(messages("messages__check__your__answer__psp__id__label")), classes = "govuk-!-width-one-half"),
+        value = Value(Text(answer)),
+        actions = Some(Actions("", items = Seq(ActionItem(href = PspIdController.onPageLoad(CheckMode).url,
+          content = Text(messages("site.change")), visuallyHiddenText = Some(messages("messages__check__your__answer__psp__id__label"))))))
+      )
     }
   }
 
-  def pspClientReference: Option[AnswerRow] = {
+  def pspClientReference(implicit messages: Messages): Option[SummaryListRow] = {
     userAnswers.get(PspClientReferenceId) map { answer =>
-      AnswerRow("messages__check__your__answer__psp_client_reference__label", Seq(getClientReference(answer)), true,
-        Some(PspClientReferenceController.onPageLoad(CheckMode).url))
+      SummaryListRow(
+        key = Key(Text(messages("messages__check__your__answer__psp_client_reference__label")), classes = "govuk-!-width-one-half"),
+        value = Value(Text(messages(getClientReference(answer)))),
+        actions = Some(Actions("", items = Seq(ActionItem(href = PspClientReferenceController.onPageLoad(CheckMode).url,
+          content = Text(messages("site.change")), visuallyHiddenText = Some(messages("messages__check__your__answer__psp_client_reference__label"))))))
+      )
     }
   }
 

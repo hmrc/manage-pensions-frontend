@@ -27,7 +27,6 @@ object ClientReference {
 
   def options: Seq[InputOption] = {
     Seq(
-
       InputOption(
         value = "true",
         label = s"site.yes",
