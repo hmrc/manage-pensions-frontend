@@ -15,41 +15,56 @@
  *@
 
 @import config.FrontendAppConfig
+@import uk.gov.hmrc.play.views.html._
+@import views.html._
+@import utils.ViewHelper.titleWithErrors
+@import controllers.psp.routes._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.hmrcfrontend.views.html.components._
 @import viewmodels.CardViewModel
 @import models.Link
 
 @this(
-        main_template: main_template,
-        appConfig: FrontendAppConfig
+layout: templates.Layout,
+hmrcPageHeading : HmrcPageHeading,
+appConfig: FrontendAppConfig
 )
 
 @(
-        name: String,
-        title: String,
-        cards: Seq[CardViewModel],
-        subHeading: Option[String] = None,
-        returnLink: Option[Link] = None
+name: String,
+title: String,
+cards: Seq[CardViewModel],
+subHeading: Option[String] = None,
+returnLink: Option[Link] = None
 )(
-        implicit request: Request[_],
-        messages: Messages
+implicit request: Request[_],
+messages: Messages
 )
 
-    @main_template(
-        title = messages(title),
-        mainContentContainerClasses = Some("full-width")
-    ) {
-
-        @components.heading(name, secondaryHeaderKey = subHeading)
-
-        <div class="flex-container grid-row">
+@layout(
+pageTitle = messages(title)
+) {
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+        @hmrcPageHeading(PageHeading(
+        text = name,
+        section = subHeading
+        ))
+        <div class="flex-container govuk-grid-row">
             @for(card <- cards) {
-                @components.card(card)
+            @components.card(card)
             }
-
         </div>
 
         @returnLink.map { ret =>
-            <a id="@ret.id" href="@ret.url">@messages(ret.linkText)</a>
+        <p class="govuk-body">
+            <a id="@ret.id" class="govuk-link" href="@ret.url">
+                @messages(ret.linkText)
+            </a>
+        </p>
         }
-
-    }
+    </div>
+</div>
+}

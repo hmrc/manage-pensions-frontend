@@ -14,29 +14,81 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcLayout
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers._
 @import uk.gov.hmrc.hmrcfrontend.views.config.StandardBetaBanner
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcReportTechnicalIssueHelper
 @import views.html.helper.CSPNonce
 @import config.FrontendAppConfig
 @import controllers.routes
 
-@this(hmrcLayout: HmrcLayout, standardBetaBanner: StandardBetaBanner, hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper, appConfig: FrontendAppConfig)
+@this(
+appConfig: FrontendAppConfig,
+govukLayout: GovukLayout,
+hmrcHead: HmrcHead,
+hmrcTimeoutDialogHelper: HmrcTimeoutDialogHelper,
+hmrcStandardFooter: HmrcStandardFooter,
+hmrcStandardHeader: HmrcStandardHeader,
+standardBetaBanner: StandardBetaBanner,
+hmrcScripts: HmrcScripts,
+stylesheets: Stylesheets,
+govukBackLink: GovukBackLink,
+hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper
+)
 
-@(pageTitle: String,backLinkUrl:Option[String]=Some("javascript:history.back()"))(contentBlock: Html)(implicit request: RequestHeader, messages: Messages)
+@(pageTitle: String,
+timeoutEnabled: Boolean = true,
+canSignOut: Boolean = true,
+showBackLink: Boolean = true,
+)(mainContent: Html)(implicit request: Request[_], messages: Messages)
 
-@content = {
-@contentBlock
+@headScripts = {
+@if(timeoutEnabled) {
+@hmrcTimeoutDialogHelper(
+signOutUrl = routes.LogoutController.onPageLoad.url,
+timeout = Some(900),
+countdown = Some(120)
+)
+}
+
+@stylesheets()
+}
+
+@beforeContentBlock = {
+@if(showBackLink) {
+@govukBackLink(BackLink(
+attributes = Map("id" -> "back-link"), classes="js-enabled", href="javascript:history.back()", content = HtmlContent(messages("site.back"))
+))
+}
+}
+
+@scripts = {
+<script src='@controllers.routes.Assets.versioned("lib/govuk-frontend/govuk/all.js")'></script>
+<script src='@controllers.routes.Assets.versioned("lib/hmrc-frontend/hmrc/all.js")'></script>
+<script>window.GOVUKFrontend.initAll();
+    window.HMRCFrontend.initAll()</script>
+<script src="@controllers.routes.Assets.versioned("javascripts/card.js")"></script>
+}
+
+@mainContentWithGetHelp = {
+@mainContent
 @hmrcReportTechnicalIssueHelper()
 }
 
-@hmrcLayout(
-serviceName = Some(messages("site.service_name")),
+
+@govukLayout(
 pageTitle = Some(pageTitle + " - " + Messages("messages__manage_pension_schemes__title")),
-backLinkUrl = backLinkUrl,
-isWelshTranslationAvailable = false, /* or false if your service has not been translated */
+headBlock = Some(hmrcHead(
+headBlock = Some(headScripts)
+)),
+headerBlock = Some(hmrcStandardHeader(
+serviceName = Some(messages("site.service_name")),
 serviceUrl = Some(routes.IndexController.onPageLoad.url),
-signOutUrl = Some(routes.LogoutController.onPageLoad.url),
-phaseBanner = Some(standardBetaBanner(url = appConfig.betaFeedbackUnauthenticatedUrl)),
-nonce = CSPNonce.get,
-)(content)
+signOutUrl = if(canSignOut) Some(routes.LogoutController.onPageLoad.url) else None,
+phaseBanner = Some(standardBetaBanner(url = appConfig.betaFeedbackUnauthenticatedUrl))
+)),
+cspNonce = CSPNonce.get,
+beforeContentBlock = Some(beforeContentBlock),
+scriptsBlock = Some(scripts),
+footerBlock = Some(hmrcStandardFooter())
+)(mainContentWithGetHelp)

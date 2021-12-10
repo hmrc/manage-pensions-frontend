@@ -20,10 +20,9 @@
 @import models.Link
 @import viewmodels.PspSchemeDashboardCardViewModel
 
-@import uk.gov.hmrc.govukfrontend.views.html.components._
 @this(
-    layout: templates.Layout,
-    appConfig: FrontendAppConfig
+        main_template: main_template,
+        appConfig: FrontendAppConfig
 )
 
 @(
@@ -36,12 +35,12 @@
         messages: Messages
 )
 
-@layout(
-    pageTitle = schemeName,
-    backLinkUrl = None
+@main_template(
+    title = schemeName,
+    mainContentContainerClasses = Some("full-width")
 ) {
 
-    <h1 class="govuk-heading-xl">@schemeName</h1>
+    @components.heading(schemeName)
 
     <div class="flex-container grid-row">
         @aftPspSchemeDashboardCards
@@ -51,8 +50,6 @@
     </div>
 
     @returnLink.map { ret =>
-        <p class="govuk-body">
-            <a id="@ret.id" class="govuk-link" href="@ret.url">@messages(ret.linkText)</a>
-        </p>
+        <a id="@ret.id" href="@ret.url">@messages(ret.linkText)</a>
     }
 }

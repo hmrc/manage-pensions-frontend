@@ -24,7 +24,7 @@ govukPanel : GovukPanel
 
 @layout(
     pageTitle = messages("messages__confirmRemoved__title"),
-    backLinkUrl = None
+    showBackLink = false
 ) {
     @govukPanel(Panel(
         title = Text(messages("messages__confirmRemoved__heading", psaName, schemeName)),
