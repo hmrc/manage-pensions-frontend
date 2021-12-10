@@ -30,6 +30,7 @@ hmrcTimeoutDialogHelper: HmrcTimeoutDialogHelper,
 hmrcStandardFooter: HmrcStandardFooter,
 hmrcStandardHeader: HmrcStandardHeader,
 standardBetaBanner: StandardBetaBanner,
+defaultMainContentLayout: TwoThirdsMainContent,
 hmrcScripts: HmrcScripts,
 stylesheets: Stylesheets,
 govukBackLink: GovukBackLink,
@@ -40,6 +41,7 @@ hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper
 timeoutEnabled: Boolean = true,
 canSignOut: Boolean = true,
 showBackLink: Boolean = true,
+fullWidthLayout: Boolean = false
 )(mainContent: Html)(implicit request: Request[_], messages: Messages)
 
 @headScripts = {
@@ -91,5 +93,6 @@ phaseBanner = Some(standardBetaBanner(url = appConfig.betaFeedbackUnauthenticate
 cspNonce = CSPNonce.get,
 beforeContentBlock = Some(beforeContentBlock),
 scriptsBlock = Some(scripts),
+mainContentLayout = if(fullWidthLayout) None else Some(defaultMainContentLayout(_)),
 footerBlock = Some(hmrcStandardFooter())
 )(mainContentWithGetHelp)

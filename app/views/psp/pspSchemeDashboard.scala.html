@@ -17,11 +17,18 @@
 @import config.FrontendAppConfig
 @import uk.gov.hmrc.play.views.html._
 @import views.html._
-@import models.Link
+@import utils.ViewHelper.titleWithErrors
+@import controllers.psp.routes._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.hmrcfrontend.views.html.components._
 @import viewmodels.PspSchemeDashboardCardViewModel
+@import models.Link
+
 
 @this(
-        main_template: main_template,
+        layout: templates.Layout,
         appConfig: FrontendAppConfig
 )
 
@@ -35,12 +42,13 @@
         messages: Messages
 )
 
-@main_template(
-    title = schemeName,
-    mainContentContainerClasses = Some("full-width")
-) {
+@layout(
+pageTitle = schemeName,
+fullWidthLayout = true
+)
+{
 
-    @components.heading(schemeName)
+
 
     <div class="flex-container grid-row">
         @aftPspSchemeDashboardCards
@@ -51,5 +59,6 @@
 
     @returnLink.map { ret =>
         <a id="@ret.id" href="@ret.url">@messages(ret.linkText)</a>
+
     }
 }
