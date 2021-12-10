@@ -28,37 +28,45 @@
 
 
 @this(
-        layout: templates.Layout,
-        appConfig: FrontendAppConfig
+    layout: templates.Layout,
+    hmrcPageHeading : HmrcPageHeading,
+    appConfig: FrontendAppConfig
 )
 
 @(
-        schemeName: String,
-        aftPspSchemeDashboardCards: Html,
-        cards: Seq[PspSchemeDashboardCardViewModel],
-        returnLink: Option[Link] = None
+    schemeName: String,
+    aftPspSchemeDashboardCards: Html,
+    cards: Seq[PspSchemeDashboardCardViewModel],
+    returnLink: Option[Link] = None
 )(
-        implicit request: Request[_],
-        messages: Messages
+    implicit request: Request[_],
+    messages: Messages
 )
+
 
 @layout(
-pageTitle = schemeName,
-fullWidthLayout = true
-)
-{
+    pageTitle = schemeName,
+    fullWidthLayout = true
+) {
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
 
+        @hmrcPageHeading(PageHeading(
+            text = schemeName
+        ))
 
+        <div class="flex-container govuk-grid-row">
+            @aftPspSchemeDashboardCards
+            @for(card <- cards) {
+                @components.pspSchemeDashboardCard(card)
+            }
+        </div>
 
-    <div class="flex-container grid-row">
-        @aftPspSchemeDashboardCards
-        @for(card <- cards) {
-            @components.pspSchemeDashboardCard(card)
+        @returnLink.map { ret =>
+            <p class="govuk-body">
+                <a id="@ret.id" class="govuk-link" href="@ret.url">@messages(ret.linkText)</a>
+            </p>
         }
+        </div>
     </div>
-
-    @returnLink.map { ret =>
-        <a id="@ret.id" href="@ret.url">@messages(ret.linkText)</a>
-
-    }
 }
