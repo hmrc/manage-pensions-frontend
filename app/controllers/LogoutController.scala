@@ -56,4 +56,8 @@ class LogoutController @Inject()(
           Redirect(appConfig.serviceSignOut).withNewSession
       }
   }
+
+  def keepAlive: Action[AnyContent] = Action.async {
+    Future successful Ok("OK")
+  }
 }

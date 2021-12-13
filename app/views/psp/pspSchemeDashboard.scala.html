@@ -17,39 +17,56 @@
 @import config.FrontendAppConfig
 @import uk.gov.hmrc.play.views.html._
 @import views.html._
-@import models.Link
+@import utils.ViewHelper.titleWithErrors
+@import controllers.psp.routes._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.hmrcfrontend.views.html.components._
 @import viewmodels.PspSchemeDashboardCardViewModel
+@import models.Link
+
 
 @this(
-        main_template: main_template,
-        appConfig: FrontendAppConfig
+    layout: templates.Layout,
+    hmrcPageHeading : HmrcPageHeading,
+    appConfig: FrontendAppConfig
 )
 
 @(
-        schemeName: String,
-        aftPspSchemeDashboardCards: Html,
-        cards: Seq[PspSchemeDashboardCardViewModel],
-        returnLink: Option[Link] = None
+    schemeName: String,
+    aftPspSchemeDashboardCards: Html,
+    cards: Seq[PspSchemeDashboardCardViewModel],
+    returnLink: Option[Link] = None
 )(
-        implicit request: Request[_],
-        messages: Messages
+    implicit request: Request[_],
+    messages: Messages
 )
 
-@main_template(
-    title = schemeName,
-    mainContentContainerClasses = Some("full-width")
+@layout(
+pageTitle = schemeName,
+fullWidthLayout = true
 ) {
 
-    @components.heading(schemeName)
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
 
-    <div class="flex-container grid-row">
-        @aftPspSchemeDashboardCards
-        @for(card <- cards) {
-            @components.pspSchemeDashboardCard(card)
+        @hmrcPageHeading(PageHeading(
+            text = schemeName
+        ))
+
+        <div class="flex-container govuk-grid-row">
+            @aftPspSchemeDashboardCards
+            @for(card <- cards) {
+                @components.pspSchemeDashboardCard(card)
+            }
+        </div>
+
+        @returnLink.map { ret =>
+            <p class="govuk-body">
+                <a id="@ret.id" class="govuk-link" href="@ret.url">@messages(ret.linkText)</a>
+            </p>
         }
+        </div>
     </div>
-
-    @returnLink.map { ret =>
-        <a id="@ret.id" href="@ret.url">@messages(ret.linkText)</a>
-    }
 }

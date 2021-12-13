@@ -20,38 +20,38 @@
 
 <div class="card" id="@cardModel.id">
     <div class="card-body">
-        <h2 class="card-heading heading-small">
+        <h2 class="card-heading govuk-heading-l">
             @cardModel.heading
         </h2>
 
         @cardModel.subHeadings.map { subHead =>
-            <h3 class="card-sub-heading @cardModel.subHeadingParam">
-                <span class="font-xsmall">@subHead._1</span>
-                @subHead._2
-            </h3>
+            <p class="card-sub-heading bold @cardModel.subHeadingParam govuk-body-m">
+                <span>@subHead._1</span>
+                <span class="font-large bold">@subHead._2</span>
+            </p>
         }
 
         @cardModel.optionalSubHeading.map { subHead =>
-            <h3 class="card-sub-heading">
-                <span class="font-xsmall">@subHead._1</span>
-                @subHead._2
-            </h3>
+            <p class="card-sub-heading bold govuk-body-m">
+                <span>@subHead._1</span>
+                <span class="font-large bold">@subHead._2</span>
+            </p>
         }
 
     </div>
 
     <div class="card-action">
         @if(cardModel.links.nonEmpty){
-            <ul>
+            <ul class="govuk-list">
                 @for(link <- cardModel.links) {
                     <li>
                         @if(link.hiddenText.nonEmpty) {
-                            <a id="@link.id" href="@link.url">
+                            <a id="@link.id" class="govuk-link" href="@link.url">
                                 <span aria-hidden="true">@messages(link.linkText)</span>
-                                <span class="visually-hidden">@messages(link.hiddenText.get)</span>
+                                <span class="govuk-visually-hidden">@messages(link.hiddenText.get)</span>
                             </a>
                         }else{
-                            <a id="@link.id" href="@link.url">@messages(link.linkText)</a>
+                            <a id="@link.id" class="govuk-link" href="@link.url">@messages(link.linkText)</a>
                         }
                     </li>
                 }

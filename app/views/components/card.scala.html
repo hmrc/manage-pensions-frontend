@@ -20,15 +20,15 @@
 
 <div class="card" id="@cardModel.id">
     <div class="card-body">
-        <h2 class="card-heading">
+        <h2 class="card-heading govuk-heading-l">
             @cardModel.heading
         </h2>
 
         @for(sh <- cardModel.subHeadings) {
-            <p class='@sh.subHeadingClasses'>
+            <p class='@sh.subHeadingClasses bold govuk-body-m'>
                 <span>@sh.subHeading</span>
                 @for(shParam <- sh.subHeadingParams) {
-                    <span class ='@shParam.subHeadingParamClasses'>@shParam.subHeadingParam</span>
+                    <span class ='font-large bold @shParam.subHeadingParamClasses'>@shParam.subHeadingParam</span>
                 }
             </p>
         }
@@ -37,10 +37,10 @@
     </div>
     <div class="card-action">
     @if(cardModel.links.nonEmpty){
-        <ul>
+        <ul class="govuk-list">
             @for(link <- cardModel.links) {
                 <li>
-                    <a id="@link.id" href="@link.url">@messages(link.linkText)</a>
+                    <a id="@link.id" class="govuk-link" href="@link.url">@messages(link.linkText)</a>
                 </li>
             }
 
