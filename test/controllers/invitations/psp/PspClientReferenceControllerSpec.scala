@@ -86,7 +86,7 @@ class PspClientReferenceControllerSpec extends ControllerSpecBase {
 
     "on a POST" must {
       "save the data and redirect to the next page if valid data is submitted" in {
-        val postRequest = fakeRequest.withFormUrlEncodedBody(("value.hasReference", "true"), ("value.reference", "A0000000"))
+        val postRequest = fakeRequest.withFormUrlEncodedBody(("hasReference", "true"), ("reference", "A0000000"))
 
         val result = controller().onSubmit(NormalMode)(postRequest)
 
@@ -95,8 +95,8 @@ class PspClientReferenceControllerSpec extends ControllerSpecBase {
       }
 
       "return a Bad Request and errors if invalid data is submitted" in {
-        val postRequest = fakeRequest.withFormUrlEncodedBody(("value.yesNo", ""))
-        val boundForm = form.bind(Map("value.yesNo" -> ""))
+        val postRequest = fakeRequest.withFormUrlEncodedBody(("yesNo", ""))
+        val boundForm = form.bind(Map("yesNo" -> ""))
 
         val result = controller().onSubmit(NormalMode)(postRequest)
 
