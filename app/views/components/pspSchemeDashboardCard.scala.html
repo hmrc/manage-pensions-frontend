@@ -20,22 +20,22 @@
 
 <div class="card" id="@cardModel.id">
     <div class="card-body">
-        <h2 class="card-heading govuk-heading-m">
+        <h2 class="card-heading govuk-heading-l">
             @cardModel.heading
         </h2>
 
         @cardModel.subHeadings.map { subHead =>
-            <h3 class="card-sub-heading @cardModel.subHeadingParam govuk-heading-s">
+            <p class="card-sub-heading bold @cardModel.subHeadingParam govuk-body-m">
                 <span>@subHead._1</span>
-                @subHead._2
-            </h3>
+                <span class="font-large bold">@subHead._2</span>
+            </p>
         }
 
         @cardModel.optionalSubHeading.map { subHead =>
-            <h3 class="card-sub-heading govuk-heading-s">
+            <p class="card-sub-heading bold govuk-body-m">
                 <span>@subHead._1</span>
-                @subHead._2
-            </h3>
+                <span class="font-large bold">@subHead._2</span>
+            </p>
         }
 
     </div>

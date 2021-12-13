@@ -20,15 +20,15 @@
 
 <div class="card" id="@cardModel.id">
     <div class="card-body">
-        <h2 class="card-heading govuk-heading-m">
+        <h2 class="card-heading govuk-heading-l">
             @cardModel.heading
         </h2>
 
         @for(sh <- cardModel.subHeadings) {
-            <p class='@sh.subHeadingClasses govuk-body-m'>
+            <p class='@sh.subHeadingClasses bold govuk-body-m'>
                 <span>@sh.subHeading</span>
                 @for(shParam <- sh.subHeadingParams) {
-                    <span class ='@shParam.subHeadingParamClasses'>@shParam.subHeadingParam</span>
+                    <span class ='font-large bold @shParam.subHeadingParamClasses'>@shParam.subHeadingParam</span>
                 }
             </p>
         }
