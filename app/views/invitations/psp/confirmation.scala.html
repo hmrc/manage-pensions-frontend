@@ -36,7 +36,7 @@ button: components.govuk_button
 
 @layout(
     pageTitle = messages("messages__pspConfirmation__title"),
-    backLinkUrl = None
+    showBackLink = false
 ) {
     @govukPanel(Panel(
         title = Text(messages("messages__pspConfirmation__heading", pspName, schemeName)),
