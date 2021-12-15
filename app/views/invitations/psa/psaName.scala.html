@@ -14,41 +14,43 @@
  * limitations under the License.
  *@
 
-@import config.FrontendAppConfig
 @import controllers.invitations.psa.routes._
-@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import views.html._
 @import utils.ViewHelper.titleWithErrors
 
 @this(
-    main_template: main_template,
-    formHelper: FormWithCSRF,
-    appConfig: FrontendAppConfig
+    layout: templates.Layout,
+    formHelper: PlayFrontendFormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    button: components.govuk_button,
+    govukInput: GovukInput
 )
 
 @(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
 
-@main_template(
-    title = titleWithErrors(form, messages("messages__psa__name__title")),
-    bodyClasses = None
+@layout(
+    pageTitle = titleWithErrors(form, messages("messages__psa__name__title"))
 ) {
 
     @formHelper(action = PsaNameController.onSubmit(mode), 'autoComplete -> "off") {
 
-        @components.back_link()
+    @if(form.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
+    }
 
-        @components.error_summary(form.errors)
+    @govukInput(
+        Input(
+            label = Label(classes = "govuk-label--xl", content = Text(messages("messages__psa__name__heading")),
+            isPageHeading = true),
+            hint = Some(Hint(content = Text(messages("messages__psa__name__p1"))))
+        ).withFormField(form("psaName"))
+    )
 
-        <div class="form-group @if(form.hasErrors){form-group--error}">
+    @button(messages("site.save_and_continue"))
 
-            @components.input_text(
-              field = form("psaName"),
-              label = messages("messages__psa__name__heading"),
-              labelClass=Some("visually-hidden"),
-                paragraphText = Some(messages("messages__psa__name__p1")),
-                headingIsLegend = true
-            )
-        </div>
-        @components.submit_button()
     }
 }

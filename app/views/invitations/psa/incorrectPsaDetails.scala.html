@@ -17,24 +17,22 @@
 @import controllers.psa.routes._
 
 @this(
-    main_template: main_template
+    layout: templates.Layout
 )
 
 @(invitee: String, srn: String, schemeName: String)(implicit request: Request[_], messages: Messages)
 
-@main_template(
-    title = messages("messages__incorrectPsaDetails__title"),
-    bodyClasses = None
+@layout(
+    pageTitle = messages("messages__incorrectPsaDetails__title")
 ) {
-    @components.back_link()
-    @components.heading(headingKey = Messages("messages__incorrectPsaDetails__title"))
+    <h1 class="govuk-heading-xl">@messages("messages__incorrectPsaDetails__title")</h1>
 
-    <p>@messages("messages__incorrectPsaDetails__text1", invitee)</p>
-    <p>@messages("messages__incorrectPsaDetails__text2")</p>
-    <p>@messages("messages__incorrectPsaDetails__text3", invitee)</p>
+    <p class="govuk-body">@messages("messages__incorrectPsaDetails__text1", invitee)</p>
+    <p class="govuk-body">@messages("messages__incorrectPsaDetails__text2")</p>
+    <p class="govuk-body">@messages("messages__incorrectPsaDetails__text3", invitee)</p>
 
-    <p>
-        <a id="return-link" href="@PsaSchemeDashboardController.onPageLoad(srn)">
+    <p class="govuk-body">
+        <a id="return-link" class="govuk-link" href="@PsaSchemeDashboardController.onPageLoad(srn)">
             <span id ="return-text">@messages("messages__incorrectPsaDetails__linkText", schemeName)</span>
         </a>
     </p>

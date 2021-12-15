@@ -38,7 +38,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.annotations.Invitations
 import utils.{CheckYourAnswersFactory, DateHelper, Navigator}
 import viewmodels.AnswerSection
-import views.html.check_your_answers
+import views.html.check_your_answers_view
 
 import java.time.LocalDateTime
 import scala.concurrent.{ExecutionContext, Future}
@@ -53,7 +53,7 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
                                            schemeDetailsConnector: SchemeDetailsConnector,
                                            invitationConnector: InvitationConnector,
                                            val controllerComponents: MessagesControllerComponents,
-                                           view: check_your_answers
+                                           view: check_your_answers_view
                                           )(implicit val ec: ExecutionContext) extends FrontendBaseController with Retrievals with I18nSupport {
 
   def onPageLoad(): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
@@ -62,9 +62,9 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
       MinimalSchemeDetailId.retrieve.right.map { schemeDetail =>
 
         val checkYourAnswersHelper = checkYourAnswersFactory.checkYourAnswersHelper(request.userAnswers)
-        val sections = Seq(AnswerSection(None, Seq(checkYourAnswersHelper.psaName, checkYourAnswersHelper.psaId).flatten))
+        val sections = Seq(checkYourAnswersHelper.psaName, checkYourAnswersHelper.psaId).flatten
 
-        Future.successful(Ok(view(sections, None, CheckYourAnswersController.onSubmit(),
+        Future.successful(Ok(view(sections, CheckYourAnswersController.onSubmit(),
           Some("messages__check__your__answer__main__containt__label"), Some(schemeDetail.schemeName))))
 
       }

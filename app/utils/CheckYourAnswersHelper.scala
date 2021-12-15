@@ -34,17 +34,25 @@ import viewmodels.AnswerRow
 
 class CheckYourAnswersHelper(userAnswers: UserAnswers, countryOptions: CountryOptions) extends Enumerable.Implicits {
 
-  def psaName: Option[AnswerRow] = {
+  def psaName(implicit messages: Messages): Option[SummaryListRow] = {
     userAnswers.get(InviteeNameId) map { answer =>
-      AnswerRow("messages__check__your__answer__psa__name__label", Seq(answer), true,
-        Some(PsaNameController.onPageLoad(CheckMode).url))
+      SummaryListRow(
+        key = Key(Text(messages("messages__check__your__answer__psa__name__label")), classes = "govuk-!-width-one-half"),
+        value = Value(Text(answer)),
+        actions = Some(Actions("", items = Seq(ActionItem(href = PsaNameController.onPageLoad(CheckMode).url,
+          content = Text(messages("site.change")), visuallyHiddenText = Some(messages("messages__check__your__answer__psa__name__label"))))))
+      )
     }
   }
 
-  def psaId: Option[AnswerRow] = {
+  def psaId(implicit messages: Messages): Option[SummaryListRow] = {
     userAnswers.get(InviteePSAId) map { answer =>
-      AnswerRow("messages__check__your__answer__psa__id__label", Seq(answer), true,
-        Some(PsaIdController.onPageLoad(CheckMode).url))
+      SummaryListRow(
+        key = Key(Text(messages("messages__check__your__answer__psa__id__label")), classes = "govuk-!-width-one-half"),
+        value = Value(Text(answer)),
+        actions = Some(Actions("", items = Seq(ActionItem(href = PsaIdController.onPageLoad(CheckMode).url,
+          content = Text(messages("site.change")), visuallyHiddenText = Some(messages("messages__check__your__answer__psa__id__label"))))))
+      )
     }
   }
 
