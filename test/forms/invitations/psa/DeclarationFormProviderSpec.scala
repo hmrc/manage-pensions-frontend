@@ -22,8 +22,8 @@ import play.api.data.Form
 class DeclarationFormProviderSpec extends CheckboxBehaviour {
 
   private val form: Form[Boolean] = new DeclarationFormProvider()()
-  private val fieldName = "agree"
-  private val trueValue = "agreed"
+  private val fieldName = "consent"
+  private val trueValue = "true"
   private val invalidKey = "messages__error__declaration__required"
 
   "DeclarationFormProvider" should {
