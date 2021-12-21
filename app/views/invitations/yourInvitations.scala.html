@@ -14,34 +14,31 @@
  * limitations under the License.
  *@
 
-@import config.FrontendAppConfig
-@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import views.html._
 @import controllers.invitations.routes._
 @import models.invitations.Invitation
 @import utils.DateHelper
 
 @this(
-main_template: main_template,
-appConfig: FrontendAppConfig
+layout: templates.Layout
 )
 
 @(invitationsList: List[Invitation], psaName: String)(implicit request: Request[_], messages: Messages)
 
-@main_template(
-    title = s"${messages("messages__yourInvitations__title")}",
+@layout(
+pageTitle = s"${messages("messages__yourInvitations__title")}"
+){
 
-    bodyClasses = None) {
-
-    @components.back_link()
-
-    @components.heading(messages("messages__yourInvitations__heading"))
-
+    <h1 class="govuk-heading-xl">@messages("messages__yourInvitations__heading")</h1>
     @if(invitationsList.isEmpty) {
-        <p>@messages("messages__yourInvitations__not_found")</p>
+        <p class="govuk-body">@messages("messages__yourInvitations__not_found")</p>
     } else {
-        <p>@messages("messages__yourInvitations__lede")</p>
-        <ul class="govuk-check-your-answers form-group">
+        <p class="govuk-body govuk-!-margin-bottom-7">@messages("messages__yourInvitations__lede")</p>
+        <ul class="govuk-list">
             @for((invitation, i) <- invitationsList.zipWithIndex) {
                 @components.invitation(invitation.schemeName,
                 invitation.expireAt,
@@ -51,5 +48,9 @@ appConfig: FrontendAppConfig
         </ul>
     }
 
-    @components.return_link(controllers.routes.SchemesOverviewController.onPageLoad(), Some(psaName))
+    <p class="govuk-body">
+        <a id="return-link" class="govuk-link" href=controllers.routes.SchemesOverviewController.onPageLoad()>
+            @messages("messages__returnToSchemeDetails__link", psaName)
+        </a>
+    </p>
 }

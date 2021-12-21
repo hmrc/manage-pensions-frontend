@@ -14,6 +14,10 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import java.time.LocalDate
 @import utils.DateHelper._
 @import java.time.LocalDateTime
@@ -29,11 +33,12 @@ srn: String
 
 <li>
     <div>
-        <h2 class="bold">@schemeName</h2>
-        <p>@messages("messages__yourInvitations__scheme_expiry_date", displayExpiryDate(expiryDate.toLocalDate))</p>
-        <a id= "accept-invitation-@id" href="@controllers.invitations.routes.YourInvitationsController.onSelect(srn)">
+        <h2 class="govuk-heading-m">@schemeName</h2>
+        <p class="govuk-body">@messages("messages__yourInvitations__scheme_expiry_date", displayExpiryDate(expiryDate.toLocalDate))</p>
+        <a class="govuk-link" id= "accept-invitation-@id" href="@controllers.invitations.routes.YourInvitationsController.onSelect(srn)">
             @messages("messages__yourInvitations__accept_link")
-            <span class="visually-hidden">@messages("messages__yourInvitations__accept_link_hidden", schemeName)</span>
+            <span class="govuk-visually-hidden">@messages("messages__yourInvitations__accept_link_hidden", schemeName)</span>
         </a>
+        <hr class="govuk-!-margin-top-4 govuk-!-margin-bottom-4 govuk-section-break govuk-section-break--m govuk-section-break--visible">
     </div>
 </li>

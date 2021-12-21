@@ -265,6 +265,7 @@ error.postcode.required = Enter the postcode
 error.postcode.invalid = Enter a valid postcode
 
 messages__declaration__title = Declaration
+messages__declaration__label = I agree
 messages__declaration__heading = Declaration
 messages__declaration__continue = By continuing you declare that
 messages__declaration__statement1 = you understand that as scheme administrator you are responsible for discharging the functions conferred or imposed on the scheme administrator of the pension scheme by the Finance Act 2004 and you intend to discharge those functions at all times, whether resident in the United Kingdom or another EU member state or non-member EEA state.
