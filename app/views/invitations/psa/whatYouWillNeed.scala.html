@@ -14,41 +14,44 @@
  * limitations under the License.
  *@
 
-@import config.FrontendAppConfig
-@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import views.html._
 @import play.api.mvc.Call
 @import controllers.invitations.psa.routes._
 
 @this(
-    main_template: main_template,
-    formHelper: FormWithCSRF,
-    appConfig: FrontendAppConfig
+layout: templates.Layout,
+formHelper: PlayFrontendFormWithCSRF,
+button: components.govuk_button
 )
 
 @(schemeName: String, returnCall: Call)(implicit request: Request[_], messages: Messages)
 
-@main_template(
-    title = s"${messages("messages__whatYouWillNeed__title")}",
-    bodyClasses = None
+@layout(
+    pageTitle = s"${messages("messages__whatYouWillNeed__title")}"
 ) {
 
     @formHelper(action = WhatYouWillNeedController.onSubmit, 'autoComplete -> "off") {
 
-    @components.back_link()
+        <h1 class="govuk-heading-xl">@messages("messages__whatYouWillNeed__heading")</h1>
 
-        @components.heading(messages("messages__whatYouWillNeed__heading"))
+        <p class="govuk-body">@messages("messages__whatYouWillNeed__lede")</p>
+        <p class="govuk-body">@messages("messages__whatYouWillNeed__list_heading")</p>
 
-        <p>@messages("messages__whatYouWillNeed__lede")</p>
-        <p>@messages("messages__whatYouWillNeed__list_heading")</p>
-
-        <ul class="list list-bullet">
+        <ul class="govuk-list govuk-list--bullet">
            <li>@messages("messages__whatYouWillNeed__item1")</li>
            <li>@messages("messages__whatYouWillNeed__item2")</li>
         </ul>
 
-        @components.submit_button("site.continue")
+        @button(messages("site.continue"))
 
-        @components.return_link(returnCall, Some(schemeName))
+        <p class="govuk-body">
+            <a id="return-link" class="govuk-link" href=returnCall>
+                @messages("messages__returnToSchemeDetails__link", schemeName)
+            </a>
+        </p>
     }
 }
