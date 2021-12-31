@@ -24,11 +24,11 @@
 @import utils.ViewHelper.titleWithErrors
 
 @this(
-layout: templates.Layout,
-formHelper: PlayFrontendFormWithCSRF,
-govukErrorSummary: GovukErrorSummary,
-govukCheckboxes : GovukCheckboxes,
-button: components.govuk_button
+    layout: templates.Layout,
+    formHelper: PlayFrontendFormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    govukCheckboxes : GovukCheckboxes,
+    button: components.govuk_button
 )
 
 @(form: Form[_])(implicit request: Request[_], messages: Messages)

@@ -14,8 +14,10 @@
  * limitations under the License.
  *@
 
-@import config.FrontendAppConfig
-@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import views.html._
 @import controllers.invitations.psa.routes._
 @import models._
@@ -23,9 +25,12 @@
 @import utils.ViewHelper.titleWithErrors
 
 @this(
-    main_template: main_template,
-    formHelper: FormWithCSRF,
-    appConfig: FrontendAppConfig
+    layout: templates.Layout,
+    formHelper: PlayFrontendFormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    button: components.govuk_button,
+    govukInput: GovukInput,
+    govukSelect : GovukSelect
 )
 
 @(
@@ -40,25 +45,65 @@
         messages: Messages
 )
 
-@main_template(
-    title = titleWithErrors(form, messages(s"messages__${prefix}__title")),
-    bodyClasses = None
-) {
+@layout(
+pageTitle = titleWithErrors(form, messages(s"messages__${prefix}__title"))) {
 
     @formHelper(action = AdviserManualAddressController.onSubmit(mode, prepopulated), 'autoComplete -> "off") {
 
-        @components.back_link()
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
+        }
 
-        @components.error_summary(form.errors)
-
-        @components.heading(
-            headingKey=messages(s"messages__${prefix}__heading", name)
-        )
+        <h1 class="govuk-heading-xl">@messages(s"messages__${prefix}__heading", name)</h1>
 
         <p>@messages("")</p>
 
-        @components.address(form, options)
+        @govukInput(
+            Input(
+                label = Label(content = Text(messages("messages__common__address1")),
+                isPageHeading = true)
+            ).withFormField(form("addressLine1"))
+        )
+        @govukInput(
+            Input(
+                label = Label(content = Text(messages("messages__common__address2")),
+                isPageHeading = true)
+            ).withFormField(form("addressLine2"))
+        )
+        @govukInput(
+            Input(
+                label = Label(content = Text(messages("messages__common__address3")),
+                isPageHeading = true)
+            ).withFormField(form("addressLine3"))
+        )
+        @govukInput(
+            Input(
+                label = Label(content = Text(messages("messages__common__address4")),
+                isPageHeading = true)
+            ).withFormField(form("addressLine4"))
+        )
+        @govukInput(
+            Input(
+                label = Label(content = Text(messages("messages__common__address_postcode")),
+                isPageHeading = true)
+            ).withFormField(form("postCode"))
+        )
+        @govukSelect(Select(
+            id = "country",
+            name = "country",
+            items = Seq(SelectItem(value = Some(""))) ++
+                options.map(valueOption =>
+                    SelectItem(
+                        value = Some(valueOption.value),
+                        text = valueOption.label
+                    )
+                ),
+            label = Label(
+                content = Text(messages("messages__common__country"))
+            )
+            ).withFormField(form("country"))
+        )
 
-        @components.submit_button()
+        @button(messages("site.save_and_continue"))
     }
 }

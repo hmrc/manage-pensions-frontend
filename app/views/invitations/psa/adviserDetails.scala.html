@@ -34,7 +34,7 @@
 @(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
 
     @layout(
-    pageTitle = messages("messages__adviser__name__title")) {
+    pageTitle = titleWithErrors(form, messages("messages__adviser__name__title"))) {
 
     @formHelper(action = AdviserDetailsController.onSubmit(mode), 'autoComplete -> "off") {
 
