@@ -1,5 +1,5 @@
 @*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,43 +16,41 @@
 
 @import config.FrontendAppConfig
 @import play.api.mvc.Call
-@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import views.html._
 @import viewmodels.{Section, AnswerSection, RepeaterAnswerSection}
 
 @this(
-    main_template: main_template,
-    formHelper: FormWithCSRF
+    layout: templates.Layout,
+    formHelper: PlayFrontendFormWithCSRF,
+    button: components.govuk_button,
+    govukSummaryList : GovukSummaryList
 )
 
-@(answerSections: Seq[Section], secondaryHeader: Option[String], postUrl: Call, guidance:Option[String] = None,
+@(answerSections: Seq[SummaryListRow], secondaryHeader: Option[String], postUrl: Call, guidance:Option[String] = None,
 guidanceData:Option[String] = None, buttonText: Option[String] = None)(implicit request: Request[_], messages: Messages)
 
-    @main_template(
-        title = messages("checkYourAnswers.title")
+    @layout(
+        pageTitle = messages("checkYourAnswers.title")
     ) {
 
         @formHelper(action = postUrl, 'autoComplete -> "off") {
 
-        @components.back_link()
-            @components.heading(
-                    headingKey=messages("checkYourAnswers.heading").toString,
-                    secondaryHeaderKey = secondaryHeader.map{x=>components.hyphen(messages(x)).toString}
-            )
+            <h1 class="govuk-heading-xl">@messages("checkYourAnswers.heading")</h1>
+
 
             @guidance.map{key=>@guidanceData.map{data=><p>@messages(key, data)}.getOrElse{<p>@messages(key)}</p>}
 
-
-            @for((section, i) <- answerSections.zipWithIndex){
-                @{
-                    section match {
-                        case a: AnswerSection => components.answer_section(a, i.toString)
-                        case r: RepeaterAnswerSection => components.repeater_answer_section(r, i.toString)
-                }
-            }
+            @govukSummaryList(SummaryList(
+                rows = answerSections
+            ))
+        @button(messages("site.save_and_continue"))
         }
 
-        @components.submit_button(buttonText.getOrElse("site.confirm"))
+
     }
 
-}
+

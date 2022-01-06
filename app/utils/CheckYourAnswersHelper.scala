@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,8 @@ import identifiers.invitations.psp.PspNameId
 import models.{Address, CheckMode, ClientReference}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListRow, Value, Actions, ActionItem}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.label.Label
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{ActionItem, Actions, Key, SummaryListRow, Value}
 import utils.countryOptions.CountryOptions
 import viewmodels.AnswerRow
 
@@ -34,39 +35,60 @@ import viewmodels.AnswerRow
 
 class CheckYourAnswersHelper(userAnswers: UserAnswers, countryOptions: CountryOptions) extends Enumerable.Implicits {
 
-  def psaName: Option[AnswerRow] = {
+  def psaName(implicit messages: Messages): Option[SummaryListRow] = {
     userAnswers.get(InviteeNameId) map { answer =>
-      AnswerRow("messages__check__your__answer__psa__name__label", Seq(answer), true,
-        Some(PsaNameController.onPageLoad(CheckMode).url))
+      SummaryListRow(
+        key = Key(Text(messages("messages__check__your__answer__psa__name__label")), classes = "govuk-!-width-one-half"),
+        value = Value(Text(answer)),
+        actions = Some(Actions("", items = Seq(ActionItem(href = PsaNameController.onPageLoad(CheckMode).url,
+          content = Text(messages("site.change")), visuallyHiddenText = Some(messages("messages__check__your__answer__psp__name__label"))))))
+      )
     }
   }
 
-  def psaId: Option[AnswerRow] = {
+  def psaId(implicit messages: Messages): Option[SummaryListRow] = {
     userAnswers.get(InviteePSAId) map { answer =>
-      AnswerRow("messages__check__your__answer__psa__id__label", Seq(answer), true,
-        Some(PsaIdController.onPageLoad(CheckMode).url))
+      SummaryListRow(
+        key = Key(Text(messages("messages__check__your__answer__psa__id__label")), classes = "govuk-!-width-one-half"),
+        value = Value(Text(answer)),
+        actions = Some(Actions("", items = Seq(ActionItem(href = PsaIdController.onPageLoad(CheckMode).url,
+          content = Text(messages("site.change")), visuallyHiddenText = Some(messages("messages__check__your__answer__psp__name__label"))))))
+      )
     }
   }
 
-  def adviserName: Option[AnswerRow] = {
+  def adviserName(implicit messages: Messages): Option[SummaryListRow] = {
     userAnswers.get(AdviserNameId) map { answer =>
-      AnswerRow("messages__check__your__answer__adviser__name__label", Seq(answer),
-        true, Some(AdviserDetailsController.onPageLoad(CheckMode).url))
+      SummaryListRow(
+        key = Key(Text(messages("messages__check__your__answer__adviser__name__label")), classes = "govuk-!-width-one-half"),
+        value = Value(Text(answer)),
+        actions = Some(Actions("", items = Seq(ActionItem(href = AdviserDetailsController.onPageLoad(CheckMode).url,
+          content = Text(messages("site.change")), visuallyHiddenText = Some(messages("messages__check__your__answer__psp__name__label"))))))
+      )
     }
   }
 
-  def adviserEmail(label: String): Option[AnswerRow] = {
+  def adviserEmail(label: String)(implicit messages: Messages): Option[SummaryListRow] = {
     userAnswers.get(AdviserEmailId) map { answer =>
-      AnswerRow(label, Seq(answer),
-        false, Some(AdviserEmailAddressController.onPageLoad(CheckMode).url))
+      SummaryListRow(
+        key = Key(Text(label), classes = "govuk-!-width-one-half"),
+        value = Value(Text(answer)),
+        actions = Some(Actions("", items = Seq(ActionItem(href = AdviserEmailAddressController.onPageLoad(CheckMode).url,
+          content = Text(messages("site.change")), visuallyHiddenText = Some(label)))))
+      )
     }
   }
 
-  def adviserAddress(label: String): Option[AnswerRow] = {
+  def adviserAddress(label: String)(implicit messages: Messages): Option[SummaryListRow] = {
     userAnswers.get(AdviserAddressId) map { answer =>
-      AnswerRow(label, addressAnswer(answer),
-        false, Some(AdviserManualAddressController.onPageLoad(CheckMode, true).url))
+      SummaryListRow(
+        key = Key(Text(label), classes = "govuk-!-width-one-half"),
+        value = Value(Text(addressAnswer(answer).mkString(", "))),
+        actions = Some(Actions("", items = Seq(ActionItem(href = AdviserManualAddressController.onPageLoad(CheckMode, true).url,
+          content = Text(messages("site.change")), visuallyHiddenText = Some(label)))))
+      )
     }
+
   }
 
   def addressAnswer(address: Address): Seq[String] = {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,6 @@ import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.annotations.Invitations
 import utils.{CheckYourAnswersFactory, DateHelper, Navigator}
-import viewmodels.AnswerSection
 import views.html.check_your_answers
 
 import java.time.LocalDateTime
@@ -62,7 +61,7 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
       MinimalSchemeDetailId.retrieve.right.map { schemeDetail =>
 
         val checkYourAnswersHelper = checkYourAnswersFactory.checkYourAnswersHelper(request.userAnswers)
-        val sections = Seq(AnswerSection(None, Seq(checkYourAnswersHelper.psaName, checkYourAnswersHelper.psaId).flatten))
+        val sections = Seq(checkYourAnswersHelper.psaName, checkYourAnswersHelper.psaId).flatten
 
         Future.successful(Ok(view(sections, None, CheckYourAnswersController.onSubmit(),
           Some("messages__check__your__answer__main__containt__label"), Some(schemeDetail.schemeName))))
