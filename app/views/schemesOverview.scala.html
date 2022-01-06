@@ -16,11 +16,16 @@
 
 @import config.FrontendAppConfig
 @import viewmodels.CardViewModel
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.hmrcfrontend.views.html.components._
 @import models.Link
 
 @this(
-        main_template: main_template,
-        appConfig: FrontendAppConfig
+    layout: templates.Layout,
+    hmrcPageHeading : HmrcPageHeading,
+    appConfig: FrontendAppConfig
 )
 
 @(
@@ -37,26 +42,35 @@
         messages: Messages
 )
 
-    @main_template(
-        title = messages(title),
-        mainContentContainerClasses = Some("full-width")
+    @layout(
+        pageTitle = messages(title),
+        fullWidthLayout = true
     ) {
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                @hmrcPageHeading(PageHeading(
+                    text = name,
+                    section = subHeading
+                ))
 
-        @components.heading(name, secondaryHeaderKey = subHeading)
+                <div class="flex-container govuk-grid-row">
+                    @penaltiesCardHtml.map { penaltiesCard =>
+                        @penaltiesCard
+                    }
+                    @components.card(schemeCard)
+                    @migrationHtml.map { migrationTile =>
+                        @migrationTile
+                    }
+                    @components.card(adminCard)
+                </div>
 
-        <div class="flex-container grid-row">
-            @penaltiesCardHtml.map { penaltiesCard =>
-                @penaltiesCard
-            }
-            @components.card(schemeCard)
-            @migrationHtml.map { migrationTile =>
-                @migrationTile
-            }
-            @components.card(adminCard)
+                @returnLink.map { ret =>
+                <p class="govuk-body">
+                    <a id="@ret.id" class="govuk-link" href="@ret.url">
+                        @messages(ret.linkText)
+                    </a>
+                </p>
+                }
+            </div>
         </div>
-
-        @returnLink.map { ret =>
-            <a id="@ret.id" href="@ret.url">@messages(ret.linkText)</a>
-        }
-
     }
