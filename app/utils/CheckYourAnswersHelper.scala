@@ -26,11 +26,8 @@ import identifiers.invitations.psp.PspNameId
 import models.{Address, CheckMode, ClientReference}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
-import uk.gov.hmrc.govukfrontend.views.viewmodels.label.Label
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{ActionItem, Actions, Key, SummaryListRow, Value}
 import utils.countryOptions.CountryOptions
-import viewmodels.AnswerRow
-
 
 
 class CheckYourAnswersHelper(userAnswers: UserAnswers, countryOptions: CountryOptions) extends Enumerable.Implicits {
@@ -41,7 +38,7 @@ class CheckYourAnswersHelper(userAnswers: UserAnswers, countryOptions: CountryOp
         key = Key(Text(messages("messages__check__your__answer__psa__name__label")), classes = "govuk-!-width-one-half"),
         value = Value(Text(answer)),
         actions = Some(Actions("", items = Seq(ActionItem(href = PsaNameController.onPageLoad(CheckMode).url,
-          content = Text(messages("site.change")), visuallyHiddenText = Some(messages("messages__check__your__answer__psp__name__label"))))))
+          content = Text(messages("site.change")), visuallyHiddenText = Some(messages("messages__check__your__answer__psa__name__label"))))))
       )
     }
   }
@@ -52,7 +49,7 @@ class CheckYourAnswersHelper(userAnswers: UserAnswers, countryOptions: CountryOp
         key = Key(Text(messages("messages__check__your__answer__psa__id__label")), classes = "govuk-!-width-one-half"),
         value = Value(Text(answer)),
         actions = Some(Actions("", items = Seq(ActionItem(href = PsaIdController.onPageLoad(CheckMode).url,
-          content = Text(messages("site.change")), visuallyHiddenText = Some(messages("messages__check__your__answer__psp__name__label"))))))
+          content = Text(messages("site.change")), visuallyHiddenText = Some(messages("messages__check__your__answer__psa__id__label"))))))
       )
     }
   }
@@ -63,7 +60,7 @@ class CheckYourAnswersHelper(userAnswers: UserAnswers, countryOptions: CountryOp
         key = Key(Text(messages("messages__check__your__answer__adviser__name__label")), classes = "govuk-!-width-one-half"),
         value = Value(Text(answer)),
         actions = Some(Actions("", items = Seq(ActionItem(href = AdviserDetailsController.onPageLoad(CheckMode).url,
-          content = Text(messages("site.change")), visuallyHiddenText = Some(messages("messages__check__your__answer__psp__name__label"))))))
+          content = Text(messages("site.change")), visuallyHiddenText = Some(messages("messages__check__your__answer__adviser__name__label"))))))
       )
     }
   }

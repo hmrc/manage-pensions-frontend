@@ -36,6 +36,7 @@ import utils.{CheckYourAnswersFactory, UserAnswers}
 import utils.countryOptions.CountryOptions
 import viewmodels.AnswerSection
 import views.html.check_your_answers
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist._
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -43,7 +44,7 @@ class CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours 
 
   import CheckYourAnswersControllerSpec._
 
-  behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, Some(userAnswer), viewAsString)
+  behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, Some(userAnswer), viewAsString )
 
   behave like controllerWithOnSubmitMethod(onSubmitAction, getEmptyData, Some(userAnswerUpdated), None)
 
@@ -126,7 +127,7 @@ object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours
 
   def call: Call = CheckYourAnswersController.onSubmit()
 
-  def viewAsString() = view(Seq(AnswerSection(None, Seq())), None, call,
+  def viewAsString() = view(Seq(), None, call,
     Some("messages__check__your__answer__main__containt__label"), Some(testSchemeName))(fakeRequest, messages).toString
 
   def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {

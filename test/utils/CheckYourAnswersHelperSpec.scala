@@ -22,6 +22,8 @@ import models.{Address, CheckMode}
 import org.scalatest.MustMatchers
 import utils.countryOptions.CountryOptions
 import viewmodels.AnswerRow
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist._
+import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 
 class CheckYourAnswersHelperSpec
   extends SpecBase
@@ -43,11 +45,11 @@ class CheckYourAnswersHelperSpec
     "return answer row if data present" in {
 
       getHelper(userAnswers.inviteeName("abc")).psaName mustBe Some(
-        AnswerRow(
-          label = "messages__check__your__answer__psa__name__label",
-          answer = Seq("abc"),
-          answerIsMessageKey = true,
-          changeUrl = Some(PsaNameController.onPageLoad(CheckMode).url)
+        SummaryListRow(
+          key = Key(Text(messages("messages__check__your__answer__psa__name__label")), classes = "govuk-!-width-one-half"),
+          value = Value(Text("abc")),
+          actions = Some(Actions("", items = Seq(ActionItem(href = PsaNameController.onPageLoad(CheckMode).url,
+            content = Text(messages("site.change")), visuallyHiddenText = Some(messages("messages__check__your__answer__psa__name__label"))))))
         )
       )
     }
@@ -63,11 +65,11 @@ class CheckYourAnswersHelperSpec
     "return answer row if data present" in {
 
       getHelper(userAnswers.inviteeId("A0000000")).psaId mustBe Some(
-        AnswerRow(
-          label = "messages__check__your__answer__psa__id__label",
-          answer = Seq("A0000000"),
-          answerIsMessageKey = true,
-          changeUrl = Some(PsaIdController.onPageLoad(CheckMode).url)
+        SummaryListRow(
+          key = Key(Text(messages("messages__check__your__answer__psa__id__label")), classes = "govuk-!-width-one-half"),
+          value = Value(Text("A0000000")),
+          actions = Some(Actions("", items = Seq(ActionItem(href = PsaIdController.onPageLoad(CheckMode).url,
+            content = Text(messages("site.change")), visuallyHiddenText = Some(messages("messages__check__your__answer__psa__id__label"))))))
         )
       )
     }
