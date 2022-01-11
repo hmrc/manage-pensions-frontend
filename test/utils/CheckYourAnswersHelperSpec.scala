@@ -20,6 +20,8 @@ import base.SpecBase
 import controllers.invitations.psa.routes._
 import models.{Address, CheckMode}
 import org.scalatest.MustMatchers
+import uk.gov.hmrc.govukfrontend.views.Aliases.Text
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{ActionItem, Actions, Key, SummaryListRow, Value}
 import utils.countryOptions.CountryOptions
 import viewmodels.AnswerRow
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist._

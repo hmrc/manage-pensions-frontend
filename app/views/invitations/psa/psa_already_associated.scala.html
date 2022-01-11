@@ -14,27 +14,25 @@
  * limitations under the License.
  *@
 
-@import config.FrontendAppConfig
-@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import views.html._
 @import controllers.routes._
 @import models.Mode
 @import viewmodels.Message
 
 @this(
-main_template: main_template,
-appConfig: FrontendAppConfig
+layout: templates.Layout
 )
 
 @(inviteeName: String, schemeName: String)(implicit request: Request[_], messages: Messages)
 
-@main_template(
-    title = messages("messages__psaAlreadyAssociated__title"),
-
-    bodyClasses = None) {
-    @components.back_link()
-    @components.heading(Messages("messages__psaAlreadyAssociated__heading", inviteeName))
-    <p id="schemeName">@Messages("messages__psaAlreadyAssociated__schemeName", inviteeName, schemeName)</p>
-    <p id="inviteInformation">@Messages("messages__psaAlreadyAssociated__inviteInformation")</p>
-    <p><a id="return-to-schemes" href="@controllers.psa.routes.ListSchemesController.onPageLoad()">@messages("messages__psaAlreadyAssociated__returnToSchemes__link")</a></p>
+@layout(
+pageTitle = messages("messages__psaAlreadyAssociated__title")) {
+    <h1 class="govuk-heading-xl">@Messages("messages__psaAlreadyAssociated__heading", inviteeName)</h1>
+    <p id="schemeName" class="govuk-body">@Messages("messages__psaAlreadyAssociated__schemeName", inviteeName, schemeName)</p>
+    <p id="inviteInformation" class="govuk-body">@Messages("messages__psaAlreadyAssociated__inviteInformation")</p>
+    <p class="govuk-body"><a id="return-to-schemes" class="govuk-link" href="@controllers.psa.routes.ListSchemesController.onPageLoad()">@messages("messages__psaAlreadyAssociated__returnToSchemes__link")</a></p>
 }

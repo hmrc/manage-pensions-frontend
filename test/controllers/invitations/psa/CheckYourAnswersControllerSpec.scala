@@ -17,8 +17,8 @@
 package controllers.invitations.psa
 
 import base.JsonFileReader
-import connectors.{InvitationConnector, NameMatchingFailedException, PsaAlreadyInvitedException}
 import connectors.scheme.SchemeDetailsConnector
+import connectors.{InvitationConnector, NameMatchingFailedException, PsaAlreadyInvitedException}
 import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction}
 import controllers.behaviours.ControllerWithNormalPageBehaviours
 import controllers.invitations.psa.routes._
@@ -32,11 +32,9 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
-import utils.{CheckYourAnswersFactory, UserAnswers}
 import utils.countryOptions.CountryOptions
-import viewmodels.AnswerSection
-import views.html.check_your_answers
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist._
+import utils.{CheckYourAnswersFactory, UserAnswers}
+import views.html.check_your_answers_view
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -116,7 +114,7 @@ object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours
 
   private val fakeSchemeDetailsConnector: SchemeDetailsConnector = mock[SchemeDetailsConnector]
   val config = injector.instanceOf[Configuration]
-  private val view = injector.instanceOf[check_your_answers]
+  private val view = injector.instanceOf[check_your_answers_view]
 
   private def fakeInvitationConnector(response: Future[Unit] = Future.successful(())): InvitationConnector = new InvitationConnector {
 
@@ -127,7 +125,7 @@ object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours
 
   def call: Call = CheckYourAnswersController.onSubmit()
 
-  def viewAsString() = view(Seq(), None, call,
+  def viewAsString() = view(Seq(), call,
     Some("messages__check__your__answer__main__containt__label"), Some(testSchemeName))(fakeRequest, messages).toString
 
   def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
