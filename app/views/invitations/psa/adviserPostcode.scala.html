@@ -14,8 +14,10 @@
  * limitations under the License.
  *@
 
-@import config.FrontendAppConfig
-@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import views.html._
 @import controllers.routes._
 @import models.NormalMode
@@ -24,40 +26,43 @@
 @import utils.ViewHelper.titleWithErrors
 
 @this(
-    main_template: main_template,
-    formHelper: FormWithCSRF,
-    appConfig: FrontendAppConfig
+    layout: templates.Layout,
+    formHelper: PlayFrontendFormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    button: components.govuk_button,
+    govukInput: GovukInput
 )
 
 @(form: Form[_], name: String)(implicit request: Request[_], messages: Messages)
 
-@main_template(
-    title = titleWithErrors(form, messages("messages__adviser__postcode__title")),
-
-    bodyClasses = None
-) {
+@layout(
+    pageTitle = titleWithErrors(form, messages("messages__adviser__postcode__title"))) {
 
     @formHelper(action = AdviserAddressPostcodeLookupController.onSubmit(), 'autoComplete -> "off") {
 
-        @components.back_link()
-
-        @components.error_summary(form.errors)
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
+        }
 
         <div class="form-group @if(form.hasErrors){form-group--error}">
-            @components.heading(Message("messages__adviser__postcode__heading", name))
 
-            @components.paragraph_text(Message("messages__adviser__postcode__lede"))
+            <h1 class="govuk-heading-xl">@messages("messages__adviser__postcode__heading", name)</h1>
+            <p class="govuk-body">@messages("messages__adviser__postcode__lede")</p>
 
-            @components.input_text(
-              field = form("value"),
-              label = Message("messages__adviser__postcode__label")
+            @govukInput(
+                Input(
+                    label = Label(
+                    content = Text(Message("messages__adviser__postcode__label"))
+                    )
+                ).withFormField(form("value"))
             )
 
-            <p>
+            <p class="govuk-body">
                 @messages("messages__adviser__postcode__enter_postcode_lhs")
-                <a id="manual-address-link" href="@AdviserManualAddressController.onPageLoad(NormalMode, false)"> @messages("messages__adviser__postcode__enter_postcode_link")</a> @messages("messages__adviser__postcode__enter_postcode_rhs")
+                <a id="manual-address-link" class="govuk-link" href="@AdviserManualAddressController.onPageLoad(NormalMode, false)"> @messages("messages__adviser__postcode__enter_postcode_link")</a> @messages("messages__adviser__postcode__enter_postcode_rhs")
             </p>
         </div>
-        @components.submit_button()
+
+        @button(messages("site.save_and_continue"))
     }
 }

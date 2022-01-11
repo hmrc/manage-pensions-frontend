@@ -14,35 +14,40 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import views.html._
 @import viewmodels.Message
 @import controllers.invitations.psa.routes._
 @import utils.ViewHelper.titleWithErrors
 
 @this(
-    main_template: main_template,
-    formHelper: FormWithCSRF
+    layout: templates.Layout,
+    formHelper: PlayFrontendFormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    govukCheckboxes : GovukCheckboxes,
+    button: components.govuk_button
 )
 
 @(haveWorkingKnowledge: Boolean, isMasterTrust: Boolean, form: Form[_])(implicit request: Request[_], messages: Messages)
 
-@main_template(
-    title = titleWithErrors(form, messages("messages__declaration__title")),
-    bodyClasses = None
-) {
+@layout(
+    pageTitle = titleWithErrors(form, messages("messages__declaration__title"))
+){
 
-    @components.back_link()
 
-    @components.error_summary(form.errors)
-
-    @components.heading(Message("messages__declaration__title"))
+    <h1 class="govuk-heading-xl">@messages("messages__declaration__title")</h1>
 
     @formHelper(action = DeclarationController.onSubmit(), 'autoComplete -> "off") {
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form, mapping = Map("consent" -> "consent")))
+        }
 
         @components.paragraph_text(messages("messages__declaration__continue") + ":")
 
-        <ol class="list list-number">
+        <ol class="govuk-list govuk-list--number">
 
             <li>@messages("messages__declaration__statement1")</li>
 
@@ -67,17 +72,26 @@
             }
         </ol>
 
-        @components.fieldSet(
-            field = form("agree"),
-            legend = Message("messages__declaration__title"),
-            hiddenLegend = true
-        ) {
-            <div class="multiple-choice">
-                <input id="consent" name="agree" type="checkbox" value="agreed">
-                <label for="consent">I agree</label>
-            </div>
-        }
+        @govukCheckboxes(Checkboxes(
+            fieldset = Some(Fieldset(
+            legend = Some(Legend(
+            content = Text(messages("messages__declaration__title")),
+            classes = "govuk-visually-hidden",
+            isPageHeading = false
+            ))
+        )),
+        idPrefix = Some("consent"),
+            name = "consent",
+            items = Seq(
+                CheckboxItem(
+                content = Text(messages("messages__declaration__label")),
+                value ="true"
+            )
+            )
+            ).withFormField(form("consent")
+        )
+        )
 
-        @components.submit_button("site.continue")
+        @button(messages("site.continue"))
     }
 }

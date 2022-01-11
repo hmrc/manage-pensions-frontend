@@ -22,8 +22,8 @@ import play.api.data.Form
 
 class DeclarationFormProvider @Inject() () extends CheckboxMapping {
 
-  private val fieldName = "agree"
-  private val trueValue = "agreed"
+  private val fieldName = "consent"
+  private val trueValue = "true"
   private val invalidKey = "messages__error__declaration__required"
 
   def apply(): Form[Boolean] =

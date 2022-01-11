@@ -143,7 +143,7 @@ class DeclarationControllerSpec
         when(fakeInvitationCacheConnector.remove(eqTo(pstr), any())(any(), any())).thenReturn(Future.successful(()))
         when(fakeInvitationConnector.acceptInvite(eqTo(InvitationBuilder.acceptedInvitation))(any(), any())).thenReturn(Future.successful(()))
 
-        val result = controller(data).onSubmit()(fakeRequest.withFormUrlEncodedBody("agree" -> "agreed"))
+        val result = controller(data).onSubmit()(fakeRequest.withFormUrlEncodedBody("consent" -> "true"))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).value mustBe onwardRoute.url
         verify(fakeInvitationCacheConnector, times(1)).get(eqTo(pstr), any())(any(), any())
@@ -154,13 +154,13 @@ class DeclarationControllerSpec
       "redirect to session expired page when there is no matching invitation" in {
         when(fakeInvitationCacheConnector.get(eqTo(pstr), any())(any(), any())).thenReturn(Future.successful(Nil))
 
-        val result = controller(data).onSubmit()(fakeRequest.withFormUrlEncodedBody("agree" -> "agreed"))
+        val result = controller(data).onSubmit()(fakeRequest.withFormUrlEncodedBody("consent" -> "true"))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).value mustBe sessionExpired
       }
 
       "return Bad Request if invalid data is submitted" in {
-        val formWithErrors = form.withError("agree", messages("messages__error__declaration__required"))
+        val formWithErrors = form.withError("consent", messages("messages__error__declaration__required"))
         val result = controller(data).onSubmit()(fakeRequest)
         status(result) mustBe BAD_REQUEST
         contentAsString(result) mustBe viewAsString(formWithErrors)

@@ -26,8 +26,8 @@ import controllers.invitations.psa.routes._
 import identifiers.MinimalSchemeDetailId
 import identifiers.invitations.psa.InviteePSAId
 import identifiers.invitations.{CheckYourAnswersId, InviteeNameId}
-import models.psa.PsaDetails
 import models.invitations.Invitation
+import models.psa.PsaDetails
 import models.requests.DataRequest
 import models.{MinimalSchemeDetail, NormalMode, SchemeReferenceNumber}
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -37,7 +37,6 @@ import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.annotations.Invitations
 import utils.{CheckYourAnswersFactory, DateHelper, Navigator}
-import viewmodels.AnswerSection
 import views.html.check_your_answers_view
 
 import java.time.LocalDateTime

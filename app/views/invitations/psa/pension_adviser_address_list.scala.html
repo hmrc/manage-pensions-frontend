@@ -21,53 +21,50 @@
 @import views.html._
 @import models.Mode
 @import utils.ViewHelper.titleWithErrors
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 
 @this(
-    main_template: main_template,
-    formHelper: FormWithCSRF,
+    layout: templates.Layout,
+    govukRadios : GovukRadios,
+    formHelper: PlayFrontendFormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    button: components.govuk_button,
     appConfig: FrontendAppConfig
 )
 
 @(form: Form[_], addresses: Seq[TolerantAddress], mode: Mode)(implicit request: Request[_], messages: Messages)
 
-@main_template(
-    title = titleWithErrors(form, messages("messages__adviser__address__list__title")),
-    bodyClasses = None
-) {
+@layout(
+    pageTitle = titleWithErrors(form, messages("messages__adviser__address__list__title"))) {
 
     @formHelper(action = PensionAdviserAddressListController.onSubmit(mode), 'autoComplete -> "off") {
 
-        @components.back_link()
+    @if(form.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
+    }
+    <h1 class="govuk-heading-xl">@messages("messages__adviser__address__list__heading")</h1>
 
-        @components.error_summary(form.errors)
+    <p class="govuk-body">
+        @messages("messages__adviser__address__list__select")
+        <a id="manual-address-link" class="govuk-link" href="@AdviserManualAddressController.onPageLoad(mode, false)">
+            @messages("messages__adviser__address__list__link")
+        </a>
+    </p>
 
-        @components.heading(
-            headingKey=messages("messages__adviser__address__list__heading")
-        )
-
-        <p>
-             @messages("messages__adviser__address__list__select")
-             <a id="manual-address-link" href="@AdviserManualAddressController.onPageLoad(mode, false)">
-                  @messages("messages__adviser__address__list__link")
-             </a>
-        </p>
-
-        @components.fieldSet(
-            field = form("value"),
-            legend = "messages__adviser__address__list__heading",
-            hiddenLegend = true
-        ) {
-
-            @for((address, i) <- addresses.zipWithIndex) {
-                @components.radio(
-                    field = form("value"),
-                    label = address.print,
-                    value = i.toString
-                )
-            }
-
+    @govukRadios(Radios(
+        items =
+        for((address, i) <- addresses.zipWithIndex)
+        yield {
+            RadioItem(
+                content = Text(address.print),
+                value = Some(i.toString)
+            )
         }
-
-        @components.submit_button("site.save_and_continue")
+        ).withFormField(form("value"))
+    )
+    @button(messages("site.save_and_continue"))
     }
 }

@@ -24,8 +24,9 @@ import org.scalatestplus.mockito.MockitoSugar
 import play.api.mvc.Call
 import utils.{CheckYourAnswersFactory, UserAnswers}
 import utils.countryOptions.CountryOptions
-import viewmodels.{AnswerRow, AnswerSection}
 import views.html.check_your_answers
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist._
+import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 
 class CheckPensionAdviserAnswersControllerSpec extends ControllerWithNormalPageBehaviours with MockitoSugar{
   //scalastyle:off magic.number
@@ -41,15 +42,14 @@ class CheckPensionAdviserAnswersControllerSpec extends ControllerWithNormalPageB
   def call: Call = CheckPensionAdviserAnswersController.onSubmit()
   private val view = injector.instanceOf[check_your_answers]
 
-  val sections = Seq(AnswerSection(
-    None,
-    Seq(AnswerRow(
-      "messages__check__your__answer__adviser__name__label",
-      Seq(adviserName),
-      true,
-      Some(AdviserDetailsController.onPageLoad(CheckMode).url)
-    ))
-  ))
+  val sections = Seq(
+    SummaryListRow(
+      key = Key(Text(messages("messages__check__your__answer__adviser__name__label")), classes = "govuk-!-width-one-half"),
+      value = Value(Text(adviserName)),
+      actions = Some(Actions("", items = Seq(ActionItem(href = AdviserDetailsController.onPageLoad(CheckMode).url,
+        content = Text(messages("site.change")), visuallyHiddenText = Some(messages("messages__check__your__answer__adviser__name__label"))))))
+    ),
+  )
 
   def viewAsString() = view(sections, None, call)(fakeRequest, messages).toString
 

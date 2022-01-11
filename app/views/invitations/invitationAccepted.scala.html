@@ -14,28 +14,30 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.play.views.html._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import views.html._
 @import controllers.routes._
 @import models.Mode
 @import viewmodels.Message
 
 @this(
-    main_template: main_template
+    layout: templates.Layout,
+    govukPanel : GovukPanel
 )
 
 @(schemeName: String)(implicit request: Request[_], messages: Messages)
 
-@main_template(
-    title = messages("messages__invitationAccepted__title"),
+@layout(
+    pageTitle = messages("messages__invitationAccepted__title")
+) {
+    @govukPanel(Panel(
+        title = Text(messages("messages__invitationAccepted__heading", schemeName)),
+        content = HtmlContent("")
+    ))
 
-    bodyClasses = None) {
-    @components.back_link()
-
-    <div class="govuk-box-highlight">
-        @components.heading(Messages("messages__invitationAccepted__heading", schemeName))
-    </div>
-
-    <p><a id="return-to-schemes" href="@controllers.psa.routes.ListSchemesController.onPageLoad()">@messages("messages__invitationAccepted__returnToSchemes__link")</a></p>
+    <p class="govuk-body"><a id="return-to-schemes" class="govuk-link" href="@controllers.psa.routes.ListSchemesController.onPageLoad()">@messages("messages__invitationAccepted__returnToSchemes__link")</a></p>
 
 }

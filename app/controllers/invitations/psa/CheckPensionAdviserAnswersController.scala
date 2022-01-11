@@ -27,7 +27,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.annotations.AcceptInvitation
 import utils.{CheckYourAnswersFactory, Navigator}
-import viewmodels.{AnswerSection, Message}
+import viewmodels.Message
 import views.html.check_your_answers
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -51,11 +51,11 @@ class CheckPensionAdviserAnswersController @Inject()(appConfig: FrontendAppConfi
         val dynamicEmailLabel = Message("messages__check__your__answer__adviser__email__label", name)
         val dynamicAddressLabel = Message("messages__check__your__answer__adviser__address__label", name)
 
-        val sections = Seq(AnswerSection(None, Seq(
+        val sections = Seq(
           checkYourAnswersHelper.adviserName,
           checkYourAnswersHelper.adviserEmail(dynamicEmailLabel),
           checkYourAnswersHelper.adviserAddress(dynamicAddressLabel
-          )).flatten))
+          )).flatten
 
         Future.successful(Ok(view(sections, None, controllers.invitations.psa.routes.CheckPensionAdviserAnswersController.onSubmit())))
       }

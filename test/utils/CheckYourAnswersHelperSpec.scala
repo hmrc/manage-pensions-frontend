@@ -24,6 +24,8 @@ import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{ActionItem, Actions, Key, SummaryListRow, Value}
 import utils.countryOptions.CountryOptions
 import viewmodels.AnswerRow
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist._
+import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 
 class CheckYourAnswersHelperSpec
   extends SpecBase

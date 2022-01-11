@@ -17,8 +17,8 @@
 package controllers.invitations.psa
 
 import base.JsonFileReader
-import connectors.{InvitationConnector, NameMatchingFailedException, PsaAlreadyInvitedException}
 import connectors.scheme.SchemeDetailsConnector
+import connectors.{InvitationConnector, NameMatchingFailedException, PsaAlreadyInvitedException}
 import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction}
 import controllers.behaviours.ControllerWithNormalPageBehaviours
 import controllers.invitations.psa.routes._
@@ -32,9 +32,8 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
-import utils.{CheckYourAnswersFactory, UserAnswers}
 import utils.countryOptions.CountryOptions
-import viewmodels.AnswerSection
+import utils.{CheckYourAnswersFactory, UserAnswers}
 import views.html.check_your_answers_view
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -43,7 +42,7 @@ class CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours 
 
   import CheckYourAnswersControllerSpec._
 
-  behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, Some(userAnswer), viewAsString)
+  behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, Some(userAnswer), viewAsString )
 
   behave like controllerWithOnSubmitMethod(onSubmitAction, getEmptyData, Some(userAnswerUpdated), None)
 
