@@ -26,7 +26,9 @@ GET         /you-need-to-register                                               
 
 GET         /list-psp                                                                                        controllers.psp.ListSchemesController.onPageLoad
 
-POST        /list-psp                                                                                        controllers.psp.ListSchemesController.onSearch
+POST        /list-psp                                                                                        controllers.psp.ListSchemesController.onSubmit
+
+POST         /psp-list-results                                                                                controllers.psp.ListSchemesController.onSearch
 
 GET         /your-pension-schemes                                                                            controllers.psa.ListSchemesController.onPageLoad
 
