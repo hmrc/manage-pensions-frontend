@@ -16,15 +16,10 @@
 
 package utils.navigators
 
-import controllers.invitations.psa.routes._
-import controllers.invitations.routes._
 import controllers.psa.routes._
 import controllers.routes.SessionExpiredController
 import identifiers.Identifier
-import identifiers.invitations._
-import identifiers.invitations.psa.InviteePSAId
 import identifiers.psp.SearchPSTRId
-import models.NormalMode
 import play.api.mvc.Call
 import utils.{Navigator, UserAnswers}
 
