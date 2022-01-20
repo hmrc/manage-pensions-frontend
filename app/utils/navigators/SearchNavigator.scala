@@ -16,7 +16,7 @@
 
 package utils.navigators
 
-import controllers.psa.routes._
+import controllers.psp.routes._
 import controllers.routes.SessionExpiredController
 import identifiers.Identifier
 import identifiers.psp.SearchPSTRId

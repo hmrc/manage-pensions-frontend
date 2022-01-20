@@ -17,10 +17,10 @@
 package controllers.psp
 
 import config.FrontendAppConfig
-import connectors.FakeUserAnswersCacheConnector
 import connectors.admin.MinimalConnector
+import connectors.{FakeUserAnswersCacheConnector, UserAnswersCacheConnector}
 import controllers.ControllerSpecBase
-import controllers.actions.{AuthAction, FakeAuthAction}
+import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction}
 import forms.psp.ListSchemesFormProvider
 import models.{NormalMode, SchemeDetails, SchemeStatus}
 import org.mockito.ArgumentMatchers
@@ -29,6 +29,7 @@ import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.mvc.Call
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.SchemeSearchService
 import utils.FakeNavigator
@@ -63,6 +64,21 @@ import ListSchemesControllerSpec._
       )
     }
   }
+
+  "onSubmit" when {
+
+      when(mockMinimalConnector.getNameFromPspID(any())(any(), any())).thenReturn(Future.successful(Some(pspName)))
+    "return OK and the correct view when there are schemes" in {
+      val searchText = "24000001IN"
+      val onwardRoute = Call("POST", "www.example.com")
+      when(mockSchemeSearchService.searchPsp(any(), ArgumentMatchers.eq(Some(searchText)))(any(), any())).thenReturn(Future.successful(fullSchemes))
+      val postRequest = FakeRequest(POST, routes.ListSchemesController.onSubmit().url).withFormUrlEncodedBody("searchText" -> searchText)
+      val result = controller().onSubmit(postRequest)
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).value mustBe onwardRoute.url
+    }
+  }
+
 
   "onSearch" when {
 
@@ -140,7 +156,8 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
   private val emptySchemes: List[SchemeDetails] = List.empty[SchemeDetails]
   private val mockMinimalConnector: MinimalConnector =
     mock[MinimalConnector]
-  private val nextCall = Call("GET", "www.example.com")
+  val mockUserAnswersCacheConnector: UserAnswersCacheConnector = mock[UserAnswersCacheConnector]
+  private val nextCall = Call("POST", "www.example.com")
   private val navigator = new FakeNavigator(nextCall, NormalMode)
   private val mockAppConfig: FrontendAppConfig = mock[FrontendAppConfig]
   private val listSchemesFormProvider = new ListSchemesFormProvider
@@ -222,6 +239,12 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
       )
     )
   private val view: list_schemes = app.injector.instanceOf[list_schemes]
+
+  def controller(dataRetrievalAction: DataRetrievalAction = getDataWithPspName()): ListSchemesController =
+    new ListSchemesController(
+      mockAppConfig,messagesApi, FakeAuthAction,dataRetrievalAction,mockMinimalConnector, navigator,
+      mockUserAnswersCacheConnector,controllerComponents, view, listSchemesFormProvider,mockSchemeSearchService)
+
 
   private def testFixture(pspId: String): TestFixture =
     new TestFixture with MockitoSugar {
