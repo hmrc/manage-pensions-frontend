@@ -53,6 +53,10 @@ class PODSModule extends AbstractModule {
       .to(classOf[AcceptInvitationNavigator])
 
     bind(classOf[Navigator])
+      .annotatedWith(classOf[SearchPstr])
+      .to(classOf[SearchNavigator])
+
+    bind(classOf[Navigator])
       .annotatedWith(classOf[AuthorisePsp])
       .to(classOf[AuthorisePspNavigator])
 
