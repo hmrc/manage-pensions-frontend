@@ -91,7 +91,7 @@
 
                 @if(form("searchText").value.isDefined && form.errors.isEmpty && schemes.isEmpty) {
                     @form("searchText").value.map{ searchText =>
-                        <p id="noSchemes">
+                        <p id="noSchemes" role="status" class="govuk-margin-bottom-3 ">
                             @messages("messages__listSchemesPsp__noMatchesLeft") <span class="bold">@searchText</span>
                             @messages("messages__listSchemesPsp__noMatchesRight")
                         </p>
@@ -100,6 +100,7 @@
                 }
 
                 @if(schemes.nonEmpty && (form("searchText").value.exists(_.nonEmpty))) {
+                <p id="oneScheme" class="govuk-margin-bottom-3 " role="status"> @messages("messages__listSchemesPsp__oneResultFound")</p>
                     @components.scheme_list_psp(schemes, appConfig)
                 }
 
