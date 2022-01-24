@@ -49,7 +49,7 @@ class PspDashboardService @Inject()(appConfig: FrontendAppConfig,
           subHeadingParams = Seq(
             CardSubHeadingParam(
               subHeadingParam = pspId,
-              subHeadingParamClasses = "font-small")))),
+              subHeadingParamClasses = "font-small bold")))),
       links = Seq(
         Link("pspLink", appConfig.pspDetailsUrl, Message("messages__pspDashboard__psp_change")),
         //todo change pspDeregisterUrl once page to redirect to is implemented
