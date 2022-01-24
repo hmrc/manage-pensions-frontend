@@ -20,27 +20,24 @@ import com.google.inject.Inject
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import connectors.admin.MinimalConnector
-import controllers.actions.AuthAction
-import controllers.actions.DataRetrievalAction
+import controllers.actions.{AuthAction, DataRetrievalAction}
 import forms.psp.ListSchemesFormProvider
 import identifiers.psa.PSANameId
+import identifiers.psp.SearchPSTRId
 import models.AuthEntity.PSP
-import models.SchemeDetails
 import models.requests.OptionalDataRequest
+import models.{NormalMode, SchemeDetails}
 import play.api.data.Form
-import play.api.i18n.I18nSupport
-import play.api.i18n.MessagesApi
-import play.api.mvc.Action
-import play.api.mvc.AnyContent
-import play.api.mvc.MessagesControllerComponents
-import play.api.mvc.Result
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.SchemeSearchService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.annotations.SearchPstr
+import utils.{Navigator, UserAnswers}
 import views.html.psp.list_schemes
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class ListSchemesController @Inject()(
                                        val appConfig: FrontendAppConfig,
@@ -48,6 +45,7 @@ class ListSchemesController @Inject()(
                                        authenticate: AuthAction,
                                        getData: DataRetrievalAction,
                                        minimalConnector: MinimalConnector,
+                                       @SearchPstr navigator: Navigator,
                                        userAnswersCacheConnector: UserAnswersCacheConnector,
                                        val controllerComponents: MessagesControllerComponents,
                                        view: list_schemes,
@@ -113,6 +111,21 @@ class ListSchemesController @Inject()(
 
   }
 
+  def onSubmit: Action[AnyContent] = (authenticate(PSP) andThen getData ).async {
+    implicit request =>
+      form.bindFromRequest().fold(
+        (formWithErrors: Form[_]) => renderView(
+          schemeDetails = Nil,
+          numberOfSchemes = 0,
+          form = formWithErrors
+        ),
+        value => {
+          val uaUpdated = request.userAnswers.get.set(SearchPSTRId)(value).asOpt.getOrElse(UserAnswers())
+          Future.successful(Redirect(navigator.nextPage(SearchPSTRId, NormalMode, uaUpdated)))
+        }
+      )
+  }
+
   def onSearch: Action[AnyContent] = (authenticate(PSP) andThen getData).async {
     implicit request =>
       form
@@ -125,6 +138,9 @@ class ListSchemesController @Inject()(
               form = formWithErrors
             ),
           value => {
+            Future.successful(
+              Redirect(controllers.routes.SessionExpiredController.onPageLoad())
+            )
             searchAndRenderView(
               searchText = Some(value),
               pageNumber = 1,
