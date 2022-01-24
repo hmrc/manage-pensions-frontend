@@ -54,6 +54,7 @@ class SchemesOverviewController @Inject()(
 
   def onPageLoad: Action[AnyContent] = (authenticate() andThen getData).async {
     implicit request =>
+      val subHeading: String = Message("messages__psaDashboard__sub_heading")
       val psaId = request.psaIdOrException.id
       service.getPsaMinimalDetails(psaId).flatMap { minDetails =>
         if (minDetails.deceasedFlag) {
@@ -69,7 +70,7 @@ class SchemesOverviewController @Inject()(
                 migrationHtml <- service.retrieveMigrationTile
                 _ <- userAnswersCacheConnector.save(request.externalId, PSANameId, name)
               } yield {
-                Ok(view(name, "site.psa", cards.head,cards(1), Some(penaltiesHtml), migrationHtml, None, returnLink(request.pspId)))
+                Ok(view(name, "site.psa", cards.head,cards(1), Some(penaltiesHtml), migrationHtml, Some(subHeading), returnLink(request.pspId)))
               }
             case _ =>
               Future.successful(Redirect(SessionExpiredController.onPageLoad()))
