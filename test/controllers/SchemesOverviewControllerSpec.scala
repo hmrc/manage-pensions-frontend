@@ -44,6 +44,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
 
   import SchemesOverviewControllerSpec._
 
+  val subHeading: String = Message("messages__psaDashboard__sub_heading")
   val fakeSchemesOverviewService: SchemesOverviewService = mock[SchemesOverviewService]
   val fakeUserAnswersCacheConnector: UserAnswersCacheConnector = mock[UserAnswersCacheConnector]
   val appConfig: FrontendAppConfig = mock[FrontendAppConfig]
@@ -62,7 +63,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
     adminTile,
     penaltiesCardHtml = Some(html),
     migrationHtml = Some(html),
-    subHeading = None,
+    subHeading = Some(subHeading),
     returnLink = None
   )(fakeRequest, messages).toString
 

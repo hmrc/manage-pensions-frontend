@@ -69,7 +69,7 @@ object PspDashboardServiceSpec extends SpecBase with MockitoSugar {
           subHeadingParams = Seq(
             CardSubHeadingParam(
               subHeadingParam = pspId,
-              subHeadingParamClasses = "font-small")))),
+              subHeadingParamClasses = "font-small bold")))),
       links = Seq(
         Link("pspLink", frontendAppConfig.pspDetailsUrl, Message("messages__pspDashboard__psp_change")),
         Link("deregister-link", frontendAppConfig.pspDeregisterCompanyUrl, Message("messages__pspDashboard__psp_deregister"))
