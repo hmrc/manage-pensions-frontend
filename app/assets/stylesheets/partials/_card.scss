@@ -94,6 +94,9 @@ html[data-useragent*='MSIE 10.0'] .flex-container {
         color: $black;
       }
     }
+    .card-sub-heading span.govuk-tag--red {
+       color: #942514 !important;
+        }
      .card-sub-heading span.font-small.bold{
        color: $black;
      }
