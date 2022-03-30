@@ -693,3 +693,22 @@ messages__delimitedAdmin__title = You cannot access this service using this sche
 messages__delimitedAdmin__p = This scheme administrator ID is no longer valid as the administrator using it is no longer registered on this service.
 messages__delimitedAdmin__link = Contact HMRC for help
 messages__summary_list_action = Action
+
+
+#triagev2
+messages__whichServiceYouWantToView__title = Which service would you like to view?
+messages__whichServiceYouWantToView__error__required = Select what service you’d like to view
+messages__whichServiceYouWantToView__opt1 = Managing Pension Schemes
+messages__whichServiceYouWantToView__opt1__PSA__hint = This is the new service that has been in operation since 2018. Apply to register a new pension scheme, file an Accounting for Tax return and manage the schemes you are an administrator of.
+messages__whichServiceYouWantToView__opt1__PSP__hint = This is the new service that has been in operation since 2018. Manage pension schemes you are authorised to.
+messages__whichServiceYouWantToView__opt2 = Pension Schemes Online
+messages__whichServiceYouWantToView__opt2__PSA__hint = This is the old service. View data, submit returns and file reports for pension schemes you manage.
+messages__whichServiceYouWantToView__opt2__PSP__hint = This is the old service. Manage pension schemes you are authorised to.
+messages__whichServiceYouWantToView__opt3 = I’m unsure what service I need
+
+messages__whatDoYouWantToDo__v2__title = What do you want to do?
+messages__whatDoYouWantToDo__v2__error__required = Select what you want to do
+messages__whatDoYouWantToDo__v2__opt1 = View and manage an existing pension scheme
+messages__whatDoYouWantToDo__v2__opt2 = File an Accounting for Tax return
+messages__whatDoYouWantToDo__v2__opt3 = File a pension scheme return
+messages__whatDoYouWantToDo__v2__opt4 = File an event report

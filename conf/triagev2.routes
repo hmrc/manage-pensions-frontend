@@ -1,0 +1,11 @@
+
+
+GET         /:role/choose-your-service               controllers.triagev2.WhichServiceYouWantToViewController.onPageLoad(role: String)
+POST        /:role/choose-your-service               controllers.triagev2.WhichServiceYouWantToViewController.onSubmit(role: String)
+
+GET         /:role/what-do-you-want-to-do            controllers.triagev2.WhatDoYouWantToDoController.onPageLoad(role: String)
+POST        /:role/what-do-you-want-to-do            controllers.triagev2.WhatDoYouWantToDoController.onSubmit(role: String)
+
+GET         /:role/view-existing-pension-scheme      controllers.triagev2.ManageExistingSchemeController.onPageLoad(role: String)
+
+

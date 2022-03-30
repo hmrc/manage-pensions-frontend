@@ -1,0 +1,85 @@
+/*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package utils.navigators
+
+import config.FrontendAppConfig
+import controllers.triagev2.routes._
+import identifiers.Identifier
+import identifiers.triagev2._
+import models.triagev2.WhatRole.{PSA, PSP}
+import models.triagev2.WhichServiceYouWantToView.{IamUnsure, ManagingPensionSchemes, PensionSchemesOnline}
+import models.triagev2._
+import play.api.mvc.Call
+import utils.{Enumerable, Navigator, UserAnswers}
+
+import javax.inject.{Inject, Singleton}
+
+@Singleton
+class TriageV2Navigator @Inject()(appConfig: FrontendAppConfig) extends Navigator with Enumerable.Implicits {
+
+  override def routeMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
+    case WhatRoleId => whatRoleRoutes(ua)
+    case WhichServiceYouWantToViewId => whichServiceYouWantToViewRoutes(ua)
+  }
+
+  private def whatRoleRoutes(ua: UserAnswers): Call =
+    ua.get(WhatRoleId) match {
+      case role@(Some(PSA) | Some(PSP)) => WhichServiceYouWantToViewController.onPageLoad(role.get.toString)
+      case _ => controllers.triage.routes.NotRegisteredController.onPageLoad() //TODO replace with new version
+    }
+
+  private def whichServiceYouWantToViewRoutes(ua: UserAnswers): Call = {
+    val psaOverviewLink = appConfig.managePensionsUrl + controllers.routes.SchemesOverviewController.onPageLoad().url
+    val pspOverviewLink = appConfig.managePensionsUrl + controllers.psp.routes.PspDashboardController.onPageLoad().url
+    ua.get(WhatRoleId) match {
+      case role@(Some(PSA) | Some(PSP)) =>
+        ua.get(WhichServiceYouWantToViewId)(reads(WhichServiceYouWantToView.enumerable(role.get.toString))) match {
+          case Some(ManagingPensionSchemes) => Call("GET", s"${appConfig.loginUrl}?continue=${role.get.toString match {
+            case "PSA" => psaOverviewLink
+            case _ => pspOverviewLink
+          }}")
+          case Some(PensionSchemesOnline) => Call("GET", appConfig.tpssWelcomeUrl)
+          case Some(IamUnsure) => WhatDoYouWantToDoController.onPageLoad(role.get.toString)
+          case _ => controllers.routes.SessionExpiredController.onPageLoad()
+        }
+      case _ => controllers.routes.SessionExpiredController.onPageLoad()
+    }
+  }
+
+  //  private def whatDoYouWantToDoRoutes(ua: UserAnswers): Call =
+//    ua.get(WhatRoleId) match {
+//      case role@(Some(PSA) | Some(PSP)) =>
+//          ua.get(WhatDoYouWantToDoId)(reads(WhatDoYouWantToDo.enumerable(role.get.toString))) match {
+//            case Some(ManageExistingScheme) => DoesPSTRStartWithTwoController.onPageLoad(role.get.toString)
+//            case Some(CheckTheSchemeStatus) => Call("GET", s"${appConfig.loginUrl}?continue=${appConfig.loginToListSchemesUrl}")
+//            case Some(Invite) => DoesPSTRStartWithTwoInviteController.onPageLoad()
+//            case Some(BecomeAnAdmin) => DoesPSTRStartWithTwoInvitedController.onPageLoad()
+//            case Some(AuthorisePsp) => DoesPSTRStartWithTwoAuthPspController.onPageLoad()
+//            case Some(UpdateSchemeInformation) => DoesPSTRStartWithTwoUpdateController.onPageLoad()
+//            case Some(ChangeAdminDetails) => DoesPSAStartWithATwoController.onPageLoad()
+//            case Some(RegisterScheme) => Call("GET", appConfig.registerSchemeGuideGovUkLink)
+//            case Some(ChangePspDetails) => DoesPSPStartWithTwoController.onPageLoad()
+//            case Some(DeauthYourself) => DoesPSTRStartWithTwoDeAuthController.onPageLoad()
+//            case _ => controllers.routes.SessionExpiredController.onPageLoad()
+//          }
+//      case _ => controllers.routes.SessionExpiredController.onPageLoad()
+//  }
+
+  override protected def editRouteMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
+    case _ => controllers.routes.SessionExpiredController.onPageLoad()
+  }
+}
