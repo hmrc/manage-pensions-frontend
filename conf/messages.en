@@ -702,7 +702,7 @@ messages__whichServiceYouWantToView__opt1 = Managing Pension Schemes
 messages__whichServiceYouWantToView__opt1__PSA__hint = This is the new service that has been in operation since 2018. Apply to register a new pension scheme, file an Accounting for Tax return and manage the schemes you are an administrator of.
 messages__whichServiceYouWantToView__opt1__PSP__hint = This is the new service that has been in operation since 2018. Manage pension schemes you are authorised to.
 messages__whichServiceYouWantToView__opt2 = Pension Schemes Online
-messages__whichServiceYouWantToView__opt2__PSA__hint = This is the old service. View data, submit returns and file reports for pension schemes you manage.
+messages__whichServiceYouWantToView__opt2__PSA__hint = This is the old service. File an event report or pension scheme return for schemes with a PSTR starting with ‘0’.
 messages__whichServiceYouWantToView__opt2__PSP__hint = This is the old service. Manage pension schemes you are authorised to.
 messages__whichServiceYouWantToView__opt3 = I’m unsure what service I need
 
@@ -722,6 +722,7 @@ messages__manageExistingScheme__p1 = If your pension scheme has a PSTR starting 
 messages__manageExistingScheme__p2__1 = If your pension scheme has not been added to Managing Pension Schemes,
 messages__manageExistingScheme__p2__link__1 =  add it using this service
 messages__manageExistingScheme__p2__2 =You can also view and manage the scheme on
+messages__manageExistingScheme__p2__PSP = If your pension scheme has not been added to Managing Pension Schemes, use
 messages__manageExistingScheme__insetText =  Changes to scheme information need to be made on both services.
 
 
@@ -735,13 +736,13 @@ messages__fileAccountingForTaxReturn__p2__item1 = file a new return for a scheme
 messages__fileAccountingForTaxReturn__p2__item2 = amend a return you originally made on Pension Schemes Online
 
 messages__filePensionSchemeReturn__title = File a pension scheme return
-messages__filePensionSchemeReturn__p1 = If your pension scheme has a PSTR starting with ‘0’, file your pension scheme return using the
-messages__filePensionSchemeReturn__p2 = If your pension scheme has a PSTR starting with ‘2’, we’ll tell you how to file your pension scheme return when we issue your Notice to file.
+messages__filePensionSchemeReturn__p1 = If your pension scheme has a PSTR starting with ‘0’, file your pension scheme return on
+messages__filePensionSchemeReturn__p2 = If your pension scheme has a PSTR starting with ‘2’, we’ll tell you how to file your pension scheme return when we issue your notice to file.
 
 messages__fileEventReport__title = File an event report
 messages__fileEventReport__p1__1 = If your pension scheme has a PSTR starting with ‘2’, email
 messages__fileEventReport__p1__2 = with ‘Event Report – Managing pension schemes’ in the subject line.
 messages__fileEventReport__email = pensions.businessdelivery@hmrc.gov.uk
-messages__fileEventReport__p2__1 = If your pension scheme has a PSTR starting with ‘0’, submit your event report using the
+messages__fileEventReport__p2__1 = If your pension scheme has a PSTR starting with ‘0’, submit your event report on
 messages__fileEventReport__p2__2 = For some events, you may also need to email HMRC.
 messages__fileEventReport__link = Read the guidance to help submit your event report

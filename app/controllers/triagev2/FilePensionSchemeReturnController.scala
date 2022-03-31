@@ -16,6 +16,7 @@
 
 package controllers.triagev2
 
+import config.FrontendAppConfig
 import controllers.Retrievals
 import controllers.actions.TriageAction
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -28,6 +29,7 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class FilePensionSchemeReturnController @Inject()(override val messagesApi: MessagesApi,
+                                                  val appConfig: FrontendAppConfig,
                                                   triageAction: TriageAction,
                                                   val controllerComponents: MessagesControllerComponents,
                                                   val view: filePensionSchemeReturn
@@ -37,6 +39,6 @@ class FilePensionSchemeReturnController @Inject()(override val messagesApi: Mess
 
   def onPageLoad(role: String): Action[AnyContent] = triageAction.async {
     implicit request =>
-      Future.successful(Ok(view(role)))
+      Future.successful(Ok(view(appConfig.tpssWelcomeUrl)))
   }
 }

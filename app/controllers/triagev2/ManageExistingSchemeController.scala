@@ -16,6 +16,7 @@
 
 package controllers.triagev2
 
+import config.FrontendAppConfig
 import controllers.Retrievals
 import controllers.actions.TriageAction
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -28,15 +29,22 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class ManageExistingSchemeController @Inject()(override val messagesApi: MessagesApi,
+                                               val appConfig: FrontendAppConfig,
                                                triageAction: TriageAction,
                                                val controllerComponents: MessagesControllerComponents,
                                                val view: manageExistingScheme
-                                           )(implicit val executionContext: ExecutionContext
-                                           ) extends FrontendBaseController with I18nSupport with Enumerable.Implicits with Retrievals {
+                                              )(implicit val executionContext: ExecutionContext
+                                              ) extends FrontendBaseController with I18nSupport with Enumerable.Implicits with Retrievals {
 
 
   def onPageLoad(role: String): Action[AnyContent] = triageAction.async {
     implicit request =>
-      Future.successful(Ok(view(role)))
+      val (managePensionSchemeLink, managePensionMigrationSchemeLink) = role match {
+        case "PSA" => (s"${appConfig.loginUrl}?continue=${appConfig.loginToListSchemesUrl}",
+          s"${appConfig.loginUrl}?continue=${appConfig.migrationListOfSchemesUrl}")
+        case _ => (s"${appConfig.loginUrl}?continue=${appConfig.loginToListSchemesPspUrl}", "#")
+      }
+      val pensionSchemesOnlineLink = appConfig.tpssWelcomeUrl
+      Future.successful(Ok(view(role,managePensionSchemeLink, managePensionMigrationSchemeLink, pensionSchemesOnlineLink)))
   }
 }

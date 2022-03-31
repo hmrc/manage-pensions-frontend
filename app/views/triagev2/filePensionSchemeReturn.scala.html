@@ -24,7 +24,7 @@ layout: templates.Layout,
 govukInsetText : GovukInsetText
 )
 
-@(role: String)(implicit request: Request[_], messages: Messages)
+@(pensionSchemesOnlineLink: String)(implicit request: Request[_], messages: Messages)
 
 @layout(
         pageTitle = messages("messages__filePensionSchemeReturn__title")
@@ -32,7 +32,7 @@ govukInsetText : GovukInsetText
         <h1 class="govuk-heading-xl">@Messages("messages__filePensionSchemeReturn__title")</h1>
 
         <p class="govuk-body">@Messages("messages__filePensionSchemeReturn__p1")
-         <a href="#" class="govuk-link">@Messages("message__triage__pensionSchemesOnlineService__link")</a>.
+         <a href="@pensionSchemesOnlineLink" class="govuk-link">@Messages("message__triage__pensionSchemesOnline__link")</a>.
         </p>
 
         <p class="govuk-body">@Messages("messages__filePensionSchemeReturn__p2")</p>

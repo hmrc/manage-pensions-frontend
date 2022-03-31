@@ -24,7 +24,7 @@ layout: templates.Layout,
 govukInsetText : GovukInsetText
 )
 
-@(role: String)(implicit request: Request[_], messages: Messages)
+@(managePensionSchemeLink: String,pensionSchemesOnlineLink: String)(implicit request: Request[_], messages: Messages)
 
 @layout(
         pageTitle = messages("messages__fileAccountingForTaxReturn__title")
@@ -33,7 +33,7 @@ govukInsetText : GovukInsetText
 
         <p class="govuk-body">
             @Messages("messages__fileAccountingForTaxReturn__p__1")
-            <a href="#" class="govuk-link">@Messages("message__triage__managingPensionSchemes__link")</a>
+            <a href="@managePensionSchemeLink" class="govuk-link">@Messages("message__triage__managingPensionSchemes__link")</a>
             @Messages("messages__fileAccountingForTaxReturn__p__2")
         </p>
         <ul class="govuk-list govuk-list--bullet">
@@ -44,7 +44,7 @@ govukInsetText : GovukInsetText
 
         <p class="govuk-body">
             @Messages("messages__fileAccountingForTaxReturn__p__1")
-            <a href="#" class="govuk-link">@Messages("message__triage__pensionSchemesOnline__link")</a>
+            <a href="@pensionSchemesOnlineLink" class="govuk-link">@Messages("message__triage__pensionSchemesOnline__link")</a>
             @Messages("messages__fileAccountingForTaxReturn__p__2")
         </p>
         <ul class="govuk-list govuk-list--bullet">

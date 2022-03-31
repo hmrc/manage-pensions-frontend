@@ -16,6 +16,7 @@
 
 package controllers.triagev2
 
+import config.FrontendAppConfig
 import controllers.Retrievals
 import controllers.actions.TriageAction
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -28,6 +29,7 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class FileAccountingForTaxReturnController @Inject()(override val messagesApi: MessagesApi,
+                                                     val appConfig: FrontendAppConfig,
                                                      triageAction: TriageAction,
                                                      val controllerComponents: MessagesControllerComponents,
                                                      val view: fileAccountingForTaxReturn
@@ -37,6 +39,13 @@ class FileAccountingForTaxReturnController @Inject()(override val messagesApi: M
 
   def onPageLoad(role: String): Action[AnyContent] = triageAction.async {
     implicit request =>
-      Future.successful(Ok(view(role)))
+      val psaOverviewLink = appConfig.managePensionsUrl + controllers.routes.SchemesOverviewController.onPageLoad().url
+      val pspOverviewLink = appConfig.managePensionsUrl + controllers.psp.routes.PspDashboardController.onPageLoad().url
+      val managePensionSchemeLink = role match {
+        case "PSA" => psaOverviewLink
+        case _ => pspOverviewLink
+      }
+      val pensionSchemesOnlineLink = appConfig.tpssWelcomeUrl
+      Future.successful(Ok(view(managePensionSchemeLink, pensionSchemesOnlineLink)))
   }
 }
