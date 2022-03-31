@@ -33,6 +33,7 @@ import javax.inject.{Inject, Singleton}
 class TriageV2Navigator @Inject()(appConfig: FrontendAppConfig) extends Navigator with Enumerable.Implicits {
 
   override def routeMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
+
     case WhatRoleId => whatRoleRoutes(ua)
     case WhichServiceYouWantToViewId => whichServiceYouWantToViewRoutes(ua)
     case WhatDoYouWantToDoId => whatDoYouWantToDoRoutes(ua)
@@ -48,8 +49,7 @@ class TriageV2Navigator @Inject()(appConfig: FrontendAppConfig) extends Navigato
     val psaOverviewLink = appConfig.managePensionsUrl + controllers.routes.SchemesOverviewController.onPageLoad().url
     val pspOverviewLink = appConfig.managePensionsUrl + controllers.psp.routes.PspDashboardController.onPageLoad().url
     ua.get(WhatRoleId) match {
-      case role@(Some(PSA) | Some(PSP)) =>
-        ua.get(WhichServiceYouWantToViewId)(reads(WhichServiceYouWantToView.enumerable(role.get.toString))) match {
+      case role@(Some(PSA) | Some(PSP)) => ua.get(WhichServiceYouWantToViewId)(reads(WhichServiceYouWantToView.enumerable(role.get.toString))) match {
           case Some(ManagingPensionSchemes) => Call("GET", s"${appConfig.loginUrl}?continue=${role.get.toString match {
             case "PSA" => psaOverviewLink
             case _ => pspOverviewLink

@@ -29,4 +29,7 @@ import scala.concurrent.Future
 class FeatureToggleService @Inject()(featureToggleConnector:FeatureToggleConnector) {
   def get(name: FeatureToggleName)(implicit hc:HeaderCarrier, ec: ExecutionContext): Future[FeatureToggle] =
     featureToggleConnector.get(name.asString)
+
+  def getAftFeatureToggle(name: FeatureToggleName)(implicit hc:HeaderCarrier, ec: ExecutionContext): Future[FeatureToggle] =
+    featureToggleConnector.getAftFeatureToggle(name.asString)
 }

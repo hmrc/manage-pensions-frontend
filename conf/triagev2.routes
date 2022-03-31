@@ -1,4 +1,6 @@
 
+GET         /who-are-you-in-service                     controllers.triagev2.WhatRoleControllerV2.onPageLoad
+POST        /who-are-you-in-service                     controllers.triagev2.WhatRoleControllerV2.onSubmit
 
 GET         /:role/choose-your-service               controllers.triagev2.WhichServiceYouWantToViewController.onPageLoad(role: String)
 POST        /:role/choose-your-service               controllers.triagev2.WhichServiceYouWantToViewController.onSubmit(role: String)

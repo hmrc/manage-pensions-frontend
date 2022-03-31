@@ -14,49 +14,39 @@
  * limitations under the License.
  */
 
-package controllers.triage
+package controllers.triagev2
 
 import controllers.Retrievals
 import controllers.actions.TriageAction
-import forms.triage.WhatRoleFormProvider
-import identifiers.triage.WhatRoleId
-import models.FeatureToggle.{Disabled, Enabled}
-import models.FeatureToggleName.FinancialInformationAFT
+import forms.triagev2.WhatRoleFormProviderV2
+import identifiers.triagev2.WhatRoleId
 import models.NormalMode
-import models.triage.WhatRole
+import models.triagev2.WhatRole
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.FeatureToggleService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.annotations.Triage
+import utils.annotations.TriageV2
 import utils.{Enumerable, Navigator, UserAnswers}
-import views.html.triage.whatRole
+import views.html.triageV2.whatRole
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class WhatRoleController @Inject()(override val messagesApi: MessagesApi,
-                                   @Triage navigator: Navigator,
-                                   triageAction: TriageAction,
-                                   formProvider: WhatRoleFormProvider,
-                                   val controllerComponents: MessagesControllerComponents,
-                                   toggleService: FeatureToggleService,
-                                   val view: whatRole)
-                                  (implicit val executionContext: ExecutionContext)
+class WhatRoleControllerV2 @Inject()(override val messagesApi: MessagesApi,
+                                     @TriageV2 navigator: Navigator,
+                                     triageAction: TriageAction,
+                                     formProvider: WhatRoleFormProviderV2,
+                                     val controllerComponents: MessagesControllerComponents,
+                                     val view: whatRole)
+                                    (implicit val executionContext: ExecutionContext)
                                     extends FrontendBaseController with I18nSupport with Enumerable.Implicits with Retrievals {
 
   private def form: Form[WhatRole] = formProvider()
 
   def onPageLoad: Action[AnyContent] = triageAction.async {
     implicit request =>
-      toggleService.getAftFeatureToggle(FinancialInformationAFT).flatMap {
-        case Enabled(FinancialInformationAFT) =>
-          Future.successful(Redirect(controllers.triagev2.routes.WhatRoleControllerV2.onPageLoad()))
-        case Disabled(FinancialInformationAFT) =>
-          Future.successful(Ok(view(form)))
-      }
-
+      Future.successful(Ok(view(form)))
   }
 
   def onSubmit: Action[AnyContent] = triageAction.async {

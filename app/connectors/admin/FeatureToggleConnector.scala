@@ -46,4 +46,18 @@ class FeatureToggleConnector @Inject()(http: HttpClient, config: FrontendAppConf
       case Failure(t: Throwable) => logger.warn("Unable to get toggle value", t)
     }
   }
+
+  def getAftFeatureToggle(name: String)
+         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[FeatureToggle] = {
+    val endPoint = config.aftFeatureToggleUrl(name)
+    http.GET[HttpResponse](endPoint) map {
+      response =>
+        response.status match {
+          case OK => response.json.as[FeatureToggle]
+          case _ => handleErrorResponse("GET", endPoint)(response)
+        }
+    } andThen {
+      case Failure(t: Throwable) => logger.warn("Unable to get toggle value", t)
+    }
+  }
 }

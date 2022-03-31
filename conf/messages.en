@@ -423,6 +423,7 @@ messages__cannotDeregister__p2 = This includes any schemes that have a status of
 
 messages__whatRole__title = What role are you registered as?
 messages__whatRole__p1 = Even if you are registered in the Pension Schemes Online service you need to register on the Managing Pension Schemes service to manage pension schemes with a Pension Scheme Tax Reference (PSTR) starting with ‘2’
+messages__whatRole__p2 = If you are registered on the Pension Schemes Online service you may still need to register on the Managing Pension Schemes service.
 messages__whatRole__error = Select what role you are registered as
 messages__whatRole__PSA = Pension scheme administrator
 messages__whatRole__PSP = Pension scheme practitioner
