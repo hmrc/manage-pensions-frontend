@@ -28,7 +28,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.annotations.TriageV2
 import utils.{Enumerable, Navigator, UserAnswers}
-import views.html.triageV2.whatRole
+import views.html.triagev2.whatRole
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
