@@ -27,22 +27,15 @@ govukInsetText : GovukInsetText
 @(role: String)(implicit request: Request[_], messages: Messages)
 
 @layout(
-        pageTitle = messages("messages__manageExistingScheme__title")
+        pageTitle = messages("messages__filePensionSchemeReturn__title")
 ){
-        <h1 class="govuk-heading-xl">@Messages("messages__manageExistingScheme__title")</h1>
+        <h1 class="govuk-heading-xl">@Messages("messages__filePensionSchemeReturn__title")</h1>
 
-        <p class="govuk-body">@Messages("messages__manageExistingScheme__p1")
-         <a href="#" class="govuk-link">@Messages("message__triage__managingPensionSchemes__link")</a>.
+        <p class="govuk-body">@Messages("messages__filePensionSchemeReturn__p1")
+         <a href="#" class="govuk-link">@Messages("message__triage__pensionSchemesOnlineService__link")</a>.
         </p>
 
-        <p class="govuk-body">@Messages("messages__manageExistingScheme__p2__1")
-            <a href="#" class="govuk-link">@Messages("messages__manageExistingScheme__p2__link__1")</a>.
-            @Messages("messages__manageExistingScheme__p2__2")
-            <a href="#" class="govuk-link">@Messages("message__triage__pensionSchemesOnline__link")</a>.
-        </p>
+        <p class="govuk-body">@Messages("messages__filePensionSchemeReturn__p2")</p>
 
-        @govukInsetText(InsetText(
-            content = Text(messages("messages__manageExistingScheme__insetText"))
-        ))
 
 }

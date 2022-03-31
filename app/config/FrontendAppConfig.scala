@@ -178,4 +178,5 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val minimumSchemeSearchResults: Int = runModeConfiguration.get[Int]("minimumSchemeSearchResults")
 
   lazy val contactHmrcUrl: String = runModeConfiguration.get[String]("urls.contactHmrc")
+  lazy val submitEventReportGovUkLink: String = runModeConfiguration.get[String]("urls.guidanceToSubmitEventReportPageGovUkLink")
 }

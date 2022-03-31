@@ -20,6 +20,7 @@ import config.FrontendAppConfig
 import controllers.triagev2.routes._
 import identifiers.Identifier
 import identifiers.triagev2._
+import models.triagev2.WhatDoYouWantToDo.{FileAccountingForTaxReturn, FileEventReport, FilePensionSchemeReturn, ManageExistingScheme}
 import models.triagev2.WhatRole.{PSA, PSP}
 import models.triagev2.WhichServiceYouWantToView.{IamUnsure, ManagingPensionSchemes, PensionSchemesOnline}
 import models.triagev2._
@@ -34,6 +35,7 @@ class TriageV2Navigator @Inject()(appConfig: FrontendAppConfig) extends Navigato
   override def routeMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
     case WhatRoleId => whatRoleRoutes(ua)
     case WhichServiceYouWantToViewId => whichServiceYouWantToViewRoutes(ua)
+    case WhatDoYouWantToDoId => whatDoYouWantToDoRoutes(ua)
   }
 
   private def whatRoleRoutes(ua: UserAnswers): Call =
@@ -60,24 +62,19 @@ class TriageV2Navigator @Inject()(appConfig: FrontendAppConfig) extends Navigato
     }
   }
 
-  //  private def whatDoYouWantToDoRoutes(ua: UserAnswers): Call =
-//    ua.get(WhatRoleId) match {
-//      case role@(Some(PSA) | Some(PSP)) =>
-//          ua.get(WhatDoYouWantToDoId)(reads(WhatDoYouWantToDo.enumerable(role.get.toString))) match {
-//            case Some(ManageExistingScheme) => DoesPSTRStartWithTwoController.onPageLoad(role.get.toString)
-//            case Some(CheckTheSchemeStatus) => Call("GET", s"${appConfig.loginUrl}?continue=${appConfig.loginToListSchemesUrl}")
-//            case Some(Invite) => DoesPSTRStartWithTwoInviteController.onPageLoad()
-//            case Some(BecomeAnAdmin) => DoesPSTRStartWithTwoInvitedController.onPageLoad()
-//            case Some(AuthorisePsp) => DoesPSTRStartWithTwoAuthPspController.onPageLoad()
-//            case Some(UpdateSchemeInformation) => DoesPSTRStartWithTwoUpdateController.onPageLoad()
-//            case Some(ChangeAdminDetails) => DoesPSAStartWithATwoController.onPageLoad()
-//            case Some(RegisterScheme) => Call("GET", appConfig.registerSchemeGuideGovUkLink)
-//            case Some(ChangePspDetails) => DoesPSPStartWithTwoController.onPageLoad()
-//            case Some(DeauthYourself) => DoesPSTRStartWithTwoDeAuthController.onPageLoad()
-//            case _ => controllers.routes.SessionExpiredController.onPageLoad()
-//          }
-//      case _ => controllers.routes.SessionExpiredController.onPageLoad()
-//  }
+    private def whatDoYouWantToDoRoutes(ua: UserAnswers): Call =
+    ua.get(WhatRoleId) match {
+      case role@(Some(PSA) | Some(PSP)) =>
+          val memberRole = role.get.toString
+        ua.get(WhatDoYouWantToDoId)(reads(WhatDoYouWantToDo.enumerable(memberRole))) match {
+            case Some(ManageExistingScheme) => ManageExistingSchemeController.onPageLoad(memberRole)
+            case Some(FileAccountingForTaxReturn) => FileAccountingForTaxReturnController.onPageLoad(memberRole)
+            case Some(FilePensionSchemeReturn) => FilePensionSchemeReturnController.onPageLoad(memberRole)
+            case Some(FileEventReport) => FileEventReportController.onPageLoad(memberRole)
+            case _ => controllers.routes.SessionExpiredController.onPageLoad()
+          }
+      case _ => controllers.routes.SessionExpiredController.onPageLoad()
+  }
 
   override protected def editRouteMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
     case _ => controllers.routes.SessionExpiredController.onPageLoad()

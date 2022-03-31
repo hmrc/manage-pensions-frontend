@@ -7,5 +7,8 @@ GET         /:role/what-do-you-want-to-do            controllers.triagev2.WhatDo
 POST        /:role/what-do-you-want-to-do            controllers.triagev2.WhatDoYouWantToDoController.onSubmit(role: String)
 
 GET         /:role/view-existing-pension-scheme      controllers.triagev2.ManageExistingSchemeController.onPageLoad(role: String)
+GET         /:role/file-an-aft                       controllers.triagev2.FileAccountingForTaxReturnController.onPageLoad(role: String)
+GET         /:role/file-a-pension-scheme-return      controllers.triagev2.FilePensionSchemeReturnController.onPageLoad(role: String)
+GET         /:role/file-an-event-report              controllers.triagev2.FileEventReportController.onPageLoad(role: String)
 
 

@@ -712,3 +712,36 @@ messages__whatDoYouWantToDo__v2__opt1 = View and manage an existing pension sche
 messages__whatDoYouWantToDo__v2__opt2 = File an Accounting for Tax return
 messages__whatDoYouWantToDo__v2__opt3 = File a pension scheme return
 messages__whatDoYouWantToDo__v2__opt4 = File an event report
+
+message__triage__managingPensionSchemes__link = Managing Pension Schemes
+message__triage__pensionSchemesOnline__link = Pension Schemes Online
+message__triage__pensionSchemesOnlineService__link = Pension Schemes Online Service
+
+messages__manageExistingScheme__title = View and manage an existing pension scheme
+messages__manageExistingScheme__p1 = If your pension scheme has a PSTR starting with ‘2’ or has been added from Pension Schemes Online, use
+messages__manageExistingScheme__p2__1 = If your pension scheme has not been added to Managing Pension Schemes,
+messages__manageExistingScheme__p2__link__1 =  add it using this service
+messages__manageExistingScheme__p2__2 =You can also view and manage the scheme on
+messages__manageExistingScheme__insetText =  Changes to scheme information need to be made on both services.
+
+
+messages__fileAccountingForTaxReturn__title = File an Accounting for Tax return
+messages__fileAccountingForTaxReturn__p__1 = File your return using
+messages__fileAccountingForTaxReturn__p__2 = if you want to:
+messages__fileAccountingForTaxReturn__p1__item1 = file a new return for a pension scheme with a PSTR starting with ‘2’
+messages__fileAccountingForTaxReturn__p1__item2 = file a new return for the quarter 1 April to 30 June 2020 or later
+messages__fileAccountingForTaxReturn__p1__item3 = amend a return you originally made on Managing Pension Schemes
+messages__fileAccountingForTaxReturn__p2__item1 = file a new return for a scheme with PSTR starting with ‘0’ when the return is for earlier than the quarter 1 April to 30 June 2020
+messages__fileAccountingForTaxReturn__p2__item2 = amend a return you originally made on Pension Schemes Online
+
+messages__filePensionSchemeReturn__title = File a pension scheme return
+messages__filePensionSchemeReturn__p1 = If your pension scheme has a PSTR starting with ‘0’, file your pension scheme return using the
+messages__filePensionSchemeReturn__p2 = If your pension scheme has a PSTR starting with ‘2’, we’ll tell you how to file your pension scheme return when we issue your Notice to file.
+
+messages__fileEventReport__title = File an event report
+messages__fileEventReport__p1__1 = If your pension scheme has a PSTR starting with ‘2’, email
+messages__fileEventReport__p1__2 = with ‘Event Report – Managing pension schemes’ in the subject line.
+messages__fileEventReport__email = pensions.businessdelivery@hmrc.gov.uk
+messages__fileEventReport__p2__1 = If your pension scheme has a PSTR starting with ‘0’, submit your event report using the
+messages__fileEventReport__p2__2 = For some events, you may also need to email HMRC.
+messages__fileEventReport__link = Read the guidance to help submit your event report
