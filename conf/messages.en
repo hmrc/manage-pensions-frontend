@@ -446,6 +446,9 @@ messages__whatDoYouWantToDo__opt10 = De‐authorise yourself from a scheme
 messages__notRegistered__title = Register as an administrator or practitioner
 messages__notRegistered__p1 = There are two pension scheme services currently in use - the Pension Schemes Online service and the new Managing Pension Schemes service.
 messages__notRegistered__p2 = The application date of the pension you want to manage will determine which service you need to register on.
+messages__notRegistered__v2__p1 = There are two pension scheme services currently in use.
+messages__notRegistered__v2__p2 = Managing Pension Schemes is the new service that has been in operation since 2018. Apply to register a new pension scheme and manage schemes.
+messages__notRegistered__v2__p3 = Pension Schemes Online is the old service. View data, submit returns and file reports for pension schemes you manage.
 messages__notRegistered__reg_psa_link = Register as an administrator
 messages__notRegistered__reg_psp_link = Register as a practitioner
 
