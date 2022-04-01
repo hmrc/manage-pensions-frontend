@@ -43,7 +43,7 @@ class PSPAuthorisationAuditEventSpec extends WordSpec with MustMatchers {
           "declarationAuthorisePensionSchemePractitionerDetails" ->
             Json.stringify(Json.obj("declarationBox1" -> true))
         )
-
+      event.auditType mustBe "PensionSchemeAdministratorAuthorisePractitioner"
       event.details mustBe expected
     }
   }
