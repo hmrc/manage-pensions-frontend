@@ -42,7 +42,7 @@ class TriageV2Navigator @Inject()(appConfig: FrontendAppConfig) extends Navigato
   private def whatRoleRoutes(ua: UserAnswers): Call =
     ua.get(WhatRoleId) match {
       case role@(Some(PSA) | Some(PSP)) => WhichServiceYouWantToViewController.onPageLoad(role.get.toString)
-      case _ => controllers.triage.routes.NotRegisteredController.onPageLoad() //TODO replace with new version
+      case _ => controllers.triagev2.routes.NotRegisteredController.onPageLoad()
     }
 
   private def whichServiceYouWantToViewRoutes(ua: UserAnswers): Call = {
