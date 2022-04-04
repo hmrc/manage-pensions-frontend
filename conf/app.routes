@@ -4,6 +4,7 @@
 ->          /invitations                                                                                     invitations.Routes
 ->          /authorise-psp                                                                                   pspInvitations.Routes
 ->          /guidance-triage                                                                                 triage.Routes
+->          /pensions-guidance-triage                                                                        triagev2.Routes
 ->          /                                                                                                remove.Routes
 
 GET         /                                                                                                controllers.SchemesOverviewController.redirect

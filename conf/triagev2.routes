@@ -1,0 +1,19 @@
+
+GET         /who-are-you-in-service                     controllers.triagev2.WhatRoleControllerV2.onPageLoad
+POST        /who-are-you-in-service                     controllers.triagev2.WhatRoleControllerV2.onSubmit
+
+GET         /register-administrator-or-practitioner     controllers.triagev2.NotRegisteredController.onPageLoad
+
+
+GET         /:role/choose-your-service               controllers.triagev2.WhichServiceYouWantToViewController.onPageLoad(role: String)
+POST        /:role/choose-your-service               controllers.triagev2.WhichServiceYouWantToViewController.onSubmit(role: String)
+
+GET         /:role/what-do-you-want-to-do            controllers.triagev2.WhatDoYouWantToDoController.onPageLoad(role: String)
+POST        /:role/what-do-you-want-to-do            controllers.triagev2.WhatDoYouWantToDoController.onSubmit(role: String)
+
+GET         /:role/view-existing-pension-scheme      controllers.triagev2.ManageExistingSchemeController.onPageLoad(role: String)
+GET         /:role/file-an-aft                       controllers.triagev2.FileAccountingForTaxReturnController.onPageLoad(role: String)
+GET         /:role/file-a-pension-scheme-return      controllers.triagev2.FilePensionSchemeReturnController.onPageLoad(role: String)
+GET         /:role/file-an-event-report              controllers.triagev2.FileEventReportController.onPageLoad(role: String)
+
+

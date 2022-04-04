@@ -59,6 +59,9 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   def featureToggleUrl(toggle:String) : String =
     s"${servicesConfig.baseUrl("pension-administrator")}${runModeConfiguration.underlying.getString("urls.featureToggle").format(toggle)}"
 
+  def aftFeatureToggleUrl(toggle: String): String =
+    s"$aftUrl${runModeConfiguration.underlying.getString("urls.featureToggle").format(toggle)}"
+
   lazy val authUrl: String = servicesConfig.baseUrl("auth")
   lazy val pensionsSchemeUrl: String = servicesConfig.baseUrl("pensions-scheme")
   lazy val pensionAdminUrl: String = servicesConfig.baseUrl("pension-administrator")
@@ -139,6 +142,10 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
     .getString("urls.penaltiesPartialHtml")}"
   lazy val migrationUrlsPartialHtmlUrl: String = s"${servicesConfig.baseUrl("migration-frontend")}${runModeConfiguration.underlying
     .getString("urls.migrationUrlsPartialHtml")}"
+
+  lazy val migrationListOfSchemesUrl: String = s"${servicesConfig.baseUrl("migration-frontend")}${runModeConfiguration.underlying
+    .getString("urls.migrationListOfSchemes")}"
+
   lazy val authorisePspUrl = s"${servicesConfig.baseUrl("pension-practitioner")}${runModeConfiguration.underlying
     .getString("urls.authorisePsp")}"
   lazy val deAuthorisePspUrl = s"${servicesConfig.baseUrl("pension-practitioner")}${runModeConfiguration.underlying
@@ -178,4 +185,5 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val minimumSchemeSearchResults: Int = runModeConfiguration.get[Int]("minimumSchemeSearchResults")
 
   lazy val contactHmrcUrl: String = runModeConfiguration.get[String]("urls.contactHmrc")
+  lazy val submitEventReportGovUkLink: String = runModeConfiguration.get[String]("urls.guidanceToSubmitEventReportPageGovUkLink")
 }

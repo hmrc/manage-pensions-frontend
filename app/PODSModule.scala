@@ -49,6 +49,10 @@ class PODSModule extends AbstractModule {
       .to(classOf[TriageNavigator])
 
     bind(classOf[Navigator])
+      .annotatedWith(classOf[TriageV2])
+      .to(classOf[TriageV2Navigator])
+
+    bind(classOf[Navigator])
       .annotatedWith(classOf[AcceptInvitation])
       .to(classOf[AcceptInvitationNavigator])
 
