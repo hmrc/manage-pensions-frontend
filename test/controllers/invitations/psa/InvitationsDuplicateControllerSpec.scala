@@ -26,7 +26,7 @@ import play.api.test.Helpers._
 import utils.{FakeNavigator, UserAnswers}
 import views.html.invitations.psa.invitation_duplicate
 
-class InvitationsDuplicateControllerSpec$ extends ControllerSpecBase {
+class InvitationsDuplicateControllerSpec extends ControllerSpecBase {
 
   import InvitationsDuplicateControllerSpec._
 
