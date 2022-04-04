@@ -20,15 +20,15 @@ import com.google.inject.Inject
 import connectors.UserAnswersCacheConnector
 import connectors.admin.MinimalConnector
 import controllers.Retrievals
-import controllers.actions.{DataRetrievalAction, DataRequiredAction, AuthAction}
-import identifiers.{SchemeNameId, AuthorisedPractitionerId}
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import identifiers.{AuthorisedPractitionerId, SchemeNameId}
 import models.AuthEntity.PSP
-import play.api.i18n.{MessagesApi, I18nSupport}
+import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.psp.deauthorisation.self.confirmation
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 class ConfirmationController @Inject()(override val messagesApi: MessagesApi,
                                        auth: AuthAction,

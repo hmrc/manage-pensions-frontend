@@ -17,21 +17,18 @@
 package audit
 
 import akka.stream.Materializer
-import org.scalatest.AsyncFlatSpec
-import org.scalatest.Inside
-import org.scalatest.Matchers
-import play.api.inject.ApplicationLifecycle
-import play.api.inject.bind
+import org.scalatest.{AsyncFlatSpec, Inside, Matchers}
+import play.api.inject.{ApplicationLifecycle, bind}
 import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.libs.json.Json
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.config.AuditingConfig
 import uk.gov.hmrc.play.audit.http.connector._
-import uk.gov.hmrc.play.audit.model.DataEvent
+import uk.gov.hmrc.play.audit.model.{DataEvent, ExtendedDataEvent}
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class AuditServiceSpec extends AsyncFlatSpec with Matchers with Inside {
 
@@ -53,6 +50,23 @@ class AuditServiceSpec extends AsyncFlatSpec with Matchers with Inside {
         auditSource shouldBe appName
         auditType shouldBe "TestAuditEvent"
         detail should contain("payload" -> "test-audit-payload")
+    }
+
+  }
+
+  "AuditServiceImpl" should "construct and send the correct Extended Event" in {
+
+    val event = TestAuditExtendedEvent("test-audit-payload")
+
+    auditService().sendExtendedEvent(event)
+
+    val sentEvent = FakeAuditConnector.lastSentExtendedEvent
+
+    inside(sentEvent) {
+      case ExtendedDataEvent(auditSource, auditType, _, _, detail, _) =>
+        auditSource shouldBe appName
+        auditType shouldBe "TestAuditEvent"
+        detail.toString() shouldBe Json.obj("payload" -> "test-audit-payload").toString()
     }
 
   }
@@ -79,6 +93,7 @@ object AuditServiceSpec {
 object FakeAuditConnector extends AuditConnector {
 
   private var sentEvent: DataEvent = _
+  private var sentExtendedEvent: ExtendedDataEvent = _
 
   override def auditingConfig: AuditingConfig = AuditingConfig(
     None,
@@ -91,8 +106,13 @@ object FakeAuditConnector extends AuditConnector {
     sentEvent = event
     super.sendEvent(event)
   }
+  override def sendExtendedEvent(event: ExtendedDataEvent)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[AuditResult] = {
+    sentExtendedEvent = event
+    super.sendExtendedEvent(event)
+  }
 
   def lastSentEvent: DataEvent = sentEvent
+  def lastSentExtendedEvent: ExtendedDataEvent = sentExtendedEvent
 
   def materializer: Materializer = ???
 
@@ -109,6 +129,17 @@ case class TestAuditEvent(payload: String) extends AuditEvent {
 
   override def details: Map[String, String] =
     Map(
+      "payload" -> payload
+    )
+
+}
+
+case class TestAuditExtendedEvent(payload: String) extends ExtendedAuditEvent {
+
+  override def auditType: String = "TestAuditEvent"
+
+  override def details =
+    Json.obj(
       "payload" -> payload
     )
 
