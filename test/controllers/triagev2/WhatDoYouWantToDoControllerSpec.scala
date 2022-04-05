@@ -43,25 +43,25 @@ class WhatDoYouWantToDoControllerSpec extends ControllerSpecBase with ScalaFutur
   "WhatDoYouWantToDoController" must {
 
     "return OK with the view when calling on page load" in {
-      val request = addCSRFToken(FakeRequest(GET, routes.WhatDoYouWantToDoController.onPageLoad("PSA").url))
+      val request = addCSRFToken(FakeRequest(GET, routes.WhatDoYouWantToDoController.onPageLoad("administrator").url))
       val result = route(application, request).value
 
       status(result) mustBe OK
-      contentAsString(result) mustBe view(formProvider("PSA"), "PSA")(request, messages).toString
+      contentAsString(result) mustBe view(formProvider("administrator"), "administrator")(request, messages).toString
     }
 
     "return a Bad Request and errors when invalid data is submitted" in {
-      val postRequest = FakeRequest(POST, routes.WhatDoYouWantToDoController.onSubmit("PSA").url).withFormUrlEncodedBody("value" -> "invalid value")
-      val boundForm = formProvider("PSA").bind(Map("value" -> "invalid value"))
+      val postRequest = FakeRequest(POST, routes.WhatDoYouWantToDoController.onSubmit("administrator").url).withFormUrlEncodedBody("value" -> "invalid value")
+      val boundForm = formProvider("administrator").bind(Map("value" -> "invalid value"))
       val result = route(application, postRequest).value
 
       status(result) mustBe BAD_REQUEST
-      contentAsString(result) mustBe view(boundForm, "PSA")(postRequest, messages).toString
+      contentAsString(result) mustBe view(boundForm, "administrator")(postRequest, messages).toString
 
     }
 
     "redirect to the next page for a valid request" in {
-      val postRequest = FakeRequest(POST, routes.WhatDoYouWantToDoController.onSubmit("PSA").url)
+      val postRequest = FakeRequest(POST, routes.WhatDoYouWantToDoController.onSubmit("administrator").url)
         .withFormUrlEncodedBody("value" -> ManageExistingScheme.toString)
       val result = route(application, postRequest).value
 

@@ -35,7 +35,7 @@ class FileAccountingForTaxReturnControllerSpec extends ControllerSpecBase with S
   "FileAccountingForTaxReturnController" must {
 
     "return OK with the view when calling on page load for PSA" in {
-      val role = "PSA"
+      val role = "administrator"
       val request = addCSRFToken(FakeRequest(GET, routes.FileAccountingForTaxReturnController.onPageLoad(role).url))
       val result = route(application, request).value
 
@@ -45,7 +45,7 @@ class FileAccountingForTaxReturnControllerSpec extends ControllerSpecBase with S
     }
 
     "return OK with the view when calling on page load for PSP" in {
-      val role = "PSP"
+      val role = "practitioner"
       val request = addCSRFToken(FakeRequest(GET, routes.FileAccountingForTaxReturnController.onPageLoad(role).url))
       val result = route(application, request).value
 

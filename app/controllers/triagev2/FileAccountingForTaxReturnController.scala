@@ -42,7 +42,7 @@ class FileAccountingForTaxReturnController @Inject()(override val messagesApi: M
       val psaOverviewLink = appConfig.managePensionsUrl + controllers.routes.SchemesOverviewController.onPageLoad().url
       val pspOverviewLink = appConfig.managePensionsUrl + controllers.psp.routes.PspDashboardController.onPageLoad().url
       val managePensionSchemeLink = role match {
-        case "PSA" => psaOverviewLink
+        case "administrator" => psaOverviewLink
         case _ => pspOverviewLink
       }
       val pensionSchemesOnlineLink = appConfig.tpssWelcomeUrl

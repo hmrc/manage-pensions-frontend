@@ -24,8 +24,9 @@ import play.api.http.Status.{BAD_REQUEST, OK, SEE_OTHER}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
 import play.api.mvc.Call
+import play.api.test.CSRFTokenHelper.addCSRFToken
 import play.api.test.FakeRequest
-import play.api.test.Helpers.{GET, POST, defaultAwaitTimeout, redirectLocation, route, status, writeableOf_AnyContentAsEmpty, writeableOf_AnyContentAsFormUrlEncoded}
+import play.api.test.Helpers.{GET, POST, contentAsString, defaultAwaitTimeout, redirectLocation, route, status, writeableOf_AnyContentAsEmpty, writeableOf_AnyContentAsFormUrlEncoded}
 import utils.annotations.TriageV2
 import utils.{FakeNavigator, Navigator}
 import views.html.triagev2.whatRole
@@ -43,15 +44,15 @@ class WhatRoleControllerV2Spec extends ControllerSpecBase with ScalaFutures with
 
     "return OK with the view when calling on page load" in {
 
-      val request = FakeRequest(GET, routes.WhatRoleControllerV2.onPageLoad().url)
+      val request = addCSRFToken(FakeRequest(GET, routes.WhatRoleControllerV2.onPageLoad().url))
       val result = route(application, request).value
 
       status(result) mustBe OK
-
+      contentAsString(result) mustBe view(formProvider())(request, messages).toString
     }
 
     "redirect to the next page for a valid request" in {
-      val postRequest = FakeRequest(POST, routes.WhatRoleControllerV2.onSubmit().url).withFormUrlEncodedBody("value"-> "PSA")
+      val postRequest = FakeRequest(POST, routes.WhatRoleControllerV2.onSubmit().url).withFormUrlEncodedBody("value"-> "administrator")
       val result = route(application, postRequest).value
 
       status(result) mustBe SEE_OTHER
@@ -60,9 +61,10 @@ class WhatRoleControllerV2Spec extends ControllerSpecBase with ScalaFutures with
   }
 
   "return a Bad Request and errors when invalid data is submitted" in {
-    val postRequest = FakeRequest(POST, routes.WhatRoleControllerV2.onSubmit().url)
+    val postRequest = FakeRequest(POST, routes.WhatRoleControllerV2.onSubmit().url).withFormUrlEncodedBody("value" -> "invalid value")
     val result = route(application, postRequest).value
-
+    val boundForm = formProvider().bind(Map("value" -> "invalid value"))
     status(result) mustBe BAD_REQUEST
+    contentAsString(result) mustBe view(boundForm)(postRequest, messages).toString
   }
 }
