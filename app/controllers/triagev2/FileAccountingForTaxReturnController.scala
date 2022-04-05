@@ -39,10 +39,11 @@ class FileAccountingForTaxReturnController @Inject()(override val messagesApi: M
 
   def onPageLoad(role: String): Action[AnyContent] = triageAction.async {
     implicit request =>
-      val managePensionSchemeLink = role match {
+      val continueLink = role match {
         case "administrator" => appConfig.psaOverviewUrl
         case _ => appConfig.pspDashboardUrl
       }
+      val managePensionSchemeLink=s"${appConfig.loginUrl}?continue=$continueLink"
       val pensionSchemesOnlineLink = appConfig.tpssWelcomeUrl
       Future.successful(Ok(view(managePensionSchemeLink, pensionSchemesOnlineLink)))
   }
