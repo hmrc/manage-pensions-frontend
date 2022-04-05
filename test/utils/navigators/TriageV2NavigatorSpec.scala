@@ -42,17 +42,17 @@ class TriageV2NavigatorSpec extends SpecBase with NavigatorBehaviour {
     (WhichServiceYouWantToViewId, whichServiceYouWantToViewAnswersPsp(ManagingPensionSchemes), pspOverviewPage, None),
     (WhichServiceYouWantToViewId, whichServiceYouWantToViewAnswersPsa(PensionSchemesOnline), tpssLoginPage, None),
     (WhichServiceYouWantToViewId, whichServiceYouWantToViewAnswersPsp(PensionSchemesOnline), tpssLoginPage, None),
-    (WhichServiceYouWantToViewId, whichServiceYouWantToViewAnswersPsa(IamUnsure), whatDoYouWantToDoPage("PSA"), None),
-    (WhichServiceYouWantToViewId, whichServiceYouWantToViewAnswersPsp(IamUnsure), whatDoYouWantToDoPage("PSP"), None),
+    (WhichServiceYouWantToViewId, whichServiceYouWantToViewAnswersPsa(IamUnsure), whatDoYouWantToDoPage("administrator"), None),
+    (WhichServiceYouWantToViewId, whichServiceYouWantToViewAnswersPsp(IamUnsure), whatDoYouWantToDoPage("practitioner"), None),
     (WhichServiceYouWantToViewId, emptyAnswers, sessionExpiredPage, None),
-    (WhatDoYouWantToDoId, whatDoYouWantToDoAnswersPsa(ManageExistingScheme), manageExistingSchemePage("PSA"), None),
-    (WhatDoYouWantToDoId, whatDoYouWantToDoAnswersPsp(ManageExistingScheme), manageExistingSchemePage("PSP"), None),
-    (WhatDoYouWantToDoId, whatDoYouWantToDoAnswersPsa(FileAccountingForTaxReturn), fileAccountingForTaxReturnPage("PSA"), None),
-    (WhatDoYouWantToDoId, whatDoYouWantToDoAnswersPsp(FileAccountingForTaxReturn), fileAccountingForTaxReturnPage("PSP"), None),
-    (WhatDoYouWantToDoId, whatDoYouWantToDoAnswersPsa(FilePensionSchemeReturn), filePensionSchemeReturnPage("PSA"), None),
-    (WhatDoYouWantToDoId, whatDoYouWantToDoAnswersPsp(FilePensionSchemeReturn), filePensionSchemeReturnPage("PSP"), None),
-    (WhatDoYouWantToDoId, whatDoYouWantToDoAnswersPsa(FileEventReport), fileEventReportPage("PSA"), None),
-    (WhatDoYouWantToDoId, whatDoYouWantToDoAnswersPsp(FileEventReport), fileEventReportPage("PSP"), None),
+    (WhatDoYouWantToDoId, whatDoYouWantToDoAnswersPsa(ManageExistingScheme), manageExistingSchemePage("administrator"), None),
+    (WhatDoYouWantToDoId, whatDoYouWantToDoAnswersPsp(ManageExistingScheme), manageExistingSchemePage("practitioner"), None),
+    (WhatDoYouWantToDoId, whatDoYouWantToDoAnswersPsa(FileAccountingForTaxReturn), fileAccountingForTaxReturnPage("administrator"), None),
+    (WhatDoYouWantToDoId, whatDoYouWantToDoAnswersPsp(FileAccountingForTaxReturn), fileAccountingForTaxReturnPage("practitioner"), None),
+    (WhatDoYouWantToDoId, whatDoYouWantToDoAnswersPsa(FilePensionSchemeReturn), filePensionSchemeReturnPage("administrator"), None),
+    (WhatDoYouWantToDoId, whatDoYouWantToDoAnswersPsp(FilePensionSchemeReturn), filePensionSchemeReturnPage("practitioner"), None),
+    (WhatDoYouWantToDoId, whatDoYouWantToDoAnswersPsa(FileEventReport), fileEventReportPage("administrator"), None),
+    (WhatDoYouWantToDoId, whatDoYouWantToDoAnswersPsp(FileEventReport), fileEventReportPage("practitioner"), None),
     (WhatDoYouWantToDoId, emptyAnswers, sessionExpiredPage, None)
   )
 
@@ -69,23 +69,21 @@ class TriageV2NavigatorSpec extends SpecBase with NavigatorBehaviour {
     lazy val whatRolePspAnswers: UserAnswers = UserAnswers().set(WhatRoleId)(PSP).asOpt.value
 
     private def whichServiceYouWantToViewAnswersPsa(answer: WhichServiceYouWantToView): UserAnswers =
-      whatRolePsaAnswers.set(WhichServiceYouWantToViewId)(answer)(writes(WhichServiceYouWantToView.enumerable("PSA"))).asOpt.value
+      whatRolePsaAnswers.set(WhichServiceYouWantToViewId)(answer)(writes(WhichServiceYouWantToView.enumerable("administrator"))).asOpt.value
 
     private def whichServiceYouWantToViewAnswersPsp(answer: WhichServiceYouWantToView): UserAnswers =
-      whatRolePspAnswers.set(WhichServiceYouWantToViewId)(answer)(writes(WhichServiceYouWantToView.enumerable("PSP"))).asOpt.value
+      whatRolePspAnswers.set(WhichServiceYouWantToViewId)(answer)(writes(WhichServiceYouWantToView.enumerable("practitioner"))).asOpt.value
 
     private def whatDoYouWantToDoAnswersPsa(answer: WhatDoYouWantToDo): UserAnswers =
-      whatRolePsaAnswers.set(WhatDoYouWantToDoId)(answer)(writes(WhatDoYouWantToDo.enumerable("PSA"))).asOpt.value
+      whatRolePsaAnswers.set(WhatDoYouWantToDoId)(answer)(writes(WhatDoYouWantToDo.enumerable("administrator"))).asOpt.value
 
     private def whatDoYouWantToDoAnswersPsp(answer: WhatDoYouWantToDo): UserAnswers =
-      whatRolePspAnswers.set(WhatDoYouWantToDoId)(answer)(writes(WhatDoYouWantToDo.enumerable("PSP"))).asOpt.value
+      whatRolePspAnswers.set(WhatDoYouWantToDoId)(answer)(writes(WhatDoYouWantToDo.enumerable("practitioner"))).asOpt.value
 
 
-    private def psaOverviewPage: Call = Call("GET", frontendAppConfig.loginUrl + "?continue="
-      + frontendAppConfig.managePensionsUrl + controllers.routes.SchemesOverviewController.onPageLoad().url)
+    private def psaOverviewPage: Call = Call("GET", frontendAppConfig.loginUrl + "?continue="+ frontendAppConfig.psaOverviewUrl)
 
-    private def pspOverviewPage: Call = Call("GET", frontendAppConfig.loginUrl + "?continue="
-      + frontendAppConfig.managePensionsUrl + controllers.psp.routes.PspDashboardController.onPageLoad().url)
+    private def pspOverviewPage: Call = Call("GET", frontendAppConfig.loginUrl + "?continue="+ frontendAppConfig.pspDashboardUrl)
     private def tpssLoginPage: Call = Call("GET", frontendAppConfig.tpssWelcomeUrl)
 
     private def whatDoYouWantToDoPage(role:String): Call = controllers.triagev2.routes.WhatDoYouWantToDoController.onPageLoad(role)

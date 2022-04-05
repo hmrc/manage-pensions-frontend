@@ -27,15 +27,15 @@ sealed trait WhatRole
 
 object WhatRole {
 
-  case object PSA extends WithName("PSA") with WhatRole
+  case object PSA extends WithName("administrator") with WhatRole
 
-  case object PSP extends WithName("PSP") with WhatRole
+  case object PSP extends WithName("practitioner") with WhatRole
 
   case object NotRegistered extends WithName("opt3") with WhatRole
 
   def fromString(value: String): WhatRole = value match {
-    case "PSA" => PSA
-    case "PSP" => PSP
+    case "administrator" => PSA
+    case "practitioner" => PSP
     case _ => NotRegistered
   }
 

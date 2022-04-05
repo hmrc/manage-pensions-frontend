@@ -427,6 +427,8 @@ messages__whatRole__p2 = If you are registered on the Pension Schemes Online ser
 messages__whatRole__error = Select what role you are registered as
 messages__whatRole__PSA = Pension scheme administrator
 messages__whatRole__PSP = Pension scheme practitioner
+messages__whatRole__administrator = Pension scheme administrator
+messages__whatRole__practitioner = Pension scheme practitioner
 messages__whatRole__opt3 = I’m not registered yet
 
 messages__whatDoYouWantToDo__title = What do you want to do?
@@ -447,8 +449,8 @@ messages__notRegistered__title = Register as an administrator or practitioner
 messages__notRegistered__p1 = There are two pension scheme services currently in use - the Pension Schemes Online service and the new Managing Pension Schemes service.
 messages__notRegistered__p2 = The application date of the pension you want to manage will determine which service you need to register on.
 messages__notRegistered__v2__p1 = There are two pension scheme services currently in use.
-messages__notRegistered__v2__p2 = Managing Pension Schemes is the new service that has been in operation since 2018. Apply to register a new pension scheme and manage schemes.
-messages__notRegistered__v2__p3 = Pension Schemes Online is the old service. View data, submit returns and file reports for pension schemes you manage.
+messages__notRegistered__v2__p2 = Managing Pension Schemes is the new service that has been in operation since 2018. Apply to register a new pension scheme, file an Accounting for Tax return and manage schemes.
+messages__notRegistered__v2__p3 = Pension Schemes Online is the old service. File an event report or pension scheme return for schemes with a PSTR starting with ''0''.
 messages__notRegistered__reg_psa_link = Register as an administrator
 messages__notRegistered__reg_psp_link = Register as a practitioner
 
@@ -703,11 +705,11 @@ messages__summary_list_action = Action
 messages__whichServiceYouWantToView__title = Which service would you like to view?
 messages__whichServiceYouWantToView__error__required = Select what service you’d like to view
 messages__whichServiceYouWantToView__opt1 = Managing Pension Schemes
-messages__whichServiceYouWantToView__opt1__PSA__hint = This is the new service that has been in operation since 2018. Apply to register a new pension scheme, file an Accounting for Tax return and manage the schemes you are an administrator of.
-messages__whichServiceYouWantToView__opt1__PSP__hint = This is the new service that has been in operation since 2018. Manage pension schemes you are authorised to.
+messages__whichServiceYouWantToView__opt1__administrator__hint = This is the new service that has been in operation since 2018. Apply to register a new pension scheme, file an Accounting for Tax return and manage the schemes you are an administrator of.
+messages__whichServiceYouWantToView__opt1__practitioner__hint = This is the new service that has been in operation since 2018. File an Accounting for Tax return and manage schemes you are authorised to.
 messages__whichServiceYouWantToView__opt2 = Pension Schemes Online
-messages__whichServiceYouWantToView__opt2__PSA__hint = This is the old service. File an event report or pension scheme return for schemes with a PSTR starting with ‘0’.
-messages__whichServiceYouWantToView__opt2__PSP__hint = This is the old service. Manage pension schemes you are authorised to.
+messages__whichServiceYouWantToView__opt2__administrator__hint = This is the old service. File an event report or pension scheme return for schemes with a PSTR starting with ‘0’.
+messages__whichServiceYouWantToView__opt2__practitioner__hint = This is the old service. File an event report or pension scheme return for schemes with a PSTR starting with ‘0’.
 messages__whichServiceYouWantToView__opt3 = I’m unsure what service I need
 
 messages__whatDoYouWantToDo__v2__title = What do you want to do?
@@ -726,7 +728,7 @@ messages__manageExistingScheme__p1 = If your pension scheme has a PSTR starting 
 messages__manageExistingScheme__p2__1 = If your pension scheme has not been added to Managing Pension Schemes,
 messages__manageExistingScheme__p2__link__1 =  add it using this service
 messages__manageExistingScheme__p2__2 =You can also view and manage the scheme on
-messages__manageExistingScheme__p2__PSP = If your pension scheme has not been added to Managing Pension Schemes, use
+messages__manageExistingScheme__p2__practitioner = If your pension scheme has not been added to Managing Pension Schemes, use
 messages__manageExistingScheme__insetText =  Changes to scheme information need to be made on both services.
 
 

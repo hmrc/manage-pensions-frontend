@@ -34,7 +34,7 @@ class FilePensionSchemeReturnControllerSpec extends ControllerSpecBase with Scal
   "FilePensionSchemeReturnController" must {
 
     "return OK with the view when calling on page load for PSA" in {
-      val role = "PSA"
+      val role = "administrator"
       val request = addCSRFToken(FakeRequest(GET, routes.FilePensionSchemeReturnController.onPageLoad(role).url))
       val result = route(application, request).value
 
@@ -44,7 +44,7 @@ class FilePensionSchemeReturnControllerSpec extends ControllerSpecBase with Scal
     }
 
     "return OK with the view when calling on page load for PSP" in {
-      val role = "PSP"
+      val role = "practitioner"
       val request = addCSRFToken(FakeRequest(GET, routes.FilePensionSchemeReturnController.onPageLoad(role).url))
       val result = route(application, request).value
 

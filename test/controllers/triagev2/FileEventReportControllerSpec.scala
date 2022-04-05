@@ -33,7 +33,7 @@ class FileEventReportControllerSpec extends ControllerSpecBase with ScalaFutures
   "FileEventReportController" must {
 
     "return OK with the view when calling on page load" in {
-      val role = "PSA"
+      val role = "administrator"
       val request = addCSRFToken(FakeRequest(GET, routes.FileEventReportController.onPageLoad(role).url))
       val result = route(application, request).value
 

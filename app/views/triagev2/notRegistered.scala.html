@@ -14,29 +14,29 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import views.html._
+@import viewmodels.Message
 @import config.FrontendAppConfig
 
 @this(
-    main_template: main_template,
-    appConfig: FrontendAppConfig
+layout: templates.Layout,
+appConfig: FrontendAppConfig
 )
 
 @()(implicit request: Request[_], messages: Messages)
 
-@main_template(
-    title = messages("messages__notRegistered__title"),
+@layout(
+pageTitle = messages("messages__notRegistered__title")
+){
 
-    bodyClasses = None
-) {
-    @components.back_link()
-    @components.heading(Messages("messages__notRegistered__title"))
-
-    @components.paragraph_text(Messages("messages__notRegistered__v2__p1"))
-    @components.paragraph_text(Messages("messages__notRegistered__v2__p2"))
-    @components.paragraph_text(Messages("messages__notRegistered__v2__p3"))
+    <h1 class="govuk-heading-xl">@Messages("messages__notRegistered__title")</h1>
+    <p class="govuk-body">@Messages("messages__notRegistered__v2__p1")</p>
+    <p class="govuk-body">@Messages("messages__notRegistered__v2__p2")</p>
+    <p class="govuk-body">@Messages("messages__notRegistered__v2__p3")</p>
 
     <div class="section">
-        <p><a id="register-as-administrator" href=@appConfig.pensionAdministratorGovUkLink>@messages("messages__notRegistered__reg_psa_link")</a></p>
-        <p><a id="register-as-practitioner" href=@appConfig.pensionPractitionerGovUkLink>@messages("messages__notRegistered__reg_psp_link")</a></p>
+        <p class="govuk-body"><a id="register-as-administrator" class="govuk-link" href=@appConfig.pensionAdministratorGovUkLink>@messages("messages__notRegistered__reg_psa_link")</a></p>
+        <p class="govuk-body"><a id="register-as-practitioner" class="govuk-link" href=@appConfig.pensionPractitionerGovUkLink>@messages("messages__notRegistered__reg_psp_link")</a></p>
     </div>
 }

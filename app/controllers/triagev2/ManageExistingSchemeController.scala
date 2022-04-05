@@ -40,7 +40,7 @@ class ManageExistingSchemeController @Inject()(override val messagesApi: Message
   def onPageLoad(role: String): Action[AnyContent] = triageAction.async {
     implicit request =>
       val (managePensionSchemeLink, managePensionMigrationSchemeLink) = role match {
-        case "PSA" => (s"${appConfig.loginUrl}?continue=${appConfig.loginToListSchemesUrl}",
+        case "administrator" => (s"${appConfig.loginUrl}?continue=${appConfig.loginToListSchemesUrl}",
           s"${appConfig.loginUrl}?continue=${appConfig.migrationListOfSchemesUrl}")
         case _ => (s"${appConfig.loginUrl}?continue=${appConfig.loginToListSchemesPspUrl}", "#")
       }

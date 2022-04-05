@@ -46,13 +46,12 @@ class TriageV2Navigator @Inject()(appConfig: FrontendAppConfig) extends Navigato
     }
 
   private def whichServiceYouWantToViewRoutes(ua: UserAnswers): Call = {
-    val psaOverviewLink = appConfig.managePensionsUrl + controllers.routes.SchemesOverviewController.onPageLoad().url
-    val pspOverviewLink = appConfig.managePensionsUrl + controllers.psp.routes.PspDashboardController.onPageLoad().url
+
     ua.get(WhatRoleId) match {
       case role@(Some(PSA) | Some(PSP)) => ua.get(WhichServiceYouWantToViewId)(reads(WhichServiceYouWantToView.enumerable(role.get.toString))) match {
           case Some(ManagingPensionSchemes) => Call("GET", s"${appConfig.loginUrl}?continue=${role.get.toString match {
-            case "PSA" => psaOverviewLink
-            case _ => pspOverviewLink
+            case "administrator" => appConfig.psaOverviewUrl
+            case _ => appConfig.pspDashboardUrl
           }}")
           case Some(PensionSchemesOnline) => Call("GET", appConfig.tpssWelcomeUrl)
           case Some(IamUnsure) => WhatDoYouWantToDoController.onPageLoad(role.get.toString)
