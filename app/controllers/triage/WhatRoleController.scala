@@ -20,7 +20,7 @@ import controllers.Retrievals
 import controllers.actions.TriageAction
 import forms.triage.WhatRoleFormProvider
 import identifiers.triage.WhatRoleId
-import models.FeatureToggle.{Disabled, Enabled}
+import models.FeatureToggle.Enabled
 import models.FeatureToggleName.FinancialInformationAFT
 import models.NormalMode
 import models.triage.WhatRole
@@ -53,7 +53,7 @@ class WhatRoleController @Inject()(override val messagesApi: MessagesApi,
       toggleService.getAftFeatureToggle(FinancialInformationAFT).flatMap {
         case Enabled(FinancialInformationAFT) =>
           Future.successful(Redirect(controllers.triagev2.routes.WhatRoleControllerV2.onPageLoad()))
-        case Disabled(FinancialInformationAFT) =>
+        case _ =>
           Future.successful(Ok(view(form)))
       }
 

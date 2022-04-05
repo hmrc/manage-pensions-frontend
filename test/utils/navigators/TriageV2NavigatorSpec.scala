@@ -81,11 +81,9 @@ class TriageV2NavigatorSpec extends SpecBase with NavigatorBehaviour {
       whatRolePspAnswers.set(WhatDoYouWantToDoId)(answer)(writes(WhatDoYouWantToDo.enumerable("practitioner"))).asOpt.value
 
 
-    private def psaOverviewPage: Call = Call("GET", frontendAppConfig.loginUrl + "?continue="
-      + frontendAppConfig.managePensionsUrl + controllers.routes.SchemesOverviewController.onPageLoad().url)
+    private def psaOverviewPage: Call = Call("GET", frontendAppConfig.loginUrl + "?continue="+ frontendAppConfig.psaOverviewUrl)
 
-    private def pspOverviewPage: Call = Call("GET", frontendAppConfig.loginUrl + "?continue="
-      + frontendAppConfig.managePensionsUrl + controllers.psp.routes.PspDashboardController.onPageLoad().url)
+    private def pspOverviewPage: Call = Call("GET", frontendAppConfig.loginUrl + "?continue="+ frontendAppConfig.pspDashboardUrl)
     private def tpssLoginPage: Call = Call("GET", frontendAppConfig.tpssWelcomeUrl)
 
     private def whatDoYouWantToDoPage(role:String): Call = controllers.triagev2.routes.WhatDoYouWantToDoController.onPageLoad(role)

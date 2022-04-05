@@ -29,8 +29,8 @@ class FileAccountingForTaxReturnControllerSpec extends ControllerSpecBase with S
   private val application = applicationBuilder().build()
 
   private val view = injector.instanceOf[fileAccountingForTaxReturn]
-  private val psaOverviewLink = frontendAppConfig.managePensionsUrl + controllers.routes.SchemesOverviewController.onPageLoad().url
-  private val pspOverviewLink = frontendAppConfig.managePensionsUrl + controllers.psp.routes.PspDashboardController.onPageLoad().url
+  private val psaOverviewLink = frontendAppConfig.psaOverviewUrl
+  private val pspOverviewLink = frontendAppConfig.pspDashboardUrl
 
   "FileAccountingForTaxReturnController" must {
 

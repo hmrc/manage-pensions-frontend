@@ -143,8 +143,9 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val migrationUrlsPartialHtmlUrl: String = s"${servicesConfig.baseUrl("migration-frontend")}${runModeConfiguration.underlying
     .getString("urls.migrationUrlsPartialHtml")}"
 
-  lazy val migrationListOfSchemesUrl: String = s"${servicesConfig.baseUrl("migration-frontend")}${runModeConfiguration.underlying
-    .getString("urls.migrationListOfSchemes")}"
+  lazy val migrationListOfSchemesUrl: String = loadConfig("urls.migrationListOfSchemes")
+  lazy val psaOverviewUrl: String = loadConfig("urls.psaOverview")
+  lazy val pspDashboardUrl: String = loadConfig("urls.pspDashboard")
 
   lazy val authorisePspUrl = s"${servicesConfig.baseUrl("pension-practitioner")}${runModeConfiguration.underlying
     .getString("urls.authorisePsp")}"
