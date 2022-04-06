@@ -19,7 +19,7 @@ package controllers.triage
 import controllers.ControllerSpecBase
 import forms.triage.WhatRoleFormProvider
 import models.FeatureToggle.{Disabled, Enabled}
-import models.FeatureToggleName.FinancialInformationAFT
+import models.FeatureToggleName.TriageV2
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.concurrent.ScalaFutures
@@ -49,12 +49,12 @@ class WhatRoleControllerSpec extends ControllerSpecBase with ScalaFutures with M
   private val formProvider = new WhatRoleFormProvider()
 
 
-  private val toggle: Disabled = Disabled(FinancialInformationAFT)
-  private val toggleEnabled: Enabled = Enabled(FinancialInformationAFT)
+  private val toggle: Disabled = Disabled(TriageV2)
+  private val toggleEnabled: Enabled = Enabled(TriageV2)
   "WhatRoleController" must {
 
     "return OK with the view when calling on page load" in {
-      when(mockFeatureToggleService.getAftFeatureToggle(any())(any(), any()))
+      when(mockFeatureToggleService.get(any())(any(), any()))
         .thenReturn(Future.successful(toggle))
       val request = addCSRFToken(FakeRequest(GET, routes.WhatRoleController.onPageLoad().url))
       val result = route(application, request).value
@@ -63,7 +63,7 @@ class WhatRoleControllerSpec extends ControllerSpecBase with ScalaFutures with M
       contentAsString(result) mustBe view(formProvider())(request, messages).toString
     }
     "return OK with the view when calling on page load with toggle Enabled" in {
-      when(mockFeatureToggleService.getAftFeatureToggle(any())(any(), any()))
+      when(mockFeatureToggleService.get(any())(any(), any()))
         .thenReturn(Future.successful(toggleEnabled))
       val request = addCSRFToken(FakeRequest(GET, routes.WhatRoleController.onPageLoad().url))
       val result = route(application, request).value
@@ -73,7 +73,7 @@ class WhatRoleControllerSpec extends ControllerSpecBase with ScalaFutures with M
     }
 
     "redirect to the next page for a valid request" in {
-      when(mockFeatureToggleService.getAftFeatureToggle(any())(any(), any()))
+      when(mockFeatureToggleService.get(any())(any(), any()))
         .thenReturn(Future.successful(toggle))
       val postRequest = FakeRequest(POST, routes.WhatRoleController.onSubmit().url).withFormUrlEncodedBody("value" -> "PSA")
       val result = route(application, postRequest).value
@@ -84,7 +84,7 @@ class WhatRoleControllerSpec extends ControllerSpecBase with ScalaFutures with M
   }
 
   "return a Bad Request and errors when invalid data is submitted" in {
-    when(mockFeatureToggleService.getAftFeatureToggle(any())(any(), any()))
+    when(mockFeatureToggleService.get(any())(any(), any()))
       .thenReturn(Future.successful(toggle))
     val postRequest = FakeRequest(POST, routes.WhatRoleController.onSubmit().url).withFormUrlEncodedBody("value" -> "invalid value")
     val result = route(application, postRequest).value
