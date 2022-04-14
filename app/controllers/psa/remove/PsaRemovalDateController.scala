@@ -87,21 +87,26 @@ class PsaRemovalDateController @Inject()(
 
   private def getFormattedRelationshipDate(ua: UserAnswers, psaId: String): String = {
     val date = getRelationshipDate(ua: UserAnswers, psaId: String)
-    formatRelationshipDate(date).getOrElse(throw new RuntimeException("No relationship date found.") )
+    formatRelationshipDate(date).getOrElse(throw new RuntimeException("No relationship date found."))
   }
 
   def onPageLoad: Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
       (SchemeNameId and PSANameId and SchemeSrnId and AssociatedDateId).retrieve.right.map {
         case schemeName ~ psaName ~ srn ~ associationDate =>
+          println("\n>>a=" + associationDate)
+          println("\n>>b=" + getFormattedRelationshipDate(request.userAnswers, request.psaId.map(_.value).getOrElse("")))
           Future.successful(
-            Ok(view(
-              form(associationDate),
-              psaName,
-              schemeName,
-              srn,
-              getFormattedRelationshipDate(request.userAnswers, request.psaId.map(_.value).getOrElse("")))))
-
+            Ok(
+              view(
+                form(associationDate),
+                psaName,
+                schemeName,
+                srn,
+                getFormattedRelationshipDate(request.userAnswers, request.psaId.map(_.value).getOrElse(""))
+              )
+            )
+          )
         case _ =>
           Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
       }
