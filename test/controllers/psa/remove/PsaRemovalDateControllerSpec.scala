@@ -22,8 +22,10 @@ import connectors.{FakeUserAnswersCacheConnector, UserAnswersCacheConnector}
 import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.psa.remove.RemovalDateFormProvider
+import identifiers.psa.ListOfPSADetailsId
 import identifiers.psa.remove.PsaRemovalDateId
 import models.SchemeVariance
+import models.psa.{Name, PsaDetails}
 import models.psa.remove.PsaToBeRemovedFromScheme
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
@@ -36,6 +38,7 @@ import play.api.mvc.AnyContentAsJson
 import play.api.mvc.Results.Ok
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{redirectLocation, status, _}
+import testhelpers.CommonBuilders
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.DateHelper._
 import utils.UserAnswers
@@ -123,7 +126,17 @@ class PsaRemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours 
       verify(mockedPensionSchemeVarianceLockConnector, times(0)).releaseLock(any(), any())(any(),any())
       verify(mockedUpdateSchemeCacheConnector, times(0)).removeAll(any())(any(),any())
     }
-  }
+
+    "return the correct relationship start date" in {
+      controller(dataRetrievalAction, fakeAuth).onPageLoad()
+
+        val result = onPageLoadAction(emptyData, FakeAuthAction)(fakeRequest)
+
+        status(result) mustBe OK
+
+        contentAsString(result) mustBe validView(emptyForm)
+      }
+    }
 }
 
 object PsaRemovalDateControllerSpec extends MockitoSugar {
@@ -134,7 +147,17 @@ object PsaRemovalDateControllerSpec extends MockitoSugar {
   private val pstr = "test pstr"
   private val date = LocalDate.now()
 
-  private val userAnswer = UserAnswers().schemeName(schemeName).psaName(psaName).srn(srn).pstr(pstr).associatedDate(associationDate)
+  private val psaDetails: PsaDetails = PsaDetails("A0000000",Some("partnetship name"),Some(Name(Some("Taylor"),Some("Middle"),Some("Rayon"))), Some("2018-10-01"))
+  private val listOfPSADetails: List[PsaDetails] = List(psaDetails)
+
+  //TODO FORMAT
+  private val userAnswer = UserAnswers()
+                .schemeName(schemeName)
+                .psaName(psaName)
+                .srn(srn)
+                .pstr(pstr)
+                .associatedDate(associationDate)
+                .set(ListOfPSADetailsId)(listOfPSADetails).getOrElse(UserAnswers())
   private val data = userAnswer.dataRetrievalAction
 
   val day: Int = LocalDate.now().getDayOfMonth

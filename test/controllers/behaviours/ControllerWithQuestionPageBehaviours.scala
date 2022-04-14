@@ -46,10 +46,6 @@ class ControllerWithQuestionPageBehaviours extends ControllerSpecBase {
       "return OK and the correct view for a GET" in {
         val result = onPageLoadAction(emptyData, FakeAuthAction)(fakeRequest)
 
-        result.foreach { x =>
-          println(s"\n\n\n\n\n\n\n\n\n result = ${x}")
-        }
-
         status(result) mustBe OK
 
         contentAsString(result) mustBe validView(emptyForm)
