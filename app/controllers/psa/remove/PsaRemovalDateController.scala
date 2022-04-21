@@ -94,8 +94,6 @@ class PsaRemovalDateController @Inject()(
     implicit request =>
       (SchemeNameId and PSANameId and SchemeSrnId and AssociatedDateId).retrieve.right.map {
         case schemeName ~ psaName ~ srn ~ associationDate =>
-          println("\n>>a=" + associationDate)
-          println("\n>>b=" + getFormattedRelationshipDate(request.userAnswers, request.psaId.map(_.value).getOrElse("")))
           Future.successful(
             Ok(
               view(
