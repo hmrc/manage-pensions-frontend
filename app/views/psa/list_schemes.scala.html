@@ -16,13 +16,22 @@
 
 @import config.FrontendAppConfig
 @import models.SchemeDetails
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
 @import controllers.routes._
 @import controllers.psa.routes._
 @import utils.ViewHelper.titleWithErrors
 
 @this(
-    main_template: main_template,
-    formHelper: FormWithCSRF,
+    layout: templates.Layout,
+    formHelper: PlayFrontendFormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    govukInput: GovukInput,
+    button: components.govuk_button,
+    govukTable: GovukTable,
+    govukInsetText : GovukInsetText,
     appConfig: FrontendAppConfig
 )
 
@@ -107,47 +116,83 @@
     }
 }
 
-@main_template(
-    title = titleWithErrors(form, messages(heading)),
-    bodyClasses = Some("full-width")
+@insetText = {
+@if(form("searchText").value.exists(_.nonEmpty)){
+<p class="govuk-body"><a class="govuk-link" id="clear-search-link" href="@{ListSchemesController.onPageLoad}"> @messages("messages__listSchemes__searchText_clearlink")</a></p>
+}else{
+<p class="govuk-body" >@Html(messages("messages__schemesOverview__manage__redirect__text", manageRedirectLink))</p>
+}
+
+}
+
+@schemeNameLink(schemeName: String, srn: SchemeReferenceNumber) = {
+    <a class="govuk-link" href="@{PsaSchemeDashboardController.onPageLoad(srn).url}"
+       target="_self" data-sso="false">@schemeName
+    </a>
+}
+
+@srnValue(status: String, srn: String, msg: String) = @{
+    status match {
+        case SchemeStatus.Open.value =>
+            Html(s"<span class='govuk-visually-hidden'>$msg</span>")
+        case _ =>
+            Html(s"<span>$srn</span>")
+    }
+}
+
+@statusValue(status: String) = @{
+    status match {
+        case SchemeStatus.Pending.value             => messages("messages__listSchemes__status_pending")
+        case SchemeStatus.PendingInfoRequired.value => messages("messages__listSchemes__status_pending_req")
+        case SchemeStatus.PendingInfoReceived.value => messages("messages__listSchemes__status_pending_rec")
+        case SchemeStatus.Rejected.value            => messages("messages__listSchemes__status_rejected")
+        case SchemeStatus.Open.value                => messages("messages__listSchemes__status_open")
+        case SchemeStatus.Deregistered.value        => messages("messages__listSchemes__status_deregistered")
+        case SchemeStatus.WoundUp.value             => messages("messages__listSchemes__status_wound_up")
+        case SchemeStatus.RejectedUnderAppeal.value => messages("messages__listSchemes__status_rejected_appeal")
+        case _ => status
+    }
+}
+
+@layout(
+    pageTitle = titleWithErrors(form, messages(heading)),
+    fullWidthLayout = true
 ) {
 
     @formHelper(action = ListSchemesController.onSearch, 'autoComplete -> "off") {
-        @components.back_link()
 
-        <div class="grid-row">
-            <div class="column-two-thirds">
-                @components.error_summary(form.errors)
-                @components.heading(headingKey = messages(heading))
+       @if(form.errors.nonEmpty) {
+          @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
+       }
 
-                @if(schemes.size >= appConfig.minimumSchemeSearchResults || form("searchText").value.isDefined){
+        <h1 class="govuk-heading-xl">@messages(heading)</h1>
 
-                    @components.input_search(
-                        field = form("searchText"),
-                        label = messages("messages__listSchemes__searchText_label"),
-                        labelClass = Some("heading-medium"),
-                        inputClass = Some("form-control--width-two-thirds"),
-                        messageKey = messages(button_content)
-                    )
+            @if(schemes.size >= appConfig.minimumSchemeSearchResults || form("searchText").value.isDefined){
 
-                }
+                @govukInput(
+                    Input(
+                        label = Label(
+                            content = Text(messages("messages__listSchemes__searchText_label"))
+                        ),
+                        classes = "govuk-!-width-one-half"
+                    ).withFormField(form("searchText"))
+                )
 
-                @if(form("searchText").value.exists(_.nonEmpty)){
-                    <p>
-                        <a id="clear-search-link" href="@ListSchemesController.onPageLoad"> @messages("messages__listSchemes__searchText_clearlink")</a>
-                    </p>
-                }else{
-                    <p class="panel panel-border-wide" >@Html(messages("messages__schemesOverview__manage__redirect__text", manageRedirectLink))</p>
-                }
+                @button(messages(button_content))
 
-            </div>
-        </div>
+            }
+
+            @govukInsetText(InsetText(
+                content = HtmlContent(insetText)
+            ))
+
+
 
         @if(form("searchText").value.exists(_.nonEmpty)){
             @if(schemes.nonEmpty){
-                <div class="grid-row">
+                <div class="govuk-grid-row">
                     <div class="column-two-thirds">
-                        <p class="govuk-margin-top-5 govuk-margin-bottom-0">
+                        <p class="govuk-body">
                             @{
                                 if(schemes.size == 1) {
                                     messages("messages__listSchemes__search_result")
@@ -162,21 +207,68 @@
         }
 
         @noResultsMessageKey.map{ text =>
-            <div class="grid-row">
+            <div class="govuk-grid-row">
                 <div class="column-two-thirds">
-                    <p id="noSchemes">@messages(text)</p>
+                    <p class="govuk-body" id="noSchemes">@messages(text)</p>
                 </div>
             </div>
         }
 
         @if(schemes.nonEmpty) {
-            @components.scheme_list(schemes, appConfig)
+            @govukTable(
+                Table(
+                    rows =
+                        for((scheme, index) <- schemes.zipWithIndex) yield {
+                            Seq(
+                                TableRow(
+                                    attributes = Map("id" -> ("schemeName-"+index), "role"-> "cell"),
+                                    content = HtmlContent(schemeNameLink(scheme.name, scheme.referenceNumber)),
+                                    classes="govuk-table__cell"
+                                ),
+                                TableRow(
+                                    attributes = Map("id" -> ("srn-"+index), "role"-> "cell"),
+                                    content = HtmlContent(srnValue(scheme.schemeStatus, scheme.referenceNumber, messages("messages__listSchemes__srn_na"))),
+                                    classes="govuk-table__cell"
+                                ),
+                                TableRow(
+                                    attributes = Map("id" -> ("pstr-"+index), "role"-> "cell"),
+                                    content = Text(scheme.pstr.getOrElse(messages("messages__listSchemes__pstr_not_assigned"))),
+                                    classes="govuk-table__cell"
+                                ),
+                                TableRow(
+                                    attributes = Map("id" -> ("schemeStatus-"+index), "role"-> "cell"),
+                                    content = Text(statusValue(scheme.schemeStatus)),
+                                    classes="govuk-table__cell"
+                                )
+                            )
+                        },
+                        head = Some(
+                            Seq(
+                                HeadCell(
+                                    content = Text(messages("messages__listSchemes__column_schemeName"))
+                                ),
+                                HeadCell(
+                                    content = Text(messages("messages__listSchemes__column_srn"))
+                                ),
+                                HeadCell(
+                                    content = Text(messages("messages__listSchemes__column_pstr"))
+                                ),
+                                HeadCell(
+                                    content = Text(messages("messages__listSchemes__column_status"))
+                                )
+                            )
+                        ),
+                        caption = Some(messages("messages__listSchemes__title")),
+                        captionClasses = "govuk-visually-hidden",
+                        attributes = Map("id" -> "scheme-list-table", "role"-> "table")
+                )
+            )
         }
 
         @if(numberOfSchemes > pagination) {
-            <div class="grid-row">
+            <div class="govuk-grid-row">
                 <div class="column-two-thirds">
-                    <p class="govuk-margin-top-5" id="pagination-text">
+                    <p class="govuk-body govuk-margin-top-5" id="pagination-text">
                         @paginationText
                     </p>
                     <nav class="govuk-margin-top-5" aria-label="page">
@@ -212,6 +304,11 @@
             </div>
         }
 
-        @components.return_link(SchemesOverviewController.onPageLoad(), Some(psaName))
+        <p class="govuk-body govuk-margin-top-5">
+            <a id="return-link" class="govuk_link" href=@SchemesOverviewController.onPageLoad()>
+                @messages("site.return_to", psaName)
+            </a>
+        </p>
+
     }
 }

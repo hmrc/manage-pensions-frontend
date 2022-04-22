@@ -14,34 +14,33 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+
 @this(
-    main_template: main_template
+    layout: templates.Layout,
+    govukInsetText : GovukInsetText
 )
 
 @()(implicit request: Request[_], messages: Messages)
 
-@main_template(
-    title = messages("messages__contactHMRC__title"),
+@layout(
+    pageTitle = messages("messages__contactHMRC__title")) {
 
-    bodyClasses = None) {
+        <h1 class="govuk-heading-xl">@messages("messages__contactHMRC__heading")</h1>
 
-        @components.back_link()
+        <p class="govuk-body">@messages("messages__contactHMRC__p1")</p>
+        <p class="govuk-body">@messages("messages__contactHMRC__p2")</p>
 
-        <h1 class="heading-xlarge">@messages("messages__contactHMRC__heading")</h1>
-
-        <p>@messages("messages__contactHMRC__p1")</p>
-        <p>@messages("messages__contactHMRC__p2")</p>
-
-        <div class="panel panel-border-narrow" >
-            <span class="address-multi-line">@messages("messages__contactHMRC__address1")</span>
-            <span class="address-multi-line">@messages("messages__contactHMRC__address2")</span>
-            <span class="address-multi-line">@messages("messages__contactHMRC__address3")</span>
-            <span class="address-multi-line">@messages("messages__contactHMRC__address4")</span>
+        <div class="govuk-inset-text">
+            <p class="govuk-body govuk-!-margin-bottom-1">@messages("messages__contactHMRC__address1")</p>
+            <p class="govuk-body govuk-!-margin-bottom-1">@messages("messages__contactHMRC__address2")</p>
+            <p class="govuk-body govuk-!-margin-bottom-1">@messages("messages__contactHMRC__address3")</p>
+            <p class="govuk-body govuk-!-margin-bottom-1">@messages("messages__contactHMRC__address4")</p>
         </div>
 
-        <p>@messages("messages__contactHMRC__p3")</p>
+        <p class="govuk-body">@messages("messages__contactHMRC__p3")</p>
 
-        <ul class="list list-bullet">
+        <ul class="govuk-list govuk-list--bullet">
             <li>@messages("messages__contactHMRC__item1")</li>
             <li>@messages("messages__contactHMRC__item2")</li>
             <li>@messages("messages__contactHMRC__item3")</li>

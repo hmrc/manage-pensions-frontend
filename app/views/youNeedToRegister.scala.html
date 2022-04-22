@@ -15,36 +15,34 @@
  *@
 
 @import config.FrontendAppConfig
-@import uk.gov.hmrc.play.views.html._
-@import views.html._
-@import controllers.routes._
-@import models.Mode
+@import uk.gov.hmrc.govukfrontend.views.html.components._
 @import viewmodels.Message
 
 @this(
-main_template: main_template,
-appConfig: FrontendAppConfig
+    layout: templates.Layout,
+    appConfig: FrontendAppConfig
 )
 
 @()(implicit request: Request[_], messages: Messages)
 
-@psaGovUkLink = {<a id="psa-gov-uk-link" href="@appConfig.pensionAdministratorGovUkLink">@messages("messages__youNeedToRegister__p1__link")</a>}
-@pspGovUkLink = {<a id="psp-gov-uk-link" href="@appConfig.pensionPractitionerGovUkLink">@messages("messages__youNeedToRegister__p2__link")</a>}
+@layout(
+    pageTitle = messages("messages__youNeedToRegister__title")) {
 
-@main_template(
-    title = messages("messages__youNeedToRegister__title"),
+        <h1 class="govuk-heading-xl">@messages("messages__youNeedToRegister__heading")</h1>
 
-    bodyClasses = None) {
-    @components.back_link()
-    @components.heading(messages("messages__youNeedToRegister__heading"))
+        <p class="govuk-body">@messages("messages__youNeedToRegister__lede")</p>
 
-    <p>@messages("messages__youNeedToRegister__lede")</p>
+        <p class="govuk-body">@messages("messages__youNeedToRegister__p1")</p>
 
-    <p>@Html(Message("messages__youNeedToRegister__p1"))</p>
+        <p class="govuk-body">
+            <a id="redirect-to-psa" class="govuk-link"
+               href="@appConfig.registerSchemeAdministratorUrl">@messages("messages__youNeedToRegisterAdministrator__link")
+            </a>
+        </p>
 
-    <a id="redirect-to-psa" href="@appConfig.registerSchemeAdministratorUrl">@messages("messages__youNeedToRegisterAdministrator__link")</a>
-
-    <div class="section">
-        <a id="redirect-to-psp" href="@appConfig.registerSchemePractitionerUrl">@messages("messages__youNeedToRegisterPractitioner__link")</a>
-    </div>
+        <p class="govuk-body">
+            <a id="redirect-to-psp" class="govuk-link"
+               href="@appConfig.registerSchemePractitionerUrl">@messages("messages__youNeedToRegisterPractitioner__link")
+            </a>
+        </p>
 }
