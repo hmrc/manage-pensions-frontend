@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-package identifiers.invitations.psp
+package forms.invitations.psp
 
-import identifiers.TypedIdentifier
+import forms.mappings.Mappings
+import play.api.data.Form
 
-object PspClientReferenceId  extends TypedIdentifier[String] {
+import javax.inject.Inject
 
-  override def toString: String = "pspClientReference"
+class PspHasClientReferenceFormProvider @Inject() extends Mappings {
 
+  def apply(): Form[Boolean] = Form(
+    "hasReference" -> boolean("messages__hasClientReference_yes_no_required")
+  )
 }

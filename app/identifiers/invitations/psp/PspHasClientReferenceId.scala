@@ -18,8 +18,6 @@ package identifiers.invitations.psp
 
 import identifiers.TypedIdentifier
 
-object PspClientReferenceId  extends TypedIdentifier[String] {
-
-  override def toString: String = "pspClientReference"
-
+case object PspHasClientReferenceId extends TypedIdentifier[Boolean] {
+  override def toString: String = "pspHasClientReference"
 }

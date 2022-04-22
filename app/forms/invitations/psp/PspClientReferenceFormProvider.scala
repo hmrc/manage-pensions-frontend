@@ -17,45 +17,18 @@
 package forms.invitations.psp
 
 import forms.mappings.{Mappings, Transforms}
-import models.ClientReference
-import models.ClientReference.{HaveClientReference, NoClientReference}
-import play.api.data.Forms.tuple
-import play.api.data.{Form, Mapping}
-import uk.gov.voa.play.form.ConditionalMappings.mandatoryIfTrue
+import play.api.data.Form
 
 import javax.inject.Inject
 
 class PspClientReferenceFormProvider @Inject() extends Mappings with Transforms {
+  val clientRefMaxLength = 11
 
-  def apply(): Form[ClientReference] = Form(
-    clientReferenceMapping
+  def apply(): Form[String] = Form(
+    "reference" -> text("messages__clientReference_required").
+      transform(standardTextTransform, noTransform).
+      verifying(firstError(
+        maxLength(clientRefMaxLength, "messages__clientReference_maxLength"),
+        clientRef("messages__clientReference_invalid")))
   )
-
-  protected def clientReferenceMapping: Mapping[ClientReference] = {
-    val clientRefMaxLength = 11
-
-    def fromClientReference(clientReference: ClientReference): (Boolean, Option[String]) = {
-      clientReference match {
-        case ClientReference.HaveClientReference(clientRef) => (true, Some(clientRef))
-        case _ => (false, None)
-      }
-    }
-
-    def toClientReference(clientReferenceTuple: (Boolean, Option[String])): ClientReference =
-      clientReferenceTuple match {
-        case (_, Some(value)) => HaveClientReference(value)
-        case _ =>  NoClientReference
-      }
-
-    tuple(
-      "hasReference" -> boolean("messages__clientReference_yes_no_required"),
-      "reference" -> mandatoryIfTrue("hasReference", text("messages__clientReference_required")
-        .transform(strip, noTransform)
-        .verifying(firstError(
-          maxLength(clientRefMaxLength, "messages__clientReference_maxLength"),
-          clientRef("messages__clientReference_invalid")
-        )
-        ))
-    ).transform(toClientReference, fromClientReference)
-  }
 }

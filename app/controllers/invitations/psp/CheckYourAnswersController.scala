@@ -20,13 +20,15 @@ import com.google.inject.Inject
 import connectors.admin.{MinimalConnector, NoMatchFoundException}
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
-import identifiers.SchemeNameId
+import controllers.psa.routes.PsaSchemeDashboardController
 import identifiers.invitations.psp.{PspId, PspNameId}
+import identifiers.{SchemeNameId, SchemeSrnId}
+import models.SchemeReferenceNumber
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.{CheckYourAnswersFactory, PspAuthoriseFuzzyMatcher}
-import views.html.check_your_answers_view
+import views.html.invitations.psp.checkYourAnswersPsp
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -38,35 +40,37 @@ class CheckYourAnswersController @Inject()(override val messagesApi: MessagesApi
                                            minimalConnector: MinimalConnector,
                                            pspAuthoriseFuzzyMatcher: PspAuthoriseFuzzyMatcher,
                                            val controllerComponents: MessagesControllerComponents,
-                                           view: check_your_answers_view
+                                           view: checkYourAnswersPsp
                                           )(implicit val ec: ExecutionContext) extends FrontendBaseController with Retrievals with I18nSupport {
 
-    def onPageLoad(): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
-        implicit request =>
+  def onPageLoad(): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
+    implicit request =>
+      (SchemeNameId and SchemeSrnId).retrieve.right.map {
+        case schemeName ~ srn =>
+          val checkYourAnswersHelper = checkYourAnswersFactory.checkYourAnswersHelper(request.userAnswers)
+          val sections = Seq(checkYourAnswersHelper.pspName, checkYourAnswersHelper.pspId, checkYourAnswersHelper.pspClientReference).flatten
+          Future.successful(Ok(view(sections, controllers.invitations.psp.routes.CheckYourAnswersController.onSubmit(),
+            Some("messages__check__your__answer__psp__label"), Some(schemeName),schemeName = schemeName, returnCall = returnCall(srn))))
 
-            SchemeNameId.retrieve.right.map { schemeName =>
-                val checkYourAnswersHelper = checkYourAnswersFactory.checkYourAnswersHelper(request.userAnswers)
-                val sections = Seq(checkYourAnswersHelper.pspName, checkYourAnswersHelper.pspId, checkYourAnswersHelper.pspClientReference).flatten
-                Future.successful(Ok(view(sections, controllers.invitations.psp.routes.CheckYourAnswersController.onSubmit(),
-                    Some("messages__check__your__answer__psp__label"), Some(schemeName))))
+      }
+  }
 
-            }
-    }
+  def onSubmit(): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
+    implicit request =>
+      (PspNameId and PspId).retrieve.right.map {
+        case pspName ~ pspId =>
+          minimalConnector.getNameFromPspID(pspId).map {
+            case Some(minPspName) if pspAuthoriseFuzzyMatcher.matches(pspName, minPspName) =>
+              Redirect(routes.DeclarationController.onPageLoad())
+            case _ => Redirect(routes.PspDoesNotMatchController.onPageLoad())
+          }.recoverWith {
+            case _: NoMatchFoundException =>
+              Future.successful(Redirect(routes.PspDoesNotMatchController.onPageLoad()))
+          }
+      }
+  }
 
-    def onSubmit(): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
-        implicit request =>
-            (PspNameId and PspId).retrieve.right.map {
-                case pspName ~ pspId =>
-                    minimalConnector.getNameFromPspID(pspId).map {
-                        case Some(minPspName) if pspAuthoriseFuzzyMatcher.matches(pspName, minPspName) =>
-                            Redirect(routes.DeclarationController.onPageLoad())
-                        case _ => Redirect(routes.PspDoesNotMatchController.onPageLoad())
-                    }.recoverWith{
-                        case _: NoMatchFoundException =>
-                            Future.successful(Redirect(routes.PspDoesNotMatchController.onPageLoad()))
-                    }
-            }
-    }
+  private def returnCall(srn: String): Call = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(srn))
 }
 
 

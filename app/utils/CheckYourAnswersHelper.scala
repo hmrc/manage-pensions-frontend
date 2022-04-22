@@ -20,13 +20,11 @@ import controllers.invitations.psa.routes._
 import controllers.invitations.psp.routes._
 import identifiers.invitations._
 import identifiers.invitations.psa.{AdviserAddressId, AdviserEmailId, AdviserNameId, InviteePSAId}
-import identifiers.invitations.psp.PspClientReferenceId
-import identifiers.invitations.psp.PspId
-import identifiers.invitations.psp.PspNameId
-import models.{Address, CheckMode, ClientReference}
+import identifiers.invitations.psp.{PspClientReferenceId, PspId, PspNameId}
+import models.{Address, CheckMode}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{ActionItem, Actions, Key, SummaryListRow, Value}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist._
 import utils.countryOptions.CountryOptions
 
 
@@ -117,18 +115,16 @@ class CheckYourAnswersHelper(userAnswers: UserAnswers, countryOptions: CountryOp
   }
 
   def pspClientReference(implicit messages: Messages): Option[SummaryListRow] = {
-    userAnswers.get(PspClientReferenceId) map { answer =>
-      SummaryListRow(
+      Some(SummaryListRow(
         key = Key(Text(messages("messages__check__your__answer__psp_client_reference__label")), classes = "govuk-!-width-one-half"),
-        value = Value(Text(messages(getClientReference(answer)))),
-        actions = Some(Actions("", items = Seq(ActionItem(href = PspClientReferenceController.onPageLoad(CheckMode).url,
+        value = Value(Text(messages(getClientReference))),
+        actions = Some(Actions("", items = Seq(ActionItem(href = PspHasClientReferenceController.onPageLoad(CheckMode).url,
           content = Text(messages("site.change")), visuallyHiddenText = Some(messages("messages__check__your__answer__psp_client_reference__label"))))))
-      )
-    }
+      ))
   }
 
-  private def getClientReference(answer: ClientReference): String = answer match {
-    case ClientReference.HaveClientReference(reference) => reference
-    case ClientReference.NoClientReference => "messages__none"
+  private def getClientReference: String = userAnswers.get(PspClientReferenceId) match {
+    case Some(reference) => reference
+    case _ => "messages__none"
   }
 }

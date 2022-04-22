@@ -28,6 +28,7 @@
 
 @this(
 layout: templates.Layout,
+govukRadios : GovukRadios,
 formHelper: PlayFrontendFormWithCSRF,
 govukErrorSummary: GovukErrorSummary,
 button: components.govuk_button,
@@ -35,10 +36,11 @@ govukInput : GovukInput
 )
 
 
+
 @(form: Form[_], pspName: String, mode: Mode, schemeName:String, returnCall: Call,actionCall: Call)(implicit request: Request[_], messages: Messages)
 
 @layout(
-pageTitle = titleWithErrors(form, messages("messages__psp__what__client_ref__title"))) {
+    pageTitle = titleWithErrors(form, messages("messages__psp_client_ref__title"))) {
 
     @formHelper(action = actionCall, 'autoComplete -> "off") {
 
@@ -46,15 +48,28 @@ pageTitle = titleWithErrors(form, messages("messages__psp__what__client_ref__tit
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
         }
 
-
-        @govukInput(
-            Input(
-                    label = Label(classes = "govuk-label--xl",
-                    content = Text(messages("messages__psp__what__client_ref__heading",pspName)),
+        @govukRadios(Radios(
+            fieldset = Some(Fieldset(
+                legend = Some(Legend(
+                    content = Text(messages("messages__psp_client_ref__heading", pspName)),
+                    classes = "govuk-fieldset__legend--xl",
                     isPageHeading = true
+                    ))
+                )),
+                idPrefix = Some("hasReference"),
+                name = "hasReference",
+                items = Seq(
+                    RadioItem(
+                        content = Text(messages("site.yes")),
+                        value = Some("true")
+                    ),
+                    RadioItem(
+                        content = Text(messages("site.no")),
+                        value = Some("false")
+                    )
                 ),
-            spellcheck = Some(false)
-            ).withFormField(form("reference"))
+            classes = "govuk-radios--inline"
+            ).withFormField(form("hasReference"))
         )
 
         @button(messages("site.save_and_continue"))
@@ -66,5 +81,5 @@ pageTitle = titleWithErrors(form, messages("messages__psp__what__client_ref__tit
         </p>
 
 
-    }
+}
 }

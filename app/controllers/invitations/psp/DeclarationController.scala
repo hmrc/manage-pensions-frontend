@@ -16,21 +16,19 @@
 
 package controllers.invitations.psp
 
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 import audit.{AuditService, PSPAuthorisationAuditEvent, PSPAuthorisationEmailAuditEvent}
 import com.google.inject.Inject
 import config.FrontendAppConfig
-import connectors.{ActiveRelationshipExistsException, EmailConnector, EmailNotSent, PspConnector}
 import connectors.admin.MinimalConnector
 import connectors.scheme.ListOfSchemesConnector
+import connectors.{ActiveRelationshipExistsException, EmailConnector, EmailNotSent, PspConnector}
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.invitations.psp.DeclarationFormProvider
-import identifiers.{SchemeNameId, SchemeSrnId}
 import identifiers.invitations.psp.{PspClientReferenceId, PspId, PspNameId}
-import models.{ClientReference, MinimalPSAPSP, SendEmailRequest, Sent}
+import identifiers.{SchemeNameId, SchemeSrnId}
 import models.requests.DataRequest
+import models.{MinimalPSAPSP, SendEmailRequest, Sent}
 import play.api.Logger
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -40,6 +38,8 @@ import uk.gov.hmrc.crypto.{ApplicationCrypto, PlainText}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.invitations.psp.declaration
 
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import scala.concurrent.{ExecutionContext, Future}
 
 class DeclarationController @Inject()(
@@ -87,7 +87,7 @@ class DeclarationController @Inject()(
         getPstr(srn).flatMap {
           case Some(pstr) =>
             val psaId = request.psaIdOrException.id
-            pspConnector.authorisePsp(pstr, psaId, pspId, getClientReference(pspCR)).flatMap { _ =>
+            pspConnector.authorisePsp(pstr, psaId, pspId, Some(pspCR)).flatMap { _ =>
               minimalConnector.getMinimalPsaDetails(psaId).flatMap { minimalPSAPSP =>
                 sendEmail(minimalPSAPSP, psaId, pspId, pstr, pspName, schemeName).map { _ =>
                   auditService.sendEvent(
@@ -126,11 +126,6 @@ class DeclarationController @Inject()(
       case Right(list) => schemeDetailsService.pstr(srn, list)
       case _ => None
     }
-
-  private def getClientReference(answer: ClientReference): Option[String] = answer match {
-    case ClientReference.HaveClientReference(reference) => Some(reference)
-    case ClientReference.NoClientReference => None
-  }
 
   private def callBackUrl(
                            psaId: String,

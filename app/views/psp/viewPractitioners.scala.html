@@ -24,6 +24,7 @@
 @import viewmodels.AuthorisedPractitionerViewModel
 @import controllers.psp.deauthorise.routes._
 @import controllers.invitations.psp.routes._
+@import controllers.psp.view.routes._
 
 
 @this(
@@ -62,9 +63,32 @@
     }
 }
 
+@viewLink(pspName: String,index: Index, authorisedByLoggedInPsa:Boolean) = {
+    @if(authorisedByLoggedInPsa){
+        <a class="govuk-link" href="@ViewPspCheckYourAnswersController.onPageLoad(index)">
+                            <span aria-hidden="true">
+                                @messages("messages__viewPractitioners__viewLinkText")
+                            </span>
+            <span class="govuk-visually-hidden">
+                                @messages("messages__viewPractitioners__viewLinkText__hiddenText", pspName)
+                            </span>
+        </a>
+    } else{
+        <span class="govuk-visually-hidden">
+            messages("messages__viewPractitioners__didNotAuthoriseView__hiddenText", pspName)
+        </span>
+    }
+}
+
 @hiddenHeader = {
     <span class="govuk-visually-hidden">
         @messages("messages__summary_list_action")
+    </span>
+}
+
+@hiddenHeaderView = {
+<span class="govuk-visually-hidden">
+        @messages("messages__viewPractitioners__viewLinkText")
     </span>
 }
 
@@ -101,6 +125,11 @@ Table(
                     classes="govuk-table__cell"
                 ),
                 TableRow(
+                attributes = Map("id" -> ("viewLink-"+index), "role"-> "cell"),
+                content = HtmlContent(viewLink(practitioner.pspName,index,practitioner.authorisedByLoggedInPsa)),
+                classes="govuk-table__cell"
+                ),
+                TableRow(
                     attributes = Map("id" -> ("deAuthoriseLink-"+index), "role"-> "cell"),
                     content = HtmlContent(deauthorisedLink(practitioner.pspName,index,practitioner.authorisedByLoggedInPsa)),
                     classes="govuk-table__cell"
@@ -119,7 +148,10 @@ Table(
                     content = Text(messages("messages__viewPractitioners__dateAuthorisedHeader"))
                 ),
                 HeadCell(
-                    content = HtmlContent(hiddenHeader)
+                    content = HtmlContent(hiddenHeaderView)
+                ),
+                HeadCell(
+                content = HtmlContent(hiddenHeader)
                 )
             )
         ),

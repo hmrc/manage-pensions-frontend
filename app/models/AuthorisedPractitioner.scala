@@ -55,6 +55,7 @@ object AuthorisingIndividual {
 }
 
 case class AuthorisedPractitioner(
+                                   clientReference: Option[String],
                                    organisationOrPartnershipName: Option[String],
                                    individual: Option[AuthorisingIndividual],
                                    authorisingPSAID: String,

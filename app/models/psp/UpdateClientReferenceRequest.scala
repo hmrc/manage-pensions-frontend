@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
-package identifiers.invitations.psp
+package models.psp
 
-import identifiers.TypedIdentifier
+import play.api.libs.json.{Json, OFormat}
 
-object PspClientReferenceId  extends TypedIdentifier[String] {
 
-  override def toString: String = "pspClientReference"
+case class UpdateClientReferenceRequest(
+                                         pstr: String,
+                                         psaId: String,
+                                         pspId: String,
+                                         clientReference: Option[String] = None
+                                       )
 
+object UpdateClientReferenceRequest {
+  implicit val updateClientReferenceRequestFormat: OFormat[UpdateClientReferenceRequest] = Json.format
 }
+
