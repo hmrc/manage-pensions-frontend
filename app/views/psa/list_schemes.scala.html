@@ -59,7 +59,7 @@
 
     val linkText: String = messages("messages__schemesOverview__manage__redirect__link")
 
-    Html(s"""<a id="manage-link" href="$href">$linkText</a>""")
+    Html(s"""<a class="govuk-link" id="manage-link" href="$href">$linkText</a>""")
 }
 
 @navLink(linkText: String, pageNumber: Int) = @{
@@ -117,12 +117,17 @@
 }
 
 @insetText = {
-@if(form("searchText").value.exists(_.nonEmpty)){
-<p class="govuk-body"><a class="govuk-link" id="clear-search-link" href="@{ListSchemesController.onPageLoad}"> @messages("messages__listSchemes__searchText_clearlink")</a></p>
-}else{
-<p class="govuk-body" >@Html(messages("messages__schemesOverview__manage__redirect__text", manageRedirectLink))</p>
-}
-
+    @if(form("searchText").value.exists(_.nonEmpty)){
+        <p class="govuk-body">
+            <a class="govuk-link" id="clear-search-link"
+                href="@{ListSchemesController.onPageLoad}"> @messages("messages__listSchemes__searchText_clearlink")
+            </a>
+        </p>
+    }else{
+        <p class="govuk-body">
+            @Html(messages("messages__schemesOverview__manage__redirect__text", manageRedirectLink))
+        </p>
+    }
 }
 
 @schemeNameLink(schemeName: String, srn: SchemeReferenceNumber) = {
@@ -161,37 +166,44 @@
 
     @formHelper(action = ListSchemesController.onSearch, 'autoComplete -> "off") {
 
-       @if(form.errors.nonEmpty) {
-          @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
-       }
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
 
-        <h1 class="govuk-heading-xl">@messages(heading)</h1>
+                @if(form.errors.nonEmpty) {
+                    @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
+                }
 
-            @if(schemes.size >= appConfig.minimumSchemeSearchResults || form("searchText").value.isDefined){
+                <h1 class="govuk-heading-xl">@messages(heading)</h1>
 
-                @govukInput(
-                    Input(
-                        label = Label(
-                            content = Text(messages("messages__listSchemes__searchText_label"))
-                        ),
-                        classes = "govuk-!-width-one-half"
-                    ).withFormField(form("searchText"))
-                )
+                @if(schemes.size >= appConfig.minimumSchemeSearchResults || form("searchText").value.isDefined){
 
-                @button(messages(button_content))
+                    @govukInput(
+                        Input(
+                            label = Label(
+                                content = Text(messages("messages__listSchemes__searchText_label")),
+                                classes = "govuk-!-font-weight-bold govuk-label--m"
+                ),
+                            classes = "govuk-!-width-one-half"
+                        ).withFormField(form("searchText"))
+                    )
 
-            }
+                    @button(messages(button_content))
 
-            @govukInsetText(InsetText(
-                content = HtmlContent(insetText)
-            ))
+                }
+
+                @govukInsetText(InsetText(
+                    content = HtmlContent(insetText)
+                ))
+
+            </div>
+        </div>
 
 
 
         @if(form("searchText").value.exists(_.nonEmpty)){
             @if(schemes.nonEmpty){
                 <div class="govuk-grid-row">
-                    <div class="column-two-thirds">
+                    <div class="govuk-grid-column-two-thirds">
                         <p class="govuk-body">
                             @{
                                 if(schemes.size == 1) {
@@ -208,13 +220,18 @@
 
         @noResultsMessageKey.map{ text =>
             <div class="govuk-grid-row">
-                <div class="column-two-thirds">
+                <div class="govuk-grid-column-two-thirds">
                     <p class="govuk-body" id="noSchemes">@messages(text)</p>
                 </div>
             </div>
         }
 
+
         @if(schemes.nonEmpty) {
+        <span aria-hidden="true" class="govuk-visually-hidden" id="schemeList_table">
+            messages("messages__listSchemes__title")
+        </span>
+        <div role="region" aria-labelledby="schemeList_table">
             @govukTable(
                 Table(
                     rows =
@@ -263,11 +280,12 @@
                         attributes = Map("id" -> "scheme-list-table", "role"-> "table")
                 )
             )
+        </div>
         }
 
         @if(numberOfSchemes > pagination) {
             <div class="govuk-grid-row">
-                <div class="column-two-thirds">
+                <div class="govuk-grid-column-two-thirds">
                     <p class="govuk-body govuk-margin-top-5" id="pagination-text">
                         @paginationText
                     </p>
@@ -305,7 +323,7 @@
         }
 
         <p class="govuk-body govuk-margin-top-5">
-            <a id="return-link" class="govuk_link" href=@SchemesOverviewController.onPageLoad()>
+            <a id="return-link" class="govuk-link" href=@SchemesOverviewController.onPageLoad()>
                 @messages("site.return_to", psaName)
             </a>
         </p>

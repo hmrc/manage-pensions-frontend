@@ -15,28 +15,28 @@
  *@
 
 @import config.FrontendAppConfig
-@import uk.gov.hmrc.play.views.html._
-@import views.html._
 @import controllers.routes._
 @import models.Mode
 @import viewmodels.Message
 
 @this(
-main_template: main_template,
-appConfig: FrontendAppConfig
+    layout: templates.Layout,
+    appConfig: FrontendAppConfig
 )
 
 @(pspName: String, schemeName:String)(implicit request: Request[_], messages: Messages)
 
-@main_template(
-    title = messages("messages__alreadyAssociatedWithScheme__title", pspName),
+@layout(
+    pageTitle = messages("messages__alreadyAssociatedWithScheme__title", pspName)) {
 
-    bodyClasses = None) {
-    @components.back_link()
-    @components.heading(messages("messages__alreadyAssociatedWithScheme__heading", pspName))
+    <h1 class="govuk-heading-xl">@messages("messages__alreadyAssociatedWithScheme__heading", pspName)</h1>
 
-    <p>@messages("messages__alreadyAssociatedWithScheme__p1", pspName, schemeName)</p>
+    <p class="govuk-body">@messages("messages__alreadyAssociatedWithScheme__p1", pspName, schemeName)</p>
 
-    <p><a id="return-to-schemes" href="@controllers.psa.routes.ListSchemesController.onPageLoad()">@messages("messages__youCannotSendAnInvite__returnToSchemes__link")</a></p>
+    <p class="govuk-body">
+        <a id="return-to-schemes" class="govuk-link" href="@controllers.psa.routes.ListSchemesController.onPageLoad()">
+            @messages("messages__youCannotSendAnInvite__returnToSchemes__link")
+        </a>
+    </p>
 
 }
