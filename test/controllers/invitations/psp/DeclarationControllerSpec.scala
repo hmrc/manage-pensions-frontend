@@ -67,7 +67,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
   val pspName: String = "psp-name"
   val schemeName: String = "scheme-name"
   val pspId: String = "psp-id"
-  val pspCR: ClientReference = HaveClientReference("psp-client-reference")
+  val pspCR: String = "psp-client-reference"
   val minPsa: MinimalPSAPSP = MinimalPSAPSP("z@z.z", isPsaSuspended = false, Some("ABC Corps"), None, rlsFlag = false, deceasedFlag = false)
 
   val userAnswers: UserAnswers = UserAnswers().set(SchemeSrnId)(srn).asOpt.value

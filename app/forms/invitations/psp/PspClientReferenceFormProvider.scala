@@ -26,7 +26,7 @@ class PspClientReferenceFormProvider @Inject() extends Mappings with Transforms 
 
   def apply(): Form[String] = Form(
     "reference" -> text("messages__clientReference_required").
-      transform(standardTextTransform, noTransform).
+      transform(strip, noTransform).
       verifying(firstError(
         maxLength(clientRefMaxLength, "messages__clientReference_maxLength"),
         clientRef("messages__clientReference_invalid")))

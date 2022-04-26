@@ -21,20 +21,20 @@ import controllers.ControllerSpecBase
 import controllers.actions._
 import controllers.invitations.psp.routes._
 import controllers.psa.routes._
-import forms.invitations.psp.PspClientReferenceFormProvider
-import identifiers.invitations.psp.{PspClientReferenceId, PspNameId}
+import forms.invitations.psp.PspHasClientReferenceFormProvider
+import identifiers.invitations.psp.{PspHasClientReferenceId, PspNameId}
 import identifiers.{SchemeNameId, SchemeSrnId}
 import models.{NormalMode, SchemeReferenceNumber}
 import play.api.data.Form
 import play.api.mvc.Call
 import play.api.test.Helpers.{contentAsString, redirectLocation, status, _}
 import utils.{FakeNavigator, UserAnswers}
-import views.html.invitations.psp.pspClientReference
+import views.html.invitations.psp.pspHasClientReference
 
 
-class PspClientReferenceControllerSpec extends ControllerSpecBase {
-  val formProvider = new PspClientReferenceFormProvider()
-  val form: Form[String] = formProvider()
+class PspHasClientReferenceControllerSpec extends ControllerSpecBase {
+  val formProvider = new PspHasClientReferenceFormProvider()
+  val form: Form[Boolean] = formProvider()
 
   def onwardRoute: Call = Call("GET", "/foo")
   private val schemeName = "Test Scheme"
@@ -43,23 +43,23 @@ class PspClientReferenceControllerSpec extends ControllerSpecBase {
     .set(PspNameId)("xyz").asOpt.value
     .set(SchemeNameId)(schemeName).asOpt.value
     .set(SchemeSrnId)(srn).asOpt.value
-  val userAnswerWithPspClientRef: UserAnswers = userAnswer.set(PspClientReferenceId)("A0000000").asOpt.value
+  val userAnswerWithPspHasClientRef: UserAnswers = userAnswer.set(PspHasClientReferenceId)(true).asOpt.value
   val minimalData = new FakeDataRetrievalAction(Some(userAnswer.json))
 
-  private val returnCall = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber("srn"))
-  private val onSubmitCall = PspClientReferenceController.onSubmit(NormalMode)
+  private def returnCall = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber("srn"))
+  private def onSubmitCall = PspHasClientReferenceController.onSubmit(NormalMode)
 
 
-  private val view = injector.instanceOf[pspClientReference]
+  private val view = injector.instanceOf[pspHasClientReference]
 
-  def controller(dataRetrievalAction: DataRetrievalAction = minimalData) = new PspClientReferenceController(
+  def controller(dataRetrievalAction: DataRetrievalAction = minimalData) = new PspHasClientReferenceController(
     messagesApi, FakeAuthAction, new FakeNavigator(onwardRoute), FakeUserAnswersCacheConnector,
     dataRetrievalAction, new DataRequiredActionImpl, formProvider, controllerComponents, view
   )
 
   private def viewAsString(form: Form[_] = form): String = view(form, "xyz", NormalMode, schemeName, returnCall,onSubmitCall)(fakeRequest, messages).toString
 
-  "PspClientReferenceController" when {
+  "PspHasClientReferenceController" when {
     "on a GET" must {
 
       "return OK and the correct view" in {
@@ -69,9 +69,9 @@ class PspClientReferenceControllerSpec extends ControllerSpecBase {
       }
 
       "populate the view correctly on a GET if the question has previously been answered" in {
-        val data = new FakeDataRetrievalAction(Some(userAnswerWithPspClientRef.json))
+        val data = new FakeDataRetrievalAction(Some(userAnswerWithPspHasClientRef.json))
         val result = controller(data).onPageLoad(NormalMode)(fakeRequest)
-        contentAsString(result) mustBe viewAsString(form.fill("A0000000"))
+        contentAsString(result) mustBe viewAsString(form.fill(true))
       }
 
       "redirect to the session expired page if there is no psp name" in {
@@ -87,7 +87,16 @@ class PspClientReferenceControllerSpec extends ControllerSpecBase {
 
     "on a POST" must {
       "save the data and redirect to the next page if valid data is submitted" in {
-        val postRequest = fakeRequest.withFormUrlEncodedBody(("hasReference", "true"), ("reference", "A0000000"))
+        val postRequest = fakeRequest.withFormUrlEncodedBody(("hasReference", "true"))
+
+        val result = controller().onSubmit(NormalMode)(postRequest)
+
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(onwardRoute.url)
+      }
+
+      "save the data and redirect to the next page if valid data(False) is submitted" in {
+        val postRequest = fakeRequest.withFormUrlEncodedBody(("hasReference", "false"))
 
         val result = controller().onSubmit(NormalMode)(postRequest)
 
@@ -96,8 +105,8 @@ class PspClientReferenceControllerSpec extends ControllerSpecBase {
       }
 
       "return a Bad Request and errors if invalid data is submitted" in {
-        val postRequest = fakeRequest.withFormUrlEncodedBody(("yesNo", ""))
-        val boundForm = form.bind(Map("yesNo" -> ""))
+        val postRequest = fakeRequest.withFormUrlEncodedBody(("hasReference", ""))
+        val boundForm = form.bind(Map("hasReference" -> ""))
 
         val result = controller().onSubmit(NormalMode)(postRequest)
 
