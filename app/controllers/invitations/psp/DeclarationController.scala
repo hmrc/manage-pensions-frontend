@@ -82,12 +82,13 @@ class DeclarationController @Inject()(
   }
 
   private def inviteEmailAndRedirect()(implicit request: DataRequest[AnyContent]): Future[Result] =
-    (SchemeNameId and SchemeSrnId and PspNameId and PspId and PspClientReferenceId).retrieve.right.map {
-      case schemeName ~ srn ~ pspName ~ pspId ~ pspCR =>
+    (SchemeNameId and SchemeSrnId and PspNameId and PspId).retrieve.right.map {
+      case schemeName ~ srn ~ pspName ~ pspId =>
         getPstr(srn).flatMap {
           case Some(pstr) =>
             val psaId = request.psaIdOrException.id
-            pspConnector.authorisePsp(pstr, psaId, pspId, Some(pspCR)).flatMap { _ =>
+            val pspCR = request.userAnswers.get(PspClientReferenceId)
+            pspConnector.authorisePsp(pstr, psaId, pspId, pspCR).flatMap { _ =>
               minimalConnector.getMinimalPsaDetails(psaId).flatMap { minimalPSAPSP =>
                 sendEmail(minimalPSAPSP, psaId, pspId, pstr, pspName, schemeName).map { _ =>
                   auditService.sendEvent(
