@@ -65,7 +65,7 @@
 
 @viewLink(pspName: String,index: Index, authorisedByLoggedInPsa:Boolean) = {
     @if(authorisedByLoggedInPsa){
-        <a class="govuk-link" href="@ViewPspCheckYourAnswersController.onPageLoad(index)">
+        <a id="view-link" class="govuk-link" href="@ViewPspCheckYourAnswersController.onPageLoad(index)">
                             <span aria-hidden="true">
                                 @messages("messages__viewPractitioners__viewLinkText")
                             </span>
