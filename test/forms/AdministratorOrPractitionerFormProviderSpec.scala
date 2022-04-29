@@ -17,9 +17,9 @@
 package forms
 
 import forms.behaviours.FormBehaviours
-import models.{AdministratorOrPractitioner, Field, Required, Invalid}
+import models.{AdministratorOrPractitioner, Field, Invalid, Required}
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.i18n.{MessagesApi, Messages}
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
 
 class AdministratorOrPractitionerFormProviderSpec extends FormBehaviours with GuiceOneAppPerSuite {
@@ -28,7 +28,7 @@ class AdministratorOrPractitionerFormProviderSpec extends FormBehaviours with Gu
   implicit val messages: Messages = messagesApi.preferred(FakeRequest())
 
   val validData: Map[String, String] = Map(
-    "value" -> AdministratorOrPractitioner.optionsAdministratorOrPractitioner.head.value
+    "value" -> AdministratorOrPractitioner.optionsAdministratorOrPractitioner.head.value.get
   )
 
   val form = new AdministratorOrPractitionerFormProvider()()
@@ -43,6 +43,6 @@ class AdministratorOrPractitionerFormProviderSpec extends FormBehaviours with Gu
         Required -> messages("messages__administratorOrPractitioner__error__required"),
         Invalid -> "error.invalid"
       ),
-      AdministratorOrPractitioner.optionsAdministratorOrPractitioner.map(_.value): _*)
+      AdministratorOrPractitioner.optionsAdministratorOrPractitioner.map(_.value.get): _*)
   }
 }
