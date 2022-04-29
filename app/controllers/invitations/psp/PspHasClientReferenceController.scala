@@ -74,14 +74,15 @@ class PspHasClientReferenceController @Inject()(
           }
         },
         value =>
-          dataCacheConnector.save(request.externalId, PspHasClientReferenceId, value).map(
+          dataCacheConnector.save(request.externalId, PspHasClientReferenceId, value).flatMap(
             cacheMap => {
               if (!value) {
                 dataCacheConnector.remove(request.externalId, PspClientReferenceId).map(  updatedCacheMap =>
                   Redirect(navigator.nextPage(PspHasClientReferenceId, mode, UserAnswers(updatedCacheMap)))
                 )
+              }else {
+                Future.successful(Redirect(navigator.nextPage(PspHasClientReferenceId, mode, UserAnswers(cacheMap))))
               }
-              Redirect(navigator.nextPage(PspHasClientReferenceId, mode, UserAnswers(cacheMap)))
             }
           )
       )

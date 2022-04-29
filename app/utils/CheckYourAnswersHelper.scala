@@ -123,8 +123,5 @@ class CheckYourAnswersHelper(userAnswers: UserAnswers, countryOptions: CountryOp
       ))
   }
 
-  private def getClientReference: String = userAnswers.get(PspClientReferenceId) match {
-    case Some(reference) => reference
-    case _ => "messages__none"
-  }
+  private def getClientReference: String = userAnswers.get(PspClientReferenceId).getOrElse("messages__none")
 }
