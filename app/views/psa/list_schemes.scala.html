@@ -130,8 +130,8 @@
     }
 }
 
-@schemeNameLink(schemeName: String, srn: SchemeReferenceNumber) = {
-    <a class="govuk-link" href="@{PsaSchemeDashboardController.onPageLoad(srn).url}"
+@schemeNameLink(id :String,schemeName: String, srn: SchemeReferenceNumber) = {
+    <a id="@id" class="govuk-link" href="@{PsaSchemeDashboardController.onPageLoad(srn).url}"
        target="_self" data-sso="false">@schemeName
     </a>
 }
@@ -238,8 +238,8 @@
                         for((scheme, index) <- schemes.zipWithIndex) yield {
                             Seq(
                                 TableRow(
-                                    attributes = Map("id" -> ("schemeName-"+index), "role"-> "cell"),
-                                    content = HtmlContent(schemeNameLink(scheme.name, scheme.referenceNumber)),
+                                    attributes = Map("id" -> ("schemeNameTd-"+index), "role"-> "cell"),
+                                    content = HtmlContent(schemeNameLink("schemeName-"+index,scheme.name, scheme.referenceNumber)),
                                     classes="govuk-table__cell"
                                 ),
                                 TableRow(
