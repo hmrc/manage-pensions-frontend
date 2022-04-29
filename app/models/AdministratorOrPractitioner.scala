@@ -16,8 +16,12 @@
 
 package models
 
+import play.api.i18n.Messages
 import play.api.libs.json._
-import utils.{Enumerable, InputOption}
+import uk.gov.hmrc.govukfrontend.views.Aliases.Hint
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
+import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
+import utils.Enumerable
 
 sealed trait AdministratorOrPractitioner
 
@@ -33,25 +37,31 @@ object AdministratorOrPractitioner {
 
   private val mappings: Map[String, AdministratorOrPractitioner] = values.map(v => (v.toString, v)).toMap
 
-  private def seqInputOption(messageKey:String, includeHints:Boolean, values: Seq[AdministratorOrPractitioner]): Seq[InputOption] = {
+  private def seqInputOption(messageKey:String, includeHints:Boolean, values: Seq[AdministratorOrPractitioner])(implicit messages: Messages): Seq[RadioItem] = {
     values.map { value =>
-      val optionHint = if(includeHints) Some(Set(s"messages__${messageKey}__${value.toString}_hint")) else None
+      val optionHint = if(includeHints) Some(Hint(Some(s"messages__${messageKey}__${value.toString}_hint"))) else None
       optionHint match {
-        case None => InputOption(value.toString, s"messages__${messageKey}__${value.toString}")
-        case Some(h) => InputOption(value.toString, s"messages__${messageKey}__${value.toString}", hint = h)
+        case None => RadioItem(
+            content = Text(messages(s"messages__${messageKey}__${value.toString}")),
+            value = Some(value.toString))
+        case Some(h) => RadioItem(
+          content = Text(messages(s"messages__${messageKey}__${value.toString}")),
+          value = Some(value.toString),
+          hint = Some(h))
       }
     }
   }
 
-  def optionsAdministratorOrPractitioner: Seq[InputOption] = seqInputOption(
+
+  def optionsAdministratorOrPractitioner(implicit messages: Messages): Seq[RadioItem] = seqInputOption(
     messageKey = "administratorOrPractitioner", includeHints = true, values
   )
 
-  def optionsCannotAccessPageAsAdministrator: Seq[InputOption] = seqInputOption(
+  def optionsCannotAccessPageAsAdministrator(implicit messages: Messages): Seq[RadioItem] = seqInputOption(
     messageKey = "cannotAccessPageAsAdministrator", includeHints = false, values.reverse
   )
 
-  def optionsCannotAccessPageAsPractitioner: Seq[InputOption] = seqInputOption(
+  def optionsCannotAccessPageAsPractitioner(implicit messages: Messages): Seq[RadioItem] = seqInputOption(
     messageKey = "cannotAccessPageAsPractitioner", includeHints = false, values
   )
 

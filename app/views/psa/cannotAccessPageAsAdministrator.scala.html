@@ -16,8 +16,10 @@
 
 @import play.api.data.Form
 @import config.FrontendAppConfig
-@import uk.gov.hmrc.play.views.html._
-@import views.html._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
 @import viewmodels.Message
 @import utils.ViewHelper.titleWithErrors
 @import models.AdministratorOrPractitioner
@@ -25,32 +27,44 @@
 @import controllers.psa.routes._
 
 @this(
-    main_template: main_template,
-    formHelper: FormWithCSRF
+    layout: templates.Layout,
+    govukRadios : GovukRadios,
+    formHelper: PlayFrontendFormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    button: components.govuk_button
 )
 
 @(form: Form[_])(implicit request: Request[_], messages: Messages)
 
-@main_template(
-    title = titleWithErrors(form, messages("messages__cannotAccessPageAsAdministrator__title"))
-){
+@layout(
+    pageTitle = titleWithErrors(form, messages("messages__cannotAccessPageAsAdministrator__title"))){
 
-    @formHelper(action = CannotAccessPageAsAdministratorController.onSubmit(), 'autoComplete -> "off") {
+        @formHelper(action = CannotAccessPageAsAdministratorController.onSubmit(), 'autoComplete -> "off") {
 
-        @components.back_link()
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
+        }
 
-        @components.error_summary(form.errors)
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">@messages("messages__cannotAccessPageAsAdministrator__heading")</h1>
 
-        @components.input_radio(
-            paragraphText = Some(messages("messages__cannotAccessPageAsAdministrator__p1")),
-            field = form("value"),
-            legend = messages("messages__cannotAccessPageAsAdministrator__heading"),
-            legendClass = Some("visually-hidden"),
-            inputs = AdministratorOrPractitioner.optionsCannotAccessPageAsAdministrator,
-            headingIsLegend=true
+        @govukRadios(
+            Radios(
+                fieldset = Some(
+                    Fieldset(
+                        legend = Some(
+                            Legend(
+                                content = Text(messages("messages__cannotAccessPageAsAdministrator__p1")),
+                                classes = "govuk-fieldset__legend--s govuk-!-font-weight-regular govuk-!-margin-bottom-5",
+                                isPageHeading = false
+                            )
+                        )
+                    )
+                ),
+                items = AdministratorOrPractitioner.optionsCannotAccessPageAsAdministrator
+            ).withFormField(form("value"))
         )
 
-        @components.submit_button("site.continue")
+        @button(messages("site.continue"))
 
     }
 

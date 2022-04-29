@@ -15,30 +15,28 @@
  *@
 
 @import config.FrontendAppConfig
-@import uk.gov.hmrc.play.views.html._
-@import views.html._
-@import controllers.routes._
-@import models.Mode
 @import viewmodels.Message
 @import viewmodels.RemovalViewModel
 
 @this(
-main_template: main_template,
-appConfig: FrontendAppConfig
+    layout: templates.Layout,
+    appConfig: FrontendAppConfig
 )
 
 @(viewModel: RemovalViewModel)(implicit request: Request[_], messages: Messages)
 
-@main_template(
-    title = messages(viewModel.titleMessageKey),
+@layout(
+    pageTitle = messages(viewModel.titleMessageKey)) {
 
-    bodyClasses = None) {
-    @components.back_link()
-    @components.heading(messages(viewModel.headingMessageKey))
+        <h1 class="govuk-heading-xl">@messages(viewModel.headingMessageKey)</h1>
 
-    <p>@messages(viewModel.p1MessageKey)</p>
-    <p>@messages(viewModel.p2MessageKey)</p>
+        <p class="govuk-body">@messages(viewModel.p1MessageKey)</p>
+        <p class="govuk-body">@messages(viewModel.p2MessageKey)</p>
 
-    <p><a id="return-to-schemes" href="@controllers.psa.routes.ListSchemesController.onPageLoad()">@messages(viewModel.returnLinkMessageKey)</a></p>
+        <p class="govuk-body">
+            <a id="return-to-schemes" class="govuk-link"
+               href="@controllers.psa.routes.ListSchemesController.onPageLoad()">@messages(viewModel.returnLinkMessageKey)
+            </a>
+        </p>
 
 }

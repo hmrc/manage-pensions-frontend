@@ -15,14 +15,22 @@
  *@
 
 @import config.FrontendAppConfig
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
 @import models.SchemeDetails
 @import controllers.psp.routes.ListSchemesController
 @import controllers.psp.routes._
 @import utils.ViewHelper.titleWithErrors
 
 @this(
-    main_template: main_template,
-    formHelper: FormWithCSRF,
+    layout: templates.Layout,
+    formHelper: PlayFrontendFormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    govukInput: GovukInput,
+    button: components.govuk_button,
+    govukSummaryList : GovukSummaryList,
     appConfig: FrontendAppConfig
 )
 
@@ -41,7 +49,7 @@
 
     val linkText: String = messages("messages__schemesOverview__manage__redirect__link")
 
-    Html(s"""<a id="manage-link" href="$href">$linkText</a>""")
+    Html(s"""<a class="govuk-link" id="manage-link" href="$href">$linkText</a>""")
 }
 
 @button_content = @{
@@ -51,6 +59,7 @@
         "messages__listSchemes__search_submit"
     }
 }
+
 @heading = @{
     if(form("searchText").value.exists(_.length > 0)){
     "messages__listSchemesPsp____search_result_title"
@@ -59,55 +68,123 @@
     }
 }
 
-@main_template(
-    title = titleWithErrors(form, messages(heading)),
-    bodyClasses = Some("full-width")
+@statusValue(status: String) = @{
+    status match {
+        case SchemeStatus.Pending.value             => messages("messages__listSchemes__status_pending")
+        case SchemeStatus.PendingInfoRequired.value => messages("messages__listSchemes__status_pending_req")
+        case SchemeStatus.PendingInfoReceived.value => messages("messages__listSchemes__status_pending_rec")
+        case SchemeStatus.Rejected.value            => messages("messages__listSchemes__status_rejected")
+        case SchemeStatus.Open.value                => messages("messages__listSchemes__status_open")
+        case SchemeStatus.Deregistered.value        => messages("messages__listSchemes__status_deregistered")
+        case SchemeStatus.WoundUp.value             => messages("messages__listSchemes__status_wound_up")
+        case SchemeStatus.RejectedUnderAppeal.value => messages("messages__listSchemes__status_rejected_appeal")
+        case _ => status
+    }
+}
+
+@rowValue(schemes: List[SchemeDetails]) = @{
+    for((scheme, index) <- schemes.zipWithIndex) yield {
+        Seq(
+            SummaryListRow(
+                key = Key(
+                    content = Text(messages("messages__listSchemesPsp__column__schemeName"))
+                ),
+                value = Value(
+                    content = Text(scheme.name)
+                )
+            ),
+            SummaryListRow(
+                key = Key(
+                    content = Text(messages("messages__listSchemesPsp__column__pstr"))
+                ),
+                value = Value(
+                    content = Text(scheme.pstr.getOrElse(messages("messages__listSchemes__pstr_not_assigned")))
+                )
+            ),
+            SummaryListRow(
+                key = Key(
+                    content = Text(messages("messages__listSchemesPsp__column__status"))
+                ),
+                value = Value(
+                    content = Text(statusValue(scheme.schemeStatus))
+                )
+            )
+        )
+    }
+}
+
+@layout(
+    pageTitle = titleWithErrors(form, messages(heading)),
+    fullWidthLayout = true
 ) {
 
     @formHelper(action = ListSchemesController.onSearch, 'autoComplete -> "off") {
-        @components.back_link()
 
-        <div class="grid-row">
-            <div class="column-two-thirds">
-                @components.error_summary(form.errors)
-                @components.heading(headingKey = messages(heading))
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
 
-                <p>@messages("messages__listSchemesPsp__lede")</p>
+                @if(form.errors.nonEmpty) {
+                    @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
+                }
 
-                @components.input_search(
-                    field = form("searchText"),
-                    label = messages("messages__listSchemesPsp__searchText_label"),
-                    hint = Some(messages("messages__listSchemesPsp__searchText_hint")),
-                    labelClass = Some("heading-medium"),
-                    inputClass = Some("form-control--width-two-thirds"),
-                    messageKey = messages(button_content)
+                <h1 class="govuk-heading-xl">@messages(heading)</h1>
+
+                <p class="govuk-body">@messages("messages__listSchemesPsp__lede")</p>
+
+                @govukInput(
+                    Input(
+                        label = Label(
+                            content = Text(messages("messages__listSchemesPsp__searchText_label")),
+                            classes = "govuk-!-font-weight-bold govuk-label--m"
+                        ),
+                        hint = Some(Hint(
+                            content = Text(messages("messages__listSchemesPsp__searchText_hint"))
+                        )),
+                        classes = "govuk-!-width-two-third"
+                    ).withFormField(form("searchText"))
                 )
 
+                @button(messages(button_content))
+
                 @if(form("searchText").value.exists(_.nonEmpty)) {
-                    <p class="govuk-margin-bottom-3">
-                        <a id="clear-search-link" href="@ListSchemesController.onPageLoad"> @messages("messages__listSchemes__searchText_clearlink")</a>
+                    <p class="govuk-body govuk-margin-bottom-3">
+                        <a id="clear-search-link" class="govuk-link" href="@ListSchemesController.onPageLoad"> @messages("messages__listSchemes__searchText_clearlink")</a>
                     </p>
                 }
 
                 @if(form("searchText").value.isDefined && form.errors.isEmpty && schemes.isEmpty) {
                     @form("searchText").value.map{ searchText =>
-                        <p id="noSchemes" role="status" class="govuk-margin-bottom-3 ">
-                            @messages("messages__listSchemesPsp__noMatchesLeft") <span class="bold">@searchText</span>
+                        <p id="noSchemes" role="status" class="govuk-body govuk-margin-bottom-3 ">
+                            @messages("messages__listSchemesPsp__noMatchesLeft") <span class="govuk-!-font-weight-bold">@searchText</span>
                             @messages("messages__listSchemesPsp__noMatchesRight")
                         </p>
-                        <p id="noMatchesCheck">@messages("messages__listSchemesPsp__noMatchesCheck")</p>
+                        <p id="noMatchesCheck" class="govuk-body">@messages("messages__listSchemesPsp__noMatchesCheck")</p>
                     }
                 }
 
                 @if(schemes.nonEmpty && (form("searchText").value.exists(_.nonEmpty))) {
-                <p id="oneScheme" class="govuk-margin-bottom-3 " role="status"> @messages("messages__listSchemesPsp__oneResultFound")</p>
-                    @components.scheme_list_psp(schemes, appConfig)
+                    <p id="oneScheme" class="govuk-body govuk-margin-bottom-3 " role="status">
+                        @messages("messages__listSchemesPsp__oneResultFound")
+                    </p>
+
+                    @govukSummaryList(
+                        SummaryList(rows = rowValue(schemes).flatten
+                        )
+                    )
+
+                    <p class="govuk-body">
+                        <a id="view-scheme" class="govuk-link" href="@PspSchemeDashboardController.onPageLoad(schemes.head.referenceNumber)">
+                            @messages("messages__listSchemesPsp__viewScheme")
+                        </a>
+                    </p>
                 }
 
-                @components.return_link(PspDashboardController.onPageLoad(), Some(pspName))
+                <p class="govuk-body govuk-margin-top-5">
+                    <a id="return-link" class="govuk-link" href=@PspDashboardController.onPageLoad()>
+                        @messages("site.return_to", pspName)
+                    </a>
+                </p>
             </div>
         </div>
-
-
     }
 }

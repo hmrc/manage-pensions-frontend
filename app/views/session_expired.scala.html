@@ -15,17 +15,16 @@
  *@
 
 @this(
-    main_template: main_template
+    layout: templates.Layout
 )
 
 @()(implicit request: Request[_], messages: Messages)
 
-@main_template(
-    title = messages("messages__session_expired__title"),
+@layout(
+    pageTitle = messages("messages__session_expired__title"),
+    showBackLink = false) {
 
-    bodyClasses = None) {
+        <h1 class="govuk-heading-xl">@messages("messages__session_expired__title")</h1>
 
-        <h1 class="heading-xlarge">@messages("messages__session_expired__title")</h1>
-
-        <p>@messages("messages__session_expired__guidance")</p>
+        <p class="govuk-body">@messages("messages__session_expired__guidance")</p>
     }

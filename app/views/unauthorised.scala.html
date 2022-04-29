@@ -15,18 +15,14 @@
  *@
 
 @this(
-    main_template: main_template
+    layout: templates.Layout
 )
 
 @()(implicit request: Request[_], messages: Messages)
 
-@main_template(
-    title = messages("messages__unauthorised__title"),
+@layout(
+    pageTitle = messages("messages__unauthorised__title")) {
 
-    bodyClasses = None) {
-
-        @components.back_link()
-
-        <h1 class="heading-xlarge">@messages("messages__unauthorised__title")</h1>
+        <h1 class="govuk-heading-xl">@messages("messages__unauthorised__title")</h1>
 
     }

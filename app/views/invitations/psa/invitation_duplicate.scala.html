@@ -14,26 +14,26 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.play.views.html._
-@import views.html._
 @import controllers.routes._
 @import models.Mode
 @import viewmodels.Message
 
 @this(
-    main_template: main_template
+    layout: templates.Layout
 )
 @(inviteeName: String, schemeName: String)(implicit request: Request[_], messages: Messages)
 
-@main_template(
-    title = messages("messages__invitationDuplicate__title"),
+@layout(
+    pageTitle = messages("messages__invitationDuplicate__title")) {
 
-    bodyClasses = None) {
-    @components.back_link()
-    @components.heading(Messages("messages__invitationDuplicate__heading", inviteeName))
+    <h1 class="govuk-heading-xl">@Messages("messages__invitationDuplicate__heading", inviteeName)</h1>
 
-    <p id="schemeName">@Messages("messages__invitationDuplicate__schemeName", inviteeName, schemeName)</p>
-    <p id="inviteInformation">@Messages("messages__invitationDuplicate__inviteInformation")</p>
+    <p id="schemeName" class="govuk-body">@Messages("messages__invitationDuplicate__schemeName", inviteeName, schemeName)</p>
+    <p id="inviteInformation" class="govuk-body">@Messages("messages__invitationDuplicate__inviteInformation")</p>
 
-    <p><a id="return-to-schemes" href="@controllers.psa.routes.ListSchemesController.onPageLoad()">@messages("messages__invitationDuplicate__returnToSchemes__link")</a></p>
+    <p class="govuk-body">
+        <a id="return-to-schemes" class="govuk-link" href="@controllers.psa.routes.ListSchemesController.onPageLoad()">
+            @messages("messages__invitationDuplicate__returnToSchemes__link")
+        </a>
+    </p>
 }
