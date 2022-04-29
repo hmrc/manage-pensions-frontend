@@ -28,7 +28,7 @@ class CannotAccessPageAsAdministratorFormProviderSpec extends FormBehaviours wit
   implicit val messages: Messages = messagesApi.preferred(FakeRequest())
 
   val validData: Map[String, String] = Map(
-    "value" -> AdministratorOrPractitioner.optionsCannotAccessPageAsAdministrator.head.value
+    "value" -> AdministratorOrPractitioner.optionsCannotAccessPageAsAdministrator.head.value.get
   )
 
   val form = new CannotAccessPageAsAdministratorFormProvider()()
@@ -43,6 +43,6 @@ class CannotAccessPageAsAdministratorFormProviderSpec extends FormBehaviours wit
         Required -> messages("messages__cannotAccessPageAsAdministrator__error__required"),
         Invalid -> "error.invalid"
       ),
-      AdministratorOrPractitioner.optionsCannotAccessPageAsAdministrator.map(_.value): _*)
+      AdministratorOrPractitioner.optionsCannotAccessPageAsAdministrator.map(_.value.get): _*)
   }
 }

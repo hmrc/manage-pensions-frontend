@@ -23,8 +23,8 @@ import controllers.invitations.routes._
 import controllers.psa.routes._
 import controllers.psp.routes._
 import identifiers.invitations.PSTRId
-import identifiers.{SchemeStatusId, SchemeNameId}
-import models.SchemeStatus.{Rejected, Open}
+import identifiers.{SchemeNameId, SchemeStatusId}
+import models.SchemeStatus.{Open, Rejected}
 import models._
 import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
@@ -32,7 +32,6 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.i18n.Messages
 import play.api.libs.json.{JsArray, Json}
-import uk.gov.hmrc.http.HeaderCarrier
 import utils.DateHelper.formatter
 import utils.UserAnswers
 import viewmodels._
@@ -46,8 +45,7 @@ class PsaSchemeDashboardServiceSpec
     with ScalaFutures {
 
   import PsaSchemeDashboardServiceSpec._
-
-  private implicit val hc: HeaderCarrier = HeaderCarrier()
+  
   private val mockAppConfig = mock[FrontendAppConfig]
 
   private def service: PsaSchemeDashboardService =
