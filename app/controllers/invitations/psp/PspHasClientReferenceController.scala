@@ -22,8 +22,8 @@ import controllers.Retrievals
 import controllers.actions._
 import controllers.psa.routes._
 import controllers.invitations.psp.routes._
-import forms.invitations.psp.PspClientReferenceFormProvider
-import identifiers.invitations.psp.{PspClientReferenceId, PspNameId}
+import forms.invitations.psp.PspHasClientReferenceFormProvider
+import identifiers.invitations.psp.{PspClientReferenceId, PspHasClientReferenceId, PspNameId}
 import identifiers.{SchemeNameId, SchemeSrnId}
 import models.{Mode, SchemeReferenceNumber}
 import play.api.data.Form
@@ -32,36 +32,35 @@ import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.annotations.AuthorisePsp
 import utils.{Navigator, UserAnswers}
-import views.html.invitations.psp.pspClientReference
+import views.html.invitations.psp.pspHasClientReference
 
 import scala.concurrent.{ExecutionContext, Future}
 
-
-class PspClientReferenceController @Inject()(
-                                             override val messagesApi: MessagesApi,
-                                             authenticate: AuthAction,
-                                             @AuthorisePsp navigator: Navigator,
-                                             dataCacheConnector: UserAnswersCacheConnector,
-                                             getData: DataRetrievalAction,
-                                             requireData: DataRequiredAction,
-                                             formProvider: PspClientReferenceFormProvider,
-                                             val controllerComponents: MessagesControllerComponents,
-                                             view: pspClientReference
-                                           )(implicit val ec: ExecutionContext)
+class PspHasClientReferenceController @Inject()(
+                                                 override val messagesApi: MessagesApi,
+                                                 authenticate: AuthAction,
+                                                 @AuthorisePsp navigator: Navigator,
+                                                 dataCacheConnector: UserAnswersCacheConnector,
+                                                 getData: DataRetrievalAction,
+                                                 requireData: DataRequiredAction,
+                                                 formProvider: PspHasClientReferenceFormProvider,
+                                                 val controllerComponents: MessagesControllerComponents,
+                                                 view: pspHasClientReference
+                                               )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with Retrievals
     with I18nSupport {
 
-  val form: Form[String] = formProvider()
+  val form: Form[Boolean] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
       (SchemeNameId and PspNameId and SchemeSrnId).retrieve.right.map {
         case schemeName ~ pspName ~ srn =>
-          val value = request.userAnswers.get(PspClientReferenceId)
+          val value = request.userAnswers.get(PspHasClientReferenceId)
           val preparedForm = value.fold(form)(form.fill)
 
-          Future.successful(Ok(view(preparedForm, pspName, mode, schemeName, returnCall(srn),PspClientReferenceController.onSubmit(mode))))
+          Future.successful(Ok(view(preparedForm, pspName, mode, schemeName, returnCall(srn),PspHasClientReferenceController.onSubmit(mode))))
       }
   }
 
@@ -71,16 +70,21 @@ class PspClientReferenceController @Inject()(
         (formWithErrors: Form[_]) => {
           (SchemeNameId and PspNameId and SchemeSrnId).retrieve.right.map {
             case schemeName ~ pspName ~ srn =>
-              Future.successful(BadRequest(view(formWithErrors, pspName, mode, schemeName, returnCall(srn),PspClientReferenceController.onSubmit(mode))))
+              Future.successful(BadRequest(view(formWithErrors, pspName, mode, schemeName, returnCall(srn),PspHasClientReferenceController.onSubmit(mode))))
           }
         },
         value =>
-          dataCacheConnector.save(request.externalId, PspClientReferenceId, value).map(
-            cacheMap =>
-              Redirect(navigator.nextPage(PspClientReferenceId, mode, UserAnswers(cacheMap)))
+          dataCacheConnector.save(request.externalId, PspHasClientReferenceId, value).map(
+            cacheMap => {
+              if (!value) {
+                dataCacheConnector.remove(request.externalId, PspClientReferenceId).map(  updatedCacheMap =>
+                  Redirect(navigator.nextPage(PspHasClientReferenceId, mode, UserAnswers(updatedCacheMap)))
+                )
+              }
+              Redirect(navigator.nextPage(PspHasClientReferenceId, mode, UserAnswers(cacheMap)))
+            }
           )
       )
-
   }
 
   private def returnCall(srn: String): Call = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(srn))

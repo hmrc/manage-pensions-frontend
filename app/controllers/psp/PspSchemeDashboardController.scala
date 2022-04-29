@@ -27,7 +27,7 @@ import identifiers.invitations.psp.PspClientReferenceId
 import identifiers.psp.PSPNameId
 import identifiers.{SchemeSrnId, SchemeStatusId}
 import models.AuthEntity.PSP
-import models.{ClientReference, _}
+import models._
 import models.requests.AuthenticatedRequest
 import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -71,10 +71,7 @@ class PspSchemeDashboardController @Inject()(
         if (pspDetails.id == request.pspIdOrException.id) {
           val schemeStatus: String = userAnswers.get(SchemeStatusId).getOrElse("")
 
-          val clientReference: Option[String] = userAnswers.get(PspClientReferenceId).flatMap {
-            case ClientReference.HaveClientReference(reference) => Some(reference)
-            case ClientReference.NoClientReference => None
-          }
+          val clientReference: Option[String] = userAnswers.get(PspClientReferenceId)
 
           val isSchemeOpen: Boolean =
             schemeStatus.equalsIgnoreCase("open")

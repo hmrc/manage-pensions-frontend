@@ -16,23 +16,22 @@
 
 package forms.invitations.psp
 
+import forms.behaviours.BooleanFieldBehaviours
 import forms.mappings.Constraints
 import play.api.data.FormError
-import views.behaviours.StringFieldBehaviours
 
-class PspClientReferenceFormProviderSpec extends StringFieldBehaviours with Constraints {
-  val validMaxLength = 11
-  val form = new PspClientReferenceFormProvider()()
+class PspHasClientReferenceFormProviderSpec extends BooleanFieldBehaviours with Constraints {
 
-  ".value.reference" must {
-    val fieldName = "reference"
-    val requiredKey = "messages__clientReference_required"
-    val invalidKey = "messages__clientReference_invalid"
+  val form = new PspHasClientReferenceFormProvider()()
+  private val fieldName = "hasReference"
+  val requiredKey = "messages__hasClientReference_yes_no_required"
+  val invalidKey = "error.boolean"
+  ".hasReference" must {
 
-    behave like fieldThatBindsValidData(
+    behave like booleanField(
       form,
       fieldName,
-      "true"
+      invalidError = FormError(fieldName, invalidKey)
     )
 
     behave like mandatoryField(
@@ -40,16 +39,5 @@ class PspClientReferenceFormProviderSpec extends StringFieldBehaviours with Cons
       fieldName,
       requiredError = FormError(fieldName, requiredKey)
     )
-
-    "not bind string invalidated by regex" in {
-      val result = form.bind(Map("reference" -> "$&^"))
-      result.errors shouldEqual Seq(FormError("reference", invalidKey, Seq(Constraints.clientRefRegx)))
-    }
-
-    "bind string with spaces, removing the spaces" in {
-      val result = form.bind(Map("reference" -> "A B C"))
-      result.errors shouldBe empty
-      result.value shouldBe Some("ABC")
-    }
   }
 }

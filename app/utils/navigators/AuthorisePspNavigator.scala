@@ -19,9 +19,10 @@ package utils.navigators
 import controllers.invitations.psp.routes._
 import identifiers.Identifier
 import identifiers.invitations.psp._
+
 import javax.inject.Inject
 import javax.inject.Singleton
-import models.NormalMode
+import models.{CheckMode, Mode, NormalMode}
 import play.api.mvc.Call
 import utils.Navigator
 import utils.UserAnswers
@@ -31,13 +32,26 @@ class AuthorisePspNavigator @Inject() extends Navigator {
 
   override def routeMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
     case PspNameId => PspIdController.onPageLoad(NormalMode)
-    case PspId => PspClientReferenceController.onPageLoad(NormalMode)
+    case PspId => PspHasClientReferenceController.onPageLoad(NormalMode)
+    case PspHasClientReferenceId => pspHasClientReferenceRoutes(ua,NormalMode)
     case PspClientReferenceId => CheckYourAnswersController.onPageLoad()
   }
 
   override protected def editRouteMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
     case PspNameId => CheckYourAnswersController.onPageLoad()
     case PspId => CheckYourAnswersController.onPageLoad()
+    case PspHasClientReferenceId => pspHasClientReferenceRoutes(ua,CheckMode)
     case PspClientReferenceId => CheckYourAnswersController.onPageLoad()
+  }
+
+  private def pspHasClientReferenceRoutes(userAnswers: UserAnswers,mode:Mode): Call = {
+    userAnswers.get(PspHasClientReferenceId) match {
+      case Some(true)  =>
+        PspClientReferenceController.onPageLoad(mode)
+      case Some(false) =>
+        CheckYourAnswersController.onPageLoad()
+      case _ =>
+        controllers.routes.SessionExpiredController.onPageLoad()
+    }
   }
 }

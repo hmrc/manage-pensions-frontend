@@ -17,9 +17,8 @@
 package identifiers.invitations.psp
 
 import identifiers.TypedIdentifier
-import models.ClientReference
 
-object PspClientReferenceId extends TypedIdentifier[ClientReference] {
+object PspClientReferenceId  extends TypedIdentifier[String] {
 
   override def toString: String = "pspClientReference"
 

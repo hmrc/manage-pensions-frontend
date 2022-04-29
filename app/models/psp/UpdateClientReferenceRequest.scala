@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-package forms.invitations.psp
+package models.psp
 
-import forms.mappings.{Mappings, Transforms}
-import play.api.data.Form
+import play.api.libs.json.{Json, OFormat}
 
-import javax.inject.Inject
 
-class PspClientReferenceFormProvider @Inject() extends Mappings with Transforms {
-  val clientRefMaxLength = 11
+case class UpdateClientReferenceRequest(
+                                         pstr: String,
+                                         psaId: String,
+                                         pspId: String,
+                                         clientReference: Option[String] = None
+                                       )
 
-  def apply(): Form[String] = Form(
-    "reference" -> text("messages__clientReference_required").
-      transform(strip, noTransform).
-      verifying(firstError(
-        maxLength(clientRefMaxLength, "messages__clientReference_maxLength"),
-        clientRef("messages__clientReference_invalid")))
-  )
+object UpdateClientReferenceRequest {
+  implicit val updateClientReferenceRequestFormat: OFormat[UpdateClientReferenceRequest] = Json.format
 }
+

@@ -20,7 +20,7 @@ import base.SpecBase
 import controllers.invitations.psp.routes._
 import identifiers.Identifier
 import identifiers.invitations.psp._
-import models.NormalMode
+import models.{CheckMode, Mode, NormalMode}
 import models.requests.IdentifiedRequest
 import org.scalatest.OptionValues
 import org.scalatest.prop.TableFor4
@@ -36,10 +36,12 @@ class AuthorisePspNavigatorSpec extends SpecBase with NavigatorBehaviour {
   val navigator = new AuthorisePspNavigator
 
   def routes(): TableFor4[Identifier, UserAnswers, Call, Option[Call]] = Table(
-    ("Id",                            "User Answers",     "Next Page (NormalMode)",     "Next Page (CheckMode)"),
-    (PspNameId,                     emptyAnswers,       pspIdPage,                    Some(checkYourAnswer)),
-    (PspId,                         emptyAnswers,       pspClientRefPage,             Some(checkYourAnswer)),
-    (PspClientReferenceId,          emptyAnswers,       checkYourAnswer,              Some(checkYourAnswer))
+    ("Id",                            "User Answers",         "Next Page (NormalMode)",                   "Next Page (CheckMode)"),
+    (PspNameId,                     emptyAnswers,                   pspIdPage,                                 Some(checkYourAnswer)),
+    (PspId,                         emptyAnswers,                   pspHasClientRefPage(NormalMode),           Some(checkYourAnswer)),
+    (PspHasClientReferenceId,       pspHasClientRefUserAns,         pspClientRefPage(NormalMode),              Some(pspClientRefPage(CheckMode))),
+    (PspHasClientReferenceId,       pspHasClientRefUserAnsNo,       checkYourAnswer,                           Some(checkYourAnswer)),
+    (PspClientReferenceId,          emptyAnswers,                   checkYourAnswer,                           Some(checkYourAnswer))
   )
 
   navigator.getClass.getSimpleName must {
@@ -51,9 +53,12 @@ class AuthorisePspNavigatorSpec extends SpecBase with NavigatorBehaviour {
 
 object AuthorisePspNavigatorSpec extends OptionValues {
   lazy val emptyAnswers: UserAnswers = UserAnswers(Json.obj())
+  private lazy val pspHasClientRefUserAns: UserAnswers = UserAnswers().srn("srn").set(PspHasClientReferenceId)(true).asOpt.get
+  private lazy val pspHasClientRefUserAnsNo: UserAnswers = UserAnswers().srn("srn").set(PspHasClientReferenceId)(false).asOpt.get
   lazy val checkYourAnswer: Call = CheckYourAnswersController.onPageLoad()
   lazy val pspIdPage: Call = PspIdController.onPageLoad(NormalMode)
-  lazy val pspClientRefPage: Call = PspClientReferenceController.onPageLoad(NormalMode)
+   def pspClientRefPage(mode:Mode): Call = PspClientReferenceController.onPageLoad(mode)
+   def pspHasClientRefPage(mode:Mode): Call = PspHasClientReferenceController.onPageLoad(mode)
 
   implicit val ex: IdentifiedRequest = new IdentifiedRequest() {
     val externalId: String = "test-external-id"

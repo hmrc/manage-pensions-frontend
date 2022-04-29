@@ -187,4 +187,6 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
 
   lazy val contactHmrcUrl: String = runModeConfiguration.get[String]("urls.contactHmrc")
   lazy val submitEventReportGovUkLink: String = runModeConfiguration.get[String]("urls.guidanceToSubmitEventReportPageGovUkLink")
+  lazy val updateClientReferenceUrl = s"${servicesConfig.baseUrl("pension-administrator")}${runModeConfiguration.underlying
+    .getString("urls.updateClientReference")}"
 }

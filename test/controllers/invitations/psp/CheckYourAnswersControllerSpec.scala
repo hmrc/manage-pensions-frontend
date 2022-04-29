@@ -22,10 +22,10 @@ import controllers.ControllerSpecBase
 import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction}
 import controllers.behaviours.ControllerWithNormalPageBehaviours
 import controllers.invitations.psp.routes._
-import identifiers.SchemeNameId
-import identifiers.invitations.psp.{PspClientReferenceId, PspId, PspNameId}
-import models.CheckMode
-import models.ClientReference.HaveClientReference
+import controllers.psa.routes.PsaSchemeDashboardController
+import identifiers.{SchemeNameId, SchemeSrnId}
+import identifiers.invitations.psp.{PspClientReferenceId, PspHasClientReferenceId, PspId, PspNameId}
+import models.{CheckMode, SchemeReferenceNumber}
 import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
@@ -35,7 +35,7 @@ import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist._
 import utils.countryOptions.CountryOptions
 import utils.{CheckYourAnswersFactory, PspAuthoriseFuzzyMatcher, UserAnswers}
-import views.html.check_your_answers_view
+import views.html.invitations.psp.checkYourAnswersPsp
 
 import scala.concurrent.Future
 
@@ -93,12 +93,15 @@ class CheckYourAnswersControllerSpec extends ControllerSpecBase with MockitoSuga
 object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours with MockitoSugar with JsonFileReader {
     private val pspName: String = "test-psp"
     private val testSchemeName = "test-scheme-name"
+    private val srn = "srn"
 
     private val data = UserAnswers()
             .set(PspNameId)(pspName).asOpt.value
             .set(PspId)("A1231231").asOpt.value
-            .set(PspClientReferenceId)(HaveClientReference("1234567")).asOpt.value
+            .set(PspHasClientReferenceId)(true).asOpt.value
+            .set(PspClientReferenceId)("1234567").asOpt.value
             .set(SchemeNameId)(testSchemeName).asOpt.value
+            .set(SchemeSrnId)(srn).asOpt.value
             .dataRetrievalAction
 
     private val expectedValues = Seq(
@@ -117,7 +120,7 @@ object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours
         SummaryListRow(
             key = Key(Text(messages("messages__check__your__answer__psp_client_reference__label")), classes = "govuk-!-width-one-half"),
             value = Value(Text("1234567")),
-            actions = Some(Actions("", items = Seq(ActionItem(href = PspClientReferenceController.onPageLoad(CheckMode).url,
+            actions = Some(Actions("", items = Seq(ActionItem(href = PspHasClientReferenceController.onPageLoad(CheckMode).url,
                 content = Text(messages("site.change")), visuallyHiddenText = Some(messages("messages__check__your__answer__psp_client_reference__label"))))))
         )
     )
@@ -125,12 +128,13 @@ object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours
     private val countryOptions = new CountryOptions(environment, frontendAppConfig)
     private val checkYourAnswersFactory = new CheckYourAnswersFactory(countryOptions)
 
-    private val view = injector.instanceOf[check_your_answers_view]
+    private val view = injector.instanceOf[checkYourAnswersPsp]
 
     def call: Call = controllers.invitations.psp.routes.CheckYourAnswersController.onSubmit()
+    def returnCall: Call = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(srn))
 
     def viewAsString(): String = view(expectedValues, call, Some("messages__check__your__answer__psp__label"),
-        Some(testSchemeName))(fakeRequest, messages).toString
+        Some(testSchemeName),testSchemeName,returnCall)(fakeRequest, messages).toString
 
 
 

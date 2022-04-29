@@ -1,0 +1,60 @@
+@*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.FrontendAppConfig
+@import play.api.mvc.Call
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import views.html._
+@import viewmodels.{Section, AnswerSection, RepeaterAnswerSection}
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
+
+@this(
+    layout: templates.Layout,
+    formHelper: PlayFrontendFormWithCSRF,
+    button: components.govuk_button,
+    govukSummaryList : GovukSummaryList
+)
+
+@(answerSections: Seq[SummaryListRow], postUrl: Call, guidance:Option[String] = None,
+guidanceData:Option[String] = None, schemeName: String, returnCall: Call)(implicit request: Request[_], messages: Messages)
+
+@layout(
+pageTitle = messages("checkYourAnswers.title")
+    ) {
+
+        @formHelper(action = postUrl, 'autoComplete -> "off") {
+
+            <h1 class="govuk-heading-xl">@messages("checkYourAnswers.heading")</h1>
+
+            @guidance.map{key=>@guidanceData.map{data=><p class = "govuk-body">@messages(key, data)}.getOrElse{<p>@messages(key)}</p>}
+
+            @govukSummaryList(SummaryList(
+                rows = answerSections
+            ))
+
+            @button(messages("site.save_and_continue"))
+
+            <p class="govuk-body">
+                <a id="return-link" class="govuk-link" href=@returnCall>
+                    @messages("messages__returnToSchemeDetails__link", schemeName)
+                </a>
+            </p>
+    }
+
+}

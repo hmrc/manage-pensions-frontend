@@ -14,21 +14,10 @@
  * limitations under the License.
  */
 
-package forms.invitations.psp
+package identifiers.invitations.psp
 
-import forms.mappings.{Mappings, Transforms}
-import play.api.data.Form
+import identifiers.TypedIdentifier
 
-import javax.inject.Inject
-
-class PspClientReferenceFormProvider @Inject() extends Mappings with Transforms {
-  val clientRefMaxLength = 11
-
-  def apply(): Form[String] = Form(
-    "reference" -> text("messages__clientReference_required").
-      transform(strip, noTransform).
-      verifying(firstError(
-        maxLength(clientRefMaxLength, "messages__clientReference_maxLength"),
-        clientRef("messages__clientReference_invalid")))
-  )
+case object PspHasClientReferenceId extends TypedIdentifier[Boolean] {
+  override def toString: String = "pspHasClientReference"
 }
