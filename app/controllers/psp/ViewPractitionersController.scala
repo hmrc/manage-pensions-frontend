@@ -21,24 +21,28 @@ import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import controllers.psa.routes._
 import identifiers.{SchemeNameId, SchemeSrnId, SeqAuthorisedPractitionerId}
+import models.FeatureToggleName.UpdateClientReference
 import models.SchemeReferenceNumber
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.FeatureToggleService
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateHelper
 import viewmodels.AuthorisedPractitionerViewModel
 import views.html.psp.viewPractitioners
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class ViewPractitionersController @Inject()(
                                              override val messagesApi: MessagesApi,
                                              authenticate: AuthAction,
                                              getData: DataRetrievalAction,
                                              requireData: DataRequiredAction,
+                                             toggleService: FeatureToggleService,
                                              val controllerComponents: MessagesControllerComponents,
                                              view: viewPractitioners
-                                           )
+                                           )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport
     with Retrievals {
@@ -56,8 +60,16 @@ class ViewPractitionersController @Inject()(
             )
           )
           val returnCall = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(srn))
-          Future.successful(Ok(view(schemeName, returnCall, authorisedPractitionerViewModelSeq)))
+         isUpdateClientReferenceEnabled.flatMap { isUpdateClientReference=>
+           Future.successful(Ok(view(schemeName, returnCall, authorisedPractitionerViewModelSeq,isUpdateClientReference)))
+         }
       }
+  }
+
+  private def isUpdateClientReferenceEnabled(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
+    toggleService.get(UpdateClientReference).map { toggle =>
+      toggle.isEnabled
+    }
   }
 
 }

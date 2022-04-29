@@ -39,7 +39,8 @@
 @(
         schemeName: String,
         returnCall: Call,
-        practitioners: Seq[AuthorisedPractitionerViewModel]
+        practitioners: Seq[AuthorisedPractitionerViewModel],
+        isUpdateClientReference: Boolean
 )(
         implicit
         request: Request[_],
@@ -65,7 +66,7 @@
 
 @viewLink(pspName: String,index: Index, authorisedByLoggedInPsa:Boolean) = {
     @if(authorisedByLoggedInPsa){
-        <a id="view-link" class="govuk-link" href="@ViewPspCheckYourAnswersController.onPageLoad(index)">
+        <a class="govuk-link" href="@ViewPspCheckYourAnswersController.onPageLoad(index)">
                             <span aria-hidden="true">
                                 @messages("messages__viewPractitioners__viewLinkText")
                             </span>
@@ -108,53 +109,60 @@
 Table(
     rows =
         for((practitioner, index) <- practitioners.zipWithIndex) yield {
+        val rows =
             Seq(
-                TableRow(
+                Some(TableRow(
                     attributes = Map("id" -> ("pspName-"+index), "role"-> "cell"),
                     content = Text(practitioner.pspName),
                     classes="govuk-table__cell"
-                ),
-                TableRow(
+                )),
+                Some(TableRow(
                     attributes = Map("id" -> ("authorisedBy-"+index), "role"-> "cell"),
                     content = Text(practitioner.authorisedBy),
                     classes="govuk-table__cell"
-                ),
-                TableRow(
+                )),
+                Some(TableRow(
                     attributes = Map("id" -> ("dateAuthorised-"+index), "role"-> "cell"),
                     content = Text(practitioner.dateAuthorised),
                     classes="govuk-table__cell"
-                ),
-                TableRow(
-                attributes = Map("id" -> ("viewLink-"+index), "role"-> "cell"),
-                content = HtmlContent(viewLink(practitioner.pspName,index,practitioner.authorisedByLoggedInPsa)),
-                classes="govuk-table__cell"
-                ),
-                TableRow(
+                )),
+                if(isUpdateClientReference)
+                    Some(TableRow(
+                    attributes = Map("id" -> ("viewLink-"+index), "role"-> "cell"),
+                    content = HtmlContent(viewLink(practitioner.pspName,index,practitioner.authorisedByLoggedInPsa)),
+                    classes="govuk-table__cell"
+                    )) else None,
+                Some(TableRow(
                     attributes = Map("id" -> ("deAuthoriseLink-"+index), "role"-> "cell"),
                     content = HtmlContent(deauthorisedLink(practitioner.pspName,index,practitioner.authorisedByLoggedInPsa)),
                     classes="govuk-table__cell"
-                )
+                ))
             )
+            rows.flatten
         },
-        head = Some(
-            Seq(
-                HeadCell(
-                    content = Text(messages("messages__viewPractitioners__practitionerNameHeader"))
-                ),
-                HeadCell(
-                    content = Text(messages("messages__viewPractitioners__authorisedByHeader"))
-                ),
-                HeadCell(
-                    content = Text(messages("messages__viewPractitioners__dateAuthorisedHeader"))
-                ),
-                HeadCell(
-                    content = HtmlContent(hiddenHeaderView)
-                ),
-                HeadCell(
-                content = HtmlContent(hiddenHeader)
+        head ={
+            val headers= Seq(
+                Some(HeadCell(
+                content = Text(messages("messages__viewPractitioners__practitionerNameHeader"))
+                )),
+                Some(HeadCell(
+                        content = Text(messages("messages__viewPractitioners__authorisedByHeader"))
+                            )),
+                Some(HeadCell(
+                        content = Text(messages("messages__viewPractitioners__dateAuthorisedHeader"))
+                            )),
+                if(isUpdateClientReference)
+                    Some(HeadCell(
+                        content = HtmlContent(hiddenHeaderView)
+                                )) else None,
+                Some(HeadCell(
+                        content = HtmlContent(hiddenHeader)
+                            ))
                 )
-            )
-        ),
+        Some(
+            headers.flatten
+        )
+        },
         caption = Some(messages("messages__listSchemes__title")),
         captionClasses = "govuk-visually-hidden",
         attributes = Map("id" -> "practitioner-authorisation-table", "role"-> "table"),
