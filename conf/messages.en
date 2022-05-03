@@ -379,7 +379,7 @@ messages__psa_cannot_be_removed__p1 = The scheme administrator cannot be removed
 messages__psa_cannot_be_removed__p2 = You need to phone Pension Scheme Services on 0300 123 1079.
 messages__psa_cannot_be_removed__returnToSchemes__link = Return to your pension schemes
 messages__removalDate__title = When did they stop being scheme administrator?
-messages__removalDate__heading = When did {0} stop being scheme administrator for {1}?
+messages__removalDate__heading = When did {0} stop being a scheme administrator for {1}?
 messages__removalDate__lede = {0} became scheme administrator for {1} on {2}. The date they stopped must be between {2} and today.
 
 messages__haveWorkingKnowledge__error__required = Select yes if you have working knowledge of pensions and pensions tax legislation
