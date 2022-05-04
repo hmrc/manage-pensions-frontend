@@ -18,10 +18,12 @@ package controllers.psp.view
 
 import com.google.inject.Inject
 import connectors.UpdateClientReferenceConnector
+import connectors.scheme.SchemeDetailsConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import controllers.psa.routes.PsaSchemeDashboardController
 import identifiers.invitations.PSTRId
+import identifiers.psp.PspOldClientReferenceId
 import identifiers.psp.deauthorise.PspDetailsId
 import identifiers.{SchemeNameId, SchemeSrnId}
 import models.SchemeReferenceNumber
@@ -39,6 +41,7 @@ class ViewPspCheckYourAnswersController @Inject()(override val messagesApi: Mess
                                                   getData: DataRetrievalAction,
                                                   requireData: DataRequiredAction,
                                                   updateClientReferenceConnector: UpdateClientReferenceConnector,
+                                                  schemeDetailsConnector: SchemeDetailsConnector,
                                                   val controllerComponents: MessagesControllerComponents,
                                                   view: checkYourAnswersPsp
                                                  )(implicit val ec: ExecutionContext) extends FrontendBaseController with Retrievals with I18nSupport {
@@ -62,15 +65,27 @@ class ViewPspCheckYourAnswersController @Inject()(override val messagesApi: Mess
 
   def onSubmit(index: Int): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
-      (PSTRId and PspDetailsId(index)).retrieve.right.map {
-        case pstr ~ pspDetail =>
+      (SchemeSrnId and PSTRId and PspDetailsId(index)).retrieve.right.map {
+        case srn ~ pstr ~ pspDetail =>
           if (pspDetail.authorisingPSAID == request.psaIdOrException.id) {
             val psaId = request.psaIdOrException.id
             val updateClientReferenceRequest: UpdateClientReferenceRequest = UpdateClientReferenceRequest(pstr, psaId, pspDetail.id, pspDetail.clientReference)
 
-            updateClientReferenceConnector.updateClientReference(updateClientReferenceRequest).map(_ =>
-              Redirect(controllers.psp.routes.ViewPractitionersController.onPageLoad())
-            )
+
+            val result:Future[Result]=(for {
+              scheme <- schemeDetailsConnector.getSchemeDetails(request.psaIdOrException.id, srn, "srn")
+            } yield {
+              val newClientRef=pspDetail.clientReference
+              val oldClientRef=scheme.get(PspOldClientReferenceId(index))
+              println("Client Ref new>>>>>>>>>>:",pspDetail.clientReference)
+              println("Client Ref old>>>>>>>>>>:",scheme.get(PspOldClientReferenceId(index)))
+              val action = "Added "
+              updateClientReferenceConnector.updateClientReference(updateClientReferenceRequest,action)
+                .map{
+                  _ => Redirect(controllers.psp.routes.ViewPractitionersController.onPageLoad())
+                }
+            }).flatten
+            result
           } else {
             Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
           }
