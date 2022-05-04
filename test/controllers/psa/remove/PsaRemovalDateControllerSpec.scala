@@ -131,42 +131,6 @@ class PsaRemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours 
       val fm = form(associationDate, frontendAppConfig.earliestDatePsaRemoval)
       contentAsString(result) mustBe view(fm, psaName, schemeName, srn, formatDate(relationshipDateAsLocalDate))(fakeRequest, messages).toString
     }
-
-    "ensure PSA cannot remove themselves from a scheme before the date they were associated with the scheme" in {
-      val psaDetails: PsaDetails = PsaDetails(
-        "A0000000",
-        Some("partnership name"),
-        Some(Name(Some("Taylor"),
-        Some("Middle"),
-        Some("Rayon"))),
-        relationshipDate = Some("2020-01-01")
-      )
-
-      val listOfPSADetails: List[PsaDetails] = List(psaDetails)
-
-      //Suspicion is that that "associatedDate" is actually the date the scheme was first opened"
-      //And that that the relationship date is actually the association date
-
-      val userAnswer = UserAnswers()
-        .schemeName(schemeName)
-        .psaName(psaName)
-        .srn(srn)
-        .pstr(pstr)
-        .associatedDate(LocalDate.parse("2018-02-02"))
-        .set(ListOfPSADetailsId)(listOfPSADetails).getOrElse(UserAnswers())
-
-      val postRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.obj(
-        "removalDate.day" -> "03",
-        "removalDate.month" -> "03",
-        "removalDate.year" -> "2019")
-      )
-
-      val result: Future[Result] = onSubmitAction(userAnswer.dataRetrievalAction, FakeAuthAction)(postRequest)
-
-      println(s"\n\n\n\n\n\n status result: ${status(result)} ")
-      status(result) mustNot be(Ok)
-
-    }
   }
 }
 
