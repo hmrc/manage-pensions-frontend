@@ -15,39 +15,44 @@
  *@
 
 @import config.FrontendAppConfig
-@import uk.gov.hmrc.play.views.html._
-@import views.html._
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import utils.ViewHelper.titleWithErrors
 
 @this(
-    main_template: main_template,
-    formHelper: FormWithCSRF
+layout: templates.Layout,
+formHelper: PlayFrontendFormWithCSRF,
+govukErrorSummary: GovukErrorSummary,
+govukInput: GovukInput,
+button: components.govuk_button
 )
-
-// TODO: pick up tomorrow
-
 @(form: Form[_])(implicit request: Request[_], messages: Messages)
 
-@main_template(
-title = titleWithErrors(form, "Set Date - Test Only"),
-
-bodyClasses = None) {
+@layout(pageTitle = titleWithErrors(form, "Set Date - Test Only")) {
 
 @formHelper(action = controllers.testonly.routes.DateTestController.submit(), 'autoComplete -> "off") {
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
 
-@components.back_link()
+        @if(form.errors.nonEmpty) {
+        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
+        }
 
-@components.error_summary(form.errors)
+        <h1 class="govuk-heading-xl">@messages("site.date_h1")</h1>
 
-<div class="form-group @if(form.hasErrors){form-group--error}">
-    @components.heading("Set Date - Test Only")
+        @govukInput(
+        Input(
+        label = Label(content = Text("Set Date - Test Only"),
+        classes = "govuk-visually-hidden",
+        isPageHeading = true),
+        classes = "govuk-!-width-two-third"
+        ).withFormField(form("date"))
+        )
 
-    @components.input_text(
-    field = form("date"),
-    label = messages("Set Date - Test Only"),
-    labelClass=Some("visually-hidden")
-    )
+        @button(messages("site.save_and_continue"))
+    </div>
 </div>
-@components.submit_button()
 }
 }
