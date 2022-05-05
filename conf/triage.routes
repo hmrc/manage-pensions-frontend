@@ -1,3 +1,4 @@
 
 GET         /who-are-you-in-service                     controllers.triage.WhatRoleController.onPageLoad
+POST        /who-are-you-in-service                     controllers.triage.WhatRoleController.onSubmit
 

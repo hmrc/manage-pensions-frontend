@@ -57,4 +57,16 @@ class WhatRoleController @Inject()(override val messagesApi: MessagesApi,
       }
 
   }
+
+  def onSubmit: Action[AnyContent] = triageAction.async {
+    implicit request =>
+      form.bindFromRequest().fold(
+        (formWithErrors: Form[_]) =>
+          Future.successful(BadRequest(view(formWithErrors))),
+        value => {
+          val uaUpdated = UserAnswers().set(WhatRoleId)(value).asOpt.getOrElse(UserAnswers())
+          Future.successful(Redirect(controllers.triage.routes.WhatRoleController.onPageLoad()))
+        }
+      )
+  }
 }

@@ -40,7 +40,7 @@ import scala.concurrent.Future
 
 class WhatRoleControllerSpec extends ControllerSpecBase with ScalaFutures with MockitoSugar {
   private val mockFeatureToggleService = mock[FeatureToggleService]
-  private val onwardRoute = Call("GET", "/dummy")
+  private val onwardRoute = Call("GET", "/manage-pension-schemes/guidance-triage/who-are-you-in-service")
   private val application = applicationBuilder(Seq[GuiceableModule](bind[Navigator].
     qualifiedWith(classOf[Triage]).toInstance(new FakeNavigator(onwardRoute)), bind[FeatureToggleService].
     toInstance(mockFeatureToggleService))).build()
