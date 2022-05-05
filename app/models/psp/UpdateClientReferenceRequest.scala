@@ -30,3 +30,13 @@ object UpdateClientReferenceRequest {
   implicit val updateClientReferenceRequestFormat: OFormat[UpdateClientReferenceRequest] = Json.format
 }
 
+sealed trait ClientReferenceUserAction
+
+case object Added extends ClientReferenceUserAction
+
+case object Amended extends ClientReferenceUserAction
+
+case object Deleted extends ClientReferenceUserAction
+
+case object NoChange extends ClientReferenceUserAction
+

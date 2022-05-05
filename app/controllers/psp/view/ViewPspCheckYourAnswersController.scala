@@ -27,7 +27,7 @@ import identifiers.psp.PspOldClientReferenceId
 import identifiers.psp.deauthorise.PspDetailsId
 import identifiers.{SchemeNameId, SchemeSrnId}
 import models.SchemeReferenceNumber
-import models.psp.UpdateClientReferenceRequest
+import models.psp._
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -72,16 +72,14 @@ class ViewPspCheckYourAnswersController @Inject()(override val messagesApi: Mess
             val updateClientReferenceRequest: UpdateClientReferenceRequest = UpdateClientReferenceRequest(pstr, psaId, pspDetail.id, pspDetail.clientReference)
 
 
-            val result:Future[Result]=(for {
+            val result: Future[Result] = (for {
               scheme <- schemeDetailsConnector.getSchemeDetails(request.psaIdOrException.id, srn, "srn")
             } yield {
-              val newClientRef=pspDetail.clientReference
-              val oldClientRef=scheme.get(PspOldClientReferenceId(index))
-              println("Client Ref new>>>>>>>>>>:",pspDetail.clientReference)
-              println("Client Ref old>>>>>>>>>>:",scheme.get(PspOldClientReferenceId(index)))
-              val action = "Added "
-              updateClientReferenceConnector.updateClientReference(updateClientReferenceRequest,action)
-                .map{
+              val newClientRef = pspDetail.clientReference
+              val oldClientRef = scheme.get(PspOldClientReferenceId(index))
+              val action: ClientReferenceUserAction = determineUserAction(newClientRef, oldClientRef)
+              updateClientReferenceConnector.updateClientReference(updateClientReferenceRequest, action.toString)
+                .map {
                   _ => Redirect(controllers.psp.routes.ViewPractitionersController.onPageLoad())
                 }
             }).flatten
@@ -90,6 +88,16 @@ class ViewPspCheckYourAnswersController @Inject()(override val messagesApi: Mess
             Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
           }
       }
+  }
+
+  private def determineUserAction(newClientRef: Option[String], oldClientRef: Option[String]): ClientReferenceUserAction = {
+    (oldClientRef, newClientRef) match {
+      case (Some(oldValue), Some(newValue)) if !oldValue.equals(newValue) => Amended
+      case (Some(oldValue), Some(newValue)) if oldValue.equals(newValue) => NoChange
+      case (Some(_), None) => Deleted
+      case (None, Some(_)) => Added
+      case (_, _) => NoChange
+    }
   }
 
   private def returnCall(srn: String): Call = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(srn))

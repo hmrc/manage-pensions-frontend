@@ -18,17 +18,21 @@ package controllers.psp.view
 
 import base.JsonFileReader
 import connectors.UpdateClientReferenceConnector
+import connectors.scheme.SchemeDetailsConnector
 import controllers.ControllerSpecBase
 import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction}
 import controllers.behaviours.ControllerWithNormalPageBehaviours
 import controllers.psa.routes.PsaSchemeDashboardController
 import controllers.psp.view.routes._
 import identifiers.invitations.PSTRId
+import identifiers.psp.PspOldClientReferenceId
 import identifiers.psp.deauthorise.PspDetailsId
 import identifiers.{SchemeNameId, SchemeSrnId}
+import models.psp._
 import models.{CheckMode, SchemeReferenceNumber}
 import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
+import org.scalatest.PrivateMethodTester
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.mvc.Call
 import play.api.test.Helpers._
@@ -40,17 +44,18 @@ import views.html.invitations.psp.checkYourAnswersPsp
 
 import scala.concurrent.Future
 
-class ViewPspCheckYourAnswersControllerSpec extends ControllerSpecBase with MockitoSugar {
+class ViewPspCheckYourAnswersControllerSpec extends ControllerSpecBase with MockitoSugar with PrivateMethodTester {
 
   import ViewPspCheckYourAnswersControllerSpec._
 
 
   private val mockUpdateClientReferenceConnector: UpdateClientReferenceConnector = mock[UpdateClientReferenceConnector]
+  private val mockSchemeDetailsConnector: SchemeDetailsConnector = mock[SchemeDetailsConnector]
 
 
   def controller(dataRetrievalAction: DataRetrievalAction = data) = new ViewPspCheckYourAnswersController(
     messagesApi, FakeAuthAction, dataRetrievalAction, new DataRequiredActionImpl,
-    mockUpdateClientReferenceConnector, controllerComponents, view
+    mockUpdateClientReferenceConnector, mockSchemeDetailsConnector, controllerComponents, view
   )
 
   "Check Your Answers Controller Spec" must {
@@ -79,7 +84,8 @@ class ViewPspCheckYourAnswersControllerSpec extends ControllerSpecBase with Mock
 
     "on a POST" must {
       "redirect to view practitioner and post to update client ref API" in {
-        when(mockUpdateClientReferenceConnector.updateClientReference(any())(any(), any())).thenReturn(Future.successful("Ok"))
+        when(mockUpdateClientReferenceConnector.updateClientReference(any(), any())(any(), any())).thenReturn(Future.successful("Ok"))
+        when(mockSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any())).thenReturn(Future.successful(schemeDetailUserAns))
         val result = controller(data).onSubmit(0)(fakeRequest)
         redirectLocation(result).value mustBe controllers.psp.routes.ViewPractitionersController.onPageLoad().url
       }
@@ -87,6 +93,42 @@ class ViewPspCheckYourAnswersControllerSpec extends ControllerSpecBase with Mock
         val result = controller(data2).onSubmit(0)(fakeRequest)
         redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad().url
       }
+    }
+
+    "determineUserAction" must {
+
+      "return UserAction NoChange when client Reference has no change " in {
+
+        val determineUserAction: PrivateMethod[ClientReferenceUserAction] = PrivateMethod[ClientReferenceUserAction]('determineUserAction)
+        val result: ClientReferenceUserAction = controller(data) invokePrivate determineUserAction(None, None)
+
+        result mustBe NoChange
+      }
+
+      "return UserAction Added when client Reference has change form None to value" in {
+
+        val determineUserAction: PrivateMethod[ClientReferenceUserAction] = PrivateMethod[ClientReferenceUserAction]('determineUserAction)
+        val result: ClientReferenceUserAction = controller(data) invokePrivate determineUserAction(Some("Test"), None)
+
+        result mustBe Added
+      }
+
+      "return UserAction Amended when client Reference has change" in {
+
+        val determineUserAction: PrivateMethod[ClientReferenceUserAction] = PrivateMethod[ClientReferenceUserAction]('determineUserAction)
+        val result: ClientReferenceUserAction = controller(data) invokePrivate determineUserAction(Some("Test"), Some("oldValue"))
+
+        result mustBe Amended
+      }
+
+      "return UserAction Deleted when client Reference updated to None" in {
+
+        val determineUserAction: PrivateMethod[ClientReferenceUserAction] = PrivateMethod[ClientReferenceUserAction]('determineUserAction)
+        val result: ClientReferenceUserAction = controller(data) invokePrivate determineUserAction(None, Some("oldValue"))
+
+        result mustBe Deleted
+      }
+
     }
   }
 }
@@ -111,6 +153,9 @@ object ViewPspCheckYourAnswersControllerSpec extends ControllerWithNormalPageBeh
     .set(PSTRId)(pstr).asOpt.value
     .set(SchemeSrnId)(srn).asOpt.value.
     dataRetrievalAction
+
+  private def schemeDetailUserAns = UserAnswers()
+    .set(PspOldClientReferenceId(0))("Test").asOpt.value
 
   private val expectedValues = Seq(
     SummaryListRow(
