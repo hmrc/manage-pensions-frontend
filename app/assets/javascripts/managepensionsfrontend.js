@@ -1,34 +1,5 @@
 $(document).ready(function() {
 
-    // =====================================================
-    // Initialise show-hide-content
-    // Toggles additional content based on radio/checkbox input state
-    // =====================================================
-    var showHideContent = new GOVUK.ShowHideContent()
-    showHideContent.init()
-
-    // =====================================================
-    // Handle number inputs
-    // =====================================================
-    numberInputs();
-
-    // =====================================================
-    // timeout dialog
-    // =====================================================
-    window.GOVUK.timeoutDialog({
-        timeout: 900,
-        countdown: 120,
-        keepAliveUrl: location.href,
-        signOutUrl: "/manage-pension-schemes/logout"
-    });
-
-    // =====================================================
-    // Back link mimics browser back functionality
-    // =====================================================
-    $('#back-link').on('click', function(e){
-        e.preventDefault();
-        window.history.back();
-    })
     // If there is an error summary, set focus to the summary
     if ($('.error-summary--show').length) {
       $('.error-summary--show').focus()
