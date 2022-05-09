@@ -63,25 +63,29 @@ class PsaRemovalDateController @Inject()(
     with I18nSupport
     with Retrievals {
 
-  //TODO RENAME SCHEME OPEN DATE VARIABLE? WRONG DATA
-
   def form(schemeOpenDate: LocalDate): Form[LocalDate] =
     formProvider(schemeOpenDate, appConfig.earliestDatePsaRemoval)
 
-  private def getFormattedRelationshipDate(ua: UserAnswers, psaId: String): String = {
+  private def getRelationshipDate(ua: UserAnswers, psaId: String): Option[String] = {
     ua.get(ListOfPSADetailsId) match {
-      case Some(x) =>
-        val relationshipDateString = x.find(_.id == psaId).flatMap(_.relationshipDate)
-        relationshipDateString match {
-          case Some(dateString) =>
-            val relationshipDate: LocalDate = LocalDate.parse(dateString)
-            val formattedDate: String = DateHelper.formatDate(relationshipDate)
-            val maybeFormattedDate = Some(formattedDate)
-            maybeFormattedDate.getOrElse(throw new RuntimeException("No relationship date found."))
-          case None => (throw new RuntimeException("No relationship date found.")) // TODO: Format of these exception messages?
-        }
-      case None => (throw new RuntimeException("No PSA Details ID found.")) // TODO: Format of these exception messages?
+      case Some(x) => x.find(_.id == psaId).flatMap(_.relationshipDate)
+      case None => None
     }
+  }
+
+  private def formatRelationshipDate(relationshipDateString: Option[String]): Option[String] = {
+    relationshipDateString match {
+      case Some(dateString) =>
+        val relationshipDate: LocalDate = LocalDate.parse(dateString)
+        val formattedDate: String = DateHelper.formatDate(relationshipDate)
+        Some(formattedDate)
+      case None => None
+    }
+  }
+
+  private def getFormattedRelationshipDate(ua: UserAnswers, psaId: String): String = {
+    val date = getRelationshipDate(ua: UserAnswers, psaId: String)
+    formatRelationshipDate(date).getOrElse(throw new RuntimeException("No relationship date found."))
   }
 
   def onPageLoad: Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
