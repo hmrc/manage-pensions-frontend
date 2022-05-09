@@ -72,18 +72,26 @@ class ViewPspCheckYourAnswersController @Inject()(override val messagesApi: Mess
             val updateClientReferenceRequest: UpdateClientReferenceRequest = UpdateClientReferenceRequest(pstr, psaId, pspDetail.id, pspDetail.clientReference)
 
 
-            val result: Future[Result] = (for {
+            val action: Future[ClientReferenceUserAction] = for {
               scheme <- schemeDetailsConnector.getSchemeDetails(request.psaIdOrException.id, srn, "srn")
             } yield {
               val newClientRef = pspDetail.clientReference
               val oldClientRef = scheme.get(PspOldClientReferenceId(index))
-              val action: ClientReferenceUserAction = determineUserAction(newClientRef, oldClientRef)
-              updateClientReferenceConnector.updateClientReference(updateClientReferenceRequest, action.toString)
-                .map {
-                  _ => Redirect(controllers.psp.routes.ViewPractitionersController.onPageLoad())
+              determineUserAction(newClientRef, oldClientRef)
+            }
+
+            action.flatMap {
+              userAction => {
+                userAction match {
+                  case Added | Amended | Deleted =>
+                    updateClientReferenceConnector.updateClientReference(updateClientReferenceRequest, userAction.toString)
+                      .map {
+                        _ => Redirect(controllers.psp.routes.ViewPractitionersController.onPageLoad())
+                      }
+                  case _ => Future.successful(Redirect(controllers.psp.routes.ViewPractitionersController.onPageLoad()))
                 }
-            }).flatten
-            result
+              }
+            }
           } else {
             Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
           }

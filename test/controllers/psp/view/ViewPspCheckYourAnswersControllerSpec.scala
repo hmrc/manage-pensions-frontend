@@ -85,7 +85,12 @@ class ViewPspCheckYourAnswersControllerSpec extends ControllerSpecBase with Mock
     "on a POST" must {
       "redirect to view practitioner and post to update client ref API" in {
         when(mockUpdateClientReferenceConnector.updateClientReference(any(), any())(any(), any())).thenReturn(Future.successful("Ok"))
-        when(mockSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any())).thenReturn(Future.successful(schemeDetailUserAns))
+        when(mockSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any())).thenReturn(Future.successful(schemeDetailUserAns("Test")))
+        val result = controller(data).onSubmit(0)(fakeRequest)
+        redirectLocation(result).value mustBe controllers.psp.routes.ViewPractitionersController.onPageLoad().url
+      }
+      "redirect to view practitioner and not updated client Ref" in {
+        when(mockSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any())).thenReturn(Future.successful(schemeDetailUserAns("A0000000")))
         val result = controller(data).onSubmit(0)(fakeRequest)
         redirectLocation(result).value mustBe controllers.psp.routes.ViewPractitionersController.onPageLoad().url
       }
@@ -154,8 +159,8 @@ object ViewPspCheckYourAnswersControllerSpec extends ControllerWithNormalPageBeh
     .set(SchemeSrnId)(srn).asOpt.value.
     dataRetrievalAction
 
-  private def schemeDetailUserAns = UserAnswers()
-    .set(PspOldClientReferenceId(0))("Test").asOpt.value
+  private def schemeDetailUserAns(clientRef: String) = UserAnswers()
+    .set(PspOldClientReferenceId(0))(clientRef).asOpt.value
 
   private val expectedValues = Seq(
     SummaryListRow(
