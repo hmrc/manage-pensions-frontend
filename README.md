@@ -8,7 +8,7 @@ This service allows an individual to -
 1. Invite a person to become a pension administrator
 2. Accept an invitation to become a pension scheme administrator
 3. Remove themselves from a pension scheme
-4. Deregister as a pension scheme administer
+4. Deregister as a pension scheme administrator
  
 This service also redirects a user to other services to do the following things -
 1. Register as a pension scheme administrator
@@ -18,10 +18,7 @@ This service also redirects a user to other services to do the following things 
 5. Start filing an AFT return
 6. Amend an existing AFT return
 
-This service does not have it's own backend, instead it the following backends for its integration -
-1. pension-administrator
-2. pensions-scheme
-3. pension-scheme-accounting-for-tax
+This service does not have its own backend, instead it uses the following backends for its integration -
 
 ### Dependencies
 
@@ -30,6 +27,8 @@ This service does not have it's own backend, instead it the following backends f
 |pension-administrator              |https://github.com/hmrc/pension-administrator              |
 |pensions-scheme                    |https://github.com/hmrc/pensions-scheme                    |
 |pension-scheme-accounting-for-tax  |https://github.com/hmrc/pension-scheme-accounting-for-tax  |
+
+// TODO: duplicate endpoints for /update-scheme/get-lock with diff purposes?
 
 ### Endpoints used
 
