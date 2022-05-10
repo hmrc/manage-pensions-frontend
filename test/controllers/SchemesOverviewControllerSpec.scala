@@ -88,7 +88,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
           .thenReturn(Future.successful(minimalDetails()))
         when(fakeSchemesOverviewService.retrievePenaltiesUrlPartial(any(), any()))
           .thenReturn(Future.successful(html))
-        when(fakeSchemesOverviewService.retrieveMigrationTile(any(), any(), any()))
+        when(fakeSchemesOverviewService.retrieveMigrationTile(any(), any()))
           .thenReturn(Future.successful(Some(html)))
         when(fakeUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(Json.obj()))
 

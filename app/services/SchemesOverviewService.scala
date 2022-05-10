@@ -18,10 +18,8 @@ package services
 
 import config.FrontendAppConfig
 import connectors._
-import connectors.admin.{FeatureToggleConnector, MinimalConnector}
+import connectors.admin.MinimalConnector
 import controllers.psa.routes._
-import models.FeatureToggle.Enabled
-import models.FeatureToggleName.Migration
 import models.requests.OptionalDataRequest
 import models.{Link, MinimalPSAPSP}
 import play.api.i18n.Messages
@@ -37,8 +35,7 @@ class SchemesOverviewService @Inject()(
                                         appConfig: FrontendAppConfig,
                                         minimalPsaConnector: MinimalConnector,
                                         invitationsCacheConnector: InvitationsCacheConnector,
-                                        frontendConnector: FrontendConnector,
-                                        featureToggleConnector: FeatureToggleConnector
+                                        frontendConnector: FrontendConnector
                                       )(implicit ec: ExecutionContext) {
 
   def getTiles(psaId: String)(implicit request: OptionalDataRequest[AnyContent], hc: HeaderCarrier, messages: Messages): Future[Seq[CardViewModel]] =
@@ -55,11 +52,8 @@ class SchemesOverviewService @Inject()(
   def retrievePenaltiesUrlPartial[A](implicit request: Request[A], ec: ExecutionContext): Future[Html] =
     frontendConnector.retrievePenaltiesUrlPartial
 
-  def retrieveMigrationTile[A](implicit request: Request[A], ec: ExecutionContext, hc: HeaderCarrier): Future[Option[Html]] =
-    featureToggleConnector.get(Migration.asString).flatMap {
-      case Enabled(_) => frontendConnector.retrieveMigrationUrlsPartial.map(Some(_))
-      case _ => Future.successful(None)
-    }
+  def retrieveMigrationTile[A](implicit request: Request[A], ec: ExecutionContext): Future[Option[Html]] =
+    frontendConnector.retrieveMigrationUrlsPartial.map(Some(_))
 
   def getPsaName(psaId: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
     minimalPsaConnector.getPsaNameFromPsaID(psaId).map(identity)
