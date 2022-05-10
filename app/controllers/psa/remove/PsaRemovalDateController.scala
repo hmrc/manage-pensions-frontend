@@ -25,9 +25,10 @@ import controllers.actions._
 import forms.psa.remove.RemovalDateFormProvider
 import identifiers.{AssociatedDateId, SchemeSrnId}
 import identifiers.invitations.{PSTRId, SchemeNameId}
-import identifiers.psa.PSANameId
+import identifiers.psa.{ListOfPSADetailsId, PSANameId}
 import identifiers.psa.remove.PsaRemovalDateId
 import models.NormalMode
+import models.psa.PsaDetails
 import models.psa.remove.PsaToBeRemovedFromScheme
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -35,7 +36,7 @@ import play.api.libs.json.Reads._
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateHelper._
-import utils.{Navigator, UserAnswers}
+import utils.{DateHelper, Navigator, UserAnswers}
 import utils.annotations.RemovePSA
 import views.html.psa.remove.removalDate
 
@@ -65,13 +66,43 @@ class PsaRemovalDateController @Inject()(
   def form(schemeOpenDate: LocalDate): Form[LocalDate] =
     formProvider(schemeOpenDate, appConfig.earliestDatePsaRemoval)
 
+  private def getRelationshipDate(ua: UserAnswers, psaId: String): Option[String] = {
+    ua.get(ListOfPSADetailsId) match {
+      case Some(x) => x.find(_.id == psaId).flatMap(_.relationshipDate)
+      case None => None
+    }
+  }
+
+  private def formatRelationshipDate(relationshipDateString: Option[String]): Option[String] = {
+    relationshipDateString match {
+      case Some(dateString) =>
+        val relationshipDate: LocalDate = LocalDate.parse(dateString)
+        val formattedDate: String = DateHelper.formatDate(relationshipDate)
+        Some(formattedDate)
+      case None => None
+    }
+  }
+
+  private def getFormattedRelationshipDate(ua: UserAnswers, psaId: String): String = {
+    val date = getRelationshipDate(ua: UserAnswers, psaId: String)
+    formatRelationshipDate(date).getOrElse(throw new RuntimeException("No relationship date found."))
+  }
+
   def onPageLoad: Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
       (SchemeNameId and PSANameId and SchemeSrnId and AssociatedDateId).retrieve.right.map {
-
         case schemeName ~ psaName ~ srn ~ associationDate =>
-          Future.successful(Ok(view(form(associationDate), psaName, schemeName, srn, formatDate(associationDate))))
-
+          Future.successful(
+            Ok(
+              view(
+                form(associationDate),
+                psaName,
+                schemeName,
+                srn,
+                getFormattedRelationshipDate(request.userAnswers, request.psaId.map(_.value).getOrElse(""))
+              )
+            )
+          )
         case _ =>
           Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
       }

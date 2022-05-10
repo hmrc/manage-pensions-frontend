@@ -48,7 +48,7 @@
 
         <h1 class="govuk-heading-xl">@messages("messages__removalDate__heading", psaName, schemeName)</h1>
 
-        @components.paragraph_text(messages("messages__removalDate__lede", psaName, associationDate))
+        @components.paragraph_text(messages("messages__removalDate__lede", psaName, schemeName, associationDate))
 
         @govukDateInput(
             DateInput(
