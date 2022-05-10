@@ -20,14 +20,11 @@ import controllers.Retrievals
 import controllers.actions.TriageAction
 import forms.triage.WhatRoleFormProvider
 import identifiers.triage.WhatRoleId
-import models.FeatureToggle.Enabled
-import models.FeatureToggleName.TriageV2
 import models.NormalMode
 import models.triage.WhatRole
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.FeatureToggleService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.annotations.Triage
 import utils.{Enumerable, Navigator, UserAnswers}
@@ -41,7 +38,6 @@ class WhatRoleController @Inject()(override val messagesApi: MessagesApi,
                                    triageAction: TriageAction,
                                    formProvider: WhatRoleFormProvider,
                                    val controllerComponents: MessagesControllerComponents,
-                                   toggleService: FeatureToggleService,
                                    val view: whatRole)
                                   (implicit val executionContext: ExecutionContext)
                                     extends FrontendBaseController with I18nSupport with Enumerable.Implicits with Retrievals {
@@ -49,14 +45,7 @@ class WhatRoleController @Inject()(override val messagesApi: MessagesApi,
   private def form: Form[WhatRole] = formProvider()
 
   def onPageLoad: Action[AnyContent] = triageAction.async {
-    implicit request =>
-      toggleService.get(TriageV2).flatMap {
-        case Enabled(TriageV2) =>
           Future.successful(Redirect(controllers.triagev2.routes.WhatRoleControllerV2.onPageLoad()))
-        case _ =>
-          Future.successful(Ok(view(form)))
-      }
-
   }
 
   def onSubmit: Action[AnyContent] = triageAction.async {
