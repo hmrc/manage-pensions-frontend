@@ -14,8 +14,6 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.govukfrontend.views.html.components._
-@import uk.gov.hmrc.hmrcfrontend.views.html.helpers._
 @import uk.gov.hmrc.hmrcfrontend.views.config.StandardBetaBanner
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcReportTechnicalIssueHelper
 @import views.html.helper.CSPNonce
@@ -70,7 +68,6 @@ attributes = Map("id" -> "back-link"), classes="js-enabled", href="javascript:hi
 <script src='@controllers.routes.Assets.versioned("lib/hmrc-frontend/hmrc/all.js")'></script>
 <script>window.GOVUKFrontend.initAll();
     window.HMRCFrontend.initAll()</script>
-<script src="@controllers.routes.Assets.versioned("javascripts/card.js")"></script>
 }
 
 @mainContentWithGetHelp = {

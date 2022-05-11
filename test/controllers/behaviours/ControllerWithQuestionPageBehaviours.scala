@@ -44,10 +44,10 @@ class ControllerWithQuestionPageBehaviours extends ControllerSpecBase {
     "calling onPageLoad" must {
 
       "return OK and the correct view for a GET" in {
-
         val result = onPageLoadAction(emptyData, FakeAuthAction)(fakeRequest)
 
         status(result) mustBe OK
+
         contentAsString(result) mustBe validView(emptyForm)
       }
 

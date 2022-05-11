@@ -21,7 +21,6 @@
 @import models.Mode
 @import utils.ViewHelper.titleWithErrors
 @import controllers.psa.routes._
-@import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
@@ -48,7 +47,7 @@
 
         <h1 class="govuk-heading-xl">@messages("messages__removalDate__heading", psaName, schemeName)</h1>
 
-        @components.paragraph_text(messages("messages__removalDate__lede", psaName, associationDate))
+        @components.paragraph_text(messages("messages__removalDate__lede", psaName, schemeName, associationDate))
 
         @govukDateInput(
             DateInput(
