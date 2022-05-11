@@ -14,7 +14,6 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
@@ -49,7 +48,7 @@ pageTitle = s"${messages("messages__yourInvitations__title")}"
     }
 
     <p class="govuk-body">
-        <a id="return-link" class="govuk-link" href=controllers.routes.SchemesOverviewController.onPageLoad()>
+        <a id="return-link" class="govuk-link" href=@controllers.routes.SchemesOverviewController.onPageLoad()>
             @messages("messages__returnToSchemeDetails__link", psaName)
         </a>
     </p>

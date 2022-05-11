@@ -37,7 +37,6 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class WhatRoleController @Inject()(override val messagesApi: MessagesApi,
-                                   @Triage navigator: Navigator,
                                    triageAction: TriageAction,
                                    formProvider: WhatRoleFormProvider,
                                    val controllerComponents: MessagesControllerComponents,
@@ -66,7 +65,7 @@ class WhatRoleController @Inject()(override val messagesApi: MessagesApi,
           Future.successful(BadRequest(view(formWithErrors))),
         value => {
           val uaUpdated = UserAnswers().set(WhatRoleId)(value).asOpt.getOrElse(UserAnswers())
-          Future.successful(Redirect(navigator.nextPage(WhatRoleId, NormalMode, uaUpdated)))
+          Future.successful(Redirect(controllers.triage.routes.WhatRoleController.onPageLoad()))
         }
       )
   }

@@ -27,8 +27,9 @@ lazy val root = (project in file("."))
     TwirlKeys.templateImports ++= Seq(
       "play.twirl.api.HtmlFormat",
       "play.twirl.api.HtmlFormat._",
-      "uk.gov.hmrc.play.views.html.helpers._",
-      "uk.gov.hmrc.play.views.html.layouts._"
+      "uk.gov.hmrc.govukfrontend.views.html.components._",
+      "uk.gov.hmrc.hmrcfrontend.views.html.components._",
+      "uk.gov.hmrc.hmrcfrontend.views.html.helpers._",
     ),
     PlayKeys.playDefaultPort := 8204,
     ScoverageKeys.coverageExcludedFiles := "<empty>;Reverse.*;.*filters.*;.*handlers.*;.*components.*;.*models.*;.*repositories.*;" +
@@ -49,7 +50,8 @@ lazy val root = (project in file("."))
     // concatenate js
     Concat.groups := Seq(
       "javascripts/managepensionsfrontend-app.js" -> group(Seq(
-        "javascripts/show-hide-content.js",
+        "javascripts/card.js",
+        "javascripts/location-autocomplete.min.js",
         "javascripts/managepensionsfrontend.js"
       ))
     ),
