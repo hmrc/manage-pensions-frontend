@@ -28,8 +28,6 @@ This service does not have its own backend, instead it uses the following backen
 |pensions-scheme                    |https://github.com/hmrc/pensions-scheme                    |
 |pension-scheme-accounting-for-tax  |https://github.com/hmrc/pension-scheme-accounting-for-tax  |
 
-// TODO: duplicate endpoints for /update-scheme/get-lock with diff purposes?
-
 ### Endpoints used
 
 |Service        |HTTP Method |Route                                  |Purpose |
@@ -45,8 +43,7 @@ This service does not have its own backend, instead it uses the following backen
 |Pensions Scheme            |GET|/pensions-scheme/list-of-schemes | Returns a list of all the schemes that the PSA is associated to  |
 |Pensions Scheme            |GET|/pensions-scheme/scheme | Returns pension scheme details of the selected scheme  |
 |Pensions Scheme            |GET|/update-scheme/get-lock | Returns an edit lock placed on the selected scheme, if present  |
-|Pensions Scheme            |GET|/update-scheme/get-lock | Returns an edit lock for the given PSA-scheme combination, if present  |
-|Pensions Scheme            |GET|/update-scheme/get-lock-by-psa | Returns an edit lock placed on any scheme by the logged in PSA  |
+|Pensions Scheme            |GET|/update-scheme/get-lock-by-psa | Returns an edit lock for the given PSA-scheme combination, if present  |
 |Pensions Scheme            |GET|/update-scheme/get-lock-by-scheme | Returns an edit lock placed on the selected scheme by any PSA  |
 |Pensions Scheme            |GET|/update-scheme/isLockByPsaOrScheme | Returns an edit lock placed either on the selected scheme or by the logged in PSA  |
 |Pensions Scheme            |DELETE|/update-scheme/release-lock | Release the edit lock on the scheme  |
