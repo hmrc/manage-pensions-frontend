@@ -31,7 +31,7 @@ import scala.util.Failure
 @ImplementedBy(classOf[UpdateClientReferenceConnectorImpl])
 trait UpdateClientReferenceConnector {
 
-  def updateClientReference(updateClientReferenceRequest: UpdateClientReferenceRequest)
+  def updateClientReference(updateClientReferenceRequest: UpdateClientReferenceRequest,userAction: String)
                            (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[String]
 }
 
@@ -42,10 +42,10 @@ class UpdateClientReferenceConnectorImpl @Inject()(http: HttpClient, config: Fro
 
   private val logger = Logger(classOf[UpdateClientReferenceConnectorImpl])
 
-  override def updateClientReference(updateClientReferenceRequest: UpdateClientReferenceRequest)
+  override def updateClientReference(updateClientReferenceRequest: UpdateClientReferenceRequest,userAction: String)
                                     (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[String] = {
 
-    http.POST[UpdateClientReferenceRequest, HttpResponse](config.updateClientReferenceUrl, updateClientReferenceRequest) map {
+    http.POST[UpdateClientReferenceRequest, HttpResponse](config.updateClientReferenceUrl, updateClientReferenceRequest,Seq("userAction"-> userAction)) map {
       response =>
         response.status match {
           case OK => val json = Json.parse(response.body)
