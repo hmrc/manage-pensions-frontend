@@ -18,14 +18,16 @@ package controllers.psp.view
 
 import com.google.inject.Inject
 import connectors.UpdateClientReferenceConnector
+import connectors.scheme.SchemeDetailsConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import controllers.psa.routes.PsaSchemeDashboardController
 import identifiers.invitations.PSTRId
+import identifiers.psp.PspOldClientReferenceId
 import identifiers.psp.deauthorise.PspDetailsId
 import identifiers.{SchemeNameId, SchemeSrnId}
 import models.SchemeReferenceNumber
-import models.psp.UpdateClientReferenceRequest
+import models.psp._
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -39,6 +41,7 @@ class ViewPspCheckYourAnswersController @Inject()(override val messagesApi: Mess
                                                   getData: DataRetrievalAction,
                                                   requireData: DataRequiredAction,
                                                   updateClientReferenceConnector: UpdateClientReferenceConnector,
+                                                  schemeDetailsConnector: SchemeDetailsConnector,
                                                   val controllerComponents: MessagesControllerComponents,
                                                   view: checkYourAnswersPsp
                                                  )(implicit val ec: ExecutionContext) extends FrontendBaseController with Retrievals with I18nSupport {
@@ -62,19 +65,47 @@ class ViewPspCheckYourAnswersController @Inject()(override val messagesApi: Mess
 
   def onSubmit(index: Int): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
-      (PSTRId and PspDetailsId(index)).retrieve.right.map {
-        case pstr ~ pspDetail =>
+      (SchemeSrnId and PSTRId and PspDetailsId(index)).retrieve.right.map {
+        case srn ~ pstr ~ pspDetail =>
           if (pspDetail.authorisingPSAID == request.psaIdOrException.id) {
             val psaId = request.psaIdOrException.id
             val updateClientReferenceRequest: UpdateClientReferenceRequest = UpdateClientReferenceRequest(pstr, psaId, pspDetail.id, pspDetail.clientReference)
 
-            updateClientReferenceConnector.updateClientReference(updateClientReferenceRequest).map(_ =>
-              Redirect(controllers.psp.routes.ViewPractitionersController.onPageLoad())
-            )
+
+            val action: Future[ClientReferenceUserAction] = for {
+              scheme <- schemeDetailsConnector.getSchemeDetails(request.psaIdOrException.id, srn, "srn")
+            } yield {
+              val newClientRef = pspDetail.clientReference
+              val oldClientRef = scheme.get(PspOldClientReferenceId(index))
+              determineUserAction(newClientRef, oldClientRef)
+            }
+
+            action.flatMap {
+              userAction => {
+                userAction match {
+                  case Added | Amended | Deleted =>
+                    updateClientReferenceConnector.updateClientReference(updateClientReferenceRequest, userAction.toString)
+                      .map {
+                        _ => Redirect(controllers.psp.routes.ViewPractitionersController.onPageLoad())
+                      }
+                  case _ => Future.successful(Redirect(controllers.psp.routes.ViewPractitionersController.onPageLoad()))
+                }
+              }
+            }
           } else {
             Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
           }
       }
+  }
+
+  private def determineUserAction(newClientRef: Option[String], oldClientRef: Option[String]): ClientReferenceUserAction = {
+    (oldClientRef, newClientRef) match {
+      case (Some(oldValue), Some(newValue)) if !oldValue.equals(newValue) => Amended
+      case (Some(oldValue), Some(newValue)) if oldValue.equals(newValue) => NoChange
+      case (Some(_), None) => Deleted
+      case (None, Some(_)) => Added
+      case (_, _) => NoChange
+    }
   }
 
   private def returnCall(srn: String): Call = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(srn))

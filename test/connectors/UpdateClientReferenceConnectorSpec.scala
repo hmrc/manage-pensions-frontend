@@ -47,7 +47,7 @@ class UpdateClientReferenceConnectorSpec extends AsyncFlatSpec with Matchers wit
 
     val connector = injector.instanceOf[UpdateClientReferenceConnector]
 
-    connector.updateClientReference(clientReferenceRequest).map(
+    connector.updateClientReference(clientReferenceRequest,"Added").map(
       _ =>
         server.findAll(postRequestedFor(urlEqualTo(updateClientReferenceUrl))).size() shouldBe 1
     )
@@ -67,7 +67,7 @@ class UpdateClientReferenceConnectorSpec extends AsyncFlatSpec with Matchers wit
     val connector = injector.instanceOf[UpdateClientReferenceConnector]
 
     recoverToSucceededIf[BadRequestException] {
-      connector.updateClientReference(clientReferenceRequest)
+      connector.updateClientReference(clientReferenceRequest,"Added")
     } map {
       _ =>
         server.findAll(postRequestedFor(urlEqualTo(updateClientReferenceUrl))).size() shouldBe 1

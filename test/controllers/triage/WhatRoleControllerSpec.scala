@@ -32,7 +32,8 @@ import utils.{FakeNavigator, Navigator}
 import views.html.triage.whatRole
 
 class WhatRoleControllerSpec extends ControllerSpecBase with ScalaFutures with MockitoSugar {
-  private val onwardRoute = Call("GET", "/dummy")
+
+  private val onwardRoute = Call("GET", "/manage-pension-schemes/guidance-triage/who-are-you-in-service")
   private val application = applicationBuilder(Seq[GuiceableModule](bind[Navigator].
     qualifiedWith(classOf[Triage]).toInstance(new FakeNavigator(onwardRoute)))).build()
 

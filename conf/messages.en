@@ -14,6 +14,7 @@ site.return_to_scheme_overview = Return to pension scheme overview
 site.error = Error:
 site.psa = Pension scheme administrator
 site.psp = Pension scheme practitioner
+site.date_h1 = Set Date - Test Only
 
 checkYourAnswers.title = Check your answers
 checkYourAnswers.heading = Check your answers
