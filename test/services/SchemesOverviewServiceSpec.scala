@@ -18,9 +18,7 @@ package services
 
 import base.SpecBase
 import connectors._
-import connectors.admin.{FeatureToggleConnector, MinimalConnector}
-import models.FeatureToggle.Enabled
-import models.FeatureToggleName.Migration
+import connectors.admin.MinimalConnector
 import models._
 import models.requests.OptionalDataRequest
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
@@ -49,14 +47,12 @@ class SchemesOverviewServiceSpec extends SpecBase with MockitoSugar with BeforeA
   private val minimalPsaConnector: MinimalConnector = mock[MinimalConnector]
   private val frontendConnector = mock[FrontendConnector]
   private val invitationsCacheConnector = mock[InvitationsCacheConnector]
-  private val featureToggleConnector = mock[FeatureToggleConnector]
 
   override def beforeEach(): Unit = {
     when(minimalPsaConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any()))
       .thenReturn(Future.successful(minimalPsaName))
     when(invitationsCacheConnector.getForInvitee(any())(any(), any()))
       .thenReturn(Future.successful(invitationList))
-    when(featureToggleConnector.get(any())(any(), any())).thenReturn(Future.successful(Enabled(Migration)))
     when(frontendConnector.retrieveSchemeUrlsPartial(any(), any())).thenReturn(Future.successful(html))
     when(frontendConnector.retrievePenaltiesUrlPartial(any(), any())).thenReturn(Future.successful(html))
     super.beforeEach()
@@ -64,7 +60,7 @@ class SchemesOverviewServiceSpec extends SpecBase with MockitoSugar with BeforeA
 
   def service: SchemesOverviewService =
     new SchemesOverviewService(frontendAppConfig, minimalPsaConnector,
-      invitationsCacheConnector, frontendConnector, featureToggleConnector)
+      invitationsCacheConnector, frontendConnector)
 
   "getTiles" must {
 
@@ -100,7 +96,7 @@ class SchemesOverviewServiceSpec extends SpecBase with MockitoSugar with BeforeA
 
 }
 
-object SchemesOverviewServiceSpec extends SpecBase with MockitoSugar  {
+object SchemesOverviewServiceSpec extends SpecBase with MockitoSugar {
 
   implicit val request: OptionalDataRequest[AnyContent] =
     OptionalDataRequest(FakeRequest("", ""), "id", Some(UserAnswers()), Some(PsaId("A0000000")))
@@ -167,7 +163,7 @@ object SchemesOverviewServiceSpec extends SpecBase with MockitoSugar  {
     Message("messages__schemeOverview__psa_view_one_invitation")))
 
   private def tiles(admin: CardViewModel = adminCard(), scheme: CardViewModel = schemeCard): Seq[CardViewModel] =
-    Seq(scheme,admin)
+    Seq(scheme, admin)
 }
 
 

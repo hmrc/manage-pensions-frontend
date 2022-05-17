@@ -28,7 +28,6 @@ import identifiers.invitations.{PSTRId, SchemeNameId}
 import identifiers.psa.{ListOfPSADetailsId, PSANameId}
 import identifiers.psa.remove.PsaRemovalDateId
 import models.NormalMode
-import models.psa.PsaDetails
 import models.psa.remove.PsaToBeRemovedFromScheme
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
