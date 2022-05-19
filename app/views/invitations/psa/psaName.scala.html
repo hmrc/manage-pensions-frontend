@@ -45,6 +45,7 @@
         Input(
             label = Label(classes = "govuk-label--xl", content = Text(messages("messages__psa__name__heading")),
             isPageHeading = true),
+            classes = "govuk-!-width-one-half",
             hint = Some(Hint(content = Text(messages("messages__psa__name__p1"))))
         ).withFormField(form("psaName"))
     )

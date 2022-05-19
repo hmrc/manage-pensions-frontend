@@ -45,6 +45,7 @@
             Input(
                 label = Label(classes = "govuk-label--xl", content = Text(messages("messages__adviser__email__address__heading", adviserName)),
                 isPageHeading = true),
+                classes = "govuk-!-width-one-half",
                 hint = Some(Hint(content = Text(messages("messages__adviser__email__address__p1"))))
             ).withFormField(form("email"))
         )
