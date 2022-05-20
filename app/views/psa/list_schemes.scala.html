@@ -116,17 +116,9 @@
 }
 
 @insetText = {
-    @if(form("searchText").value.exists(_.nonEmpty)){
-        <p class="govuk-body">
-            <a class="govuk-link" id="clear-search-link"
-                href="@{ListSchemesController.onPageLoad}"> @messages("messages__listSchemes__searchText_clearlink")
-            </a>
-        </p>
-    }else{
         <p class="govuk-body">
             @Html(messages("messages__schemesOverview__manage__redirect__text", manageRedirectLink))
         </p>
-    }
 }
 
 @schemeNameLink(id :String,schemeName: String, srn: SchemeReferenceNumber) = {
@@ -190,9 +182,19 @@
 
                 }
 
+                @if(form("searchText").value.exists(_.nonEmpty)){
+                <p class="govuk-body">
+                    <a class="govuk-link" id="clear-search-link"
+                       href="@{ListSchemesController.onPageLoad}"> @messages("messages__listSchemes__searchText_clearlink")
+                    </a>
+                </p>
+                }else{
                 @govukInsetText(InsetText(
-                    content = HtmlContent(insetText)
+                content = HtmlContent(insetText)
                 ))
+
+                }
+
 
 
 

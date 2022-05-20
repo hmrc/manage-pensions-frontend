@@ -40,14 +40,14 @@ pageTitle = messages("messages__invitationSuccess__title")) {
         content = HtmlContent("")
     ))
 
-    <p id="schemeName" class="govuk-body">@Messages("messages__invitationSuccess__schemeName", schemeName)</p>
+    <p id="schemeName" class="govuk-body">@messages("messages__invitationSuccess__schemeName", schemeName)</p>
 
     <p id="emailAdvice" class="govuk-body">
-        @Messages("messages__invitationSuccess__emailAdvice")
+        @messages("messages__invitationSuccess__emailAdvice")
         <span class="govuk-!-font-weight-bold">@inviteeEmail</span>.
     </p>
 
-    <p id="expiryDate" class="govuk-body">@Messages("messages__invitationSuccess__expiryDate", DateHelper.formatDate(expiryDate))</p>
+    <p id="expiryDate" class="govuk-body">@messages("messages__invitationSuccess__expiryDate", DateHelper.formatDate(expiryDate))</p>
 
     @formHelper(action = continue, 'autoComplete -> "off") {
         @button(messages("site.continue"))
