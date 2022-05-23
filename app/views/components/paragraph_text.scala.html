@@ -14,5 +14,5 @@
  * limitations under the License.
  *@
 
-@(text: String, id: String = "para_id")
-<p class="govuk-body" id=@id>@text</p>
+@(text: String, para_id: Option[String] = None)
+<p class="govuk-body" @if(para_id.nonEmpty) {id="@para_id"} >@text</p>
