@@ -18,6 +18,7 @@ package connectors.scheme
 
 import base.JsonFileReader
 import com.github.tomakehurst.wiremock.client.WireMock._
+import connectors.scheme.SchemeDetailsConnectorSpec.{idNumber, psaId, schemeIdType}
 import org.scalatest.AsyncFlatSpec
 import org.scalatest.Matchers
 import play.api.http.Status
@@ -151,6 +152,59 @@ class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
       )
     }
 
+  }
+
+  "getSchemeDetailsRefresh" should "return the getSchemeDetailsRefresh for a valid request/response" in {
+    val jsonResponse = """{"abc":"def"}"""
+    server.stubFor(
+      get(urlEqualTo(schemeDetailsUrl))
+        .withHeader("psaId", equalTo(psaId))
+        .withHeader("idNumber", equalTo(idNumber))
+        .withHeader("schemeIdType", equalTo(schemeIdType))
+        .withHeader("refreshData", equalTo("true"))
+        .willReturn(
+          aResponse()
+            .withStatus(Status.OK)
+            .withHeader("Content-Type", "application/json")
+            .withBody(jsonResponse)
+        )
+    )
+
+    val connector = injector.instanceOf[SchemeDetailsConnector]
+
+    connector.getSchemeDetailsRefresh(
+      psaId = psaId,
+      idNumber = idNumber,
+      schemeIdType = schemeIdType
+    ) map(schemeDetails =>
+      schemeDetails shouldBe ()
+      )
+
+  }
+
+  it should "throw BadRequestException for a 400 INVALID_IDTYPE response" in {
+
+    server.stubFor(
+      get(urlEqualTo(schemeDetailsUrl))
+        .withHeader("psaId", equalTo(psaId))
+        .withHeader("idNumber", equalTo(idNumber))
+        .withHeader("schemeIdType", equalTo(schemeIdType))
+        .withHeader("refreshData", equalTo("true"))
+        .willReturn(
+          badRequest
+            .withHeader("Content-Type", "application/json")
+            .withBody(errorResponse("INVALID_IDTYPE"))
+        )
+    )
+
+    val connector = injector.instanceOf[SchemeDetailsConnector]
+    recoverToSucceededIf[BadRequestException] {
+      connector.getSchemeDetailsRefresh(
+        psaId = psaId,
+        idNumber = idNumber,
+        schemeIdType = schemeIdType
+      )
+    }
   }
 
 }

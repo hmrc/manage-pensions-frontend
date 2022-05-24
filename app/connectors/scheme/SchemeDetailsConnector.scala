@@ -33,6 +33,9 @@ trait SchemeDetailsConnector {
   def getSchemeDetails(psaId: String, idNumber: String, schemeIdType: String)
                       (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[UserAnswers]
 
+  def getSchemeDetailsRefresh(psaId: String, idNumber: String, schemeIdType: String)
+                      (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit]
+
   def getPspSchemeDetails(pspId: String, srn: String)
                          (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[UserAnswers]
 
@@ -66,6 +69,33 @@ class SchemeDetailsConnectorImpl @Inject()(http: HttpClient, config: FrontendApp
         case OK =>
           val json = Json.parse(response.body)
           UserAnswers(json)
+        case _ => handleErrorResponse("GET", url)(response)
+      }
+    } andThen {
+      case Failure(t: Throwable) => logger.warn("Unable to get scheme details", t)
+    }
+  }
+
+  override def getSchemeDetailsRefresh(
+                                 psaId: String,
+                                 idNumber: String,
+                                 schemeIdType: String
+                               )(
+                                 implicit hc: HeaderCarrier,
+                                 ec: ExecutionContext
+                               ): Future[Unit] = {
+
+    val url = config.schemeDetailsUrl
+    val schemeHc =
+      hc.withExtraHeaders(
+        "idNumber" -> idNumber,
+        "psaId" -> psaId,
+        "schemeIdType" -> schemeIdType,
+        "refreshData" -> "true"
+      )
+    http.GET[HttpResponse](url)(implicitly, schemeHc, implicitly).map { response =>
+      response.status match {
+        case OK => ()
         case _ => handleErrorResponse("GET", url)(response)
       }
     } andThen {

@@ -85,8 +85,11 @@ class ViewPspCheckYourAnswersController @Inject()(override val messagesApi: Mess
                 userAction match {
                   case Added | Amended | Deleted =>
                     updateClientReferenceConnector.updateClientReference(updateClientReferenceRequest, userAction.toString)
-                      .map {
-                        _ => Redirect(controllers.psp.routes.ViewPractitionersController.onPageLoad())
+                      .flatMap {
+                        _ =>
+                          schemeDetailsConnector.getSchemeDetailsRefresh(request.psaIdOrException.id, srn, "srn").flatMap {
+                            _ => Future.successful(Redirect(controllers.psp.routes.ViewPractitionersController.onPageLoad()))
+                          }
                       }
                   case _ => Future.successful(Redirect(controllers.psp.routes.ViewPractitionersController.onPageLoad()))
                 }
