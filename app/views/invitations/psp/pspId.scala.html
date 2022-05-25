@@ -46,6 +46,7 @@ pageTitle = titleWithErrors(form, messages("messages__pspId__title"))) {
             Input(
                 label = Label(classes = "govuk-label--xl", content = Text(messages("messages__pspId__heading", pspName)),
                 isPageHeading = true),
+                classes = "govuk-!-width-one-half",
                 hint = Some(Hint(content = Text(messages("messages__pspId__hint"))))
             ).withFormField(form("pspId"))
         )

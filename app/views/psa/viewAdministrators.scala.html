@@ -38,7 +38,7 @@
 )(implicit request: Request[_], messages: Messages)
 
 @layout(
-    pageTitle = schemeName) {
+    pageTitle = s"${messages("messages__psaSchemeDash__psa_list_head")}") {
 
         @hmrcPageHeading(
             PageHeading(

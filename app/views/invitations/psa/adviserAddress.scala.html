@@ -60,36 +60,42 @@ pageTitle = titleWithErrors(form, messages(s"messages__${prefix}__title"))) {
         @govukInput(
             Input(
                 label = Label(content = Text(messages("messages__common__address1")),
-                isPageHeading = true)
+                isPageHeading = false),
+                classes = "govuk-!-width-two-thirds"
             ).withFormField(form("addressLine1"))
         )
         @govukInput(
             Input(
                 label = Label(content = Text(messages("messages__common__address2")),
-                isPageHeading = true)
+                isPageHeading = false),
+                classes = "govuk-!-width-two-thirds"
             ).withFormField(form("addressLine2"))
         )
         @govukInput(
             Input(
                 label = Label(content = Text(messages("messages__common__address3")),
-                isPageHeading = true)
+                isPageHeading = false),
+                classes = "govuk-!-width-one-half"
             ).withFormField(form("addressLine3"))
         )
         @govukInput(
             Input(
                 label = Label(content = Text(messages("messages__common__address4")),
-                isPageHeading = true)
+                isPageHeading = false),
+                classes = "govuk-!-width-one-half"
             ).withFormField(form("addressLine4"))
         )
         @govukInput(
             Input(
                 label = Label(content = Text(messages("messages__common__address_postcode")),
-                isPageHeading = true)
+                isPageHeading = false),
+                classes = "govuk-!-width-one-quarter"
             ).withFormField(form("postCode"))
         )
         @govukSelect(Select(
             id = "country",
             name = "country",
+            classes = "govuk-!-width-one-third",
             items = Seq(SelectItem(value = Some(""))) ++
                 options.map(valueOption =>
                     SelectItem(

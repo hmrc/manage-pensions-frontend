@@ -44,7 +44,8 @@
     @govukInput(
         Input(
             label = Label(classes = "govuk-label--xl", content = Text(messages("messages__psa__id__heading", psaName)),
-            isPageHeading = true)
+            isPageHeading = true),
+            classes = "govuk-!-width-one-half"
         ).withFormField(form("psaId"))
     )
 

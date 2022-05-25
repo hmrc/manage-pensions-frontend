@@ -52,6 +52,7 @@ pageTitle = titleWithErrors(form, messages("messages__psp__what__client_ref__tit
                     content = Text(messages("messages__psp__what__client_ref__heading",pspName)),
                     isPageHeading = true
                 ),
+            classes = "govuk-!-width-one-half",
             spellcheck = Some(false)
             ).withFormField(form("reference"))
         )

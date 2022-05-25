@@ -116,17 +116,9 @@
 }
 
 @insetText = {
-    @if(form("searchText").value.exists(_.nonEmpty)){
-        <p class="govuk-body">
-            <a class="govuk-link" id="clear-search-link"
-                href="@{ListSchemesController.onPageLoad}"> @messages("messages__listSchemes__searchText_clearlink")
-            </a>
-        </p>
-    }else{
         <p class="govuk-body">
             @Html(messages("messages__schemesOverview__manage__redirect__text", manageRedirectLink))
         </p>
-    }
 }
 
 @schemeNameLink(id :String,schemeName: String, srn: SchemeReferenceNumber) = {
@@ -190,45 +182,52 @@
 
                 }
 
+                @if(form("searchText").value.exists(_.nonEmpty)){
+                <p class="govuk-body">
+                    <a class="govuk-link" id="clear-search-link"
+                       href="@{ListSchemesController.onPageLoad}"> @messages("messages__listSchemes__searchText_clearlink")
+                    </a>
+                </p>
+                }else{
                 @govukInsetText(InsetText(
-                    content = HtmlContent(insetText)
+                content = HtmlContent(insetText)
                 ))
+
+                }
+
+
+
+
+
+
+                @if(form("searchText").value.exists(_.nonEmpty)){
+                    @if(schemes.nonEmpty){
+
+                                <p class="govuk-body" role="status">
+                                    @{
+                                        if(schemes.size == 1) {
+                                            messages("messages__listSchemes__search_result")
+                                        } else {
+                                            messages("messages__listSchemes__search_multipleResults", schemes.size)
+                                        }
+                                    }
+                                </p>
+
+                    }
+                }
+
+                @noResultsMessageKey.map{ text =>
+
+                            <p class="govuk-body" role="status" id="noSchemes">@messages(text)</p>
+
+                }
 
             </div>
         </div>
 
-
-
-        @if(form("searchText").value.exists(_.nonEmpty)){
-            @if(schemes.nonEmpty){
-                <div class="govuk-grid-row">
-                    <div class="govuk-grid-column-two-thirds">
-                        <p class="govuk-body">
-                            @{
-                                if(schemes.size == 1) {
-                                    messages("messages__listSchemes__search_result")
-                                } else {
-                                    messages("messages__listSchemes__search_multipleResults", schemes.size)
-                                }
-                            }
-                        </p>
-                    </div>
-                </div>
-            }
-        }
-
-        @noResultsMessageKey.map{ text =>
-            <div class="govuk-grid-row">
-                <div class="govuk-grid-column-two-thirds">
-                    <p class="govuk-body" id="noSchemes">@messages(text)</p>
-                </div>
-            </div>
-        }
-
-
         @if(schemes.nonEmpty) {
         <span aria-hidden="true" class="govuk-visually-hidden" id="schemeList_table">
-            messages("messages__listSchemes__title")
+            @messages("messages__listSchemes__title")
         </span>
         <div role="region" aria-labelledby="schemeList_table">
             @govukTable(
