@@ -29,6 +29,15 @@
     <span class="bold">@emailAddress</span>
 }
 
+@panelText = {
+<span aria-hidden="true">
+        @messages("messages__pspDeauthConfirmation__heading", schemeName)
+    </span>
+<span class="govuk-visually-hidden">
+        @messages("messages__pspDeauthConfirmation__heading__screenReaderAlternative", schemeName)
+    </span>
+}
+
 @p2Text = {
     <span aria-hidden="true">
         @messages("messages__pspDeauthConfirmation__p2", authorisingPsa, schemeName)
@@ -42,14 +51,11 @@
     pageTitle = messages("messages__pspDeauthConfirmation__title")
 ) {
 
-    @govukPanel(Panel(
-        title = Text(messages(messages("messages__pspDeauthConfirmation__heading", schemeName))),
-        content = HtmlContent("")
-    ))
-
-    <span class="govuk-visually-hidden">
-        @messages("messages__pspDeauthConfirmation__heading__screenReaderAlternative", schemeName)
-    </span>
+    @govukPanel(
+        Panel(
+                title = HtmlContent(panelText.toString)
+        )
+    )
 
     <p class="govuk-body">
         @Html(messages("messages__pspDeauthConfirmation__p1", email.toString))
