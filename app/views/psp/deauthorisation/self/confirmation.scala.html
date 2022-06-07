@@ -42,12 +42,10 @@
     pageTitle = messages("messages__pspDeauthConfirmation__title")
 ) {
 
-    <span aria-hidden="true">
-        @govukPanel(Panel(
-            title = Text(messages(messages("messages__pspDeauthConfirmation__heading", schemeName))),
-            content = HtmlContent("")
-        ))
-    </span>
+    @govukPanel(Panel(
+        title = Text(messages(messages("messages__pspDeauthConfirmation__heading", schemeName))),
+        content = HtmlContent("")
+    ))
 
     <span class="govuk-visually-hidden">
         @messages("messages__pspDeauthConfirmation__heading__screenReaderAlternative", schemeName)
