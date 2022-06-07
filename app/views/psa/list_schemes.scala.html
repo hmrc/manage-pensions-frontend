@@ -236,22 +236,22 @@
                         for((scheme, index) <- schemes.zipWithIndex) yield {
                             Seq(
                                 TableRow(
-                                    attributes = Map("id" -> ("schemeNameTd-"+index), "role"-> "cell"),
+                                    attributes = Map("id" -> ("schemeNameTd-"+index)),
                                     content = HtmlContent(schemeNameLink("schemeName-"+index,scheme.name, scheme.referenceNumber)),
                                     classes="govuk-table__cell"
                                 ),
                                 TableRow(
-                                    attributes = Map("id" -> ("srn-"+index), "role"-> "cell"),
+                                    attributes = Map("id" -> ("srn-"+index)),
                                     content = HtmlContent(srnValue(scheme.schemeStatus, scheme.referenceNumber, messages("messages__listSchemes__srn_na"))),
                                     classes="govuk-table__cell"
                                 ),
                                 TableRow(
-                                    attributes = Map("id" -> ("pstr-"+index), "role"-> "cell"),
+                                    attributes = Map("id" -> ("pstr-"+index)),
                                     content = Text(scheme.pstr.getOrElse(messages("messages__listSchemes__pstr_not_assigned"))),
                                     classes="govuk-table__cell"
                                 ),
                                 TableRow(
-                                    attributes = Map("id" -> ("schemeStatus-"+index), "role"-> "cell"),
+                                    attributes = Map("id" -> ("schemeStatus-"+index)),
                                     content = Text(statusValue(scheme.schemeStatus)),
                                     classes="govuk-table__cell"
                                 )
