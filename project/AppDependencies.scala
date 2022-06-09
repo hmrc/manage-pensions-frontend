@@ -13,7 +13,7 @@ object AppDependencies {
     "uk.gov.hmrc"       %% "bootstrap-frontend-play-28"    % "5.12.0",
     "uk.gov.hmrc"       %% "domain"                        % "6.2.0-play-28",
     "uk.gov.hmrc"       %% "play-partials"                 % "8.2.0-play-28",
-    "uk.gov.hmrc"       %% "play-frontend-hmrc"            % "1.25.0-play-28"
+    "uk.gov.hmrc"       %% "play-frontend-hmrc"            % "3.21.0-play-28"
 
   )
 
