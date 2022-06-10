@@ -102,6 +102,8 @@
     )
 )
 
+<span aria-hidden="true" class="govuk-visually-hidden" id="practitionerList_table">@messages("messages__viewPractitioners__heading")</span>
+
 <div role="region" aria-labelledby="practitionerList_table">
 @govukTable(
 Table(
@@ -161,7 +163,7 @@ Table(
             headers.flatten
         )
         },
-        caption = Some(messages("messages__listSchemes__title")),
+        caption = Some(messages("messages__viewPractitioners__heading")),
         captionClasses = "govuk-visually-hidden",
         attributes = Map("id" -> "practitioner-authorisation-table", "role"-> "table"),
     )
