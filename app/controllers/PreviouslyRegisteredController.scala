@@ -55,7 +55,7 @@ class PreviouslyRegisteredController @Inject()(
         (formWithErrors: Form[_]) =>
           BadRequest(view(formWithErrors, AdministratorOrPractitioner.Administrator)),
         {
-          case YesNotLoggedIn => Redirect(appConfig.registerSchemeAdministratorUrl)
+          case YesNotLoggedIn => Redirect(appConfig.recoverCredentialsPSAUrl)
           case _ => Redirect(appConfig.registerSchemeAdministratorUrl)
         }
       )
@@ -67,7 +67,7 @@ class PreviouslyRegisteredController @Inject()(
         (formWithErrors: Form[_]) =>
           BadRequest(view(formWithErrors, AdministratorOrPractitioner.Practitioner)),
         {
-          case YesNotLoggedIn => Redirect(appConfig.registerSchemePractitionerUrl)
+          case YesNotLoggedIn => Redirect(appConfig.recoverCredentialsPSPUrl)
           case _ => Redirect(appConfig.registerSchemePractitionerUrl)
         }
       )

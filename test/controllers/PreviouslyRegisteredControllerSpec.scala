@@ -20,7 +20,8 @@ import config.FrontendAppConfig
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.PreviouslyRegisteredFormProvider
 import models.{AdministratorOrPractitioner, PreviouslyRegistered}
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{reset, when}
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.test.CSRFTokenHelper.addCSRFToken
@@ -28,12 +29,16 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.previouslyRegistered
 
-class PreviouslyRegisteredControllerSpec extends ControllerWithQuestionPageBehaviours with ScalaFutures with MockitoSugar {
+class PreviouslyRegisteredControllerSpec extends ControllerWithQuestionPageBehaviours with ScalaFutures with MockitoSugar with BeforeAndAfterEach {
   private val appConfig: FrontendAppConfig = mock[FrontendAppConfig]
   private val dummyUrl = "/url"
 
   private val view = injector.instanceOf[previouslyRegistered]
   private val formProvider = new PreviouslyRegisteredFormProvider()
+
+  override def beforeEach(): Unit = {
+    reset(appConfig)
+  }
 
   def controller(): PreviouslyRegisteredController =
     new PreviouslyRegisteredController(
@@ -57,10 +62,10 @@ class PreviouslyRegisteredControllerSpec extends ControllerWithQuestionPageBehav
       contentAsString(result) mustBe view(boundForm, AdministratorOrPractitioner.Administrator)(postRequest,messages).toString
     }
 
-    "redirect to the correct next page when yes not logged in chosen" in {
+    "redirect to the correct next page when yes not logged in chosen (recovery url)" in {
       val postRequest = FakeRequest(POST, routes.PreviouslyRegisteredController.onSubmitAdministrator().url).withFormUrlEncodedBody("value" ->
         PreviouslyRegistered.YesNotLoggedIn.toString)
-      when(appConfig.registerSchemeAdministratorUrl).thenReturn(dummyUrl)
+      when(appConfig.recoverCredentialsPSAUrl).thenReturn(dummyUrl)
       val result = controller().onSubmitAdministrator(postRequest)
 
       status(result) mustBe SEE_OTHER
@@ -106,10 +111,10 @@ class PreviouslyRegisteredControllerSpec extends ControllerWithQuestionPageBehav
       contentAsString(result) mustBe view(boundForm, AdministratorOrPractitioner.Practitioner)(postRequest,messages).toString
     }
 
-    "redirect to the correct next page when yes not logged in chosen" in {
+    "redirect to the correct next page when yes not logged in chosen (recovery URL)" in {
       val postRequest = FakeRequest(POST, routes.PreviouslyRegisteredController.onSubmitPractitioner().url).withFormUrlEncodedBody("value" ->
         PreviouslyRegistered.YesNotLoggedIn.toString)
-      when(appConfig.registerSchemePractitionerUrl).thenReturn(dummyUrl)
+      when(appConfig.recoverCredentialsPSPUrl).thenReturn(dummyUrl)
       val result = controller().onSubmitPractitioner(postRequest)
 
       status(result) mustBe SEE_OTHER
