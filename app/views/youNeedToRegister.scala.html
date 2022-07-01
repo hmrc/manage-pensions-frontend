@@ -16,10 +16,10 @@
 
 @import config.FrontendAppConfig
 @import viewmodels.Message
+@import controllers.routes._
 
 @this(
-    layout: templates.Layout,
-    appConfig: FrontendAppConfig
+    layout: templates.Layout
 )
 
 @()(implicit request: Request[_], messages: Messages)
@@ -35,13 +35,13 @@
 
         <p class="govuk-body">
             <a id="redirect-to-psa" class="govuk-link"
-               href="@appConfig.registerSchemeAdministratorUrl">@messages("messages__youNeedToRegisterAdministrator__link")
+               href="@controllers.routes.PreviouslyRegisteredController.onPageLoadAdministrator()">@messages("messages__youNeedToRegisterAdministrator__link")
             </a>
         </p>
 
         <p class="govuk-body">
             <a id="redirect-to-psp" class="govuk-link"
-               href="@appConfig.registerSchemePractitionerUrl">@messages("messages__youNeedToRegisterPractitioner__link")
+               href="@controllers.routes.PreviouslyRegisteredController.onPageLoadPractitioner()">@messages("messages__youNeedToRegisterPractitioner__link")
             </a>
         </p>
 }

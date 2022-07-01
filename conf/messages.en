@@ -83,10 +83,19 @@ messages__error__common__email__address__invalid = Enter an email address in the
 
 messages__youNeedToRegister__title = Manage and register your pension schemes
 messages__youNeedToRegister__heading = You need to register as a pension scheme administrator or practitioner
-messages__youNeedToRegister__lede = You must do this before you can use the Managing Pension Schemes service.
-messages__youNeedToRegister__p1 = You can register as an individual, company or partnership.
-messages__youNeedToRegisterAdministrator__link = Register as a pension scheme administrator
-messages__youNeedToRegisterPractitioner__link = Register as a pension scheme practitioner
+messages__youNeedToRegister__lede = You must do this before you can use the Managing Pension Schemes service. You can register as an individual, company or partnership.
+messages__youNeedToRegister__p1 = If you have previously registered, you can use this service to recover your details.
+messages__youNeedToRegisterAdministrator__link = Register as an administrator or recover your administrator details
+messages__youNeedToRegisterPractitioner__link = Register as a practitioner or recover your practitioner details
+
+
+
+messages__youNeedToRegisterOld__lede = You must do this before you can use the Managing Pension Schemes service.
+messages__youNeedToRegisterOld__p1 = You can register as an individual, company or partnership.
+messages__youNeedToRegisterAdministratorOld__link = Register as a pension scheme administrator
+messages__youNeedToRegisterPractitionerOld__link = Register as a pension scheme practitioner
+
+
 
 messages__youCannotSendAnInvite__title = An invite cannot be sent
 messages__youCannotSendAnInvite__heading = An invite cannot be sent
@@ -760,3 +769,13 @@ messages__fileEventReport__email = pensions.businessdelivery@hmrc.gov.uk
 messages__fileEventReport__p2__1 = If your pension scheme has a PSTR starting with ‘0’, submit your event report on
 messages__fileEventReport__p2__2 = For some events, you may also need to email HMRC.
 messages__fileEventReport__link = Read the guidance to help submit your event report
+
+messages__previouslyRegistered__title = Have you previously registered on the Managing Pension Schemes service?
+messages__previouslyRegistered__heading = Have you previously registered on the Managing Pension Schemes service?
+messages__previouslyRegistered__error__required = Select if you previously registered on the Managing Pension Schemes service
+messages__previouslyRegistered__yes__not_logged_in = Yes, but I have not logged in to my account in the last 3 years
+messages__previouslyRegistered__yes__stopped = Yes, but I stopped being a pension scheme administrator
+messages__previouslyRegistered__not_logged_in_administrator_hint = You may need to recover your pension scheme administrator details.
+messages__previouslyRegistered__not_logged_in_practitioner_hint = You may need to recover your pension scheme practitioner details.
+messages__previouslyRegistered__stopped_hint = You need to register again.
+

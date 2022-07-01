@@ -39,10 +39,15 @@ object FeatureToggleName {
     val asString = "update-client-reference"
   }
 
-  val toggles = Seq(UpdateClientReference)
+  case object EnrolmentRecovery extends FeatureToggleName {
+    val asString = "enrolment-recovery"
+  }
+
+  val toggles = Seq(UpdateClientReference, EnrolmentRecovery)
 
   implicit val reads: Reads[FeatureToggleName] = Reads {
     case JsString(UpdateClientReference.asString) => JsSuccess(UpdateClientReference)
+    case JsString(EnrolmentRecovery.asString) => JsSuccess(EnrolmentRecovery)
     case _ => JsError("Unrecognised feature toggle name")}
 
   implicit val writes: Writes[FeatureToggleName] = Writes(value => JsString(value.asString))
