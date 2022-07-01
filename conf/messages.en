@@ -760,3 +760,13 @@ messages__fileEventReport__email = pensions.businessdelivery@hmrc.gov.uk
 messages__fileEventReport__p2__1 = If your pension scheme has a PSTR starting with ‘0’, submit your event report on
 messages__fileEventReport__p2__2 = For some events, you may also need to email HMRC.
 messages__fileEventReport__link = Read the guidance to help submit your event report
+
+messages__previouslyRegistered__title = Have you previously registered on the Managing Pension Schemes service?
+messages__previouslyRegistered__heading = Have you previously registered on the Managing Pension Schemes service?
+messages__previouslyRegistered__error__required = Select if you have previously registered
+messages__previouslyRegistered__yes__not_logged_in = Yes, but I have not logged in to my account in the last 3 years
+messages__previouslyRegistered__yes__stopped = Yes, but I stopped being a pension scheme administrator
+messages__previouslyRegistered__not_logged_in_administrator_hint = You may need to recover your pension scheme administrator details.
+messages__previouslyRegistered__not_logged_in_practitioner_hint = You may need to recover your pension scheme practitioner details.
+messages__previouslyRegistered__stopped_hint = You need to register again.
+
