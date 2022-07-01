@@ -88,6 +88,15 @@ messages__youNeedToRegister__p1 = If you have previously registered, you can use
 messages__youNeedToRegisterAdministrator__link = Register as an administrator or recover your administrator details
 messages__youNeedToRegisterPractitioner__link = Register as a practitioner or recover your practitioner details
 
+
+
+messages__youNeedToRegisterOld__lede = You must do this before you can use the Managing Pension Schemes service.
+messages__youNeedToRegisterOld__p1 = You can register as an individual, company or partnership.
+messages__youNeedToRegisterAdministratorOld__link = Register as a pension scheme administrator
+messages__youNeedToRegisterPractitionerOld__link = Register as a pension scheme practitioner
+
+
+
 messages__youCannotSendAnInvite__title = An invite cannot be sent
 messages__youCannotSendAnInvite__heading = An invite cannot be sent
 messages__youCannotSendAnInvite__p1 = An invite cannot be sent to another PSA to administer a scheme at the moment.

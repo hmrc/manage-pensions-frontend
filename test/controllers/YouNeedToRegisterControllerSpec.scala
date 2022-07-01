@@ -17,27 +17,49 @@
 package controllers
 
 import controllers.actions._
+import models.FeatureToggle.{Disabled, Enabled}
+import models.FeatureToggleName.EnrolmentRecovery
+import org.scalatest.BeforeAndAfterEach
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.test.Helpers._
-import views.html.youNeedToRegister
+import services.FeatureToggleService
+import views.html.{youNeedToRegister, youNeedToRegisterOld}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
+
+import scala.concurrent.Future
 
 
-class YouNeedToRegisterControllerSpec extends ControllerSpecBase {
+class YouNeedToRegisterControllerSpec extends ControllerSpecBase with MockitoSugar with BeforeAndAfterEach {
+
+  val toggleService: FeatureToggleService = mock[FeatureToggleService]
 
   val view: youNeedToRegister = app.injector.instanceOf[youNeedToRegister]
+  val viewOld: youNeedToRegisterOld = app.injector.instanceOf[youNeedToRegisterOld]
 
 
   def controller(dataRetrievalAction: DataRetrievalAction = getEmptyData): YouNeedToRegisterController =
-    new YouNeedToRegisterController(messagesApi, controllerComponents, view)
+    new YouNeedToRegisterController(messagesApi, controllerComponents, toggleService, view, viewOld)
 
   private def viewAsString() = view()(fakeRequest, messages).toString
+  private def viewAsStringOld() = viewOld()(fakeRequest, messages).toString
 
   "YouNeedToRegister Controller" must {
 
-    "return OK and the correct view for a GET" in {
+    "return OK and the correct view for a GET when enrolment recovery toggle switched on" in {
+      when(toggleService.get(any())(any(), any())).thenReturn(Future.successful(Enabled(EnrolmentRecovery)))
       val result = controller().onPageLoad(fakeRequest)
 
       status(result) mustBe OK
       contentAsString(result) mustBe viewAsString()
+    }
+
+    "return OK and the correct view for a GET when enrolment recovery toggle switched off" in {
+      when(toggleService.get(any())(any(), any())).thenReturn(Future.successful(Disabled(EnrolmentRecovery)))
+      val result = controller().onPageLoad(fakeRequest)
+
+      status(result) mustBe OK
+      contentAsString(result) mustBe viewAsStringOld()
     }
   }
 }
