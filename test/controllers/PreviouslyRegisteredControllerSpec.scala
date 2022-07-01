@@ -17,38 +17,29 @@
 package controllers
 
 import config.FrontendAppConfig
-import connectors.UserAnswersCacheConnector
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.PreviouslyRegisteredFormProvider
 import models.{AdministratorOrPractitioner, PreviouslyRegistered}
-import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.libs.json.Json
 import play.api.test.CSRFTokenHelper.addCSRFToken
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import utils.Navigator
 import views.html.previouslyRegistered
 
-import scala.concurrent.Future
-
 class PreviouslyRegisteredControllerSpec extends ControllerWithQuestionPageBehaviours with ScalaFutures with MockitoSugar {
-  val appConfig: FrontendAppConfig = mock[FrontendAppConfig]
-
-  private val mockNavigator = mock[Navigator]
+  private val appConfig: FrontendAppConfig = mock[FrontendAppConfig]
+  private val dummyUrl = "/url"
 
   private val view = injector.instanceOf[previouslyRegistered]
   private val formProvider = new PreviouslyRegisteredFormProvider()
-  val mockUserAnswersCacheConnector: UserAnswersCacheConnector = mock[UserAnswersCacheConnector]
 
   def controller(): PreviouslyRegisteredController =
     new PreviouslyRegisteredController(
-      appConfig, messagesApi, mockNavigator, formProvider, controllerComponents, view)
+      appConfig, messagesApi, formProvider, controllerComponents, view)
 
-  "PreviouslyRegisteredController" must {
-
+  "PreviouslyRegisteredController for administrator" must {
     "return OK with the view when calling on page load" in {
       val request = addCSRFToken(FakeRequest(GET, routes.PreviouslyRegisteredController.onPageLoadAdministrator().url))
       val result = controller().onPageLoadAdministrator(request)
@@ -66,16 +57,83 @@ class PreviouslyRegisteredControllerSpec extends ControllerWithQuestionPageBehav
       contentAsString(result) mustBe view(boundForm, AdministratorOrPractitioner.Administrator)(postRequest,messages).toString
     }
 
-    "redirect to the next page for a valid request" in {
-      when(mockUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any()))
-        .thenReturn(Future.successful(Json.obj()))
-      when(mockNavigator.nextPage(any(), any(), any())).thenReturn(onwardRoute)
+    "redirect to the correct next page when yes not logged in chosen" in {
       val postRequest = FakeRequest(POST, routes.PreviouslyRegisteredController.onSubmitAdministrator().url).withFormUrlEncodedBody("value" ->
         PreviouslyRegistered.YesNotLoggedIn.toString)
+      when(appConfig.registerSchemeAdministratorUrl).thenReturn(dummyUrl)
       val result = controller().onSubmitAdministrator(postRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).value mustBe onwardRoute.url
+      redirectLocation(result).value mustBe dummyUrl
+    }
+
+    "redirect to the correct next page when yes stopped in chosen" in {
+      val postRequest = FakeRequest(POST, routes.PreviouslyRegisteredController.onSubmitAdministrator().url).withFormUrlEncodedBody("value" ->
+        PreviouslyRegistered.YesStopped.toString)
+      when(appConfig.registerSchemeAdministratorUrl).thenReturn(dummyUrl)
+      val result = controller().onSubmitAdministrator(postRequest)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).value mustBe dummyUrl
+    }
+
+    "redirect to the correct next page when no chosen" in {
+      val postRequest = FakeRequest(POST, routes.PreviouslyRegisteredController.onSubmitAdministrator().url).withFormUrlEncodedBody("value" ->
+        PreviouslyRegistered.No.toString)
+      when(appConfig.registerSchemeAdministratorUrl).thenReturn(dummyUrl)
+      val result = controller().onSubmitAdministrator(postRequest)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).value mustBe dummyUrl
+    }
+  }
+
+  "PreviouslyRegisteredController for practitioner" must {
+    "return OK with the view when calling on page load" in {
+      val request = addCSRFToken(FakeRequest(GET, routes.PreviouslyRegisteredController.onPageLoadPractitioner().url))
+      val result = controller().onPageLoadPractitioner(request)
+
+      status(result) mustBe OK
+      contentAsString(result) mustBe view(formProvider(), AdministratorOrPractitioner.Practitioner)(request, messages).toString
+    }
+
+    "return a Bad Request and errors when invalid data is submitted" in {
+      val postRequest = FakeRequest(POST, routes.PreviouslyRegisteredController.onSubmitPractitioner().url).withFormUrlEncodedBody("value" -> "invalid value")
+      val boundForm = formProvider().bind(Map("value" -> "invalid value"))
+      val result = controller().onSubmitPractitioner(postRequest)
+
+      status(result) mustBe BAD_REQUEST
+      contentAsString(result) mustBe view(boundForm, AdministratorOrPractitioner.Practitioner)(postRequest,messages).toString
+    }
+
+    "redirect to the correct next page when yes not logged in chosen" in {
+      val postRequest = FakeRequest(POST, routes.PreviouslyRegisteredController.onSubmitPractitioner().url).withFormUrlEncodedBody("value" ->
+        PreviouslyRegistered.YesNotLoggedIn.toString)
+      when(appConfig.registerSchemePractitionerUrl).thenReturn(dummyUrl)
+      val result = controller().onSubmitPractitioner(postRequest)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).value mustBe dummyUrl
+    }
+
+    "redirect to the correct next page when yes stopped in chosen" in {
+      val postRequest = FakeRequest(POST, routes.PreviouslyRegisteredController.onSubmitPractitioner().url).withFormUrlEncodedBody("value" ->
+        PreviouslyRegistered.YesStopped.toString)
+      when(appConfig.registerSchemePractitionerUrl).thenReturn(dummyUrl)
+      val result = controller().onSubmitPractitioner(postRequest)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).value mustBe dummyUrl
+    }
+
+    "redirect to the correct next page when no chosen" in {
+      val postRequest = FakeRequest(POST, routes.PreviouslyRegisteredController.onSubmitPractitioner().url).withFormUrlEncodedBody("value" ->
+        PreviouslyRegistered.No.toString)
+      when(appConfig.registerSchemePractitionerUrl).thenReturn(dummyUrl)
+      val result = controller().onSubmitPractitioner(postRequest)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).value mustBe dummyUrl
     }
   }
 

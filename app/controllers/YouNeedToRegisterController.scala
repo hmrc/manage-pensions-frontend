@@ -16,7 +16,6 @@
 
 package controllers
 
-import config.FrontendAppConfig
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -25,8 +24,7 @@ import views.html.youNeedToRegister
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class YouNeedToRegisterController @Inject()(appConfig: FrontendAppConfig,
-                                            override val messagesApi: MessagesApi,
+class YouNeedToRegisterController @Inject()(override val messagesApi: MessagesApi,
                                             val controllerComponents: MessagesControllerComponents,
                                             view: youNeedToRegister)(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 

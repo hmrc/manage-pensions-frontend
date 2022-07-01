@@ -18,14 +18,12 @@ package controllers
 
 import config.FrontendAppConfig
 import forms.PreviouslyRegisteredFormProvider
-import identifiers.AdministratorOrPractitionerId
-import models.PreviouslyRegistered.{YesNotLoggedIn, YesStopped}
-import models.{AdministratorOrPractitioner, NormalMode, PreviouslyRegistered}
+import models.PreviouslyRegistered.YesNotLoggedIn
+import models.{AdministratorOrPractitioner, PreviouslyRegistered}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.{Navigator, UserAnswers}
 import views.html.previouslyRegistered
 
 import javax.inject.Inject
@@ -34,7 +32,6 @@ import scala.concurrent.ExecutionContext
 class PreviouslyRegisteredController @Inject()(
                                                 val appConfig: FrontendAppConfig,
                                                 override val messagesApi: MessagesApi,
-                                                navigator: Navigator,
                                                 val formProvider: PreviouslyRegisteredFormProvider,
                                                 val controllerComponents: MessagesControllerComponents,
                                                 view: previouslyRegistered
@@ -58,9 +55,8 @@ class PreviouslyRegisteredController @Inject()(
         (formWithErrors: Form[_]) =>
           BadRequest(view(formWithErrors, AdministratorOrPractitioner.Administrator)),
         {
-          case YesNotLoggedIn => Redirect(navigator.nextPage(AdministratorOrPractitionerId, NormalMode, UserAnswers()))
-          case YesStopped => Redirect(navigator.nextPage(AdministratorOrPractitionerId, NormalMode, UserAnswers()))
-          case _ => Redirect(navigator.nextPage(AdministratorOrPractitionerId, NormalMode, UserAnswers()))
+          case YesNotLoggedIn => Redirect(appConfig.registerSchemeAdministratorUrl)
+          case _ => Redirect(appConfig.registerSchemeAdministratorUrl)
         }
       )
   }
@@ -71,9 +67,8 @@ class PreviouslyRegisteredController @Inject()(
         (formWithErrors: Form[_]) =>
           BadRequest(view(formWithErrors, AdministratorOrPractitioner.Practitioner)),
         {
-          case YesNotLoggedIn => Redirect(navigator.nextPage(AdministratorOrPractitionerId, NormalMode, UserAnswers()))
-          case YesStopped => Redirect(navigator.nextPage(AdministratorOrPractitionerId, NormalMode, UserAnswers()))
-          case _ => Redirect(navigator.nextPage(AdministratorOrPractitionerId, NormalMode, UserAnswers()))
+          case YesNotLoggedIn => Redirect(appConfig.registerSchemePractitionerUrl)
+          case _ => Redirect(appConfig.registerSchemePractitionerUrl)
         }
       )
   }
