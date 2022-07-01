@@ -18,7 +18,7 @@ package controllers
 
 import config.FrontendAppConfig
 import forms.PreviouslyRegisteredFormProvider
-import models.PreviouslyRegistered.YesNotLoggedIn
+import models.PreviouslyRegistered.PreviouslyRegisteredButNotLoggedIn
 import models.{AdministratorOrPractitioner, PreviouslyRegistered}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
@@ -55,7 +55,7 @@ class PreviouslyRegisteredController @Inject()(
         (formWithErrors: Form[_]) =>
           BadRequest(view(formWithErrors, AdministratorOrPractitioner.Administrator)),
         {
-          case YesNotLoggedIn => Redirect(appConfig.recoverCredentialsPSAUrl)
+          case PreviouslyRegisteredButNotLoggedIn => Redirect(appConfig.recoverCredentialsPSAUrl)
           case _ => Redirect(appConfig.registerSchemeAdministratorUrl)
         }
       )
@@ -67,7 +67,7 @@ class PreviouslyRegisteredController @Inject()(
         (formWithErrors: Form[_]) =>
           BadRequest(view(formWithErrors, AdministratorOrPractitioner.Practitioner)),
         {
-          case YesNotLoggedIn => Redirect(appConfig.recoverCredentialsPSPUrl)
+          case PreviouslyRegisteredButNotLoggedIn => Redirect(appConfig.recoverCredentialsPSPUrl)
           case _ => Redirect(appConfig.registerSchemePractitionerUrl)
         }
       )

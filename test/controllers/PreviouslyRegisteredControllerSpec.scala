@@ -64,7 +64,7 @@ class PreviouslyRegisteredControllerSpec extends ControllerWithQuestionPageBehav
 
     "redirect to the correct next page when yes not logged in chosen (recovery url)" in {
       val postRequest = FakeRequest(POST, routes.PreviouslyRegisteredController.onSubmitAdministrator().url).withFormUrlEncodedBody("value" ->
-        PreviouslyRegistered.YesNotLoggedIn.toString)
+        PreviouslyRegistered.PreviouslyRegisteredButNotLoggedIn.toString)
       when(appConfig.recoverCredentialsPSAUrl).thenReturn(dummyUrl)
       val result = controller().onSubmitAdministrator(postRequest)
 
@@ -74,7 +74,7 @@ class PreviouslyRegisteredControllerSpec extends ControllerWithQuestionPageBehav
 
     "redirect to the correct next page when yes stopped in chosen" in {
       val postRequest = FakeRequest(POST, routes.PreviouslyRegisteredController.onSubmitAdministrator().url).withFormUrlEncodedBody("value" ->
-        PreviouslyRegistered.YesStopped.toString)
+        PreviouslyRegistered.PreviouslyRegisteredButStoppedBeingAdministrator.toString)
       when(appConfig.registerSchemeAdministratorUrl).thenReturn(dummyUrl)
       val result = controller().onSubmitAdministrator(postRequest)
 
@@ -84,7 +84,7 @@ class PreviouslyRegisteredControllerSpec extends ControllerWithQuestionPageBehav
 
     "redirect to the correct next page when no chosen" in {
       val postRequest = FakeRequest(POST, routes.PreviouslyRegisteredController.onSubmitAdministrator().url).withFormUrlEncodedBody("value" ->
-        PreviouslyRegistered.No.toString)
+        PreviouslyRegistered.NotPreviousRegistered.toString)
       when(appConfig.registerSchemeAdministratorUrl).thenReturn(dummyUrl)
       val result = controller().onSubmitAdministrator(postRequest)
 
@@ -113,7 +113,7 @@ class PreviouslyRegisteredControllerSpec extends ControllerWithQuestionPageBehav
 
     "redirect to the correct next page when yes not logged in chosen (recovery URL)" in {
       val postRequest = FakeRequest(POST, routes.PreviouslyRegisteredController.onSubmitPractitioner().url).withFormUrlEncodedBody("value" ->
-        PreviouslyRegistered.YesNotLoggedIn.toString)
+        PreviouslyRegistered.PreviouslyRegisteredButNotLoggedIn.toString)
       when(appConfig.recoverCredentialsPSPUrl).thenReturn(dummyUrl)
       val result = controller().onSubmitPractitioner(postRequest)
 
@@ -123,7 +123,7 @@ class PreviouslyRegisteredControllerSpec extends ControllerWithQuestionPageBehav
 
     "redirect to the correct next page when yes stopped in chosen" in {
       val postRequest = FakeRequest(POST, routes.PreviouslyRegisteredController.onSubmitPractitioner().url).withFormUrlEncodedBody("value" ->
-        PreviouslyRegistered.YesStopped.toString)
+        PreviouslyRegistered.PreviouslyRegisteredButStoppedBeingAdministrator.toString)
       when(appConfig.registerSchemePractitionerUrl).thenReturn(dummyUrl)
       val result = controller().onSubmitPractitioner(postRequest)
 
@@ -133,7 +133,7 @@ class PreviouslyRegisteredControllerSpec extends ControllerWithQuestionPageBehav
 
     "redirect to the correct next page when no chosen" in {
       val postRequest = FakeRequest(POST, routes.PreviouslyRegisteredController.onSubmitPractitioner().url).withFormUrlEncodedBody("value" ->
-        PreviouslyRegistered.No.toString)
+        PreviouslyRegistered.NotPreviousRegistered.toString)
       when(appConfig.registerSchemePractitionerUrl).thenReturn(dummyUrl)
       val result = controller().onSubmitPractitioner(postRequest)
 

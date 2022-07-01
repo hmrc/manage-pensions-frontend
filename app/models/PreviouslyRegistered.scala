@@ -16,43 +16,24 @@
 
 package models
 
-import play.api.i18n.Messages
 import play.api.libs.json._
-import uk.gov.hmrc.govukfrontend.views.Aliases.Hint
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
-import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import utils.Enumerable
 
 sealed trait PreviouslyRegistered
 
 object PreviouslyRegistered {
 
-  case object YesNotLoggedIn extends WithName("yesNotLoggedIn") with PreviouslyRegistered
+  case object PreviouslyRegisteredButNotLoggedIn extends WithName("previouslyRegisteredButNotLoggedIn") with PreviouslyRegistered
 
-  case object YesStopped extends WithName("yesStopped") with PreviouslyRegistered
+  case object PreviouslyRegisteredButStoppedBeingAdministrator extends WithName("previouslyRegisteredButStoppedBeingAdministrator") with PreviouslyRegistered
 
-  case object No extends WithName("no") with PreviouslyRegistered
+  case object NotPreviousRegistered extends WithName("notPreviouslyRegistered") with PreviouslyRegistered
 
   val values: Seq[PreviouslyRegistered] = Seq(
-    YesNotLoggedIn, YesStopped, No
+    PreviouslyRegisteredButNotLoggedIn, PreviouslyRegisteredButStoppedBeingAdministrator, NotPreviousRegistered
   )
 
   private val mappings: Map[String, PreviouslyRegistered] = values.map(v => (v.toString, v)).toMap
-
-  private def seqInputOption(messageKey:String, includeHints:Boolean, values: Seq[PreviouslyRegistered])(implicit messages: Messages): Seq[RadioItem] = {
-    values.map { value =>
-      val optionHint = if(includeHints) Some(Hint(Some(s"messages__${messageKey}__${value.toString}_hint"))) else None
-      optionHint match {
-        case None => RadioItem(
-          content = Text(messages(s"messages__${messageKey}__${value.toString}")),
-          value = Some(value.toString))
-        case Some(h) => RadioItem(
-          content = Text(messages(s"messages__${messageKey}__${value.toString}")),
-          value = Some(value.toString),
-          hint = Some(h))
-      }
-    }
-  }
 
   implicit val reads: Reads[PreviouslyRegistered] =
     JsPath.read[String].flatMap {
