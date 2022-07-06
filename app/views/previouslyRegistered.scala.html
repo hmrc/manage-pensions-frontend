@@ -46,6 +46,10 @@
     }
 }
 
+@boldText(text: String) = @{
+  HtmlContent(s"<strong>$text</strong>")
+}
+
 @layout(
     pageTitle = titleWithErrors(form, messages("messages__previouslyRegistered__title"))
 ){
@@ -71,7 +75,7 @@
             ),
             items = Seq(
                 RadioItem(
-                    content = Text(messages("messages__previouslyRegistered__yes__not_logged_in")),
+                    content = boldText(messages("messages__previouslyRegistered__yes__not_logged_in")),
                     value = Some(PreviouslyRegistered.PreviouslyRegisteredButNotLoggedIn.toString),
                     hint = Some(
                         Hint(
@@ -80,7 +84,7 @@
                     )
                 ),
                 RadioItem(
-                    content = Text(messages("messages__previouslyRegistered__yes__stopped")),
+                    content = boldText(messages("messages__previouslyRegistered__yes__stopped")),
                     value = Some(PreviouslyRegistered.PreviouslyRegisteredButStoppedBeingAdministrator.toString),
                     hint = Some(
                         Hint(
@@ -89,11 +93,12 @@
                     )
                 ),
                 RadioItem(
-                    content = Text(messages("site.no")),
+                    content = boldText(messages("site.no")),
                     value = Some(PreviouslyRegistered.NotPreviousRegistered.toString),
                     hint = None
                 )
-            )
+            ),
+            classes = "govuk-!-font-weight-bold"
         ).withFormField(form("value"))
     )
 
