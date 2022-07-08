@@ -39,6 +39,13 @@
     }
 }
 
+@yesButStoppedTitleMessageKey = @{
+    administratorOrPractitioner match {
+    case AdministratorOrPractitioner.Administrator =>  "messages__previouslyRegistered__yes__stopped_administrator"
+    case _ => "messages__previouslyRegistered__yes__stopped_practitioner"
+    }
+}
+
 @submitRoute = @{
     administratorOrPractitioner match {
         case AdministratorOrPractitioner.Administrator =>  controllers.routes.PreviouslyRegisteredController.onSubmitAdministrator()
@@ -84,7 +91,7 @@
                     )
                 ),
                 RadioItem(
-                    content = boldText(messages("messages__previouslyRegistered__yes__stopped")),
+                    content = boldText(messages(yesButStoppedTitleMessageKey)),
                     value = Some(PreviouslyRegistered.PreviouslyRegisteredButStoppedBeingAdministrator.toString),
                     hint = Some(
                         Hint(
