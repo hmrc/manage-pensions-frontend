@@ -170,6 +170,7 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
         referenceNumber = "srn-0",
         schemeStatus = SchemeStatus.Open.value,
         openDate = None,
+        windUpDate = None,
         pstr = Some("pstr-0"),
         relationship = None,
         underAppeal = None
@@ -179,6 +180,7 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
         referenceNumber = "srn-1",
         schemeStatus = SchemeStatus.Deregistered.value,
         openDate = None,
+        windUpDate = None,
         pstr = Some("24000001IN"),
         relationship = None,
         underAppeal = None
@@ -188,6 +190,7 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
         referenceNumber = "S2400000005",
         schemeStatus = SchemeStatus.Deregistered.value,
         openDate = None,
+        windUpDate = None,
         pstr = Some("pstr-2"),
         relationship = None,
         underAppeal = None
@@ -197,6 +200,7 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
         referenceNumber = "srn-3",
         schemeStatus = SchemeStatus.Deregistered.value,
         openDate = None,
+        windUpDate = None,
         pstr = Some("pstr-3"),
         relationship = None,
         underAppeal = None
@@ -206,6 +210,7 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
         referenceNumber = "srn-4",
         schemeStatus = SchemeStatus.Deregistered.value,
         openDate = None,
+        windUpDate = None,
         pstr = Some("pstr-4"),
         relationship = None,
         underAppeal = None
@@ -215,6 +220,7 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
         referenceNumber = "srn-5",
         schemeStatus = SchemeStatus.Deregistered.value,
         openDate = None,
+        windUpDate = None,
         pstr = Some("pstr-5"),
         relationship = None,
         underAppeal = None
@@ -224,6 +230,7 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
         referenceNumber = "srn-6",
         schemeStatus = SchemeStatus.Deregistered.value,
         openDate = None,
+        windUpDate = None,
         pstr = Some("pstr-6"),
         relationship = None,
         underAppeal = None
@@ -233,6 +240,7 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
         referenceNumber = "srn-7",
         schemeStatus = SchemeStatus.Deregistered.value,
         openDate = None,
+        windUpDate = None,
         pstr = Some("pstr-7"),
         relationship = None,
         underAppeal = None

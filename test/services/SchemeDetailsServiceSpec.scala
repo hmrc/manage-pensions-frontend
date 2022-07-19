@@ -169,6 +169,7 @@ object SchemeDetailsServiceSpec {
   private val psaId = "A0000000"
   private val name = "test-name"
   private val date = "2020-01-01"
+  private val windUpDate = "2020-02-01"
   val minimalPsaName: Option[String] = Some("John Doe Doe")
   val administrators: Option[Seq[AssociatedPsa]] =
     Some(
@@ -200,6 +201,6 @@ object SchemeDetailsServiceSpec {
       )
     )
   ))
-  val listOfSchemes: ListOfSchemes = ListOfSchemes("", "", Some(List(SchemeDetails(name, srn, "Open", Some(date), Some(pstr), None))))
+  val listOfSchemes: ListOfSchemes = ListOfSchemes("", "", Some(List(SchemeDetails(name, srn, "Open", Some(date), Some(windUpDate), Some(pstr), None))))
 
 }

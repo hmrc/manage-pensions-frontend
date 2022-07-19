@@ -68,8 +68,9 @@ class PsaSchemeDashboardControllerSpec
   private val mockAppConfig: FrontendAppConfig = mock[FrontendAppConfig]
   private val name = "test-name"
   private val date = "2020-01-01"
+  private val windUpDate = "2020-02-01"
   private val pstr = "pstr"
-  private val listOfSchemes: ListOfSchemes = ListOfSchemes("", "", Some(List(SchemeDetails(name, srn, "Open", Some(date), Some(pstr), None))))
+  private val listOfSchemes: ListOfSchemes = ListOfSchemes("", "", Some(List(SchemeDetails(name, srn, "Open", Some(date), Some(windUpDate), Some(pstr), None))))
 
   private def psaCard(inviteLink: Seq[Link] = inviteLink)
     (implicit messages: Messages): CardViewModel = CardViewModel(
