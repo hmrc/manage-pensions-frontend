@@ -25,8 +25,8 @@ import forms.psa.remove.RemovalDateFormProvider
 import identifiers.psa.ListOfPSADetailsId
 import identifiers.psa.remove.PsaRemovalDateId
 import models.SchemeVariance
-import models.psa.{Name, PsaDetails}
 import models.psa.remove.PsaToBeRemovedFromScheme
+import models.psa.{Name, PsaDetails}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, times, verify, when}
@@ -34,11 +34,10 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito._
 import play.api.data.Form
 import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsJson, Result}
+import play.api.mvc.AnyContentAsJson
 import play.api.mvc.Results.Ok
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{redirectLocation, status, _}
-import testhelpers.CommonBuilders
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.DateHelper._
 import utils.UserAnswers
@@ -148,8 +147,8 @@ object PsaRemovalDateControllerSpec extends MockitoSugar {
     "A0000000",
     Some("partnership name"),
     Some(Name(Some("Taylor"),
-    Some("Middle"),
-    Some("Rayon"))),
+      Some("Middle"),
+      Some("Rayon"))),
     Some(relationshipDate)
   )
 

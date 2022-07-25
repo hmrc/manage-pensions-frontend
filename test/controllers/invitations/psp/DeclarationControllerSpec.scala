@@ -26,7 +26,6 @@ import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAut
 import forms.invitations.psp.DeclarationFormProvider
 import identifiers.invitations.psp.{PspClientReferenceId, PspId, PspNameId}
 import identifiers.{SchemeNameId, SchemeSrnId}
-import models.ClientReference.HaveClientReference
 import models._
 import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
@@ -53,6 +52,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
 
   val config: Configuration = injector.instanceOf[Configuration]
   private val view = injector.instanceOf[declaration]
+
   private def sessionExpired: String = controllers.routes.SessionExpiredController.onPageLoad().url
 
   private val mockPspConnector = mock[PspConnector]
