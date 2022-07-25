@@ -102,6 +102,7 @@ object PsaSchemeDashboardServiceSpec {
   private val schemeName = "Benefits Scheme"
   private val name = "test-name"
   private val date = "2020-01-01"
+  private val windUpDate = "2020-02-01"
   private val dummyUrl = "dummy"
   private def userAnswers(schemeStatus: String): UserAnswers = UserAnswers(Json.obj(
     PSTRId.toString -> pstr,
@@ -220,7 +221,7 @@ object PsaSchemeDashboardServiceSpec {
       ))
   )
 
-  private def currentScheme(schemeStatus: SchemeStatus):Option[SchemeDetails] = Some(SchemeDetails(name, srn, schemeStatus.value, Some(date), Some(pstr), None))
+  private def currentScheme(schemeStatus: SchemeStatus):Option[SchemeDetails] = Some(SchemeDetails(name, srn, schemeStatus.value, Some(date), Some(windUpDate), Some(pstr), None))
 
 }
 

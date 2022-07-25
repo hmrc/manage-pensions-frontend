@@ -131,6 +131,7 @@ object SchemeSearchServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
         referenceNumber = "srn-1",
         schemeStatus = SchemeStatus.Deregistered.value,
         openDate = None,
+        windUpDate = None,
         pstr = Some("24000001IN"),
         relationship = None,
         underAppeal = None
@@ -140,6 +141,7 @@ object SchemeSearchServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
         referenceNumber = "S2400000005",
         schemeStatus = SchemeStatus.Deregistered.value,
         openDate = None,
+        windUpDate = None,
         pstr = Some("pstr-1"),
         relationship = None,
         underAppeal = None
