@@ -21,22 +21,25 @@ import config.FrontendAppConfig
 import controllers.invitations.psp.routes._
 import controllers.invitations.routes._
 import controllers.psa.routes._
-import models.SchemeStatus.Open
 import controllers.psp.routes._
 import identifiers.psa.ListOfPSADetailsId
 import identifiers.{SchemeStatusId, SeqAuthorisedPractitionerId}
+import models.SchemeStatus.Open
 import models._
 import models.psa.PsaDetails
+import play.api.Logger
 import play.api.i18n.Messages
 import utils.DateHelper._
 import utils.UserAnswers
-import viewmodels.{CardSubHeadingParam, Message, CardViewModel, CardSubHeading}
+import viewmodels.{CardSubHeading, CardSubHeadingParam, CardViewModel, Message}
 
 import java.time.LocalDate
 
 class PsaSchemeDashboardService @Inject()(
                                            appConfig: FrontendAppConfig
                                          ) {
+
+  private val logger = Logger(classOf[PsaSchemeDashboardService])
 
   def cards(srn: String, lock: Option[Lock], list: ListOfSchemes, ua: UserAnswers)
            (implicit messages: Messages): Seq[CardViewModel] = {
@@ -45,7 +48,7 @@ class PsaSchemeDashboardService @Inject()(
   }
 
   //Scheme details card
-  def schemeCard(srn: String, currentScheme:Option[SchemeDetails], lock: Option[Lock], ua: UserAnswers)
+  def schemeCard(srn: String, currentScheme: Option[SchemeDetails], lock: Option[Lock], ua: UserAnswers)
                 (implicit messages: Messages): CardViewModel = {
     CardViewModel(
       id = "scheme_details",
@@ -62,6 +65,16 @@ class PsaSchemeDashboardService @Inject()(
     val linkText = if (!isSchemeOpen(ua)) {
       viewLinkText
     } else {
+
+      logger.warn(s"Pension-scheme : $srn -- Lock-Status : ${lock.getOrElse("No-Lock-Found").toString}")
+
+      ua.get(ListOfPSADetailsId).map {
+        listOfPSADetails =>
+          listOfPSADetails.map { psaDetails =>
+            logger.warn(s"Pension-scheme : $srn -- PsaDetails-ID : ${psaDetails.id}")
+          }
+      }
+
       lock match {
         case Some(VarianceLock) | None => viewOrChangeLinkText
         case Some(_) => viewLinkText
@@ -70,13 +83,14 @@ class PsaSchemeDashboardService @Inject()(
     Link("view-details", appConfig.viewSchemeDetailsUrl.format(srn), linkText)
   }
 
-  private def getSchemeDetailsFromListOfSchemes(srn:String, list: ListOfSchemes): Option[SchemeDetails] =
-    list.schemeDetails.flatMap( _.find(_.referenceNumber.contains(srn)))
+  private def getSchemeDetailsFromListOfSchemes(srn: String, list: ListOfSchemes): Option[SchemeDetails] =
+    list.schemeDetails.flatMap(_.find(_.referenceNumber.contains(srn)))
 
   private def dateSubHead(currentScheme: Option[SchemeDetails], ua: UserAnswers)
-    (implicit messages: Messages): Option[CardSubHeading] =
+                         (implicit messages: Messages): Option[CardSubHeading] =
     if (isSchemeOpen(ua)) {
       def date: Option[String] = currentScheme.flatMap(_.openDate.map(LocalDate.parse(_).format(formatter)))
+
       if (currentScheme.nonEmpty && date.nonEmpty) {
         Some(CardSubHeading(
           subHeading = Message("messages__psaSchemeDash__regDate"),
@@ -93,16 +107,16 @@ class PsaSchemeDashboardService @Inject()(
     }
 
   private def pstrSubHead(currentScheme: Option[SchemeDetails])(implicit messages: Messages): Option[CardSubHeading] = {
-      if (currentScheme.exists(_.pstr.nonEmpty)) {
-        Some(CardSubHeading(
-          subHeading = Message("messages__psaSchemeDash__pstr"),
-          subHeadingClasses = "card-sub-heading",
-          subHeadingParams = Seq(CardSubHeadingParam(
-            subHeadingParam = currentScheme.head.pstr.head,
-            subHeadingParamClasses = "font-small bold"))))
-      } else {
-        None
-      }
+    if (currentScheme.exists(_.pstr.nonEmpty)) {
+      Some(CardSubHeading(
+        subHeading = Message("messages__psaSchemeDash__pstr"),
+        subHeadingClasses = "card-sub-heading",
+        subHeadingParams = Seq(CardSubHeadingParam(
+          subHeadingParam = currentScheme.head.pstr.head,
+          subHeadingParamClasses = "font-small bold"))))
+    } else {
+      None
+    }
   }
 
   //PSA card
