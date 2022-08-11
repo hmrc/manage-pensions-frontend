@@ -71,7 +71,7 @@ class PsaSchemeDashboardService @Inject()(
       ua.get(ListOfPSADetailsId).map {
         listOfPSADetails =>
           listOfPSADetails.map { psaDetails =>
-            logger.warn(s"Pension-scheme : $srn -- PsaDetails-ID : ${psaDetails.id} -- PsaDetails-FullName : ${psaDetails.getPsaName}")
+            logger.warn(s"Pension-scheme : $srn -- PsaDetails-ID : ${psaDetails.id}")
           }
       }
 
