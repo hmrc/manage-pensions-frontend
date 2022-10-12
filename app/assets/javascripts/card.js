@@ -3,6 +3,7 @@ var card = (function () {
 
   // Capture when a user clicks
   $('.card-body').on('click', function () {
+    console.log("foo");
     var url = $(this).find('a').attr('href')
     if (url !== undefined) {
       window.location.href = url
