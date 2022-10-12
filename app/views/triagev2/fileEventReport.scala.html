@@ -17,32 +17,30 @@
 @import views.html._
 @import viewmodels.Message
 
-
 @this(
-layout: templates.Layout
+    layout: templates.Layout
 )
 
 @(role: String,pensionSchemesOnlineLink: String,submitEventReportGovUkLink: String)(implicit request: Request[_], messages: Messages)
 
-@layout(
-        pageTitle = messages("messages__fileEventReport__title")
-){
-        <h1 class="govuk-heading-xl">@Messages("messages__fileEventReport__title")</h1>
+@layout(pageTitle = messages("messages__fileEventReport__title")){
 
-        <p class="govuk-body">
-            @Messages("messages__fileEventReport__p1__1")
-            <a href='mailto:@Messages("messages__fileEventReport__email")' class="govuk-link">@Messages("messages__fileEventReport__email")</a>
-            @Messages("messages__fileEventReport__p1__2")
-        </p>
+    <h1 class="govuk-heading-xl">@Messages("messages__fileEventReport__title")</h1>
 
-        <p class="govuk-body">
-            @Messages("messages__fileEventReport__p2__1")
-            <a href="@pensionSchemesOnlineLink" class="govuk-link">@Messages("message__triage__pensionSchemesOnline__link")</a>.
-            @Messages("messages__fileEventReport__p2__2")
-        </p>
+    <p class="govuk-body">
+        @Messages("messages__fileEventReport__p1__1")
+        <a href='mailto:@Messages("messages__fileEventReport__email")' class="govuk-link">@Messages("messages__fileEventReport__email")</a>
+        @Messages("messages__fileEventReport__p1__2")
+    </p>
 
-        <p class="govuk-body">
-            <a href="@submitEventReportGovUkLink" class="govuk-link">@Messages("messages__fileEventReport__link")</a>.
-        </p>
+    <p class="govuk-body">
+        @Messages("messages__fileEventReport__p2__1")
+        <a href="@pensionSchemesOnlineLink" class="govuk-link">@Messages("message__triage__pensionSchemesOnline__link")</a>.
+        @Messages("messages__fileEventReport__p2__2")
+    </p>
+
+    <p class="govuk-body">
+        <a href="@submitEventReportGovUkLink" class="govuk-link">@Messages("messages__fileEventReport__link")</a>.
+    </p>
 
 }

@@ -27,68 +27,66 @@
 
 
 @this(
-layout: templates.Layout,
-formHelper: PlayFrontendFormWithCSRF,
-govukErrorSummary: GovukErrorSummary,
-govukCheckboxes : GovukCheckboxes,
-button: components.govuk_button
+    layout: templates.Layout,
+    formHelper: PlayFrontendFormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    govukCheckboxes : GovukCheckboxes,
+    button: components.govuk_button
 )
 
 @(
-        form: Form[Boolean],
-        schemeName: String,
-        srn: String,
-        index: Int
-)(
-        implicit
-        request: Request[_],
-        messages: Messages
-)
-@layout(
-pageTitle = titleWithErrors(form, messages("messages__deauthPspDeclaration__title"))
-) {
+    form: Form[Boolean],
+    schemeName: String,
+    srn: String,
+    index: Int
+)(implicit request: Request[_], messages: Messages)
 
-@formHelper(action = PsaDeauthPspDeclarationController.onSubmit(index), 'autoComplete -> "off", 'novalidate -> "novalidate") {
-@if(form.errors.nonEmpty) {
-@govukErrorSummary(ErrorSummary().withFormErrorsAsText(form, mapping = Map("declaration" -> "declaration")))
-}
+@layout(pageTitle = titleWithErrors(form, messages("messages__deauthPspDeclaration__title"))) {
 
-<h1 class="govuk-heading-xl">@messages("messages__deauthPspDeclaration__title")</h1>
+    @formHelper(action = PsaDeauthPspDeclarationController.onSubmit(index), 'autoComplete -> "off", 'novalidate -> "novalidate") {
 
-<p id="para_id" class="govuk-body">
-           <span aria-hidden="true">
-        @messages("messages__deauthPspDeclaration__p")
-    </span>
-    <span class="govuk-visually-hidden">
-        @messages("messages__deauthPspDeclaration__p__screenReaderAlternative")
-    </span>
-</p>
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form, mapping = Map("declaration" -> "declaration")))
+        }
 
-@govukCheckboxes(Checkboxes(
-    fieldset = Some(Fieldset(
-    legend = Some(Legend(
-    content = Text(messages("messages__deauthPspDeclaration__title")),
-    classes = "govuk-visually-hidden",
-    isPageHeading = false
-    ))
-    )),
-    idPrefix = Some("declaration"),
-    name = "declaration",
-    items = Seq(
-    CheckboxItem(
-    content = Text(messages("messages__deauthPspDeclaration__label")),
-    value ="true"
-    )
-    )
-    ).withFormField(form("declaration")
-    )
-)
-@button(messages("site.save_and_continue"))
+        <h1 class="govuk-heading-xl">@messages("messages__deauthPspDeclaration__title")</h1>
 
-<p class="govuk-body">
-    <a id="return-link" class="govuk-link" href="@PsaSchemeDashboardController.onPageLoad(srn)">
-        @messages("messages__returnToSchemeDetails__link", schemeName)
-    </a>
-</p>
-}
+        <p id="para_id" class="govuk-body">
+                   <span aria-hidden="true">
+                @messages("messages__deauthPspDeclaration__p")
+            </span>
+            <span class="govuk-visually-hidden">
+                @messages("messages__deauthPspDeclaration__p__screenReaderAlternative")
+            </span>
+        </p>
+
+        @govukCheckboxes(Checkboxes(
+            fieldset = Some(Fieldset(
+            legend = Some(Legend(
+            content = Text(messages("messages__deauthPspDeclaration__title")),
+            classes = "govuk-visually-hidden",
+            isPageHeading = false
+            ))
+            )),
+            idPrefix = Some("declaration"),
+            name = "declaration",
+            items = Seq(
+            CheckboxItem(
+            content = Text(messages("messages__deauthPspDeclaration__label")),
+            value ="true"
+            )
+            )
+            ).withFormField(form("declaration")
+            )
+        )
+
+        @button(messages("site.save_and_continue"))
+
+        <p class="govuk-body">
+            <a id="return-link" class="govuk-link" href="@PsaSchemeDashboardController.onPageLoad(srn)">
+                @messages("messages__returnToSchemeDetails__link", schemeName)
+            </a>
+        </p>
+
+    }
 }

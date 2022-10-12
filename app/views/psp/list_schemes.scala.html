@@ -38,16 +38,11 @@
     schemes: List[SchemeDetails],
     pspName: String,
     numberOfSchemes: Int
-)(implicit
-    request: Request[_],
-    messages: Messages
-)
+)(implicit request: Request[_], messages: Messages)
 
 @manageRedirectLink = @{
     val href: String = appConfig.pensionSchemeOnlineServiceUrl
-
     val linkText: String = messages("messages__schemesOverview__manage__redirect__link")
-
     Html(s"""<a class="govuk-link" id="manage-link" href="$href">$linkText</a>""")
 }
 
@@ -112,14 +107,12 @@
     }
 }
 
-@layout(
-    pageTitle = titleWithErrors(form, messages(heading)),
-    fullWidthLayout = true
-) {
+@layout(pageTitle = titleWithErrors(form, messages(heading)), fullWidthLayout = true) {
 
     @formHelper(action = ListSchemesController.onSearch, 'autoComplete -> "off") {
 
         <div class="govuk-grid-row">
+
             <div class="govuk-grid-column-two-thirds">
 
                 @if(form.errors.nonEmpty) {
@@ -183,7 +176,10 @@
                         @messages("site.return_to", pspName)
                     </a>
                 </p>
+
             </div>
+
         </div>
+
     }
 }

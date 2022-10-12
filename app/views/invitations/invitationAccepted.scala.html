@@ -29,9 +29,8 @@
 
 @(schemeName: String)(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = messages("messages__invitationAccepted__title")
-) {
+@layout(pageTitle = messages("messages__invitationAccepted__title")) {
+
     @govukPanel(Panel(
         title = Text(messages("messages__invitationAccepted__heading", schemeName)),
         content = HtmlContent("")

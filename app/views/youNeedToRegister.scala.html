@@ -24,24 +24,24 @@
 
 @()(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = messages("messages__youNeedToRegister__title")) {
+@layout(pageTitle = messages("messages__youNeedToRegister__title")) {
 
-        <h1 class="govuk-heading-xl">@messages("messages__youNeedToRegister__heading")</h1>
+    <h1 class="govuk-heading-xl">@messages("messages__youNeedToRegister__heading")</h1>
 
-        <p class="govuk-body">@messages("messages__youNeedToRegister__lede")</p>
+    <p class="govuk-body">@messages("messages__youNeedToRegister__lede")</p>
 
-        <p class="govuk-body">@messages("messages__youNeedToRegister__p1")</p>
+    <p class="govuk-body">@messages("messages__youNeedToRegister__p1")</p>
 
-        <p class="govuk-body">
-            <a id="redirect-to-psa" class="govuk-link"
-               href="@controllers.routes.PreviouslyRegisteredController.onPageLoadAdministrator()">@messages("messages__youNeedToRegisterAdministrator__link")
-            </a>
-        </p>
+    <p class="govuk-body">
+        <a id="redirect-to-psa" class="govuk-link"
+           href="@controllers.routes.PreviouslyRegisteredController.onPageLoadAdministrator()">@messages("messages__youNeedToRegisterAdministrator__link")
+        </a>
+    </p>
 
-        <p class="govuk-body">
-            <a id="redirect-to-psp" class="govuk-link"
-               href="@controllers.routes.PreviouslyRegisteredController.onPageLoadPractitioner()">@messages("messages__youNeedToRegisterPractitioner__link")
-            </a>
-        </p>
+    <p class="govuk-body">
+        <a id="redirect-to-psp" class="govuk-link"
+           href="@controllers.routes.PreviouslyRegisteredController.onPageLoadPractitioner()">@messages("messages__youNeedToRegisterPractitioner__link")
+        </a>
+    </p>
+
 }

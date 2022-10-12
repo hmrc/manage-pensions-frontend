@@ -34,8 +34,7 @@
 
 @(form: Form[_], name: String)(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = titleWithErrors(form, messages("messages__adviser__postcode__title"))) {
+@layout(pageTitle = titleWithErrors(form, messages("messages__adviser__postcode__title"))) {
 
     @formHelper(action = AdviserAddressPostcodeLookupController.onSubmit(), 'autoComplete -> "off") {
 
@@ -43,26 +42,25 @@
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
         }
 
-        <div class="form-group @if(form.hasErrors){form-group--error}">
+        <h1 class="govuk-heading-xl">@messages("messages__adviser__postcode__heading", name)</h1>
 
-            <h1 class="govuk-heading-xl">@messages("messages__adviser__postcode__heading", name)</h1>
-            <p class="govuk-body">@messages("messages__adviser__postcode__lede")</p>
+        <p class="govuk-body">@messages("messages__adviser__postcode__lede")</p>
 
-            @govukInput(
-                Input(
-                    label = Label(
-                    content = Text(Message("messages__adviser__postcode__label"))
-                    ),
-                    classes = "govuk-!-width-one-half"
-                ).withFormField(form("value"))
-            )
+        @govukInput(
+            Input(
+                label = Label(
+                content = Text(Message("messages__adviser__postcode__label"))
+                ),
+                classes = "govuk-!-width-one-half"
+            ).withFormField(form("value"))
+        )
 
-            <p class="govuk-body">
-                @messages("messages__adviser__postcode__enter_postcode_lhs")
-                <a id="manual-address-link" class="govuk-link" href="@AdviserManualAddressController.onPageLoad(NormalMode, false)"> @messages("messages__adviser__postcode__enter_postcode_link")</a> @messages("messages__adviser__postcode__enter_postcode_rhs")
-            </p>
-        </div>
+        <p class="govuk-body">
+            @messages("messages__adviser__postcode__enter_postcode_lhs")
+            <a id="manual-address-link" class="govuk-link" href="@AdviserManualAddressController.onPageLoad(NormalMode, false)"> @messages("messages__adviser__postcode__enter_postcode_link")</a> @messages("messages__adviser__postcode__enter_postcode_rhs")
+        </p>
 
         @button(messages("site.save_and_continue"))
+
     }
 }

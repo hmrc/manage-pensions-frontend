@@ -35,11 +35,10 @@
 
 @(form: Form[_], schemeName: String, srn: String, authorisationDate: String)(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = titleWithErrors(form, messages("messages__pspSelfDeauthDate__title"))
-) {
+@layout(pageTitle = titleWithErrors(form, messages("messages__pspSelfDeauthDate__title"))) {
 
     @formHelper(action = DeauthDateController.onSubmit, 'autoComplete -> "off", 'novalidate -> "novalidate") {
+
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form, mapping = Map("pspDeauthDate" -> "pspDeauthDate.day")))
         }

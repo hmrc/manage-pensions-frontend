@@ -15,19 +15,19 @@
  *@
 
 @this(
-layout: templates.Layout,
-govukPanel : GovukPanel
+    layout: templates.Layout,
+    govukPanel : GovukPanel
 )
+
 @(psaName: String, schemeName: String)(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = messages("messages__confirmRemoved__title"),
-    showBackLink = false
-) {
+@layout(pageTitle = messages("messages__confirmRemoved__title"), showBackLink = false) {
+
     @govukPanel(Panel(
         title = Text(messages("messages__confirmRemoved__heading", psaName, schemeName)),
         content = HtmlContent("")
     ))
+
     <p class="govuk-body">
         <a id="return-link" href="@controllers.psa.routes.ListSchemesController.onPageLoad().url">@messages("messages__confirmRemoved__return_link")</a>
     </p>

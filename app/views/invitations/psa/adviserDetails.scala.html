@@ -32,14 +32,14 @@
 
 @(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
 
-    @layout(
-    pageTitle = titleWithErrors(form, messages("messages__adviser__name__title"))) {
+@layout(pageTitle = titleWithErrors(form, messages("messages__adviser__name__title"))) {
 
     @formHelper(action = AdviserDetailsController.onSubmit(mode), 'autoComplete -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
         }
+
         @govukInput(
             Input(
                 label = Label(classes = "govuk-label--xl", content = Text(messages("messages__adviser__name__heading")),
@@ -50,5 +50,6 @@
         )
 
         @button(messages("site.save_and_continue"))
+
     }
 }

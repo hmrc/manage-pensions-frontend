@@ -22,22 +22,21 @@
 @import controllers.invitations.psa.routes._
 
 @this(
-layout: templates.Layout,
-formHelper: PlayFrontendFormWithCSRF,
-button: components.govuk_button
+    layout: templates.Layout,
+    formHelper: PlayFrontendFormWithCSRF,
+    button: components.govuk_button
 )
 
 @(schemeName: String, returnCall: Call)(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = s"${messages("messages__whatYouWillNeed__title")}"
-) {
+@layout(pageTitle = s"${messages("messages__whatYouWillNeed__title")}") {
 
     @formHelper(action = WhatYouWillNeedController.onSubmit, 'autoComplete -> "off") {
 
         <h1 class="govuk-heading-xl">@messages("messages__whatYouWillNeed__heading")</h1>
 
         <p class="govuk-body">@messages("messages__whatYouWillNeed__lede")</p>
+
         <p class="govuk-body">@messages("messages__whatYouWillNeed__list_heading")</p>
 
         <ul class="govuk-list govuk-list--bullet">
@@ -52,5 +51,6 @@ button: components.govuk_button
                 @messages("messages__returnToSchemeDetails__link", schemeName)
             </a>
         </p>
+
     }
 }

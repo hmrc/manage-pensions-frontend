@@ -21,75 +21,74 @@
 @import controllers.routes
 
 @this(
-appConfig: FrontendAppConfig,
-govukLayout: GovukLayout,
-hmrcHead: HmrcHead,
-hmrcTimeoutDialogHelper: HmrcTimeoutDialogHelper,
-hmrcStandardFooter: HmrcStandardFooter,
-hmrcStandardHeader: HmrcStandardHeader,
-standardBetaBanner: StandardBetaBanner,
-defaultMainContentLayout: TwoThirdsMainContent,
-hmrcScripts: HmrcScripts,
-stylesheets: Stylesheets,
-govukBackLink: GovukBackLink,
-hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper
+    appConfig: FrontendAppConfig,
+    govukLayout: GovukLayout,
+    hmrcHead: HmrcHead,
+    hmrcTimeoutDialogHelper: HmrcTimeoutDialogHelper,
+    hmrcStandardFooter: HmrcStandardFooter,
+    hmrcStandardHeader: HmrcStandardHeader,
+    standardBetaBanner: StandardBetaBanner,
+    defaultMainContentLayout: TwoThirdsMainContent,
+    hmrcScripts: HmrcScripts,
+    stylesheets: Stylesheets,
+    govukBackLink: GovukBackLink,
+    hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper
 )
 
 @(pageTitle: String,
-timeoutEnabled: Boolean = true,
-canSignOut: Boolean = true,
-showBackLink: Boolean = true,
-fullWidthLayout: Boolean = false
+    timeoutEnabled: Boolean = true,
+    canSignOut: Boolean = true,
+    showBackLink: Boolean = true,
+    fullWidthLayout: Boolean = false
 )(mainContent: Html)(implicit request: Request[_], messages: Messages)
 
 @headScripts = {
-@if(timeoutEnabled) {
-@hmrcTimeoutDialogHelper(
-signOutUrl = routes.LogoutController.onPageLoad.url,
-keepAliveUrl= Some(routes.LogoutController.keepAlive.url),
-timeout = Some(900),
-countdown = Some(120)
-)
-}
-
-@stylesheets()
+    @if(timeoutEnabled) {
+        @hmrcTimeoutDialogHelper(
+            signOutUrl = routes.LogoutController.onPageLoad.url,
+            keepAliveUrl= Some(routes.LogoutController.keepAlive.url),
+            timeout = Some(900),
+            countdown = Some(120)
+        )
+    }
+    @stylesheets()
 }
 
 @beforeContentBlock = {
-@if(showBackLink) {
-@govukBackLink(BackLink(
-attributes = Map("id" -> "back-link"), classes="js-enabled", href="javascript:history.back()", content = HtmlContent(messages("site.back"))
-))
-}
+    @if(showBackLink) {
+        @govukBackLink(BackLink(
+            attributes = Map("id" -> "back-link"), classes="js-enabled", href="javascript:history.back()", content = HtmlContent(messages("site.back"))
+        ))
+    }
 }
 
 @scripts = {
-<script src='@controllers.routes.Assets.versioned("lib/govuk-frontend/govuk/all.js")'></script>
-<script src='@controllers.routes.Assets.versioned("lib/hmrc-frontend/hmrc/all.js")'></script>
-<script>window.GOVUKFrontend.initAll();
+    <script src='@controllers.routes.Assets.versioned("lib/govuk-frontend/govuk/all.js")'></script>
+    <script src='@controllers.routes.Assets.versioned("lib/hmrc-frontend/hmrc/all.js")'></script>
+    <script>window.GOVUKFrontend.initAll();
     window.HMRCFrontend.initAll()</script>
 }
 
 @mainContentWithGetHelp = {
-@mainContent
-@hmrcReportTechnicalIssueHelper()
+    @mainContent
+    @hmrcReportTechnicalIssueHelper()
 }
 
 
 @govukLayout(
-pageTitle = Some(pageTitle + " - " + Messages("messages__manage_pension_schemes__title")),
-headBlock = Some(hmrcHead(
-headBlock = Some(headScripts)
-)),
-headerBlock = Some(hmrcStandardHeader(
-serviceName = Some(messages("site.service_name")),
-serviceUrl = Some(routes.SchemesOverviewController.onPageLoad.url),
-signOutUrl = if(canSignOut) Some(routes.LogoutController.onPageLoad.url) else None,
-phaseBanner = Some(standardBetaBanner(url = appConfig.betaFeedbackUnauthenticatedUrl))
-)),
-cspNonce = CSPNonce.get,
-beforeContentBlock = Some(beforeContentBlock),
-scriptsBlock = Some(scripts),
-mainContentLayout = if(fullWidthLayout) None else Some(defaultMainContentLayout(_)),
-footerBlock = Some(hmrcStandardFooter())
+    pageTitle = Some(pageTitle + " - " + Messages("messages__manage_pension_schemes__title")),
+    headBlock = Some(hmrcHead(
+        headBlock = Some(headScripts)
+    )),
+    headerBlock = Some(hmrcStandardHeader(
+        serviceName = Some(messages("site.service_name")),
+        serviceUrl = Some(routes.SchemesOverviewController.onPageLoad.url),
+        signOutUrl = if(canSignOut) Some(routes.LogoutController.onPageLoad.url) else None,
+        phaseBanner = Some(standardBetaBanner(url = appConfig.betaFeedbackUnauthenticatedUrl))
+    )),
+    cspNonce = CSPNonce.get,
+    beforeContentBlock = Some(beforeContentBlock),
+    scriptsBlock = Some(scripts),
+    mainContentLayout = if(fullWidthLayout) None else Some(defaultMainContentLayout(_)),
+    footerBlock = Some(hmrcStandardFooter())
 )(mainContentWithGetHelp)

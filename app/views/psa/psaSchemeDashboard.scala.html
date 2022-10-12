@@ -27,41 +27,41 @@
 
 
 @this(
-layout: templates.Layout,
-appConfig: FrontendAppConfig
+    layout: templates.Layout,
+    appConfig: FrontendAppConfig
 )
 
 @(
-schemeName: String,
-aftHtml: Html,
-cards: Seq[CardViewModel],
-subHeading: Option[String] = None,
-returnLink: Option[Link] = None
-)(
-implicit request: Request[_],
-messages: Messages
-)
+    schemeName: String,
+    aftHtml: Html,
+    cards: Seq[CardViewModel],
+    subHeading: Option[String] = None,
+    returnLink: Option[Link] = None
+)(implicit request: Request[_], messages: Messages)
 
-@layout(
-pageTitle = messages(schemeName),
-fullWidthLayout = true
-) {
-<div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-        <h1 class="govuk-heading-xl">@messages(schemeName)</h1>
-        <div class="flex-container govuk-grid-row">
-            @aftHtml
-            @for(card <- cards) {
-            @components.card(card)
-            }
+@layout(pageTitle = messages(schemeName), fullWidthLayout = true) {
+
+    <div class="govuk-grid-row">
+
+        <div class="govuk-grid-column-full">
+
+            <h1 class="govuk-heading-xl">@messages(schemeName)</h1>
+
+            <div class="flex-container govuk-grid-row">
+                @aftHtml
+                @for(card <- cards) {
+                    @components.card(card)
+                }
+            </div>
+
+            <p class="govuk-body">
+                <a id="list-schemes" class="govuk-link" href="@controllers.psa.routes.ListSchemesController.onPageLoad().url">
+                    @messages("messages__psaSchemeDash__return_link")
+                </a>
+            </p>
+
         </div>
 
-        <p class="govuk-body">
-            <a id="list-schemes" class="govuk-link" href="@controllers.psa.routes.ListSchemesController.onPageLoad().url">
-                @messages("messages__psaSchemeDash__return_link")
-            </a>
-        </p>
-
     </div>
-</div>
+
 }

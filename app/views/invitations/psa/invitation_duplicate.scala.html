@@ -23,12 +23,12 @@
 )
 @(inviteeName: String, schemeName: String)(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = messages("messages__invitationDuplicate__title")) {
+@layout(pageTitle = messages("messages__invitationDuplicate__title")) {
 
     <h1 class="govuk-heading-xl">@Messages("messages__invitationDuplicate__heading", inviteeName)</h1>
 
     <p id="schemeName" class="govuk-body">@Messages("messages__invitationDuplicate__schemeName", inviteeName, schemeName)</p>
+
     <p id="inviteInformation" class="govuk-body">@Messages("messages__invitationDuplicate__inviteInformation")</p>
 
     <p class="govuk-body">
@@ -36,4 +36,5 @@
             @messages("messages__invitationDuplicate__returnToSchemes__link")
         </a>
     </p>
+
 }

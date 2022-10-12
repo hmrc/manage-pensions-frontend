@@ -33,9 +33,7 @@
 
 @(form: Form[Boolean], mode: Mode)(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = titleWithErrors(form, messages("messages__doYouHaveWorkingKnowledge__title"))
-){
+@layout(pageTitle = titleWithErrors(form, messages("messages__doYouHaveWorkingKnowledge__title"))){
 
     @formHelper(action = controllers.invitations.routes.DoYouHaveWorkingKnowledgeController.onSubmit(mode), 'autoComplete -> "off") {
 
@@ -83,5 +81,4 @@
         @button(messages("site.save_and_continue"))
 
     }
-
 }

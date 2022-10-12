@@ -25,31 +25,30 @@
 @import play.api.mvc.Call
 
 @this(
-layout: templates.Layout,
-govukPanel : GovukPanel,
-formHelper: PlayFrontendFormWithCSRF,
-button: components.govuk_button
+    layout: templates.Layout,
+    govukPanel : GovukPanel,
+    formHelper: PlayFrontendFormWithCSRF,
+    button: components.govuk_button
 )
 
 @(schemeName: String, pspName: String)(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = messages("messages__pspConfirmation__title"),
-    showBackLink = false
-) {
-    @govukPanel(Panel(
-        title = Text(messages("messages__pspConfirmation__heading", pspName, schemeName)),
-        content = HtmlContent("")
-    ))
-
-    <h2 class="govuk-heading-m">@messages("messages__pspConfirmation__whatHappensNext")</h2>
-
-    <p class="govuk-body">@messages("messages__pspConfirmation__p1", schemeName)</p>
-
-    <p class="govuk-body">@messages("messages__pspConfirmation__p2", schemeName)</p>
+@layout(pageTitle = messages("messages__pspConfirmation__title"), showBackLink = false) {
 
     @formHelper(action = controllers.routes.SchemesOverviewController.onPageLoad(), 'autoComplete -> "off") {
-        @button(messages("site.return_to_scheme_overview"))
-    }
 
+        @govukPanel(Panel(
+            title = Text(messages("messages__pspConfirmation__heading", pspName, schemeName)),
+            content = HtmlContent("")
+        ))
+
+        <h2 class="govuk-heading-m">@messages("messages__pspConfirmation__whatHappensNext")</h2>
+
+        <p class="govuk-body">@messages("messages__pspConfirmation__p1", schemeName)</p>
+
+        <p class="govuk-body">@messages("messages__pspConfirmation__p2", schemeName)</p>
+
+        @button(messages("site.return_to_scheme_overview"))
+
+    }
 }

@@ -57,59 +57,57 @@
   HtmlContent(s"<strong>$text</strong>")
 }
 
-@layout(
-    pageTitle = titleWithErrors(form, messages("messages__previouslyRegistered__title"))
-){
+@layout(pageTitle = titleWithErrors(form, messages("messages__previouslyRegistered__title"))){
 
     @formHelper(action = submitRoute, 'autoComplete -> "off") {
 
-    @if(form.errors.nonEmpty) {
-        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
-    }
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
+        }
 
-    @govukRadios(
-        Radios(
-            fieldset = Some(
-                Fieldset(
-                    legend = Some(
-                        Legend(
-                            content = Text(messages("messages__previouslyRegistered__heading")),
-                            classes = "govuk-fieldset__legend--xl",
-                            isPageHeading = true
-                        )
-                    )
-                )
-            ),
-            items = Seq(
-                RadioItem(
-                    content = boldText(messages("messages__previouslyRegistered__yes__not_logged_in")),
-                    value = Some(PreviouslyRegistered.PreviouslyRegisteredButNotLoggedIn.toString),
-                    hint = Some(
-                        Hint(
-                            content = Text(messages(yesHintMessageKey))
+        @govukRadios(
+            Radios(
+                fieldset = Some(
+                    Fieldset(
+                        legend = Some(
+                            Legend(
+                                content = Text(messages("messages__previouslyRegistered__heading")),
+                                classes = "govuk-fieldset__legend--xl",
+                                isPageHeading = true
+                            )
                         )
                     )
                 ),
-                RadioItem(
-                    content = boldText(messages(yesButStoppedTitleMessageKey)),
-                    value = Some(PreviouslyRegistered.PreviouslyRegisteredButStoppedBeingAdministrator.toString),
-                    hint = Some(
-                        Hint(
-                            content = Text(messages("messages__previouslyRegistered__stopped_hint"))
+                items = Seq(
+                    RadioItem(
+                        content = boldText(messages("messages__previouslyRegistered__yes__not_logged_in")),
+                        value = Some(PreviouslyRegistered.PreviouslyRegisteredButNotLoggedIn.toString),
+                        hint = Some(
+                            Hint(
+                                content = Text(messages(yesHintMessageKey))
+                            )
                         )
+                    ),
+                    RadioItem(
+                        content = boldText(messages(yesButStoppedTitleMessageKey)),
+                        value = Some(PreviouslyRegistered.PreviouslyRegisteredButStoppedBeingAdministrator.toString),
+                        hint = Some(
+                            Hint(
+                                content = Text(messages("messages__previouslyRegistered__stopped_hint"))
+                            )
+                        )
+                    ),
+                    RadioItem(
+                        content = boldText(messages("site.no")),
+                        value = Some(PreviouslyRegistered.NotPreviousRegistered.toString),
+                        hint = None
                     )
                 ),
-                RadioItem(
-                    content = boldText(messages("site.no")),
-                    value = Some(PreviouslyRegistered.NotPreviousRegistered.toString),
-                    hint = None
-                )
-            ),
-            classes = "govuk-!-font-weight-bold"
-        ).withFormField(form("value"))
-    )
+                classes = "govuk-!-font-weight-bold"
+            ).withFormField(form("value"))
+        )
 
-    @button(messages("site.continue"))
+        @button(messages("site.continue"))
 
     }
 }

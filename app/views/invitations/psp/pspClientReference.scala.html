@@ -26,25 +26,23 @@
 
 
 @this(
-layout: templates.Layout,
-formHelper: PlayFrontendFormWithCSRF,
-govukErrorSummary: GovukErrorSummary,
-button: components.govuk_button,
-govukInput : GovukInput
+    layout: templates.Layout,
+    formHelper: PlayFrontendFormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    button: components.govuk_button,
+    govukInput : GovukInput
 )
 
 
 @(form: Form[_], pspName: String, mode: Mode, schemeName:String, returnCall: Call,actionCall: Call)(implicit request: Request[_], messages: Messages)
 
-@layout(
-pageTitle = titleWithErrors(form, messages("messages__psp__what__client_ref__title"))) {
+@layout(pageTitle = titleWithErrors(form, messages("messages__psp__what__client_ref__title"))) {
 
     @formHelper(action = actionCall, 'autoComplete -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
         }
-
 
         @govukInput(
             Input(
@@ -64,7 +62,6 @@ pageTitle = titleWithErrors(form, messages("messages__psp__what__client_ref__tit
                 @messages("messages__returnToSchemeDetails__link", schemeName)
             </a>
         </p>
-
 
     }
 }

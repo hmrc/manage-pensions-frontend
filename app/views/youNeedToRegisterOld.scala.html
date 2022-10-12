@@ -18,30 +18,30 @@
 @import viewmodels.Message
 
 @this(
-layout: templates.Layout,
-appConfig: FrontendAppConfig
+    layout: templates.Layout,
+    appConfig: FrontendAppConfig
 )
 
 @()(implicit request: Request[_], messages: Messages)
 
-@layout(
-pageTitle = messages("messages__youNeedToRegister__title")) {
+@layout(pageTitle = messages("messages__youNeedToRegister__title")) {
 
-<h1 class="govuk-heading-xl">@messages("messages__youNeedToRegister__heading")</h1>
+    <h1 class="govuk-heading-xl">@messages("messages__youNeedToRegister__heading")</h1>
 
-<p class="govuk-body">@messages("messages__youNeedToRegisterOld__lede")</p>
+    <p class="govuk-body">@messages("messages__youNeedToRegisterOld__lede")</p>
 
-<p class="govuk-body">@messages("messages__youNeedToRegisterOld__p1")</p>
+    <p class="govuk-body">@messages("messages__youNeedToRegisterOld__p1")</p>
 
-<p class="govuk-body">
-    <a id="redirect-to-psa" class="govuk-link"
-       href="@appConfig.registerSchemeAdministratorUrl">@messages("messages__youNeedToRegisterAdministratorOld__link")
-    </a>
-</p>
+    <p class="govuk-body">
+        <a id="redirect-to-psa" class="govuk-link"
+           href="@appConfig.registerSchemeAdministratorUrl">@messages("messages__youNeedToRegisterAdministratorOld__link")
+        </a>
+    </p>
 
-<p class="govuk-body">
-    <a id="redirect-to-psp" class="govuk-link"
-       href="@appConfig.registerSchemePractitionerUrl">@messages("messages__youNeedToRegisterPractitionerOld__link")
-    </a>
-</p>
+    <p class="govuk-body">
+        <a id="redirect-to-psp" class="govuk-link"
+           href="@appConfig.registerSchemePractitionerUrl">@messages("messages__youNeedToRegisterPractitionerOld__link")
+        </a>
+    </p>
+
 }

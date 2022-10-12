@@ -34,9 +34,7 @@
 
 @(form: Form[_], schemeName: String, srn: String, psaName: String)(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = titleWithErrors(form, messages("messages__confirmRemovePsa__title"))
-){
+@layout(pageTitle = titleWithErrors(form, messages("messages__confirmRemovePsa__title"))){
 
     @formHelper(action = ConfirmRemovePsaController.onSubmit(), 'autoComplete -> "off") {
 
@@ -79,4 +77,3 @@
 
     }
 }
-

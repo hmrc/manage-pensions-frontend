@@ -35,9 +35,7 @@
 
 @(form: Form[_], psaName: String, schemeName: String, srn: String, associationDate: String)(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = titleWithErrors(form, messages("messages__removalDate__title"))
-) {
+@layout(pageTitle = titleWithErrors(form, messages("messages__removalDate__title"))) {
 
     @formHelper(action = PsaRemovalDateController.onSubmit, 'autoComplete -> "off",'novalidate -> "novalidate") {
 

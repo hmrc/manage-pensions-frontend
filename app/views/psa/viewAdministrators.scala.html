@@ -37,15 +37,14 @@
     isSchemeOpen: Boolean
 )(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = s"${messages("messages__psaSchemeDash__psa_list_head")}") {
+@layout(pageTitle = s"${messages("messages__psaSchemeDash__psa_list_head")}") {
 
-        @hmrcPageHeading(
-            PageHeading(
-                text = messages("messages__psaSchemeDash__psa_list_head"),
-                section = Some(schemeName)
-            )
+    @hmrcPageHeading(
+        PageHeading(
+            text = messages("messages__psaSchemeDash__psa_list_head"),
+            section = Some(schemeName)
         )
+    )
 
     @admins.map { admins =>
         <div id="admins-list" class="govuk-form-group">

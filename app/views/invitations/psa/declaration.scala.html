@@ -32,14 +32,12 @@
 
 @(haveWorkingKnowledge: Boolean, isMasterTrust: Boolean, form: Form[_])(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = titleWithErrors(form, messages("messages__declaration__title"))
-){
-
-
-    <h1 class="govuk-heading-xl">@messages("messages__declaration__title")</h1>
+@layout(pageTitle = titleWithErrors(form, messages("messages__declaration__title"))){
 
     @formHelper(action = DeclarationController.onSubmit(), 'autoComplete -> "off") {
+
+        <h1 class="govuk-heading-xl">@messages("messages__declaration__title")</h1>
+
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form, mapping = Map("consent" -> "consent")))
         }
@@ -47,15 +45,10 @@
         @components.paragraph_text(messages("messages__declaration__continue") + ":")
 
         <ol class="govuk-list govuk-list--number">
-
             <li>@messages("messages__declaration__statement1")</li>
-
             <li>@messages("messages__declaration__statement2")</li>
-
             <li>@messages("messages__declaration__statement3")</li>
-
             <li>@messages("messages__declaration__statement4")</li>
-
             <li>
                 @if(haveWorkingKnowledge) {
                     @messages("messages__declaration__statement5__no__adviser")
@@ -63,9 +56,7 @@
                     @messages("messages__declaration__statement5__with__adviser")
                 }
             </li>
-
             <li>@messages("messages__declaration__statement6")</li>
-
             @if(isMasterTrust) {
                 <li>@messages("messages__declaration__statement7")</li>
             }
@@ -85,12 +76,12 @@
                 CheckboxItem(
                 content = Text(messages("messages__declaration__label")),
                 value ="true"
-            )
+                )
             )
             ).withFormField(form("consent")
-        )
-        )
+        ))
 
         @button(messages("site.continue"))
+
     }
 }

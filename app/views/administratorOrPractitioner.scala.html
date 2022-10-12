@@ -33,53 +33,51 @@
 
 @(form: Form[_])(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = titleWithErrors(form, messages("messages__administratorOrPractitioner__title"))
-){
+@layout(pageTitle = titleWithErrors(form, messages("messages__administratorOrPractitioner__title"))){
 
     @formHelper(action = controllers.routes.AdministratorOrPractitionerController.onSubmit(), 'autoComplete -> "off") {
 
-    @if(form.errors.nonEmpty) {
-        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
-    }
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
+        }
 
-    @govukRadios(
-        Radios(
-            fieldset = Some(
-                Fieldset(
-                    legend = Some(
-                        Legend(
-                            content = Text(messages("messages__administratorOrPractitioner__heading")),
-                            classes = "govuk-fieldset__legend--xl",
-                            isPageHeading = true
-                        )
-                    )
-                )
-            ),
-            items = Seq(
-                RadioItem(
-                    content = Text(messages("messages__administratorOrPractitioner__administrator")),
-                    value = Some(AdministratorOrPractitioner.Administrator.toString),
-                    hint = Some(
-                        Hint(
-                            content = Text(messages("messages__administratorOrPractitioner__administrator_hint"))
+        @govukRadios(
+            Radios(
+                fieldset = Some(
+                    Fieldset(
+                        legend = Some(
+                            Legend(
+                                content = Text(messages("messages__administratorOrPractitioner__heading")),
+                                classes = "govuk-fieldset__legend--xl",
+                                isPageHeading = true
+                            )
                         )
                     )
                 ),
-                RadioItem(
-                    content = Text(messages("messages__administratorOrPractitioner__practitioner")),
-                    value = Some(AdministratorOrPractitioner.Practitioner.toString),
-                    hint = Some(
-                        Hint(
-                            content = Text(messages("messages__administratorOrPractitioner__practitioner_hint"))
+                items = Seq(
+                    RadioItem(
+                        content = Text(messages("messages__administratorOrPractitioner__administrator")),
+                        value = Some(AdministratorOrPractitioner.Administrator.toString),
+                        hint = Some(
+                            Hint(
+                                content = Text(messages("messages__administratorOrPractitioner__administrator_hint"))
+                            )
+                        )
+                    ),
+                    RadioItem(
+                        content = Text(messages("messages__administratorOrPractitioner__practitioner")),
+                        value = Some(AdministratorOrPractitioner.Practitioner.toString),
+                        hint = Some(
+                            Hint(
+                                content = Text(messages("messages__administratorOrPractitioner__practitioner_hint"))
+                            )
                         )
                     )
                 )
-            )
-        ).withFormField(form("value"))
-    )
+            ).withFormField(form("value"))
+        )
 
-    @button(messages("site.continue"))
+        @button(messages("site.continue"))
 
     }
 }

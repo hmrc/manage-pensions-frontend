@@ -37,34 +37,30 @@
     cards: Seq[CardViewModel],
     subHeading: Option[String] = None,
     returnLink: Option[Link] = None
-)(
-    implicit request: Request[_],
-    messages: Messages
-)
+)(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = messages(title),
-    fullWidthLayout = true
-) {
-<div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-        @hmrcPageHeading(PageHeading(
-            text = name,
-            section = subHeading
-        ))
-        <div class="flex-container govuk-grid-row">
-            @for(card <- cards) {
-                @components.card(card)
+@layout(pageTitle = messages(title), fullWidthLayout = true) {
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            @hmrcPageHeading(PageHeading(
+                text = name,
+                section = subHeading
+            ))
+            <div class="flex-container govuk-grid-row">
+                @for(card <- cards) {
+                    @components.card(card)
+                }
+            </div>
+
+            @returnLink.map { ret =>
+            <p class="govuk-body">
+                <a id="@ret.id" class="govuk-link" href="@ret.url">
+                    @messages(ret.linkText)
+                </a>
+            </p>
             }
         </div>
-
-        @returnLink.map { ret =>
-        <p class="govuk-body">
-            <a id="@ret.id" class="govuk-link" href="@ret.url">
-                @messages(ret.linkText)
-            </a>
-        </p>
-        }
     </div>
-</div>
+
 }

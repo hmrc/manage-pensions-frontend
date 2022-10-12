@@ -35,10 +35,9 @@
 
 @(form: Form[_])(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = titleWithErrors(form, messages("messages__cannotAccessPageAsAdministrator__title"))){
+@layout(pageTitle = titleWithErrors(form, messages("messages__cannotAccessPageAsAdministrator__title"))){
 
-        @formHelper(action = CannotAccessPageAsAdministratorController.onSubmit(), 'autoComplete -> "off") {
+    @formHelper(action = CannotAccessPageAsAdministratorController.onSubmit(), 'autoComplete -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
@@ -66,6 +65,4 @@
         @button(messages("site.continue"))
 
     }
-
 }
-

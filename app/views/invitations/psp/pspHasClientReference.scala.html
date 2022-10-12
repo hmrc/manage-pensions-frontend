@@ -24,22 +24,18 @@
 @import utils.ViewHelper.titleWithErrors
 @import play.api.mvc.Call
 
-
 @this(
-layout: templates.Layout,
-govukRadios : GovukRadios,
-formHelper: PlayFrontendFormWithCSRF,
-govukErrorSummary: GovukErrorSummary,
-button: components.govuk_button,
-govukInput : GovukInput
+    layout: templates.Layout,
+    govukRadios : GovukRadios,
+    formHelper: PlayFrontendFormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    button: components.govuk_button,
+    govukInput : GovukInput
 )
-
-
 
 @(form: Form[_], pspName: String, mode: Mode, schemeName:String, returnCall: Call,actionCall: Call)(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = titleWithErrors(form, messages("messages__psp_client_ref__title"))) {
+@layout(pageTitle = titleWithErrors(form, messages("messages__psp_client_ref__title"))) {
 
     @formHelper(action = actionCall, 'autoComplete -> "off") {
 
@@ -79,6 +75,5 @@ govukInput : GovukInput
             </a>
         </p>
 
-
-}
+    }
 }

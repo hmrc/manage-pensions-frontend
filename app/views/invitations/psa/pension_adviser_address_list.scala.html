@@ -36,34 +36,36 @@
 
 @(form: Form[_], addresses: Seq[TolerantAddress], mode: Mode)(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = titleWithErrors(form, messages("messages__adviser__address__list__title"))) {
+@layout(pageTitle = titleWithErrors(form, messages("messages__adviser__address__list__title"))) {
 
     @formHelper(action = PensionAdviserAddressListController.onSubmit(mode), 'autoComplete -> "off") {
 
-    @if(form.errors.nonEmpty) {
-        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
-    }
-    <h1 class="govuk-heading-xl">@messages("messages__adviser__address__list__heading")</h1>
-
-    <p class="govuk-body">
-        @messages("messages__adviser__address__list__select")
-        <a id="manual-address-link" class="govuk-link" href="@AdviserManualAddressController.onPageLoad(mode, false)">
-            @messages("messages__adviser__address__list__link")
-        </a>
-    </p>
-
-    @govukRadios(Radios(
-        items =
-        for((address, i) <- addresses.zipWithIndex)
-        yield {
-            RadioItem(
-                content = Text(address.print),
-                value = Some(i.toString)
-            )
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
         }
-        ).withFormField(form("value"))
-    )
-    @button(messages("site.save_and_continue"))
+
+        <h1 class="govuk-heading-xl">@messages("messages__adviser__address__list__heading")</h1>
+
+        <p class="govuk-body">
+            @messages("messages__adviser__address__list__select")
+            <a id="manual-address-link" class="govuk-link" href="@AdviserManualAddressController.onPageLoad(mode, false)">
+                @messages("messages__adviser__address__list__link")
+            </a>
+        </p>
+
+        @govukRadios(Radios(
+            items =
+            for((address, i) <- addresses.zipWithIndex)
+            yield {
+                RadioItem(
+                    content = Text(address.print),
+                    value = Some(i.toString)
+                )
+            }
+            ).withFormField(form("value"))
+        )
+
+        @button(messages("site.save_and_continue"))
+
     }
 }

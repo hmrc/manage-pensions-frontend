@@ -17,18 +17,19 @@
 @import views.html._
 
 @this(
-layout: templates.Layout
+    layout: templates.Layout
 )
 
 @()(implicit request: Request[_], messages: Messages)
 
-@layout(
-pageTitle = messages("messages__pageNotFound404__title")){
-<h1 class="govuk-heading-xl">@messages("messages__pageNotFound404__heading")</h1>
+@layout(pageTitle = messages("messages__pageNotFound404__title")){
 
-<p class="govuk-body">@messages("messages__pageNotFound404__p1")</p>
-<p class="govuk-body">@messages("messages__pageNotFound404__p2")</p>
+    <h1 class="govuk-heading-xl">@messages("messages__pageNotFound404__heading")</h1>
 
-<p class="govuk-body"><a class="govuk-link" id="view-pension-schemes" href="@controllers.psa.routes.ListSchemesController.onPageLoad()">@messages("messages__schemesOverview__manage__link")</a></p>
+    <p class="govuk-body">@messages("messages__pageNotFound404__p1")</p>
+
+    <p class="govuk-body">@messages("messages__pageNotFound404__p2")</p>
+
+    <p class="govuk-body"><a class="govuk-link" id="view-pension-schemes" href="@controllers.psa.routes.ListSchemesController.onPageLoad()">@messages("messages__schemesOverview__manage__link")</a></p>
 
 }

@@ -50,10 +50,9 @@
 
 @(form: Form[_])(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = titleWithErrors(form, messages("messages__cannotAccessPageAsPractitioner__title"))){
+@layout(pageTitle = titleWithErrors(form, messages("messages__cannotAccessPageAsPractitioner__title"))){
 
-        @formHelper(action = CannotAccessPageAsPractitionerController.onSubmit(), 'autoComplete -> "off") {
+    @formHelper(action = CannotAccessPageAsPractitionerController.onSubmit(), 'autoComplete -> "off") {
 
         @if(form.errors.nonEmpty) {
            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
@@ -79,7 +78,6 @@
         )
 
         @button(messages("site.continue"))
+
     }
-
 }
-

@@ -17,38 +17,37 @@
 @import views.html._
 @import viewmodels.Message
 
-
 @this(
-layout: templates.Layout
+    layout: templates.Layout
 )
 
 @(managePensionSchemeLink: String,pensionSchemesOnlineLink: String)(implicit request: Request[_], messages: Messages)
 
-@layout(
-        pageTitle = messages("messages__fileAccountingForTaxReturn__title")
-){
-        <h1 class="govuk-heading-xl">@Messages("messages__fileAccountingForTaxReturn__title")</h1>
+@layout(pageTitle = messages("messages__fileAccountingForTaxReturn__title")){
 
-        <p class="govuk-body">
-            @Messages("messages__fileAccountingForTaxReturn__p__1")
-            <a href="@managePensionSchemeLink" class="govuk-link">@Messages("message__triage__managingPensionSchemes__link")</a>
-            @Messages("messages__fileAccountingForTaxReturn__p__2")
-        </p>
-        <ul class="govuk-list govuk-list--bullet">
-            <li>@Messages("messages__fileAccountingForTaxReturn__p1__item1")</li>
-            <li>@Messages("messages__fileAccountingForTaxReturn__p1__item2")</li>
-            <li>@Messages("messages__fileAccountingForTaxReturn__p1__item3")</li>
-        </ul>
+    <h1 class="govuk-heading-xl">@Messages("messages__fileAccountingForTaxReturn__title")</h1>
 
-        <p class="govuk-body">
-            @Messages("messages__fileAccountingForTaxReturn__p__1")
-            <a href="@pensionSchemesOnlineLink" class="govuk-link">@Messages("message__triage__pensionSchemesOnline__link")</a>
-            @Messages("messages__fileAccountingForTaxReturn__p__2")
-        </p>
-        <ul class="govuk-list govuk-list--bullet">
-            <li>@Messages("messages__fileAccountingForTaxReturn__p2__item1")</li>
-            <li>@Messages("messages__fileAccountingForTaxReturn__p2__item2")</li>
-        </ul>
+    <p class="govuk-body">
+        @Messages("messages__fileAccountingForTaxReturn__p__1")
+        <a href="@managePensionSchemeLink" class="govuk-link">@Messages("message__triage__managingPensionSchemes__link")</a>
+        @Messages("messages__fileAccountingForTaxReturn__p__2")
+    </p>
 
+    <ul class="govuk-list govuk-list--bullet">
+        <li>@Messages("messages__fileAccountingForTaxReturn__p1__item1")</li>
+        <li>@Messages("messages__fileAccountingForTaxReturn__p1__item2")</li>
+        <li>@Messages("messages__fileAccountingForTaxReturn__p1__item3")</li>
+    </ul>
+
+    <p class="govuk-body">
+        @Messages("messages__fileAccountingForTaxReturn__p__1")
+        <a href="@pensionSchemesOnlineLink" class="govuk-link">@Messages("message__triage__pensionSchemesOnline__link")</a>
+        @Messages("messages__fileAccountingForTaxReturn__p__2")
+    </p>
+
+    <ul class="govuk-list govuk-list--bullet">
+        <li>@Messages("messages__fileAccountingForTaxReturn__p2__item1")</li>
+        <li>@Messages("messages__fileAccountingForTaxReturn__p2__item2")</li>
+    </ul>
 
 }

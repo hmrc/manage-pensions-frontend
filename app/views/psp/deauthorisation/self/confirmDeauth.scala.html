@@ -32,14 +32,12 @@
     button: components.govuk_button
 )
 
-@(form: Form[_], schemeName: String, srn: String, pspName: String)(implicit request: Request[_],
-messages: Messages)
+@(form: Form[_], schemeName: String, srn: String, pspName: String)(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = titleWithErrors(form, messages("messages__confirmDeauthorisePsp__title"))
-){
+@layout(pageTitle = titleWithErrors(form, messages("messages__confirmDeauthorisePsp__title"))){
 
     @formHelper(action = ConfirmDeauthController.onSubmit(), 'autoComplete -> "off") {
+
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
         }
@@ -81,4 +79,3 @@ messages: Messages)
 
     }
 }
-

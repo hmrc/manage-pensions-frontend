@@ -26,28 +26,22 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 
 @this(
-        layout: templates.Layout,
-        govukRadios : GovukRadios,
-        formHelper: PlayFrontendFormWithCSRF,
-        govukErrorSummary: GovukErrorSummary,
-        button: components.govuk_button
+    layout: templates.Layout,
+    govukRadios : GovukRadios,
+    formHelper: PlayFrontendFormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    button: components.govuk_button
 )
 
 @(
-        form: Form[_],
-        schemeName: String,
-        srn: String,
-        pspName: String,
-        index: Index
-)(
-        implicit
-        request: Request[_],
-        messages: Messages
-)
+    form: Form[_],
+    schemeName: String,
+    srn: String,
+    pspName: String,
+    index: Index
+)(implicit request: Request[_], messages: Messages)
 
-@layout(
-        pageTitle = titleWithErrors(form, messages("messages__confirmDeauthorisePsp__title"))
-) {
+@layout(pageTitle = titleWithErrors(form, messages("messages__confirmDeauthorisePsp__title"))) {
 
     @formHelper(action = ConfirmDeauthorisePspController.onSubmit(index), 'autoComplete -> "off") {
 
@@ -92,4 +86,3 @@
 
     }
 }
-

@@ -37,35 +37,33 @@
     aftPspSchemeDashboardCards: Html,
     cards: Seq[PspSchemeDashboardCardViewModel],
     returnLink: Option[Link] = None
-)(
-    implicit request: Request[_],
-    messages: Messages
-)
+)(implicit request: Request[_], messages: Messages)
 
-@layout(
-pageTitle = schemeName,
-fullWidthLayout = true
-) {
+@layout(pageTitle = schemeName, fullWidthLayout = true) {
 
     <div class="govuk-grid-row">
+
         <div class="govuk-grid-column-full">
 
-        @hmrcPageHeading(PageHeading(
-            text = schemeName
-        ))
+            @hmrcPageHeading(PageHeading(
+                text = schemeName
+            ))
 
-        <div class="flex-container govuk-grid-row">
-            @aftPspSchemeDashboardCards
-            @for(card <- cards) {
-                @components.pspSchemeDashboardCard(card)
+            <div class="flex-container govuk-grid-row">
+                @aftPspSchemeDashboardCards
+                @for(card <- cards) {
+                    @components.pspSchemeDashboardCard(card)
+                }
+            </div>
+
+            @returnLink.map { ret =>
+                <p class="govuk-body">
+                    <a id="@ret.id" class="govuk-link" href="@ret.url">@messages(ret.linkText)</a>
+                </p>
             }
+
         </div>
 
-        @returnLink.map { ret =>
-            <p class="govuk-body">
-                <a id="@ret.id" class="govuk-link" href="@ret.url">@messages(ret.linkText)</a>
-            </p>
-        }
-        </div>
     </div>
+
 }

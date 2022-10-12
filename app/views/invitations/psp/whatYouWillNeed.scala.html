@@ -21,35 +21,35 @@
 @import play.api.mvc.Call
 
 @this(
-layout: templates.Layout,
-formHelper: PlayFrontendFormWithCSRF,
-button: components.govuk_button
+    layout: templates.Layout,
+    formHelper: PlayFrontendFormWithCSRF,
+    button: components.govuk_button
 )
 
 @(schemeName: String, returnCall: Call)(implicit request: Request[_], messages: Messages)
 
-@layout(
-pageTitle = s"${messages("messages__pspWhatYouWillNeed__title")}") {
+@layout(pageTitle = s"${messages("messages__pspWhatYouWillNeed__title")}") {
 
-        @formHelper(action = controllers.invitations.psp.routes.WhatYouWillNeedController.onSubmit, 'autoComplete -> "off") {
+    @formHelper(action = controllers.invitations.psp.routes.WhatYouWillNeedController.onSubmit, 'autoComplete -> "off") {
 
-            <h1 class="govuk-heading-xl">@messages("messages__pspWhatYouWillNeed__title")</h1>
+        <h1 class="govuk-heading-xl">@messages("messages__pspWhatYouWillNeed__title")</h1>
 
-            <p class="govuk-body">@messages("messages__pspWhatYouWillNeed__lede")</p>
-            <p class="govuk-body">@messages("messages__pspWhatYouWillNeed__list_heading")</p>
+        <p class="govuk-body">@messages("messages__pspWhatYouWillNeed__lede")</p>
+        <p class="govuk-body">@messages("messages__pspWhatYouWillNeed__list_heading")</p>
 
-            <ul class="govuk-list govuk-list--bullet">
-               <li>@messages("messages__pspWhatYouWillNeed__item1")</li>
-               <li>@messages("messages__pspWhatYouWillNeed__item2")</li>
-               <li>@messages("messages__pspWhatYouWillNeed__item3")</li>
-            </ul>
+        <ul class="govuk-list govuk-list--bullet">
+           <li>@messages("messages__pspWhatYouWillNeed__item1")</li>
+           <li>@messages("messages__pspWhatYouWillNeed__item2")</li>
+           <li>@messages("messages__pspWhatYouWillNeed__item3")</li>
+        </ul>
 
-            @button(messages("site.continue"))
+        @button(messages("site.continue"))
 
-            <p class="govuk-body">
-                <a id="return-link" class="govuk-link" href=returnCall>
-                    @messages("messages__returnToSchemeDetails__link", schemeName)
-                </a>
-            </p>
-        }
+        <p class="govuk-body">
+            <a id="return-link" class="govuk-link" href=returnCall>
+                @messages("messages__returnToSchemeDetails__link", schemeName)
+            </a>
+        </p>
+
     }
+}

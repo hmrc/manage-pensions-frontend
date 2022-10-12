@@ -22,13 +22,14 @@
 
 @(invitee: String, srn: String, schemeName: String)(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = messages("messages__incorrectPsaDetails__title")
-) {
+@layout(pageTitle = messages("messages__incorrectPsaDetails__title")) {
+
     <h1 class="govuk-heading-xl">@messages("messages__incorrectPsaDetails__title")</h1>
 
     <p class="govuk-body">@messages("messages__incorrectPsaDetails__text1", invitee)</p>
+
     <p class="govuk-body">@messages("messages__incorrectPsaDetails__text2")</p>
+
     <p class="govuk-body">@messages("messages__incorrectPsaDetails__text3", invitee)</p>
 
     <p class="govuk-body">

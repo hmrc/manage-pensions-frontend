@@ -19,23 +19,25 @@
 @import config.FrontendAppConfig
 
 @this(
-layout: templates.Layout,
-appConfig: FrontendAppConfig
+    layout: templates.Layout,
+    appConfig: FrontendAppConfig
 )
 
 @()(implicit request: Request[_], messages: Messages)
 
-@layout(
-pageTitle = messages("messages__notRegistered__title")
-){
+@layout(pageTitle = messages("messages__notRegistered__title")){
 
     <h1 class="govuk-heading-xl">@Messages("messages__notRegistered__title")</h1>
+
     <p class="govuk-body">@Messages("messages__notRegistered__v2__p1")</p>
+
     <p class="govuk-body">@Messages("messages__notRegistered__v2__p2")</p>
+
     <p class="govuk-body">@Messages("messages__notRegistered__v2__p3")</p>
 
     <div class="section">
         <p class="govuk-body"><a id="register-as-administrator" class="govuk-link" href=@appConfig.pensionAdministratorGovUkLink>@messages("messages__notRegistered__reg_psa_link")</a></p>
         <p class="govuk-body"><a id="register-as-practitioner" class="govuk-link" href=@appConfig.pensionPractitionerGovUkLink>@messages("messages__notRegistered__reg_psp_link")</a></p>
     </div>
+
 }

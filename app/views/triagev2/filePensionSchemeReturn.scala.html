@@ -17,23 +17,20 @@
 @import views.html._
 @import viewmodels.Message
 
-
 @this(
-layout: templates.Layout
+    layout: templates.Layout
 )
 
 @(pensionSchemesOnlineLink: String)(implicit request: Request[_], messages: Messages)
 
-@layout(
-        pageTitle = messages("messages__filePensionSchemeReturn__title")
-){
-        <h1 class="govuk-heading-xl">@Messages("messages__filePensionSchemeReturn__title")</h1>
+@layout(pageTitle = messages("messages__filePensionSchemeReturn__title")){
 
-        <p class="govuk-body">@Messages("messages__filePensionSchemeReturn__p1")
-         <a href="@pensionSchemesOnlineLink" class="govuk-link">@Messages("message__triage__pensionSchemesOnline__link")</a>.
-        </p>
+    <h1 class="govuk-heading-xl">@Messages("messages__filePensionSchemeReturn__title")</h1>
 
-        <p class="govuk-body">@Messages("messages__filePensionSchemeReturn__p2")</p>
+    <p class="govuk-body">@Messages("messages__filePensionSchemeReturn__p1")
+        <a href="@pensionSchemesOnlineLink" class="govuk-link">@Messages("message__triage__pensionSchemesOnline__link")</a>.
+    </p>
 
+    <p class="govuk-body">@Messages("messages__filePensionSchemeReturn__p2")</p>
 
 }

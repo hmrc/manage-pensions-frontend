@@ -33,34 +33,32 @@
 
 @(form: Form[_], role: String)(implicit request: Request[_], messages: Messages)
 
-@layout(
-   pageTitle = titleWithErrors(form, messages("messages__whichServiceYouWantToView__title"))) {
+@layout(pageTitle = titleWithErrors(form, messages("messages__whichServiceYouWantToView__title"))) {
 
-      @formHelper(action = controllers.triagev2.routes.WhichServiceYouWantToViewController.onSubmit(role), 'autoComplete -> "off") {
+    @formHelper(action = controllers.triagev2.routes.WhichServiceYouWantToViewController.onSubmit(role), 'autoComplete -> "off") {
 
-         @if(form.errors.nonEmpty) {
+        @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
-         }
+        }
 
-         @govukRadios(
-            Radios(
-               fieldset = Some(
-                  Fieldset(
-                     legend = Some(
-                        Legend(
-                           content = Text(messages("messages__whichServiceYouWantToView__title")),
-                           classes = "govuk-fieldset__legend--xl",
-                           isPageHeading = true
-                        )
-                     )
-                  )
-               ),
-               items = WhichServiceYouWantToView.options(role)
+        @govukRadios(Radios(
+            fieldset = Some(
+              Fieldset(
+                 legend = Some(
+                    Legend(
+                       content = Text(messages("messages__whichServiceYouWantToView__title")),
+                       classes = "govuk-fieldset__legend--xl",
+                       isPageHeading = true
+                    )
+                 )
+              )
+            ),
+            items = WhichServiceYouWantToView.options(role)
             ).withFormField(form("value")
-         )
-      )
+            )
+        )
 
-      @button(messages("site.continue"))
+        @button(messages("site.continue"))
 
-   }
+    }
 }

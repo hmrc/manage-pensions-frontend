@@ -33,16 +33,15 @@
 
 @(form: Form[_])(implicit request: Request[_], messages: Messages)
 
-@layout(
-   pageTitle = titleWithErrors(form, messages("messages__whatRole__title"))) {
-     @formHelper(action = controllers.triagev2.routes.WhatRoleControllerV2.onSubmit(), 'autoComplete -> "off") {
+@layout(pageTitle = titleWithErrors(form, messages("messages__whatRole__title"))) {
 
-      @if(form.errors.nonEmpty) {
-        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
-      }
+    @formHelper(action = controllers.triagev2.routes.WhatRoleControllerV2.onSubmit(), 'autoComplete -> "off") {
 
-      @govukRadios(
-         Radios(
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
+        }
+
+        @govukRadios(Radios(
             fieldset = Some(
                Fieldset(
                   legend = Some(
@@ -60,10 +59,10 @@
                )
             ),
             items = WhatRole.options,
-         ).withFormField(form("value"))
-      )
+            ).withFormField(form("value")
+        ))
 
-      @button(messages("site.continue"))
+        @button(messages("site.continue"))
 
-   }
+    }
 }

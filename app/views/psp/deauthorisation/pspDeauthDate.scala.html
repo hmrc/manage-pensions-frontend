@@ -34,28 +34,21 @@
 )
 
 @(
-        form: Form[_],
-        pspName: String,
-        schemeName: String,
-        srn: String,
-        relationshipStartDate: String,
-        index: Int
-)(
-        implicit
-        request: Request[_],
-        messages: Messages
-)
+    form: Form[_],
+    pspName: String,
+    schemeName: String,
+    srn: String,
+    relationshipStartDate: String,
+    index: Int
+)(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = titleWithErrors(form, messages("messages__pspDeauthDate__title"))
-) {
+@layout(pageTitle = titleWithErrors(form, messages("messages__pspDeauthDate__title"))) {
 
     @formHelper(action = PspDeauthDateController.onSubmit(index), 'autoComplete -> "off",'novalidate -> "novalidate") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form, mapping = Map("pspDeauthDate" -> "pspDeauthDate.day")))
         }
-
 
         <h1 class="govuk-heading-xl">@messages("messages__pspDeauthDate__heading", pspName, schemeName)</h1>
 
