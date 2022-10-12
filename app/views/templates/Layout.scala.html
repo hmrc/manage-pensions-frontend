@@ -30,7 +30,6 @@
     standardBetaBanner: StandardBetaBanner,
     defaultMainContentLayout: TwoThirdsMainContent,
     hmrcScripts: HmrcScripts,
-    stylesheets: Stylesheets,
     govukBackLink: GovukBackLink,
     hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper
 )
@@ -51,7 +50,7 @@
             countdown = Some(120)
         )
     }
-    @stylesheets()
+    <link rel="stylesheet" media="all" type="text/css" href='@routes.Assets.versioned("stylesheets/managepensionsfrontend.css")' />
 }
 
 @beforeContentBlock = {
@@ -65,13 +64,14 @@
 @scripts = {
     <script src='@controllers.routes.Assets.versioned("lib/govuk-frontend/govuk/all.js")'></script>
     <script src='@controllers.routes.Assets.versioned("lib/hmrc-frontend/hmrc/all.js")'></script>
-    <script>window.GOVUKFrontend.initAll();
-    window.HMRCFrontend.initAll()</script>
+    <script src='@routes.Assets.versioned("javascripts/application.js")'> </script>
 }
 
 @mainContentWithGetHelp = {
     @mainContent
-    @hmrcReportTechnicalIssueHelper()
+    <div class="govuk-!-margin-top-8">
+        @hmrcReportTechnicalIssueHelper()
+    </div>
 }
 
 

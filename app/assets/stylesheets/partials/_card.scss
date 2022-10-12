@@ -156,7 +156,7 @@ html[data-useragent*='MSIE 10.0'] .flex-container {
   }
 }
 
-.js {
+.js-enabled {
   .card-body.active {
     &:hover {
       background-color: $link-colour;
