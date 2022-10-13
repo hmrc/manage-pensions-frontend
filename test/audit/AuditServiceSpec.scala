@@ -46,7 +46,7 @@ class AuditServiceSpec extends AsyncFlatSpec with Matchers with Inside {
     val sentEvent = FakeAuditConnector.lastSentEvent
 
     inside(sentEvent) {
-      case DataEvent(auditSource, auditType, _, _, detail, _) =>
+      case DataEvent(auditSource, auditType, _, _, detail, _, _ ,_) =>
         auditSource shouldBe appName
         auditType shouldBe "TestAuditEvent"
         detail should contain("payload" -> "test-audit-payload")
@@ -63,7 +63,7 @@ class AuditServiceSpec extends AsyncFlatSpec with Matchers with Inside {
     val sentEvent = FakeAuditConnector.lastSentExtendedEvent
 
     inside(sentEvent) {
-      case ExtendedDataEvent(auditSource, auditType, _, _, detail, _) =>
+      case ExtendedDataEvent(auditSource, auditType, _, _, detail, _, _, _) =>
         auditSource shouldBe appName
         auditType shouldBe "TestAuditEvent"
         detail.toString() shouldBe Json.obj("payload" -> "test-audit-payload").toString()
