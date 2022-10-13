@@ -38,8 +38,7 @@
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
         }
 
-        @govukRadios(
-            Radios(
+        @govukRadios(Radios(
             fieldset = Some(
                Fieldset(
                   legend = Some(
@@ -57,8 +56,7 @@
                )
             ),
             items = WhatRole.options,
-            ).withFormField(form("value"))
-        )
+        ).withFormField(form("value")))
 
         @button(messages("site.continue"))
 

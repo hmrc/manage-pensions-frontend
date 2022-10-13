@@ -29,14 +29,7 @@
     button: components.govuk_button
 )
 
-@(
-    form: Form[_],
-    pspName: String,
-    schemeName: String,
-    srn: String,
-    relationshipStartDate: String,
-    index: Int
-)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], pspName: String, schemeName: String, srn: String, relationshipStartDate: String, index: Int)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleWithErrors(form, messages("messages__pspDeauthDate__title"))) {
 

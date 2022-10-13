@@ -38,25 +38,22 @@
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
         }
 
-        @govukRadios(
-            Radios(
-                   fieldset = Some(
-                      Fieldset(
-                         legend = Some(
-                            Legend(
-                               content = Text(messages("messages__whatDoYouWantToDo__v2__title")),
-                               classes = "govuk-fieldset__legend--xl",
-                               isPageHeading = true
-                            )
-                         )
-                      )
-                   ),
-                   items = WhatDoYouWantToDo.options(role)
-                ).withFormField(form("value")
-            )
-        )
+        @govukRadios(Radios(
+            fieldset = Some(
+                Fieldset(
+                    legend = Some(
+                        Legend(
+                            content = Text(messages("messages__whatDoYouWantToDo__v2__title")),
+                            classes = "govuk-fieldset__legend--xl",
+                            isPageHeading = true
+                        )
+                    )
+                )
+            ),
+            items = WhatDoYouWantToDo.options(role)
+        ).withFormField(form("value")))
 
         @button(messages("site.continue"))
 
-   }
+    }
 }

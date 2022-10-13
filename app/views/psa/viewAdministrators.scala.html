@@ -26,12 +26,7 @@
     appConfig: FrontendAppConfig
 )
 
-@(
-    schemeName: String,
-    admins: Option[Seq[AssociatedPsa]],
-    srn: String,
-    isSchemeOpen: Boolean
-)(implicit request: Request[_], messages: Messages)
+@(schemeName: String, admins: Option[Seq[AssociatedPsa]], srn: String, isSchemeOpen: Boolean)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = s"${messages("messages__psaSchemeDash__psa_list_head")}") {
 

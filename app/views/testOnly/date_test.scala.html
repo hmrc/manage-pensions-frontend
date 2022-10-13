@@ -26,6 +26,7 @@
     govukInput: GovukInput,
     button: components.govuk_button
 )
+
 @(form: Form[_])(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleWithErrors(form, "Set Date - Test Only")) {
@@ -37,13 +38,12 @@
             <div class="govuk-grid-column-two-thirds">
 
                 @if(form.errors.nonEmpty) {
-                @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
+                    @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
                 }
 
                 <h1 class="govuk-heading-xl">@messages("site.date_h1")</h1>
 
-                @govukInput(
-                Input(
+                @govukInput(Input(
                     label = Label(content = Text("Set Date - Test Only"),
                     classes = "govuk-visually-hidden",
                     isPageHeading = true),

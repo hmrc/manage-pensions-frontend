@@ -26,13 +26,7 @@
     appConfig: FrontendAppConfig
 )
 
-@(
-    name: String,
-    title: String,
-    cards: Seq[CardViewModel],
-    subHeading: Option[String] = None,
-    returnLink: Option[Link] = None
-)(implicit request: Request[_], messages: Messages)
+@(name: String, title: String, cards: Seq[CardViewModel], subHeading: Option[String] = None, returnLink: Option[Link] = None)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = messages(title), fullWidthLayout = true) {
 

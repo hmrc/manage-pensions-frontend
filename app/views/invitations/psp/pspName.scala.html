@@ -41,12 +41,12 @@
         }
 
         @govukInput(
-                Input(
-                    label = Label(classes = "govuk-label--xl", content = Text(messages("messages__pspName__title")),
-                    isPageHeading = true),
-                    classes = "govuk-!-width-one-half",
-                    hint = Some(Hint(content = Text(messages("messages__pspName__p1"))))
-                ).withFormField(form("pspName"))
+            Input(
+                label = Label(classes = "govuk-label--xl", content = Text(messages("messages__pspName__title")),
+                isPageHeading = true),
+                classes = "govuk-!-width-one-half",
+                hint = Some(Hint(content = Text(messages("messages__pspName__p1"))))
+            ).withFormField(form("pspName"))
         )
 
         @button(messages("site.save_and_continue"))

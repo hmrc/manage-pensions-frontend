@@ -31,12 +31,7 @@
     hmrcPageHeading : HmrcPageHeading
 )
 
-@(
-    schemeName: String,
-    returnCall: Call,
-    practitioners: Seq[AuthorisedPractitionerViewModel],
-    isUpdateClientReference: Boolean
-)(implicit request: Request[_], messages: Messages)
+@(schemeName: String, returnCall: Call, practitioners: Seq[AuthorisedPractitionerViewModel], isUpdateClientReference: Boolean)(implicit request: Request[_], messages: Messages)
 
 @deauthorisedLink(pspName: String, index: Index, authorisedByLoggedInPsa:Boolean) = {
     @if(authorisedByLoggedInPsa){

@@ -30,12 +30,7 @@
     button: components.govuk_button
 )
 
-@(
-    form: Form[Boolean],
-    schemeName: String,
-    srn: String,
-    index: Int
-)(implicit request: Request[_], messages: Messages)
+@(form: Form[Boolean], schemeName: String, srn: String, index: Int)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleWithErrors(form, messages("messages__deauthPspDeclaration__title"))) {
 
@@ -58,23 +53,21 @@
 
         @govukCheckboxes(Checkboxes(
             fieldset = Some(Fieldset(
-            legend = Some(Legend(
-            content = Text(messages("messages__deauthPspDeclaration__title")),
-            classes = "govuk-visually-hidden",
-            isPageHeading = false
-            ))
+                legend = Some(Legend(
+                    content = Text(messages("messages__deauthPspDeclaration__title")),
+                    classes = "govuk-visually-hidden",
+                    isPageHeading = false
+                ))
             )),
             idPrefix = Some("declaration"),
             name = "declaration",
             items = Seq(
-            CheckboxItem(
-            content = Text(messages("messages__deauthPspDeclaration__label")),
-            value ="true"
+                CheckboxItem(
+                    content = Text(messages("messages__deauthPspDeclaration__label")),
+                    value ="true"
+                )
             )
-            )
-            ).withFormField(form("declaration")
-            )
-        )
+        ).withFormField(form("declaration")))
 
         @button(messages("site.save_and_continue"))
 
