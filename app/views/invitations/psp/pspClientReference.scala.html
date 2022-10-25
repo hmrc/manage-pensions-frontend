@@ -16,20 +16,17 @@
 
 @import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
-@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import views.html._
 @import utils.ViewHelper.titleWithErrors
 @import play.api.mvc.Call
-
 
 @this(
     layout: templates.Layout,
     formHelper: PlayFrontendFormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
-    button: components.govuk_button,
-    govukInput : GovukInput
+    input_text: components.input_text,
+    button: components.govuk_button
 )
-
 
 @(form: Form[_], pspName: String, mode: Mode, schemeName:String, returnCall: Call,actionCall: Call)(implicit request: Request[_], messages: Messages)
 
@@ -41,15 +38,10 @@
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
         }
 
-        @govukInput(
-            Input(
-                label = Label(classes = "govuk-label--xl",
-                content = Text(messages("messages__psp__what__client_ref__heading",pspName)),
-                isPageHeading = true
-            ),
-            classes = "govuk-!-width-one-half",
-            spellcheck = Some(false)
-            ).withFormField(form("reference"))
+        @input_text(
+            field = form("reference"),
+            label = messages("messages__psp__what__client_ref__heading", pspName),
+            headingIsLegend = true
         )
 
         @button(messages("site.save_and_continue"))

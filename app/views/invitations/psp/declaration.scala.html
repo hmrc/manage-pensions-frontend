@@ -39,7 +39,7 @@
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form, mapping = Map("declaration" -> "declaration")))
         }
 
-        <h1 class="govuk-heading-xl">@messages("messages__psp_declaration__title")</h1>
+        @components.heading(messages("messages__psp_declaration__title"))
 
         <p id="para_id" class="govuk-body">@messages("messages__psp_declaration__continue")</p>
 

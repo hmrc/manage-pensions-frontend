@@ -17,7 +17,6 @@
 @import models.Mode
 @import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
-@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import views.html._
 @import controllers.invitations.psa.routes._
 @import utils.ViewHelper.titleWithErrors
@@ -26,8 +25,8 @@
     layout: templates.Layout,
     formHelper: PlayFrontendFormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
-    button: components.govuk_button,
-    govukInput: GovukInput
+    input_text: components.input_text,
+    button: components.govuk_button
 )
 
 @(form: Form[_], mode: Mode, adviserName: String)(implicit request: Request[_], messages: Messages)
@@ -40,13 +39,12 @@
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
         }
 
-        @govukInput(
-            Input(
-                label = Label(classes = "govuk-label--xl", content = Text(messages("messages__adviser__email__address__heading", adviserName)),
-                isPageHeading = true),
-                classes = "govuk-!-width-one-half",
-                hint = Some(Hint(content = Text(messages("messages__adviser__email__address__p1"))))
-            ).withFormField(form("email"))
+        @input_text(
+            field = form("email"),
+            label = messages("messages__adviser__email__address__heading", adviserName),
+            headingIsLegend = true,
+            hint = Some(messages("messages__adviser__email__address__p1")),
+            typeValue = "email"
         )
 
         @button(messages("site.save_and_continue"))

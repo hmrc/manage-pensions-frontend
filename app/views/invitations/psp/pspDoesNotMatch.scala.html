@@ -25,8 +25,8 @@
 @(schemeName: String, pspName: String, returnCall: Call)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = messages("messages__pspDoesNotMatch__title")) {
-
-    <h1 class="govuk-heading-xl">@messages("messages__pspDoesNotMatch__title")</h1>
+    
+    @components.heading(messages("messages__pspDoesNotMatch__title"))
 
     <p class="govuk-body">@messages("messages__pspDoesNotMatch__psp", pspName)</p>
 

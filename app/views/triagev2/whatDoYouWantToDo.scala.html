@@ -21,11 +21,11 @@
 @import utils.ViewHelper.titleWithErrors
 
 @this(
-   layout: templates.Layout,
-   govukRadios : GovukRadios,
-   formHelper: PlayFrontendFormWithCSRF,
-   govukErrorSummary: GovukErrorSummary,
-   button: components.govuk_button
+    layout: templates.Layout,
+    formHelper: PlayFrontendFormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    input_radio: components.input_radio,
+    button: components.govuk_button
 )
 
 @(form: Form[_], role: String)(implicit request: Request[_], messages: Messages)
@@ -38,20 +38,12 @@
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
         }
 
-        @govukRadios(Radios(
-            fieldset = Some(
-                Fieldset(
-                    legend = Some(
-                        Legend(
-                            content = Text(messages("messages__whatDoYouWantToDo__v2__title")),
-                            classes = "govuk-fieldset__legend--xl",
-                            isPageHeading = true
-                        )
-                    )
-                )
-            ),
-            items = WhatDoYouWantToDo.options(role)
-        ).withFormField(form("value")))
+        @input_radio(
+            field = form("value"),
+            legend = messages("messages__whatDoYouWantToDo__v2__title"),
+            legendAsHeading = true,
+            inputs = WhatDoYouWantToDo.options(role)
+        )
 
         @button(messages("site.continue"))
 

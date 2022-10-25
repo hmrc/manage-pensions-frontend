@@ -25,12 +25,13 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 
 @this(
+    appConfig: FrontendAppConfig,
     layout: templates.Layout,
-    govukRadios : GovukRadios,
     formHelper: PlayFrontendFormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
+    input_radio: components.input_radio,
     button: components.govuk_button,
-    appConfig: FrontendAppConfig
+
 )
 
 @(form: Form[_], addresses: Seq[TolerantAddress], mode: Mode)(implicit request: Request[_], messages: Messages)
@@ -43,7 +44,7 @@
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
         }
 
-        <h1 class="govuk-heading-xl">@messages("messages__adviser__address__list__heading")</h1>
+        @components.heading(messages("messages__adviser__address__list__heading"))
 
         <p class="govuk-body">
             @messages("messages__adviser__address__list__select")
@@ -52,16 +53,17 @@
             </a>
         </p>
 
-        @govukRadios(Radios(
-            items =
-            for((address, i) <- addresses.zipWithIndex)
-            yield {
+        @input_radio(
+            field = form("value"),
+            legend = messages("messages__adviser__address__list__heading"),
+            legendClass = Some("govuk-visually-hidden"),
+            inputs = for((address, i) <- addresses.zipWithIndex)
+                yield {
                 RadioItem(
                     content = Text(address.print),
                     value = Some(i.toString)
                 )
             }
-            ).withFormField(form("value"))
         )
 
         @button(messages("site.save_and_continue"))

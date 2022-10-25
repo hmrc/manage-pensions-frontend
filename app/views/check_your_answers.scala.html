@@ -31,7 +31,7 @@
 
     @formHelper(action = postUrl, 'autoComplete -> "off") {
 
-        <h1 class="govuk-heading-xl">@messages("checkYourAnswers.heading")</h1>
+        @components.heading(messages("checkYourAnswers.heading"))
 
         @guidance.map{key=>@guidanceData.map{data=><p>@messages(key, data)}.getOrElse{<p>@messages(key)}</p>}
 

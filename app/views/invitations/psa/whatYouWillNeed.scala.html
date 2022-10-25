@@ -31,7 +31,7 @@
 
     @formHelper(action = WhatYouWillNeedController.onSubmit, 'autoComplete -> "off") {
 
-        <h1 class="govuk-heading-xl">@messages("messages__whatYouWillNeed__heading")</h1>
+        @components.heading(messages("messages__whatYouWillNeed__heading"))
 
         <p class="govuk-body">@messages("messages__whatYouWillNeed__lede")</p>
 

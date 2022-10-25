@@ -23,9 +23,9 @@
 
 @this(
     layout: templates.Layout,
-    govukRadios : GovukRadios,
     formHelper: PlayFrontendFormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
+    input_radio: components.input_radio,
     button: components.govuk_button
 )
 
@@ -39,40 +39,30 @@
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
         }
 
-        @govukRadios(
-            Radios(
-                fieldset = Some(
-                    Fieldset(
-                        legend = Some(
-                            Legend(
-                                content = Text(messages("messages__administratorOrPractitioner__heading")),
-                                classes = "govuk-fieldset__legend--xl",
-                                isPageHeading = true
-                            )
+        @input_radio(
+            field = form("value"),
+            legend = messages("messages__administratorOrPractitioner__heading"),
+            legendAsHeading = true,
+            inputs = Seq(
+                RadioItem(
+                    content = Text(messages("messages__administratorOrPractitioner__administrator")),
+                    value = Some(AdministratorOrPractitioner.Administrator.toString),
+                    hint = Some(
+                        Hint(
+                            content = Text(messages("messages__administratorOrPractitioner__administrator_hint"))
                         )
                     )
                 ),
-                items = Seq(
-                    RadioItem(
-                        content = Text(messages("messages__administratorOrPractitioner__administrator")),
-                        value = Some(AdministratorOrPractitioner.Administrator.toString),
-                        hint = Some(
-                            Hint(
-                                content = Text(messages("messages__administratorOrPractitioner__administrator_hint"))
-                            )
-                        )
-                    ),
-                    RadioItem(
-                        content = Text(messages("messages__administratorOrPractitioner__practitioner")),
-                        value = Some(AdministratorOrPractitioner.Practitioner.toString),
-                        hint = Some(
-                            Hint(
-                                content = Text(messages("messages__administratorOrPractitioner__practitioner_hint"))
-                            )
+                RadioItem(
+                    content = Text(messages("messages__administratorOrPractitioner__practitioner")),
+                    value = Some(AdministratorOrPractitioner.Practitioner.toString),
+                    hint = Some(
+                        Hint(
+                            content = Text(messages("messages__administratorOrPractitioner__practitioner_hint"))
                         )
                     )
                 )
-            ).withFormField(form("value"))
+            )
         )
 
         @button(messages("site.continue"))

@@ -33,29 +33,21 @@
 
     @formHelper(action = controllers.testonly.routes.DateTestController.submit(), 'autoComplete -> "off") {
 
-        <div class="govuk-grid-row">
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
+        }
 
-            <div class="govuk-grid-column-two-thirds">
+        @components.heading(messages("site.date_h1"))
 
-                @if(form.errors.nonEmpty) {
-                    @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
-                }
+        @govukInput(
+            Input(
+                label = Label(content = Text("Set Date - Test Only"),
+                classes = "govuk-visually-hidden",
+                isPageHeading = false
+            )).withFormField(form("date"))
+        )
 
-                <h1 class="govuk-heading-xl">@messages("site.date_h1")</h1>
-
-                @govukInput(Input(
-                    label = Label(content = Text("Set Date - Test Only"),
-                    classes = "govuk-visually-hidden",
-                    isPageHeading = true),
-                    classes = "govuk-!-width-two-third"
-                    ).withFormField(form("date"))
-                )
-
-                @button(messages("site.save_and_continue"))
-
-            </div>
-
-        </div>
+        @button(messages("site.save_and_continue"))
 
     }
 }

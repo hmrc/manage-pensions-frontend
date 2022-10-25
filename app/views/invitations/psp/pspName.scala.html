@@ -16,7 +16,6 @@
 
 @import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
-@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import views.html._
 @import controllers.invitations.psp.routes.PspNameController
 @import utils.ViewHelper.titleWithErrors
@@ -26,8 +25,8 @@
     layout: templates.Layout,
     formHelper: PlayFrontendFormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
-    button: components.govuk_button,
-    govukInput: GovukInput
+    input_text: components.input_text,
+    button: components.govuk_button
 )
 
 @(form: Form[_], mode: Mode, schemeName:String, returnCall: Call)(implicit request: Request[_], messages: Messages)
@@ -40,19 +39,17 @@
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
         }
 
-        @govukInput(
-            Input(
-                label = Label(classes = "govuk-label--xl", content = Text(messages("messages__pspName__title")),
-                isPageHeading = true),
-                classes = "govuk-!-width-one-half",
-                hint = Some(Hint(content = Text(messages("messages__pspName__p1"))))
-            ).withFormField(form("pspName"))
+        @input_text(
+            field = form("pspName"),
+            label = messages("messages__pspName__title"),
+            headingIsLegend = true,
+            hint = Some(messages("messages__pspName__p1"))
         )
 
         @button(messages("site.save_and_continue"))
 
         <p class="govuk-body">
-            <a id="return-link" class="govuk-link" href=returnCall>
+            <a id="return-link" class="govuk-link" href=@returnCall>
                 @messages("messages__returnToSchemeDetails__link", schemeName)
             </a>
         </p>

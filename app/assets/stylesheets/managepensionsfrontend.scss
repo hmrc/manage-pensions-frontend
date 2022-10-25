@@ -1,11 +1,8 @@
+@import "lib/govuk-frontend/govuk/base";
 @import 'partials/_variables';
 @import 'partials/_card';
 @import 'partials/_flexbox';
 @import 'location-autocomplete.min';
-
-.autocomplete__wrapper ul, .autocomplete__wrapper li {
-  font-family: "nta",Arial,sans-serif;
-}
 
 .app-task-list {
 

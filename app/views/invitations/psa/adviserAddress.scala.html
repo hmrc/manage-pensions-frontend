@@ -42,9 +42,7 @@
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
         }
 
-        <h1 class="govuk-heading-xl">@messages(s"messages__${prefix}__heading", name)</h1>
-
-        <p>@messages("")</p>
+        @components.heading(messages(s"messages__${prefix}__heading", name))
 
         @govukInput(
             Input(

@@ -24,9 +24,9 @@
 
 @this(
     layout: templates.Layout,
-    govukRadios : GovukRadios,
     formHelper: PlayFrontendFormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
+    input_radio: components.input_radio,
     button: components.govuk_button
 )
 
@@ -40,23 +40,12 @@
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
         }
 
-        <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">@messages("messages__cannotAccessPageAsAdministrator__heading")</h1>
-
-        @govukRadios(
-            Radios(
-                fieldset = Some(
-                    Fieldset(
-                        legend = Some(
-                            Legend(
-                                content = Text(messages("messages__cannotAccessPageAsAdministrator__p1")),
-                                classes = "govuk-fieldset__legend--s govuk-!-font-weight-regular govuk-!-margin-bottom-5",
-                                isPageHeading = false
-                            )
-                        )
-                    )
-                ),
-                items = AdministratorOrPractitioner.optionsCannotAccessPageAsAdministrator
-            ).withFormField(form("value"))
+        @input_radio(
+            field = form("value"),
+            legend = messages("messages__cannotAccessPageAsAdministrator__heading"),
+            legendAsHeading = true,
+            hint = Some(messages("messages__cannotAccessPageAsAdministrator__p1")),
+            inputs = AdministratorOrPractitioner.optionsCannotAccessPageAsAdministrator
         )
 
         @button(messages("site.continue"))

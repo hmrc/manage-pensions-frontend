@@ -24,6 +24,7 @@
 @this(
     layout: templates.Layout,
     govukRadios : GovukRadios,
+    input_yes_no: components.input_yes_no,
     formHelper: PlayFrontendFormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
     button: components.govuk_button,
@@ -40,28 +41,10 @@
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
         }
 
-        @govukRadios(Radios(
-            fieldset = Some(Fieldset(
-                legend = Some(Legend(
-                    content = Text(messages("messages__psp_client_ref__heading", pspName)),
-                    classes = "govuk-fieldset__legend--xl",
-                    isPageHeading = true
-                    ))
-                )),
-                idPrefix = Some("hasReference"),
-                name = "hasReference",
-                items = Seq(
-                    RadioItem(
-                        content = Text(messages("site.yes")),
-                        value = Some("true")
-                    ),
-                    RadioItem(
-                        content = Text(messages("site.no")),
-                        value = Some("false")
-                    )
-                ),
-            classes = "govuk-radios--inline"
-            ).withFormField(form("hasReference"))
+        @input_yes_no(
+            field = form("hasReference"),
+            label = messages("messages__psp_client_ref__heading", pspName),
+            headingIsLegend = true
         )
 
         @button(messages("site.save_and_continue"))

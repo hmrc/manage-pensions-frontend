@@ -24,7 +24,7 @@
 
 @layout(pageTitle = messages("messages__incorrectPsaDetails__title")) {
 
-    <h1 class="govuk-heading-xl">@messages("messages__incorrectPsaDetails__title")</h1>
+    @components.heading(messages("messages__incorrectPsaDetails__title"))
 
     <p class="govuk-body">@messages("messages__incorrectPsaDetails__text1", invitee)</p>
 

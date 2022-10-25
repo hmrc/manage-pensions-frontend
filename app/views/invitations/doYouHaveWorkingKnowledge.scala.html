@@ -16,16 +16,15 @@
 
 @import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
-@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import play.api.data.Form
 @import views.html._
 @import utils.ViewHelper.titleWithErrors
 
 @this(
     layout: templates.Layout,
-    govukRadios : GovukRadios,
     formHelper: PlayFrontendFormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
+    input_yes_no: components.input_yes_no,
     button: components.govuk_button
 )
 
@@ -39,7 +38,7 @@
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
         }
 
-        <h1 class="govuk-heading-xl">@Html(messages("messages__doYouHaveWorkingKnowledge__heading"))</h1>
+        @components.heading(messages("messages__doYouHaveWorkingKnowledge__heading"))
 
         @components.paragraph_text(messages("messages__doYouHaveWorkingKnowledge_p1"))
 
@@ -49,31 +48,10 @@
 
         @components.paragraph_text(messages("messages__doYouHaveWorkingKnowledge_p4"))
 
-        @govukRadios(
-            Radios(
-                fieldset = Some(
-                    Fieldset(
-                        legend = Some(
-                            Legend(
-                                content = Text(messages("messages__doYouHaveWorkingKnowledge__heading")),
-                                classes = "govuk-visually-hidden",
-                                isPageHeading = false
-                            )
-                        )
-                    )
-                ),
-                items = Seq(
-                    RadioItem(
-                        content = Text(messages("site.yes")),
-                        value = Some("true")
-                    ),
-                    RadioItem(
-                        content = Text(messages("site.no")),
-                        value = Some("false")
-                    )
-                ),
-            classes = "govuk-radios--inline"
-            ).withFormField(form("value"))
+        @input_yes_no(
+            field = form("value"),
+            label = messages("messages__doYouHaveWorkingKnowledge__heading"),
+            labelClass = Some("govuk-visually-hidden")
         )
 
         @button(messages("site.save_and_continue"))

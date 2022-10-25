@@ -25,7 +25,7 @@
 
 @layout(pageTitle = messages("messages__manageExistingScheme__title")){
 
-    <h1 class="govuk-heading-xl">@Messages("messages__manageExistingScheme__title")</h1>
+    @components.heading(messages("messages__manageExistingScheme__title"))
 
     <p class="govuk-body">@Messages("messages__manageExistingScheme__p1")
         <a href="@managePensionSchemeLink" class="govuk-link">@Messages("message__triage__managingPensionSchemes__link")</a>.

@@ -25,7 +25,7 @@
 
 @layout(pageTitle = messages("messages__alreadyAssociatedWithScheme__title", pspName)) {
 
-    <h1 class="govuk-heading-xl">@messages("messages__alreadyAssociatedWithScheme__heading", pspName)</h1>
+    @components.heading(messages("messages__alreadyAssociatedWithScheme__heading", pspName))
 
     <p class="govuk-body">@messages("messages__alreadyAssociatedWithScheme__p1", pspName, schemeName)</p>
 

@@ -21,7 +21,7 @@
 
 @layout(pageTitle = messages("messages__invitationDuplicate__title")) {
 
-    <h1 class="govuk-heading-xl">@Messages("messages__invitationDuplicate__heading", inviteeName)</h1>
+    @components.heading(messages("messages__invitationDuplicate__heading", inviteeName))
 
     <p id="schemeName" class="govuk-body">@Messages("messages__invitationDuplicate__schemeName", inviteeName, schemeName)</p>
 

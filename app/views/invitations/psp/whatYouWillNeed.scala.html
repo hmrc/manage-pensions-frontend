@@ -30,7 +30,7 @@
 
     @formHelper(action = controllers.invitations.psp.routes.WhatYouWillNeedController.onSubmit, 'autoComplete -> "off") {
 
-        <h1 class="govuk-heading-xl">@messages("messages__pspWhatYouWillNeed__title")</h1>
+        @components.heading(messages("messages__pspWhatYouWillNeed__title"))
 
         <p class="govuk-body">@messages("messages__pspWhatYouWillNeed__lede")</p>
 

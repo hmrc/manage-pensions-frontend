@@ -14,16 +14,17 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+
 @this(
-    layout: templates.Layout
+    govukPanel: GovukPanel
 )
 
-@()(implicit request: Request[_], messages: Messages)
+@(panelTitle: String, panelContent: String)(implicit messages: Messages)
 
-@layout(pageTitle = messages("messages__session_expired__title"), showBackLink = false) {
-
-    @components.heading(messages("messages__session_expired__title"))
-
-    <p class="govuk-body">@messages("messages__session_expired__guidance")</p>
-
-}
+@govukPanel(
+    Panel(
+        title = Text(panelTitle),
+        content = HtmlContent(panelContent)
+    )
+)

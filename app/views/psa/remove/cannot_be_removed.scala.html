@@ -26,7 +26,7 @@
 
 @layout(pageTitle = messages(viewModel.titleMessageKey)) {
 
-    <h1 class="govuk-heading-xl">@messages(viewModel.headingMessageKey)</h1>
+    @components.heading(messages(viewModel.headingMessageKey))
 
     <p class="govuk-body">@messages(viewModel.p1MessageKey)</p>
 

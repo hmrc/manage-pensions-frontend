@@ -16,7 +16,6 @@
 
 @import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
-@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import views.html._
 @import controllers.invitations.psp.routes._
 @import utils.ViewHelper.titleWithErrors
@@ -27,8 +26,8 @@
     layout: templates.Layout,
     formHelper: PlayFrontendFormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
-    button: components.govuk_button,
-    govukInput: GovukInput
+    input_text: components.input_text,
+    button: components.govuk_button
 )
 
 @(form: Form[_], pspName: String, mode: Mode, schemeName:String, returnCall: Call)(implicit request: Request[_], messages: Messages)
@@ -41,13 +40,11 @@
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
         }
 
-        @govukInput(
-            Input(
-                label = Label(classes = "govuk-label--xl", content = Text(messages("messages__pspId__heading", pspName)),
-                isPageHeading = true),
-                classes = "govuk-!-width-one-half",
-                hint = Some(Hint(content = Text(messages("messages__pspId__hint"))))
-            ).withFormField(form("pspId"))
+        @input_text(
+            field = form("pspId"),
+            label = messages("messages__pspId__heading", pspName),
+            headingIsLegend = true,
+            hint = Some(messages("messages__pspId__hint"))
         )
 
         @button(messages("site.save_and_continue"))

@@ -40,7 +40,7 @@
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form, mapping = Map("declaration" -> "declaration")))
         }
 
-        <h1 class="govuk-heading-xl">@messages("messages__deauthPspDeclaration__title")</h1>
+        @components.heading(messages("messages__deauthPspDeclaration__title"))
 
         <p id="para_id" class="govuk-body">
             <span aria-hidden="true">
