@@ -18,7 +18,7 @@
 
 @this(
     layout: templates.Layout,
-    govukInsetText : GovukInsetText
+    inset_text: components.inset_text
 )
 
 @(role: String,managePensionSchemeLink: String,managePensionMigrationSchemeLink: String,pensionSchemesOnlineLink: String)(implicit request: Request[_], messages: Messages)
@@ -32,19 +32,23 @@
     </p>
 
     @if(role == "administrator"){
+
         <p class="govuk-body">@Messages("messages__manageExistingScheme__p2__1")
             <a href="@managePensionMigrationSchemeLink" class="govuk-link">@Messages("messages__manageExistingScheme__p2__link__1")</a>.
             @Messages("messages__manageExistingScheme__p2__2")
             <a href="@pensionSchemesOnlineLink" class="govuk-link">@Messages("message__triage__pensionSchemesOnline__link")</a>.
         </p>
+
     } else {
+
         <p class="govuk-body">@Messages("messages__manageExistingScheme__p2__practitioner")
             <a href="@pensionSchemesOnlineLink" class="govuk-link">@Messages("message__triage__pensionSchemesOnline__link")</a>.
         </p>
+
      }
 
-    @govukInsetText(InsetText(
-        content = Text(messages("messages__manageExistingScheme__insetText"))
-    ))
+    @inset_text(
+        content = messages("messages__manageExistingScheme__insetText")
+    )
 
 }

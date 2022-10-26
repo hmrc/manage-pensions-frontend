@@ -29,7 +29,7 @@
     input_text: components.input_text,
     button: components.govuk_button,
     govukTable: GovukTable,
-    govukInsetText : GovukInsetText,
+    inset_text: components.inset_text,
     appConfig: FrontendAppConfig
 )
 
@@ -161,9 +161,9 @@
 
                 } else {
 
-                    @govukInsetText(InsetText(
-                        content = HtmlContent(insetText)
-                    ))
+                    @inset_text(
+                        content = insetText.toString
+                    )
 
                 }
 
