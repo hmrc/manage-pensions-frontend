@@ -16,7 +16,7 @@
 
 @this(
     layout: templates.Layout,
-    govukPanel : GovukPanel
+    panel: components.panel
 )
 
 @(pspName: String, schemeName: String, psaEmailAddress: String)(implicit request: Request[_], messages: Messages)
@@ -45,10 +45,9 @@
 
 @layout(pageTitle = messages("messages__confirmPsaDeauthPsp__title"), showBackLink = false) {
 
-    @govukPanel(
-        Panel(
-            title = HtmlContent(headingText.toString)
-        )
+    @panel(
+        panelTitle = headingText.toString,
+        panelContent = ""
     )
 
     <p class="govuk-body">

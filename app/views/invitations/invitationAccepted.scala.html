@@ -18,17 +18,17 @@
 
 @this(
     layout: templates.Layout,
-    govukPanel : GovukPanel
+    panel: components.panel
 )
 
 @(schemeName: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = messages("messages__invitationAccepted__title")) {
 
-    @govukPanel(Panel(
-        title = Text(messages("messages__invitationAccepted__heading", schemeName)),
-        content = HtmlContent("")
-    ))
+    @panel(
+        panelTitle = messages("messages__invitationAccepted__heading", schemeName),
+        panelContent = ""
+    )
 
     <p class="govuk-body">
         <a id="return-to-schemes" class="govuk-link" href="@controllers.psa.routes.ListSchemesController.onPageLoad()">

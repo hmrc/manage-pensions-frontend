@@ -20,8 +20,8 @@
 
 @this(
     layout: templates.Layout,
-    govukPanel : GovukPanel,
     formHelper: PlayFrontendFormWithCSRF,
+    panel: components.panel,
     button: components.govuk_button
 )
 
@@ -31,10 +31,10 @@
 
     @formHelper(action = controllers.routes.SchemesOverviewController.onPageLoad(), 'autoComplete -> "off") {
 
-        @govukPanel(Panel(
-            title = Text(messages("messages__pspConfirmation__heading", pspName, schemeName)),
-            content = HtmlContent("")
-        ))
+        @panel(
+            panelTitle = messages("messages__pspConfirmation__heading", pspName, schemeName),
+            panelContent = ""
+        )
 
         <h2 class="govuk-heading-m">@messages("messages__pspConfirmation__whatHappensNext")</h2>
 
