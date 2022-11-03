@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
             }
         });
     }
-
+    
     var printLink = document.querySelector('#print-this-page-link');
     if (printLink) {
         printLink.addEventListener('click', function (e) {
