@@ -14,13 +14,9 @@
  * limitations under the License.
  *@
 
-@import config.FrontendAppConfig
 @import play.api.mvc.Call
 @import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
-@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
-@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import views.html._
-@import viewmodels.{Section, AnswerSection, RepeaterAnswerSection}
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 
 @this(
@@ -30,24 +26,21 @@
     govukSummaryList : GovukSummaryList
 )
 
-@(answerSections: Seq[SummaryListRow], postUrl: Call, guidance:Option[String] = None,
-guidanceData:Option[String] = None)(implicit request: Request[_], messages: Messages)
+@(answerSections: Seq[SummaryListRow], postUrl: Call, guidance:Option[String] = None, guidanceData:Option[String] = None)(implicit request: Request[_], messages: Messages)
 
-@layout(
-pageTitle = messages("checkYourAnswers.title")
-    ) {
+@layout(pageTitle = messages("checkYourAnswers.title")) {
 
-        @formHelper(action = postUrl, 'autoComplete -> "off") {
+    @formHelper(action = postUrl, 'autoComplete -> "off") {
+        
+        @components.heading(messages("checkYourAnswers.heading"))
 
-            <h1 class="govuk-heading-xl">@messages("checkYourAnswers.heading")</h1>
+        @guidance.map{key=>@guidanceData.map{data=><p class = "govuk-body">@messages(key, data)}.getOrElse{<p>@messages(key)}</p>}
 
-            @guidance.map{key=>@guidanceData.map{data=><p class = "govuk-body">@messages(key, data)}.getOrElse{<p>@messages(key)}</p>}
+        @govukSummaryList(SummaryList(
+            rows = answerSections
+        ))
 
-            @govukSummaryList(SummaryList(
-                rows = answerSections
-            ))
+        @button(messages("site.save_and_continue"))
 
-            @button(messages("site.save_and_continue"))
     }
-
 }

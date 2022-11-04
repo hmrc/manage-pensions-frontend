@@ -15,48 +15,35 @@
  *@
 
 @import play.api.data.Form
-@import config.FrontendAppConfig
 @import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
-@import viewmodels.Message
 @import utils.ViewHelper.titleWithErrors
 @import models.AdministratorOrPractitioner
 
 @this(
     layout: templates.Layout,
-    govukRadios : GovukRadios,
     formHelper: PlayFrontendFormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
+    input_radio: components.input_radio,
     button: components.govuk_button
 )
 
 @(form: Form[_])(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = titleWithErrors(form, messages("messages__administratorOrPractitioner__title"))
-){
+@layout(pageTitle = titleWithErrors(form, messages("messages__administratorOrPractitioner__title"))){
 
     @formHelper(action = controllers.routes.AdministratorOrPractitionerController.onSubmit(), 'autoComplete -> "off") {
 
-    @if(form.errors.nonEmpty) {
-        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
-    }
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
+        }
 
-    @govukRadios(
-        Radios(
-            fieldset = Some(
-                Fieldset(
-                    legend = Some(
-                        Legend(
-                            content = Text(messages("messages__administratorOrPractitioner__heading")),
-                            classes = "govuk-fieldset__legend--xl",
-                            isPageHeading = true
-                        )
-                    )
-                )
-            ),
-            items = Seq(
+        @input_radio(
+            field = form("value"),
+            legend = messages("messages__administratorOrPractitioner__heading"),
+            legendAsHeading = true,
+            inputs = Seq(
                 RadioItem(
                     content = Text(messages("messages__administratorOrPractitioner__administrator")),
                     value = Some(AdministratorOrPractitioner.Administrator.toString),
@@ -76,10 +63,9 @@
                     )
                 )
             )
-        ).withFormField(form("value"))
-    )
+        )
 
-    @button(messages("site.continue"))
+        @button(messages("site.continue"))
 
     }
 }

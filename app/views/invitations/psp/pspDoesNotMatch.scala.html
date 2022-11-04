@@ -14,27 +14,19 @@
  * limitations under the License.
  *@
 
-@import config.FrontendAppConfig
-@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
-@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
-@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import views.html._
-@import java.time.LocalDate
 @import utils.DateHelper
-@import controllers.routes._
 @import play.api.mvc.Call
 
 @this(
-layout: templates.Layout
+    layout: templates.Layout
 )
 
 @(schemeName: String, pspName: String, returnCall: Call)(implicit request: Request[_], messages: Messages)
 
-@layout(
-pageTitle = messages("messages__pspDoesNotMatch__title")
-) {
-
-<h1 class="govuk-heading-xl">@messages("messages__pspDoesNotMatch__title")</h1>
+@layout(pageTitle = messages("messages__pspDoesNotMatch__title")) {
+    
+    @components.heading(messages("messages__pspDoesNotMatch__title"))
 
     <p class="govuk-body">@messages("messages__pspDoesNotMatch__psp", pspName)</p>
 

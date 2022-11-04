@@ -16,7 +16,6 @@
 
 @import config.FrontendAppConfig
 @import models.SchemeDetails
-@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
 @import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
 @import controllers.routes._
@@ -27,27 +26,14 @@
     layout: templates.Layout,
     formHelper: PlayFrontendFormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
-    govukInput: GovukInput,
+    input_text: components.input_text,
     button: components.govuk_button,
     govukTable: GovukTable,
-    govukInsetText : GovukInsetText,
+    inset_text: components.inset_text,
     appConfig: FrontendAppConfig
 )
 
-@(
-    form: Form[_],
-    schemes: List[SchemeDetails],
-    psaName: String,
-    numberOfSchemes: Int,
-    pagination: Int,
-    pageNumber: Int,
-    pageNumberLinks: Seq[Int],
-    numberOfPages: Int,
-    noResultsMessageKey: Option[String]
-)(implicit
-    request: Request[_],
-    messages: Messages
-)
+@(form: Form[_], schemes: List[SchemeDetails], psaName: String, numberOfSchemes: Int, pagination: Int, pageNumber: Int, pageNumberLinks: Seq[Int], numberOfPages: Int, noResultsMessageKey: Option[String])(implicit request: Request[_], messages: Messages)
 
 @msgPrefix = @{
     "messages__schemesOverview__pagination__"
@@ -55,27 +41,20 @@
 
 @manageRedirectLink = @{
     val href: String = appConfig.pensionSchemeOnlineServiceUrl
-
     val linkText: String = messages("messages__schemesOverview__manage__redirect__link")
-
     Html(s"""<a class="govuk-link" id="manage-link" href="$href">$linkText</a>""")
 }
 
 @navLink(linkText: String, pageNumber: Int) = @{
     val id: String = linkText.toLowerCase
-
     val href: String = ListSchemesController.onPageLoadWithPageNumber(pageNumber).url
-
     val ariaLabel: String = messages(s"$msgPrefix${linkText.toLowerCase}__ariaLabel")
-
-    Html(s"""<span class="nav-item"><a id="$id" href="$href" aria-label="$ariaLabel">$linkText</a></span>""")
+    Html(s"""<span class="nav-item"><a class="govuk-link" id="$id" href="$href" aria-label="$ariaLabel">$linkText</a></span>""")
 }
 
 @ariaAttrs(linkNumber: Int) = @{
     val ariaLabelLinkCurrent: String = messages(s"${msgPrefix}pageNumberCurrent__ariaLabel", linkNumber, numberOfPages)
-
     val ariaLabelLink: String = messages(s"${msgPrefix}pageNumber__ariaLabel", linkNumber, numberOfPages)
-
     if(linkNumber == pageNumber)
         s"""aria-current="page" aria-label="$ariaLabelLinkCurrent""""
     else
@@ -84,10 +63,8 @@
 
 @pageNumberLink(linkNumber: Int) = @{
     val id: String = s"pageNumber-$linkNumber"
-
     val href: String = ListSchemesController.onPageLoadWithPageNumber(linkNumber).url
-
-    Html(s"""<span class="nav-item"><a id="$id" href="$href" ${ariaAttrs(linkNumber)}>$linkNumber</a></span>""")
+    Html(s"""<span class="nav-item"><a class="govuk-link" id="$id" href="$href" ${ariaAttrs(linkNumber)}>$linkNumber</a></span>""")
 }
 
 @paginationText = @{
@@ -116,9 +93,9 @@
 }
 
 @insetText = {
-        <p class="govuk-body">
-            @Html(messages("messages__schemesOverview__manage__redirect__text", manageRedirectLink))
-        </p>
+    <p class="govuk-body">
+        @Html(messages("messages__schemesOverview__manage__redirect__text", manageRedirectLink))
+    </p>
 }
 
 @schemeNameLink(id :String,schemeName: String, srn: SchemeReferenceNumber) = {
@@ -150,10 +127,7 @@
     }
 }
 
-@layout(
-    pageTitle = titleWithErrors(form, messages(heading)),
-    fullWidthLayout = true
-) {
+@layout(pageTitle = titleWithErrors(form, messages(heading)), fullWidthLayout = true) {
 
     @formHelper(action = ListSchemesController.onSearch, 'autoComplete -> "off") {
 
@@ -164,18 +138,13 @@
                     @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
                 }
 
-                <h1 class="govuk-heading-xl">@messages(heading)</h1>
+                @components.heading(messages(heading))
 
                 @if(schemes.size >= appConfig.minimumSchemeSearchResults || form("searchText").value.isDefined){
 
-                    @govukInput(
-                        Input(
-                            label = Label(
-                                content = Text(messages("messages__listSchemes__searchText_label")),
-                                classes = "govuk-!-font-weight-bold govuk-label--m"
-                ),
-                            classes = "govuk-!-width-one-half"
-                        ).withFormField(form("searchText"))
+                    @input_text(
+                        field = form("searchText"),
+                        label = messages("messages__listSchemes__searchText_label")
                     )
 
                     @button(messages(button_content))
@@ -183,112 +152,112 @@
                 }
 
                 @if(form("searchText").value.exists(_.nonEmpty)){
-                <p class="govuk-body">
-                    <a class="govuk-link" id="clear-search-link"
-                       href="@{ListSchemesController.onPageLoad}"> @messages("messages__listSchemes__searchText_clearlink")
-                    </a>
-                </p>
-                }else{
-                @govukInsetText(InsetText(
-                content = HtmlContent(insetText)
-                ))
+
+                    <p class="govuk-body">
+                        <a class="govuk-link" id="clear-search-link"
+                           href="@{ListSchemesController.onPageLoad}"> @messages("messages__listSchemes__searchText_clearlink")
+                        </a>
+                    </p>
+
+                } else {
+
+                    @inset_text(
+                        content = insetText.toString
+                    )
 
                 }
-
-
-
-
-
 
                 @if(form("searchText").value.exists(_.nonEmpty)){
                     @if(schemes.nonEmpty){
 
-                                <p class="govuk-body" role="status">
-                                    @{
-                                        if(schemes.size == 1) {
-                                            messages("messages__listSchemes__search_result")
-                                        } else {
-                                            messages("messages__listSchemes__search_multipleResults", schemes.size)
-                                        }
-                                    }
-                                </p>
+                        <p class="govuk-body" role="status">
+                            @{
+                                if(schemes.size == 1) {
+                                    messages("messages__listSchemes__search_result")
+                                } else {
+                                    messages("messages__listSchemes__search_multipleResults", schemes.size)
+                                }
+                            }
+                        </p>
 
                     }
                 }
 
                 @noResultsMessageKey.map{ text =>
-
-                            <p class="govuk-body" role="status" id="noSchemes">@messages(text)</p>
-
+                    <p class="govuk-body" role="status" id="noSchemes">@messages(text)</p>
                 }
 
             </div>
         </div>
 
         @if(schemes.nonEmpty) {
-        <span aria-hidden="true" class="govuk-visually-hidden" id="schemeList_table">
-            @messages("messages__listSchemes__title")
-        </span>
-        <div role="region" aria-labelledby="schemeList_table">
-            @govukTable(
-                Table(
-                    rows =
-                        for((scheme, index) <- schemes.zipWithIndex) yield {
-                            Seq(
-                                TableRow(
-                                    attributes = Map("id" -> ("schemeNameTd-"+index)),
-                                    content = HtmlContent(schemeNameLink("schemeName-"+index,scheme.name, scheme.referenceNumber)),
-                                    classes="govuk-table__cell"
-                                ),
-                                TableRow(
-                                    attributes = Map("id" -> ("srn-"+index)),
-                                    content = HtmlContent(srnValue(scheme.schemeStatus, scheme.referenceNumber, messages("messages__listSchemes__srn_na"))),
-                                    classes="govuk-table__cell"
-                                ),
-                                TableRow(
-                                    attributes = Map("id" -> ("pstr-"+index)),
-                                    content = Text(scheme.pstr.getOrElse(messages("messages__listSchemes__pstr_not_assigned"))),
-                                    classes="govuk-table__cell"
-                                ),
-                                TableRow(
-                                    attributes = Map("id" -> ("schemeStatus-"+index)),
-                                    content = Text(statusValue(scheme.schemeStatus)),
-                                    classes="govuk-table__cell"
+
+            <span aria-hidden="true" class="govuk-visually-hidden" id="schemeList_table">
+                @messages("messages__listSchemes__title")
+            </span>
+
+            <div role="region" aria-labelledby="schemeList_table">
+                @govukTable(
+                    Table(
+                        rows =
+                            for((scheme, index) <- schemes.zipWithIndex) yield {
+                                Seq(
+                                    TableRow(
+                                        attributes = Map("id" -> ("schemeNameTd-"+index)),
+                                        content = HtmlContent(schemeNameLink("schemeName-"+index,scheme.name, scheme.referenceNumber)),
+                                        classes="govuk-table__cell"
+                                    ),
+                                    TableRow(
+                                        attributes = Map("id" -> ("srn-"+index)),
+                                        content = HtmlContent(srnValue(scheme.schemeStatus, scheme.referenceNumber, messages("messages__listSchemes__srn_na"))),
+                                        classes="govuk-table__cell"
+                                    ),
+                                    TableRow(
+                                        attributes = Map("id" -> ("pstr-"+index)),
+                                        content = Text(scheme.pstr.getOrElse(messages("messages__listSchemes__pstr_not_assigned"))),
+                                        classes="govuk-table__cell"
+                                    ),
+                                    TableRow(
+                                        attributes = Map("id" -> ("schemeStatus-"+index)),
+                                        content = Text(statusValue(scheme.schemeStatus)),
+                                        classes="govuk-table__cell"
+                                    )
                                 )
-                            )
-                        },
-                        head = Some(
-                            Seq(
-                                HeadCell(
-                                    content = Text(messages("messages__listSchemes__column_schemeName"))
-                                ),
-                                HeadCell(
-                                    content = Text(messages("messages__listSchemes__column_srn"))
-                                ),
-                                HeadCell(
-                                    content = Text(messages("messages__listSchemes__column_pstr"))
-                                ),
-                                HeadCell(
-                                    content = Text(messages("messages__listSchemes__column_status"))
+                            },
+                            head = Some(
+                                Seq(
+                                    HeadCell(
+                                        content = Text(messages("messages__listSchemes__column_schemeName"))
+                                    ),
+                                    HeadCell(
+                                        content = Text(messages("messages__listSchemes__column_srn"))
+                                    ),
+                                    HeadCell(
+                                        content = Text(messages("messages__listSchemes__column_pstr"))
+                                    ),
+                                    HeadCell(
+                                        content = Text(messages("messages__listSchemes__column_status"))
+                                    )
                                 )
-                            )
-                        ),
-                        caption = Some(messages("messages__listSchemes__title")),
-                        captionClasses = "govuk-visually-hidden",
-                        attributes = Map("id" -> "scheme-list-table", "role"-> "table")
+                            ),
+                            caption = Some(messages("messages__listSchemes__title")),
+                            captionClasses = "govuk-visually-hidden",
+                            attributes = Map("id" -> "scheme-list-table", "role"-> "table")
+                    )
                 )
-            )
-        </div>
+            </div>
         }
 
-        @if(numberOfSchemes > pagination) {
-            <div class="govuk-grid-row">
-                <div class="govuk-grid-column-two-thirds">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+
+                @if(numberOfSchemes > pagination) {
                     <p class="govuk-body govuk-margin-top-5" id="pagination-text">
                         @paginationText
                     </p>
-                    <nav class="govuk-margin-top-5" aria-label="page">
-                        @if(pageNumber > 1) {
+                    <nav class="govuk-pagination govuk-!-margin-bottom-8" role="navigation" aria-label="results">
+                    <p class="govuk-body">
+                    @if(pageNumber > 1) {
                             @navLink(
                                 linkText = messages(s"${msgPrefix}first"),
                                 pageNumber = 1
@@ -298,13 +267,11 @@
                                 pageNumber = pageNumber - 1
                             )
                         }
-
                         @for((int, i) <- pageNumberLinks.zipWithIndex) {
                             @pageNumberLink(
                                 linkNumber = pageNumberLinks(i)
                             )
                         }
-
                         @if(pageNumber < numberOfPages) {
                             @navLink(
                                 linkText = messages(s"${msgPrefix}next"),
@@ -315,16 +282,18 @@
                                 pageNumber = numberOfPages
                             )
                         }
+                    </p>
                     </nav>
-                </div>
-            </div>
-        }
+                }
 
-        <p class="govuk-body govuk-margin-top-5">
-            <a id="return-link" class="govuk-link" href=@SchemesOverviewController.onPageLoad()>
-                @messages("site.return_to", psaName)
-            </a>
-        </p>
+                <p class="govuk-body govuk-margin-top-5">
+                    <a id="return-link" class="govuk-link" href=@SchemesOverviewController.onPageLoad()>
+                        @messages("site.return_to", psaName)
+                    </a>
+                </p>
+
+            </div>
+        </div>
 
     }
 }

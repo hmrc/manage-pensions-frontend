@@ -15,7 +15,6 @@
  *@
 
 @import config.FrontendAppConfig
-@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
 @import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
 @import models.SchemeDetails
@@ -27,27 +26,17 @@
     layout: templates.Layout,
     formHelper: PlayFrontendFormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
-    govukInput: GovukInput,
+    input_text: components.input_text,
     button: components.govuk_button,
     govukSummaryList : GovukSummaryList,
     appConfig: FrontendAppConfig
 )
 
-@(
-    form: Form[_],
-    schemes: List[SchemeDetails],
-    pspName: String,
-    numberOfSchemes: Int
-)(implicit
-    request: Request[_],
-    messages: Messages
-)
+@(form: Form[_], schemes: List[SchemeDetails], pspName: String, numberOfSchemes: Int)(implicit request: Request[_], messages: Messages)
 
 @manageRedirectLink = @{
     val href: String = appConfig.pensionSchemeOnlineServiceUrl
-
     val linkText: String = messages("messages__schemesOverview__manage__redirect__link")
-
     Html(s"""<a class="govuk-link" id="manage-link" href="$href">$linkText</a>""")
 }
 
@@ -112,78 +101,64 @@
     }
 }
 
-@layout(
-    pageTitle = titleWithErrors(form, messages(heading)),
-    fullWidthLayout = true
-) {
+@layout(pageTitle = titleWithErrors(form, messages(heading))) {
 
     @formHelper(action = ListSchemesController.onSearch, 'autoComplete -> "off") {
 
-        <div class="govuk-grid-row">
-            <div class="govuk-grid-column-two-thirds">
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
+        }
 
-                @if(form.errors.nonEmpty) {
-                    @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
-                }
+        @components.heading(messages(heading))
 
-                <h1 class="govuk-heading-xl">@messages(heading)</h1>
+        <p class="govuk-body">@messages("messages__listSchemesPsp__lede")</p>
 
-                <p class="govuk-body">@messages("messages__listSchemesPsp__lede")</p>
+        @input_text(
+            field = form("searchText"),
+            label = messages("messages__listSchemesPsp__searchText_label"),
+            hint = Some(messages("messages__listSchemesPsp__searchText_hint"))
+        )
 
-                @govukInput(
-                    Input(
-                        label = Label(
-                            content = Text(messages("messages__listSchemesPsp__searchText_label")),
-                            classes = "govuk-!-font-weight-bold govuk-label--m"
-                        ),
-                        hint = Some(Hint(
-                            content = Text(messages("messages__listSchemesPsp__searchText_hint"))
-                        )),
-                        classes = "govuk-!-width-one-half"
-                    ).withFormField(form("searchText"))
-                )
+        @button(messages(button_content))
 
-                @button(messages(button_content))
+        @if(form("searchText").value.exists(_.nonEmpty)) {
+            <p class="govuk-body govuk-margin-bottom-3">
+                <a id="clear-search-link" class="govuk-link" href="@ListSchemesController.onPageLoad"> @messages("messages__listSchemes__searchText_clearlink")</a>
+            </p>
+        }
 
-                @if(form("searchText").value.exists(_.nonEmpty)) {
-                    <p class="govuk-body govuk-margin-bottom-3">
-                        <a id="clear-search-link" class="govuk-link" href="@ListSchemesController.onPageLoad"> @messages("messages__listSchemes__searchText_clearlink")</a>
-                    </p>
-                }
-
-                @if(form("searchText").value.isDefined && form.errors.isEmpty && schemes.isEmpty) {
-                    @form("searchText").value.map{ searchText =>
-                        <p id="noSchemes" role="status" class="govuk-body govuk-margin-bottom-3 ">
-                            @messages("messages__listSchemesPsp__noMatchesLeft") <span class="govuk-!-font-weight-bold">@searchText</span>
-                            @messages("messages__listSchemesPsp__noMatchesRight")
-                        </p>
-                        <p id="noMatchesCheck" class="govuk-body">@messages("messages__listSchemesPsp__noMatchesCheck")</p>
-                    }
-                }
-
-                @if(schemes.nonEmpty && (form("searchText").value.exists(_.nonEmpty))) {
-                    <p id="oneScheme" class="govuk-body govuk-margin-bottom-3 " role="status">
-                        @messages("messages__listSchemesPsp__oneResultFound")
-                    </p>
-
-                    @govukSummaryList(
-                        SummaryList(rows = rowValue(schemes).flatten
-                        )
-                    )
-
-                    <p class="govuk-body">
-                        <a id="view-scheme" class="govuk-link" href="@PspSchemeDashboardController.onPageLoad(schemes.head.referenceNumber)">
-                            @messages("messages__listSchemesPsp__viewScheme")
-                        </a>
-                    </p>
-                }
-
-                <p class="govuk-body govuk-margin-top-5">
-                    <a id="return-link" class="govuk-link" href=@PspDashboardController.onPageLoad()>
-                        @messages("site.return_to", pspName)
-                    </a>
+        @if(form("searchText").value.isDefined && form.errors.isEmpty && schemes.isEmpty) {
+            @form("searchText").value.map{ searchText =>
+                <p id="noSchemes" role="status" class="govuk-body govuk-margin-bottom-3 ">
+                    @messages("messages__listSchemesPsp__noMatchesLeft") <span class="govuk-!-font-weight-bold">@searchText</span>
+                    @messages("messages__listSchemesPsp__noMatchesRight")
                 </p>
-            </div>
-        </div>
+                <p id="noMatchesCheck" class="govuk-body">@messages("messages__listSchemesPsp__noMatchesCheck")</p>
+            }
+        }
+
+        @if(schemes.nonEmpty && (form("searchText").value.exists(_.nonEmpty))) {
+            <p id="oneScheme" class="govuk-body govuk-margin-bottom-3 " role="status">
+                @messages("messages__listSchemesPsp__oneResultFound")
+            </p>
+
+            @govukSummaryList(
+                SummaryList(rows = rowValue(schemes).flatten
+                )
+            )
+
+            <p class="govuk-body">
+                <a id="view-scheme" class="govuk-link" href="@PspSchemeDashboardController.onPageLoad(schemes.head.referenceNumber)">
+                    @messages("messages__listSchemesPsp__viewScheme")
+                </a>
+            </p>
+        }
+
+        <p class="govuk-body govuk-margin-top-5">
+            <a id="return-link" class="govuk-link" href=@PspDashboardController.onPageLoad()>
+                @messages("site.return_to", pspName)
+            </a>
+        </p>
+
     }
 }

@@ -14,9 +14,7 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.play.views.html._
 @import views.html._
-@import viewmodels.Message
 @import controllers.psp.deauthorise.self.routes._
 @import utils.ViewHelper.titleWithErrors
 @import controllers.psp.routes._
@@ -34,16 +32,15 @@
 
 @(form: Form[Boolean], schemeName: String, srn: String)(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = titleWithErrors(form, messages("messages__deauthPspDeclaration__title"))
-) {
+@layout(pageTitle = titleWithErrors(form, messages("messages__deauthPspDeclaration__title"))) {
 
     @formHelper(action = DeclarationController.onSubmit(), 'autoComplete -> "off", 'novalidate -> "novalidate") {
-    @if(form.errors.nonEmpty) {
-    @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form, mapping = Map("declaration" -> "declaration")))
-    }
 
-        <h1 class="govuk-heading-xl">@messages("messages__deauthPspDeclaration__title")</h1>
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form, mapping = Map("declaration" -> "declaration")))
+        }
+
+        @components.heading(messages("messages__deauthPspDeclaration__title"))
 
         <p id="para_id" class="govuk-body">
             <span aria-hidden="true">
@@ -54,31 +51,31 @@
             </span>
         </p>
 
-    @govukCheckboxes(Checkboxes(
-        fieldset = Some(Fieldset(
-        legend = Some(Legend(
-        content = Text(messages("messages__deauthPspDeclaration__title")),
-        classes = "govuk-visually-hidden",
-        isPageHeading = false
-        ))
-        )),
-        idPrefix = Some("declaration"),
-        name = "declaration",
-        items = Seq(
-        CheckboxItem(
-        content = Text(messages("messages__deauthPspDeclaration__label")),
-        value ="true"
-        )
-        )
-        ).withFormField(form("declaration")
-        )
-        )
-    @button(messages("site.save_and_continue"))
+        @govukCheckboxes(Checkboxes(
+            fieldset = Some(Fieldset(
+                legend = Some(Legend(
+                    content = Text(messages("messages__deauthPspDeclaration__title")),
+                    classes = "govuk-visually-hidden",
+                    isPageHeading = false
+                ))
+            )),
+            idPrefix = Some("declaration"),
+            name = "declaration",
+            items = Seq(
+                CheckboxItem(
+                    content = Text(messages("messages__deauthPspDeclaration__label")),
+                    value ="true"
+                )
+            )
+        ).withFormField(form("declaration")))
 
-<p class="govuk-body">
-    <a id="return-link" class="govuk-link" href="@PspSchemeDashboardController.onPageLoad(srn)">
-        @messages("messages__returnToSchemeDetails__link", schemeName)
-    </a>
-</p>
-}
+        @button(messages("site.save_and_continue"))
+
+        <p class="govuk-body">
+            <a id="return-link" class="govuk-link" href="@PspSchemeDashboardController.onPageLoad(srn)">
+                @messages("messages__returnToSchemeDetails__link", schemeName)
+            </a>
+        </p>
+
+    }
 }

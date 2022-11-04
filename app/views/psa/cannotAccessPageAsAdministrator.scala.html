@@ -15,57 +15,40 @@
  *@
 
 @import play.api.data.Form
-@import config.FrontendAppConfig
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
 @import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
-@import viewmodels.Message
 @import utils.ViewHelper.titleWithErrors
 @import models.AdministratorOrPractitioner
-@import akka.http.scaladsl.model.headers.LinkParams.title
 @import controllers.psa.routes._
 
 @this(
     layout: templates.Layout,
-    govukRadios : GovukRadios,
     formHelper: PlayFrontendFormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
+    input_radio: components.input_radio,
     button: components.govuk_button
 )
 
 @(form: Form[_])(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = titleWithErrors(form, messages("messages__cannotAccessPageAsAdministrator__title"))){
+@layout(pageTitle = titleWithErrors(form, messages("messages__cannotAccessPageAsAdministrator__title"))){
 
-        @formHelper(action = CannotAccessPageAsAdministratorController.onSubmit(), 'autoComplete -> "off") {
+    @formHelper(action = CannotAccessPageAsAdministratorController.onSubmit(), 'autoComplete -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
         }
 
-        <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">@messages("messages__cannotAccessPageAsAdministrator__heading")</h1>
-
-        @govukRadios(
-            Radios(
-                fieldset = Some(
-                    Fieldset(
-                        legend = Some(
-                            Legend(
-                                content = Text(messages("messages__cannotAccessPageAsAdministrator__p1")),
-                                classes = "govuk-fieldset__legend--s govuk-!-font-weight-regular govuk-!-margin-bottom-5",
-                                isPageHeading = false
-                            )
-                        )
-                    )
-                ),
-                items = AdministratorOrPractitioner.optionsCannotAccessPageAsAdministrator
-            ).withFormField(form("value"))
+        @input_radio(
+            field = form("value"),
+            legend = messages("messages__cannotAccessPageAsAdministrator__heading"),
+            legendAsHeading = true,
+            hint = Some(messages("messages__cannotAccessPageAsAdministrator__p1")),
+            inputs = AdministratorOrPractitioner.optionsCannotAccessPageAsAdministrator
         )
 
         @button(messages("site.continue"))
 
     }
-
 }
-

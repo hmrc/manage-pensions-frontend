@@ -14,24 +14,22 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
-@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
-@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import views.html._
-@import controllers.routes._
-@import models.Mode
-@import viewmodels.Message
 
 @this(
-layout: templates.Layout
+    layout: templates.Layout
 )
 
 @(inviteeName: String, schemeName: String)(implicit request: Request[_], messages: Messages)
 
-@layout(
-pageTitle = messages("messages__psaAlreadyAssociated__title")) {
-    <h1 class="govuk-heading-xl">@Messages("messages__psaAlreadyAssociated__heading", inviteeName)</h1>
+@layout(pageTitle = messages("messages__psaAlreadyAssociated__title")) {
+
+    @components.heading(messages("messages__psaAlreadyAssociated__heading", inviteeName))
+
     <p id="schemeName" class="govuk-body">@Messages("messages__psaAlreadyAssociated__schemeName", inviteeName, schemeName)</p>
+
     <p id="inviteInformation" class="govuk-body">@Messages("messages__psaAlreadyAssociated__inviteInformation")</p>
+
     <p class="govuk-body"><a id="return-to-schemes" class="govuk-link" href="@controllers.psa.routes.ListSchemesController.onPageLoad()">@messages("messages__psaAlreadyAssociated__returnToSchemes__link")</a></p>
+
 }

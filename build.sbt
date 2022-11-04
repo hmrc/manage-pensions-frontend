@@ -48,8 +48,8 @@ lazy val root = (project in file("."))
     ),
     // concatenate js
     Concat.groups := Seq(
-      "javascripts/managepensionsfrontend-app.js" -> group(Seq(
-        "javascripts/card.js",
+      "javascripts/application.js" -> group(Seq(
+        "javascripts/autocomplete/location-autocomplete.min.js",
         "javascripts/managepensionsfrontend.js"
       ))
     ),

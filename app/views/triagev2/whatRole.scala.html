@@ -14,57 +14,39 @@
  * limitations under the License.
  *@
 
-@import config.FrontendAppConfig
 @import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
-@import controllers.triage.routes._
-@import controllers.triagev2.routes._
-@import models.{Mode}
 @import models.triagev2.WhatRole
 @import utils.ViewHelper.titleWithErrors
 
 @this(
-   layout: templates.Layout,
-   govukRadios : GovukRadios,
-   formHelper: PlayFrontendFormWithCSRF,
-   govukErrorSummary: GovukErrorSummary,
-   button: components.govuk_button
+    layout: templates.Layout,
+    formHelper: PlayFrontendFormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    input_radio: components.input_radio,
+    button: components.govuk_button
 )
 
 @(form: Form[_])(implicit request: Request[_], messages: Messages)
 
-@layout(
-   pageTitle = titleWithErrors(form, messages("messages__whatRole__title"))) {
-     @formHelper(action = controllers.triagev2.routes.WhatRoleControllerV2.onSubmit(), 'autoComplete -> "off") {
+@layout(pageTitle = titleWithErrors(form, messages("messages__whatRole__title"))) {
 
-      @if(form.errors.nonEmpty) {
-        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
-      }
+    @formHelper(action = controllers.triagev2.routes.WhatRoleControllerV2.onSubmit(), 'autoComplete -> "off") {
 
-      @govukRadios(
-         Radios(
-            fieldset = Some(
-               Fieldset(
-                  legend = Some(
-                     Legend(
-                        content = Text(messages("messages__whatRole__title")),
-                        classes = "govuk-fieldset__legend--xl",
-                        isPageHeading = true
-                     )
-                  )
-               )
-            ),
-            hint = Some(
-               Hint(
-                  content = Text(messages("messages__whatRole__p2"))
-               )
-            ),
-            items = WhatRole.options,
-         ).withFormField(form("value"))
-      )
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
+        }
 
-      @button(messages("site.continue"))
+        @input_radio(
+            field = form("value"),
+            legend = messages("messages__whatRole__title"),
+            legendAsHeading = true,
+            hint = Some(messages("messages__whatRole__p2")),
+            inputs = WhatRole.options
+        )
 
-   }
+        @button(messages("site.continue"))
+
+    }
 }

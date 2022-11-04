@@ -23,10 +23,10 @@
 
 @()(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle    =  messages("messages__index__title")) {
+@layout(pageTitle = messages("messages__index__title")) {
 
-       <h1 class="govuk-heading-xl">@messages("messages__index__title")</h1>
+    @components.heading(messages("messages__index__title"))
 
-       <p class="govuk-body">@messages("messages__index__guidance")</p>
-    }
+    <p class="govuk-body">@messages("messages__index__guidance")</p>
+
+}

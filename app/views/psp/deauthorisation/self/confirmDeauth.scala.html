@@ -19,56 +19,32 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import play.api.data.Form
 @import views.html._
-@import viewmodels.Message
 @import utils.ViewHelper.titleWithErrors
 @import controllers.psp.deauthorise.self.routes._
 @import controllers.psp.routes._
 
 @this(
     layout: templates.Layout,
-    govukRadios : GovukRadios,
     formHelper: PlayFrontendFormWithCSRF,
+    input_yes_no: components.input_yes_no,
     govukErrorSummary: GovukErrorSummary,
     button: components.govuk_button
 )
 
-@(form: Form[_], schemeName: String, srn: String, pspName: String)(implicit request: Request[_],
-messages: Messages)
+@(form: Form[_], schemeName: String, srn: String, pspName: String)(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = titleWithErrors(form, messages("messages__confirmDeauthorisePsp__title"))
-){
+@layout(pageTitle = titleWithErrors(form, messages("messages__confirmDeauthorisePsp__title"))){
 
     @formHelper(action = ConfirmDeauthController.onSubmit(), 'autoComplete -> "off") {
+
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
         }
 
-        @govukRadios(
-            Radios(
-                fieldset = Some(
-                    Fieldset(
-                        legend = Some(
-                            Legend(
-                                content = Text(messages("messages__confirmDeauthorisePsp__heading", pspName, schemeName)),
-                                classes = "govuk-fieldset__legend--xl",
-                                isPageHeading = true
-                            )
-                        )
-                    )
-                ),
-                items = Seq(
-                    RadioItem(
-                        content = Text(messages("site.yes")),
-                        value = Some("true")
-                    ),
-                    RadioItem(
-                        content = Text(messages("site.no")),
-                        value = Some("false")
-                    )
-                ),
-                classes = "govuk-radios--inline"
-            ).withFormField(form("value"))
+        @input_yes_no(
+            field = form("value"),
+            label = messages("messages__confirmDeauthorisePsp__heading", pspName, schemeName),
+            headingIsLegend = true
         )
 
         @button(messages("site.save_and_continue"))
@@ -81,4 +57,3 @@ messages: Messages)
 
     }
 }
-

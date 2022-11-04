@@ -14,29 +14,26 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
-@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
-@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import views.html._
-@import controllers.routes._
-@import models.Mode
-@import viewmodels.Message
 
 @this(
     layout: templates.Layout,
-    govukPanel : GovukPanel
+    panel: components.panel
 )
 
 @(schemeName: String)(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = messages("messages__invitationAccepted__title")
-) {
-    @govukPanel(Panel(
-        title = Text(messages("messages__invitationAccepted__heading", schemeName)),
-        content = HtmlContent("")
-    ))
+@layout(pageTitle = messages("messages__invitationAccepted__title")) {
 
-    <p class="govuk-body"><a id="return-to-schemes" class="govuk-link" href="@controllers.psa.routes.ListSchemesController.onPageLoad()">@messages("messages__invitationAccepted__returnToSchemes__link")</a></p>
+    @panel(
+        panelTitle = messages("messages__invitationAccepted__heading", schemeName),
+        panelContent = ""
+    )
+
+    <p class="govuk-body">
+        <a id="return-to-schemes" class="govuk-link" href="@controllers.psa.routes.ListSchemesController.onPageLoad()">
+            @messages("messages__invitationAccepted__returnToSchemes__link")
+        </a>
+    </p>
 
 }

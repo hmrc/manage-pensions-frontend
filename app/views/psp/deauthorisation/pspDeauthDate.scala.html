@@ -14,16 +14,12 @@
  * limitations under the License.
  *@
 
-@import config.FrontendAppConfig
-@import uk.gov.hmrc.play.views.html._
 @import views.html._
 @import controllers.psp.deauthorise.routes._
 @import controllers.psa.routes._
-@import models.Mode
 @import utils.ViewHelper.titleWithErrors
 @import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
-@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 
 @this(
     layout: templates.Layout,
@@ -33,22 +29,9 @@
     button: components.govuk_button
 )
 
-@(
-        form: Form[_],
-        pspName: String,
-        schemeName: String,
-        srn: String,
-        relationshipStartDate: String,
-        index: Int
-)(
-        implicit
-        request: Request[_],
-        messages: Messages
-)
+@(form: Form[_], pspName: String, schemeName: String, srn: String, relationshipStartDate: String, index: Int)(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = titleWithErrors(form, messages("messages__pspDeauthDate__title"))
-) {
+@layout(pageTitle = titleWithErrors(form, messages("messages__pspDeauthDate__title"))) {
 
     @formHelper(action = PspDeauthDateController.onSubmit(index), 'autoComplete -> "off",'novalidate -> "novalidate") {
 
@@ -56,8 +39,7 @@
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form, mapping = Map("pspDeauthDate" -> "pspDeauthDate.day")))
         }
 
-
-        <h1 class="govuk-heading-xl">@messages("messages__pspDeauthDate__heading", pspName, schemeName)</h1>
+        @components.heading(messages("messages__pspDeauthDate__heading", pspName, schemeName))
 
         @components.paragraph_text(messages("messages__pspDeauthDate__lede", pspName, relationshipStartDate))
 

@@ -20,11 +20,10 @@
 
 @(pageTitle: String, heading: String, message: String)(implicit request: Request[_], messages: Messages)
 
-@layout(
-pageTitle = pageTitle){
-<h1 class="govuk-heading-xl">@heading</h1>
+@layout(pageTitle = pageTitle){
 
-<p class="govuk-body">@message</p>
+    <h1 class="govuk-heading-xl">@heading</h1>
+
+    <p class="govuk-body">@message</p>
 
 }
-

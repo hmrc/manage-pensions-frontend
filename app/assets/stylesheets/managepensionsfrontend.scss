@@ -1,0 +1,74 @@
+@import "lib/govuk-frontend/govuk/base";
+@import 'partials/_variables';
+@import 'partials/_card';
+@import 'partials/_flexbox';
+@import 'location-autocomplete.min';
+
+.app-task-list {
+
+  .app-task-list__items {
+    padding-left: 0;
+  }
+
+  .app-task-list__item {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    justify-content: flex-start;
+
+    @media (min-width: 451px) {
+      flex-direction: row;
+    }
+
+    .app-task-list__task-name {
+      float: none;
+
+      @media (min-width: 451px) {
+        margin-right: 1em;
+      }
+    }
+
+    .app-task-list__tag {
+      float: none;
+      flex: 0 0 auto;
+      margin: .75em 0 0 0;
+      font-size: 1em;
+      letter-spacing: 1px;
+      font-weight: normal;
+
+      @media (min-width: 451px) {
+        margin: 0 0 0 auto;
+      }
+    }
+  }
+}
+
+.app-task-list__items  + .app-task-list__items {
+  .app-task-list__item:first-child {
+    border-top: none;
+  }
+}
+
+.govuk-summary-list {
+  &.govuk-check-your-answers{
+    margin-bottom: 0;
+    &:last-of-type {
+      margin-bottom: 1.75em;
+    }
+  }
+}
+
+.govuk-form-group {
+  .govuk-fieldset {
+    .govuk-fieldset__legend {
+      &.govuk-visually-hidden {
+        white-space: normal!important;
+      }
+    }
+  }
+}
+
+[role="region"][aria-labelledby] {
+  overflow: auto;
+}

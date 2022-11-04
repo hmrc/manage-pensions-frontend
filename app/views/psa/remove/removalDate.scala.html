@@ -14,16 +14,12 @@
  * limitations under the License.
  *@
 
-@import config.FrontendAppConfig
-@import uk.gov.hmrc.play.views.html._
 @import views.html._
 @import controllers.psa.remove.routes._
-@import models.Mode
 @import utils.ViewHelper.titleWithErrors
 @import controllers.psa.routes._
 @import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
-@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 
 @this(
     layout: templates.Layout,
@@ -35,9 +31,7 @@
 
 @(form: Form[_], psaName: String, schemeName: String, srn: String, associationDate: String)(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = titleWithErrors(form, messages("messages__removalDate__title"))
-) {
+@layout(pageTitle = titleWithErrors(form, messages("messages__removalDate__title"))) {
 
     @formHelper(action = PsaRemovalDateController.onSubmit, 'autoComplete -> "off",'novalidate -> "novalidate") {
 
@@ -45,7 +39,7 @@
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form, mapping = Map("removalDate" -> "removalDate.day")))
         }
 
-        <h1 class="govuk-heading-xl">@messages("messages__removalDate__heading", psaName, schemeName)</h1>
+        @components.heading(messages("messages__removalDate__heading", psaName, schemeName))
 
         @components.paragraph_text(messages("messages__removalDate__lede", psaName, schemeName, associationDate))
 

@@ -14,29 +14,28 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
-@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
-@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import views.html._
-@import controllers.invitations.routes._
 @import models.invitations.Invitation
 @import utils.DateHelper
 
 @this(
-layout: templates.Layout
+    layout: templates.Layout
 )
 
 @(invitationsList: List[Invitation], psaName: String)(implicit request: Request[_], messages: Messages)
 
-@layout(
-pageTitle = s"${messages("messages__yourInvitations__title")}"
-){
+@layout(pageTitle = s"${messages("messages__yourInvitations__title")}"){
 
-    <h1 class="govuk-heading-xl">@messages("messages__yourInvitations__heading")</h1>
+    @components.heading(messages("messages__yourInvitations__heading"))
+
     @if(invitationsList.isEmpty) {
+
         <p class="govuk-body">@messages("messages__yourInvitations__not_found")</p>
+
     } else {
+
         <p class="govuk-body govuk-!-margin-bottom-7">@messages("messages__yourInvitations__lede")</p>
+
         <ul class="govuk-list">
             @for((invitation, i) <- invitationsList.zipWithIndex) {
                 @components.invitation(invitation.schemeName,
@@ -45,6 +44,7 @@ pageTitle = s"${messages("messages__yourInvitations__title")}"
                 invitation.srn)
             }
         </ul>
+
     }
 
     <p class="govuk-body">
@@ -52,4 +52,5 @@ pageTitle = s"${messages("messages__yourInvitations__title")}"
             @messages("messages__returnToSchemeDetails__link", psaName)
         </a>
     </p>
+
 }

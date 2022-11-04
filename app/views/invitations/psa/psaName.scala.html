@@ -17,7 +17,6 @@
 @import controllers.invitations.psa.routes._
 @import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
-@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import views.html._
 @import utils.ViewHelper.titleWithErrors
 
@@ -25,32 +24,28 @@
     layout: templates.Layout,
     formHelper: PlayFrontendFormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
-    button: components.govuk_button,
-    govukInput: GovukInput
+    input_text: components.input_text,
+    button: components.govuk_button
 )
 
 @(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = titleWithErrors(form, messages("messages__psa__name__title"))
-) {
+@layout(pageTitle = titleWithErrors(form, messages("messages__psa__name__title"))) {
 
     @formHelper(action = PsaNameController.onSubmit(mode), 'autoComplete -> "off") {
 
-    @if(form.errors.nonEmpty) {
-        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
-    }
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
+        }
 
-    @govukInput(
-        Input(
-            label = Label(classes = "govuk-label--xl", content = Text(messages("messages__psa__name__heading")),
-            isPageHeading = true),
-            classes = "govuk-!-width-one-half",
-            hint = Some(Hint(content = Text(messages("messages__psa__name__p1"))))
-        ).withFormField(form("psaName"))
-    )
+        @input_text(
+            field = form("psaName"),
+            label = messages("messages__psa__name__heading"),
+            headingIsLegend = true,
+            hint = Some(messages("messages__psa__name__p1"))
+        )
 
-    @button(messages("site.save_and_continue"))
+        @button(messages("site.save_and_continue"))
 
     }
 }

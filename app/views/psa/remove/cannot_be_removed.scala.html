@@ -15,7 +15,6 @@
  *@
 
 @import config.FrontendAppConfig
-@import viewmodels.Message
 @import viewmodels.RemovalViewModel
 
 @this(
@@ -25,18 +24,18 @@
 
 @(viewModel: RemovalViewModel)(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = messages(viewModel.titleMessageKey)) {
+@layout(pageTitle = messages(viewModel.titleMessageKey)) {
 
-        <h1 class="govuk-heading-xl">@messages(viewModel.headingMessageKey)</h1>
+    @components.heading(messages(viewModel.headingMessageKey))
 
-        <p class="govuk-body">@messages(viewModel.p1MessageKey)</p>
-        <p class="govuk-body">@messages(viewModel.p2MessageKey)</p>
+    <p class="govuk-body">@messages(viewModel.p1MessageKey)</p>
 
-        <p class="govuk-body">
-            <a id="return-to-schemes" class="govuk-link"
-               href="@controllers.psa.routes.ListSchemesController.onPageLoad()">@messages(viewModel.returnLinkMessageKey)
-            </a>
-        </p>
+    <p class="govuk-body">@messages(viewModel.p2MessageKey)</p>
+
+    <p class="govuk-body">
+        <a id="return-to-schemes" class="govuk-link"
+           href="@controllers.psa.routes.ListSchemesController.onPageLoad()">@messages(viewModel.returnLinkMessageKey)
+        </a>
+    </p>
 
 }

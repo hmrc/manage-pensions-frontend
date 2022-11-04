@@ -19,6 +19,7 @@
 @(cardModel: CardViewModel)(implicit messages: Messages)
 
 <div class="card" id="@cardModel.id">
+
     <div class="card-body">
         <h2 class="card-heading govuk-heading-m">
             @cardModel.heading
@@ -32,25 +33,22 @@
                 }
             </p>
         }
-
-
     </div>
+
     <div class="card-action">
-    @if(cardModel.links.nonEmpty){
-        <ul class="govuk-list">
-            @for(link <- cardModel.links) {
-                <li>
-                    <a id="@link.id" class="govuk-link" href="@link.url">@messages(link.linkText)</a>
-                </li>
-            }
+        @if(cardModel.links.nonEmpty){
+            <ul class="govuk-list">
+                @for(link <- cardModel.links) {
+                    <li>
+                        <a id="@link.id" class="govuk-link" href="@link.url">@messages(link.linkText)</a>
+                    </li>
+                }
 
-            @if(cardModel.html.nonEmpty){
-                @cardModel.html
-            }
-        </ul>
-    }
-
+                @if(cardModel.html.nonEmpty){
+                    @cardModel.html
+                }
+            </ul>
+        }
     </div>
-
 
 </div>

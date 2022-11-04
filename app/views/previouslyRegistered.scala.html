@@ -14,7 +14,6 @@
  * limitations under the License.
  *@
 
-@import config.FrontendAppConfig
 @import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
@@ -24,9 +23,9 @@
 
 @this(
     layout: templates.Layout,
-    govukRadios : GovukRadios,
     formHelper: PlayFrontendFormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
+    input_radio: components.input_radio,
     button: components.govuk_button
 )
 
@@ -57,30 +56,19 @@
   HtmlContent(s"<strong>$text</strong>")
 }
 
-@layout(
-    pageTitle = titleWithErrors(form, messages("messages__previouslyRegistered__title"))
-){
+@layout(pageTitle = titleWithErrors(form, messages("messages__previouslyRegistered__title"))){
 
     @formHelper(action = submitRoute, 'autoComplete -> "off") {
 
-    @if(form.errors.nonEmpty) {
-        @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
-    }
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
+        }
 
-    @govukRadios(
-        Radios(
-            fieldset = Some(
-                Fieldset(
-                    legend = Some(
-                        Legend(
-                            content = Text(messages("messages__previouslyRegistered__heading")),
-                            classes = "govuk-fieldset__legend--xl",
-                            isPageHeading = true
-                        )
-                    )
-                )
-            ),
-            items = Seq(
+        @input_radio(
+            field = form("value"),
+            legend = messages("messages__previouslyRegistered__heading"),
+            legendAsHeading = true,
+            inputs = Seq(
                 RadioItem(
                     content = boldText(messages("messages__previouslyRegistered__yes__not_logged_in")),
                     value = Some(PreviouslyRegistered.PreviouslyRegisteredButNotLoggedIn.toString),
@@ -104,12 +92,10 @@
                     value = Some(PreviouslyRegistered.NotPreviousRegistered.toString),
                     hint = None
                 )
-            ),
-            classes = "govuk-!-font-weight-bold"
-        ).withFormField(form("value"))
-    )
+            )
+        )
 
-    @button(messages("site.continue"))
+        @button(messages("site.continue"))
 
     }
 }

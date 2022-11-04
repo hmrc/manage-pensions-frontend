@@ -16,9 +16,6 @@
 
 @import config.FrontendAppConfig
 @import viewmodels.CardViewModel
-@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
-@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
-@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import models.Link
 
 @this(
@@ -28,48 +25,53 @@
 )
 
 @(
-        name: String,
-        title: String,
-        schemeCard: CardViewModel,
-        adminCard:  CardViewModel,
-        penaltiesCardHtml: Option[Html],
-        migrationHtml: Option[Html],
-        subHeading: Option[String] = None,
-        returnLink: Option[Link] = None
-)(
-        implicit request: Request[_],
-        messages: Messages
-)
+    name: String,
+    title: String,
+    schemeCard: CardViewModel,
+    adminCard:  CardViewModel,
+    penaltiesCardHtml: Option[Html],
+    migrationHtml: Option[Html],
+    subHeading: Option[String] = None,
+    returnLink: Option[Link] = None
+)(implicit request: Request[_], messages: Messages)
 
-    @layout(
-        pageTitle = messages(title),
-        fullWidthLayout = true
-    ) {
-        <div class="govuk-grid-row">
-            <div class="govuk-grid-column-full">
-                @hmrcPageHeading(PageHeading(
-                    text = name,
-                    section = subHeading
-                ))
+@layout(pageTitle = messages(title), fullWidthLayout = true) {
 
-                <div class="flex-container govuk-grid-row">
-                    @penaltiesCardHtml.map { penaltiesCard =>
-                        @penaltiesCard
-                    }
-                    @components.card(schemeCard)
-                    @migrationHtml.map { migrationTile =>
-                        @migrationTile
-                    }
-                    @components.card(adminCard)
-                </div>
+    <div class="govuk-grid-row">
 
-                @returnLink.map { ret =>
+        <div class="govuk-grid-column-full">
+
+            @hmrcPageHeading(PageHeading(
+                text = name,
+                section = subHeading
+            ))
+
+            <div class="flex-container govuk-grid-row">
+
+                @penaltiesCardHtml.map { penaltiesCard =>
+                    @penaltiesCard
+                }
+
+                @components.card(schemeCard)
+
+                @migrationHtml.map { migrationTile =>
+                    @migrationTile
+                }
+
+                @components.card(adminCard)
+
+            </div>
+
+            @returnLink.map { ret =>
                 <p class="govuk-body">
                     <a id="@ret.id" class="govuk-link" href="@ret.url">
                         @messages(ret.linkText)
                     </a>
                 </p>
-                }
-            </div>
+            }
+
         </div>
-    }
+
+    </div>
+
+}

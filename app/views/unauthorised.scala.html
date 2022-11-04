@@ -20,9 +20,8 @@
 
 @()(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = messages("messages__unauthorised__title")) {
+@layout(pageTitle = messages("messages__unauthorised__title")) {
+    
+    @components.heading(messages("messages__unauthorised__title"))
 
-        <h1 class="govuk-heading-xl">@messages("messages__unauthorised__title")</h1>
-
-    }
+}

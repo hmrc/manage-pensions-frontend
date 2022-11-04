@@ -14,30 +14,23 @@
  * limitations under the License.
  *@
 
-@import config.FrontendAppConfig
 @import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
-@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import views.html._
-@import controllers.invitations.psp.routes._
-@import models.ClientReference
 @import utils.ViewHelper.titleWithErrors
 @import play.api.mvc.Call
 
-
 @this(
-layout: templates.Layout,
-formHelper: PlayFrontendFormWithCSRF,
-govukErrorSummary: GovukErrorSummary,
-button: components.govuk_button,
-govukInput : GovukInput
+    layout: templates.Layout,
+    formHelper: PlayFrontendFormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    input_text: components.input_text,
+    button: components.govuk_button
 )
-
 
 @(form: Form[_], pspName: String, mode: Mode, schemeName:String, returnCall: Call,actionCall: Call)(implicit request: Request[_], messages: Messages)
 
-@layout(
-pageTitle = titleWithErrors(form, messages("messages__psp__what__client_ref__title"))) {
+@layout(pageTitle = titleWithErrors(form, messages("messages__psp__what__client_ref__title"))) {
 
     @formHelper(action = actionCall, 'autoComplete -> "off") {
 
@@ -45,16 +38,10 @@ pageTitle = titleWithErrors(form, messages("messages__psp__what__client_ref__tit
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
         }
 
-
-        @govukInput(
-            Input(
-                    label = Label(classes = "govuk-label--xl",
-                    content = Text(messages("messages__psp__what__client_ref__heading",pspName)),
-                    isPageHeading = true
-                ),
-            classes = "govuk-!-width-one-half",
-            spellcheck = Some(false)
-            ).withFormField(form("reference"))
+        @input_text(
+            field = form("reference"),
+            label = messages("messages__psp__what__client_ref__heading", pspName),
+            headingIsLegend = true
         )
 
         @button(messages("site.save_and_continue"))
@@ -64,7 +51,6 @@ pageTitle = titleWithErrors(form, messages("messages__psp__what__client_ref__tit
                 @messages("messages__returnToSchemeDetails__link", schemeName)
             </a>
         </p>
-
 
     }
 }

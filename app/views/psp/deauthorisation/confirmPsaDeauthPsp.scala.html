@@ -16,18 +16,10 @@
 
 @this(
     layout: templates.Layout,
-    govukPanel : GovukPanel
+    panel: components.panel
 )
 
-@(
-        pspName: String,
-        schemeName: String,
-        psaEmailAddress: String
-)(
-        implicit
-        request: Request[_],
-        messages: Messages
-)
+@(pspName: String, schemeName: String, psaEmailAddress: String)(implicit request: Request[_], messages: Messages)
 
 @email = {
     <span class="govuk-!-font-weight-bold">@psaEmailAddress</span>
@@ -51,17 +43,12 @@
     </span>
 }
 
-@layout(
-    pageTitle = messages("messages__confirmPsaDeauthPsp__title"),
-    showBackLink = false
-) {
+@layout(pageTitle = messages("messages__confirmPsaDeauthPsp__title"), showBackLink = false) {
 
-    @govukPanel(
-        Panel(
-            title = HtmlContent(headingText.toString)
-        )
+    @panel(
+        panelTitle = headingText.toString,
+        panelContent = ""
     )
-
 
     <p class="govuk-body">
         @Html(messages("messages__confirmPsaDeauthPsp__p1", email.toString))

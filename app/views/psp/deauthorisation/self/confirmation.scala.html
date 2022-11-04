@@ -15,12 +15,10 @@
  *@
 
 @import controllers.psp.routes._
-@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
-@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 
 @this(
     layout: templates.Layout,
-    govukPanel : GovukPanel
+    panel: components.panel
 )
 
 @(schemeName: String, authorisingPsa: String, emailAddress: String)(implicit request: Request[_],messages: Messages)
@@ -47,14 +45,11 @@
     </span>
 }
 
-@layout(
-    pageTitle = messages("messages__pspDeauthConfirmation__title")
-) {
+@layout(pageTitle = messages("messages__pspDeauthConfirmation__title")) {
 
-    @govukPanel(
-        Panel(
-            title = HtmlContent(panelText.toString)
-        )
+    @panel(
+        panelTitle = panelText.toString,
+        panelContent = ""
     )
 
     <p class="govuk-body">

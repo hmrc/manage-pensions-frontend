@@ -32,20 +32,9 @@
     govukSelect : GovukSelect
 )
 
-@(
-        form: Form[_],
-        mode: Mode,
-        options: Seq[InputOption],
-        prepopulated: Boolean,
-        prefix: String,
-        name: String
-)(
-        implicit request: Request[_],
-        messages: Messages
-)
+@(form: Form[_], mode: Mode, options: Seq[InputOption], prepopulated: Boolean, prefix: String, name: String)(implicit request: Request[_], messages: Messages)
 
-@layout(
-pageTitle = titleWithErrors(form, messages(s"messages__${prefix}__title"))) {
+@layout(pageTitle = titleWithErrors(form, messages(s"messages__${prefix}__title"))) {
 
     @formHelper(action = AdviserManualAddressController.onSubmit(mode, prepopulated), 'autoComplete -> "off") {
 
@@ -53,9 +42,7 @@ pageTitle = titleWithErrors(form, messages(s"messages__${prefix}__title"))) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
         }
 
-        <h1 class="govuk-heading-xl">@messages(s"messages__${prefix}__heading", name)</h1>
-
-        <p>@messages("")</p>
+        @components.heading(messages(s"messages__${prefix}__heading", name))
 
         @govukInput(
             Input(
@@ -64,6 +51,7 @@ pageTitle = titleWithErrors(form, messages(s"messages__${prefix}__title"))) {
                 classes = "govuk-!-width-two-thirds"
             ).withFormField(form("addressLine1"))
         )
+
         @govukInput(
             Input(
                 label = Label(content = Text(messages("messages__common__address2")),
@@ -71,6 +59,7 @@ pageTitle = titleWithErrors(form, messages(s"messages__${prefix}__title"))) {
                 classes = "govuk-!-width-two-thirds"
             ).withFormField(form("addressLine2"))
         )
+
         @govukInput(
             Input(
                 label = Label(content = Text(messages("messages__common__address3")),
@@ -78,6 +67,7 @@ pageTitle = titleWithErrors(form, messages(s"messages__${prefix}__title"))) {
                 classes = "govuk-!-width-one-half"
             ).withFormField(form("addressLine3"))
         )
+
         @govukInput(
             Input(
                 label = Label(content = Text(messages("messages__common__address4")),
@@ -85,6 +75,7 @@ pageTitle = titleWithErrors(form, messages(s"messages__${prefix}__title"))) {
                 classes = "govuk-!-width-one-half"
             ).withFormField(form("addressLine4"))
         )
+
         @govukInput(
             Input(
                 label = Label(content = Text(messages("messages__common__address_postcode")),
@@ -92,6 +83,7 @@ pageTitle = titleWithErrors(form, messages(s"messages__${prefix}__title"))) {
                 classes = "govuk-!-width-one-quarter"
             ).withFormField(form("postCode"))
         )
+
         @govukSelect(Select(
             id = "country",
             name = "country",
@@ -110,5 +102,6 @@ pageTitle = titleWithErrors(form, messages(s"messages__${prefix}__title"))) {
         )
 
         @button(messages("site.save_and_continue"))
+
     }
 }

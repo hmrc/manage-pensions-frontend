@@ -15,9 +15,6 @@
  *@
 
 @import config.FrontendAppConfig
-@import controllers.routes._
-@import models.Mode
-@import viewmodels.Message
 
 @this(
     layout: templates.Layout,
@@ -26,10 +23,9 @@
 
 @(pspName: String, schemeName:String)(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = messages("messages__alreadyAssociatedWithScheme__title", pspName)) {
+@layout(pageTitle = messages("messages__alreadyAssociatedWithScheme__title", pspName)) {
 
-    <h1 class="govuk-heading-xl">@messages("messages__alreadyAssociatedWithScheme__heading", pspName)</h1>
+    @components.heading(messages("messages__alreadyAssociatedWithScheme__heading", pspName))
 
     <p class="govuk-body">@messages("messages__alreadyAssociatedWithScheme__p1", pspName, schemeName)</p>
 

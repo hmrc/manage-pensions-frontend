@@ -16,32 +16,36 @@
 
 @this(
     layout: templates.Layout,
-    govukInsetText : GovukInsetText
+    inset_text: components.inset_text
 )
 
 @()(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = messages("messages__contactHMRC__title")) {
+@insetContent = {
+    <p class="govuk-body govuk-!-margin-bottom-1">@messages("messages__contactHMRC__address1")</p>
+    <p class="govuk-body govuk-!-margin-bottom-1">@messages("messages__contactHMRC__address2")</p>
+    <p class="govuk-body govuk-!-margin-bottom-1">@messages("messages__contactHMRC__address3")</p>
+    <p class="govuk-body govuk-!-margin-bottom-1">@messages("messages__contactHMRC__address4")</p>
+}
 
-        <h1 class="govuk-heading-xl">@messages("messages__contactHMRC__heading")</h1>
+@layout(pageTitle = messages("messages__contactHMRC__title")) {
 
-        <p class="govuk-body">@messages("messages__contactHMRC__p1")</p>
-        <p class="govuk-body">@messages("messages__contactHMRC__p2")</p>
+    @components.heading(messages("messages__contactHMRC__heading"))
 
-        <div class="govuk-inset-text">
-            <p class="govuk-body govuk-!-margin-bottom-1">@messages("messages__contactHMRC__address1")</p>
-            <p class="govuk-body govuk-!-margin-bottom-1">@messages("messages__contactHMRC__address2")</p>
-            <p class="govuk-body govuk-!-margin-bottom-1">@messages("messages__contactHMRC__address3")</p>
-            <p class="govuk-body govuk-!-margin-bottom-1">@messages("messages__contactHMRC__address4")</p>
-        </div>
+    <p class="govuk-body">@messages("messages__contactHMRC__p1")</p>
 
-        <p class="govuk-body">@messages("messages__contactHMRC__p3")</p>
+    <p class="govuk-body">@messages("messages__contactHMRC__p2")</p>
 
-        <ul class="govuk-list govuk-list--bullet">
-            <li>@messages("messages__contactHMRC__item1")</li>
-            <li>@messages("messages__contactHMRC__item2")</li>
-            <li>@messages("messages__contactHMRC__item3")</li>
-        </ul>
+    @inset_text(
+        content = insetContent.toString
+    )
 
-    }
+    <p class="govuk-body">@messages("messages__contactHMRC__p3")</p>
+
+    <ul class="govuk-list govuk-list--bullet">
+        <li>@messages("messages__contactHMRC__item1")</li>
+        <li>@messages("messages__contactHMRC__item2")</li>
+        <li>@messages("messages__contactHMRC__item3")</li>
+    </ul>
+
+}

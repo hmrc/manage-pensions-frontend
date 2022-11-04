@@ -15,11 +15,7 @@
  *@
 
 @import config.FrontendAppConfig
-@import controllers.routes._
-@import models.Mode
-@import viewmodels.{AssociatedPsa, Message}
-@import models.Link
-@import play.api.mvc.Call
+@import viewmodels.{AssociatedPsa}
 @import controllers.psa.remove.routes._
 @import controllers.psa.routes._
 @import controllers.invitations.routes._
@@ -30,22 +26,16 @@
     appConfig: FrontendAppConfig
 )
 
-@(
-    schemeName: String,
-    admins: Option[Seq[AssociatedPsa]],
-    srn: String,
-    isSchemeOpen: Boolean
-)(implicit request: Request[_], messages: Messages)
+@(schemeName: String, admins: Option[Seq[AssociatedPsa]], srn: String, isSchemeOpen: Boolean)(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = s"${messages("messages__psaSchemeDash__psa_list_head")}") {
+@layout(pageTitle = s"${messages("messages__psaSchemeDash__psa_list_head")}") {
 
-        @hmrcPageHeading(
-            PageHeading(
-                text = messages("messages__psaSchemeDash__psa_list_head"),
-                section = Some(schemeName)
-            )
+    @hmrcPageHeading(
+        PageHeading(
+            text = messages("messages__psaSchemeDash__psa_list_head"),
+            section = Some(schemeName)
         )
+    )
 
     @admins.map { admins =>
         <div id="admins-list" class="govuk-form-group">

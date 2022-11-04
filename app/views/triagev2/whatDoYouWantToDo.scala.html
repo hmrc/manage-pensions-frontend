@@ -14,53 +14,38 @@
  * limitations under the License.
  *@
 
-@import config.FrontendAppConfig
 @import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
-@import controllers.triagev2.routes._
-@import models.{Mode}
 @import models.triagev2.WhatDoYouWantToDo
 @import utils.ViewHelper.titleWithErrors
 
 @this(
-   layout: templates.Layout,
-   govukRadios : GovukRadios,
-   formHelper: PlayFrontendFormWithCSRF,
-   govukErrorSummary: GovukErrorSummary,
-   button: components.govuk_button
+    layout: templates.Layout,
+    formHelper: PlayFrontendFormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    input_radio: components.input_radio,
+    button: components.govuk_button
 )
 
 @(form: Form[_], role: String)(implicit request: Request[_], messages: Messages)
 
-@layout(
-   pageTitle = titleWithErrors(form, messages("messages__whatDoYouWantToDo__v2__title"))) {
+@layout(pageTitle = titleWithErrors(form, messages("messages__whatDoYouWantToDo__v2__title"))) {
 
-      @formHelper(action = controllers.triagev2.routes.WhatDoYouWantToDoController.onSubmit(role), 'autoComplete -> "off") {
+    @formHelper(action = controllers.triagev2.routes.WhatDoYouWantToDoController.onSubmit(role), 'autoComplete -> "off") {
 
-         @if(form.errors.nonEmpty) {
+        @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
-         }
+        }
 
-         @govukRadios(
-            Radios(
-               fieldset = Some(
-                  Fieldset(
-                     legend = Some(
-                        Legend(
-                           content = Text(messages("messages__whatDoYouWantToDo__v2__title")),
-                           classes = "govuk-fieldset__legend--xl",
-                           isPageHeading = true
-                        )
-                     )
-                  )
-               ),
-               items = WhatDoYouWantToDo.options(role)
-            ).withFormField(form("value")
-         )
-      )
+        @input_radio(
+            field = form("value"),
+            legend = messages("messages__whatDoYouWantToDo__v2__title"),
+            legendAsHeading = true,
+            inputs = WhatDoYouWantToDo.options(role)
+        )
 
-      @button(messages("site.continue"))
+        @button(messages("site.continue"))
 
-   }
+    }
 }

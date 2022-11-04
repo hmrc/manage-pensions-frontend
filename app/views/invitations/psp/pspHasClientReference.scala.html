@@ -14,32 +14,26 @@
  * limitations under the License.
  *@
 
-@import config.FrontendAppConfig
 @import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import views.html._
-@import controllers.invitations.psp.routes._
-@import models.ClientReference
 @import utils.ViewHelper.titleWithErrors
 @import play.api.mvc.Call
 
-
 @this(
-layout: templates.Layout,
-govukRadios : GovukRadios,
-formHelper: PlayFrontendFormWithCSRF,
-govukErrorSummary: GovukErrorSummary,
-button: components.govuk_button,
-govukInput : GovukInput
+    layout: templates.Layout,
+    govukRadios : GovukRadios,
+    input_yes_no: components.input_yes_no,
+    formHelper: PlayFrontendFormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    button: components.govuk_button,
+    govukInput : GovukInput
 )
-
-
 
 @(form: Form[_], pspName: String, mode: Mode, schemeName:String, returnCall: Call,actionCall: Call)(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = titleWithErrors(form, messages("messages__psp_client_ref__title"))) {
+@layout(pageTitle = titleWithErrors(form, messages("messages__psp_client_ref__title"))) {
 
     @formHelper(action = actionCall, 'autoComplete -> "off") {
 
@@ -47,28 +41,10 @@ govukInput : GovukInput
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
         }
 
-        @govukRadios(Radios(
-            fieldset = Some(Fieldset(
-                legend = Some(Legend(
-                    content = Text(messages("messages__psp_client_ref__heading", pspName)),
-                    classes = "govuk-fieldset__legend--xl",
-                    isPageHeading = true
-                    ))
-                )),
-                idPrefix = Some("hasReference"),
-                name = "hasReference",
-                items = Seq(
-                    RadioItem(
-                        content = Text(messages("site.yes")),
-                        value = Some("true")
-                    ),
-                    RadioItem(
-                        content = Text(messages("site.no")),
-                        value = Some("false")
-                    )
-                ),
-            classes = "govuk-radios--inline"
-            ).withFormField(form("hasReference"))
+        @input_yes_no(
+            field = form("hasReference"),
+            label = messages("messages__psp_client_ref__heading", pspName),
+            headingIsLegend = true
         )
 
         @button(messages("site.save_and_continue"))
@@ -79,6 +55,5 @@ govukInput : GovukInput
             </a>
         </p>
 
-
-}
+    }
 }

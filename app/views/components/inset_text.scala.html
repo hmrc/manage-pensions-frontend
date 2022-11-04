@@ -14,22 +14,17 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+
 @this(
-    layout: templates.Layout,
-    panel: components.panel
+    govukInsetText : GovukInsetText
 )
 
-@(psaName: String, schemeName: String)(implicit request: Request[_], messages: Messages)
+@(content: String, id: Option[String] = None)(implicit messages: Messages)
 
-@layout(pageTitle = messages("messages__confirmRemoved__title"), showBackLink = false) {
-
-    @panel(
-        panelTitle = messages("messages__confirmRemoved__heading", psaName, schemeName),
-        panelContent = ""
+@govukInsetText(
+    InsetText(
+        content = HtmlContent(content),
+        id = id
     )
-
-    <p class="govuk-body">
-        <a id="return-link" href="@controllers.psa.routes.ListSchemesController.onPageLoad().url">@messages("messages__confirmRemoved__return_link")</a>
-    </p>
-
-}
+)

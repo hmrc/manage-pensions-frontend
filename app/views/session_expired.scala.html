@@ -20,11 +20,10 @@
 
 @()(implicit request: Request[_], messages: Messages)
 
-@layout(
-    pageTitle = messages("messages__session_expired__title"),
-    showBackLink = false) {
+@layout(pageTitle = messages("messages__session_expired__title"), showBackLink = false) {
 
-        <h1 class="govuk-heading-xl">@messages("messages__session_expired__title")</h1>
+    @components.heading(messages("messages__session_expired__title"))
 
-        <p class="govuk-body">@messages("messages__session_expired__guidance")</p>
-    }
+    <p class="govuk-body">@messages("messages__session_expired__guidance")</p>
+
+}

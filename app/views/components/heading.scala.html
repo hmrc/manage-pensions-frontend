@@ -14,22 +14,11 @@
  * limitations under the License.
  *@
 
-@this(
-    layout: templates.Layout,
-    panel: components.panel
-)
+@(
+    headingKey: String,
+    headingClass: Boolean = false,
+    headingSize: String = "govuk-heading-xl",
+    headingSizeAlt: String = "govuk-heading-xl govuk-!-margin-bottom-5"
+)(implicit messages: Messages)
 
-@(psaName: String, schemeName: String)(implicit request: Request[_], messages: Messages)
-
-@layout(pageTitle = messages("messages__confirmRemoved__title"), showBackLink = false) {
-
-    @panel(
-        panelTitle = messages("messages__confirmRemoved__heading", psaName, schemeName),
-        panelContent = ""
-    )
-
-    <p class="govuk-body">
-        <a id="return-link" href="@controllers.psa.routes.ListSchemesController.onPageLoad().url">@messages("messages__confirmRemoved__return_link")</a>
-    </p>
-
-}
+<h1 class="@if(headingClass == true) {@headingSizeAlt} else {@headingSize}">@Html(headingKey)</h1>
