@@ -22,5 +22,6 @@ case class Link(
                  id: String,
                  url: String,
                  linkText: Message,
-                 hiddenText: Option[Message] = None
+                 hiddenText: Option[Message] = None,
+                 notification: Option[Message] = None
                )

@@ -25,7 +25,7 @@ import controllers.psp.routes._
 import identifiers.psa.ListOfPSADetailsId
 import identifiers.{SchemeStatusId, SeqAuthorisedPractitionerId}
 import models.SchemeStatus.Open
-import models._
+import models.{Lock, SchemeLock, _}
 import models.psa.PsaDetails
 import play.api.Logger
 import play.api.i18n.Messages
@@ -50,18 +50,27 @@ class PsaSchemeDashboardService @Inject()(
   //Scheme details card
   def schemeCard(srn: String, currentScheme: Option[SchemeDetails], lock: Option[Lock], ua: UserAnswers)
                 (implicit messages: Messages): CardViewModel = {
+    val schemeName: String = currentScheme.map(_.name).getOrElse("the scheme")
     CardViewModel(
       id = "scheme_details",
       heading = Message("messages__psaSchemeDash__scheme_details_head"),
       subHeadings = optToSeq(pstrSubHead(currentScheme)) ++ optToSeq(dateSubHead(currentScheme, ua)),
-      links = Seq(schemeDetailsLink(srn, ua, lock))
+      links = Seq(schemeDetailsLink(srn, ua, lock, schemeName))
     )
   }
 
-  private def schemeDetailsLink(srn: String, ua: UserAnswers, lock: Option[Lock])
+  private def schemeDetailsLink(srn: String, ua: UserAnswers, lock: Option[Lock], schemeName: String)
                                (implicit messages: Messages): Link = {
     val viewOrChangeLinkText = messages("messages__psaSchemeDash__view_change_details_link")
     val viewLinkText = messages("messages__psaSchemeDash__view_details_link")
+
+    val notification: Option[Message] = lock.flatMap {
+      case SchemeLock => Some(Message("messages__psaSchemeDash__view_change_details_link_notification_scheme", schemeName))
+      case PsaLock => Some(Message("messages__psaSchemeDash__view_change_details_link_notification_psa", schemeName))
+      case BothLock => Some(Message("messages__psaSchemeDash__view_change_details_link_notification_psa", schemeName))
+      case _ => None
+    }
+
     val linkText = if (!isSchemeOpen(ua)) {
       viewLinkText
     } else {
@@ -80,7 +89,12 @@ class PsaSchemeDashboardService @Inject()(
         case Some(_) => viewLinkText
       }
     }
-    Link("view-details", appConfig.viewSchemeDetailsUrl.format(srn), linkText)
+    Link(
+      id = "view-details",
+      url = appConfig.viewSchemeDetailsUrl.format(srn),
+      linkText = linkText,
+      notification = notification
+    )
   }
 
   private def getSchemeDetailsFromListOfSchemes(srn: String, list: ListOfSchemes): Option[SchemeDetails] =
