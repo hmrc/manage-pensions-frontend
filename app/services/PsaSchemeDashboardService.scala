@@ -25,8 +25,8 @@ import controllers.psp.routes._
 import identifiers.psa.ListOfPSADetailsId
 import identifiers.{SchemeStatusId, SeqAuthorisedPractitionerId}
 import models.SchemeStatus.Open
-import models.{Lock, SchemeLock, _}
 import models.psa.PsaDetails
+import models._
 import play.api.Logger
 import play.api.i18n.Messages
 import utils.DateHelper._
@@ -50,24 +50,23 @@ class PsaSchemeDashboardService @Inject()(
   //Scheme details card
   def schemeCard(srn: String, currentScheme: Option[SchemeDetails], lock: Option[Lock], ua: UserAnswers)
                 (implicit messages: Messages): CardViewModel = {
-    val schemeName: String = currentScheme.map(_.name).getOrElse("the scheme")
     CardViewModel(
       id = "scheme_details",
       heading = Message("messages__psaSchemeDash__scheme_details_head"),
       subHeadings = optToSeq(pstrSubHead(currentScheme)) ++ optToSeq(dateSubHead(currentScheme, ua)),
-      links = Seq(schemeDetailsLink(srn, ua, lock, schemeName))
+      links = Seq(schemeDetailsLink(srn, ua, lock, currentScheme.map(_.name)))
     )
   }
 
-  private def schemeDetailsLink(srn: String, ua: UserAnswers, lock: Option[Lock], schemeName: String)
+  private def schemeDetailsLink(srn: String, ua: UserAnswers, optionLock: Option[Lock], optionSchemeName: Option[String])
                                (implicit messages: Messages): Link = {
     val viewOrChangeLinkText = messages("messages__psaSchemeDash__view_change_details_link")
     val viewLinkText = messages("messages__psaSchemeDash__view_details_link")
 
-    val notification: Option[Message] = lock.flatMap {
-      case SchemeLock => Some(Message("messages__psaSchemeDash__view_change_details_link_notification_scheme", schemeName))
-      case PsaLock => Some(Message("messages__psaSchemeDash__view_change_details_link_notification_psa", schemeName))
-      case BothLock => Some(Message("messages__psaSchemeDash__view_change_details_link_notification_psa", schemeName))
+    val notification: Option[Message] = (optionLock, optionSchemeName) match {
+      case (Some(SchemeLock), Some(schemeName)) => Some(Message("messages__psaSchemeDash__view_change_details_link_notification_scheme", schemeName))
+      case (Some(PsaLock), Some(schemeName)) => Some(Message("messages__psaSchemeDash__view_change_details_link_notification_psa", schemeName))
+      case (Some(BothLock), Some(schemeName)) => Some(Message("messages__psaSchemeDash__view_change_details_link_notification_scheme", schemeName))
       case _ => None
     }
 
@@ -75,7 +74,7 @@ class PsaSchemeDashboardService @Inject()(
       viewLinkText
     } else {
 
-      logger.warn(s"Pension-scheme : $srn -- Lock-Status : ${lock.getOrElse("No-Lock-Found").toString}")
+      logger.warn(s"Pension-scheme : $srn -- Lock-Status : ${optionLock.getOrElse("No-Lock-Found").toString}")
 
       ua.get(ListOfPSADetailsId).map {
         listOfPSADetails =>
@@ -84,7 +83,7 @@ class PsaSchemeDashboardService @Inject()(
           }
       }
 
-      lock match {
+      optionLock match {
         case Some(VarianceLock) | None => viewOrChangeLinkText
         case Some(_) => viewLinkText
       }
