@@ -25,8 +25,8 @@ import controllers.psp.routes._
 import identifiers.psa.ListOfPSADetailsId
 import identifiers.{SchemeStatusId, SeqAuthorisedPractitionerId}
 import models.SchemeStatus.Open
-import models.psa.PsaDetails
 import models._
+import models.psa.PsaDetails
 import play.api.Logger
 import play.api.i18n.Messages
 import utils.DateHelper._
@@ -58,15 +58,19 @@ class PsaSchemeDashboardService @Inject()(
     )
   }
 
+  private def ptionNotificationMessageKey(optionLock: Option[Lock]): Option[String] = optionLock.flatMap {
+    case SchemeLock | BothLock => Some("messages__psaSchemeDash__view_change_details_link_notification_scheme")
+    case PsaLock => Some("messages__psaSchemeDash__view_change_details_link_notification_psa")
+    case _ => None
+  }
+
   private def schemeDetailsLink(srn: String, ua: UserAnswers, optionLock: Option[Lock], optionSchemeName: Option[String])
                                (implicit messages: Messages): Link = {
     val viewOrChangeLinkText = messages("messages__psaSchemeDash__view_change_details_link")
     val viewLinkText = messages("messages__psaSchemeDash__view_details_link")
 
-    val notification: Option[Message] = (optionLock, optionSchemeName) match {
-      case (Some(SchemeLock), Some(schemeName)) => Some(Message("messages__psaSchemeDash__view_change_details_link_notification_scheme", schemeName))
-      case (Some(PsaLock), Some(schemeName)) => Some(Message("messages__psaSchemeDash__view_change_details_link_notification_psa", schemeName))
-      case (Some(BothLock), Some(schemeName)) => Some(Message("messages__psaSchemeDash__view_change_details_link_notification_scheme", schemeName))
+    val notification: Option[Message] = (ptionNotificationMessageKey(optionLock), optionSchemeName) match {
+      case (Some(key), Some(schemeName)) => Some(Message(key, schemeName))
       case _ => None
     }
 
