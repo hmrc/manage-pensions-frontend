@@ -70,7 +70,7 @@ class PsaSchemeDashboardService @Inject()(
     val viewLinkText = messages("messages__psaSchemeDash__view_details_link")
 
     val notification: Option[Message] = (optionNotificationMessageKey(optionLock), optionSchemeName) match {
-      case (Some(key), Some(schemeName)) => Some(Message(key, schemeName))
+      case (Some(key), Some(schemeName)) => Some(Message(key, "<strong>" + schemeName + "</strong>"))
       case _ => None
     }
 
