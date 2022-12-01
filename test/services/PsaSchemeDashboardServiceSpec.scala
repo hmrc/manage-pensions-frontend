@@ -67,6 +67,11 @@ class PsaSchemeDashboardServiceSpec
         schemeCard(notificationText = Some(Message("messages__psaSchemeDash__view_change_details_link_notification_scheme", name)))
     }
 
+    "return model with view-only link for scheme if psa does hold lock" in {
+      service.schemeCard(srn, currentScheme(Open), Some(PsaLock), userAnswers(Open.value)) mustBe
+        schemeCard(notificationText = Some(Message("messages__psaSchemeDash__view_change_details_link_notification_psa", name)))
+    }
+
     "return not display subheadings if scheme is not open" in {
       val ua = UserAnswers().set(SchemeStatusId)(Rejected.value).asOpt.get
 

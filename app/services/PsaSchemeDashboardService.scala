@@ -58,7 +58,7 @@ class PsaSchemeDashboardService @Inject()(
     )
   }
 
-  private def ptionNotificationMessageKey(optionLock: Option[Lock]): Option[String] = optionLock.flatMap {
+  private def optionNotificationMessageKey(optionLock: Option[Lock]): Option[String] = optionLock.flatMap {
     case SchemeLock | BothLock => Some("messages__psaSchemeDash__view_change_details_link_notification_scheme")
     case PsaLock => Some("messages__psaSchemeDash__view_change_details_link_notification_psa")
     case _ => None
@@ -69,7 +69,7 @@ class PsaSchemeDashboardService @Inject()(
     val viewOrChangeLinkText = messages("messages__psaSchemeDash__view_change_details_link")
     val viewLinkText = messages("messages__psaSchemeDash__view_details_link")
 
-    val notification: Option[Message] = (ptionNotificationMessageKey(optionLock), optionSchemeName) match {
+    val notification: Option[Message] = (optionNotificationMessageKey(optionLock), optionSchemeName) match {
       case (Some(key), Some(schemeName)) => Some(Message(key, schemeName))
       case _ => None
     }
