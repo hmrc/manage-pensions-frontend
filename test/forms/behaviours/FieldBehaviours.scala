@@ -18,15 +18,14 @@ package forms.behaviours
 
 import generators.Generators
 import org.scalacheck.Gen
-import org.scalatest.Matchers
-import org.scalatest.WordSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AsyncWordSpec
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
-import play.api.data.Form
-import play.api.data.FormError
+import play.api.data.{Form, FormError}
 
-trait FieldBehaviours extends WordSpec with Matchers with ScalaCheckDrivenPropertyChecks with Generators {
+trait FieldBehaviours extends AsyncWordSpec with Matchers with ScalaCheckDrivenPropertyChecks with Generators {
 
-  lazy val emptyForm = Map[String, String]()
+  lazy val emptyForm: Map[String, String] = Map[String, String]()
 
   def fieldWithRegex(form: Form[_],
                      fieldName: String,

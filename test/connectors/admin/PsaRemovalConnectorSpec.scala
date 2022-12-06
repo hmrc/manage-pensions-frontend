@@ -16,21 +16,22 @@
 
 package connectors.admin
 
-import java.time.LocalDate
 import com.github.tomakehurst.wiremock.client.WireMock._
 import models.psa.remove.PsaToBeRemovedFromScheme
-import org.scalatest.AsyncFlatSpec
-import org.scalatest.Matchers
+import org.scalatest.flatspec.AsyncFlatSpec
+import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.scalacheck.Checkers
 import play.api.http.Status
 import play.api.libs.json.Json
-import uk.gov.hmrc.http.BadRequestException
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
 import utils.WireMockHelper
+
+import java.time.LocalDate
 
 class PsaRemovalConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper with Checkers {
 
   import PsaRemovalConnectorSpec._
+
   override protected def portConfigKey: String = "microservice.services.pension-administrator.port"
 
   "Delete" should "return successful following a successful deletion" in {
@@ -70,9 +71,9 @@ class PsaRemovalConnectorSpec extends AsyncFlatSpec with Matchers with WireMockH
 }
 
 object PsaRemovalConnectorSpec {
-  implicit val hc : HeaderCarrier = HeaderCarrier()
+  implicit val hc: HeaderCarrier = HeaderCarrier()
 
-  private val psaToBeRemoved = PsaToBeRemovedFromScheme("238DAJFASS", "XXAJ329AJJ", LocalDate.of(2009,1,1))
+  private val psaToBeRemoved = PsaToBeRemovedFromScheme("238DAJFASS", "XXAJ329AJJ", LocalDate.of(2009, 1, 1))
   private val deleteUrl = "/pension-administrator/remove-psa"
   private val requestJson = Json.stringify(Json.toJson(psaToBeRemoved))
 

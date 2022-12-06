@@ -16,7 +16,6 @@
 
 package controllers.psp.deauthorise.self
 
-import java.time.LocalDate
 import connectors.FakeUserAnswersCacheConnector
 import controllers.ControllerSpecBase
 import controllers.actions._
@@ -34,6 +33,8 @@ import utils.DateHelper.formatDate
 import utils.FakeNavigator
 import views.html.psp.deauthorisation.self.deauthDate
 
+import java.time.LocalDate
+
 class DeauthDateControllerSpec extends ControllerSpecBase {
 
   private val formProvider = new PspDeauthDateFormProvider()
@@ -41,6 +42,7 @@ class DeauthDateControllerSpec extends ControllerSpecBase {
   private val form = formProvider(date, messages("messages__pspDeauth_date_error__before_earliest_date", formatDate(date)))
 
   private def onwardRoute = Call("GET", "/foo")
+
   private val schemeName = "test-scheme"
   private val srn = "srn"
   private val ceaseDate = LocalDate.now()
@@ -79,12 +81,12 @@ class DeauthDateControllerSpec extends ControllerSpecBase {
 
       "redirect to the session expired page if there is no required data" in {
         val result = controller(getEmptyData).onPageLoad()(fakeRequest)
-        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad().url
+        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
 
       "redirect to the session expired page if there is no existing data" in {
         val result = controller(dontGetAnyData).onPageLoad()(fakeRequest)
-        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad().url
+        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
     }
 
@@ -114,12 +116,12 @@ class DeauthDateControllerSpec extends ControllerSpecBase {
 
       "redirect to the session expired page if there is no required data" in {
         val result = controller(getEmptyData).onSubmit()(fakeRequest)
-        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad().url
+        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
 
       "redirect to the session expired page if there is no existing data" in {
         val result = controller(dontGetAnyData).onSubmit()(fakeRequest)
-        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad().url
+        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
     }
   }

@@ -16,10 +16,11 @@
 
 package audit
 
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
 class PSPDeauthorisationByPSAEmailAuditEventSpec
-  extends FlatSpec
+  extends AnyFlatSpec
     with Matchers {
 
   "PSPDeauthorisationByPSAEmailAuditEvent" should "output the correct map of data" in {

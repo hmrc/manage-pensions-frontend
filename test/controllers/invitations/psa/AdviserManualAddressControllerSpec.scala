@@ -22,8 +22,10 @@ import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction, Fak
 import forms.invitations.psa.AdviserManualAddressFormProvider
 import identifiers.invitations.psa.{AdviserAddressId, AdviserAddressListId, AdviserAddressPostCodeLookupId, AdviserNameId}
 import models.{Address, NormalMode, TolerantAddress}
+import org.scalatest.OptionValues
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.{MustMatchers, OptionValues, WordSpec}
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.Application
 import play.api.data.Form
@@ -38,8 +40,8 @@ import utils.{FakeCountryOptions, FakeNavigator, Navigator}
 import views.html.invitations.psa.adviserAddress
 
 class AdviserManualAddressControllerSpec
-  extends WordSpec
-    with MustMatchers
+  extends AnyWordSpec
+    with Matchers
     with MockitoSugar
     with ScalaFutures
     with OptionValues {
@@ -64,7 +66,7 @@ class AdviserManualAddressControllerSpec
 
             val form = app.injector.instanceOf[AdviserManualAddressFormProvider]
             val controller = app.injector.instanceOf[AdviserManualAddressController]
-            val result = controller.onPageLoad(NormalMode, false)(FakeRequest())
+            val result = controller.onPageLoad(NormalMode, prepopulated = false)(FakeRequest())
 
             status(result) mustEqual OK
             contentAsString(result) mustEqual viewAsString(address, form())
@@ -84,10 +86,10 @@ class AdviserManualAddressControllerSpec
 
             val form = app.injector.instanceOf[AdviserManualAddressFormProvider]
             val controller = app.injector.instanceOf[AdviserManualAddressController]
-            val result = controller.onPageLoad(NormalMode, true)(FakeRequest())
+            val result = controller.onPageLoad(NormalMode, prepopulated = true)(FakeRequest())
 
             status(result) mustEqual OK
-            contentAsString(result) mustEqual viewAsString(address, form().fill(address), true, "adviser__address__confirm")
+            contentAsString(result) mustEqual viewAsString(address, form().fill(address), prepopulated = true, "adviser__address__confirm")
 
         }
       }
@@ -104,10 +106,10 @@ class AdviserManualAddressControllerSpec
 
             val form = app.injector.instanceOf[AdviserManualAddressFormProvider]
             val controller = app.injector.instanceOf[AdviserManualAddressController]
-            val result = controller.onPageLoad(NormalMode, true)(FakeRequest())
+            val result = controller.onPageLoad(NormalMode, prepopulated = true)(FakeRequest())
 
             status(result) mustEqual OK
-            contentAsString(result) mustEqual viewAsString(address, form().fill(address), true, "adviser__address__confirm")
+            contentAsString(result) mustEqual viewAsString(address, form().fill(address), prepopulated = true, "adviser__address__confirm")
 
         }
 
@@ -130,7 +132,7 @@ class AdviserManualAddressControllerSpec
         app =>
 
           val controller = app.injector.instanceOf[AdviserManualAddressController]
-          val result = controller.onSubmit(NormalMode, false)(FakeRequest().withFormUrlEncodedBody(
+          val result = controller.onSubmit(NormalMode, prepopulated = false)(FakeRequest().withFormUrlEncodedBody(
             ("addressLine1", "value 1"),
             ("addressLine2", "value 2"),
             ("postCode", "AB1 1AB"),
@@ -158,9 +160,8 @@ class AdviserManualAddressControllerSpec
       )) {
         implicit app =>
 
-          val form = app.injector.instanceOf[AdviserManualAddressFormProvider]
           val controller = app.injector.instanceOf[AdviserManualAddressController]
-          val result = controller.onSubmit(NormalMode, false)(FakeRequest().withFormUrlEncodedBody())
+          val result = controller.onSubmit(NormalMode, prepopulated = false)(FakeRequest().withFormUrlEncodedBody())
 
           status(result) mustEqual BAD_REQUEST
       }
@@ -174,13 +175,7 @@ class AdviserManualAddressControllerSpec
 object AdviserManualAddressControllerSpec extends ControllerSpecBase {
 
   val name = "Pension Adviser"
-  private val incompleteAddresses = TolerantAddress(
-      Some("Address 1 Line 1"),
-      None, None, None,
-      Some("A1 1PC"),
-      Some("GB")
-    )
-  val tolerantAddress = TolerantAddress(
+  val tolerantAddress: TolerantAddress = TolerantAddress(
     Some("address line 1"),
     Some("address line 2"),
     Some("address line 3"),
@@ -189,7 +184,7 @@ object AdviserManualAddressControllerSpec extends ControllerSpecBase {
     Some("GB")
   )
 
-  val address = tolerantAddress.toAddress.get
+  val address: Address = tolerantAddress.toAddress.get
 
   val addressData: Map[String, String] = Map(
     "addressLine1" -> "address line 1",
@@ -198,16 +193,6 @@ object AdviserManualAddressControllerSpec extends ControllerSpecBase {
     "addressLine4" -> "address line 4",
     "postCode" -> "AB1 1AP",
     "country" -> "GB"
-  )
-  private val fixableAddress = Seq(
-    TolerantAddress(
-      Some("Address 2 Line 1"),
-      None,
-      None,
-      Some("Address 2 Line 4"),
-      Some("123"),
-      Some("GB")
-    )
   )
   val messageKeyPrefix = "adviser__address"
 

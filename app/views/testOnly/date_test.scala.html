@@ -31,7 +31,7 @@
 
 @layout(pageTitle = titleWithErrors(form, "Set Date - Test Only")) {
 
-    @formHelper(action = controllers.testonly.routes.DateTestController.submit(), 'autoComplete -> "off") {
+    @formHelper(action = controllers.testonly.routes.DateTestController.submit(), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))

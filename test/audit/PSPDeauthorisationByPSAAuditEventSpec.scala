@@ -16,15 +16,15 @@
 
 package audit
 
-import java.time.LocalDate
-import org.scalatest.{MustMatchers, WordSpec}
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AsyncWordSpec
 import play.api.libs.json.Json
 import utils.DateHelper
 
+import java.time.LocalDate
 
-class PSPDeauthorisationByPSAAuditEventSpec
-  extends WordSpec
-    with MustMatchers {
+
+class PSPDeauthorisationByPSAAuditEventSpec extends AsyncWordSpec with Matchers {
 
   // scalastyle:off magic.number
   private val ceaseDate = LocalDate.of(2021, 3, 25)

@@ -17,7 +17,7 @@
 package forms.psa.remove
 
 import forms.mappings.Constraints
-import org.scalatest.Matchers
+import org.scalatest.matchers.should.Matchers
 import play.api.data.FormError
 import views.behaviours.StringFieldBehaviours
 
@@ -26,9 +26,10 @@ import java.time.LocalDate
 class RemovalDateFormProviderSpec extends StringFieldBehaviours with Constraints with Matchers {
 
   // scalastyle:off magic.number
-  private val associationDate =  LocalDate.of(2018, 10, 1)
-  private val beforeEarliestDate = LocalDate.of(2017, 1,1)
-  private val beforeAssociationDate = LocalDate.of(2018, 7,1)
+  private val associationDate = LocalDate.of(2018, 10, 1)
+  private val beforeEarliestDate = LocalDate.of(2017, 1, 1)
+  private val beforeAssociationDate = LocalDate.of(2018, 7, 1)
+
   def form() = new RemovalDateFormProvider()(associationDate, frontendAppConfig.earliestDatePsaRemoval)
   // scalastyle:on magic.number
 
@@ -37,7 +38,7 @@ class RemovalDateFormProviderSpec extends StringFieldBehaviours with Constraints
     val fieldName = "removalDate"
 
     behave like mandatoryDateField(
-      form,
+      () => form(),
       fieldName,
       "removal"
     )

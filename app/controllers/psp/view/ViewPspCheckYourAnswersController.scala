@@ -48,7 +48,7 @@ class ViewPspCheckYourAnswersController @Inject()(override val messagesApi: Mess
 
   def onPageLoad(index: Int): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
-      (SchemeSrnId and SchemeNameId and PspDetailsId(index)).retrieve.right.map {
+      (SchemeSrnId and SchemeNameId and PspDetailsId(index)).retrieve.map {
         case srn ~ schemeName ~ pspDetail =>
           if (pspDetail.authorisingPSAID == request.psaIdOrException.id) {
             val helper: ViewPspCheckYourAnswersHelper = new ViewPspCheckYourAnswersHelper()
@@ -58,14 +58,14 @@ class ViewPspCheckYourAnswersController @Inject()(override val messagesApi: Mess
             Future.successful(Ok(view(sections, controllers.psp.view.routes.ViewPspCheckYourAnswersController.onSubmit(index),
               schemeName = schemeName, returnCall = returnCall(srn))))
           } else {
-            Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+            Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad))
           }
       }
   }
 
   def onSubmit(index: Int): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
-      (SchemeSrnId and PSTRId and PspDetailsId(index)).retrieve.right.map {
+      (SchemeSrnId and PSTRId and PspDetailsId(index)).retrieve.map {
         case srn ~ pstr ~ pspDetail =>
           if (pspDetail.authorisingPSAID == request.psaIdOrException.id) {
             val psaId = request.psaIdOrException.id
@@ -96,7 +96,7 @@ class ViewPspCheckYourAnswersController @Inject()(override val messagesApi: Mess
               }
             }
           } else {
-            Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+            Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad))
           }
       }
   }

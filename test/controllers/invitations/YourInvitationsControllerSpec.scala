@@ -16,8 +16,7 @@
 
 package controllers.invitations
 
-import connectors.FakeUserAnswersCacheConnector
-import connectors.InvitationsCacheConnector
+import connectors.{FakeUserAnswersCacheConnector, InvitationsCacheConnector}
 import controllers.ControllerSpecBase
 import controllers.actions._
 import identifiers.SchemeSrnId
@@ -53,7 +52,6 @@ class YourInvitationsControllerSpec extends ControllerSpecBase with MockitoSugar
   private def controller(authAction: AuthAction = FakeAuthAction): YourInvitationsController = {
 
     new YourInvitationsController(
-      frontendAppConfig,
       messagesApi,
       authAction,
       dataRetrievalAction,
@@ -87,7 +85,7 @@ class YourInvitationsControllerSpec extends ControllerSpecBase with MockitoSugar
       val result = controller(FakeUnAuthorisedAction).onPageLoad()(fakeRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)
+      redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad.url)
 
     }
 

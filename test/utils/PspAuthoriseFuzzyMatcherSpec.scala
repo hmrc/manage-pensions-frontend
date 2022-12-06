@@ -17,18 +17,20 @@
 package utils
 
 import org.scalacheck.{Gen, Shrink}
-import org.scalatest.{FlatSpec, Assertion, Matchers}
+import org.scalatest.Assertion
+import org.scalatest.flatspec.AsyncFlatSpec
+import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import wolfendale.scalacheck.regexp.RegexpGen
 
-class PspAuthoriseFuzzyMatcherSpec extends FlatSpec with Matchers with ScalaCheckDrivenPropertyChecks {
+class PspAuthoriseFuzzyMatcherSpec extends AsyncFlatSpec with Matchers with ScalaCheckDrivenPropertyChecks {
 
   import PspAuthoriseFuzzyMatcherSpec._
 
   "fuzzify" should "uppercase all names" in {
 
     val gen = {
-      for  {
+      for {
         s <- validWordGen
       } yield FuzzifyTestCase(s, s.toUpperCase)
     }
@@ -95,7 +97,7 @@ object PspAuthoriseFuzzyMatcherSpec {
   def interleavedFuzzifyTestCaseGen(invalids: Gen[String]): Gen[FuzzifyTestCase] = {
     for {
       keep <- Gen.listOf(validWordGen)
-        strip <- Gen.listOfN(keep.length, invalids)
+      strip <- Gen.listOfN(keep.length, invalids)
     } yield interleave(keep, strip)
   }
 

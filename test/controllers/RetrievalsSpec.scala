@@ -18,8 +18,10 @@ package controllers
 
 import identifiers.TypedIdentifier
 import models.requests.DataRequest
+import org.scalatest.EitherValues
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.{EitherValues, MustMatchers, WordSpec}
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsValue, Json}
@@ -31,13 +33,7 @@ import utils.UserAnswers
 
 import scala.concurrent.Future
 
-class RetrievalsSpec
-  extends WordSpec
-    with FrontendBaseController
-    with Retrievals
-    with EitherValues
-    with ScalaFutures
-    with MustMatchers {
+class RetrievalsSpec extends AnyWordSpec with FrontendBaseController with Retrievals with EitherValues with ScalaFutures with Matchers {
 
   def dataRequest(data: JsValue): DataRequest[AnyContent] =
     DataRequest(FakeRequest("", ""), "cacheId", UserAnswers(data), Some(PsaId("A0000000")))
@@ -60,14 +56,14 @@ class RetrievalsSpec
 
       implicit val request: DataRequest[AnyContent] = dataRequest(Json.obj("test" -> "result"))
 
-      testIdentifier.retrieve.right.value mustEqual "result"
+      testIdentifier.retrieve.value mustEqual "result"
     }
 
     "reach the intended result when identifier uses and to get the value from answers" in {
 
       implicit val request: DataRequest[AnyContent] = dataRequest(Json.obj("test" -> "result", "second" -> "answer"))
 
-      (testIdentifier and secondIdentifier).retrieve.right.value mustEqual new ~("result", "answer")
+      (testIdentifier and secondIdentifier).retrieve.value mustEqual new ~("result", "answer")
     }
 
     "redirect to the session expired page when cant find identifier" in {
@@ -75,7 +71,7 @@ class RetrievalsSpec
       implicit val request: DataRequest[AnyContent] = dataRequest(Json.obj("test1" -> "result"))
 
       whenReady(testIdentifier.retrieve.left.value) {
-        _ mustEqual Redirect(routes.SessionExpiredController.onPageLoad())
+        _ mustEqual Redirect(routes.SessionExpiredController.onPageLoad)
       }
     }
 

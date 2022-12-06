@@ -35,13 +35,13 @@ lazy val root = (project in file("."))
       ".*BuildInfo.*;.*javascript.*;.*FrontendAuditConnector.*;.*Routes.*;.*GuiceInjector;" +
       ".*ControllerConfiguration;.*LanguageSwitchController;.*MongoDiagnosticsConnector;.*PensionsSchemeFeatureSwitchConnector;" +
       ".*PensionAdministratorFeatureSwitchConnectorImpl;.*controllers.testonly.*;.*target.*",
-    ScoverageKeys.coverageMinimum := 80,
+    ScoverageKeys.coverageMinimumStmtTotal := 80,
     ScoverageKeys.coverageFailOnMinimum := true,
     ScoverageKeys.coverageHighlighting := true,
     scalacOptions ++= Seq("-feature"),
     libraryDependencies ++= AppDependencies(),
     retrieveManaged := true,
-    evictionWarningOptions in update :=
+    update / evictionWarningOptions :=
       EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
     resolvers ++= Seq(
       Resolver.jcenterRepo
@@ -60,7 +60,7 @@ lazy val root = (project in file("."))
     scalacOptions += "-Wconf:cat=unused-imports&src=html/.*:s",
     pipelineStages := Seq(digest),
     // below line required to force asset pipeline to operate in dev rather than only prod
-    pipelineStages in Assets := Seq(concat, uglify)
+    Assets / pipelineStages := Seq(concat, uglify)
   )
 
 lazy val testSettings: Seq[Def.Setting[_]] = Seq(

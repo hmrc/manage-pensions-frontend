@@ -49,7 +49,7 @@ class ViewPractitionersController @Inject()(
 
   def onPageLoad(): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
-      (SchemeSrnId and SchemeNameId and SeqAuthorisedPractitionerId).retrieve.right.map {
+      (SchemeSrnId and SchemeNameId and SeqAuthorisedPractitionerId).retrieve.map {
         case srn ~ schemeName ~ authorisedPractitioners =>
           val authorisedPractitionerViewModelSeq = authorisedPractitioners.map(p =>
             AuthorisedPractitionerViewModel(
@@ -60,9 +60,9 @@ class ViewPractitionersController @Inject()(
             )
           )
           val returnCall = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(srn))
-         isUpdateClientReferenceEnabled.flatMap { isUpdateClientReference=>
-           Future.successful(Ok(view(schemeName, returnCall, authorisedPractitionerViewModelSeq,isUpdateClientReference)))
-         }
+          isUpdateClientReferenceEnabled.flatMap { isUpdateClientReference =>
+            Future.successful(Ok(view(schemeName, returnCall, authorisedPractitionerViewModelSeq, isUpdateClientReference)))
+          }
       }
   }
 

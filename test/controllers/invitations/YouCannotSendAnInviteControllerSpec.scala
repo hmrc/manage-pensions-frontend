@@ -18,8 +18,7 @@ package controllers.invitations
 
 import controllers.actions._
 import controllers.behaviours.ControllerWithNormalPageBehaviours
-import play.api.mvc.Action
-import play.api.mvc.AnyContent
+import play.api.mvc.{Action, AnyContent}
 import views.html.invitations.youCannotSendAnInvite
 
 class YouCannotSendAnInviteControllerSpec extends ControllerWithNormalPageBehaviours {
@@ -35,5 +34,5 @@ class YouCannotSendAnInviteControllerSpec extends ControllerWithNormalPageBehavi
 
   private def viewAsString(): String = youCannotSendAnInviteView()(fakeRequest, messages).toString
 
-  behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, None, viewAsString)
+  behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, None, () => viewAsString())
 }

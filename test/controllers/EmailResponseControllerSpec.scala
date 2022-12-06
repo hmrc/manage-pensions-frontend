@@ -20,9 +20,11 @@ import audit._
 import models.{Sent, _}
 import org.joda.time.DateTime
 import org.mockito.ArgumentMatchers.any
-import org.mockito.{ArgumentCaptor, Mockito}
 import org.mockito.Mockito.{never, times, verify, when}
-import org.scalatest.{BeforeAndAfterEach, AsyncWordSpec, MustMatchers}
+import org.mockito.{ArgumentCaptor, Mockito}
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AsyncWordSpec
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.Application
 import play.api.inject.bind
@@ -35,7 +37,7 @@ import uk.gov.hmrc.crypto.{ApplicationCrypto, PlainText}
 
 import scala.concurrent.Future
 
-class EmailResponseControllerSpec extends AsyncWordSpec with MustMatchers with MockitoSugar with BeforeAndAfterEach {
+class EmailResponseControllerSpec extends AsyncWordSpec with Matchers with MockitoSugar with BeforeAndAfterEach {
 
   import EmailResponseControllerSpec._
 
@@ -57,7 +59,8 @@ class EmailResponseControllerSpec extends AsyncWordSpec with MustMatchers with M
   private val encryptedEmail = injector.instanceOf[ApplicationCrypto].QueryParameterCrypto.encrypt(PlainText(email)).value
 
   override def beforeEach(): Unit = {
-    Mockito.reset(mockAuditService, mockAuthConnector)
+    Mockito.reset(mockAuditService)
+    Mockito.reset(mockAuthConnector)
     when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any()))
       .thenReturn(Future.successful(enrolments))
   }

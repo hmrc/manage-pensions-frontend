@@ -18,15 +18,13 @@ package utils
 
 import base.SpecBase
 import models.CheckMode
-import org.scalatest.MustMatchers
+import org.scalatest.matchers.must.Matchers
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist._
 
-class ViewPspCheckYourAnswersHelperSpec
-  extends SpecBase
-    with MustMatchers {
+class ViewPspCheckYourAnswersHelperSpec extends SpecBase with Matchers {
 
-  val userAnswers = UserAnswers()
+  val userAnswers: UserAnswers = UserAnswers()
 
   private val pspName = "pspName"
   private val pspId = "0000000"
@@ -43,7 +41,7 @@ class ViewPspCheckYourAnswersHelperSpec
           key = Key(Text(messages("messages__check__your__answer__psp__name__label")), classes = "govuk-!-width-one-half"),
           value = Value(Text(pspName)),
           actions = None
-      )
+        )
     }
   }
 
@@ -55,7 +53,7 @@ class ViewPspCheckYourAnswersHelperSpec
           key = Key(Text(messages("messages__check__your__answer__psp__id__label")), classes = "govuk-!-width-one-half"),
           value = Value(Text(pspId)),
           actions = None
-      )
+        )
     }
   }
 

@@ -17,15 +17,15 @@
 package utils.navigators
 
 import connectors.UserAnswersCacheConnector
-import controllers.psp.routes._
 import controllers.psp.deauthorise.self.routes._
+import controllers.psp.routes._
 import controllers.routes._
 import identifiers.psp.deauthorise.self.{ConfirmDeauthId, DeauthDateId}
 import identifiers.{Identifier, SchemeSrnId}
-
-import javax.inject.{Inject, Singleton}
 import play.api.mvc.Call
 import utils.{Navigator, UserAnswers}
+
+import javax.inject.{Inject, Singleton}
 
 @Singleton
 class PspSelfDeauthoriseNavigator @Inject()(val dataCacheConnector: UserAnswersCacheConnector)
@@ -40,11 +40,11 @@ class PspSelfDeauthoriseNavigator @Inject()(val dataCacheConnector: UserAnswersC
     (userAnswers.get(ConfirmDeauthId), userAnswers.get(SchemeSrnId)) match {
       case (Some(false), Some(srn)) => PspSchemeDashboardController.onPageLoad(srn)
       case (Some(true), _) => DeauthDateController.onPageLoad()
-      case _ => SessionExpiredController.onPageLoad()
+      case _ => SessionExpiredController.onPageLoad
     }
   }
 
   override protected def editRouteMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
-    case _ => SessionExpiredController.onPageLoad()
+    case _ => SessionExpiredController.onPageLoad
   }
 }

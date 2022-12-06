@@ -32,7 +32,7 @@
 
 @layout(pageTitle = titleWithErrors(form, messages("messages__whichServiceYouWantToView__title"))) {
 
-    @formHelper(action = controllers.triagev2.routes.WhichServiceYouWantToViewController.onSubmit(role), 'autoComplete -> "off") {
+    @formHelper(action = controllers.triagev2.routes.WhichServiceYouWantToViewController.onSubmit(role), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))

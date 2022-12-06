@@ -53,7 +53,7 @@ class ViewPspClientReferenceController @Inject()(
 
   def onPageLoad(mode: Mode, index: Int): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
-      (SchemeNameId and SchemeSrnId and PspDetailsId(index)).retrieve.right.map {
+      (SchemeNameId and SchemeSrnId and PspDetailsId(index)).retrieve.map {
         case schemeName ~ srn ~ pspDetail =>
           if (pspDetail.authorisingPSAID == request.psaIdOrException.id) {
             val value = pspDetail.clientReference
@@ -61,7 +61,7 @@ class ViewPspClientReferenceController @Inject()(
 
             Future.successful(Ok(view(preparedForm, pspDetail.name, mode, schemeName, returnCall(srn), ViewPspClientReferenceController.onSubmit(mode, index))))
           } else {
-            Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+            Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad))
           }
       }
   }
@@ -70,14 +70,14 @@ class ViewPspClientReferenceController @Inject()(
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[_]) => {
-          (SchemeNameId and SchemeSrnId and PspDetailsId(index)).retrieve.right.map {
+          (SchemeNameId and SchemeSrnId and PspDetailsId(index)).retrieve.map {
             case schemeName ~ srn ~ pspDetail =>
               Future.successful(BadRequest(view(formWithErrors, pspDetail.name, mode, schemeName, returnCall(srn),
                 ViewPspClientReferenceController.onSubmit(mode, index))))
           }
         },
         value => {
-          PspDetailsId(index).retrieve.right.map {
+          PspDetailsId(index).retrieve.map {
             pspDetail =>
               if (pspDetail.authorisingPSAID == request.psaIdOrException.id) {
                 val updatedPspDetail = pspDetail.copy(clientReference = Some(value))
@@ -85,7 +85,7 @@ class ViewPspClientReferenceController @Inject()(
                   Redirect(controllers.psp.view.routes.ViewPspCheckYourAnswersController.onPageLoad(index))
                 )
               } else {
-                Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+                Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad))
               }
           }
         }

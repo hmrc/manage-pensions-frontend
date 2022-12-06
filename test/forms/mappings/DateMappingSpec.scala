@@ -16,18 +16,17 @@
 
 package forms.mappings
 
+import org.scalatest.OptionValues
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AsyncWordSpec
+import play.api.data.Forms._
+import play.api.data.{Form, FormError}
+
 import java.time.LocalDate
 
-import org.scalatest.MustMatchers
-import org.scalatest.OptionValues
-import org.scalatest.WordSpec
-import play.api.data.Forms._
-import play.api.data.Form
-import play.api.data.FormError
+class DateMappingSpec extends AsyncWordSpec with DateMapping with Matchers with OptionValues {
 
-class DateMappingSpec extends WordSpec with DateMapping with MustMatchers with OptionValues {
-
-  val dateErrors = DateErrors(
+  val dateErrors: DateErrors = DateErrors(
     "messages__removal_date_error__all_blank",
     "messages__removal_date_error__day_blank",
     "messages__removal_date_error__month_blank",

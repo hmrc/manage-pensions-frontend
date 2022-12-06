@@ -53,7 +53,7 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
     override def getNameFromPspID(pspId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = ???
   }
 
-  val userAnswersJson =
+  val userAnswersJson: String =
     s"""{
          "benefits": "opt1",
          "schemeName": "Test Scheme name",
@@ -81,7 +81,7 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
        }
        """.stripMargin
 
-  val userAnswersJsonWithoutPstr =
+  val userAnswersJsonWithoutPstr: String =
     s"""{
         "benefits": "opt1",
          "schemeName": "Test Scheme name",
@@ -208,7 +208,7 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
         schemeDetailsConnector = fakeSchemeDetailsConnector()).onPageLoad(fakeRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)
+      redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad.url)
     }
 
     "save scheme name pstr, then redirect to remove as scheme administrator page if PSA is not suspended" in {
@@ -265,7 +265,7 @@ object RemovePsaControllerSpec {
   private val userAnswer = UserAnswers().srn("S9000000000")
   private val data = userAnswer.dataRetrievalAction
 
-  private val psaMinimalSubscription = MinimalPSAPSP("test@test.com", false, None, Some(IndividualDetails("First", Some("Middle"), "Last")),
+  private val psaMinimalSubscription = MinimalPSAPSP("test@test.com", isPsaSuspended = false, None, Some(IndividualDetails("First", Some("Middle"), "Last")),
     rlsFlag = false, deceasedFlag = false)
 }
 

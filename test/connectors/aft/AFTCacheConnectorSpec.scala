@@ -17,14 +17,14 @@
 package connectors.aft
 
 import com.github.tomakehurst.wiremock.client.WireMock._
-import org.scalatest.AsyncWordSpec
-import org.scalatest.MustMatchers
 import org.scalatest.OptionValues
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AsyncWordSpec
+import play.api.mvc.Results
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.WireMockHelper
-import play.api.mvc.Results
 
-class AFTCacheConnectorSpec extends AsyncWordSpec with MustMatchers with WireMockHelper with OptionValues {
+class AFTCacheConnectorSpec extends AsyncWordSpec with Matchers with WireMockHelper with OptionValues {
 
   override protected def portConfigKey: String = "microservice.services.pension-scheme-accounting-for-tax.port"
 

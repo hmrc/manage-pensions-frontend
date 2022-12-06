@@ -17,26 +17,25 @@
 package forms
 
 import config.FrontendAppConfig
-import org.scalatest.Matchers
-import org.scalatest.OptionValues
-import org.scalatest.WordSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.{Assertion, OptionValues}
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.Environment
-import play.api.data.Form
-import play.api.data.FormError
+import play.api.data.{Form, FormError}
 import play.api.inject.Injector
 import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.{Application, Environment}
 
-trait FormSpec extends WordSpec with OptionValues with Matchers with GuiceOneAppPerSuite {
+trait FormSpec extends AnyWordSpec with OptionValues with Matchers with GuiceOneAppPerSuite {
 
-  def checkForError(form: Form[_], data: Map[String, String], expectedErrors: Seq[FormError]) = {
+  def checkForError(form: Form[_], data: Map[String, String], expectedErrors: Seq[FormError]): Assertion = {
 
     form.bind(data).fold(
       formWithErrors => {
         for (error <- expectedErrors) formWithErrors.errors should contain(FormError(error.key, error.message, error.args))
         formWithErrors.errors.size shouldBe expectedErrors.size
       },
-      form => {
+      _ => {
         fail("Expected a validation error when binding the form, but it was bound successfully.")
       }
     )
@@ -44,9 +43,9 @@ trait FormSpec extends WordSpec with OptionValues with Matchers with GuiceOneApp
 
   def error(key: String, value: String, args: Any*) = Seq(FormError(key, value, args))
 
-  lazy val emptyForm = Map[String, String]()
+  lazy val emptyForm: Map[String, String] = Map[String, String]()
 
-  override lazy val app = new GuiceApplicationBuilder()
+  override lazy val app: Application = new GuiceApplicationBuilder()
     .build()
 
   def injector: Injector = app.injector

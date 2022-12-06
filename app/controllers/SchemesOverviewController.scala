@@ -70,15 +70,15 @@ class SchemesOverviewController @Inject()(
                 migrationHtml <- service.retrieveMigrationTile
                 _ <- userAnswersCacheConnector.save(request.externalId, PSANameId, name)
               } yield {
-                Ok(view(name, "site.psa", cards.head,cards(1), Some(penaltiesHtml), migrationHtml, Some(subHeading), returnLink(request.pspId)))
+                Ok(view(name, "site.psa", cards.head, cards(1), Some(penaltiesHtml), migrationHtml, Some(subHeading), returnLink(request.pspId)))
               }
             case _ =>
-              Future.successful(Redirect(SessionExpiredController.onPageLoad()))
+              Future.successful(Redirect(SessionExpiredController.onPageLoad))
           }
         }
       } recoverWith {
         case _: DelimitedAdminException =>
-          Future.successful(Redirect(controllers.routes.DelimitedAdministratorController.onPageLoad()))
+          Future.successful(Redirect(controllers.routes.DelimitedAdministratorController.onPageLoad))
       }
   }
 
@@ -89,7 +89,7 @@ class SchemesOverviewController @Inject()(
     implicit request =>
       sessionDataCacheConnector.fetch(request.externalId).flatMap { optionJsValue =>
         optionJsValue.map(UserAnswers).getOrElse(UserAnswers()).set(AdministratorOrPractitionerId)(Administrator).asOpt
-          .fold(Future.successful(Redirect(SessionExpiredController.onPageLoad()))) { updatedUA =>
+          .fold(Future.successful(Redirect(SessionExpiredController.onPageLoad))) { updatedUA =>
             sessionDataCacheConnector.upsert(request.externalId, updatedUA.json).map { _ =>
               Redirect(SchemesOverviewController.onPageLoad())
             }

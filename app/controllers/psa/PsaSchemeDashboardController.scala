@@ -65,7 +65,7 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
               val updatedUa = userAnswers.set(SchemeSrnId)(srn.id).flatMap(_.set(SchemeNameId)(schemeName)).asOpt.getOrElse(userAnswers)
               for {
                 aftHtml <- retrieveAftTilesHtml(srn, schemeStatus)
-                  _ <- userAnswersCacheConnector.upsert(request.externalId, updatedUa.json)
+                _ <- userAnswersCacheConnector.upsert(request.externalId, updatedUa.json)
               } yield {
                 val cards = psaSchemeDashboardService.cards(srn, lock, listOfSchemes, userAnswers)
                 Ok(view(schemeName, aftHtml, cards))
@@ -74,7 +74,7 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
         }
       } recoverWith {
         case _: DelimitedAdminException =>
-          Future.successful(Redirect(controllers.routes.DelimitedAdministratorController.onPageLoad()))
+          Future.successful(Redirect(controllers.routes.DelimitedAdministratorController.onPageLoad))
       }
 
 
@@ -86,8 +86,8 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
                                   )(implicit request: AuthenticatedRequest[AnyContent]): Future[Html] = {
     if (
       schemeStatus.equalsIgnoreCase("open") ||
-      schemeStatus.equalsIgnoreCase("wound-up") ||
-      schemeStatus.equalsIgnoreCase("deregistered")
+        schemeStatus.equalsIgnoreCase("wound-up") ||
+        schemeStatus.equalsIgnoreCase("deregistered")
     ) {
       frontendConnector.retrieveAftPartial(srn)
     } else {

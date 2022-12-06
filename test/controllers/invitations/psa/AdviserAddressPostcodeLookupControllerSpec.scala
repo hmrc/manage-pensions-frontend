@@ -24,8 +24,10 @@ import identifiers.invitations.psa.AdviserNameId
 import models.TolerantAddress
 import org.mockito.ArgumentMatchers.{eq => eqTo, _}
 import org.mockito.Mockito._
+import org.scalatest.OptionValues
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.{MustMatchers, OptionValues, WordSpec}
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AsyncWordSpec
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.Application
 import play.api.data.Form
@@ -42,8 +44,8 @@ import views.html.invitations.psa.adviserPostcode
 import scala.concurrent.Future
 
 class AdviserAddressPostcodeLookupControllerSpec
-  extends WordSpec
-    with MustMatchers
+  extends AsyncWordSpec
+    with Matchers
     with MockitoSugar
     with ScalaFutures
     with OptionValues {
@@ -77,7 +79,7 @@ class AdviserAddressPostcodeLookupControllerSpec
 
     "return a redirect on successful submission" in {
 
-      val onwardRoute = controllers.routes.IndexController.onPageLoad()
+      val onwardRoute = controllers.routes.IndexController.onPageLoad
       val addressConnector: AddressLookupConnector = mock[AddressLookupConnector]
       val cacheConnector: UserAnswersCacheConnector = FakeUserAnswersCacheConnector
 
@@ -197,6 +199,6 @@ object AdviserAddressPostcodeLookupControllerSpec extends ControllerSpecBase {
 
   }
 
-  val address = TolerantAddress(Some("Address 1"), Some("Address 2"), None, None, None, Some("GB"))
+  val address: TolerantAddress = TolerantAddress(Some("Address 1"), Some("Address 2"), None, None, None, Some("GB"))
 
 }

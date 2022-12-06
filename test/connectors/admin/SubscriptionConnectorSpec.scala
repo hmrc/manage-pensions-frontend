@@ -18,21 +18,19 @@ package connectors.admin
 
 import base.JsonFileReader
 import com.github.tomakehurst.wiremock.client.WireMock._
-import org.scalatest.AsyncFlatSpec
-import org.scalatest.Matchers
+import org.scalatest.flatspec.AsyncFlatSpec
+import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.scalacheck.Checkers
 import play.api.http.Status._
-import play.api.libs.json.JsResultException
-import play.api.libs.json.Json
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.UpstreamErrorResponse
+import play.api.libs.json.{JsResultException, Json}
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 import utils.WireMockHelper
 
 class SubscriptionConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper with Checkers {
 
   override protected def portConfigKey: String = "microservice.services.pension-administrator.port"
 
-  lazy val connector = injector.instanceOf[SubscriptionConnector]
+  lazy val connector: SubscriptionConnector = injector.instanceOf[SubscriptionConnector]
 
   import SubscriptionConnectorSpec._
 
@@ -170,13 +168,13 @@ object SubscriptionConnectorSpec extends JsonFileReader {
   val psaId = "A1234567"
   val subscriptionDetailsUrl = s"/pension-administrator/psa-subscription-details"
 
-  val psaIdJson = Json.stringify(
+  val psaIdJson: String = Json.stringify(
     Json.obj(
       "psaId" -> s"$psaId"
     )
   )
 
-  val successResponse = readJsonFromFile("/data/validSubscription.json").toString()
+  val successResponse: String = readJsonFromFile("/data/validSubscription.json").toString()
 
   val invalidResponse = """{"invalid" : "response"}"""
 

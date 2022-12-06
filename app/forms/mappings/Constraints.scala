@@ -16,13 +16,10 @@
 
 package forms.mappings
 
-import java.time.LocalDate
-
-import play.api.data.validation.Constraint
-import play.api.data.validation.Invalid
-import play.api.data.validation.Valid
+import play.api.data.validation.{Constraint, Invalid, Valid}
 import utils.countryOptions.CountryOptions
 
+import java.time.LocalDate
 import scala.language.implicitConversions
 
 trait Constraints {
@@ -150,7 +147,7 @@ trait Constraints {
 
   protected def afterGivenDate(errorKey: String, givenDate: LocalDate): Constraint[LocalDate] =
     Constraint {
-      case date if date.isBefore(givenDate)  => Invalid(errorKey)
+      case date if date.isBefore(givenDate) => Invalid(errorKey)
       case _ => Valid
     }
 }
@@ -161,12 +158,12 @@ object Constraints {
   val psaIdRegx = """^A[0-9]{7}$"""
   val pspIdRegx = """^[0|1|2]{1}[0-9]{7}$"""
   val clientRefRegx = """^[a-zA-Z0-9\\\/\-]{1,11}$"""
-  val adviserNameRegex = """^[a-zA-Z\u00C0-\u00FF '‘’\u2014\u2013\u2010\u002d]{1,107}$"""
-  val psaNameRegex = """^[a-zA-Z0-9-\u00C0-\u00FF '&\\/‘’\u2014\u2013\u2010\u002d]{1,105}$"""
-  val inviteeNameRegex = """^[a-zA-Z0-9\u00C0-\u00FF !#$%&'‘’\"“”«»()*+,./:;=?@\[\]£€¥\\u005C\u2014\u2013\u2010\u002d]{1,160}$"""
-  val addressLineRegex = """^[A-Za-z0-9 &!'‘’\"“”(),./\u2014\u2013\u2010\u002d]{1,35}$"""
+  val adviserNameRegex = """^[a-zA-ZÀ-ÿ '‘’—–‐-]{1,107}$"""
+  val psaNameRegex = """^[a-zA-Z0-9-À-ÿ '&\\/‘’—–‐-]{1,105}$"""
+  val inviteeNameRegex = """^[a-zA-Z0-9À-ÿ !#$%&'‘’\"“”«»()*+,./:;=?@\[\]£€¥\\u005C—–‐-]{1,160}$"""
+  val addressLineRegex = """^[A-Za-z0-9 &!'‘’\"“”(),./—–‐-]{1,35}$"""
   val postCodeRegex = """^[A-Za-z]{1,2}[0-9][0-9A-Za-z]?[ ]?[0-9][A-Za-z]{2}$"""
-  val emailRegex = "^(?:[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"" +
+  val emailRegex: String = "^(?:[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"" +
     "(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")" +
     "@(?:(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?|" +
     "\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-zA-Z0-9-]*[a-zA-Z0-9]:" +

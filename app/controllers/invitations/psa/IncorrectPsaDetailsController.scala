@@ -46,7 +46,7 @@ class IncorrectPsaDetailsController @Inject()(
     (authenticate() andThen getData andThen requireData).async {
       implicit request =>
 
-        (InviteeNameId and MinimalSchemeDetailId).retrieve.right.map {
+        (InviteeNameId and MinimalSchemeDetailId).retrieve.map {
           case inviteeName ~ schemeDetails =>
             Future.successful(
               Ok(

@@ -24,7 +24,6 @@ import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAut
 import forms.invitations.psa.DeclarationFormProvider
 import identifiers.invitations.{IsMasterTrustId, IsRacDacId, PSTRId, SchemeNameId}
 import identifiers.{SchemeNameId => GetSchemeNameId}
-import org.mockito.ArgumentMatchers._
 import org.mockito.ArgumentMatchers.{eq => eqTo, _}
 import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.BeforeAndAfterEach
@@ -48,7 +47,7 @@ class DeclarationControllerSpec
 
   import DeclarationControllerSpec._
 
-  val config = injector.instanceOf[Configuration]
+  val config: Configuration = injector.instanceOf[Configuration]
   private val fakeSchemeDetailsConnector: SchemeDetailsConnector = mock[SchemeDetailsConnector]
   private val fakeInvitationCacheConnector = mock[InvitationsCacheConnector]
   private val fakeInvitationConnector = mock[InvitationConnector]
@@ -75,7 +74,7 @@ class DeclarationControllerSpec
     reset(fakeInvitationConnector)
   }
 
-  val schemeDetailsResponse = UserAnswers(readJsonFromFile("/data/validSchemeDetailsUserAnswers.json"))
+  val schemeDetailsResponse: UserAnswers = UserAnswers(readJsonFromFile("/data/validSchemeDetailsUserAnswers.json"))
 
   private def viewAsString(form: Form[_] = form, isItMasterTrust: Boolean = isMasterTrust, hasWkAdvisor: Boolean = hasAdviser) =
     view(hasWkAdvisor, isItMasterTrust, form)(fakeRequest, messages).toString
@@ -182,7 +181,7 @@ object DeclarationControllerSpec {
   val srn = "S9000000000"
   val pstr = "S12345"
 
-  def onwardRoute = Call("GET", "/foo")
+  def onwardRoute: Call = Call("GET", "/foo")
 
   val data = new FakeDataRetrievalAction(Some(UserAnswers().
     haveWorkingKnowledge(hasAdviser).
@@ -195,7 +194,7 @@ object DeclarationControllerSpec {
   ))
 
   val formProvider = new DeclarationFormProvider()
-  val form = formProvider()
+  val form: Form[Boolean] = formProvider()
 
-  private def sessionExpired = controllers.routes.SessionExpiredController.onPageLoad().url
+  private def sessionExpired = controllers.routes.SessionExpiredController.onPageLoad.url
 }

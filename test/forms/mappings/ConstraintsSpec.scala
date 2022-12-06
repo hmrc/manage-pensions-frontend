@@ -16,17 +16,16 @@
 
 package forms.mappings
 
-import java.time.LocalDate
-
-import org.scalatest.Matchers
-import org.scalatest.WordSpec
-import play.api.data.validation.Invalid
-import play.api.data.validation.Valid
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
+import play.api.data.validation.{Invalid, Valid}
 import wolfendale.scalacheck.regexp.RegexpGen
+
+import java.time.LocalDate
 
 // scalastyle:off magic.number
 
-class ConstraintsSpec extends WordSpec with Matchers with Constraints with RegexBehaviourSpec {
+class ConstraintsSpec extends AnyWordSpec with Matchers with Constraints with RegexBehaviourSpec {
 
   import Constraints._
 

@@ -121,7 +121,7 @@ class PspDashboardControllerSpec
       links = Seq(
         Link(
           id = "search-schemes",
-          url = controllers.psa.routes.ListSchemesController.onPageLoad().url,
+          url = controllers.psa.routes.ListSchemesController.onPageLoad.url,
           linkText = Message("messages__pspDashboard__search_scheme")
         )
       )

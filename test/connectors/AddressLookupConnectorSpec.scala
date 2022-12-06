@@ -18,16 +18,15 @@ package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import models.TolerantAddress
-import org.scalatest.{AsyncWordSpec, MustMatchers, RecoverMethods}
+import org.scalatest.RecoverMethods
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AsyncWordSpec
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpException}
 import utils.WireMockHelper
 
-class AddressLookupConnectorSpec extends AsyncWordSpec
-  with MustMatchers
-  with WireMockHelper
-  with RecoverMethods {
+class AddressLookupConnectorSpec extends AsyncWordSpec with Matchers with WireMockHelper with RecoverMethods {
 
   private def url = "/lookup"
 
@@ -96,7 +95,7 @@ class AddressLookupConnectorSpec extends AsyncWordSpec
         server.stubFor(
           post(urlEqualTo(url))
             .withHeader("user-agent", matching(".+"))
-            .withRequestBody(equalTo(Json.obj("postcode"->"ZZ1 1ZZ").toString()))
+            .withRequestBody(equalTo(Json.obj("postcode" -> "ZZ1 1ZZ").toString()))
             .willReturn
             (
               aResponse().withStatus(OK)
@@ -151,7 +150,7 @@ class AddressLookupConnectorSpec extends AsyncWordSpec
         server.stubFor(
           post(urlEqualTo(url))
             .withHeader("user-agent", matching(".+"))
-            .withRequestBody(equalTo(Json.obj("postcode"->"ZZ1 1ZZ").toString()))
+            .withRequestBody(equalTo(Json.obj("postcode" -> "ZZ1 1ZZ").toString()))
             .willReturn
             (
               aResponse().withStatus(OK)
@@ -164,7 +163,6 @@ class AddressLookupConnectorSpec extends AsyncWordSpec
         }
       }
     }
-
 
 
     "returns an exception" which {

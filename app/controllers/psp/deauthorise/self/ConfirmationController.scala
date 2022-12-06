@@ -46,11 +46,11 @@ class ConfirmationController @Inject()(override val messagesApi: MessagesApi,
   def onPageLoad(): Action[AnyContent] = (auth(PSP) andThen getData andThen requireData).async {
     implicit request =>
 
-      (SchemeNameId and AuthorisedPractitionerId).retrieve.right.map {
+      (SchemeNameId and AuthorisedPractitionerId).retrieve.map {
         case schemeName ~ psp =>
           minimalConnector.getMinimalPspDetails(request.pspIdOrException.id) flatMap { pspDetails =>
             userAnswersCacheConnector.removeAll(request.externalId) map { _ =>
-             Ok(view(schemeName, psp.authorisingPSA.name, pspDetails.email))
+              Ok(view(schemeName, psp.authorisingPSA.name, pspDetails.email))
             }
           }
       }

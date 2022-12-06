@@ -17,10 +17,11 @@
 package audit
 
 import models.Sent
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.flatspec.AsyncFlatSpec
+import org.scalatest.matchers.should.Matchers
 
 class PSPDeauthorisationEmailAuditEventSpec
-  extends FlatSpec
+  extends AsyncFlatSpec
     with Matchers {
 
   "PSPDeauthorisationEmailAuditEvent" should "output the correct map of data" in {

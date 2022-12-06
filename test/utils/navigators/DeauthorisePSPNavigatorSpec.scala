@@ -36,12 +36,12 @@ class DeauthorisePSPNavigatorSpec extends SpecBase with NavigatorBehaviour {
   val navigator = new DeauthorisePSPNavigator(FakeUserAnswersCacheConnector)
 
   def routes(): TableFor4[Identifier, UserAnswers, Call, Option[Call]] = Table(
-    ("Id",                                              "User Answers",      "Next Page (NormalMode)",        "Next Page (CheckMode)"),
-    (ConfirmDeauthorisePspId(0),                         deauthPsp,           pspDeauthDatePage,               None),
-    (deauthorise.ConfirmDeauthorisePspId(0),             dontDeauthPsp,       schemeDetailsPage,               None),
-    (deauthorise.ConfirmDeauthorisePspId(0),             emptyAnswers,        sessionExpiredPage,              None),
-    (deauthorise.PspDeauthDateId(0),                     emptyAnswers,        psaDeauthPspDeclarationPage,     None),
-    (deauthorise.PsaDeauthorisePspDeclarationId(0),      emptyAnswers,        psaDeauthPspConfirmationPage,    None)
+    ("Id", "User Answers", "Next Page (NormalMode)", "Next Page (CheckMode)"),
+    (ConfirmDeauthorisePspId(0), deauthPsp, pspDeauthDatePage, None),
+    (deauthorise.ConfirmDeauthorisePspId(0), dontDeauthPsp, schemeDetailsPage, None),
+    (deauthorise.ConfirmDeauthorisePspId(0), emptyAnswers, sessionExpiredPage, None),
+    (deauthorise.PspDeauthDateId(0), emptyAnswers, psaDeauthPspDeclarationPage, None),
+    (deauthorise.PsaDeauthorisePspDeclarationId(0), emptyAnswers, psaDeauthPspConfirmationPage, None)
   )
 
   navigator.getClass.getSimpleName must {
@@ -59,7 +59,7 @@ object DeauthorisePSPNavigatorSpec {
 
   private def dataDescriber(answers: UserAnswers): String = answers.toString
 
-  private val sessionExpiredPage = SessionExpiredController.onPageLoad()
+  private val sessionExpiredPage = SessionExpiredController.onPageLoad
   private val schemeDetailsPage = PsaSchemeDashboardController.onPageLoad(srn)
   private val pspDeauthDatePage = PspDeauthDateController.onPageLoad(0)
   private val psaDeauthPspDeclarationPage = PsaDeauthPspDeclarationController.onPageLoad(0)

@@ -16,11 +16,12 @@
 
 package audit
 
-import org.scalatest.{MustMatchers, WordSpec}
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AsyncWordSpec
 import play.api.libs.json.Json
 
 
-class PSPAuthorisationAuditEventSpec extends WordSpec with MustMatchers {
+class PSPAuthorisationAuditEventSpec extends AsyncWordSpec with Matchers {
 
   private val pspId = "pspId"
   private val psaId = "psaId"
@@ -35,14 +36,14 @@ class PSPAuthorisationAuditEventSpec extends WordSpec with MustMatchers {
       )
 
       val expected = Map(
-          "initiatedIDType" -> "PSAID",
-          "initiatedIDNumber" -> psaId,
-          "authoriseIDType"-> "PSPID",
-          "authoriseIDNumber" -> pspId,
-          "pensionSchemeTaxReference" -> pstr,
-          "declarationAuthorisePensionSchemePractitionerDetails" ->
-            Json.stringify(Json.obj("declarationBox1" -> true))
-        )
+        "initiatedIDType" -> "PSAID",
+        "initiatedIDNumber" -> psaId,
+        "authoriseIDType" -> "PSPID",
+        "authoriseIDNumber" -> pspId,
+        "pensionSchemeTaxReference" -> pstr,
+        "declarationAuthorisePensionSchemePractitionerDetails" ->
+          Json.stringify(Json.obj("declarationBox1" -> true))
+      )
       event.auditType mustBe "PensionSchemeAdministratorAuthorisePractitioner"
       event.details mustBe expected
     }

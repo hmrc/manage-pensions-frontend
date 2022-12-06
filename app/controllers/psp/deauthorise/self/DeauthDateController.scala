@@ -48,7 +48,7 @@ class DeauthDateController @Inject()(
                                       formProvider: PspDeauthDateFormProvider,
                                       val controllerComponents: MessagesControllerComponents,
                                       view: deauthDate
-                                     )(implicit val ec: ExecutionContext)
+                                    )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport
     with Retrievals {
@@ -58,7 +58,7 @@ class DeauthDateController @Inject()(
 
   def onPageLoad: Action[AnyContent] = (authenticate(PSP) andThen getData andThen requireData).async {
     implicit request =>
-      (SchemeNameId and SchemeSrnId and AuthorisedPractitionerId).retrieve.right.map {
+      (SchemeNameId and SchemeSrnId and AuthorisedPractitionerId).retrieve.map {
         case schemeName ~ srn ~ psp =>
           val authDate: LocalDate = psp.relationshipStartDate
           val preparedForm = request.userAnswers.get(DeauthDateId).fold(form(authDate))(form(authDate).fill)
@@ -68,7 +68,7 @@ class DeauthDateController @Inject()(
 
   def onSubmit: Action[AnyContent] = (authenticate(PSP) andThen getData andThen requireData).async {
     implicit request =>
-      (SchemeNameId and SchemeSrnId and AuthorisedPractitionerId).retrieve.right.map {
+      (SchemeNameId and SchemeSrnId and AuthorisedPractitionerId).retrieve.map {
         case schemeName ~ srn ~ psp =>
 
           val authDate: LocalDate = psp.relationshipStartDate

@@ -16,8 +16,7 @@
 
 package controllers.behaviours
 
-import connectors.FakeUserAnswersCacheConnector
-import connectors.UserAnswersCacheConnector
+import connectors.{FakeUserAnswersCacheConnector, UserAnswersCacheConnector}
 import controllers.ControllerSpecBase
 import controllers.actions._
 import identifiers.TypedIdentifier
@@ -34,12 +33,12 @@ class ControllerWithQuestionPageBehaviours extends ControllerSpecBase {
   val navigator = new FakeNavigator(onwardRoute)
   val requiredDataAction = new DataRequiredActionImpl
 
-  def onwardRoute = Call("GET", "/foo")
+  def onwardRoute: Call = Call("GET", "/foo")
 
   def controllerWithOnPageLoadMethodWithoutPrePopulation[T](onPageLoadAction: (DataRetrievalAction, AuthAction) => Action[AnyContent],
-                                        emptyData: DataRetrievalAction,
-                                        emptyForm: Form[T],
-                                        validView: Form[T] => String): Unit = {
+                                                            emptyData: DataRetrievalAction,
+                                                            emptyForm: Form[T],
+                                                            validView: Form[T] => String): Unit = {
 
     "calling onPageLoad" must {
 
@@ -56,7 +55,7 @@ class ControllerWithQuestionPageBehaviours extends ControllerSpecBase {
         val result = onPageLoadAction(emptyData, FakeUnAuthorisedAction)(fakeRequest)
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)
+        redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad.url)
       }
     }
 
@@ -89,7 +88,7 @@ class ControllerWithQuestionPageBehaviours extends ControllerSpecBase {
                                       form: Form[T],
                                       errorView: Form[T] => String,
                                       postRequest: FakeRequest[AnyContentAsJson],
-                                      emptyPostRequest: Option[FakeRequest[AnyContentAsJson]]=None): Unit = {
+                                      emptyPostRequest: Option[FakeRequest[AnyContentAsJson]] = None): Unit = {
 
     "calling onSubmit" must {
 
@@ -121,14 +120,14 @@ class ControllerWithQuestionPageBehaviours extends ControllerSpecBase {
         val result = onPageLoadAction(validData, FakeAuthAction)(fakeRequest)
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)
+        redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad.url)
       }
     }
 
   }
 
   def controllerWithOnSubmitMethodMissingRequiredData(onSubmitAction: (DataRetrievalAction, AuthAction) => Action[AnyContent],
-                                                        validDate: DataRetrievalAction): Unit = {
+                                                      validDate: DataRetrievalAction): Unit = {
 
     "when required data is not present" must {
 
@@ -137,17 +136,17 @@ class ControllerWithQuestionPageBehaviours extends ControllerSpecBase {
         val result = onSubmitAction(validDate, FakeAuthAction)(fakeRequest)
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)
+        redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad.url)
       }
     }
 
   }
 
   def controllerThatSavesUserAnswers[A, I <: TypedIdentifier[A], T](saveAction: UserAnswersCacheConnector => Action[AnyContent],
-                                                                  validRequest: FakeRequest[AnyContentAsJson],
-                                                                  id: I,
-                                                                  value: A
-                                                                )(implicit fmt: Format[A]): Unit = {
+                                                                    validRequest: FakeRequest[AnyContentAsJson],
+                                                                    id: I,
+                                                                    value: A
+                                                                   )(implicit fmt: Format[A]): Unit = {
 
     "save user answers to cache" in {
       val cache = new FakeUserAnswersCacheConnector() {}

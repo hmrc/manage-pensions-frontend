@@ -81,7 +81,7 @@ class PspDashboardController @Inject()(
     implicit request =>
       sessionDataCacheConnector.fetch(request.externalId).flatMap { optionJsValue =>
         optionJsValue.map(UserAnswers).getOrElse(UserAnswers()).set(AdministratorOrPractitionerId)(Practitioner).asOpt
-          .fold(Future.successful(Redirect(SessionExpiredController.onPageLoad()))) { updatedUA =>
+          .fold(Future.successful(Redirect(SessionExpiredController.onPageLoad))) { updatedUA =>
             sessionDataCacheConnector.upsert(request.externalId, updatedUA.json).map { _ =>
               Redirect(PspDashboardController.onPageLoad())
             }

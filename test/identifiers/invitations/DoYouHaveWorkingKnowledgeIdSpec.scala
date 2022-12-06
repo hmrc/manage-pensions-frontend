@@ -16,20 +16,19 @@
 
 package identifiers.invitations
 
-import identifiers.invitations.psa.{AdviserAddressId, AdviserAddressListId, AdviserAddressPostCodeLookupId, AdviserEmailId, AdviserNameId}
-import models.Address
-import models.TolerantAddress
-import org.scalatest.MustMatchers
+import identifiers.invitations.psa._
+import models.{Address, TolerantAddress}
 import org.scalatest.OptionValues
-import org.scalatest.WordSpec
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AsyncWordSpec
 import utils.UserAnswers
 
-class DoYouHaveWorkingKnowledgeIdSpec extends WordSpec with MustMatchers with OptionValues {
+class DoYouHaveWorkingKnowledgeIdSpec extends AsyncWordSpec with Matchers with OptionValues {
 
   val tolerantAddressSample = Seq(
     TolerantAddress(Some("10 Other Place"), Some("Some District"), Some("Anytown"), Some("Somerset"), Some("ZZ1 1ZZ"), Some("UK"))
   )
-  val userAnswers = UserAnswers().haveWorkingKnowledge(false).
+  val userAnswers: UserAnswers = UserAnswers().haveWorkingKnowledge(false).
     adviserName("test").
     adviserEmail("test@test.com").
     adviserPostCodeLookup(Seq(TolerantAddress(Some("10 Other Place"), Some("Some District"), Some("Anytown"), Some("Somerset"), Some("ZZ1 1ZZ"), Some("UK")))).

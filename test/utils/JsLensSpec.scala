@@ -17,13 +17,13 @@
 package utils
 
 import org.scalacheck.Gen
-import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
-import org.scalatest.MustMatchers
 import org.scalatest.OptionValues
-import org.scalatest.WordSpec
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AsyncWordSpec
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import play.api.libs.json._
 
-class JsLensSpec extends WordSpec with MustMatchers with ScalaCheckPropertyChecks with OptionValues {
+class JsLensSpec extends AsyncWordSpec with Matchers with ScalaCheckPropertyChecks with OptionValues { // scalastyle:off magic.number
 
   val jsLeafGen: Gen[JsValue] = {
     Gen.frequency(
@@ -320,7 +320,7 @@ class JsLensSpec extends WordSpec with MustMatchers with ScalaCheckPropertyCheck
 
         val gen: Gen[(Int, JsArray)] = for {
           idx <- Gen.chooseNum(0, 50)
-          arr <- Gen.listOfN(idx - 1, jsLeafGen).map(JsArray(_))
+          arr <- Gen.listOfN(idx, jsLeafGen).map(JsArray(_))
         } yield (idx, arr)
 
         forAll(gen) {

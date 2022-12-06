@@ -82,7 +82,7 @@ class ListSchemesController @Inject()(
             }
       }.getOrElse {
         Future.successful(
-          Redirect(controllers.routes.SessionExpiredController.onPageLoad())
+          Redirect(controllers.routes.SessionExpiredController.onPageLoad)
         )
       })
   }
@@ -93,11 +93,11 @@ class ListSchemesController @Inject()(
                                    searchText: Option[String]
                                  )(implicit request: OptionalDataRequest[AnyContent]): Future[Result] = {
     schemeSearchService.searchPsp(request.pspIdOrException.id, searchText).flatMap { searchResult =>
-          renderView(
-            schemeDetails = searchResult,
-            numberOfSchemes = searchResult.length,
-            form = form
-          )
+      renderView(
+        schemeDetails = searchResult,
+        numberOfSchemes = searchResult.length,
+        form = form
+      )
     }
   }
 
@@ -111,7 +111,7 @@ class ListSchemesController @Inject()(
 
   }
 
-  def onSubmit: Action[AnyContent] = (authenticate(PSP) andThen getData ).async {
+  def onSubmit: Action[AnyContent] = (authenticate(PSP) andThen getData).async {
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[_]) => renderView(
@@ -139,7 +139,7 @@ class ListSchemesController @Inject()(
             ),
           value => {
             Future.successful(
-              Redirect(controllers.routes.SessionExpiredController.onPageLoad())
+              Redirect(controllers.routes.SessionExpiredController.onPageLoad)
             )
             searchAndRenderView(
               searchText = Some(value),

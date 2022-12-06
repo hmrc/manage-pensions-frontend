@@ -56,7 +56,7 @@ class PsaIdController @Inject()(
     (authenticate() andThen getData andThen requireData).async {
       implicit request =>
 
-        InviteeNameId.retrieve.right.map {
+        InviteeNameId.retrieve.map {
           psaName =>
             val value = request.userAnswers.get(InviteePSAId)
             val preparedForm = value.fold(form)(form.fill)
@@ -70,7 +70,7 @@ class PsaIdController @Inject()(
       implicit request =>
         form.bindFromRequest().fold(
           (formWithErrors: Form[_]) =>
-            InviteeNameId.retrieve.right.map {
+            InviteeNameId.retrieve.map {
               psaName =>
                 Future.successful(BadRequest(view(formWithErrors, psaName, mode)))
             },

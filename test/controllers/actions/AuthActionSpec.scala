@@ -22,10 +22,10 @@ import controllers.psa.routes._
 import controllers.psp.routes._
 import controllers.routes
 import identifiers.AdministratorOrPractitionerId
+import models.AuthEntity.{PSA, PSP}
 import models.{AdministratorOrPractitioner, AuthEntity}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import models.AuthEntity.{PSA, PSP}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.mvc._
 import play.api.test.FakeRequest
@@ -179,7 +179,6 @@ class AuthActionSpec
     }
 
 
-
     "the user hasn't enrolled in PODS" must {
       "redirect the user to pension administrator frontend" in {
         val authAction = new AuthActionImpl(
@@ -234,7 +233,7 @@ class AuthActionSpec
         val controller = new Harness(authAction)
         val result = controller.onPageLoad()(fakeRequest)
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad().url)
+        redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
       }
     }
 
@@ -248,7 +247,7 @@ class AuthActionSpec
         val controller = new Harness(authAction)
         val result = controller.onPageLoad()(fakeRequest)
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad().url)
+        redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
       }
     }
 
@@ -262,7 +261,7 @@ class AuthActionSpec
         val controller = new Harness(authAction)
         val result = controller.onPageLoad()(fakeRequest)
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad().url)
+        redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
       }
     }
 
@@ -276,7 +275,7 @@ class AuthActionSpec
         val controller = new Harness(authAction)
         val result = controller.onPageLoad()(fakeRequest)
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad().url)
+        redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
       }
     }
 
@@ -290,7 +289,7 @@ class AuthActionSpec
         val controller = new Harness(authAction)
         val result = controller.onPageLoad()(fakeRequest)
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad().url)
+        redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
       }
     }
   }
@@ -305,7 +304,7 @@ object AuthActionSpec extends SpecBase with MockitoSugar {
     delegatedAuthRule = None
   )
 
-  private  val enrolmentPSA = Enrolment(
+  private val enrolmentPSA = Enrolment(
     key = "HMRC-PODS-ORG",
     identifiers = Seq(EnrolmentIdentifier(key = "PSAID", value = "A0000000")),
     state = "",
@@ -315,7 +314,7 @@ object AuthActionSpec extends SpecBase with MockitoSugar {
   private val mockUserAnswersCacheConnector = mock[UserAnswersCacheConnector]
 
   private class Harness(authAction: AuthAction, val controllerComponents: MessagesControllerComponents = controllerComponents,
-    authEntity: AuthEntity = PSA)
+                        authEntity: AuthEntity = PSA)
     extends BaseController {
     def onPageLoad(): Action[AnyContent] = authAction.apply(authEntity) { _ => Ok }
   }

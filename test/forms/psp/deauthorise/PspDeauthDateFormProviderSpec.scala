@@ -17,7 +17,7 @@
 package forms.psp.deauthorise
 
 import forms.mappings.Constraints
-import org.scalatest.Matchers
+import org.scalatest.matchers.should.Matchers
 import play.api.data.FormError
 import views.behaviours.StringFieldBehaviours
 
@@ -26,7 +26,8 @@ import java.time.LocalDate
 class PspDeauthDateFormProviderSpec extends StringFieldBehaviours with Constraints with Matchers {
 
   // scalastyle:off magic.number
-  private val relationshipStartDate =  LocalDate.of(2020, 4, 1)
+  private val relationshipStartDate = LocalDate.of(2020, 4, 1)
+
   def form() = new PspDeauthDateFormProvider()(relationshipStartDate, "messages__pspDeauth_date_error__before_relationshipStartDate")
   // scalastyle:on magic.number
 
@@ -35,7 +36,7 @@ class PspDeauthDateFormProviderSpec extends StringFieldBehaviours with Constrain
     val fieldName = "pspDeauthDate"
 
     behave like mandatoryDateField(
-      form,
+      () => form(),
       fieldName,
       "pspDeauth"
     )

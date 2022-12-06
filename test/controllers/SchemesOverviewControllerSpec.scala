@@ -18,7 +18,7 @@ package controllers
 
 import config._
 import connectors.{SessionDataCacheConnector, UserAnswersCacheConnector}
-import controllers.actions.{DataRetrievalAction, _}
+import controllers.actions._
 import controllers.psa.routes.ListSchemesController
 import identifiers.AdministratorOrPractitionerId
 import models.AdministratorOrPractitioner.Administrator
@@ -81,7 +81,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
   "SchemesOverview Controller" when {
     "onPageLoad" must {
       "return OK and the correct tiles" in {
-        when(fakeSchemesOverviewService.getTiles(eqTo(psaId))(any(), any(), any())).thenReturn(Future.successful(Seq(schemeCard,adminCard)))
+        when(fakeSchemesOverviewService.getTiles(eqTo(psaId))(any(), any(), any())).thenReturn(Future.successful(Seq(schemeCard, adminCard)))
         when(fakeSchemesOverviewService.getPsaName(eqTo(psaId))(any()))
           .thenReturn(Future.successful(Some(psaName)))
         when(fakeSchemesOverviewService.getPsaMinimalDetails(any())(any()))
@@ -99,7 +99,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
       }
 
       "redirect to update contact address when RLS flag is set" in {
-        when(fakeSchemesOverviewService.getTiles(eqTo(psaId))(any(), any(), any())).thenReturn(Future.successful(Seq(schemeCard,adminCard)))
+        when(fakeSchemesOverviewService.getTiles(eqTo(psaId))(any(), any(), any())).thenReturn(Future.successful(Seq(schemeCard, adminCard)))
         when(fakeSchemesOverviewService.getPsaName(eqTo(psaId))(any()))
           .thenReturn(Future.successful(Some(psaName)))
         when(fakeSchemesOverviewService.getPsaMinimalDetails(any())(any()))
@@ -114,7 +114,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
       }
 
       "redirect to contact HMRC page when both rls and deceased flag are set" in {
-        when(fakeSchemesOverviewService.getTiles(eqTo(psaId))(any(), any(), any())).thenReturn(Future.successful(Seq(schemeCard,adminCard)))
+        when(fakeSchemesOverviewService.getTiles(eqTo(psaId))(any(), any(), any())).thenReturn(Future.successful(Seq(schemeCard, adminCard)))
         when(fakeSchemesOverviewService.getPsaName(eqTo(psaId))(any()))
           .thenReturn(Future.successful(Some(psaName)))
         when(fakeSchemesOverviewService.getPsaMinimalDetails(any())(any()))
@@ -132,7 +132,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
     }
     "changeRoleToPsaAndLoadPage" must {
       "redirect to overview page and update mongo" in {
-        when(fakeSchemesOverviewService.getTiles(eqTo(psaId))(any(), any(), any())).thenReturn(Future.successful(Seq(schemeCard,adminCard)))
+        when(fakeSchemesOverviewService.getTiles(eqTo(psaId))(any(), any(), any())).thenReturn(Future.successful(Seq(schemeCard, adminCard)))
         when(fakeSchemesOverviewService.getPsaName(eqTo(psaId))(any()))
           .thenReturn(Future.successful(Some(psaName)))
         when(fakeSchemesOverviewService.getPsaMinimalDetails(any())(any()))
@@ -199,13 +199,13 @@ object SchemesOverviewControllerSpec extends ControllerSpecBase {
     id = "scheme-card",
     heading = Message("messages__schemeOverview__scheme_heading"),
     links = Seq(
-      Link("view-schemes", ListSchemesController.onPageLoad().url, Message("messages__schemeOverview__scheme_view"))
+      Link("view-schemes", ListSchemesController.onPageLoad.url, Message("messages__schemeOverview__scheme_view"))
     ),
     html = Some(html)
   )
 
   private val adminTile = adminCard
-  private val schemeTile =schemeCard
+  private val schemeTile = schemeCard
 }
 
 

@@ -17,8 +17,8 @@
 package utils.navigators
 
 import connectors.UserAnswersCacheConnector
-import controllers.psa.routes._
 import controllers.psa.remove.routes._
+import controllers.psa.routes._
 import controllers.routes._
 import identifiers.psa.remove.{ConfirmRemovePsaId, PsaRemovalDateId}
 import identifiers.{Identifier, SchemeSrnId}
@@ -40,13 +40,13 @@ class RemovePSANavigator @Inject()(val dataCacheConnector: UserAnswersCacheConne
       case (Some(false), Some(srn)) =>
         PsaSchemeDashboardController.onPageLoad(srn)
       case (Some(true), _) =>
-        PsaRemovalDateController.onPageLoad()
+        PsaRemovalDateController.onPageLoad
       case _ =>
-        controllers.routes.SessionExpiredController.onPageLoad()
+        controllers.routes.SessionExpiredController.onPageLoad
     }
   }
 
   override protected def editRouteMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
-    case _ => SessionExpiredController.onPageLoad()
+    case _ => SessionExpiredController.onPageLoad
   }
 }

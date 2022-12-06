@@ -22,7 +22,6 @@ import connectors.admin.MinimalConnector
 import connectors.scheme.{ListOfSchemesConnector, SchemeDetailsConnector}
 import controllers.ControllerSpecBase
 import controllers.actions.{AuthAction, FakeAuthAction}
-import controllers.psp.PspSchemeDashboardControllerSpec.aftPspSchemeDashboardCards
 import handlers.ErrorHandler
 import models.{IndividualDetails, Link, MinimalPSAPSP}
 import org.mockito.ArgumentMatchers.any
@@ -134,16 +133,14 @@ class PspSchemeDashboardControllerSpec
   ).toString
 
   override def beforeEach(): Unit = {
-    reset(
-      schemeDetailsService,
-      schemeDetailsConnector,
-      listSchemesConnector,
-      pspSchemeDashboardService,
-      userAnswersCacheConnector,
-      appConfig,
-      minimalConnector,
-      errorHandler
-    )
+    reset(schemeDetailsService)
+    reset(schemeDetailsConnector)
+    reset(listSchemesConnector)
+    reset(pspSchemeDashboardService)
+    reset(userAnswersCacheConnector)
+    reset(appConfig)
+    reset(minimalConnector)
+    reset(errorHandler)
     when(userAnswersCacheConnector.removeAll(any())(any(), any()))
       .thenReturn(Future.successful(Ok("")))
     when(schemeDetailsService.retrievePspSchemeDashboardCards(any(), any(), any())(any()))
@@ -291,7 +288,7 @@ object PspSchemeDashboardControllerSpec {
   private val returnLink: Link =
     Link(
       id = "return-search-schemes",
-      url = controllers.psp.routes.ListSchemesController.onPageLoad().url,
+      url = controllers.psp.routes.ListSchemesController.onPageLoad.url,
       linkText = "Return to your pension schemes"
     )
   private val deauthoriseLink: Link =

@@ -18,17 +18,19 @@ package connectors.admin
 
 import connectors.ManagePensionsCacheConnector
 import connectors.behaviour.ConnectorBehaviour
-import org.scalatest.AsyncWordSpec
-import org.scalatest.MustMatchers
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AsyncWordSpec
 
-class PensionAdminCacheConnectorSpec extends AsyncWordSpec with MustMatchers with ConnectorBehaviour {
+class PensionAdminCacheConnectorSpec extends AsyncWordSpec with Matchers with ConnectorBehaviour {
 
   override protected def portConfigKey: String = "microservice.services.pension-administrator.port"
 
   protected def pensionAdminCacheConnectorUrl(id: String) = s"/pension-administrator/journey-cache/psa-data/$id"
+
   protected def pensionAdminCacheConnectorLastUpdatedUrl(id: String) = s"/pension-administrator/journey-cache/psa-data/$id/lastUpdated"
 
   protected def managePensionsCacheConnectorUrl(id: String) = s"/pension-administrator/journey-cache/manage-pensions/$id"
+
   protected def managePensionsCacheConnectorLastUpdatedUrl(id: String) = s"/pension-administrator/journey-cache/manage-pensions/$id/lastUpdated"
 
   "PensionAdminCacheConnector" must {

@@ -18,9 +18,9 @@ package utils.navigators
 
 import controllers.invitations.psa.routes._
 import controllers.invitations.routes._
-import identifiers.{Identifier, SchemeSrnId}
 import identifiers.invitations._
-import identifiers.invitations.psa.{AdviserAddressId, AdviserAddressListId, AdviserAddressPostCodeLookupId, AdviserEmailId, AdviserNameId, CheckPensionAdviserAnswersId}
+import identifiers.invitations.psa._
+import identifiers.{Identifier, SchemeSrnId}
 import models.NormalMode
 import play.api.mvc.Call
 import utils.{Navigator, UserAnswers}
@@ -61,7 +61,7 @@ class AcceptInvitationNavigator @Inject() extends Navigator {
       case Some(true) =>
         DeclarationController.onPageLoad()
       case _ =>
-        controllers.routes.SessionExpiredController.onPageLoad()
+        controllers.routes.SessionExpiredController.onPageLoad
     }
   }
 

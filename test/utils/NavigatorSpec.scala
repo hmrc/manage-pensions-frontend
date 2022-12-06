@@ -19,11 +19,12 @@ package utils
 import identifiers.{Identifier, TypedIdentifier}
 import models.requests.IdentifiedRequest
 import models.{CheckMode, NormalMode}
-import org.scalatest.{MustMatchers, WordSpec}
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AsyncWordSpec
 import play.api.mvc.Call
 import uk.gov.hmrc.http.HeaderCarrier
 
-class NavigatorSpec extends WordSpec with MustMatchers {
+class NavigatorSpec extends AsyncWordSpec with Matchers {
 
   import NavigatorSpec._
 
@@ -39,7 +40,7 @@ class NavigatorSpec extends WordSpec with MustMatchers {
       "go to Index from an identifier that doesn't exist in the route map" in {
         val fixture = testFixture()
         val result = fixture.navigator.nextPage(testNotExistId, NormalMode, UserAnswers())
-        result mustBe controllers.routes.IndexController.onPageLoad()
+        result mustBe controllers.routes.IndexController.onPageLoad
       }
     }
 
@@ -53,7 +54,7 @@ class NavigatorSpec extends WordSpec with MustMatchers {
       "go to Index from an identifier that doesn't exist in the edit route map" in {
         val fixture = testFixture()
         val result = fixture.navigator.nextPage(testNotExistId, CheckMode, UserAnswers())
-        result mustBe controllers.routes.IndexController.onPageLoad()
+        result mustBe controllers.routes.IndexController.onPageLoad
       }
     }
   }

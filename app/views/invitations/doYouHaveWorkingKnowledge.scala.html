@@ -32,7 +32,7 @@
 
 @layout(pageTitle = titleWithErrors(form, messages("messages__doYouHaveWorkingKnowledge__title"))){
 
-    @formHelper(action = controllers.invitations.routes.DoYouHaveWorkingKnowledgeController.onSubmit(mode), 'autoComplete -> "off") {
+    @formHelper(action = controllers.invitations.routes.DoYouHaveWorkingKnowledgeController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))

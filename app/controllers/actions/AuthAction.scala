@@ -61,20 +61,20 @@ class AuthImpl(
       case Some(id) ~ enrolments ~ Some(affinityGroup) =>
         createAuthRequest(id, enrolments, affinityGroup, request, block)
       case _ =>
-        Future.successful(Redirect(UnauthorisedController.onPageLoad()))
+        Future.successful(Redirect(UnauthorisedController.onPageLoad))
     } recover {
       case _: NoActiveSession =>
         Redirect(config.loginUrl, Map("continue" -> Seq(config.loginContinueUrl)))
       case _: InsufficientEnrolments =>
-        Redirect(UnauthorisedController.onPageLoad())
+        Redirect(UnauthorisedController.onPageLoad)
       case _: InsufficientConfidenceLevel =>
-        Redirect(UnauthorisedController.onPageLoad())
+        Redirect(UnauthorisedController.onPageLoad)
       case _: UnsupportedAuthProvider =>
-        Redirect(UnauthorisedController.onPageLoad())
+        Redirect(UnauthorisedController.onPageLoad)
       case _: UnsupportedAffinityGroup =>
-        Redirect(UnauthorisedController.onPageLoad())
+        Redirect(UnauthorisedController.onPageLoad)
       case _: UnsupportedCredentialRole =>
-        Redirect(UnauthorisedController.onPageLoad())
+        Redirect(UnauthorisedController.onPageLoad)
       case _: IdNotFound =>
         Redirect(YouNeedToRegisterController.onPageLoad())
     }

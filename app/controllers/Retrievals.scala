@@ -19,8 +19,7 @@ package controllers
 import identifiers.TypedIdentifier
 import models.requests.DataRequest
 import play.api.libs.json.Reads
-import play.api.mvc.AnyContent
-import play.api.mvc.Result
+import play.api.mvc.{AnyContent, Result}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import scala.concurrent.Future
@@ -42,8 +41,8 @@ trait Retrievals {
       new Retrieval[A ~ B] {
         override def retrieve(implicit request: DataRequest[AnyContent]): Either[Future[Result], A ~ B] = {
           for {
-            a <- self.retrieve.right
-            b <- query.retrieve.right
+            a <- self.retrieve
+            b <- query.retrieve
           } yield new ~(a, b)
         }
       }
@@ -52,15 +51,11 @@ trait Retrievals {
   object Retrieval {
 
     def apply[A](f: DataRequest[AnyContent] => Either[Future[Result], A]): Retrieval[A] =
-      new Retrieval[A] {
-        override def retrieve(implicit request: DataRequest[AnyContent]): Either[Future[Result], A] =
-          f(request)
-      }
+      (request: DataRequest[AnyContent]) => f(request)
 
     def static[A](a: A): Retrieval[A] =
-      Retrieval {
-        implicit request =>
-          Right(a)
+      Retrieval { _ =>
+        Right(a)
       }
   }
 
@@ -69,7 +64,7 @@ trait Retrievals {
       implicit request =>
         request.userAnswers.get(id) match {
           case Some(value) => Right(value)
-          case None => Left(Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad())))
+          case None => Left(Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad)))
         }
     }
 

@@ -74,7 +74,7 @@ class ConfirmPsaDeauthPspControllerSpec
       onPageLoadAction = onPageLoadAction,
       emptyData = getEmptyData,
       validData = Some(sessionData),
-      validView = viewAsString(this)
+      validView = () => viewAsString(this)()
     )
   }
 }

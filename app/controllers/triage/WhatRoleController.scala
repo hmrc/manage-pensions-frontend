@@ -19,13 +19,12 @@ package controllers.triage
 import controllers.Retrievals
 import controllers.actions.TriageAction
 import forms.triage.WhatRoleFormProvider
-import identifiers.triage.WhatRoleId
 import models.triage.WhatRole
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.{Enumerable, UserAnswers}
+import utils.Enumerable
 import views.html.triage.whatRole
 
 import javax.inject.Inject
@@ -42,7 +41,7 @@ class WhatRoleController @Inject()(override val messagesApi: MessagesApi,
   private def form: Form[WhatRole] = formProvider()
 
   def onPageLoad: Action[AnyContent] = triageAction.async {
-    Future.successful(Redirect(controllers.triagev2.routes.WhatRoleControllerV2.onPageLoad()))
+    Future.successful(Redirect(controllers.triagev2.routes.WhatRoleControllerV2.onPageLoad))
   }
 
   def onSubmit: Action[AnyContent] = triageAction.async {
@@ -50,9 +49,8 @@ class WhatRoleController @Inject()(override val messagesApi: MessagesApi,
       form.bindFromRequest().fold(
         (formWithErrors: Form[_]) =>
           Future.successful(BadRequest(view(formWithErrors))),
-        value => {
-          val uaUpdated = UserAnswers().set(WhatRoleId)(value).asOpt.getOrElse(UserAnswers())
-          Future.successful(Redirect(controllers.triage.routes.WhatRoleController.onPageLoad()))
+        _ => {
+          Future.successful(Redirect(controllers.triage.routes.WhatRoleController.onPageLoad))
         }
       )
   }

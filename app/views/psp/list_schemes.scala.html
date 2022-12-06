@@ -34,12 +34,6 @@
 
 @(form: Form[_], schemes: List[SchemeDetails], pspName: String, numberOfSchemes: Int)(implicit request: Request[_], messages: Messages)
 
-@manageRedirectLink = @{
-    val href: String = appConfig.pensionSchemeOnlineServiceUrl
-    val linkText: String = messages("messages__schemesOverview__manage__redirect__link")
-    Html(s"""<a class="govuk-link" id="manage-link" href="$href">$linkText</a>""")
-}
-
 @button_content = @{
     if(form("searchText").value.exists(_.length > 0)) {
         "messages__listSchemes__search_again"
@@ -103,7 +97,7 @@
 
 @layout(pageTitle = titleWithErrors(form, messages(heading))) {
 
-    @formHelper(action = ListSchemesController.onSearch, 'autoComplete -> "off") {
+    @formHelper(action = ListSchemesController.onSearch, Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))

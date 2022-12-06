@@ -28,7 +28,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.Configuration
-import play.api.mvc.Call
+import play.api.mvc.{Action, AnyContent, Call}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
@@ -42,7 +42,7 @@ class CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours 
 
   import CheckYourAnswersControllerSpec._
 
-  behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, Some(userAnswer), viewAsString )
+  behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, Some(userAnswer), () => viewAsString())
 
   behave like controllerWithOnSubmitMethod(onSubmitAction, getEmptyData, Some(userAnswerUpdated), None)
 
@@ -113,7 +113,7 @@ object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours
   private val checkYourAnswersFactory = new CheckYourAnswersFactory(countryOptions)
 
   private val fakeSchemeDetailsConnector: SchemeDetailsConnector = mock[SchemeDetailsConnector]
-  val config = injector.instanceOf[Configuration]
+  val config: Configuration = injector.instanceOf[Configuration]
   private val view = injector.instanceOf[check_your_answers_view]
 
   private def fakeInvitationConnector(response: Future[Unit] = Future.successful(())): InvitationConnector = new InvitationConnector {
@@ -125,17 +125,17 @@ object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours
 
   def call: Call = CheckYourAnswersController.onSubmit()
 
-  def viewAsString() = view(Seq(), call,
+  def viewAsString(): String = view(Seq(), call,
     Some("messages__check__your__answer__main__containt__label"), Some(testSchemeName))(fakeRequest, messages).toString
 
-  def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
+  def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
 
     new CheckYourAnswersController(
       frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction,
       checkYourAnswersFactory, fakeSchemeDetailsConnector, fakeInvitationConnector(), controllerComponents, view).onPageLoad()
   }
 
-  def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
+  def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
 
     when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any()))
       .thenReturn(Future.successful(UserAnswers(readJsonFromFile("/data/validSchemeDetailsResponse.json"))))
@@ -145,10 +145,10 @@ object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours
       checkYourAnswersFactory, fakeSchemeDetailsConnector, fakeInvitationConnector(), controllerComponents, view).onSubmit()
   }
 
-  def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction, invitationResponse: Future[Unit]) = {
+  def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction, invitationResponse: Future[Unit]): Action[AnyContent] = {
 
-        when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any()))
-          .thenReturn(Future.successful(UserAnswers(readJsonFromFile("/data/validSchemeDetailsResponse.json"))))
+    when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any()))
+      .thenReturn(Future.successful(UserAnswers(readJsonFromFile("/data/validSchemeDetailsResponse.json"))))
 
     new CheckYourAnswersController(
       frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction,

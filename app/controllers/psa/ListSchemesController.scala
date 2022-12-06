@@ -66,7 +66,7 @@ class ListSchemesController @Inject()(
                           request: OptionalDataRequest[AnyContent]): Future[Result] = {
     val status = if (form.hasErrors) BadRequest else Ok
 
-    minimalPsaConnector.getMinimalPsaDetails(request.psaIdOrException.id).flatMap{ minimalDetails =>
+    minimalPsaConnector.getMinimalPsaDetails(request.psaIdOrException.id).flatMap { minimalDetails =>
       (minimalDetails, MinimalPSAPSP.getNameFromId(minimalDetails)) match {
         case (md, _) if md.deceasedFlag => Future.successful(Redirect(controllers.routes.ContactHMRCController.onPageLoad()))
         case (md, _) if md.rlsFlag => Future.successful(Redirect(appConfig.psaUpdateContactDetailsUrl))
@@ -91,11 +91,11 @@ class ListSchemesController @Inject()(
               )
             )
           }
-        case (_, None) => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+        case (_, None) => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad))
       }
     } recoverWith {
       case _: DelimitedAdminException =>
-        Future.successful(Redirect(controllers.routes.DelimitedAdministratorController.onPageLoad()))
+        Future.successful(Redirect(controllers.routes.DelimitedAdministratorController.onPageLoad))
     }
   }
 
@@ -131,7 +131,7 @@ class ListSchemesController @Inject()(
           )
         case _ =>
           Future.successful(
-            Redirect(controllers.routes.SessionExpiredController.onPageLoad())
+            Redirect(controllers.routes.SessionExpiredController.onPageLoad)
           )
       }
     }

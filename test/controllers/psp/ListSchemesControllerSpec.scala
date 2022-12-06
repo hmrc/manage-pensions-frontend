@@ -38,7 +38,8 @@ import views.html.psp.list_schemes
 import scala.concurrent.Future
 
 class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar with BeforeAndAfterEach {
-import ListSchemesControllerSpec._
+
+  import ListSchemesControllerSpec._
 
   override def beforeEach(): Unit = {
     when(mockAppConfig.minimumSchemeSearchResults) thenReturn 1
@@ -67,12 +68,12 @@ import ListSchemesControllerSpec._
 
   "onSubmit" when {
 
-      when(mockMinimalConnector.getNameFromPspID(any())(any(), any())).thenReturn(Future.successful(Some(pspName)))
+    when(mockMinimalConnector.getNameFromPspID(any())(any(), any())).thenReturn(Future.successful(Some(pspName)))
     "return OK and the correct view when there are schemes" in {
       val searchText = "24000001IN"
       val onwardRoute = Call("POST", "www.example.com")
       when(mockSchemeSearchService.searchPsp(any(), ArgumentMatchers.eq(Some(searchText)))(any(), any())).thenReturn(Future.successful(fullSchemes))
-      val postRequest = FakeRequest(POST, routes.ListSchemesController.onSubmit().url).withFormUrlEncodedBody("searchText" -> searchText)
+      val postRequest = FakeRequest(POST, routes.ListSchemesController.onSubmit.url).withFormUrlEncodedBody("searchText" -> searchText)
       val result = controller().onSubmit(postRequest)
       status(result) mustBe SEE_OTHER
       redirectLocation(result).value mustBe onwardRoute.url
@@ -122,26 +123,26 @@ import ListSchemesControllerSpec._
       contentAsString(result) mustBe expected
     }
 
-      "return OK and the correct view with correct no matches message when no match is made" in {
+    "return OK and the correct view with correct no matches message when no match is made" in {
 
-        val incorrectSearchText = "incorrect"
-        when(mockSchemeSearchService.searchPsp(any(), ArgumentMatchers.eq(Some(incorrectSearchText)))(any(), any())).thenReturn(Future.successful(Nil))
+      val incorrectSearchText = "incorrect"
+      when(mockSchemeSearchService.searchPsp(any(), ArgumentMatchers.eq(Some(incorrectSearchText)))(any(), any())).thenReturn(Future.successful(Nil))
 
-        val fixture = testFixture(pspIdWithSchemes)
-        val postRequest =
-          fakeRequest.withFormUrlEncodedBody(("searchText", incorrectSearchText))
-        val result = fixture.controller.onSearch(postRequest)
+      val fixture = testFixture(pspIdWithSchemes)
+      val postRequest =
+        fakeRequest.withFormUrlEncodedBody(("searchText", incorrectSearchText))
+      val result = fixture.controller.onSearch(postRequest)
 
-        status(result) mustBe OK
+      status(result) mustBe OK
 
-        val expected = viewAsString(
-          schemes = List.empty,
-          numberOfSchemes = 0,
-          Some(incorrectSearchText)
-        )
+      val expected = viewAsString(
+        schemes = List.empty,
+        numberOfSchemes = 0,
+        Some(incorrectSearchText)
+      )
 
-        contentAsString(result) mustBe expected
-      }
+      contentAsString(result) mustBe expected
+    }
   }
 }
 
@@ -250,8 +251,8 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
 
   def controller(dataRetrievalAction: DataRetrievalAction = getDataWithPspName()): ListSchemesController =
     new ListSchemesController(
-      mockAppConfig,messagesApi, FakeAuthAction,dataRetrievalAction,mockMinimalConnector, navigator,
-      mockUserAnswersCacheConnector,controllerComponents, view, listSchemesFormProvider,mockSchemeSearchService)
+      mockAppConfig, messagesApi, FakeAuthAction, dataRetrievalAction, mockMinimalConnector, navigator,
+      mockUserAnswersCacheConnector, controllerComponents, view, listSchemesFormProvider, mockSchemeSearchService)
 
 
   private def testFixture(pspId: String): TestFixture =

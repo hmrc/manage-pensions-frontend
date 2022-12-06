@@ -28,7 +28,7 @@
 
 @layout(pageTitle = s"${messages("messages__pspWhatYouWillNeed__title")}") {
 
-    @formHelper(action = controllers.invitations.psp.routes.WhatYouWillNeedController.onSubmit, 'autoComplete -> "off") {
+    @formHelper(action = controllers.invitations.psp.routes.WhatYouWillNeedController.onSubmit(), Symbol("autoComplete") -> "off") {
 
         @components.heading(messages("messages__pspWhatYouWillNeed__title"))
 

@@ -18,14 +18,13 @@ package services
 
 import config.FrontendAppConfig
 import connectors.admin.MinimalConnector
-import javax.inject.Inject
 import models.{Link, MinimalPSAPSP}
 import play.api.i18n.Messages
 import uk.gov.hmrc.http.HeaderCarrier
 import viewmodels.{CardSubHeading, CardSubHeadingParam, CardViewModel, Message}
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class PspDashboardService @Inject()(appConfig: FrontendAppConfig,
                                     minimalConnector: MinimalConnector
@@ -58,7 +57,7 @@ class PspDashboardService @Inject()(appConfig: FrontendAppConfig,
     )
 
   private def deregisterLink(details: MinimalPSAPSP): String =
-    if(details.individualDetails.nonEmpty) appConfig.pspDeregisterIndividualUrl else appConfig.pspDeregisterCompanyUrl
+    if (details.individualDetails.nonEmpty) appConfig.pspDeregisterIndividualUrl else appConfig.pspDeregisterCompanyUrl
 
   private def schemeCard(implicit messages: Messages): CardViewModel =
     CardViewModel(
@@ -66,7 +65,7 @@ class PspDashboardService @Inject()(appConfig: FrontendAppConfig,
       heading = Message("messages__pspDashboard__scheme_heading"),
       links = Seq(Link(
         "search-schemes",
-        controllers.psp.routes.ListSchemesController.onPageLoad().url,
+        controllers.psp.routes.ListSchemesController.onPageLoad.url,
         Message("messages__pspDashboard__search_scheme")))
     )
 }

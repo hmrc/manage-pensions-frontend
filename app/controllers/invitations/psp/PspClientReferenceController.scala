@@ -20,8 +20,8 @@ import com.google.inject.Inject
 import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
 import controllers.actions._
-import controllers.psa.routes._
 import controllers.invitations.psp.routes._
+import controllers.psa.routes._
 import forms.invitations.psp.PspClientReferenceFormProvider
 import identifiers.invitations.psp.{PspClientReferenceId, PspNameId}
 import identifiers.{SchemeNameId, SchemeSrnId}
@@ -38,16 +38,16 @@ import scala.concurrent.{ExecutionContext, Future}
 
 
 class PspClientReferenceController @Inject()(
-                                             override val messagesApi: MessagesApi,
-                                             authenticate: AuthAction,
-                                             @AuthorisePsp navigator: Navigator,
-                                             dataCacheConnector: UserAnswersCacheConnector,
-                                             getData: DataRetrievalAction,
-                                             requireData: DataRequiredAction,
-                                             formProvider: PspClientReferenceFormProvider,
-                                             val controllerComponents: MessagesControllerComponents,
-                                             view: pspClientReference
-                                           )(implicit val ec: ExecutionContext)
+                                              override val messagesApi: MessagesApi,
+                                              authenticate: AuthAction,
+                                              @AuthorisePsp navigator: Navigator,
+                                              dataCacheConnector: UserAnswersCacheConnector,
+                                              getData: DataRetrievalAction,
+                                              requireData: DataRequiredAction,
+                                              formProvider: PspClientReferenceFormProvider,
+                                              val controllerComponents: MessagesControllerComponents,
+                                              view: pspClientReference
+                                            )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with Retrievals
     with I18nSupport {
@@ -56,12 +56,12 @@ class PspClientReferenceController @Inject()(
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
-      (SchemeNameId and PspNameId and SchemeSrnId).retrieve.right.map {
+      (SchemeNameId and PspNameId and SchemeSrnId).retrieve.map {
         case schemeName ~ pspName ~ srn =>
           val value = request.userAnswers.get(PspClientReferenceId)
           val preparedForm = value.fold(form)(form.fill)
 
-          Future.successful(Ok(view(preparedForm, pspName, mode, schemeName, returnCall(srn),PspClientReferenceController.onSubmit(mode))))
+          Future.successful(Ok(view(preparedForm, pspName, mode, schemeName, returnCall(srn), PspClientReferenceController.onSubmit(mode))))
       }
   }
 
@@ -69,9 +69,9 @@ class PspClientReferenceController @Inject()(
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[_]) => {
-          (SchemeNameId and PspNameId and SchemeSrnId).retrieve.right.map {
+          (SchemeNameId and PspNameId and SchemeSrnId).retrieve.map {
             case schemeName ~ pspName ~ srn =>
-              Future.successful(BadRequest(view(formWithErrors, pspName, mode, schemeName, returnCall(srn),PspClientReferenceController.onSubmit(mode))))
+              Future.successful(BadRequest(view(formWithErrors, pspName, mode, schemeName, returnCall(srn), PspClientReferenceController.onSubmit(mode))))
           }
         },
         value =>

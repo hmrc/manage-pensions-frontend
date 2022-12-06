@@ -16,17 +16,16 @@
 
 package models
 
-import java.time.LocalDate
-import models.SchemeStatus.Deregistered
-import models.SchemeStatus.Rejected
-import models.SchemeStatus.WoundUp
+import models.SchemeStatus.{Deregistered, Rejected, WoundUp}
 import models.psa.{PsaDetails, PsaSchemeDetails}
 import org.scalacheck.Gen
-import org.scalatest.MustMatchers
-import org.scalatest.WordSpec
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AsyncWordSpec
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
-class PsaSchemeDetailsSpec extends WordSpec with MustMatchers with ScalaCheckDrivenPropertyChecks {
+import java.time.LocalDate
+
+class PsaSchemeDetailsSpec extends AsyncWordSpec with Matchers with ScalaCheckDrivenPropertyChecks {
 
   import PsaSchemeDetailsSpec._
 
@@ -54,9 +53,9 @@ class PsaSchemeDetailsSpec extends WordSpec with MustMatchers with ScalaCheckDri
       }
 
       "there are other PSAs and the scheme has a status of Rejected Under Appeal" in {
-            PsaSchemeDetails.canRemovePsaVariations(
-              testPsaId1, Seq(testPsa1(), testPsa2),
-              SchemeStatus.RejectedUnderAppeal.value) mustBe false
+        PsaSchemeDetails.canRemovePsaVariations(
+          testPsaId1, Seq(testPsa1(), testPsa2),
+          SchemeStatus.RejectedUnderAppeal.value) mustBe false
       }
 
       "there are other PSAs and the scheme has a status of Rejected" in {

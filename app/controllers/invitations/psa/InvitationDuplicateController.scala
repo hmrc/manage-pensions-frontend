@@ -43,7 +43,7 @@ class InvitationDuplicateController @Inject()(
 
   def onPageLoad(): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
-      (InviteeNameId and MinimalSchemeDetailId).retrieve.right.map {
+      (InviteeNameId and MinimalSchemeDetailId).retrieve.map {
         case name ~ schemeDetails =>
           Future.successful(
             Ok(view(

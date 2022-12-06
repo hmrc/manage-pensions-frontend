@@ -38,7 +38,7 @@
 
 @layout(pageTitle = titleWithErrors(form, messages("messages__adviser__address__list__title"))) {
 
-    @formHelper(action = PensionAdviserAddressListController.onSubmit(mode), 'autoComplete -> "off") {
+    @formHelper(action = PensionAdviserAddressListController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))

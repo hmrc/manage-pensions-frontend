@@ -27,6 +27,7 @@ import views.html.psa.remove.cannot_be_removed
 class CanNotBeRemovedControllerSpec extends ControllerWithNormalPageBehaviours {
 
   import CanNotBeRemovedControllerSpec._
+
   private val view = injector.instanceOf[cannot_be_removed]
 
   def fakeControllerAction(authAction: AuthAction = FakeUnAuthorisedAction) = new CanNotBeRemovedController(
@@ -71,7 +72,7 @@ class CanNotBeRemovedControllerSpec extends ControllerWithNormalPageBehaviours {
       val result = fakeControllerAction().onPageLoadWhereSuspended()(fakeRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)
+      redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad.url)
     }
   }
 

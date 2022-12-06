@@ -17,11 +17,11 @@
 package models
 
 import org.scalacheck.Gen
-import org.scalatest.FlatSpec
-import org.scalatest.Matchers
+import org.scalatest.flatspec.AsyncFlatSpec
+import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
-class SchemeStatusSpec extends FlatSpec with Matchers with ScalaCheckDrivenPropertyChecks {
+class SchemeStatusSpec extends AsyncFlatSpec with Matchers with ScalaCheckDrivenPropertyChecks {
 
   "SchemeStatus" should "correctly configure Pending" in {
 
