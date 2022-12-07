@@ -20,12 +20,12 @@ import identifiers.invitations.psa._
 import models.{Address, TolerantAddress}
 import org.scalatest.OptionValues
 import org.scalatest.matchers.must.Matchers
-import org.scalatest.wordspec.AsyncWordSpec
+import org.scalatest.wordspec.AnyWordSpec
 import utils.UserAnswers
 
-class DoYouHaveWorkingKnowledgeIdSpec extends AsyncWordSpec with Matchers with OptionValues {
+class DoYouHaveWorkingKnowledgeIdSpec extends AnyWordSpec with Matchers with OptionValues {
 
-  val tolerantAddressSample = Seq(
+  val tolerantAddressSample: Seq[TolerantAddress] = Seq(
     TolerantAddress(Some("10 Other Place"), Some("Some District"), Some("Anytown"), Some("Somerset"), Some("ZZ1 1ZZ"), Some("UK"))
   )
   val userAnswers: UserAnswers = UserAnswers().haveWorkingKnowledge(false).

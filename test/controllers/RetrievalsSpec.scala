@@ -63,7 +63,7 @@ class RetrievalsSpec extends AnyWordSpec with FrontendBaseController with Retrie
 
       implicit val request: DataRequest[AnyContent] = dataRequest(Json.obj("test" -> "result", "second" -> "answer"))
 
-      (testIdentifier and secondIdentifier).retrieve.value mustEqual new ~("result", "answer")
+      (testIdentifier and secondIdentifier).retrieve.value mustEqual new~("result", "answer")
     }
 
     "redirect to the session expired page when cant find identifier" in {

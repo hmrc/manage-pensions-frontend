@@ -19,8 +19,8 @@ package controllers.invitations.psp
 import controllers.actions._
 import controllers.behaviours.ControllerWithNormalPageBehaviours
 import controllers.psa.routes._
-import identifiers.{SchemeNameId, SchemeSrnId}
 import identifiers.invitations.psp.PspNameId
+import identifiers.{SchemeNameId, SchemeSrnId}
 import models.SchemeReferenceNumber
 import play.api.mvc.{Action, AnyContent, Call}
 import utils.UserAnswers

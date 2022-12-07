@@ -17,9 +17,9 @@
 package models
 
 import org.scalatest.matchers.must.Matchers
-import org.scalatest.wordspec.AsyncWordSpec
+import org.scalatest.wordspec.AnyWordSpec
 
-class SchemeReferenceNumberSpec extends AsyncWordSpec with Matchers {
+class SchemeReferenceNumberSpec extends AnyWordSpec with Matchers {
 
   "SchemeReferenceNumber" must {
 

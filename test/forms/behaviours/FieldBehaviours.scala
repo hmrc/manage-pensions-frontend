@@ -19,11 +19,11 @@ package forms.behaviours
 import generators.Generators
 import org.scalacheck.Gen
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AsyncWordSpec
+import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import play.api.data.{Form, FormError}
 
-trait FieldBehaviours extends AsyncWordSpec with Matchers with ScalaCheckDrivenPropertyChecks with Generators {
+trait FieldBehaviours extends AnyWordSpec with Matchers with ScalaCheckDrivenPropertyChecks with Generators {
 
   lazy val emptyForm: Map[String, String] = Map[String, String]()
 

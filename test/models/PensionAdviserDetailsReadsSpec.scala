@@ -17,11 +17,11 @@
 package models
 
 import org.scalatest.matchers.must.Matchers
-import org.scalatest.wordspec.AsyncWordSpec
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.{JsValue, Json}
 import testhelpers.InvitationBuilder
 
-class PensionAdviserDetailsReadsSpec extends AsyncWordSpec with Matchers {
+class PensionAdviserDetailsReadsSpec extends AnyWordSpec with Matchers {
 
   import PensionAdviserDetailsReadsSpec._
 

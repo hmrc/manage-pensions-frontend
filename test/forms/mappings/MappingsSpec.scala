@@ -18,11 +18,11 @@ package forms.mappings
 
 import org.scalatest.OptionValues
 import org.scalatest.matchers.must.Matchers
-import org.scalatest.wordspec.AsyncWordSpec
+import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import play.api.data.{Form, FormError}
 
-class MappingsSpec extends AsyncWordSpec with Matchers with OptionValues with Mappings with ScalaCheckDrivenPropertyChecks {
+class MappingsSpec extends AnyWordSpec with Matchers with OptionValues with Mappings with ScalaCheckDrivenPropertyChecks {
 
   "boolean" must {
 

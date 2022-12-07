@@ -18,12 +18,12 @@ package utils
 
 import org.scalacheck.{Gen, Shrink}
 import org.scalatest.Assertion
-import org.scalatest.flatspec.AsyncFlatSpec
+import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import wolfendale.scalacheck.regexp.RegexpGen
 
-class PspAuthoriseFuzzyMatcherSpec extends AsyncFlatSpec with Matchers with ScalaCheckDrivenPropertyChecks {
+class PspAuthoriseFuzzyMatcherSpec extends AnyFlatSpec with Matchers with ScalaCheckDrivenPropertyChecks {
 
   import PspAuthoriseFuzzyMatcherSpec._
 

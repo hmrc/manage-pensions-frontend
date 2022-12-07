@@ -17,12 +17,12 @@
 package utils
 
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AsyncWordSpec
+import org.scalatest.wordspec.AnyWordSpec
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class DateHelperSpec extends AsyncWordSpec with Matchers {
+class DateHelperSpec extends AnyWordSpec with Matchers {
 
   val currentDate: LocalDate = LocalDate.parse("2018-01-04T00:00:01", DateTimeFormatter.ISO_LOCAL_DATE_TIME)
 

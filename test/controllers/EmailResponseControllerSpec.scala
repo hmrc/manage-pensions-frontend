@@ -19,9 +19,9 @@ package controllers
 import audit._
 import models.{Sent, _}
 import org.joda.time.DateTime
+import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{never, times, verify, when}
-import org.mockito.{ArgumentCaptor, Mockito}
+import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
@@ -59,8 +59,8 @@ class EmailResponseControllerSpec extends AsyncWordSpec with Matchers with Mocki
   private val encryptedEmail = injector.instanceOf[ApplicationCrypto].QueryParameterCrypto.encrypt(PlainText(email)).value
 
   override def beforeEach(): Unit = {
-    Mockito.reset(mockAuditService)
-    Mockito.reset(mockAuthConnector)
+    reset(mockAuditService)
+    reset(mockAuthConnector)
     when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any()))
       .thenReturn(Future.successful(enrolments))
   }

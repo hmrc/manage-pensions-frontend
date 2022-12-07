@@ -22,10 +22,10 @@ import connectors.UserAnswersCacheConnector
 import connectors.admin.{DelimitedAdminException, MinimalConnector}
 import connectors.scheme.SchemeDetailsConnector
 import controllers.actions.AuthAction
-import identifiers.{MinimalSchemeDetailId, SchemeNameId}
 import identifiers.invitations.PSTRId
-import models.{MinimalSchemeDetail, SchemeReferenceNumber}
+import identifiers.{MinimalSchemeDetailId, SchemeNameId}
 import models.requests.AuthenticatedRequest
+import models.{MinimalSchemeDetail, SchemeReferenceNumber}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 

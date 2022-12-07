@@ -43,7 +43,7 @@ trait Retrievals {
           for {
             a <- self.retrieve
             b <- query.retrieve
-          } yield new ~(a, b)
+          } yield new~(a, b)
         }
       }
   }

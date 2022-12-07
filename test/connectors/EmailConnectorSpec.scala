@@ -20,14 +20,14 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import config.FrontendAppConfig
 import models.SendEmailRequest
 import org.scalatest.matchers.must.Matchers
-import org.scalatest.wordspec.AsyncWordSpec
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.http.Status
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.WireMockHelper
 
 import scala.concurrent.ExecutionContext
 
-class EmailConnectorSpec extends AsyncWordSpec with Matchers with WireMockHelper {
+class EmailConnectorSpec extends AnyWordSpec with Matchers with WireMockHelper {
   override protected def portConfigKey: String = "microservice.services.email.port"
 
   def frontendAppConfig: FrontendAppConfig = injector.instanceOf[FrontendAppConfig]

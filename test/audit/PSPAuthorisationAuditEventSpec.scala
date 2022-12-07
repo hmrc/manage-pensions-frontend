@@ -17,11 +17,11 @@
 package audit
 
 import org.scalatest.matchers.must.Matchers
-import org.scalatest.wordspec.AsyncWordSpec
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.Json
 
 
-class PSPAuthorisationAuditEventSpec extends AsyncWordSpec with Matchers {
+class PSPAuthorisationAuditEventSpec extends AnyWordSpec with Matchers {
 
   private val pspId = "pspId"
   private val psaId = "psaId"

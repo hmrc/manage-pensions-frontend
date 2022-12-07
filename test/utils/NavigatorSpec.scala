@@ -20,11 +20,11 @@ import identifiers.{Identifier, TypedIdentifier}
 import models.requests.IdentifiedRequest
 import models.{CheckMode, NormalMode}
 import org.scalatest.matchers.must.Matchers
-import org.scalatest.wordspec.AsyncWordSpec
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.mvc.Call
 import uk.gov.hmrc.http.HeaderCarrier
 
-class NavigatorSpec extends AsyncWordSpec with Matchers {
+class NavigatorSpec extends AnyWordSpec with Matchers {
 
   import NavigatorSpec._
 

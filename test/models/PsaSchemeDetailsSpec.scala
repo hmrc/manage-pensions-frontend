@@ -20,12 +20,12 @@ import models.SchemeStatus.{Deregistered, Rejected, WoundUp}
 import models.psa.{PsaDetails, PsaSchemeDetails}
 import org.scalacheck.Gen
 import org.scalatest.matchers.must.Matchers
-import org.scalatest.wordspec.AsyncWordSpec
+import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
 import java.time.LocalDate
 
-class PsaSchemeDetailsSpec extends AsyncWordSpec with Matchers with ScalaCheckDrivenPropertyChecks {
+class PsaSchemeDetailsSpec extends AnyWordSpec with Matchers with ScalaCheckDrivenPropertyChecks {
 
   import PsaSchemeDetailsSpec._
 

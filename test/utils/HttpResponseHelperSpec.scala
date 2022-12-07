@@ -17,7 +17,7 @@
 package utils
 
 import org.scalacheck.Gen
-import org.scalatest.flatspec.AsyncFlatSpec
+import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import play.api.http.Status._
@@ -25,7 +25,7 @@ import uk.gov.hmrc.http._
 
 // scalastyle:off magic.number
 
-class HttpResponseHelperSpec extends AsyncFlatSpec with Matchers with ScalaCheckDrivenPropertyChecks {
+class HttpResponseHelperSpec extends AnyFlatSpec with Matchers with ScalaCheckDrivenPropertyChecks {
 
   import HttpResponseHelperSpec._
 

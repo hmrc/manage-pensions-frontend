@@ -19,12 +19,13 @@ package controllers.triage
 import controllers.Retrievals
 import controllers.actions.TriageAction
 import forms.triage.WhatRoleFormProvider
+import identifiers.triage.WhatRoleId
 import models.triage.WhatRole
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.Enumerable
+import utils.{Enumerable, UserAnswers}
 import views.html.triage.whatRole
 
 import javax.inject.Inject
@@ -49,7 +50,8 @@ class WhatRoleController @Inject()(override val messagesApi: MessagesApi,
       form.bindFromRequest().fold(
         (formWithErrors: Form[_]) =>
           Future.successful(BadRequest(view(formWithErrors))),
-        _ => {
+        value => {
+          UserAnswers().set(WhatRoleId)(value).asOpt.getOrElse(UserAnswers())
           Future.successful(Redirect(controllers.triage.routes.WhatRoleController.onPageLoad))
         }
       )

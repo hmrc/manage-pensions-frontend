@@ -19,11 +19,11 @@ package utils
 import org.scalacheck.Gen
 import org.scalatest.OptionValues
 import org.scalatest.matchers.must.Matchers
-import org.scalatest.wordspec.AsyncWordSpec
+import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import play.api.libs.json._
 
-class JsLensSpec extends AsyncWordSpec with Matchers with ScalaCheckPropertyChecks with OptionValues { // scalastyle:off magic.number
+class JsLensSpec extends AnyWordSpec with Matchers with ScalaCheckPropertyChecks with OptionValues { // scalastyle:off magic.number
 
   val jsLeafGen: Gen[JsValue] = {
     Gen.frequency(

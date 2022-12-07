@@ -18,11 +18,11 @@ package forms.behaviours
 
 import forms.mappings.AddressMapping
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AsyncWordSpec
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.data.{Form, FormError}
 import wolfendale.scalacheck.regexp.RegexpGen
 
-trait AddressBehaviours extends AsyncWordSpec with Matchers with FieldBehaviours {
+trait AddressBehaviours extends AnyWordSpec with Matchers with FieldBehaviours {
 
   def formWithPostCode(form: Form[_], fieldName: String, keyRequired: String, keyLength: String, keyInvalid: String): Unit = {
 

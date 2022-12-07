@@ -56,6 +56,7 @@ class RetryHelperSpec extends SpecBase with MockitoSugar with ScalaFutures with 
       val failedFunction = () => Future.failed(new HttpException("Bad Request", 503))
       whenReady(retryHelper.retryOnFailure(failedFunction, frontendAppConfig).failed, timeout(Span(TIMEOUT, Seconds))) {
         case e: HttpException => e.responseCode mustEqual SERVICE_UNAVAILABLE
+        case _ => false
       }
     }
 
@@ -75,6 +76,7 @@ class RetryHelperSpec extends SpecBase with MockitoSugar with ScalaFutures with 
 
       whenReady(retryHelper.retryOnFailure(failedFunction, frontendAppConfig).failed, timeout(Span(TIMEOUT, Seconds))) {
         case e: UpstreamErrorResponse => e.statusCode mustEqual SERVICE_UNAVAILABLE
+        case _ => false
       }
 
       val endTime = LocalDateTime.now

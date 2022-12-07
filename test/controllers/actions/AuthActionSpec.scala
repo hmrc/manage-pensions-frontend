@@ -327,5 +327,5 @@ object AuthActionSpec extends SpecBase with MockitoSugar {
   }
 
   private def authRetrievals(enrolments: Set[Enrolment] = Set()): Future[Some[String] ~ Enrolments ~ Some[AffinityGroup.Individual.type]] =
-    Future.successful(new ~(new ~(Some("id"), Enrolments(enrolments)), Some(AffinityGroup.Individual)))
+    Future.successful(new~(new~(Some("id"), Enrolments(enrolments)), Some(AffinityGroup.Individual)))
 }
