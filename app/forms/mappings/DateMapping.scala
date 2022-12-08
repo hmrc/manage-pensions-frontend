@@ -19,16 +19,12 @@ package forms.mappings
 
 import forms.mappings.DateMapping.notRealDate
 import play.api.data.Forms.{of, tuple}
-import play.api.data.validation.Constraint
+import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.data.{FieldMapping, Mapping}
-import play.api.data.validation.Invalid
-import play.api.data.validation.Valid
 
 import java.time.{DateTimeException, LocalDate}
-import scala.util.Try
-import scala.util.Failure
-import scala.util.Success
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
+
 trait DateMapping extends Formatters with Constraints {
 
   def validDate(genericError: String): Constraint[(Int, Int, Int)] = Constraint {
@@ -42,6 +38,7 @@ trait DateMapping extends Formatters with Constraints {
           Valid
       }
   }
+
   def dateMapping(errors: DateErrors): Mapping[LocalDate] = tuple(
     "day" -> int(requiredKey = errors.dayBlank, wholeNumberKey = "error.date.day_invalid", nonNumericKey =
       "error.date.day_invalid"),

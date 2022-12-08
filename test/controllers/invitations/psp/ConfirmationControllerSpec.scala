@@ -21,9 +21,7 @@ import controllers.actions._
 import controllers.behaviours.ControllerWithNormalPageBehaviours
 import identifiers.SchemeNameId
 import identifiers.invitations.psp.PspNameId
-import play.api.mvc.Action
-import play.api.mvc.AnyContent
-import play.api.mvc.Call
+import play.api.mvc.{Action, AnyContent, Call}
 import utils.UserAnswers
 import views.html.invitations.psp.confirmation
 
@@ -40,19 +38,19 @@ class ConfirmationControllerSpec extends ControllerWithNormalPageBehaviours {
 
   private val confirmationView = injector.instanceOf[confirmation]
 
-  def viewAsString() = confirmationView(testSchemeName, testPspName)(fakeRequest, messages).toString
+  def viewAsString(): String = confirmationView(testSchemeName, testPspName)(fakeRequest, messages).toString
 
   private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
 
     new ConfirmationController(
-      messagesApi, frontendAppConfig, fakeAuth, dataRetrievalAction, requiredDateAction, FakeUserAnswersCacheConnector,
+      messagesApi, fakeAuth, dataRetrievalAction, requiredDateAction, FakeUserAnswersCacheConnector,
       controllerComponents, confirmationView).onPageLoad()
   }
 
 
   def redirectionCall(): Call = onwardRoute
 
-  behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, Some(userAnswer), viewAsString)
+  behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, Some(userAnswer), () => viewAsString())
 
   "ConfirmationController" when {
     "on PageLoad" must {

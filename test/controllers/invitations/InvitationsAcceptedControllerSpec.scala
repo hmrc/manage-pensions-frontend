@@ -32,7 +32,6 @@ class InvitationsAcceptedControllerSpec extends ControllerSpecBase {
   def controller(authAction: AuthAction = FakeAuthAction, dataRetrievalAction: DataRetrievalAction = getRelevantData):
   InvitationAcceptedController =
     new InvitationAcceptedController(
-      frontendAppConfig,
       messagesApi,
       authAction,
       dataRetrievalAction,
@@ -57,7 +56,7 @@ class InvitationsAcceptedControllerSpec extends ControllerSpecBase {
 
       val result = controller(dataRetrievalAction = getEmptyData).onPageLoad(fakeRequest)
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)
+      redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad.url)
     }
 
     "redirect to unauthorised if user action is not authenticated" in {
@@ -65,7 +64,7 @@ class InvitationsAcceptedControllerSpec extends ControllerSpecBase {
       val result = controller(authAction = FakeUnAuthorisedAction).onPageLoad(fakeRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)
+      redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad.url)
     }
   }
 }

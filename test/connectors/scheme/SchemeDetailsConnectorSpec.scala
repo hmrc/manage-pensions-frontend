@@ -18,15 +18,12 @@ package connectors.scheme
 
 import base.JsonFileReader
 import com.github.tomakehurst.wiremock.client.WireMock._
-import connectors.scheme.SchemeDetailsConnectorSpec.{idNumber, psaId, schemeIdType}
-import org.scalatest.AsyncFlatSpec
-import org.scalatest.Matchers
+import org.scalatest.flatspec.AsyncFlatSpec
+import org.scalatest.matchers.should.Matchers
 import play.api.http.Status
 import play.api.libs.json.Json
-import uk.gov.hmrc.http.BadRequestException
-import uk.gov.hmrc.http.HeaderCarrier
-import utils.UserAnswers
-import utils.WireMockHelper
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
+import utils.{UserAnswers, WireMockHelper}
 
 class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper {
 
@@ -56,9 +53,9 @@ class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
       psaId = psaId,
       idNumber = idNumber,
       schemeIdType = schemeIdType
-    ) map(schemeDetails =>
+    ) map (schemeDetails =>
       schemeDetails shouldBe UserAnswers(Json.parse(jsonResponse))
-    )
+      )
 
   }
 
@@ -176,8 +173,8 @@ class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
       psaId = psaId,
       idNumber = idNumber,
       schemeIdType = schemeIdType
-    ) map(schemeDetails =>
-      schemeDetails shouldBe ()
+    ) map (schemeDetails =>
+      schemeDetails shouldBe()
       )
 
   }

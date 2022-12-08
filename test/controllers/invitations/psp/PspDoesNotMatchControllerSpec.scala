@@ -20,12 +20,9 @@ import controllers.actions._
 import controllers.behaviours.ControllerWithNormalPageBehaviours
 import controllers.psa.routes._
 import identifiers.invitations.psp.PspNameId
-import identifiers.SchemeNameId
-import identifiers.SchemeSrnId
+import identifiers.{SchemeNameId, SchemeSrnId}
 import models.SchemeReferenceNumber
-import play.api.mvc.Action
-import play.api.mvc.AnyContent
-import play.api.mvc.Call
+import play.api.mvc.{Action, AnyContent, Call}
 import utils.UserAnswers
 import views.html.invitations.psp.pspDoesNotMatch
 
@@ -57,6 +54,6 @@ class PspDoesNotMatchControllerSpec extends ControllerWithNormalPageBehaviours {
 
   def redirectionCall(): Call = onwardRoute
 
-  behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, Some(userAnswer), viewAsString)
+  behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, Some(userAnswer), () => viewAsString())
 
 }

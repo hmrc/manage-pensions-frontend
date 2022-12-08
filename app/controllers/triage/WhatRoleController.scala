@@ -42,7 +42,7 @@ class WhatRoleController @Inject()(override val messagesApi: MessagesApi,
   private def form: Form[WhatRole] = formProvider()
 
   def onPageLoad: Action[AnyContent] = triageAction.async {
-    Future.successful(Redirect(controllers.triagev2.routes.WhatRoleControllerV2.onPageLoad()))
+    Future.successful(Redirect(controllers.triagev2.routes.WhatRoleControllerV2.onPageLoad))
   }
 
   def onSubmit: Action[AnyContent] = triageAction.async {
@@ -51,8 +51,8 @@ class WhatRoleController @Inject()(override val messagesApi: MessagesApi,
         (formWithErrors: Form[_]) =>
           Future.successful(BadRequest(view(formWithErrors))),
         value => {
-          val uaUpdated = UserAnswers().set(WhatRoleId)(value).asOpt.getOrElse(UserAnswers())
-          Future.successful(Redirect(controllers.triage.routes.WhatRoleController.onPageLoad()))
+          UserAnswers().set(WhatRoleId)(value).asOpt.getOrElse(UserAnswers())
+          Future.successful(Redirect(controllers.triage.routes.WhatRoleController.onPageLoad))
         }
       )
   }

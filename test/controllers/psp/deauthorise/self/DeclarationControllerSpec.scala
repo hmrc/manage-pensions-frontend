@@ -54,6 +54,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
   private val mockAuditService = mock[AuditService]
 
   private def onwardRoute = controllers.psp.deauthorise.self.routes.ConfirmationController.onPageLoad()
+
   private val schemeName = "test-scheme"
   private val srn = "srn"
   private val pstr = "pstr"
@@ -91,8 +92,10 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
   private def viewAsString(form: Form[Boolean] = form) = view(form, schemeName, srn)(fakeRequest, messages).toString
 
   override def beforeEach(): Unit = {
-    reset(mockPspConnector, mockMinimalConnector, mockEmailConnector, mockAuditService)
-
+    reset(mockPspConnector)
+    reset(mockMinimalConnector)
+    reset(mockEmailConnector)
+    reset(mockAuditService)
   }
 
   "Declaration Controller" when {
@@ -106,12 +109,12 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
 
       "redirect to the session expired page if there is no required data" in {
         val result = controller(getEmptyData).onPageLoad()(fakeRequest)
-        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad().url
+        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
 
       "redirect to the session expired page if there is no existing data" in {
         val result = controller(dontGetAnyData).onPageLoad()(fakeRequest)
-        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad().url
+        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
     }
 
@@ -191,12 +194,12 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
 
       "redirect to the session expired page if there is no required data" in {
         val result = controller(getEmptyData).onSubmit()(fakeRequest)
-        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad().url
+        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
 
       "redirect to the session expired page if there is no existing data" in {
         val result = controller(dontGetAnyData).onSubmit()(fakeRequest)
-        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad().url
+        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
     }
   }

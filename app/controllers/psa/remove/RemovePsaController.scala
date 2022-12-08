@@ -28,9 +28,9 @@ import controllers.routes._
 import identifiers.invitations.PSTRId
 import identifiers.psa.PSANameId
 import identifiers.{AssociatedDateId, SchemeNameId, SchemeSrnId}
-import models.requests.DataRequest
 import models.MinimalPSAPSP
 import models.psa.PsaAssociatedDate
+import models.requests.DataRequest
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json.{JsArray, JsPath, __}
@@ -57,7 +57,7 @@ class RemovePsaController @Inject()(
 
   def onPageLoad: Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
-      SchemeSrnId.retrieve.right.map { srn =>
+      SchemeSrnId.retrieve.map { srn =>
         minimalPsaConnector.getMinimalPsaDetails(request.psaIdOrException.id).flatMap { minimalPsaDetails =>
           if (minimalPsaDetails.isPsaSuspended) {
             Future.successful(Redirect(CanNotBeRemovedController.onPageLoadWhereSuspended()))
@@ -70,7 +70,7 @@ class RemovePsaController @Inject()(
           }
         } recoverWith {
           case _: DelimitedAdminException =>
-            Future.successful(Redirect(controllers.routes.DelimitedAdministratorController.onPageLoad()))
+            Future.successful(Redirect(controllers.routes.DelimitedAdministratorController.onPageLoad))
         }
       }
   }
@@ -108,11 +108,11 @@ class RemovePsaController @Inject()(
       schemeIdType = "srn"
     ) map { userAnswers =>
 
-      val admins = userAnswers.json.transform((JsPath \ 'psaDetails).json.pick)
+      val admins = userAnswers.json.transform((JsPath \ Symbol("psaDetails")).json.pick)
         .asOpt.map(_.as[JsArray].value).toSeq.flatten
         .flatMap(_.transform((
-          (__ \ 'psaId).json.copyFrom((JsPath \ "id").json.pick) and
-            (__ \ 'relationshipDate).json.copyFrom((JsPath \ 'relationshipDate).json.pick)
+          (__ \ Symbol("psaId")).json.copyFrom((JsPath \ "id").json.pick) and
+            (__ \ Symbol("relationshipDate")).json.copyFrom((JsPath \ Symbol("relationshipDate")).json.pick)
           ).reduce).asOpt.flatMap(_.validate[PsaAssociatedDate].asOpt))
 
       val psa = admins.filter(_.psaId.contains(request.psaIdOrException.id))

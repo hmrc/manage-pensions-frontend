@@ -16,26 +16,20 @@
 
 package controllers.invitations
 
-import com.google.inject.Inject
-import com.google.inject.Singleton
+import com.google.inject.{Inject, Singleton}
 import config.FrontendAppConfig
-import connectors.admin.{DelimitedAdminException, MinimalConnector}
 import connectors.UserAnswersCacheConnector
+import connectors.admin.{DelimitedAdminException, MinimalConnector}
 import connectors.scheme.SchemeDetailsConnector
 import controllers.actions.AuthAction
 import identifiers.invitations.PSTRId
-import identifiers.MinimalSchemeDetailId
-import identifiers.SchemeNameId
+import identifiers.{MinimalSchemeDetailId, SchemeNameId}
 import models.requests.AuthenticatedRequest
-import models.MinimalSchemeDetail
-import models.SchemeReferenceNumber
-import play.api.mvc.Action
-import play.api.mvc.AnyContent
-import play.api.mvc.MessagesControllerComponents
+import models.{MinimalSchemeDetail, SchemeReferenceNumber}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class InviteController @Inject()(
@@ -64,12 +58,12 @@ class InviteController @Inject()(
               userAnswersCacheConnector.save(request.externalId, MinimalSchemeDetailId, minimalSchemeDetail).map { _ =>
                 Redirect(controllers.invitations.psa.routes.WhatYouWillNeedController.onPageLoad())
               }
-            case None => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+            case None => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad))
           }
         }
       } recoverWith {
-          case _: DelimitedAdminException =>
-                  Future.successful(Redirect(controllers.routes.DelimitedAdministratorController.onPageLoad()))
+        case _: DelimitedAdminException =>
+          Future.successful(Redirect(controllers.routes.DelimitedAdministratorController.onPageLoad))
       }
   }
 

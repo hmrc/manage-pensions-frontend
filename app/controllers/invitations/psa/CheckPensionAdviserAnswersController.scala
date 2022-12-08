@@ -46,7 +46,7 @@ class CheckPensionAdviserAnswersController @Inject()(appConfig: FrontendAppConfi
   def onPageLoad(): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
       val checkYourAnswersHelper = checkYourAnswersFactory.checkYourAnswersHelper(request.userAnswers)
-      AdviserNameId.retrieve.right.map { name =>
+      AdviserNameId.retrieve.map { name =>
 
         val dynamicEmailLabel = Message("messages__check__your__answer__adviser__email__label", name)
         val dynamicAddressLabel = Message("messages__check__your__answer__adviser__address__label", name)

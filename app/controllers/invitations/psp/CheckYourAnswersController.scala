@@ -45,19 +45,19 @@ class CheckYourAnswersController @Inject()(override val messagesApi: MessagesApi
 
   def onPageLoad(): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
-      (SchemeNameId and SchemeSrnId).retrieve.right.map {
+      (SchemeNameId and SchemeSrnId).retrieve.map {
         case schemeName ~ srn =>
           val checkYourAnswersHelper = checkYourAnswersFactory.checkYourAnswersHelper(request.userAnswers)
           val sections = Seq(checkYourAnswersHelper.pspName, checkYourAnswersHelper.pspId, checkYourAnswersHelper.pspClientReference).flatten
           Future.successful(Ok(view(sections, controllers.invitations.psp.routes.CheckYourAnswersController.onSubmit(),
-            Some("messages__check__your__answer__psp__label"), Some(schemeName),schemeName = schemeName, returnCall = returnCall(srn))))
+            Some("messages__check__your__answer__psp__label"), Some(schemeName), schemeName = schemeName, returnCall = returnCall(srn))))
 
       }
   }
 
   def onSubmit(): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
-      (PspNameId and PspId).retrieve.right.map {
+      (PspNameId and PspId).retrieve.map {
         case pspName ~ pspId =>
           minimalConnector.getNameFromPspID(pspId).map {
             case Some(minPspName) if pspAuthoriseFuzzyMatcher.matches(pspName, minPspName) =>

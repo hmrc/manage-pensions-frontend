@@ -18,9 +18,8 @@ package controllers.invitations
 
 import base.{JsonFileReader, SpecBase}
 import config.FrontendAppConfig
-import org.mockito.Mockito.when
-import connectors.admin.MinimalConnector
 import connectors.FakeUserAnswersCacheConnector
+import connectors.admin.MinimalConnector
 import connectors.scheme.SchemeDetailsConnector
 import controllers.actions.{FakeAuthAction, FakeUnAuthorisedAction}
 import controllers.invitations.psa.routes._
@@ -28,6 +27,7 @@ import controllers.invitations.routes.YouCannotSendAnInviteController
 import controllers.routes._
 import identifiers.MinimalSchemeDetailId
 import models._
+import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.Configuration
 import play.api.test.Helpers._
@@ -39,7 +39,6 @@ import scala.concurrent.{ExecutionContext, Future}
 class InviteControllerSpec extends SpecBase {
 
   import InviteControllerSpec._
-
 
 
   "InviteController calling onPageLoad(srn)" must {
@@ -58,7 +57,7 @@ class InviteControllerSpec extends SpecBase {
 
       when(mockAppConfig.psaUpdateContactDetailsUrl).thenReturn(dummyUrl)
 
-      val result = controller(isSuspended = false, rlsFlag = true, deceasedFlag = false).onPageLoad(srn)(fakeRequest)
+      val result = controller(isSuspended = false, rlsFlag = true).onPageLoad(srn)(fakeRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(dummyUrl)
@@ -99,7 +98,7 @@ class InviteControllerSpec extends SpecBase {
       val result = controller.onPageLoad(srn)(fakeRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(UnauthorisedController.onPageLoad().url)
+      redirectLocation(result) mustBe Some(UnauthorisedController.onPageLoad.url)
     }
   }
 }
@@ -110,16 +109,16 @@ object InviteControllerSpec extends SpecBase with JsonFileReader with MockitoSug
   val pstr = "24000001IN"
   val schemeName = "Open Single Trust Scheme with Indiv Establisher and Trustees"
 
-  private val psaMinimalSubscription = MinimalPSAPSP(email, false, None, Some(IndividualDetails("First", Some("Middle"), "Last")),
+  private val psaMinimalSubscription = MinimalPSAPSP(email, isPsaSuspended = false, None, Some(IndividualDetails("First", Some("Middle"), "Last")),
     rlsFlag = false, deceasedFlag = false)
   private val mockAuthAction = FakeAuthAction
 
   private val dummyUrl = "/url"
   private val mockAppConfig = mock[FrontendAppConfig]
 
-  val config = injector.instanceOf[Configuration]
+  val config: Configuration = injector.instanceOf[Configuration]
 
-  def fakeMinimalPsaConnector(isSuspended: Boolean, rlsFlag: Boolean = false, deceasedFlag:Boolean = false): MinimalConnector = new MinimalConnector {
+  def fakeMinimalPsaConnector(isSuspended: Boolean, rlsFlag: Boolean = false, deceasedFlag: Boolean = false): MinimalConnector = new MinimalConnector {
     override def getMinimalPsaDetails(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP] =
       Future.successful(psaMinimalSubscription.copy(isPsaSuspended = isSuspended, rlsFlag = rlsFlag, deceasedFlag = deceasedFlag))
 
@@ -137,7 +136,7 @@ object InviteControllerSpec extends SpecBase with JsonFileReader with MockitoSug
                                   idNumber: String,
                                   schemeIdType: String
                                  )(implicit hc: HeaderCarrier,
-                                                              ec: ExecutionContext): Future[UserAnswers] =
+                                   ec: ExecutionContext): Future[UserAnswers] =
       Future.successful(UserAnswers(readJsonFromFile("/data/validSchemeDetailsUserAnswers.json")))
 
     override def getPspSchemeDetails(pspId: String, srn: String)
@@ -146,10 +145,10 @@ object InviteControllerSpec extends SpecBase with JsonFileReader with MockitoSug
     override def getSchemeDetailsRefresh(psaId: String,
                                          idNumber: String,
                                          schemeIdType: String)
-                                    (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = ???
+                                        (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = ???
   }
 
-  def controller(isSuspended: Boolean, rlsFlag: Boolean = false, deceasedFlag:Boolean = false) =
+  def controller(isSuspended: Boolean, rlsFlag: Boolean = false, deceasedFlag: Boolean = false) =
     new InviteController(mockAuthAction, fakeSchemeDetailsConnector,
-    FakeUserAnswersCacheConnector, fakeMinimalPsaConnector(isSuspended, rlsFlag, deceasedFlag), controllerComponents, mockAppConfig)
+      FakeUserAnswersCacheConnector, fakeMinimalPsaConnector(isSuspended, rlsFlag, deceasedFlag), controllerComponents, mockAppConfig)
 }

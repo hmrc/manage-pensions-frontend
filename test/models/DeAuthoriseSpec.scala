@@ -17,10 +17,11 @@
 package models
 
 import connectors.PspConnectorSpec._
-import org.scalatest.{MustMatchers, WordSpec}
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.{JsValue, Json}
 
-class DeAuthoriseSpec extends WordSpec with MustMatchers {
+class DeAuthoriseSpec extends AnyWordSpec with Matchers {
 
   "DeAuthorise" must {
     "not write declarationCeasePSPDetails for PSA deAuth PSA" in {

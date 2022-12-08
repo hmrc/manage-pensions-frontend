@@ -18,7 +18,8 @@ package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import models.psp.UpdateClientReferenceRequest
-import org.scalatest.{AsyncFlatSpec, Matchers}
+import org.scalatest.flatspec.AsyncFlatSpec
+import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.scalacheck.Checkers
 import play.api.http.Status._
 import play.api.libs.json.Json
@@ -41,13 +42,13 @@ class UpdateClientReferenceConnectorSpec extends AsyncFlatSpec with Matchers wit
         .willReturn(
           aResponse()
             .withStatus(OK)
-            .withBody(Json.stringify(Json.obj("status" -> "OK","processingDate" -> LocalDateTime.now())))
+            .withBody(Json.stringify(Json.obj("status" -> "OK", "processingDate" -> LocalDateTime.now())))
         )
     )
 
     val connector = injector.instanceOf[UpdateClientReferenceConnector]
 
-    connector.updateClientReference(clientReferenceRequest,"Added").map(
+    connector.updateClientReference(clientReferenceRequest, "Added").map(
       _ =>
         server.findAll(postRequestedFor(urlEqualTo(updateClientReferenceUrl))).size() shouldBe 1
     )
@@ -67,7 +68,7 @@ class UpdateClientReferenceConnectorSpec extends AsyncFlatSpec with Matchers wit
     val connector = injector.instanceOf[UpdateClientReferenceConnector]
 
     recoverToSucceededIf[BadRequestException] {
-      connector.updateClientReference(clientReferenceRequest,"Added")
+      connector.updateClientReference(clientReferenceRequest, "Added")
     } map {
       _ =>
         server.findAll(postRequestedFor(urlEqualTo(updateClientReferenceUrl))).size() shouldBe 1

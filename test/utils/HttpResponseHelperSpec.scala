@@ -17,15 +17,15 @@
 package utils
 
 import org.scalacheck.Gen
-import org.scalatest.FlatSpec
-import org.scalatest.Matchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import play.api.http.Status._
 import uk.gov.hmrc.http._
 
 // scalastyle:off magic.number
 
-class HttpResponseHelperSpec extends FlatSpec with Matchers with ScalaCheckDrivenPropertyChecks {
+class HttpResponseHelperSpec extends AnyFlatSpec with Matchers with ScalaCheckDrivenPropertyChecks {
 
   import HttpResponseHelperSpec._
 
@@ -62,7 +62,7 @@ class HttpResponseHelperSpec extends FlatSpec with Matchers with ScalaCheckDrive
   }
 
   it should "transform any other status into an UnrecognisedHttpResponseException" in {
-    val statuses = for (n <- Gen.choose(0, 1000) suchThat(n => n < 400 || n >= 600)) yield n
+    val statuses = for (n <- Gen.choose(0, 1000) suchThat (n => n < 400 || n >= 600)) yield n
 
     forAll(statuses) {
       status =>

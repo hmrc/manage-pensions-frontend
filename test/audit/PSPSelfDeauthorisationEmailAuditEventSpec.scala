@@ -17,11 +17,10 @@
 package audit
 
 import models.Sent
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class PSPSelfDeauthorisationEmailAuditEventSpec
-  extends FlatSpec
-    with Matchers {
+class PSPSelfDeauthorisationEmailAuditEventSpec extends AnyFlatSpec with Matchers {
 
   "PSPSelfDeauthorisationEmailAuditEvent" should "output the correct map of data" in {
 
@@ -29,7 +28,7 @@ class PSPSelfDeauthorisationEmailAuditEventSpec
       pspId = "pensionSchemePractitionerId",
       pstr = "pensionSchemeTaxReference",
       emailAddress = "email@address",
-      event= Sent
+      event = Sent
     )
 
     val expected = Map(

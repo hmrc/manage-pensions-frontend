@@ -23,8 +23,6 @@ import forms.psp.deauthorise.ConfirmDeauthPspFormProvider
 import identifiers.psp.PSPNameId
 import identifiers.psp.deauthorise.self.ConfirmDeauthId
 import identifiers.{SchemeNameId, SchemeSrnId}
-
-import javax.inject.Inject
 import models.AuthEntity.PSP
 import models.NormalMode
 import play.api.data.Form
@@ -35,6 +33,7 @@ import utils.annotations.PspSelfDeauth
 import utils.{Navigator, UserAnswers}
 import views.html.psp.deauthorisation.self.confirmDeauth
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class ConfirmDeauthController @Inject()(val auth: AuthAction,
@@ -46,13 +45,13 @@ class ConfirmDeauthController @Inject()(val auth: AuthAction,
                                         val userAnswersCacheConnector: UserAnswersCacheConnector,
                                         val controllerComponents: MessagesControllerComponents,
                                         view: confirmDeauth
-                                          )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
+                                       )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
 
   val form: Form[Boolean] = formProvider()
 
   def onPageLoad: Action[AnyContent] = (auth(PSP) andThen getData andThen requireData).async {
     implicit request =>
-      (SchemeSrnId and SchemeNameId and PSPNameId).retrieve.right.map {
+      (SchemeSrnId and SchemeNameId and PSPNameId).retrieve.map {
         case srn ~ schemeName ~ pspName =>
           val preparedForm = request.userAnswers.get(ConfirmDeauthId).fold(form)(form.fill)
           Future.successful(Ok(view(preparedForm, schemeName, srn, pspName)))
@@ -63,10 +62,10 @@ class ConfirmDeauthController @Inject()(val auth: AuthAction,
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[Boolean]) =>
-          (SchemeNameId and SchemeSrnId and PSPNameId).retrieve.right.map {
+          (SchemeNameId and SchemeSrnId and PSPNameId).retrieve.map {
             case schemeName ~ srn ~ pspName =>
               Future.successful(BadRequest(view(formWithErrors, schemeName, srn, pspName)))
-        },
+          },
         value =>
           userAnswersCacheConnector.save(request.externalId, ConfirmDeauthId, value).map { cacheMap =>
             Redirect(navigator.nextPage(ConfirmDeauthId, NormalMode, UserAnswers(cacheMap)))

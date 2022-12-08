@@ -18,17 +18,15 @@ package utils.navigators
 
 import base.SpecBase
 import connectors.FakeUserAnswersCacheConnector
-import controllers.psa.routes._
 import controllers.psa.remove.routes._
+import controllers.psa.routes._
 import controllers.routes._
 import identifiers.Identifier
 import identifiers.psa.remove.{ConfirmRemovePsaId, PsaRemovalDateId}
 import org.scalatest.prop.TableFor4
 import play.api.libs.json.Json
 import play.api.mvc.Call
-import utils.NavigatorBehaviour
-import utils.UserAnswerOps
-import utils.UserAnswers
+import utils.{NavigatorBehaviour, UserAnswerOps, UserAnswers}
 
 class RemovePSANavigatorSpec extends SpecBase with NavigatorBehaviour {
 
@@ -37,11 +35,11 @@ class RemovePSANavigatorSpec extends SpecBase with NavigatorBehaviour {
   val navigator = new RemovePSANavigator(FakeUserAnswersCacheConnector)
 
   def routes(): TableFor4[Identifier, UserAnswers, Call, Option[Call]] = Table(
-    ("Id",                 "User Answers",   "Next Page (NormalMode)",   "Next Page (CheckMode)"),
-    (ConfirmRemovePsaId,   removePsa,           removalDatePage,           None),
-    (ConfirmRemovePsaId,   dontRemovePsa,       schemeDetailsPage,         None),
-    (ConfirmRemovePsaId,   emptyAnswers,        sessionExpiredPage,        None),
-    (PsaRemovalDateId,     emptyAnswers,        confirmRemovedPage,        None)
+    ("Id", "User Answers", "Next Page (NormalMode)", "Next Page (CheckMode)"),
+    (ConfirmRemovePsaId, removePsa, removalDatePage, None),
+    (ConfirmRemovePsaId, dontRemovePsa, schemeDetailsPage, None),
+    (ConfirmRemovePsaId, emptyAnswers, sessionExpiredPage, None),
+    (PsaRemovalDateId, emptyAnswers, confirmRemovedPage, None)
   )
 
   navigator.getClass.getSimpleName must {
@@ -59,9 +57,9 @@ object RemovePSANavigatorSpec {
 
   private def dataDescriber(answers: UserAnswers): String = answers.toString
 
-  private val sessionExpiredPage = SessionExpiredController.onPageLoad()
+  private val sessionExpiredPage = SessionExpiredController.onPageLoad
   private val schemeDetailsPage = PsaSchemeDashboardController.onPageLoad(srn)
-  private val removalDatePage = PsaRemovalDateController.onPageLoad()
+  private val removalDatePage = PsaRemovalDateController.onPageLoad
   private val confirmRemovedPage = ConfirmRemovedController.onPageLoad()
 }
 

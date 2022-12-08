@@ -75,19 +75,19 @@ class ViewPspHasClientReferenceControllerSpec extends ControllerSpecBase {
 
       "redirect to the session expired page if there is no psp name" in {
         val result = controller(getEmptyData).onPageLoad(CheckMode, 0)(fakeRequest)
-        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad().url
+        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
 
       "redirect to the session expired page if not authorisingPSA" in {
         val userAnswerWithPspClient: UserAnswers = userAnswer.set(PspDetailsId(0))(pspDetails2).asOpt.value
         val data = new FakeDataRetrievalAction(Some(userAnswerWithPspClient.json))
         val result = controller(data).onPageLoad(CheckMode, 0)(fakeRequest)
-        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad().url
+        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
 
       "redirect to the session expired page if there is no existing data" in {
         val result = controller(dontGetAnyData).onPageLoad(CheckMode, 0)(fakeRequest)
-        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad().url
+        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
     }
 
@@ -107,7 +107,7 @@ class ViewPspHasClientReferenceControllerSpec extends ControllerSpecBase {
         val result = controller(data).onSubmit(CheckMode, 0)(postRequest)
 
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(ViewPspClientReferenceController.onPageLoad(CheckMode,0).url)
+        redirectLocation(result) mustBe Some(ViewPspClientReferenceController.onPageLoad(CheckMode, 0).url)
       }
 
       "return a Bad Request and errors if invalid data is submitted" in {
@@ -123,19 +123,19 @@ class ViewPspHasClientReferenceControllerSpec extends ControllerSpecBase {
 
       "redirect to the session expired page if there is no psp name" in {
         val result = controller(getEmptyData).onSubmit(CheckMode, 0)(fakeRequest)
-        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad().url
+        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
       "redirect to the session expired page if not authorisingPSA" in {
         val postRequest = fakeRequest.withFormUrlEncodedBody(("hasReference", "false"))
         val userAnswerWithPspClient: UserAnswers = userAnswer.set(PspDetailsId(0))(pspDetails2).asOpt.value
         val data = new FakeDataRetrievalAction(Some(userAnswerWithPspClient.json))
         val result = controller(data).onSubmit(CheckMode, 0)(postRequest)
-        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad().url
+        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
 
       "redirect to the session expired page if there is no existing data" in {
         val result = controller(dontGetAnyData).onSubmit(CheckMode, 0)(fakeRequest)
-        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad().url
+        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
     }
   }

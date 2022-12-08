@@ -23,8 +23,8 @@ import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAut
 import controllers.behaviours.ControllerWithNormalPageBehaviours
 import controllers.invitations.psp.routes._
 import controllers.psa.routes.PsaSchemeDashboardController
-import identifiers.{SchemeNameId, SchemeSrnId}
 import identifiers.invitations.psp.{PspClientReferenceId, PspHasClientReferenceId, PspId, PspNameId}
+import identifiers.{SchemeNameId, SchemeSrnId}
 import models.{CheckMode, SchemeReferenceNumber}
 import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
@@ -41,101 +41,101 @@ import scala.concurrent.Future
 
 class CheckYourAnswersControllerSpec extends ControllerSpecBase with MockitoSugar {
 
-    import CheckYourAnswersControllerSpec._
+  import CheckYourAnswersControllerSpec._
 
-    private val mockMinConnector = mock[MinimalConnector]
+  private val mockMinConnector = mock[MinimalConnector]
 
-    private val mockPspAuthoriseFuzzyMatcher = mock[PspAuthoriseFuzzyMatcher]
+  private val mockPspAuthoriseFuzzyMatcher = mock[PspAuthoriseFuzzyMatcher]
 
-    def controller(dataRetrievalAction: DataRetrievalAction = data) = new CheckYourAnswersController(
-        messagesApi, FakeAuthAction, dataRetrievalAction, new DataRequiredActionImpl,
-        checkYourAnswersFactory, mockMinConnector, mockPspAuthoriseFuzzyMatcher, controllerComponents, view
-    )
+  def controller(dataRetrievalAction: DataRetrievalAction = data) = new CheckYourAnswersController(
+    messagesApi, FakeAuthAction, dataRetrievalAction, new DataRequiredActionImpl,
+    checkYourAnswersFactory, mockMinConnector, mockPspAuthoriseFuzzyMatcher, controllerComponents, view
+  )
 
-    "Check Your Answers Controller Spec" must {
-        "on a GET" must {
+  "Check Your Answers Controller Spec" must {
+    "on a GET" must {
 
-            "return OK and the correct view" in {
-                val result = controller().onPageLoad()(fakeRequest)
-                status(result) mustBe OK
-                contentAsString(result) mustBe viewAsString()
-            }
+      "return OK and the correct view" in {
+        val result = controller().onPageLoad()(fakeRequest)
+        status(result) mustBe OK
+        contentAsString(result) mustBe viewAsString()
+      }
 
-            "redirect to the session expired page if there is no psp name" in {
-                val result = controller(getEmptyData).onPageLoad()(fakeRequest)
-                redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad().url
-            }
+      "redirect to the session expired page if there is no psp name" in {
+        val result = controller(getEmptyData).onPageLoad()(fakeRequest)
+        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
+      }
 
-            "redirect to the session expired page if there is no existing data" in {
-                val result = controller(dontGetAnyData).onPageLoad()(fakeRequest)
-                redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad().url
-            }
-        }
-
-        "on a POST" must {
-            "redirect to Declaration if pspName matches the one returned from minDetails API" in {
-                when(mockMinConnector.getNameFromPspID(any())(any(), any())).thenReturn(Future.successful(Some(pspName)))
-                when(mockPspAuthoriseFuzzyMatcher.matches(any(), any())).thenReturn(true)
-                val result = controller(data).onSubmit()(fakeRequest)
-                redirectLocation(result).value mustBe DeclarationController.onPageLoad().url
-            }
-
-            "redirect to interrupt if pspName does not match the one returned from minDetails API" in {
-                when(mockMinConnector.getNameFromPspID(any())(any(), any())).thenReturn(Future.successful(Some(pspName)))
-                when(mockPspAuthoriseFuzzyMatcher.matches(any(), any())).thenReturn(false)
-                val result = controller(data).onSubmit()(fakeRequest)
-                redirectLocation(result).get mustBe PspDoesNotMatchController.onPageLoad().url
-            }
-        }
+      "redirect to the session expired page if there is no existing data" in {
+        val result = controller(dontGetAnyData).onPageLoad()(fakeRequest)
+        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
+      }
     }
+
+    "on a POST" must {
+      "redirect to Declaration if pspName matches the one returned from minDetails API" in {
+        when(mockMinConnector.getNameFromPspID(any())(any(), any())).thenReturn(Future.successful(Some(pspName)))
+        when(mockPspAuthoriseFuzzyMatcher.matches(any(), any())).thenReturn(true)
+        val result = controller(data).onSubmit()(fakeRequest)
+        redirectLocation(result).value mustBe DeclarationController.onPageLoad().url
+      }
+
+      "redirect to interrupt if pspName does not match the one returned from minDetails API" in {
+        when(mockMinConnector.getNameFromPspID(any())(any(), any())).thenReturn(Future.successful(Some(pspName)))
+        when(mockPspAuthoriseFuzzyMatcher.matches(any(), any())).thenReturn(false)
+        val result = controller(data).onSubmit()(fakeRequest)
+        redirectLocation(result).get mustBe PspDoesNotMatchController.onPageLoad().url
+      }
+    }
+  }
 }
 
 object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours with MockitoSugar with JsonFileReader {
-    private val pspName: String = "test-psp"
-    private val testSchemeName = "test-scheme-name"
-    private val srn = "srn"
+  private val pspName: String = "test-psp"
+  private val testSchemeName = "test-scheme-name"
+  private val srn = "srn"
 
-    private val data = UserAnswers()
-            .set(PspNameId)(pspName).asOpt.value
-            .set(PspId)("A1231231").asOpt.value
-            .set(PspHasClientReferenceId)(true).asOpt.value
-            .set(PspClientReferenceId)("1234567").asOpt.value
-            .set(SchemeNameId)(testSchemeName).asOpt.value
-            .set(SchemeSrnId)(srn).asOpt.value
-            .dataRetrievalAction
+  private val data = UserAnswers()
+    .set(PspNameId)(pspName).asOpt.value
+    .set(PspId)("A1231231").asOpt.value
+    .set(PspHasClientReferenceId)(true).asOpt.value
+    .set(PspClientReferenceId)("1234567").asOpt.value
+    .set(SchemeNameId)(testSchemeName).asOpt.value
+    .set(SchemeSrnId)(srn).asOpt.value
+    .dataRetrievalAction
 
-    private val expectedValues = Seq(
-        SummaryListRow(
-            key = Key(Text(messages("messages__check__your__answer__psp__name__label")), classes = "govuk-!-width-one-half"),
-            value = Value(Text(pspName)),
-            actions = Some(Actions("", items = Seq(ActionItem(href = PspNameController.onPageLoad(CheckMode).url,
-                content = Text(messages("site.change")), visuallyHiddenText = Some(messages("messages__check__your__answer__psp__name__label"))))))
-        ),
-        SummaryListRow(
-            key = Key(Text(messages("messages__check__your__answer__psp__id__label")), classes = "govuk-!-width-one-half"),
-            value = Value(Text("A1231231")),
-            actions = Some(Actions("", items = Seq(ActionItem(href = PspIdController.onPageLoad(CheckMode).url,
-                content = Text(messages("site.change")), visuallyHiddenText = Some(messages("messages__check__your__answer__psp__id__label"))))))
-        ),
-        SummaryListRow(
-            key = Key(Text(messages("messages__check__your__answer__psp_client_reference__label")), classes = "govuk-!-width-one-half"),
-            value = Value(Text("1234567")),
-            actions = Some(Actions("", items = Seq(ActionItem(href = PspHasClientReferenceController.onPageLoad(CheckMode).url,
-                content = Text(messages("site.change")), visuallyHiddenText = Some(messages("messages__check__your__answer__psp_client_reference__label"))))))
-        )
+  private val expectedValues = Seq(
+    SummaryListRow(
+      key = Key(Text(messages("messages__check__your__answer__psp__name__label")), classes = "govuk-!-width-one-half"),
+      value = Value(Text(pspName)),
+      actions = Some(Actions("", items = Seq(ActionItem(href = PspNameController.onPageLoad(CheckMode).url,
+        content = Text(messages("site.change")), visuallyHiddenText = Some(messages("messages__check__your__answer__psp__name__label"))))))
+    ),
+    SummaryListRow(
+      key = Key(Text(messages("messages__check__your__answer__psp__id__label")), classes = "govuk-!-width-one-half"),
+      value = Value(Text("A1231231")),
+      actions = Some(Actions("", items = Seq(ActionItem(href = PspIdController.onPageLoad(CheckMode).url,
+        content = Text(messages("site.change")), visuallyHiddenText = Some(messages("messages__check__your__answer__psp__id__label"))))))
+    ),
+    SummaryListRow(
+      key = Key(Text(messages("messages__check__your__answer__psp_client_reference__label")), classes = "govuk-!-width-one-half"),
+      value = Value(Text("1234567")),
+      actions = Some(Actions("", items = Seq(ActionItem(href = PspHasClientReferenceController.onPageLoad(CheckMode).url,
+        content = Text(messages("site.change")), visuallyHiddenText = Some(messages("messages__check__your__answer__psp_client_reference__label"))))))
     )
+  )
 
-    private val countryOptions = new CountryOptions(environment, frontendAppConfig)
-    private val checkYourAnswersFactory = new CheckYourAnswersFactory(countryOptions)
+  private val countryOptions = new CountryOptions(environment, frontendAppConfig)
+  private val checkYourAnswersFactory = new CheckYourAnswersFactory(countryOptions)
 
-    private val view = injector.instanceOf[checkYourAnswersPsp]
+  private val view = injector.instanceOf[checkYourAnswersPsp]
 
-    def call: Call = controllers.invitations.psp.routes.CheckYourAnswersController.onSubmit()
-    def returnCall: Call = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(srn))
+  def call: Call = controllers.invitations.psp.routes.CheckYourAnswersController.onSubmit()
 
-    def viewAsString(): String = view(expectedValues, call, Some("messages__check__your__answer__psp__label"),
-        Some(testSchemeName),testSchemeName,returnCall)(fakeRequest, messages).toString
+  def returnCall: Call = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(srn))
 
+  def viewAsString(): String = view(expectedValues, call, Some("messages__check__your__answer__psp__label"),
+    Some(testSchemeName), testSchemeName, returnCall)(fakeRequest, messages).toString
 
 
 }

@@ -21,15 +21,15 @@ import controllers.Retrievals
 import controllers.actions._
 import controllers.psa.routes._
 import forms.invitations.psp.PspNameFormProvider
-import identifiers.{SchemeNameId, SchemeSrnId}
 import identifiers.invitations.psp.PspNameId
+import identifiers.{SchemeNameId, SchemeSrnId}
 import models.{Mode, SchemeReferenceNumber}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.{Navigator, UserAnswers}
 import utils.annotations.AuthorisePsp
+import utils.{Navigator, UserAnswers}
 import views.html.invitations.psp.pspName
 
 import javax.inject.Inject
@@ -54,7 +54,7 @@ class PspNameController @Inject()(
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
-      (SchemeNameId and SchemeSrnId).retrieve.right.map {
+      (SchemeNameId and SchemeSrnId).retrieve.map {
         case schemeName ~ srn =>
           val value = request.userAnswers.get(PspNameId)
           val preparedForm = value.fold(form)(form.fill)
@@ -68,7 +68,7 @@ class PspNameController @Inject()(
 
       form.bindFromRequest().fold(
         (formWithErrors: Form[_]) =>
-          (SchemeNameId and SchemeSrnId).retrieve.right.map { case schemeName ~ srn =>
+          (SchemeNameId and SchemeSrnId).retrieve.map { case schemeName ~ srn =>
             Future.successful(BadRequest(view(formWithErrors, mode, schemeName, returnCall(srn))))
           },
 

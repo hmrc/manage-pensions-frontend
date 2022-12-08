@@ -52,27 +52,27 @@ class PensionAdviserAddressListController @Inject()(
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
-      AdviserAddressPostCodeLookupId.retrieve.right.map { addresses =>
+      AdviserAddressPostCodeLookupId.retrieve.map { addresses =>
         Future.successful(Ok(view(form(addresses), addresses, mode)))
       }
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
-      AdviserAddressPostCodeLookupId.retrieve.right.map { addresses =>
+      AdviserAddressPostCodeLookupId.retrieve.map { addresses =>
         formProvider(addresses).bindFromRequest().fold(
           formWithErrors => Future.successful(BadRequest(view(formWithErrors, addresses, mode))),
           addressIndex => {
             val address = addresses(addressIndex).copy(countryOpt = Some("GB"))
             address.toAddress.map(_.toTolerantAddress) match {
               case None =>
-                cacheConnector.save(request.externalId, AdviserAddressListId, address).map { json =>
-                Redirect(controllers.invitations.psa.routes.AdviserManualAddressController.onPageLoad(mode, false))
-              }
+                cacheConnector.save(request.externalId, AdviserAddressListId, address).map { _ =>
+                  Redirect(controllers.invitations.psa.routes.AdviserManualAddressController.onPageLoad(mode, prepopulated = false))
+                }
               case Some(t) =>
                 cacheConnector.save(request.externalId, AdviserAddressListId, t).map { json =>
-                Redirect(navigator.nextPage(AdviserAddressListId, NormalMode, UserAnswers(json)))
-              }
+                  Redirect(navigator.nextPage(AdviserAddressListId, NormalMode, UserAnswers(json)))
+                }
 
             }
           }

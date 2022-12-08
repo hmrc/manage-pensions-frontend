@@ -20,10 +20,10 @@ import controllers.psp.routes._
 import controllers.routes._
 import identifiers.{AdministratorOrPractitionerId, Identifier}
 import models.AdministratorOrPractitioner.{Administrator, Practitioner}
-
-import javax.inject.{Inject, Singleton}
 import play.api.mvc.Call
 import utils.{Enumerable, Navigator, UserAnswers}
+
+import javax.inject.{Inject, Singleton}
 
 @Singleton
 class ManageNavigator @Inject()() extends Navigator with Enumerable.Implicits {
@@ -33,7 +33,7 @@ class ManageNavigator @Inject()() extends Navigator with Enumerable.Implicits {
       ua.get(AdministratorOrPractitionerId) match {
         case Some(Administrator) => SchemesOverviewController.onPageLoad()
         case Some(Practitioner) => PspDashboardController.onPageLoad()
-        case _ => SessionExpiredController.onPageLoad()
+        case _ => SessionExpiredController.onPageLoad
       }
   }
 

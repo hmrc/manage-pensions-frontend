@@ -19,7 +19,7 @@ package utils.navigators
 import base.SpecBase
 import base.SpecBase.frontendAppConfig
 import identifiers.Identifier
-import identifiers.triagev2.{WhichServiceYouWantToViewId, _}
+import identifiers.triagev2._
 import models.triagev2.WhatDoYouWantToDo.{FileAccountingForTaxReturn, FileEventReport, FilePensionSchemeReturn, ManageExistingScheme}
 import models.triagev2.WhatRole.{PSA, PSP}
 import models.triagev2.WhichServiceYouWantToView.{IamUnsure, ManagingPensionSchemes, PensionSchemesOnline}
@@ -62,42 +62,47 @@ class TriageV2NavigatorSpec extends SpecBase with NavigatorBehaviour {
     behave like navigatorWithRoutes(navigator, routes(), dataDescriber)
   }
 }
-  object TriageV2NavigatorSpec extends OptionValues with Enumerable.Implicits {
 
-    lazy val emptyAnswers: UserAnswers = UserAnswers(Json.obj())
-    lazy val whatRolePsaAnswers: UserAnswers = UserAnswers().set(WhatRoleId)(PSA).asOpt.value
-    lazy val whatRolePspAnswers: UserAnswers = UserAnswers().set(WhatRoleId)(PSP).asOpt.value
+object TriageV2NavigatorSpec extends OptionValues with Enumerable.Implicits {
 
-    private def whichServiceYouWantToViewAnswersPsa(answer: WhichServiceYouWantToView): UserAnswers =
-      whatRolePsaAnswers.set(WhichServiceYouWantToViewId)(answer)(writes(WhichServiceYouWantToView.enumerable("administrator"))).asOpt.value
+  lazy val emptyAnswers: UserAnswers = UserAnswers(Json.obj())
+  lazy val whatRolePsaAnswers: UserAnswers = UserAnswers().set(WhatRoleId)(PSA).asOpt.value
+  lazy val whatRolePspAnswers: UserAnswers = UserAnswers().set(WhatRoleId)(PSP).asOpt.value
 
-    private def whichServiceYouWantToViewAnswersPsp(answer: WhichServiceYouWantToView): UserAnswers =
-      whatRolePspAnswers.set(WhichServiceYouWantToViewId)(answer)(writes(WhichServiceYouWantToView.enumerable("practitioner"))).asOpt.value
+  private def whichServiceYouWantToViewAnswersPsa(answer: WhichServiceYouWantToView): UserAnswers =
+    whatRolePsaAnswers.set(WhichServiceYouWantToViewId)(answer)(writes(WhichServiceYouWantToView.enumerable("administrator"))).asOpt.value
 
-    private def whatDoYouWantToDoAnswersPsa(answer: WhatDoYouWantToDo): UserAnswers =
-      whatRolePsaAnswers.set(WhatDoYouWantToDoId)(answer)(writes(WhatDoYouWantToDo.enumerable("administrator"))).asOpt.value
+  private def whichServiceYouWantToViewAnswersPsp(answer: WhichServiceYouWantToView): UserAnswers =
+    whatRolePspAnswers.set(WhichServiceYouWantToViewId)(answer)(writes(WhichServiceYouWantToView.enumerable("practitioner"))).asOpt.value
 
-    private def whatDoYouWantToDoAnswersPsp(answer: WhatDoYouWantToDo): UserAnswers =
-      whatRolePspAnswers.set(WhatDoYouWantToDoId)(answer)(writes(WhatDoYouWantToDo.enumerable("practitioner"))).asOpt.value
+  private def whatDoYouWantToDoAnswersPsa(answer: WhatDoYouWantToDo): UserAnswers =
+    whatRolePsaAnswers.set(WhatDoYouWantToDoId)(answer)(writes(WhatDoYouWantToDo.enumerable("administrator"))).asOpt.value
 
-
-    private def psaOverviewPage: Call = Call("GET", frontendAppConfig.loginUrl + "?continue="+ frontendAppConfig.psaOverviewUrl)
-
-    private def pspOverviewPage: Call = Call("GET", frontendAppConfig.loginUrl + "?continue="+ frontendAppConfig.pspDashboardUrl)
-    private def tpssLoginPage: Call = Call("GET", frontendAppConfig.tpssWelcomeUrl)
-
-    private def whatDoYouWantToDoPage(role:String): Call = controllers.triagev2.routes.WhatDoYouWantToDoController.onPageLoad(role)
-
-    private def manageExistingSchemePage(role:String): Call = controllers.triagev2.routes.ManageExistingSchemeController.onPageLoad(role)
-    private def fileAccountingForTaxReturnPage(role:String): Call = controllers.triagev2.routes.FileAccountingForTaxReturnController.onPageLoad(role)
-    private def filePensionSchemeReturnPage(role:String): Call = controllers.triagev2.routes.FilePensionSchemeReturnController.onPageLoad(role)
-    private def fileEventReportPage(role:String): Call = controllers.triagev2.routes.FileEventReportController.onPageLoad(role)
-
-    private def sessionExpiredPage: Call = controllers.routes.SessionExpiredController.onPageLoad()
+  private def whatDoYouWantToDoAnswersPsp(answer: WhatDoYouWantToDo): UserAnswers =
+    whatRolePspAnswers.set(WhatDoYouWantToDoId)(answer)(writes(WhatDoYouWantToDo.enumerable("practitioner"))).asOpt.value
 
 
-    private def dataDescriber(answers: UserAnswers): String = answers.toString
-  }
+  private def psaOverviewPage: Call = Call("GET", frontendAppConfig.loginUrl + "?continue=" + frontendAppConfig.psaOverviewUrl)
+
+  private def pspOverviewPage: Call = Call("GET", frontendAppConfig.loginUrl + "?continue=" + frontendAppConfig.pspDashboardUrl)
+
+  private def tpssLoginPage: Call = Call("GET", frontendAppConfig.tpssWelcomeUrl)
+
+  private def whatDoYouWantToDoPage(role: String): Call = controllers.triagev2.routes.WhatDoYouWantToDoController.onPageLoad(role)
+
+  private def manageExistingSchemePage(role: String): Call = controllers.triagev2.routes.ManageExistingSchemeController.onPageLoad(role)
+
+  private def fileAccountingForTaxReturnPage(role: String): Call = controllers.triagev2.routes.FileAccountingForTaxReturnController.onPageLoad(role)
+
+  private def filePensionSchemeReturnPage(role: String): Call = controllers.triagev2.routes.FilePensionSchemeReturnController.onPageLoad(role)
+
+  private def fileEventReportPage(role: String): Call = controllers.triagev2.routes.FileEventReportController.onPageLoad(role)
+
+  private def sessionExpiredPage: Call = controllers.routes.SessionExpiredController.onPageLoad
+
+
+  private def dataDescriber(answers: UserAnswers): String = answers.toString
+}
 
 
 

@@ -18,19 +18,16 @@ package forms.mappings
 
 import generators.Generators
 import org.scalacheck.Gen
-import org.scalatest.prop.TableDrivenPropertyChecks
-import org.scalatest.prop.TableFor1
-import org.scalatest.Matchers
-import org.scalatest.WordSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.prop.{TableDrivenPropertyChecks, TableFor1}
+import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import play.api.data.Form
-import play.api.data.validation.Constraint
-import play.api.data.validation.Invalid
-import play.api.data.validation.Valid
+import play.api.data.validation.{Constraint, Invalid, Valid}
 
 trait RegexBehaviourSpec extends TableDrivenPropertyChecks with ScalaCheckDrivenPropertyChecks with Generators {
 
-  this: WordSpec with Matchers =>
+  this: AnyWordSpec with Matchers =>
 
   def regexWithValidAndInvalidExamples(constraint: String => Constraint[String],
                                        valid: Gen[String],

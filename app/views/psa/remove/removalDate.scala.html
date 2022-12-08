@@ -33,7 +33,7 @@
 
 @layout(pageTitle = titleWithErrors(form, messages("messages__removalDate__title"))) {
 
-    @formHelper(action = PsaRemovalDateController.onSubmit, 'autoComplete -> "off",'novalidate -> "novalidate") {
+    @formHelper(action = PsaRemovalDateController.onSubmit, Symbol("autoComplete") -> "off", Symbol("novalidate") -> "novalidate") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form, mapping = Map("removalDate" -> "removalDate.day")))

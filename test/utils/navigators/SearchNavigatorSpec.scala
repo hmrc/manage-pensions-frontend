@@ -36,9 +36,9 @@ class SearchNavigatorSpec
   val navigator = new SearchNavigator
 
   def routes(): TableFor4[Identifier, UserAnswers, Call, Option[Call]] = Table(
-    ("Id",                            "User Answers",     "Next Page (NormalMode)",     "Next Page (CheckMode)"),
-    (SearchPSTRId,                     emptyAnswers,       pspIdPage,                    None
-  ))
+    ("Id", "User Answers", "Next Page (NormalMode)", "Next Page (CheckMode)"),
+    (SearchPSTRId, emptyAnswers, pspIdPage, None
+    ))
 
   navigator.getClass.getSimpleName must {
     appRunning()
@@ -48,8 +48,8 @@ class SearchNavigatorSpec
 }
 
 object SearchNavigatorSpec extends OptionValues {
-  lazy val emptyAnswers:UserAnswers = UserAnswers(Json.obj())
-  lazy val pspIdPage: Call = controllers.psp.routes.ListSchemesController.onSearch()
+  lazy val emptyAnswers: UserAnswers = UserAnswers(Json.obj())
+  lazy val pspIdPage: Call = controllers.psp.routes.ListSchemesController.onSearch
 
   implicit val ex: IdentifiedRequest = new IdentifiedRequest() {
     val externalId: String = "test-external-id"

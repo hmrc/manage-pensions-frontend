@@ -16,12 +16,12 @@
 
 package models
 
-import org.scalatest.MustMatchers
-import org.scalatest.WordSpec
-import play.api.libs.json.Json
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AnyWordSpec
+import play.api.libs.json.{JsValue, Json}
 import testhelpers.InvitationBuilder
 
-class PensionAdviserDetailsReadsSpec extends WordSpec with MustMatchers {
+class PensionAdviserDetailsReadsSpec extends AnyWordSpec with Matchers {
 
   import PensionAdviserDetailsReadsSpec._
 
@@ -43,7 +43,7 @@ class PensionAdviserDetailsReadsSpec extends WordSpec with MustMatchers {
 
 object PensionAdviserDetailsReadsSpec {
 
-  val inputJson = Json.parse(
+  val inputJson: JsValue = Json.parse(
     """ {
       |"adviserName":"test adviser",
       |"adviserEmail":"test@test.com",

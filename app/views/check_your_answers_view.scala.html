@@ -30,7 +30,7 @@
 
 @layout(pageTitle = messages("checkYourAnswers.title")) {
 
-    @formHelper(action = postUrl, 'autoComplete -> "off") {
+    @formHelper(action = postUrl, Symbol("autoComplete") -> "off") {
         
         @components.heading(messages("checkYourAnswers.heading"))
 

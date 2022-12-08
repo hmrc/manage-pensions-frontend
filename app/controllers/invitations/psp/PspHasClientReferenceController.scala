@@ -20,8 +20,8 @@ import com.google.inject.Inject
 import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
 import controllers.actions._
-import controllers.psa.routes._
 import controllers.invitations.psp.routes._
+import controllers.psa.routes._
 import forms.invitations.psp.PspHasClientReferenceFormProvider
 import identifiers.invitations.psp.{PspClientReferenceId, PspHasClientReferenceId, PspNameId}
 import identifiers.{SchemeNameId, SchemeSrnId}
@@ -55,12 +55,12 @@ class PspHasClientReferenceController @Inject()(
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
-      (SchemeNameId and PspNameId and SchemeSrnId).retrieve.right.map {
+      (SchemeNameId and PspNameId and SchemeSrnId).retrieve.map {
         case schemeName ~ pspName ~ srn =>
           val value = request.userAnswers.get(PspHasClientReferenceId)
           val preparedForm = value.fold(form)(form.fill)
 
-          Future.successful(Ok(view(preparedForm, pspName, mode, schemeName, returnCall(srn),PspHasClientReferenceController.onSubmit(mode))))
+          Future.successful(Ok(view(preparedForm, pspName, mode, schemeName, returnCall(srn), PspHasClientReferenceController.onSubmit(mode))))
       }
   }
 
@@ -68,19 +68,19 @@ class PspHasClientReferenceController @Inject()(
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[_]) => {
-          (SchemeNameId and PspNameId and SchemeSrnId).retrieve.right.map {
+          (SchemeNameId and PspNameId and SchemeSrnId).retrieve.map {
             case schemeName ~ pspName ~ srn =>
-              Future.successful(BadRequest(view(formWithErrors, pspName, mode, schemeName, returnCall(srn),PspHasClientReferenceController.onSubmit(mode))))
+              Future.successful(BadRequest(view(formWithErrors, pspName, mode, schemeName, returnCall(srn), PspHasClientReferenceController.onSubmit(mode))))
           }
         },
         value =>
           dataCacheConnector.save(request.externalId, PspHasClientReferenceId, value).flatMap(
             cacheMap => {
               if (!value) {
-                dataCacheConnector.remove(request.externalId, PspClientReferenceId).map(  updatedCacheMap =>
+                dataCacheConnector.remove(request.externalId, PspClientReferenceId).map(updatedCacheMap =>
                   Redirect(navigator.nextPage(PspHasClientReferenceId, mode, UserAnswers(updatedCacheMap)))
                 )
-              }else {
+              } else {
                 Future.successful(Redirect(navigator.nextPage(PspHasClientReferenceId, mode, UserAnswers(cacheMap))))
               }
             }

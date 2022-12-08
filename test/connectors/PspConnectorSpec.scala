@@ -16,15 +16,17 @@
 
 package connectors
 
-import java.time.LocalDateTime
 import com.github.tomakehurst.wiremock.client.WireMock._
 import models.DeAuthorise
-import org.scalatest.{AsyncFlatSpec, Matchers}
+import org.scalatest.flatspec.AsyncFlatSpec
+import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.scalacheck.Checkers
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, Json}
-import uk.gov.hmrc.http.{UpstreamErrorResponse, BadRequestException, HeaderCarrier}
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier, UpstreamErrorResponse}
 import utils.WireMockHelper
+
+import java.time.LocalDateTime
 
 class PspConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper with Checkers {
   override protected def portConfigKey: String = "microservice.services.pension-practitioner.port"
@@ -45,7 +47,7 @@ class PspConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper w
     val connector = injector.instanceOf[PspConnector]
 
     connector.authorisePsp(pstr, psaId, pspId, Some(cr)) map {
-      response =>
+      _ =>
         server.findAll(postRequestedFor(urlEqualTo(pspAuthUrl))).size() shouldBe 1
     }
   }

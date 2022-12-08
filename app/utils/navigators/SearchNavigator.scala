@@ -29,10 +29,10 @@ import javax.inject.{Inject, Singleton}
 class SearchNavigator @Inject() extends Navigator {
 
   override def routeMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
-    case SearchPSTRId => ListSchemesController.onSearch()
+    case SearchPSTRId => ListSchemesController.onSearch
   }
 
   override protected def editRouteMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
-    case _ => SessionExpiredController.onPageLoad()
+    case _ => SessionExpiredController.onPageLoad
   }
 }

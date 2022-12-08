@@ -44,7 +44,7 @@ class WhatRoleControllerV2Spec extends ControllerSpecBase with ScalaFutures with
 
     "return OK with the view when calling on page load" in {
 
-      val request = addCSRFToken(FakeRequest(GET, routes.WhatRoleControllerV2.onPageLoad().url))
+      val request = addCSRFToken(FakeRequest(GET, routes.WhatRoleControllerV2.onPageLoad.url))
       val result = route(application, request).value
 
       status(result) mustBe OK
@@ -52,7 +52,7 @@ class WhatRoleControllerV2Spec extends ControllerSpecBase with ScalaFutures with
     }
 
     "redirect to the next page for a valid request" in {
-      val postRequest = FakeRequest(POST, routes.WhatRoleControllerV2.onSubmit().url).withFormUrlEncodedBody("value"-> "administrator")
+      val postRequest = FakeRequest(POST, routes.WhatRoleControllerV2.onSubmit.url).withFormUrlEncodedBody("value" -> "administrator")
       val result = route(application, postRequest).value
 
       status(result) mustBe SEE_OTHER
@@ -61,7 +61,7 @@ class WhatRoleControllerV2Spec extends ControllerSpecBase with ScalaFutures with
   }
 
   "return a Bad Request and errors when invalid data is submitted" in {
-    val postRequest = FakeRequest(POST, routes.WhatRoleControllerV2.onSubmit().url).withFormUrlEncodedBody("value" -> "invalid value")
+    val postRequest = FakeRequest(POST, routes.WhatRoleControllerV2.onSubmit.url).withFormUrlEncodedBody("value" -> "invalid value")
     val result = route(application, postRequest).value
     val boundForm = formProvider().bind(Map("value" -> "invalid value"))
     status(result) mustBe BAD_REQUEST

@@ -16,10 +16,10 @@
 
 package models
 
-import org.scalatest.MustMatchers
-import org.scalatest.WordSpec
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class SchemeReferenceNumberSpec extends WordSpec with MustMatchers {
+class SchemeReferenceNumberSpec extends AnyWordSpec with Matchers {
 
   "SchemeReferenceNumber" must {
 

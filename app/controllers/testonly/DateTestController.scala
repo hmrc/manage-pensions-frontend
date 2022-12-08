@@ -16,8 +16,6 @@
 
 package controllers.testonly
 
-import java.time.LocalDate
-
 import com.google.inject.{Inject, Singleton}
 import play.api.data.Form
 import play.api.data.Forms._
@@ -26,6 +24,8 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateHelper
 import views.html.testOnly.date_test
+
+import java.time.LocalDate
 
 @Singleton
 class DateTestController @Inject()(
@@ -43,7 +43,7 @@ class DateTestController @Inject()(
 
   def submit: Action[AnyContent] = Action {
     implicit request =>
-      form.bindFromRequest.fold(
+      form.bindFromRequest().fold(
         invalidForm => {
           BadRequest(view(invalidForm))
         },

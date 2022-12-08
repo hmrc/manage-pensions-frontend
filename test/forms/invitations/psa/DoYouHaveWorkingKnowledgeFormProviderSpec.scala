@@ -17,7 +17,7 @@
 package forms.invitations.psa
 
 import forms.behaviours.BooleanFieldBehaviours
-import play.api.data.FormError
+import play.api.data.{Form, FormError}
 
 class DoYouHaveWorkingKnowledgeFormProviderSpec extends BooleanFieldBehaviours {
 
@@ -25,7 +25,7 @@ class DoYouHaveWorkingKnowledgeFormProviderSpec extends BooleanFieldBehaviours {
   val invalidKey = "error.boolean"
 
   val formProvider = new DoYouHaveWorkingKnowledgeFormProvider()
-  val form = formProvider()
+  val form: Form[Boolean] = formProvider()
 
   ".value" must {
 

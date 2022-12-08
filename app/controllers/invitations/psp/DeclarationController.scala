@@ -82,7 +82,7 @@ class DeclarationController @Inject()(
   }
 
   private def inviteEmailAndRedirect()(implicit request: DataRequest[AnyContent]): Future[Result] =
-    (SchemeNameId and SchemeSrnId and PspNameId and PspId).retrieve.right.map {
+    (SchemeNameId and SchemeSrnId and PspNameId and PspId).retrieve.map {
       case schemeName ~ srn ~ pspName ~ pspId =>
         getPstr(srn).flatMap {
           case Some(pstr) =>
@@ -112,13 +112,13 @@ class DeclarationController @Inject()(
               }
             } recoverWith {
               case _: ActiveRelationshipExistsException =>
-                Future.successful(Redirect(controllers.invitations.psp.routes.AlreadyAssociatedWithSchemeController.onPageLoad()))
+                Future.successful(Redirect(controllers.invitations.psp.routes.AlreadyAssociatedWithSchemeController.onPageLoad))
             }
           case _ =>
-            Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+            Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad))
         }
     }.left.map(_ =>
-      Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+      Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad))
     )
 
 

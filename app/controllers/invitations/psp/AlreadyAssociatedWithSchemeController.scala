@@ -43,7 +43,7 @@ class AlreadyAssociatedWithSchemeController @Inject()(
 
   def onPageLoad: Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
-      (SchemeNameId and PspNameId).retrieve.right.map {
+      (SchemeNameId and PspNameId).retrieve.map {
         case schemeName ~ pspName =>
           Future.successful(Ok(view(pspName, schemeName)))
       }

@@ -18,9 +18,9 @@ package controllers.invitations.psa
 
 import forms.FormSpec
 import forms.invitations.psa.PensionAdviserAddressListFormProvider
-import org.scalatest.WordSpec
+import org.scalatest.wordspec.AnyWordSpec
 
-class PensionAdviserAddressListFormProviderSpec extends WordSpec with FormSpec {
+class PensionAdviserAddressListFormProviderSpec extends AnyWordSpec with FormSpec {
 
   val validData: Map[String, String] = Map(
     "value" -> "0"

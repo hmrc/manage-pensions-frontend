@@ -19,7 +19,8 @@ package connectors
 import com.github.tomakehurst.wiremock.client.WireMock._
 import models.invitations.Invitation
 import models.{AcceptedInvitation, SchemeReferenceNumber}
-import org.scalatest.{AsyncFlatSpec, Matchers}
+import org.scalatest.flatspec.AsyncFlatSpec
+import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.scalacheck.Checkers
 import play.api.http.Status
 import play.api.libs.json.Json

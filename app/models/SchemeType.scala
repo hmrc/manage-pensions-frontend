@@ -90,15 +90,11 @@ object SchemeType {
     }
   }
 
-  implicit lazy val writes = new Writes[SchemeType] {
-    def writes(o: SchemeType) = {
-      o match {
-        case SchemeType.Other(schemeTypeDetails) =>
-          Json.obj("name" -> other, "schemeTypeDetails" -> schemeTypeDetails)
-        case s if mappings.keySet.contains(s.toString) =>
-          Json.obj("name" -> s.toString)
-      }
-    }
+  implicit lazy val writes: Writes[SchemeType] = {
+    case SchemeType.Other(schemeTypeDetails) =>
+      Json.obj("name" -> other, "schemeTypeDetails" -> schemeTypeDetails)
+    case s if mappings.keySet.contains(s.toString) =>
+      Json.obj("name" -> s.toString)
   }
 
   def getSchemeType(schemeTypeStr: Option[String], isMasterTrust: Boolean): Option[String] = {
@@ -108,7 +104,7 @@ object SchemeType {
       schemeTypeStr.flatMap { schemeStr =>
         List(SingleTrust.toString, GroupLifeDeath.toString, BodyCorporate.toString, other).find(scheme =>
           schemeStr.toLowerCase.contains(scheme.toLowerCase)).map { str =>
-          s"messages__scheme_details__type_${str}"
+          s"messages__scheme_details__type_$str"
         }
       }
     }

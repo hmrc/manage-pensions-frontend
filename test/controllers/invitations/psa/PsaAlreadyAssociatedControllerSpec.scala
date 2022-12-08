@@ -47,7 +47,7 @@ class PsaAlreadyAssociatedControllerSpec extends ControllerSpecBase {
       val result = fixture.controller.onPageLoad()(fakeRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad().url)
+      redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad.url)
 
     }
 
@@ -57,7 +57,7 @@ class PsaAlreadyAssociatedControllerSpec extends ControllerSpecBase {
       val result = fixture.controller.onPageLoad()(fakeRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)
+      redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad.url)
 
     }
   }
@@ -72,7 +72,7 @@ object PsaAlreadyAssociatedControllerSpec extends ControllerSpecBase {
   private val testSchemeName = "test-scheme-name"
   private val testSchemeDetail = MinimalSchemeDetail(testSrn, Some(testPstr), testSchemeName)
 
-  private val onwardRoute: Call = controllers.routes.IndexController.onPageLoad()
+  private val onwardRoute: Call = controllers.routes.IndexController.onPageLoad
   private val testNavigator: FakeNavigator = new FakeNavigator(onwardRoute)
   private val view = injector.instanceOf[psa_already_associated]
 

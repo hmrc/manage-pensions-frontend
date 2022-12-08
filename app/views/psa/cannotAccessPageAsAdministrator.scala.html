@@ -34,7 +34,7 @@
 
 @layout(pageTitle = titleWithErrors(form, messages("messages__cannotAccessPageAsAdministrator__title"))){
 
-    @formHelper(action = CannotAccessPageAsAdministratorController.onSubmit(), 'autoComplete -> "off") {
+    @formHelper(action = CannotAccessPageAsAdministratorController.onSubmit(), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))

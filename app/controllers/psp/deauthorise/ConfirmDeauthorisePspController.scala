@@ -47,7 +47,7 @@ class ConfirmDeauthorisePspController @Inject()(
                                                  val requireData: DataRequiredAction,
                                                  val controllerComponents: MessagesControllerComponents,
                                                  view: confirmDeauthorisePsp
-                                          )(implicit val ec: ExecutionContext)
+                                               )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport
     with Retrievals {
@@ -56,20 +56,20 @@ class ConfirmDeauthorisePspController @Inject()(
 
   def onPageLoad(index: Index): Action[AnyContent] = (auth() andThen getData andThen requireData).async {
     implicit request =>
-      (SchemeSrnId and SchemeNameId and deauthorise.PspDetailsId(index)).retrieve.right.map {
+      (SchemeSrnId and SchemeNameId and deauthorise.PspDetailsId(index)).retrieve.map {
         case srn ~ schemeName ~ pspDetails =>
           val preparedForm = request.userAnswers.get(deauthorise.ConfirmDeauthorisePspId(index)).fold(form)(form.fill)
           if (pspDetails.authorisingPSAID == request.psaIdOrException.id) {
             Future.successful(Ok(view(preparedForm, schemeName, srn, pspDetails.name, index)))
           } else {
-            Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+            Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad))
           }
       }
   }
 
   def onSubmit(index: Index): Action[AnyContent] = (auth() andThen getData andThen requireData).async {
     implicit request =>
-      (SchemeNameId and SchemeSrnId and PspDetailsId(index)).retrieve.right.map {
+      (SchemeNameId and SchemeSrnId and PspDetailsId(index)).retrieve.map {
         case schemeName ~ srn ~ pspDetails =>
           form.bindFromRequest().fold(
             (formWithErrors: Form[Boolean]) =>

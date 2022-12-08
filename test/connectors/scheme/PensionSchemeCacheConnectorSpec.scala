@@ -18,18 +18,21 @@ package connectors.scheme
 
 import connectors.MicroserviceCacheConnector
 import connectors.behaviour.ConnectorBehaviour
-import org.scalatest.AsyncWordSpec
-import org.scalatest.MustMatchers
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AsyncWordSpec
 
-class PensionSchemeCacheConnectorSpec extends AsyncWordSpec with MustMatchers with ConnectorBehaviour {
+class PensionSchemeCacheConnectorSpec extends AsyncWordSpec with Matchers with ConnectorBehaviour {
 
   override protected def portConfigKey: String = "microservice.services.pensions-scheme.port"
 
   protected def userAnswersCacheConnectorUrl(id: String): String = s"/pensions-scheme/journey-cache/scheme/$id"
+
   protected def userAnswersCacheConnectorLastUpdatedUrl(id: String) = s"/pensions-scheme/journey-cache/scheme/$id/lastUpdated"
 
   protected def updateSchemeCacheConnectorUrl(id: String): String = s"/pensions-scheme/journey-cache/update-scheme/$id"
+
   protected def updateSchemeCacheConnectorLastUpdatedUrl(id: String) = s"/pensions-scheme/journey-cache/update-scheme/$id/lastUpdated"
+
   "MicroserviceCacheConnector" must {
 
     behave like cacheConnector[MicroserviceCacheConnector](userAnswersCacheConnectorUrl, userAnswersCacheConnectorLastUpdatedUrl)

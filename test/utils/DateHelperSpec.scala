@@ -16,13 +16,13 @@
 
 package utils
 
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
+
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-import org.scalatest.Matchers
-import org.scalatest.WordSpec
-
-class DateHelperSpec extends WordSpec with Matchers {
+class DateHelperSpec extends AnyWordSpec with Matchers {
 
   val currentDate: LocalDate = LocalDate.parse("2018-01-04T00:00:01", DateTimeFormatter.ISO_LOCAL_DATE_TIME)
 

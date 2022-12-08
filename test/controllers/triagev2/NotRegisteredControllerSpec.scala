@@ -27,7 +27,6 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.{GET, defaultAwaitTimeout, route, status, writeableOf_AnyContentAsEmpty}
 import utils.annotations.TriageV2
 import utils.{FakeNavigator, Navigator}
-import views.html.triagev2.notRegistered
 
 class NotRegisteredControllerSpec extends ControllerSpecBase with ScalaFutures with MockitoSugar {
 
@@ -35,13 +34,11 @@ class NotRegisteredControllerSpec extends ControllerSpecBase with ScalaFutures w
   private val application = applicationBuilder(Seq[GuiceableModule](bind[Navigator].
     qualifiedWith(classOf[TriageV2]).toInstance(new FakeNavigator(onwardRoute)))).build()
 
-  private val view = injector.instanceOf[notRegistered]
-
   "NotRegisteredController" must {
 
     "return OK with the view when calling on page load" in {
 
-      val request = FakeRequest(GET, routes.NotRegisteredController.onPageLoad().url)
+      val request = FakeRequest(GET, routes.NotRegisteredController.onPageLoad.url)
       val result = route(application, request).value
 
       status(result) mustBe OK

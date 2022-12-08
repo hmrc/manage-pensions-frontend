@@ -34,7 +34,7 @@
 
 @layout(pageTitle = titleWithErrors(form, messages("messages__adviser__postcode__title"))) {
 
-    @formHelper(action = AdviserAddressPostcodeLookupController.onSubmit(), 'autoComplete -> "off") {
+    @formHelper(action = AdviserAddressPostcodeLookupController.onSubmit(), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))

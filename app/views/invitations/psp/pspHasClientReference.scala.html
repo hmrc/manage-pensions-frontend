@@ -35,7 +35,7 @@
 
 @layout(pageTitle = titleWithErrors(form, messages("messages__psp_client_ref__title"))) {
 
-    @formHelper(action = actionCall, 'autoComplete -> "off") {
+    @formHelper(action = actionCall, Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))

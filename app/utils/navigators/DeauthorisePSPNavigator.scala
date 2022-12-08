@@ -17,16 +17,16 @@
 package utils.navigators
 
 import connectors.UserAnswersCacheConnector
-import controllers.routes._
 import controllers.psa.routes._
 import controllers.psp.deauthorise.routes._
+import controllers.routes._
 import identifiers.psp.deauthorise._
 import identifiers.{Identifier, SchemeSrnId}
-
-import javax.inject.{Inject, Singleton}
 import models.Index
 import play.api.mvc.Call
 import utils.{Navigator, UserAnswers}
+
+import javax.inject.{Inject, Singleton}
 
 @Singleton
 class DeauthorisePSPNavigator @Inject()(val dataCacheConnector: UserAnswersCacheConnector)
@@ -48,12 +48,12 @@ class DeauthorisePSPNavigator @Inject()(val dataCacheConnector: UserAnswersCache
       case (Some(true), _) =>
         PspDeauthDateController.onPageLoad(index)
       case _ =>
-        SessionExpiredController.onPageLoad()
+        SessionExpiredController.onPageLoad
     }
   }
 
   override protected def editRouteMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
     case _ =>
-      SessionExpiredController.onPageLoad()
+      SessionExpiredController.onPageLoad
   }
 }

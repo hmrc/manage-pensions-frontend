@@ -36,7 +36,7 @@
 
 @layout(pageTitle = titleWithErrors(form, messages(s"messages__${prefix}__title"))) {
 
-    @formHelper(action = AdviserManualAddressController.onSubmit(mode, prepopulated), 'autoComplete -> "off") {
+    @formHelper(action = AdviserManualAddressController.onSubmit(mode, prepopulated), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))

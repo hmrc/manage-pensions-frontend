@@ -28,7 +28,7 @@ class ControllerWithNormalPageBehaviours extends ControllerSpecBase {
   val navigator = new FakeNavigator(onwardRoute)
   val requiredDateAction = new DataRequiredActionImpl
 
-  def onwardRoute = Call("GET", "/foo")
+  def onwardRoute: Call = Call("GET", "/foo")
 
   // scalastyle:off method.length
   def controllerWithOnPageLoadMethod[T](onPageLoadAction: (DataRetrievalAction, AuthAction) => Action[AnyContent],
@@ -60,7 +60,7 @@ class ControllerWithNormalPageBehaviours extends ControllerSpecBase {
           val result = onPageLoadAction(emptyData, FakeAuthAction)(fakeRequest)
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)
+          redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad.url)
         }
 
       } else {
@@ -99,7 +99,7 @@ class ControllerWithNormalPageBehaviours extends ControllerSpecBase {
         status(result) mustBe SEE_OTHER
         redirectionUrl match {
           case Some(call) => redirectLocation(result) mustBe Some(call().url)
-          case _=> redirectLocation(result) mustBe Some(onwardRoute.url)
+          case _ => redirectLocation(result) mustBe Some(onwardRoute.url)
         }
       }
 
@@ -110,7 +110,7 @@ class ControllerWithNormalPageBehaviours extends ControllerSpecBase {
           val result = onSubmitAction(emptyData, FakeAuthAction)(fakeRequest)
 
           status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad().url)
+          redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad.url)
         }
       }
     }

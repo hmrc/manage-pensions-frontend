@@ -34,7 +34,7 @@
 
 @layout(pageTitle = titleWithErrors(form, messages("messages__cannotAccessPageAsPractitioner__title"))){
 
-    @formHelper(action = CannotAccessPageAsPractitionerController.onSubmit(), 'autoComplete -> "off") {
+    @formHelper(action = CannotAccessPageAsPractitionerController.onSubmit(), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))

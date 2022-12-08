@@ -61,7 +61,8 @@ class ViewAdministratorsControllerSpec extends ControllerSpecBase with BeforeAnd
   }
 
   override def beforeEach(): Unit = {
-    reset(fakeSchemeDetailsConnector, schemeDetailsService)
+    reset(fakeSchemeDetailsConnector)
+    reset(schemeDetailsService)
   }
 
   "SchemeDetailsController" must {

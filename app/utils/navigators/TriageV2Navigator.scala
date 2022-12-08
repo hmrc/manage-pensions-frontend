@@ -42,40 +42,42 @@ class TriageV2Navigator @Inject()(appConfig: FrontendAppConfig) extends Navigato
   private def whatRoleRoutes(ua: UserAnswers): Call =
     ua.get(WhatRoleId) match {
       case role@(Some(PSA) | Some(PSP)) => WhichServiceYouWantToViewController.onPageLoad(role.get.toString)
-      case _ => controllers.triagev2.routes.NotRegisteredController.onPageLoad()
+      case _ => controllers.triagev2.routes.NotRegisteredController.onPageLoad
     }
 
   private def whichServiceYouWantToViewRoutes(ua: UserAnswers): Call = {
 
     ua.get(WhatRoleId) match {
       case role@(Some(PSA) | Some(PSP)) => ua.get(WhichServiceYouWantToViewId)(reads(WhichServiceYouWantToView.enumerable(role.get.toString))) match {
-          case Some(ManagingPensionSchemes) => Call("GET", s"${appConfig.loginUrl}?continue=${role.get.toString match {
+        case Some(ManagingPensionSchemes) => Call("GET", s"${appConfig.loginUrl}?continue=${
+          role.get.toString match {
             case "administrator" => appConfig.psaOverviewUrl
             case _ => appConfig.pspDashboardUrl
-          }}")
-          case Some(PensionSchemesOnline) => Call("GET", appConfig.tpssWelcomeUrl)
-          case Some(IamUnsure) => WhatDoYouWantToDoController.onPageLoad(role.get.toString)
-          case _ => controllers.routes.SessionExpiredController.onPageLoad()
-        }
-      case _ => controllers.routes.SessionExpiredController.onPageLoad()
+          }
+        }")
+        case Some(PensionSchemesOnline) => Call("GET", appConfig.tpssWelcomeUrl)
+        case Some(IamUnsure) => WhatDoYouWantToDoController.onPageLoad(role.get.toString)
+        case _ => controllers.routes.SessionExpiredController.onPageLoad
+      }
+      case _ => controllers.routes.SessionExpiredController.onPageLoad
     }
   }
 
-    private def whatDoYouWantToDoRoutes(ua: UserAnswers): Call =
+  private def whatDoYouWantToDoRoutes(ua: UserAnswers): Call =
     ua.get(WhatRoleId) match {
       case role@(Some(PSA) | Some(PSP)) =>
-          val memberRole = role.get.toString
+        val memberRole = role.get.toString
         ua.get(WhatDoYouWantToDoId)(reads(WhatDoYouWantToDo.enumerable(memberRole))) match {
-            case Some(ManageExistingScheme) => ManageExistingSchemeController.onPageLoad(memberRole)
-            case Some(FileAccountingForTaxReturn) => FileAccountingForTaxReturnController.onPageLoad(memberRole)
-            case Some(FilePensionSchemeReturn) => FilePensionSchemeReturnController.onPageLoad(memberRole)
-            case Some(FileEventReport) => FileEventReportController.onPageLoad(memberRole)
-            case _ => controllers.routes.SessionExpiredController.onPageLoad()
-          }
-      case _ => controllers.routes.SessionExpiredController.onPageLoad()
-  }
+          case Some(ManageExistingScheme) => ManageExistingSchemeController.onPageLoad(memberRole)
+          case Some(FileAccountingForTaxReturn) => FileAccountingForTaxReturnController.onPageLoad(memberRole)
+          case Some(FilePensionSchemeReturn) => FilePensionSchemeReturnController.onPageLoad(memberRole)
+          case Some(FileEventReport) => FileEventReportController.onPageLoad(memberRole)
+          case _ => controllers.routes.SessionExpiredController.onPageLoad
+        }
+      case _ => controllers.routes.SessionExpiredController.onPageLoad
+    }
 
   override protected def editRouteMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
-    case _ => controllers.routes.SessionExpiredController.onPageLoad()
+    case _ => controllers.routes.SessionExpiredController.onPageLoad
   }
 }

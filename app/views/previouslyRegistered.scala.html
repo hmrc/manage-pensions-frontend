@@ -58,7 +58,7 @@
 
 @layout(pageTitle = titleWithErrors(form, messages("messages__previouslyRegistered__title"))){
 
-    @formHelper(action = submitRoute, 'autoComplete -> "off") {
+    @formHelper(action = submitRoute, Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))

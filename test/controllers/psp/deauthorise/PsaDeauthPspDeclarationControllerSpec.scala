@@ -85,7 +85,10 @@ class PsaDeauthPspDeclarationControllerSpec
     )
 
   override def beforeEach(): Unit = {
-    reset(mockPspConnector, mockEmailConnector, mockMinimalConnector, mockAuditService)
+    reset(mockPspConnector)
+    reset(mockEmailConnector)
+    reset(mockMinimalConnector)
+    reset(mockAuditService)
     when(mockPspConnector.deAuthorise(any(), any())(any(), any())).thenReturn(
       Future.successful(HttpResponse.apply(OK, Json.stringify(Json.obj("processingDate" -> LocalDate.now))))
     )

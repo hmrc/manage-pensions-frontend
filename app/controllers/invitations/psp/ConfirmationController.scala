@@ -16,39 +16,32 @@
 
 package controllers.invitations.psp
 
-import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
-import controllers.actions.AuthAction
-import controllers.actions.DataRequiredAction
-import controllers.actions.DataRetrievalAction
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import identifiers.SchemeNameId
 import identifiers.invitations.psp.PspNameId
-import javax.inject.Inject
-import play.api.i18n.I18nSupport
-import play.api.i18n.MessagesApi
-import play.api.mvc.Action
-import play.api.mvc.AnyContent
-import play.api.mvc.MessagesControllerComponents
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.invitations.psp.confirmation
 
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 class ConfirmationController @Inject()(
-                                             override val messagesApi: MessagesApi,
-                                             frontendAppConfig: FrontendAppConfig,
-                                             authenticate: AuthAction,
-                                             getData: DataRetrievalAction,
-                                             requireData: DataRequiredAction,
-                                             userAnswersCacheConnector: UserAnswersCacheConnector,
-                                             val controllerComponents: MessagesControllerComponents,
-                                             view: confirmation
-                                           )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
+                                        override val messagesApi: MessagesApi,
+                                        authenticate: AuthAction,
+                                        getData: DataRetrievalAction,
+                                        requireData: DataRequiredAction,
+                                        userAnswersCacheConnector: UserAnswersCacheConnector,
+                                        val controllerComponents: MessagesControllerComponents,
+                                        view: confirmation
+                                      )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
 
   def onPageLoad: Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
-      (SchemeNameId and PspNameId).retrieve.right.map {
+      (SchemeNameId and PspNameId).retrieve.map {
         case schemeName ~ pspName =>
           userAnswersCacheConnector.removeAll(request.externalId).map { _ =>
             Ok(view(schemeName, pspName))
