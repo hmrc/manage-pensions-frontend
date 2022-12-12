@@ -64,12 +64,12 @@ class PsaSchemeDashboardServiceSpec
 
     "return model with view-only link for scheme if psa does not hold lock" in {
       service.schemeCard(srn, currentScheme(Open), Some(SchemeLock), userAnswers(Open.value)) mustBe
-        schemeCard(notificationText = Some(Message("messages__psaSchemeDash__view_change_details_link_notification_scheme", name)))
+        schemeCard(notificationText = Some(Message("messages__psaSchemeDash__view_change_details_link_notification_scheme", "<strong>" + name + "</strong>")))
     }
 
     "return model with view-only link for scheme if psa does hold lock" in {
       service.schemeCard(srn, currentScheme(Open), Some(PsaLock), userAnswers(Open.value)) mustBe
-        schemeCard(notificationText = Some(Message("messages__psaSchemeDash__view_change_details_link_notification_psa", name)))
+        schemeCard(notificationText = Some(Message("messages__psaSchemeDash__view_change_details_link_notification_psa", "<strong>" + name + "</strong>")))
     }
 
     "return not display subheadings if scheme is not open" in {
@@ -177,7 +177,7 @@ object PsaSchemeDashboardServiceSpec {
       id = "view-details",
       url = dummyUrl,
       linkText = messages(linkText),
-      notification = Some(Message("messages__psaSchemeDash__view_change_details_link_notification_scheme", name))
+      notification = Some(Message("messages__psaSchemeDash__view_change_details_link_notification_scheme", "<strong>" + name + "</strong>"))
     ))
   )
 
