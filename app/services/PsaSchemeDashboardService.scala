@@ -73,7 +73,7 @@ class PsaSchemeDashboardService @Inject()(
       case (Some(key), Some(schemeName)) => Some(Message(key, "<strong>" + schemeName + "</strong>"))
       case _ => None
     }
-
+println("\n>>>" +  notification)
     val linkText = if (!isSchemeOpen(ua)) {
       viewLinkText
     } else {
