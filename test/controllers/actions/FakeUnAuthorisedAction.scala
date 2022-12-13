@@ -33,7 +33,7 @@ object FakeUnAuthorisedAction extends AuthAction {
                                    request: Request[A],
                                    block: AuthenticatedRequest[A] => Future[Result]
                                  ): Future[Result] =
-        Future.successful(Redirect(routes.UnauthorisedController.onPageLoad()))
+        Future.successful(Redirect(routes.UnauthorisedController.onPageLoad))
 
       val parser: BodyParser[AnyContent] =
         controllerComponents.parsers.defaultBodyParser

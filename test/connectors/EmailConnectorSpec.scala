@@ -19,16 +19,19 @@ package connectors
 import com.github.tomakehurst.wiremock.client.WireMock._
 import config.FrontendAppConfig
 import models.SendEmailRequest
-import org.scalatest.{MustMatchers, WordSpec}
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.http.Status
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.WireMockHelper
 
 import scala.concurrent.ExecutionContext
 
-class EmailConnectorSpec extends WordSpec with MustMatchers with WireMockHelper {
+class EmailConnectorSpec extends AnyWordSpec with Matchers with WireMockHelper {
   override protected def portConfigKey: String = "microservice.services.email.port"
+
   def frontendAppConfig: FrontendAppConfig = injector.instanceOf[FrontendAppConfig]
+
   private val url: String = "/hmrc/email"
   private implicit val hc: HeaderCarrier = HeaderCarrier()
   private val callbackUrl = "/hmrc/email"
@@ -57,7 +60,7 @@ class EmailConnectorSpec extends WordSpec with MustMatchers with WireMockHelper 
         )
         connector.sendEmail(sendEmailReq
 
-        ).map{ result => result mustBe EmailSent}
+        ).map { result => result mustBe EmailSent }
       }
     }
 
@@ -76,16 +79,16 @@ class EmailConnectorSpec extends WordSpec with MustMatchers with WireMockHelper 
           parameters = Map.empty,
           eventUrl = Some(callbackUrl)
         )
-        connector.sendEmail( sendEmailReq
+        connector.sendEmail(sendEmailReq
         ).map { result => result mustBe EmailNotSent
         }
       }
 
       "email service returns back with 204 (No Content)" in {
         server.stubFor(
-            post(urlEqualTo(url)).willReturn(
-              aResponse()
-                .withStatus(Status.NO_CONTENT)
+          post(urlEqualTo(url)).willReturn(
+            aResponse()
+              .withStatus(Status.NO_CONTENT)
               .withHeader("Content-Type", "application/json")
           )
         )

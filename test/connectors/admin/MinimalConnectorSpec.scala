@@ -19,12 +19,11 @@ package connectors.admin
 import base.JsonFileReader
 import com.github.tomakehurst.wiremock.client.WireMock._
 import models._
-import org.scalatest.AsyncFlatSpec
-import org.scalatest.Matchers
+import org.scalatest.flatspec.AsyncFlatSpec
+import org.scalatest.matchers.should.Matchers
 import play.api.http.Status
 import play.api.libs.json.Json
-import uk.gov.hmrc.http.BadRequestException
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{BadRequestException, HeaderCarrier}
 import utils.WireMockHelper
 
 class MinimalConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper {
@@ -111,7 +110,7 @@ object MinimalConnectorSpec extends JsonFileReader {
 
   private val email = "test@test.com"
 
-  private val expectedResponse = MinimalPSAPSP(email,false,None,Some(IndividualDetails("First",Some("Middle"),"Last")),
+  private val expectedResponse = MinimalPSAPSP(email, isPsaSuspended = false, None, Some(IndividualDetails("First", Some("Middle"), "Last")),
     rlsFlag = false, deceasedFlag = false)
 }
 

@@ -17,10 +17,12 @@
 package audit
 
 import akka.stream.Materializer
-import org.scalatest.{AsyncFlatSpec, Inside, Matchers}
-import play.api.inject.{ApplicationLifecycle, bind}
+import org.scalatest.Inside
+import org.scalatest.flatspec.AsyncFlatSpec
+import org.scalatest.matchers.should.Matchers
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.json.Json
+import play.api.inject.{ApplicationLifecycle, bind}
+import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.HeaderCarrier
@@ -46,7 +48,7 @@ class AuditServiceSpec extends AsyncFlatSpec with Matchers with Inside {
     val sentEvent = FakeAuditConnector.lastSentEvent
 
     inside(sentEvent) {
-      case DataEvent(auditSource, auditType, _, _, detail, _, _ ,_) =>
+      case DataEvent(auditSource, auditType, _, _, detail, _, _, _) =>
         auditSource shouldBe appName
         auditType shouldBe "TestAuditEvent"
         detail should contain("payload" -> "test-audit-payload")
@@ -97,21 +99,23 @@ object FakeAuditConnector extends AuditConnector {
 
   override def auditingConfig: AuditingConfig = AuditingConfig(
     None,
-    false,
+    enabled = false,
     "",
-    false
+    auditSentHeaders = false
   )
 
   override def sendEvent(event: DataEvent)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[AuditResult] = {
     sentEvent = event
     super.sendEvent(event)
   }
+
   override def sendExtendedEvent(event: ExtendedDataEvent)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[AuditResult] = {
     sentExtendedEvent = event
     super.sendExtendedEvent(event)
   }
 
   def lastSentEvent: DataEvent = sentEvent
+
   def lastSentExtendedEvent: ExtendedDataEvent = sentExtendedEvent
 
   def materializer: Materializer = ???
@@ -138,7 +142,7 @@ case class TestAuditExtendedEvent(payload: String) extends ExtendedAuditEvent {
 
   override def auditType: String = "TestAuditEvent"
 
-  override def details =
+  override def details: JsObject =
     Json.obj(
       "payload" -> payload
     )

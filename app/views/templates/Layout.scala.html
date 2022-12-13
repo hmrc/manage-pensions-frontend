@@ -82,7 +82,7 @@
     )),
     headerBlock = Some(hmrcStandardHeader(
         serviceName = Some(messages("site.service_name")),
-        serviceUrl = Some(routes.SchemesOverviewController.onPageLoad.url),
+        serviceUrl = Some(routes.SchemesOverviewController.onPageLoad().url),
         signOutUrl = if(canSignOut) Some(routes.LogoutController.onPageLoad.url) else None,
         phaseBanner = Some(standardBetaBanner(url = appConfig.betaFeedbackUnauthenticatedUrl))
     )),

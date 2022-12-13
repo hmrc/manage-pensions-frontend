@@ -58,7 +58,7 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
   def onPageLoad(): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
 
-      MinimalSchemeDetailId.retrieve.right.map { schemeDetail =>
+      MinimalSchemeDetailId.retrieve.map { schemeDetail =>
 
         val checkYourAnswersHelper = checkYourAnswersFactory.checkYourAnswersHelper(request.userAnswers)
         val sections = Seq(checkYourAnswersHelper.psaName, checkYourAnswersHelper.psaId).flatten
@@ -83,7 +83,7 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
 
   def onSubmit(): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
-      (MinimalSchemeDetailId and InviteeNameId and InviteePSAId).retrieve.right.map {
+      (MinimalSchemeDetailId and InviteeNameId and InviteePSAId).retrieve.map {
         case schemeDetails ~ inviteeName ~ inviteePsaId if schemeDetails.pstr.isDefined =>
           val invitation = Invitation(
             SchemeReferenceNumber(schemeDetails.srn),
@@ -103,8 +103,10 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
             case _: NameMatchingFailedException =>
               Future.successful(Redirect(IncorrectPsaDetailsController.onPageLoad()))
             case _ =>
-              Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+              Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad))
           }
+        case _ =>
+          Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad))
       }
   }
 

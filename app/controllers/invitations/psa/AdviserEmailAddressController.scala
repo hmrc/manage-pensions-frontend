@@ -21,7 +21,6 @@ import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.invitations.psa.AdviserEmailFormProvider
-import identifiers.invitations.psa.AdviserNameId
 import identifiers.invitations.psa.{AdviserEmailId, AdviserNameId}
 import models.Mode
 import play.api.data.Form
@@ -52,7 +51,7 @@ class AdviserEmailAddressController @Inject()(
   def onPageLoad(mode: Mode): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
       val form = formProvider()
-      AdviserNameId.retrieve.right.map { adviserName =>
+      AdviserNameId.retrieve.map { adviserName =>
         val preparedForm = request.userAnswers.get(AdviserEmailId) match {
           case None => form
           case Some(value) => form.fill(value)
@@ -63,7 +62,7 @@ class AdviserEmailAddressController @Inject()(
 
   def onSubmit(mode: Mode): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
-      AdviserNameId.retrieve.right.map { adviserName =>
+      AdviserNameId.retrieve.map { adviserName =>
         form.bindFromRequest().fold(
           (formWithErrors: Form[_]) => {
             Future.successful(BadRequest(view(formWithErrors, mode, adviserName)))

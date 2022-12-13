@@ -23,10 +23,10 @@ import connectors.scheme.{PensionSchemeVarianceLockConnector, UpdateSchemeCacheC
 import controllers.Retrievals
 import controllers.actions._
 import forms.psa.remove.RemovalDateFormProvider
-import identifiers.{AssociatedDateId, SchemeSrnId}
 import identifiers.invitations.{PSTRId, SchemeNameId}
-import identifiers.psa.{ListOfPSADetailsId, PSANameId}
 import identifiers.psa.remove.PsaRemovalDateId
+import identifiers.psa.{ListOfPSADetailsId, PSANameId}
+import identifiers.{AssociatedDateId, SchemeSrnId}
 import models.NormalMode
 import models.psa.remove.PsaToBeRemovedFromScheme
 import play.api.data.Form
@@ -35,8 +35,8 @@ import play.api.libs.json.Reads._
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateHelper._
-import utils.{DateHelper, Navigator, UserAnswers}
 import utils.annotations.RemovePSA
+import utils.{DateHelper, Navigator, UserAnswers}
 import views.html.psa.remove.removalDate
 
 import java.time.LocalDate
@@ -89,7 +89,7 @@ class PsaRemovalDateController @Inject()(
 
   def onPageLoad: Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
-      (SchemeNameId and PSANameId and SchemeSrnId and AssociatedDateId).retrieve.right.map {
+      (SchemeNameId and PSANameId and SchemeSrnId and AssociatedDateId).retrieve.map {
         case schemeName ~ psaName ~ srn ~ associationDate =>
           Future.successful(
             Ok(
@@ -103,13 +103,13 @@ class PsaRemovalDateController @Inject()(
             )
           )
         case _ =>
-          Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+          Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad))
       }
   }
 
   def onSubmit: Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
-      (SchemeNameId and PSANameId and SchemeSrnId and PSTRId and AssociatedDateId).retrieve.right.map {
+      (SchemeNameId and PSANameId and SchemeSrnId and PSTRId and AssociatedDateId).retrieve.map {
         case schemeName ~ psaName ~ srn ~ pstr ~ associationDate =>
           form(associationDate).bindFromRequest().fold(
             (formWithErrors: Form[_]) =>

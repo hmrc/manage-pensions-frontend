@@ -61,10 +61,6 @@ class PsaRemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours 
     requiredDataAction, formProvider, fakePsaRemovalConnector,
     mockedUpdateSchemeCacheConnector, mockedPensionSchemeVarianceLockConnector, controllerComponents, view)
 
-  private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
-    controller(dataRetrievalAction, fakeAuth).onPageLoad()
-  }
-
   private def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
     controller(dataRetrievalAction, fakeAuth).onSubmit()
   }
@@ -73,14 +69,12 @@ class PsaRemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours 
     controller(userAnswersCacheConnector = userAnswersConnector).onSubmit()
   }
 
-  private def viewAsString(form: Form[LocalDate]): String =
-    view(form, psaName, schemeName, srn, formatDate(associationDate))(fakeRequest, messages).toString
-
   private def viewAsStringPostRequest(form: Form[LocalDate]): String =
     view(form, psaName, schemeName, srn, formatDate(associationDate))(postRequest, messages).toString
 
   override def beforeEach(): Unit = {
-    reset(mockedPensionSchemeVarianceLockConnector, mockedUpdateSchemeCacheConnector)
+    reset(mockedPensionSchemeVarianceLockConnector)
+    reset(mockedUpdateSchemeCacheConnector)
     when(mockedPensionSchemeVarianceLockConnector.getLockByPsa(any())(any(), any())).thenReturn(Future.successful(None))
   }
 

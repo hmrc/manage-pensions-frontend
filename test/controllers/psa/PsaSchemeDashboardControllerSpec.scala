@@ -18,17 +18,17 @@ package controllers.psa
 
 import config.FrontendAppConfig
 import connectors.admin.MinimalConnector
-import connectors.scheme.{SchemeDetailsConnector, PensionSchemeVarianceLockConnector, ListOfSchemesConnector}
-import connectors.{FrontendConnector, FakeUserAnswersCacheConnector}
+import connectors.scheme.{ListOfSchemesConnector, PensionSchemeVarianceLockConnector, SchemeDetailsConnector}
+import connectors.{FakeUserAnswersCacheConnector, FrontendConnector}
 import controllers.ControllerSpecBase
 import controllers.actions.FakeAuthAction
 import controllers.invitations.psp.routes.WhatYouWillNeedController
 import controllers.invitations.routes.InviteController
 import controllers.psa.routes.ViewAdministratorsController
 import controllers.psp.routes.ViewPractitionersController
-import identifiers.{SchemeStatusId, SchemeNameId}
 import identifiers.invitations.PSTRId
-import models.SchemeStatus.{Rejected, Open}
+import identifiers.{SchemeNameId, SchemeStatusId}
+import models.SchemeStatus.{Open, Rejected}
 import models._
 import org.mockito.ArgumentMatchers.{any, eq => eqTo}
 import org.mockito.Mockito.{reset, when}
@@ -41,7 +41,7 @@ import play.twirl.api.Html
 import services.PsaSchemeDashboardService
 import utils.DateHelper.formatter
 import utils.UserAnswers
-import viewmodels.{CardSubHeadingParam, Message, CardViewModel, CardSubHeading}
+import viewmodels.{CardSubHeading, CardSubHeadingParam, CardViewModel, Message}
 import views.html.psa.psaSchemeDashboard
 
 import java.time.LocalDate
@@ -73,7 +73,7 @@ class PsaSchemeDashboardControllerSpec
   private val listOfSchemes: ListOfSchemes = ListOfSchemes("", "", Some(List(SchemeDetails(name, srn, "Open", Some(date), Some(windUpDate), Some(pstr), None))))
 
   private def psaCard(inviteLink: Seq[Link] = inviteLink)
-    (implicit messages: Messages): CardViewModel = CardViewModel(
+                     (implicit messages: Messages): CardViewModel = CardViewModel(
     id = "psa_list",
     heading = Message("messages__psaSchemeDash__psa_list_head"),
     subHeadings = Seq(CardSubHeading(
@@ -212,7 +212,10 @@ class PsaSchemeDashboardControllerSpec
   )
 
   override def beforeEach(): Unit = {
-    reset(fakeSchemeDetailsConnector, fakeListOfSchemesConnector, fakeSchemeLockConnector, mockService)
+    reset(fakeSchemeDetailsConnector)
+    reset(fakeListOfSchemesConnector)
+    reset(fakeSchemeLockConnector)
+    reset(mockService)
     when(fakeSchemeLockConnector.isLockByPsaIdOrSchemeId(eqTo("A0000000"), any())(any(), any()))
       .thenReturn(Future.successful(Some(VarianceLock)))
   }

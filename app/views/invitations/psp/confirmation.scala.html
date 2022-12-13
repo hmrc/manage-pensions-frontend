@@ -29,7 +29,7 @@
 
 @layout(pageTitle = messages("messages__pspConfirmation__title"), showBackLink = false) {
 
-    @formHelper(action = controllers.routes.SchemesOverviewController.onPageLoad(), 'autoComplete -> "off") {
+    @formHelper(action = controllers.routes.SchemesOverviewController.onPageLoad(), Symbol("autoComplete") -> "off") {
 
         @panel(
             panelTitle = messages("messages__pspConfirmation__heading", pspName, schemeName),

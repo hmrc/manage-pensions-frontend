@@ -31,7 +31,7 @@
 
 @layout(pageTitle = messages("messages__invitationSuccess__title")) {
 
-    @formHelper(action = continue, 'autoComplete -> "off") {
+    @formHelper(action = continue, Symbol("autoComplete") -> "off") {
 
         @panel(
             panelTitle = messages("messages__invitationSuccess__heading", inviteeName),

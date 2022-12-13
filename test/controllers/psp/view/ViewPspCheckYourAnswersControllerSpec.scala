@@ -69,16 +69,16 @@ class ViewPspCheckYourAnswersControllerSpec extends ControllerSpecBase with Mock
 
       "redirect to the session expired page if there is no psp name" in {
         val result = controller(getEmptyData).onPageLoad(0)(fakeRequest)
-        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad().url
+        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
       "redirect to the session expired page if not authorisingPSA" in {
         val result = controller(data2).onPageLoad(0)(fakeRequest)
-        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad().url
+        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
 
       "redirect to the session expired page if there is no existing data" in {
         val result = controller(dontGetAnyData).onPageLoad(0)(fakeRequest)
-        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad().url
+        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
     }
 
@@ -86,7 +86,7 @@ class ViewPspCheckYourAnswersControllerSpec extends ControllerSpecBase with Mock
       "redirect to view practitioner and post to update client ref API" in {
         when(mockUpdateClientReferenceConnector.updateClientReference(any(), any())(any(), any())).thenReturn(Future.successful("Ok"))
         when(mockSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any())).thenReturn(Future.successful(schemeDetailUserAns("Test")))
-        when(mockSchemeDetailsConnector.getSchemeDetailsRefresh(any(), any(), any())(any(), any())).thenReturn(Future.successful())
+        when(mockSchemeDetailsConnector.getSchemeDetailsRefresh(any(), any(), any())(any(), any())).thenReturn(Future.successful((): Unit))
         val result = controller(data).onSubmit(0)(fakeRequest)
         redirectLocation(result).value mustBe controllers.psp.routes.ViewPractitionersController.onPageLoad().url
       }
@@ -97,7 +97,7 @@ class ViewPspCheckYourAnswersControllerSpec extends ControllerSpecBase with Mock
       }
       "redirect to the session expired page if not authorisingPSA" in {
         val result = controller(data2).onSubmit(0)(fakeRequest)
-        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad().url
+        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
     }
 
@@ -105,7 +105,7 @@ class ViewPspCheckYourAnswersControllerSpec extends ControllerSpecBase with Mock
 
       "return UserAction NoChange when client Reference has no change " in {
 
-        val determineUserAction: PrivateMethod[ClientReferenceUserAction] = PrivateMethod[ClientReferenceUserAction]('determineUserAction)
+        val determineUserAction: PrivateMethod[ClientReferenceUserAction] = PrivateMethod[ClientReferenceUserAction](Symbol("determineUserAction"))
         val result: ClientReferenceUserAction = controller(data) invokePrivate determineUserAction(None, None)
 
         result mustBe NoChange
@@ -113,7 +113,7 @@ class ViewPspCheckYourAnswersControllerSpec extends ControllerSpecBase with Mock
 
       "return UserAction Added when client Reference has change form None to value" in {
 
-        val determineUserAction: PrivateMethod[ClientReferenceUserAction] = PrivateMethod[ClientReferenceUserAction]('determineUserAction)
+        val determineUserAction: PrivateMethod[ClientReferenceUserAction] = PrivateMethod[ClientReferenceUserAction](Symbol("determineUserAction"))
         val result: ClientReferenceUserAction = controller(data) invokePrivate determineUserAction(Some("Test"), None)
 
         result mustBe Added
@@ -121,7 +121,7 @@ class ViewPspCheckYourAnswersControllerSpec extends ControllerSpecBase with Mock
 
       "return UserAction Amended when client Reference has change" in {
 
-        val determineUserAction: PrivateMethod[ClientReferenceUserAction] = PrivateMethod[ClientReferenceUserAction]('determineUserAction)
+        val determineUserAction: PrivateMethod[ClientReferenceUserAction] = PrivateMethod[ClientReferenceUserAction](Symbol("determineUserAction"))
         val result: ClientReferenceUserAction = controller(data) invokePrivate determineUserAction(Some("Test"), Some("oldValue"))
 
         result mustBe Amended
@@ -129,7 +129,7 @@ class ViewPspCheckYourAnswersControllerSpec extends ControllerSpecBase with Mock
 
       "return UserAction Deleted when client Reference updated to None" in {
 
-        val determineUserAction: PrivateMethod[ClientReferenceUserAction] = PrivateMethod[ClientReferenceUserAction]('determineUserAction)
+        val determineUserAction: PrivateMethod[ClientReferenceUserAction] = PrivateMethod[ClientReferenceUserAction](Symbol("determineUserAction"))
         val result: ClientReferenceUserAction = controller(data) invokePrivate determineUserAction(None, Some("oldValue"))
 
         result mustBe Deleted

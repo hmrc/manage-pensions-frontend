@@ -15,14 +15,13 @@
  */
 
 package config
-import org.scalatest.MustMatchers
+
+import org.scalatest.matchers.must.Matchers
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.Lang
 
-class FrontEndAppConfigSpec extends PlaySpec
-  with MustMatchers
-  with GuiceOneAppPerSuite {
+class FrontEndAppConfigSpec extends PlaySpec with Matchers with GuiceOneAppPerSuite {
 
   implicit lazy val appConfig: FrontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
 
@@ -40,17 +39,17 @@ class FrontEndAppConfigSpec extends PlaySpec
     }
 
     "have pspAuthEmailCallback" in {
-      appConfig.pspAuthEmailCallback("psa","psp","pstr","email.com") must
+      appConfig.pspAuthEmailCallback("psa", "psp", "pstr", "email.com") must
         be("http://localhost:8209/pension-practitioner/email-response-psp-auth/psa/psp/pstr/email.com")
     }
 
     "have pspDeauthEmailCallback" in {
-      appConfig.pspDeauthEmailCallback("psa","psp","pstr","email.com") must
+      appConfig.pspDeauthEmailCallback("psa", "psp", "pstr", "email.com") must
         be("http://localhost:8209/pension-practitioner/email-response-psp-deauth/psa/psp/pstr/email.com")
     }
 
     "have pspSelfDeauthEmailCallback" in {
-      appConfig.pspSelfDeauthEmailCallback("psa","pstr","email.com") must
+      appConfig.pspSelfDeauthEmailCallback("psa", "pstr", "email.com") must
         be("http://localhost:8209/pension-practitioner/email-response-psp-self-deauth/psa/pstr/email.com")
     }
 

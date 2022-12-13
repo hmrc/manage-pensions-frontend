@@ -18,17 +18,15 @@ package utils.navigators
 
 import base.SpecBase
 import connectors.FakeUserAnswersCacheConnector
-import controllers.psp.routes._
 import controllers.psp.deauthorise.self.routes._
+import controllers.psp.routes._
 import controllers.routes._
 import identifiers.Identifier
 import identifiers.psp.deauthorise.self.{ConfirmDeauthId, DeauthDateId}
 import org.scalatest.prop.TableFor4
 import play.api.libs.json.Json
 import play.api.mvc.Call
-import utils.NavigatorBehaviour
-import utils.UserAnswerOps
-import utils.UserAnswers
+import utils.{NavigatorBehaviour, UserAnswerOps, UserAnswers}
 import utils.navigators.PspSelfDeauthNavigatorSpec._
 
 class PspSelfDeauthNavigatorSpec extends SpecBase with NavigatorBehaviour {
@@ -36,11 +34,11 @@ class PspSelfDeauthNavigatorSpec extends SpecBase with NavigatorBehaviour {
   val navigator = new PspSelfDeauthoriseNavigator(FakeUserAnswersCacheConnector)
 
   def routes(): TableFor4[Identifier, UserAnswers, Call, Option[Call]] = Table(
-    ("Id",                 "User Answers",      "Next Page (NormalMode)",   "Next Page (CheckMode)"),
-    (ConfirmDeauthId,       deauthPsp,           deauthDatePage,            None),
-    (ConfirmDeauthId,       dontDeauthPsp,       schemeDashboardPage,        None),
-    (ConfirmDeauthId,       emptyAnswers,        sessionExpiredPage,         None),
-    (DeauthDateId,          emptyAnswers,        declarationPage,            None)
+    ("Id", "User Answers", "Next Page (NormalMode)", "Next Page (CheckMode)"),
+    (ConfirmDeauthId, deauthPsp, deauthDatePage, None),
+    (ConfirmDeauthId, dontDeauthPsp, schemeDashboardPage, None),
+    (ConfirmDeauthId, emptyAnswers, sessionExpiredPage, None),
+    (DeauthDateId, emptyAnswers, declarationPage, None)
   )
 
   navigator.getClass.getSimpleName must {
@@ -58,7 +56,7 @@ object PspSelfDeauthNavigatorSpec {
 
   private def dataDescriber(answers: UserAnswers): String = answers.toString
 
-  private val sessionExpiredPage = SessionExpiredController.onPageLoad()
+  private val sessionExpiredPage = SessionExpiredController.onPageLoad
   private val schemeDashboardPage = PspSchemeDashboardController.onPageLoad(srn)
   private val deauthDatePage = DeauthDateController.onPageLoad()
   private val declarationPage = DeclarationController.onPageLoad()

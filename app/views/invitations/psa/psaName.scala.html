@@ -32,7 +32,7 @@
 
 @layout(pageTitle = titleWithErrors(form, messages("messages__psa__name__title"))) {
 
-    @formHelper(action = PsaNameController.onSubmit(mode), 'autoComplete -> "off") {
+    @formHelper(action = PsaNameController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))

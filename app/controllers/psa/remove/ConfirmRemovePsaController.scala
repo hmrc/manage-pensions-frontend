@@ -30,8 +30,8 @@ import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.{Navigator, UserAnswers}
 import utils.annotations.RemovePSA
+import utils.{Navigator, UserAnswers}
 import views.html.psa.remove.confirmRemovePsa
 
 import javax.inject.Inject
@@ -57,7 +57,7 @@ class ConfirmRemovePsaController @Inject()(
 
   def onPageLoad: Action[AnyContent] = (auth() andThen getData andThen requireData).async {
     implicit request =>
-      (SchemeSrnId and SchemeNameId and PSANameId).retrieve.right.map {
+      (SchemeSrnId and SchemeNameId and PSANameId).retrieve.map {
         case srn ~ schemeName ~ psaName =>
           val preparedForm = request.userAnswers.get(ConfirmRemovePsaId).fold(form)(form.fill)
           Future.successful(Ok(view(preparedForm, schemeName, srn, psaName)))
@@ -68,7 +68,7 @@ class ConfirmRemovePsaController @Inject()(
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[Boolean]) =>
-          (SchemeNameId and SchemeSrnId and PSANameId).retrieve.right.map {
+          (SchemeNameId and SchemeSrnId and PSANameId).retrieve.map {
             case schemeName ~ srn ~ psaName =>
               Future.successful(BadRequest(view(formWithErrors, schemeName, srn, psaName)))
           },

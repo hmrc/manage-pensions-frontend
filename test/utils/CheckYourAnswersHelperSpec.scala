@@ -19,16 +19,14 @@ package utils
 import base.SpecBase
 import controllers.invitations.psa.routes._
 import models.{Address, CheckMode}
-import org.scalatest.MustMatchers
+import org.scalatest.matchers.must.Matchers
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist._
 import utils.countryOptions.CountryOptions
 
-class CheckYourAnswersHelperSpec
-  extends SpecBase
-    with MustMatchers {
+class CheckYourAnswersHelperSpec extends SpecBase with Matchers {
 
-  val userAnswers = UserAnswers()
+  val userAnswers: UserAnswers = UserAnswers()
 
   private val countryOptions = new CountryOptions(environment, frontendAppConfig)
 

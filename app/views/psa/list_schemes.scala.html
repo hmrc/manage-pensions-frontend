@@ -129,7 +129,7 @@
 
 @layout(pageTitle = titleWithErrors(form, messages(heading)), fullWidthLayout = true) {
 
-    @formHelper(action = ListSchemesController.onSearch, 'autoComplete -> "off") {
+    @formHelper(action = ListSchemesController.onSearch, Symbol("autoComplete") -> "off") {
 
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">

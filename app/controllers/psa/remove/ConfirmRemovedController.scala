@@ -42,7 +42,7 @@ class ConfirmRemovedController @Inject()(
   def onPageLoad(): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
 
-      (PSANameId and SchemeNameId).retrieve.right.map {
+      (PSANameId and SchemeNameId).retrieve.map {
         case psaName ~ schemeName =>
           userAnswersCacheConnector.removeAll(request.externalId).map { _ =>
             Ok(view(psaName, schemeName))

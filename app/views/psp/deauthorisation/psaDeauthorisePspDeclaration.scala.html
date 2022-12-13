@@ -34,7 +34,7 @@
 
 @layout(pageTitle = titleWithErrors(form, messages("messages__deauthPspDeclaration__title"))) {
 
-    @formHelper(action = PsaDeauthPspDeclarationController.onSubmit(index), 'autoComplete -> "off", 'novalidate -> "novalidate") {
+    @formHelper(action = PsaDeauthPspDeclarationController.onSubmit(index), Symbol("autoComplete") -> "off", Symbol("novalidate") -> "novalidate") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form, mapping = Map("declaration" -> "declaration")))

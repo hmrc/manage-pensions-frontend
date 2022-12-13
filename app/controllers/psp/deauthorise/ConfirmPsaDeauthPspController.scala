@@ -32,15 +32,15 @@ import views.html.psp.deauthorisation.confirmPsaDeauthPsp
 import scala.concurrent.ExecutionContext
 
 class ConfirmPsaDeauthPspController @Inject()(
-                                                override val messagesApi: MessagesApi,
-                                                authenticate: AuthAction,
-                                                getData: DataRetrievalAction,
-                                                requireData: DataRequiredAction,
-                                                userAnswersCacheConnector: UserAnswersCacheConnector,
-                                                val controllerComponents: MessagesControllerComponents,
-                                                minimalPsaConnector: MinimalConnector,
-                                                view: confirmPsaDeauthPsp
-                                              )(implicit val ec: ExecutionContext)
+                                               override val messagesApi: MessagesApi,
+                                               authenticate: AuthAction,
+                                               getData: DataRetrievalAction,
+                                               requireData: DataRequiredAction,
+                                               userAnswersCacheConnector: UserAnswersCacheConnector,
+                                               val controllerComponents: MessagesControllerComponents,
+                                               minimalPsaConnector: MinimalConnector,
+                                               view: confirmPsaDeauthPsp
+                                             )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport
     with Retrievals {
@@ -49,7 +49,7 @@ class ConfirmPsaDeauthPspController @Inject()(
     (authenticate() andThen getData andThen requireData).async {
       implicit request =>
 
-        (SchemeNameId and PspDetailsId(index)).retrieve.right.map {
+        (SchemeNameId and PspDetailsId(index)).retrieve.map {
           case schemeName ~ pspDetails =>
             minimalPsaConnector.getMinimalPsaDetails(request.psaIdOrException.id) flatMap {
               psaDetails =>

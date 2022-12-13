@@ -73,12 +73,12 @@ class ConfirmDeauthControllerSpec extends ControllerSpecBase {
 
       "redirect to the session expired page if there is no required data" in {
         val result = controller(getEmptyData).onPageLoad()(fakeRequest)
-        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad().url
+        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
 
       "redirect to the session expired page if there is no existing data" in {
         val result = controller(dontGetAnyData).onPageLoad()(fakeRequest)
-        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad().url
+        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
     }
 
@@ -105,12 +105,12 @@ class ConfirmDeauthControllerSpec extends ControllerSpecBase {
 
       "redirect to the session expired page if there is no required data" in {
         val result = controller(getEmptyData).onSubmit()(fakeRequest)
-        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad().url
+        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
 
       "redirect to the session expired page if there is no existing data" in {
         val result = controller(dontGetAnyData).onSubmit()(fakeRequest)
-        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad().url
+        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
     }
   }

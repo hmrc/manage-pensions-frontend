@@ -69,11 +69,11 @@ class InvitationSuccessController @Inject()(
             }
           }
         case _ =>
-          Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+          Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad))
       }
   }
 
   def onSubmit(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate().async {
-     _ => Future.successful(Redirect(navigator.nextPage(InvitationSuccessId(srn), NormalMode, UserAnswers())))
+    _ => Future.successful(Redirect(navigator.nextPage(InvitationSuccessId(srn), NormalMode, UserAnswers())))
   }
 }

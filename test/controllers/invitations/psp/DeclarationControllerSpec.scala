@@ -53,7 +53,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
   val config: Configuration = injector.instanceOf[Configuration]
   private val view = injector.instanceOf[declaration]
 
-  private def sessionExpired: String = controllers.routes.SessionExpiredController.onPageLoad().url
+  private def sessionExpired: String = controllers.routes.SessionExpiredController.onPageLoad.url
 
   private val mockPspConnector = mock[PspConnector]
   private val mockListOfSchemesConnector = mock[ListOfSchemesConnector]
@@ -79,8 +79,8 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
   val data: DataRetrievalAction = new FakeDataRetrievalAction(Some(userAnswers.json))
   val listOfSchemesResponse: Future[Right[Nothing, ListOfSchemes]] = Future.successful(Right(ListOfSchemes("", "", None)))
 
-  override def beforeEach: Unit = {
-    super.beforeEach
+  override def beforeEach(): Unit = {
+    super.beforeEach()
     reset(mockAuditService)
     doNothing().when(mockAuditService).sendEvent(any())(any(), any())
   }
@@ -194,7 +194,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
 
         val result = controller(data).onSubmit()(fakeRequest.withFormUrlEncodedBody("declaration" -> "true"))
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).value mustBe controllers.invitations.psp.routes.AlreadyAssociatedWithSchemeController.onPageLoad().url
+        redirectLocation(result).value mustBe controllers.invitations.psp.routes.AlreadyAssociatedWithSchemeController.onPageLoad.url
       }
 
     }

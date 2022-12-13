@@ -59,7 +59,7 @@ class DeclarationController @Inject()(
 
   def onPageLoad(): Action[AnyContent] = (auth() andThen getData andThen requireData).async {
     implicit request =>
-      (DoYouHaveWorkingKnowledgeId and SchemeSrnId).retrieve.right.map {
+      (DoYouHaveWorkingKnowledgeId and SchemeSrnId).retrieve.map {
         case haveWorkingKnowledge ~ srn =>
           schemeDetailsConnector.getSchemeDetails(
             psaId = request.psaIdOrException.id,
@@ -82,7 +82,7 @@ class DeclarationController @Inject()(
                 } yield {
                   Ok(view(haveWorkingKnowledge, isMasterTrust, form))
                 }
-              case _ => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+              case _ => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad))
 
             }
           }
@@ -95,12 +95,12 @@ class DeclarationController @Inject()(
 
       form.bindFromRequest().fold(
         (formWithErrors: Form[Boolean]) =>
-          (DoYouHaveWorkingKnowledgeId and IsMasterTrustId).retrieve.right.map {
+          (DoYouHaveWorkingKnowledgeId and IsMasterTrustId).retrieve.map {
             case haveWorkingKnowledge ~ isMasterTrust =>
               Future.successful(BadRequest(view(haveWorkingKnowledge, isMasterTrust, formWithErrors)))
           },
         declaration => {
-          (PSTRId and DoYouHaveWorkingKnowledgeId).retrieve.right.map {
+          (PSTRId and DoYouHaveWorkingKnowledgeId).retrieve.map {
             case pstr ~ haveWorkingKnowledge =>
               acceptInviteAndRedirect(pstr, haveWorkingKnowledge, declaration)
           }
@@ -135,7 +135,7 @@ class DeclarationController @Inject()(
             }
           }
         case _ =>
-          Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+          Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad))
       }
     }
   }

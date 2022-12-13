@@ -16,10 +16,10 @@
 
 package utils
 
-import org.scalatest.FreeSpec
-import org.scalatest.MustMatchers
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.must.Matchers
 
-class SchemeFuzzyMatcherSpec extends FreeSpec with MustMatchers {
+class SchemeFuzzyMatcherSpec extends AnyFreeSpec with Matchers {
 
   private val fuzzyMatching = new SchemeFuzzyMatcher
   private val inputString = "this can work at least for a single time for multiple inputs"

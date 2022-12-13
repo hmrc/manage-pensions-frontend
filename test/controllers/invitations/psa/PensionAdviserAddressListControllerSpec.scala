@@ -16,12 +16,15 @@
 
 package controllers.invitations.psa
 
-import connectors.{UserAnswersCacheConnector, FakeUserAnswersCacheConnector}
-import controllers.actions.{DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction, AuthAction}
+import connectors.{FakeUserAnswersCacheConnector, UserAnswersCacheConnector}
+import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
 import forms.invitations.psa.PensionAdviserAddressListFormProvider
-import identifiers.invitations.psa.{AdviserAddressPostCodeLookupId, AdviserAddressId, AdviserAddressListId}
-import models.{TolerantAddress, NormalMode}
-import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
+import identifiers.invitations.psa.{AdviserAddressId, AdviserAddressListId, AdviserAddressPostCodeLookupId}
+import models.{NormalMode, TolerantAddress}
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.Application
 import play.api.i18n.MessagesApi
 import play.api.inject.bind
@@ -29,13 +32,10 @@ import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import utils.annotations.AcceptInvitation
-import utils.{Navigator, FakeNavigator}
+import utils.{FakeNavigator, Navigator}
 import views.html.invitations.psa.pension_adviser_address_list
 
-class PensionAdviserAddressListControllerSpec
-  extends WordSpec
-    with Matchers
-    with BeforeAndAfterEach {
+class PensionAdviserAddressListControllerSpec extends AnyWordSpec with Matchers with BeforeAndAfterEach {
 
   import PensionAdviserAddressListControllerSpec._
 
@@ -86,7 +86,7 @@ class PensionAdviserAddressListControllerSpec
   "post" must {
 
     "redirect to the page specified by the navigator following submission of valid data" in {
-      val onwardRoute = controllers.routes.IndexController.onPageLoad()
+      val onwardRoute = controllers.routes.IndexController.onPageLoad
       running(_.overrides(
         bind[Navigator].qualifiedWith(classOf[AcceptInvitation]).toInstance(new FakeNavigator(onwardRoute)),
         bind[AuthAction].toInstance(FakeAuthAction),
@@ -121,11 +121,12 @@ class PensionAdviserAddressListControllerSpec
           Some("GB")
         )
       )
+
       def dataRetrievalAction = new FakeDataRetrievalAction(Some(Json.obj(
         AdviserAddressPostCodeLookupId.toString -> addresses
       )))
 
-      val onwardRoute = controllers.routes.IndexController.onPageLoad()
+      val onwardRoute = controllers.routes.IndexController.onPageLoad
       running(_.overrides(
         bind[Navigator].qualifiedWith(classOf[AcceptInvitation]).toInstance(new FakeNavigator(onwardRoute)),
         bind[AuthAction].toInstance(FakeAuthAction),
@@ -138,7 +139,7 @@ class PensionAdviserAddressListControllerSpec
 
         status(result) shouldBe SEE_OTHER
         redirectLocation(result) shouldBe Some(
-          controllers.invitations.psa.routes.AdviserManualAddressController.onPageLoad(NormalMode, false).url)
+          controllers.invitations.psa.routes.AdviserManualAddressController.onPageLoad(NormalMode, prepopulated = false).url)
       }
     }
 
@@ -234,6 +235,6 @@ object PensionAdviserAddressListControllerSpec {
 
   }
 
-  def navigator = new FakeNavigator(controllers.routes.IndexController.onPageLoad())
+  def navigator = new FakeNavigator(controllers.routes.IndexController.onPageLoad)
 
 }

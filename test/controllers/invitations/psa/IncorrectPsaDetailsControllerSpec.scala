@@ -43,6 +43,6 @@ class IncorrectPsaDetailsControllerSpec extends ControllerWithNormalPageBehaviou
 
   def viewAsString(): String = view(invitee, srn, schemeName)(fakeRequest, messages).toString
 
-  behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, Some(userAnswer.dataRetrievalAction), viewAsString)
+  behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, Some(userAnswer.dataRetrievalAction), () => viewAsString())
 
 }

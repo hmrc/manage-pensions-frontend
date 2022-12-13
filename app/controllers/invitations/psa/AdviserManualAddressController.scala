@@ -20,7 +20,6 @@ import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.invitations.psa.AdviserManualAddressFormProvider
-import identifiers.invitations.psa.AdviserNameId
 import identifiers.invitations.psa.{AdviserAddressId, AdviserAddressListId, AdviserAddressPostCodeLookupId, AdviserNameId}
 import models.{Address, Mode}
 import play.api.data.Form
@@ -53,7 +52,7 @@ class AdviserManualAddressController @Inject()(
   def onPageLoad(mode: Mode, prepopulated: Boolean): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
 
-      AdviserNameId.retrieve.right.map { name =>
+      AdviserNameId.retrieve.map { name =>
 
         val prefix = if (prepopulated) {
           "adviser__address__confirm"
@@ -82,7 +81,7 @@ class AdviserManualAddressController @Inject()(
       }
 
       form.bindFromRequest().fold(
-        (formWithError: Form[_]) => AdviserNameId.retrieve.right.map { name =>
+        (formWithError: Form[_]) => AdviserNameId.retrieve.map { name =>
           Future.successful(BadRequest(view(formWithError, mode, countryOptions.options, prepopulated, prefix, name)))
         },
         address =>

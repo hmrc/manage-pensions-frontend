@@ -44,8 +44,8 @@ class PspDashboardServiceSpec extends SpecBase with MockitoSugar with BeforeAndA
 
   "getTiles" must {
     "return tiles with relevant links when all possible links are displayed" in {
-        service.getTiles(pspId, minimalPsaDetails) mustBe tiles
-      }
+      service.getTiles(pspId, minimalPsaDetails) mustBe tiles
+    }
   }
 
 }
@@ -80,7 +80,7 @@ object PspDashboardServiceSpec extends SpecBase with MockitoSugar {
     CardViewModel(
       id = "scheme-card",
       heading = Message("messages__pspDashboard__scheme_heading"),
-      links = Seq(Link("search-schemes", controllers.psp.routes.ListSchemesController.onPageLoad().url, Message("messages__pspDashboard__search_scheme")))
+      links = Seq(Link("search-schemes", controllers.psp.routes.ListSchemesController.onPageLoad.url, Message("messages__pspDashboard__search_scheme")))
     )
 
   private val tiles: Seq[CardViewModel] = Seq(schemeCard, practitionerCard)

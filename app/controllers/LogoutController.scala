@@ -22,7 +22,7 @@ import connectors.aft.AftCacheConnector
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import uk.gov.hmrc.auth.core.{AuthorisedFunctions, MissingBearerToken, AuthConnector}
+import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions, MissingBearerToken}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.annotations.SessionDataCache
 
@@ -50,7 +50,7 @@ class LogoutController @Inject()(
             }
           }
         case _ =>
-          Future.successful(Redirect(routes.UnauthorisedController.onPageLoad()))
+          Future.successful(Redirect(routes.UnauthorisedController.onPageLoad))
       } recover {
         case _: MissingBearerToken =>
           Redirect(appConfig.serviceSignOut).withNewSession

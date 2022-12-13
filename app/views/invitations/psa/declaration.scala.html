@@ -33,7 +33,7 @@
 
 @layout(pageTitle = titleWithErrors(form, messages("messages__declaration__title"))){
 
-    @formHelper(action = DeclarationController.onSubmit(), 'autoComplete -> "off") {
+    @formHelper(action = DeclarationController.onSubmit(), Symbol("autoComplete") -> "off") {
 
         @components.heading(messages("messages__declaration__title"))
 

@@ -16,24 +16,20 @@
 
 package controllers.invitations
 
-import java.time.LocalDate
-
 import config.FrontendAppConfig
 import connectors.FakeUserAnswersCacheConnector
 import connectors.admin.MinimalConnector
 import controllers.actions._
 import controllers.behaviours.ControllerWithNormalPageBehaviours
-import models.MinimalPSAPSP
-import models.MinimalSchemeDetail
+import models.{MinimalPSAPSP, MinimalSchemeDetail}
 import play.api.mvc.Call
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.DateHelper
-import utils.UserAnswers
+import utils.{DateHelper, UserAnswers}
 import views.html.invitations.invitation_success
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import java.time.LocalDate
+import scala.concurrent.{ExecutionContext, Future}
 
 class InvitationsSuccessControllerSpec extends ControllerWithNormalPageBehaviours {
 
@@ -54,7 +50,7 @@ class InvitationsSuccessControllerSpec extends ControllerWithNormalPageBehaviour
 
   private val invitationSuccessView = injector.instanceOf[invitation_success]
 
-  def viewAsString() = invitationSuccessView(
+  def viewAsString(): String = invitationSuccessView(
     testInviteeName,
     testEmail,
     testSchemeName,
@@ -63,7 +59,7 @@ class InvitationsSuccessControllerSpec extends ControllerWithNormalPageBehaviour
 
   private def fakeMinimalPsaConnector = new MinimalConnector {
     override def getMinimalPsaDetails(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP] =
-      Future.successful(MinimalPSAPSP(testEmail, false, Some(testInviteeName), None, rlsFlag = false, deceasedFlag = false))
+      Future.successful(MinimalPSAPSP(testEmail, isPsaSuspended = false, Some(testInviteeName), None, rlsFlag = false, deceasedFlag = false))
 
     override def getPsaNameFromPsaID(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = ???
 
@@ -92,14 +88,14 @@ class InvitationsSuccessControllerSpec extends ControllerWithNormalPageBehaviour
 
   def redirectionCall(): Call = onwardRoute
 
-  behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, Some(userAnswer), viewAsString)
+  behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, Some(userAnswer), () => viewAsString())
 
   "InvitationSuccessController" when {
     "on PageLoad" must {
       "remove all the data from the cache" in {
         onPageLoadAction(userAnswer, FakeAuthAction)(fakeRequest)
 
-        FakeUserAnswersCacheConnector.verifyAllDataRemoved
+        FakeUserAnswersCacheConnector.verifyAllDataRemoved()
       }
     }
   }

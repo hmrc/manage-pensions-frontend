@@ -31,7 +31,7 @@ class ConfirmRemovedControllerSpec extends ControllerWithNormalPageBehaviours {
 
   "ConfirmRemovedController" should {
 
-    behave like controllerWithOnPageLoadMethod(onPageLoadAction(this), getEmptyData, validData, viewAsString(this))
+    behave like controllerWithOnPageLoadMethod(onPageLoadAction(this), getEmptyData, validData, () => viewAsString(this)())
 
   }
 

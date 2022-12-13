@@ -17,15 +17,14 @@
 package connectors
 
 import identifiers.TypedIdentifier
-import org.scalatest.Matchers
+import org.scalatest.matchers.should.Matchers
 import play.api.libs.json._
 import play.api.mvc.Result
 import play.api.mvc.Results._
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.collection.mutable
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 trait FakeUserAnswersCacheConnector extends UserAnswersCacheConnector with Matchers {
 

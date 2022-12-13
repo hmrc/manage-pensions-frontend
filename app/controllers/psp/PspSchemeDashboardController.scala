@@ -95,7 +95,7 @@ class PspSchemeDashboardController @Inject()(
                   ),
                   returnLink = Some(Link(
                     id = "return-search-schemes",
-                    url = controllers.psp.routes.ListSchemesController.onPageLoad().url,
+                    url = controllers.psp.routes.ListSchemesController.onPageLoad.url,
                     linkText = Message("messages__psaSchemeDash__return_link").resolve
                   ))
                 ))
@@ -105,17 +105,17 @@ class PspSchemeDashboardController @Inject()(
           }
         } else {
           logger.debug("PSP tried to access an unauthorised scheme")
-          Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+          Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad))
         }
       }
   }
 
   private def aftPspSchemeDashboardCards(schemeStatus: String, srn: String, authorisingPsaId: String)
-                            (implicit request: AuthenticatedRequest[AnyContent]): Future[Html] =
+                                        (implicit request: AuthenticatedRequest[AnyContent]): Future[Html] =
     if (
       schemeStatus.equalsIgnoreCase("open") ||
-      schemeStatus.equalsIgnoreCase("wound-up") ||
-      schemeStatus.equalsIgnoreCase("deregistered")
+        schemeStatus.equalsIgnoreCase("wound-up") ||
+        schemeStatus.equalsIgnoreCase("deregistered")
     ) {
       schemeDetailsService.retrievePspSchemeDashboardCards(srn, request.pspIdOrException.id, authorisingPsaId)
     } else {

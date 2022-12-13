@@ -17,8 +17,10 @@
 package connectors.scheme
 
 import com.github.tomakehurst.wiremock.client.WireMock._
-import models.{SchemeStatus, ListOfSchemes, SchemeDetails}
-import org.scalatest.{AsyncFlatSpec, OptionValues, BeforeAndAfterEach, Matchers}
+import models.{ListOfSchemes, SchemeDetails, SchemeStatus}
+import org.scalatest.flatspec.AsyncFlatSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.{BeforeAndAfterEach, OptionValues}
 import play.api.http.Status._
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.HeaderCarrier
@@ -47,7 +49,7 @@ class ListOfSchemesConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
     val connector = injector.instanceOf[ListOfSchemesConnector]
 
     connector.getListOfSchemes(psaId).map(listOfSchemes =>
-      listOfSchemes.right.get shouldBe expectedResponse
+      listOfSchemes.toOption.get shouldBe expectedResponse
     )
 
   }
@@ -66,7 +68,7 @@ class ListOfSchemesConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
     val connector = injector.instanceOf[ListOfSchemesConnector]
 
     connector.getListOfSchemes(psaId).map(listOfSchemes =>
-      listOfSchemes.left.get.status shouldBe BAD_REQUEST
+      listOfSchemes.left.toOption.get.status shouldBe BAD_REQUEST
     )
   }
 
@@ -88,7 +90,7 @@ class ListOfSchemesConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
       connector.getListOfSchemes(psaId)
     }
     connector.getListOfSchemes(psaId).map(listOfSchemes =>
-      listOfSchemes.left.get.status shouldBe INTERNAL_SERVER_ERROR
+      listOfSchemes.left.toOption.get.status shouldBe INTERNAL_SERVER_ERROR
     )
 
   }

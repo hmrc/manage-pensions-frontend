@@ -47,7 +47,7 @@ class CanNotBeRemovedController @Inject()(
           case Organization =>
             Ok(view(viewModelOrganisation))
           case _ =>
-            Redirect(controllers.routes.SessionExpiredController.onPageLoad())
+            Redirect(controllers.routes.SessionExpiredController.onPageLoad)
         }
       }
   }

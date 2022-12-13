@@ -17,7 +17,9 @@
 package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
-import org.scalatest.{AsyncWordSpec, MustMatchers, OptionValues}
+import org.scalatest.OptionValues
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AsyncWordSpec
 import play.api.http.Status
 import play.api.test.FakeRequest
 import play.twirl.api.Html
@@ -25,11 +27,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.partials.HeaderCarrierForPartials
 import utils.WireMockHelper
 
-class FrontendConnectorSpec
-  extends AsyncWordSpec
-    with MustMatchers
-    with WireMockHelper
-    with OptionValues {
+class FrontendConnectorSpec extends AsyncWordSpec with Matchers with WireMockHelper with OptionValues {
 
   override protected def portConfigKey: String = "microservice.services.aft-frontend.port"
 
@@ -166,7 +164,7 @@ class FrontendConnectorSpec
 
       val connector = injector.instanceOf[FrontendConnector]
 
-      connector.retrievePspSchemeDashboardCards(srn,pspId = "psp",authorisingPsaId = "authorisingPsa").map(pspSchemeDashboard =>
+      connector.retrievePspSchemeDashboardCards(srn, pspId = "psp", authorisingPsaId = "authorisingPsa").map(pspSchemeDashboard =>
         pspSchemeDashboard mustBe pspSchemeDashboardCardsHtml
       )
     }

@@ -20,7 +20,6 @@ import connectors.FakeUserAnswersCacheConnector
 import controllers.ControllerSpecBase
 import controllers.actions._
 import forms.invitations.psa.AdviserEmailFormProvider
-import identifiers.invitations.psa.AdviserNameId
 import identifiers.invitations.psa.{AdviserEmailId, AdviserNameId}
 import models.NormalMode
 import play.api.data.Form
@@ -33,9 +32,9 @@ import views.html.invitations.psa.adviserEmailAddress
 class AdviserEmailAddressControllerSpec extends ControllerSpecBase {
 
   val formProvider = new AdviserEmailFormProvider()
-  val form = formProvider()
+  val form: Form[String] = formProvider()
 
-  def onwardRoute = Call("GET", "/foo")
+  def onwardRoute: Call = Call("GET", "/foo")
 
   val minimalAdviserData = new FakeDataRetrievalAction(Some(Json.obj(
     AdviserNameId.toString -> "test name"
@@ -67,12 +66,12 @@ class AdviserEmailAddressControllerSpec extends ControllerSpecBase {
 
       "redirect to the session expired page if there is no adviser name" in {
         val result = controller(getEmptyData).onPageLoad(NormalMode)(fakeRequest)
-        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad().url
+        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
 
       "redirect to the session expired page if there is no existing data" in {
         val result = controller(dontGetAnyData).onPageLoad(NormalMode)(fakeRequest)
-        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad().url
+        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
     }
 
@@ -99,12 +98,12 @@ class AdviserEmailAddressControllerSpec extends ControllerSpecBase {
 
       "redirect to the session expired page if there is no adviser name" in {
         val result = controller(getEmptyData).onSubmit(NormalMode)(fakeRequest)
-        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad().url
+        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
 
       "redirect to the session expired page if there is no existing data" in {
         val result = controller(dontGetAnyData).onSubmit(NormalMode)(fakeRequest)
-        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad().url
+        redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
     }
   }

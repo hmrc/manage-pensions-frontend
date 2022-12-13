@@ -48,7 +48,7 @@ class PspDeauthDateController @Inject()(
                                          formProvider: PspDeauthDateFormProvider,
                                          val controllerComponents: MessagesControllerComponents,
                                          view: pspDeauthDate
-                                        )(implicit val ec: ExecutionContext)
+                                       )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport
     with Retrievals {
@@ -59,7 +59,7 @@ class PspDeauthDateController @Inject()(
     (authenticate() andThen getData andThen requireData).async {
       implicit request =>
 
-        (SchemeSrnId and SchemeNameId and deauthorise.PspDetailsId(index)).retrieve.right.map {
+        (SchemeSrnId and SchemeNameId and deauthorise.PspDetailsId(index)).retrieve.map {
           case srn ~ schemeName ~ pspDetails =>
             if (pspDetails.authorisingPSAID == request.psaIdOrException.id) {
               Future.successful(Ok(view(
@@ -74,7 +74,7 @@ class PspDeauthDateController @Inject()(
                 index = index
               )))
             } else {
-              Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad()))
+              Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad))
             }
         }
     }
@@ -82,7 +82,7 @@ class PspDeauthDateController @Inject()(
   def onSubmit(index: Index): Action[AnyContent] =
     (authenticate() andThen getData andThen requireData).async {
       implicit request =>
-        (SchemeSrnId and SchemeNameId and PspDetailsId(index)).retrieve.right.map {
+        (SchemeSrnId and SchemeNameId and PspDetailsId(index)).retrieve.map {
           case srn ~ schemeName ~ pspDetails =>
             formProvider(
               relationshipStartDate = pspDetails.relationshipStartDate,

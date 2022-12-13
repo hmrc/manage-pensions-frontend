@@ -19,8 +19,8 @@ package controllers.invitations.psp
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import controllers.psa.routes._
-import identifiers.{SchemeNameId, SchemeSrnId}
 import identifiers.invitations.psp.PspNameId
+import identifiers.{SchemeNameId, SchemeSrnId}
 import models.SchemeReferenceNumber
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}
@@ -44,7 +44,7 @@ class PspDoesNotMatchController @Inject()(
 
   def onPageLoad: Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
-      (SchemeNameId and SchemeSrnId and PspNameId).retrieve.right.map {
+      (SchemeNameId and SchemeSrnId and PspNameId).retrieve.map {
         case schemeName ~ srn ~ pspName =>
           Future.successful(Ok(view(schemeName, pspName, returnCall(srn))))
       }
