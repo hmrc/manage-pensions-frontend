@@ -18,7 +18,7 @@ package controllers
 
 import audit._
 import com.google.inject.Inject
-import models.{Opened, EmailEvents}
+import models.{EmailEvents, Opened}
 import play.api.Logger
 import play.api.libs.json.JsValue
 import play.api.mvc._
@@ -29,16 +29,15 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext
 
 class EmailResponseController @Inject()(
                                          auditService: AuditService,
-                                         cc: ControllerComponents,
                                          crypto: ApplicationCrypto,
                                          parser: PlayBodyParsers,
                                          val controllerComponents: MessagesControllerComponents,
                                          val authConnector: AuthConnector
-                                       )
+                                       )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with AuthorisedFunctions {
 
@@ -97,10 +96,10 @@ class EmailResponseController @Inject()(
   }
 
   def retrieveStatusForPSPSelfDeauthorisation(
-    encryptedPspId: String,
-    encryptedPstr: String,
-    encryptedEmail: String
-  ): Action[JsValue] = Action(parser.tolerantJson) {
+                                               encryptedPspId: String,
+                                               encryptedPstr: String,
+                                               encryptedEmail: String
+                                             ): Action[JsValue] = Action(parser.tolerantJson) {
     implicit request =>
       decryptAndValidateDetailsForPSPSelfDeauth(encryptedPspId, encryptedPstr, encryptedEmail) match {
         case Right(Tuple3(pspId, pstr, email)) =>
@@ -140,9 +139,9 @@ class EmailResponseController @Inject()(
   }
 
   private def decryptAndValidateDetailsForPSPSelfDeauth(
-    encryptedPspId: String,
-    encryptedPstr: String,
-    encryptedEmail: String): Either[Result, (PspId, String, String)] = {
+                                                         encryptedPspId: String,
+                                                         encryptedPstr: String,
+                                                         encryptedEmail: String): Either[Result, (PspId, String, String)] = {
 
     val pspId = crypto.QueryParameterCrypto.decrypt(Crypted(URLDecoder.decode(encryptedPspId, StandardCharsets.UTF_8.toString))).value
     val pstr = crypto.QueryParameterCrypto.decrypt(Crypted(URLDecoder.decode(encryptedPstr, StandardCharsets.UTF_8.toString))).value

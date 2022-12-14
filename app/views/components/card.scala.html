@@ -42,8 +42,10 @@
                     <li>
                         <a id="@link.id" class="govuk-link" href="@link.url">@messages(link.linkText)</a>
                     </li>
+                    @link.notification.map{ n =>
+                        <li class="govuk-inset-text">@Html(n.resolve)</li>
+                    }
                 }
-
                 @if(cardModel.html.nonEmpty){
                     @cardModel.html
                 }

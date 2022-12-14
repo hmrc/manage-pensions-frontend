@@ -345,6 +345,13 @@ messages__psaSchemeDash__pstr = Pension Scheme Tax Reference:
 messages__psaSchemeDash__regDate = Registration for Tax:
 messages__psaSchemeDash__view_details_link = View the registered scheme details
 messages__psaSchemeDash__view_change_details_link = View or change the registered scheme details
+
+messages__psaSchemeDash__view_change_details_link_notification_scheme = Another user is editing {0}. It must be saved and closed before changes can be made to another scheme.
+messages__psaSchemeDash__view_change_details_link_notification_psa = A scheme you have already selected is currently being edited. It must be saved and closed before changes can be made to another scheme.
+
+
+
+
 messages__psaSchemeDash__psa_making_changes = You cannot make changes to this scheme at the moment. {0} is making changes to this scheme.
 messages__psaSchemeDash__opened_date_head = This scheme was opened on:
 messages__psaSchemeDash__scheme_details_head = Pension scheme details

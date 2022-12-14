@@ -63,7 +63,13 @@ class PsaSchemeDashboardServiceSpec
     }
 
     "return model with view-only link for scheme if psa does not hold lock" in {
-      service.schemeCard(srn, currentScheme(Open), Some(SchemeLock), userAnswers(Open.value)) mustBe schemeCard()
+      service.schemeCard(srn, currentScheme(Open), Some(SchemeLock), userAnswers(Open.value)) mustBe
+        schemeCard(notificationText = Some(Message("messages__psaSchemeDash__view_change_details_link_notification_scheme", "<strong>" + name + "</strong>")))
+    }
+
+    "return model with view-only link for scheme if psa does hold lock" in {
+      service.schemeCard(srn, currentScheme(Open), Some(PsaLock), userAnswers(Open.value)) mustBe
+        schemeCard(notificationText = Some(Message("messages__psaSchemeDash__view_change_details_link_notification_psa", "<strong>" + name + "</strong>")))
     }
 
     "return not display subheadings if scheme is not open" in {
@@ -153,18 +159,26 @@ object PsaSchemeDashboardServiceSpec {
     )
   ))
 
-  private def schemeCard(linkText: String = "messages__psaSchemeDash__view_details_link")(implicit messages: Messages): CardViewModel = CardViewModel(
+  private def schemeCard(linkText: String = "messages__psaSchemeDash__view_details_link",
+                         notificationText: Option[Message] = None)(implicit messages: Messages): CardViewModel = CardViewModel(
     id = "scheme_details",
     heading = Message("messages__psaSchemeDash__scheme_details_head"),
     subHeadings = pstrSubHead ++ dateSubHead,
-    links = Seq(Link("view-details", dummyUrl, messages(linkText)))
+    links = Seq(Link(
+      id = "view-details", url = dummyUrl, linkText = messages(linkText), notification = notificationText
+    ))
   )
 
   private def closedSchemeCard(linkText: String = "messages__psaSchemeDash__view_details_link")(implicit messages: Messages): CardViewModel = CardViewModel(
     id = "scheme_details",
     heading = Message("messages__psaSchemeDash__scheme_details_head"),
     subHeadings = pstrSubHead,
-    links = Seq(Link("view-details", dummyUrl, messages(linkText)))
+    links = Seq(Link(
+      id = "view-details",
+      url = dummyUrl,
+      linkText = messages(linkText),
+      notification = Some(Message("messages__psaSchemeDash__view_change_details_link_notification_scheme", "<strong>" + name + "</strong>"))
+    ))
   )
 
   private def pstrSubHead(implicit messages: Messages): Seq[CardSubHeading] = Seq(CardSubHeading(
@@ -221,7 +235,16 @@ object PsaSchemeDashboardServiceSpec {
       ))
   )
 
-  private def currentScheme(schemeStatus: SchemeStatus):Option[SchemeDetails] = Some(SchemeDetails(name, srn, schemeStatus.value, Some(date), Some(windUpDate), Some(pstr), None))
+  private def currentScheme(schemeStatus: SchemeStatus):Option[SchemeDetails] = Some(
+    SchemeDetails(name = name,
+      referenceNumber = srn,
+      schemeStatus = schemeStatus.value,
+      openDate = Some(date),
+      windUpDate = Some(windUpDate),
+      pstr = Some(pstr),
+      relationship = None
+    )
+  )
 
 }
 
