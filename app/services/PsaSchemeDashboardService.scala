@@ -48,7 +48,7 @@ class PsaSchemeDashboardService @Inject()(
   }
 
   //Scheme details card
-  def schemeCard(srn: String, currentScheme: Option[SchemeDetails], lock: Option[Lock], ua: UserAnswers)
+  private[services] def schemeCard(srn: String, currentScheme: Option[SchemeDetails], lock: Option[Lock], ua: UserAnswers)
                 (implicit messages: Messages): CardViewModel = {
     CardViewModel(
       id = "scheme_details",
