@@ -95,6 +95,7 @@ object SchemeType {
       Json.obj("name" -> other, "schemeTypeDetails" -> schemeTypeDetails)
     case s if mappings.keySet.contains(s.toString) =>
       Json.obj("name" -> s.toString)
+    case _ => Json.obj()
   }
 
   def getSchemeType(schemeTypeStr: Option[String], isMasterTrust: Boolean): Option[String] = {

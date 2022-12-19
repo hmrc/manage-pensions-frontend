@@ -120,7 +120,6 @@ class PsaSchemeDashboardServiceSpec
 
 object PsaSchemeDashboardServiceSpec {
   private val srn = "srn"
-  private val anotherSrn = "srn2"
   private val pstr = "pstr"
   private val schemeName = "Benefits Scheme"
   private val anotherSchemeName = "Another scheme"

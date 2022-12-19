@@ -52,15 +52,24 @@ class PsaSchemeDashboardService @Inject()(
   private implicit def hc(implicit request: RequestHeader): HeaderCarrier =
     HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
-  private def optionLockedSchemeName(lock: Option[Lock])(implicit messages: Messages,
-                                                         request: AuthenticatedRequest[AnyContent]): Future[Option[String]] = lock match {
+  private def optionLockedSchemeName(lock: Option[Lock])(implicit request: AuthenticatedRequest[AnyContent]): Future[Option[String]] = lock match {
     case Some(PsaLock) =>
       val psaId = request.psaIdOrException.id
       lockConnector.getLockByPsa(psaId)(hc(request), implicitly).flatMap { lockedSchemeVariance =>
         lockedSchemeVariance.map(_.srn) match {
           case Some(lockedSrn) =>
-            schemeDetailsConnector.getSchemeDetails(psaId, lockedSrn, "srn").map(_.get(SchemeNameId))
-          case None => Future.successful(None)
+            schemeDetailsConnector.getSchemeDetails(psaId, lockedSrn, "srn").map { ua =>
+              ua.get(SchemeNameId) match {
+                case sn@Some(_) => sn
+                case _ => logger.warn(
+                  s"PSA $psaId has a lock on a scheme. Scheme lock info: $lockedSchemeVariance but " +
+                    s"no scheme name found for $lockedSrn")
+                  None
+              }
+            }
+          case None =>
+            logger.warn(s"PSA $psaId has a lock on a scheme. Scheme lock info: $lockedSchemeVariance but no SRN present")
+            Future.successful(None)
         }
       }
     case _ => Future.successful(None)
