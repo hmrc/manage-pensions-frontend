@@ -48,7 +48,7 @@ class PsaSchemeDashboardServiceSpec
     with ScalaFutures {
 
   import PsaSchemeDashboardServiceSpec._
-  
+
   private val mockAppConfig = mock[FrontendAppConfig]
   private val mockPensionSchemeVarianceLockConnector = mock[PensionSchemeVarianceLockConnector]
   private val mockSchemeDetailsConnector = mock[SchemeDetailsConnector]
@@ -77,9 +77,15 @@ class PsaSchemeDashboardServiceSpec
         schemeCard(notificationText = Some(Message("messages__psaSchemeDash__view_change_details_link_notification_scheme", "<strong>" + name + "</strong>")))
     }
 
-    "return model with view-only link for scheme if psa does hold lock" in {
+    "return model with view-only link for scheme if psa does hold lock where scheme name not returned" in {
       service.schemeCard(srn, currentScheme(Open), Some(PsaLock), userAnswers(Open.value), None) mustBe
-        schemeCard(notificationText = Some(Message("messages__psaSchemeDash__view_change_details_link_notification_psa", "<strong>" + name + "</strong>")))
+        schemeCard(notificationText = Some(Message("messages__psaSchemeDash__view_change_details_link_notification_psa-unknown_scheme")))
+    }
+
+    "return model with view-only link for scheme if psa does hold lock where scheme name returned for locked scheme" in {
+      service.schemeCard(srn, currentScheme(Open), Some(PsaLock), userAnswers(Open.value), Some(anotherSchemeName)) mustBe
+        schemeCard(notificationText = Some(Message("messages__psaSchemeDash__view_change_details_link_notification_psa",
+          "<strong>" + anotherSchemeName + "</strong>")))
     }
 
     "return not display subheadings if scheme is not open" in {
@@ -114,12 +120,15 @@ class PsaSchemeDashboardServiceSpec
 
 object PsaSchemeDashboardServiceSpec {
   private val srn = "srn"
+  private val anotherSrn = "srn2"
   private val pstr = "pstr"
   private val schemeName = "Benefits Scheme"
+  private val anotherSchemeName = "Another scheme"
   private val name = "test-name"
   private val date = "2020-01-01"
   private val windUpDate = "2020-02-01"
   private val dummyUrl = "dummy"
+
   private def userAnswers(schemeStatus: String): UserAnswers = UserAnswers(Json.obj(
     PSTRId.toString -> pstr,
     "schemeStatus" -> schemeStatus,
@@ -206,7 +215,7 @@ object PsaSchemeDashboardServiceSpec {
       subHeadingParamClasses = "font-small bold"))))
 
   private def psaCard(inviteLink: Seq[Link] = inviteLink)
-             (implicit messages: Messages): CardViewModel = CardViewModel(
+                     (implicit messages: Messages): CardViewModel = CardViewModel(
     id = "psa_list",
     heading = Message("messages__psaSchemeDash__psa_list_head"),
     subHeadings = Seq(CardSubHeading(
@@ -245,7 +254,7 @@ object PsaSchemeDashboardServiceSpec {
       ))
   )
 
-  private def currentScheme(schemeStatus: SchemeStatus):Option[SchemeDetails] = Some(
+  private def currentScheme(schemeStatus: SchemeStatus): Option[SchemeDetails] = Some(
     SchemeDetails(name = name,
       referenceNumber = srn,
       schemeStatus = schemeStatus.value,
