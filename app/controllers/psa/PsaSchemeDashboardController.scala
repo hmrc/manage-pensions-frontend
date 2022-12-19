@@ -58,26 +58,23 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
           case (_, true) => Future.successful(Redirect(appConfig.psaUpdateContactDetailsUrl))
           case _ =>
             getSchemeAndLock(srn).flatMap { case (userAnswers, lock, listOfSchemes) =>
-
               val schemeName = userAnswers.get(SchemeNameId).getOrElse("")
               val schemeStatus = userAnswers.get(SchemeStatusId).getOrElse("")
-
               val updatedUa = userAnswers.set(SchemeSrnId)(srn.id).flatMap(_.set(SchemeNameId)(schemeName)).asOpt.getOrElse(userAnswers)
-              for {
+              (for {
                 aftHtml <- retrieveAftTilesHtml(srn, schemeStatus)
                 _ <- userAnswersCacheConnector.upsert(request.externalId, updatedUa.json)
               } yield {
-                val cards = psaSchemeDashboardService.cards(srn, lock, listOfSchemes, userAnswers)
-                Ok(view(schemeName, aftHtml, cards))
-              }
+                psaSchemeDashboardService.cards(srn, lock, listOfSchemes, userAnswers).map { cards =>
+                  Ok(view(schemeName, aftHtml, cards))
+                }
+              }).flatten
             }
         }
       } recoverWith {
         case _: DelimitedAdminException =>
           Future.successful(Redirect(controllers.routes.DelimitedAdministratorController.onPageLoad))
       }
-
-
   }
 
   private def retrieveAftTilesHtml(

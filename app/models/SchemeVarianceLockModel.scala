@@ -46,7 +46,7 @@ object Lock extends Enumerable.Implicits {
 
   implicit object LockFormat extends Format[Lock] {
 
-    implicit def reads(json: JsValue) : JsResult[Lock] =
+    implicit def reads(json: JsValue) : JsResult[Lock] = {
       json match {
         case JsString("SuccessfulVarianceLock") => JsSuccess(VarianceLock)
         case JsString("PsaHasLockedAnotherScheme") => JsSuccess(PsaLock)
@@ -54,7 +54,7 @@ object Lock extends Enumerable.Implicits {
         case JsString("PsaAndSchemeHasAlreadyLocked") => JsSuccess(BothLock)
         case _ => JsError("cannot parse it")
       }
-
+    }
     implicit def writes(lock: Lock) = JsString(lock.toString)
 
   }

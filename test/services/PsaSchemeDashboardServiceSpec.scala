@@ -18,6 +18,7 @@ package services
 
 import base.SpecBase
 import config.FrontendAppConfig
+import connectors.scheme.{PensionSchemeVarianceLockConnector, SchemeDetailsConnector}
 import controllers.invitations.psp.routes._
 import controllers.invitations.routes._
 import controllers.psa.routes._
@@ -26,7 +27,8 @@ import identifiers.invitations.PSTRId
 import identifiers.{SchemeNameId, SchemeStatusId}
 import models.SchemeStatus.{Open, Rejected}
 import models._
-import org.mockito.Mockito.when
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
@@ -37,6 +39,7 @@ import utils.UserAnswers
 import viewmodels._
 
 import java.time.LocalDate
+import scala.concurrent.Future
 
 class PsaSchemeDashboardServiceSpec
   extends SpecBase
@@ -47,35 +50,42 @@ class PsaSchemeDashboardServiceSpec
   import PsaSchemeDashboardServiceSpec._
   
   private val mockAppConfig = mock[FrontendAppConfig]
+  private val mockPensionSchemeVarianceLockConnector = mock[PensionSchemeVarianceLockConnector]
+  private val mockSchemeDetailsConnector = mock[SchemeDetailsConnector]
 
   private def service: PsaSchemeDashboardService =
-    new PsaSchemeDashboardService(mockAppConfig)
+    new PsaSchemeDashboardService(mockAppConfig, mockPensionSchemeVarianceLockConnector, mockSchemeDetailsConnector)
 
   override def beforeEach(): Unit = {
+    reset(mockAppConfig)
+    reset(mockPensionSchemeVarianceLockConnector)
+    reset(mockSchemeDetailsConnector)
     when(mockAppConfig.viewSchemeDetailsUrl).thenReturn(dummyUrl)
+    when(mockPensionSchemeVarianceLockConnector.getLockByPsa(any())(any(), any())).thenReturn(Future.successful(None))
+    when(mockSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any())).thenReturn(Future.successful(UserAnswers()))
     super.beforeEach()
   }
 
   "schemeCard" must {
     "return model fron aft-frontend is Scheme status is open and psa holds the lock" in {
-      service.schemeCard(srn, currentScheme(Open), Some(VarianceLock), userAnswers(Open.value)) mustBe
+      service.schemeCard(srn, currentScheme(Open), Some(VarianceLock), userAnswers(Open.value), None) mustBe
         schemeCard("messages__psaSchemeDash__view_change_details_link")
     }
 
     "return model with view-only link for scheme if psa does not hold lock" in {
-      service.schemeCard(srn, currentScheme(Open), Some(SchemeLock), userAnswers(Open.value)) mustBe
+      service.schemeCard(srn, currentScheme(Open), Some(SchemeLock), userAnswers(Open.value), None) mustBe
         schemeCard(notificationText = Some(Message("messages__psaSchemeDash__view_change_details_link_notification_scheme", "<strong>" + name + "</strong>")))
     }
 
     "return model with view-only link for scheme if psa does hold lock" in {
-      service.schemeCard(srn, currentScheme(Open), Some(PsaLock), userAnswers(Open.value)) mustBe
+      service.schemeCard(srn, currentScheme(Open), Some(PsaLock), userAnswers(Open.value), None) mustBe
         schemeCard(notificationText = Some(Message("messages__psaSchemeDash__view_change_details_link_notification_psa", "<strong>" + name + "</strong>")))
     }
 
     "return not display subheadings if scheme is not open" in {
       val ua = UserAnswers().set(SchemeStatusId)(Rejected.value).asOpt.get
 
-      service.schemeCard(srn, currentScheme(Open), Some(SchemeLock), ua) mustBe closedSchemeCard()
+      service.schemeCard(srn, currentScheme(Open), Some(SchemeLock), ua, None) mustBe closedSchemeCard()
     }
   }
 
