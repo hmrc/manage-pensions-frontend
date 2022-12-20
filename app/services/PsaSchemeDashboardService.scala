@@ -18,61 +18,110 @@ package services
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
+import connectors.scheme.{PensionSchemeVarianceLockConnector, SchemeDetailsConnector}
 import controllers.invitations.psp.routes._
 import controllers.invitations.routes._
 import controllers.psa.routes._
 import controllers.psp.routes._
 import identifiers.psa.ListOfPSADetailsId
-import identifiers.{SchemeStatusId, SeqAuthorisedPractitionerId}
+import identifiers.{SchemeNameId, SchemeStatusId, SeqAuthorisedPractitionerId}
 import models.SchemeStatus.Open
 import models._
 import models.psa.PsaDetails
+import models.requests.AuthenticatedRequest
 import play.api.Logger
 import play.api.i18n.Messages
+import play.api.mvc.{AnyContent, RequestHeader}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import utils.DateHelper._
 import utils.UserAnswers
 import viewmodels.{CardSubHeading, CardSubHeadingParam, CardViewModel, Message}
 
 import java.time.LocalDate
+import scala.concurrent.{ExecutionContext, Future}
 
 class PsaSchemeDashboardService @Inject()(
-                                           appConfig: FrontendAppConfig
-                                         ) {
+                                           appConfig: FrontendAppConfig,
+                                           lockConnector: PensionSchemeVarianceLockConnector,
+                                           schemeDetailsConnector: SchemeDetailsConnector
+                                         )(implicit val ec: ExecutionContext) {
 
   private val logger = Logger(classOf[PsaSchemeDashboardService])
 
+  private implicit def hc(implicit request: RequestHeader): HeaderCarrier =
+    HeaderCarrierConverter.fromRequestAndSession(request, request.session)
+
+  private def optionLockedSchemeName(lock: Option[Lock])(implicit request: AuthenticatedRequest[AnyContent]): Future[Option[String]] = lock match {
+    case Some(PsaLock) =>
+      val psaId = request.psaIdOrException.id
+      lockConnector.getLockByPsa(psaId)(hc(request), implicitly).flatMap { lockedSchemeVariance =>
+        lockedSchemeVariance.map(_.srn) match {
+          case Some(lockedSrn) =>
+            schemeDetailsConnector.getSchemeDetails(psaId, lockedSrn, "srn").map { ua =>
+              ua.get(SchemeNameId) match {
+                case sn@Some(_) => sn
+                case _ => logger.warn(
+                  s"PSA $psaId has a lock on a scheme. Scheme lock info: $lockedSchemeVariance but " +
+                    s"no scheme name found for $lockedSrn")
+                  None
+              }
+            }
+          case None =>
+            logger.warn(s"PSA $psaId has a lock on a scheme. Scheme lock info: $lockedSchemeVariance but no SRN present")
+            Future.successful(None)
+        }
+      }
+    case _ => Future.successful(None)
+  }
+
   def cards(srn: String, lock: Option[Lock], list: ListOfSchemes, ua: UserAnswers)
-           (implicit messages: Messages): Seq[CardViewModel] = {
+           (implicit messages: Messages, request: AuthenticatedRequest[AnyContent]): Future[Seq[CardViewModel]] = {
     val currentScheme = getSchemeDetailsFromListOfSchemes(srn, list)
-    Seq(schemeCard(srn, currentScheme, lock, ua)) ++ Seq(psaCard(srn, ua)) ++ pspCard(ua, currentScheme.map(_.schemeStatus))
+    optionLockedSchemeName(lock).map { otherOptionSchemeName =>
+      Seq(schemeCard(srn, currentScheme, lock, ua, otherOptionSchemeName)) ++ Seq(psaCard(srn, ua)) ++ pspCard(ua, currentScheme.map(_.schemeStatus))
+    }
   }
 
   //Scheme details card
-  def schemeCard(srn: String, currentScheme: Option[SchemeDetails], lock: Option[Lock], ua: UserAnswers)
-                (implicit messages: Messages): CardViewModel = {
+  private[services] def schemeCard(srn: String,
+                                   currentScheme: Option[SchemeDetails],
+                                   lock: Option[Lock],
+                                   ua: UserAnswers,
+                                   lockedSchemeName: Option[String])
+                                  (implicit messages: Messages): CardViewModel = {
     CardViewModel(
       id = "scheme_details",
       heading = Message("messages__psaSchemeDash__scheme_details_head"),
       subHeadings = optToSeq(pstrSubHead(currentScheme)) ++ optToSeq(dateSubHead(currentScheme, ua)),
-      links = Seq(schemeDetailsLink(srn, ua, lock, currentScheme.map(_.name)))
+      links = Seq(schemeDetailsLink(srn, ua, lock, currentScheme.map(_.name), lockedSchemeName))
     )
   }
 
-  private def optionNotificationMessageKey(optionLock: Option[Lock]): Option[String] = optionLock.flatMap {
-    case SchemeLock | BothLock => Some("messages__psaSchemeDash__view_change_details_link_notification_scheme")
-    case PsaLock => Some("messages__psaSchemeDash__view_change_details_link_notification_psa")
-    case _ => None
-  }
+  private def optionNotificationMessageKey(optionLock: Option[Lock], lockedSchemeName: Option[String]): Option[String] =
+    (optionLock, lockedSchemeName) match {
+      case (Some(SchemeLock) | Some(BothLock), _) => Some("messages__psaSchemeDash__view_change_details_link_notification_scheme")
+      case (Some(PsaLock), Some(_)) => Some("messages__psaSchemeDash__view_change_details_link_notification_psa")
+      case (Some(PsaLock), None) => Some("messages__psaSchemeDash__view_change_details_link_notification_psa-unknown_scheme")
+      case _ => None
+    }
 
-  private def schemeDetailsLink(srn: String, ua: UserAnswers, optionLock: Option[Lock], optionSchemeName: Option[String])
+  private def schemeDetailsLink(srn: String,
+                                ua: UserAnswers,
+                                optionLock: Option[Lock],
+                                optionSchemeName: Option[String],
+                                lockedSchemeName: Option[String])
                                (implicit messages: Messages): Link = {
     val viewOrChangeLinkText = messages("messages__psaSchemeDash__view_change_details_link")
     val viewLinkText = messages("messages__psaSchemeDash__view_details_link")
 
-    val notification: Option[Message] = (optionNotificationMessageKey(optionLock), optionSchemeName) match {
-      case (Some(key), Some(schemeName)) => Some(Message(key, "<strong>" + schemeName + "</strong>"))
-      case _ => None
-    }
+    val notification: Option[Message] =
+      (optionLock, optionNotificationMessageKey(optionLock, lockedSchemeName), optionSchemeName, lockedSchemeName) match {
+        case (Some(PsaLock), Some(key), _, Some(sn)) => Some(Message(key, "<strong>" + sn + "</strong>"))
+        case (Some(PsaLock), Some(key), _, None) => Some(Message(key))
+        case (_, Some(key), Some(schemeName), _) => Some(Message(key, "<strong>" + schemeName + "</strong>"))
+        case _ => None
+      }
     val linkText = if (!isSchemeOpen(ua)) {
       viewLinkText
     } else {
