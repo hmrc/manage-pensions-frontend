@@ -266,7 +266,6 @@ messages__psaAlreadyAssociated__returnToSchemes__link = Return to your pension s
 
 messages__adviser__postcode__title = What is your pension adviser’s postcode?
 messages__adviser__postcode__heading = What is {0}’s postcode?
-messages__adviser__postcode__label = Postcode
 messages__adviser__postcode__lede = You can enter any postcode you have for your adviser.
 messages__error__postcode__lookup__no__results = There are no addresses for that postcode
 messages__adviser__postcode__enter_postcode_lhs = You can
