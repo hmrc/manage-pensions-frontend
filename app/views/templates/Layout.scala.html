@@ -16,6 +16,7 @@
 
 @import uk.gov.hmrc.hmrcfrontend.views.config.StandardBetaBanner
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcReportTechnicalIssueHelper
+@import uk.gov.hmrc.hmrcfrontend.views.Aliases.UserResearchBanner
 @import views.html.helper.CSPNonce
 @import config.FrontendAppConfig
 @import controllers.routes
@@ -84,7 +85,8 @@
         serviceName = Some(messages("site.service_name")),
         serviceUrl = Some(routes.SchemesOverviewController.onPageLoad().url),
         signOutUrl = if(canSignOut) Some(routes.LogoutController.onPageLoad.url) else None,
-        phaseBanner = Some(standardBetaBanner(url = appConfig.betaFeedbackUnauthenticatedUrl))
+        phaseBanner = Some(standardBetaBanner(url = appConfig.betaFeedbackUnauthenticatedUrl)),
+        userResearchBanner = Some(UserResearchBanner(url="/manage-pension-schemes/user-research-banner"))
     )),
     cspNonce = CSPNonce.get,
     beforeContentBlock = Some(beforeContentBlock),

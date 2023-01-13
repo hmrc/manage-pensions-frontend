@@ -39,4 +39,16 @@ document.addEventListener('DOMContentLoaded', function(event) {
         });
     }
 
+    var urBanner = document.querySelector('.hmrc-user-research-banner');
+    if (urBanner) {
+        console.log("banner loaded");
+        var title = document.querySelector('.hmrc-user-research-banner__title');
+        var yeslink  = document.querySelector('.hmrc-user-research-banner__link');
+        var nolink   = document.querySelector('.hmrc-user-research-banner__close');
+        title.innerHTML = "Help update GOV.UK pensions services";
+        yeslink.innerHTML = "bar";
+        nolink.innerHTML = "xyz";
+        console.log("content changed");
+    }
+
 });
