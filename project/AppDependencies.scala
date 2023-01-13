@@ -9,12 +9,12 @@ object AppDependencies {
     "uk.gov.hmrc"                   %% "bootstrap-frontend-play-28"    % "7.11.0",
     "uk.gov.hmrc"                   %% "domain"                        % "8.1.0-play-28",
     "uk.gov.hmrc"                   %% "play-partials"                 % "8.3.0-play-28",
-    "uk.gov.hmrc"                   %% "play-frontend-hmrc"            % "3.32.0-play-28",
+    "uk.gov.hmrc"                   %% "play-frontend-hmrc"            % "6.2.0-play-28",
     "com.fasterxml.jackson.module"  %% "jackson-module-scala"          % "2.14.1"
   )
 
   val test: Seq[ModuleID] = Seq(
-    "org.scalatest"                 %% "scalatest"                     % "3.2.14",
+    "org.scalatest"                 %% "scalatest"                     % "3.2.15",
     "org.scalatestplus"             %% "scalacheck-1-17"               % "3.2.14.0",
     "org.scalatestplus.play"        %% "scalatestplus-play"            % "5.1.0",
     "org.scalatestplus"             %% "mockito-4-6"                   % "3.2.14.0",
