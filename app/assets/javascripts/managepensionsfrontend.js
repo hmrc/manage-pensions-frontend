@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
     }
 
     var urBanner = document.querySelector('.hmrc-user-research-banner');
-    if (urBanner) {
+    if (urBanner !== null) {
         var title = document.querySelector('.hmrc-user-research-banner__title');
         title.innerHTML = "Help update GOV.UK pensions services";
     }
