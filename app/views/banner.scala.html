@@ -16,67 +16,66 @@
 
 @import config.FrontendAppConfig
 @import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
+@import play.api.data.Form
+@import views.html._
+@import utils.ViewHelper.titleWithErrors
+@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
 
 @this(
     layout: templates.Layout,
     appConfig: FrontendAppConfig,
+    formHelper: PlayFrontendFormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
     inset_text: components.inset_text,
     input_text: components.input_text,
     button: components.govuk_button,
     govukInput : GovukInput
 )
 
-@()(implicit request: Request[_], messages: Messages)
+@(form: Form[URBanner])(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = messages("messages__banner__title")) {
+@layout(pageTitle = titleWithErrors(form, messages("messages__banner__title"))){
 
-    @components.heading(messages("messages__banner__heading"))
+    @formHelper(action = controllers.routes.BannerController.onSubmit, Symbol("autoComplete") -> "off") {
 
-    <p class="govuk-body">@messages("messages__banner__p1")</p>
-    <p class="govuk-body">@messages("messages__banner__p2")</p>
-    <p class="govuk-body">@messages("messages__banner__p3")</p>
-    <p class="govuk-body">@messages("messages__banner__p4")</p>
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
+        }
 
-    <ul class="govuk-list govuk-list--bullet">
-        <li>@messages("messages__banner__bullet1")</li>
-        <li>@messages("messages__banner__bullet2")</li>
-        <li>@messages("messages__banner__bullet3")</li>
-    </ul>
+        @components.heading(messages("messages__banner__heading"))
 
-    <p class="govuk-body">@messages("messages__banner__p5")</p>
+        <p class="govuk-body">@messages("messages__banner__p1")</p>
+        <p class="govuk-body">@messages("messages__banner__p2")</p>
+        <p class="govuk-body">@messages("messages__banner__p3")</p>
+        <p class="govuk-body">@messages("messages__banner__p4")</p>
 
-    @inset_text(
-        content = messages("messages__banner__inset")
-    )
+        <ul class="govuk-list govuk-list--bullet">
+            <li>@messages("messages__banner__bullet1")</li>
+            <li>@messages("messages__banner__bullet2")</li>
+            <li>@messages("messages__banner__bullet3")</li>
+        </ul>
 
-    @govukInput(Input(
-        id = "org-ind-name",
-        name = "org-ind-name",
-        classes = "govuk-!-width-two-thirds",
-        label = Label(
-            isPageHeading = false,
-            content = Text(messages("messages__banner__input1"))
-        ),
-        errorMessage = Some(ErrorMessage(
-            content = Text("Enter a valid organisation or individual name")
-        ))
-    ))
+        <p class="govuk-body">@messages("messages__banner__p5")</p>
 
-    @govukInput(Input(
-        id = "email",
-        name = "email",
-        inputType = "email",
-        classes = "govuk-!-width-two-thirds",
-        label = Label(
-            isPageHeading = false,
-            content = Text(messages("messages__banner__input2"))
-        ),
-        errorMessage = Some(ErrorMessage(
-            content = Text("Enter a valid email address")
-        ))
-    ))
+        @inset_text(
+            content = messages("messages__banner__inset")
+        )
 
-    @button(messages("messages__banner__button"))
+        @input_text(
+            field = form("indOrgName"),
+            label = messages("messages__banner__input1"),
+            headingIsLegend = false
+        )
 
+        @input_text(
+            field = form("email"),
+            label = messages("messages__banner__input2"),
+            headingIsLegend = false,
+            typeValue = "email"
+        )
 
+        @button(messages("messages__banner__button"))
+
+    }
 }

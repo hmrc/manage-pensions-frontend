@@ -17,7 +17,12 @@
 package controllers
 
 import config.FrontendAppConfig
+import connectors.EmailConnector
+import connectors.admin.MinimalConnector
 import controllers.actions.AuthAction
+import forms.UrBannerFormProvider
+import models.{SendEmailRequest, URBanner}
+import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -27,17 +32,40 @@ import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 class BannerController @Inject()(
-                                 val appConfig: FrontendAppConfig,
-                                 override val messagesApi: MessagesApi,
-                                 authenticate: AuthAction,
-                                 val controllerComponents: MessagesControllerComponents,
-                                 view: banner
+                                  val appConfig: FrontendAppConfig,
+                                  formProvider: UrBannerFormProvider,
+                                  minConnector: MinimalConnector,
+                                  emailConnector: EmailConnector,
+                                  override val messagesApi: MessagesApi,
+                                  authenticate: AuthAction,
+                                  val controllerComponents: MessagesControllerComponents,
+                                  view: banner
                                )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport {
 
+  private val form: Form[URBanner] = formProvider()
+
   def onPageLoad: Action[AnyContent] = authenticate() {
     implicit request =>
-      Ok(view())
+      Ok(view(form))
   }
+
+  def onSubmit: Action[AnyContent] = authenticate().async {
+    implicit request =>
+      for{
+        minDetails <- minConnector.getMinimalPsaDetails(request.psaIdOrException.id)
+        _ <- emailConnector.sendEmail(SendEmailRequest.apply(
+          to = List("david.saunders@digital.hmrc.gov.uk"),
+          templateId = "pods_user_research_banner",
+          parameters = Map(),
+          eventUrl = None
+        ))
+
+      } yield {
+        Ok(view(form))
+      }
+
+  }
+
 }

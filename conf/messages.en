@@ -801,3 +801,4 @@ messages__banner__bullet3 = make sure that we cannot see any sensitive informati
 messages__banner__input1 =  Organisation/individual name
 messages__banner__input2 =  Email
 messages__banner__button =  Sign up now
+messages__banner__error =  The organisation/individual name must only include letters, spaces, ampersands, grave accents, apostrophes, hyphens, full stops and carets
