@@ -16,6 +16,7 @@
 
 package controllers
 
+import akka.stream.impl.Stages.DefaultAttributes.{recover, recoverWith}
 import config.FrontendAppConfig
 import connectors.EmailConnector
 import connectors.admin.MinimalConnector
@@ -55,14 +56,14 @@ class BannerController @Inject()(
     implicit request =>
       for{
         minDetails <- minConnector.getMinimalPsaDetails(request.psaIdOrException.id)
-        _ <- emailConnector.sendEmail(SendEmailRequest.apply(
+        email <- emailConnector.sendEmail(SendEmailRequest.apply(
           to = List("david.saunders@digital.hmrc.gov.uk"),
           templateId = "pods_user_research_banner",
           parameters = Map(),
           eventUrl = None
         ))
-
       } yield {
+        print(s"\n\nthis here\n $minDetails\n\nand this \n\n $email\n")
         Ok(view(form))
       }
 

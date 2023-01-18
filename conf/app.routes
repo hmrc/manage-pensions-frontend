@@ -12,8 +12,8 @@ GET         /                                                                   
 GET         /index                                                                                           controllers.IndexController.onPageLoad
 
 GET         /user-research-banner                                                                            controllers.BannerController.onPageLoad
-POST        /user-research-banner                                                                            controllers.BannerController.onSubmit
 
+POST        /user-research-banner                                                                            controllers.BannerController.onSubmit
 
 GET         /assets/*file                                                                                    controllers.Assets.versioned(path="/public", file: Asset)
 
