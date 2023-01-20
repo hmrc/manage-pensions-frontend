@@ -45,6 +45,7 @@ class UrBannerFormProviderSpec extends FormBehaviours with GuiceOneAppPerSuite w
 
   private val requiredNameKey = "messages__banner__error_required"
   private val invalidNameKey = "messages__banner__error"
+  private val maxLengthNameKey = "messages__banner__error_length"
 
   val form = new UrBannerFormProvider()()
 
@@ -52,10 +53,34 @@ class UrBannerFormProviderSpec extends FormBehaviours with GuiceOneAppPerSuite w
 
     behave like formWithEmailField(formEmail, email, requiredEmailKey, maxLengthEmailKey, invalidEmailKey)
 
-    behave like fieldThatBindsValidData(form, name, "Name")
+    behave like fieldThatBindsValidData(
+      form,
+      name,
+      validDataGenerator = "Name"
+    )
 
-    behave like mandatoryField(form, name, FormError(name, requiredNameKey))
+    behave like mandatoryField(
+      form,
+      name,
+      FormError(name, requiredNameKey)
+    )
 
-    behave like fieldWithRegex(form, name, "!£$%^&*", FormError(name, invalidNameKey, Seq(regexPersonOrOrganisationName.toString)))
+    behave like fieldWithRegex(
+      form,
+      name,
+      invalidString = "!£$%^&*",
+      error = FormError(
+        name,
+        invalidNameKey,
+        Seq(regexPersonOrOrganisationName.toString)
+      )
+    )
+
+    behave like fieldWithMaxLength(
+      form,
+      name,
+      35,
+      FormError(name, maxLengthNameKey, Seq(35))
+    )
   }
 }
