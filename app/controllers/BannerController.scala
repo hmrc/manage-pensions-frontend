@@ -76,12 +76,14 @@ class BannerController @Inject()(
                 "psaName" -> value.indOrgName,
                 "comOrgName" -> minDetails.name,
                 "psaId" -> psaId,
-                "psaEmail" -> value.email),
+                "psaEmail" -> value.email
+              ),
               eventUrl = None
             ))
           } yield {
             Ok(view(form))
           }
+          Future.successful(Redirect(controllers.routes.BannerConfirmationController.onPageLoad))
         }
       )
   }
