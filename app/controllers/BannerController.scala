@@ -16,7 +16,6 @@
 
 package controllers
 
-import akka.stream.impl.Stages.DefaultAttributes.{recover, recoverWith}
 import config.FrontendAppConfig
 import connectors.EmailConnector
 import connectors.admin.MinimalConnector
@@ -30,7 +29,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.banner
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class BannerController @Inject()(
                                   val appConfig: FrontendAppConfig,
@@ -47,26 +46,43 @@ class BannerController @Inject()(
 
   private val form: Form[URBanner] = formProvider()
 
-  def onPageLoad: Action[AnyContent] = authenticate() {
+  def onPageLoad: Action[AnyContent] = authenticate().async {
     implicit request =>
-      Ok(view(form))
+      val psaId = request.psaIdOrException.id
+      minConnector.getMinimalPsaDetails(psaId).map {
+        minDetails =>
+          val name = if (minDetails.individualDetails.isDefined) minDetails.name else ""
+          val fm = form.fill(
+            URBanner(
+              name,
+              minDetails.email))
+          Ok(view(fm))
+      }
   }
 
   def onSubmit: Action[AnyContent] = authenticate().async {
     implicit request =>
-      for{
-        minDetails <- minConnector.getMinimalPsaDetails(request.psaIdOrException.id)
-        email <- emailConnector.sendEmail(SendEmailRequest.apply(
-          to = List("david.saunders@digital.hmrc.gov.uk"),
-          templateId = "pods_user_research_banner",
-          parameters = Map(),
-          eventUrl = None
-        ))
-      } yield {
-        print(s"\n\nthis here\n $minDetails\n\nand this \n\n $email\n")
-        Ok(view(form))
-      }
-
+      val psaId = request.psaIdOrException.id
+      form.bindFromRequest().fold(
+        (formWithErrors: Form[URBanner]) =>
+          Future.successful(BadRequest(view(formWithErrors))),
+        value => {
+          for {
+            minDetails <- minConnector.getMinimalPsaDetails(psaId)
+            email <- emailConnector.sendEmail(SendEmailRequest.apply(
+              to = List("david.saunders@digital.hmrc.gov.uk"),
+              templateId = "pods_user_research_banner",
+              parameters = Map(
+                "psaName" -> value.indOrgName,
+                "comOrgName" -> minDetails.name,
+                "psaId" -> psaId,
+                "psaEmail" -> value.email),
+              eventUrl = None
+            ))
+          } yield {
+            Ok(view(form))
+          }
+        }
+      )
   }
-
 }

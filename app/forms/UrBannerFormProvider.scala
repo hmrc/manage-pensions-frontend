@@ -31,7 +31,7 @@ class UrBannerFormProvider @Inject() extends Mappings with Transforms with Email
     Form(
       mapping(
         "indOrgName" ->
-          text(errorKey = "")
+          text(errorKey = "messages__banner__error_required")
             .verifying(
             regexp(regexPersonOrOrganisationName, "messages__banner__error" )
             ),

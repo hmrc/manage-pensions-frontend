@@ -22,11 +22,12 @@ import connectors.{EmailConnector, EmailNotSent}
 import controllers.actions.FakeAuthAction
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.UrBannerFormProvider
-import models.MinimalPSAPSP
+import models.{IndividualDetails, MinimalPSAPSP, URBanner}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.data.Form
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.banner
@@ -53,16 +54,18 @@ class BannerControllerSpec extends ControllerWithQuestionPageBehaviours with Sca
       controllerComponents,
       view)
 
-  private val minDetails = MinimalPSAPSP("email", false, Some("orgName"), None, false, false)
+  private val minDetails = MinimalPSAPSP("email", false, None, Some(IndividualDetails("Nigel", None, "Smith")), false, false)
 
   "BannerController" must {
 
     "return OK with the view when calling on page load" in {
+      when(mockMinimalConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minDetails))
+      val form = formProvider.apply().fill(URBanner("Nigel Smith", "email"))
       val request = FakeRequest(GET, routes.BannerController.onPageLoad.url)
       val result = controller.onPageLoad(request)
-
+      print(s"\n\n here \n\n ${request.body} \n\n")
       status(result) mustBe OK
-      contentAsString(result) mustBe view(formProvider())(request, messages).toString
+      contentAsString(result) mustBe view(form)(request, messages).toString
     }
 
     "return a Bad Request and errors when invalid data is submitted" in {
@@ -78,12 +81,7 @@ class BannerControllerSpec extends ControllerWithQuestionPageBehaviours with Sca
       status(result) mustBe BAD_REQUEST
       contentAsString(result) mustBe view(boundForm)(postRequest,messages).toString
     }
-
-    "redirect to the next page for a valid request" in {
-     ???
-    }
   }
-
 }
 
 
