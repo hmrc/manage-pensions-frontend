@@ -40,7 +40,7 @@ class AdministratorOrPractitionerFormProviderSpec extends FormBehaviours with Gu
     behave like formWithOptionField(
       Field(
         "value",
-        Required -> messages("messages__administratorOrPractitioner__error__required"),
+        Required -> messages("messages__banner__error_required"),
         Invalid -> "error.invalid"
       ),
       AdministratorOrPractitioner.optionsAdministratorOrPractitioner.map(_.value.get): _*)
