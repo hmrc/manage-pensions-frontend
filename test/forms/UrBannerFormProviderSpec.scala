@@ -17,40 +17,45 @@
 package forms
 
 import forms.behaviours.{EmailBehaviours, FormBehaviours}
-import models.{AdministratorOrPractitioner, Field, Invalid, Required, URBanner}
+import models.URBanner
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.data.{Form, FormError, Mapping}
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.test.FakeRequest
-import play.api.data.Form
-import play.api.data.Mapping
 
 class UrBannerFormProviderSpec extends FormBehaviours with GuiceOneAppPerSuite with EmailBehaviours {
 
+  private val regexPersonOrOrganisationName =   """^[a-zA-Z\u00C0-\u00FF '??\u2014\u2013\u2010\u002d]{1,107}"""
+  private val email = "email"
+  private val name = "indOrgName"
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+
   implicit val messages: Messages = messagesApi.preferred(FakeRequest())
-
   val validData: Map[String, String] = Map(
-    "indOrgName" -> URBanner.apply("name", "email").indOrgName,
-    "email" -> URBanner.apply("name", "email").email
+    name -> URBanner.apply("name", "email").indOrgName,
+    email -> URBanner.apply("name", "email").email
   )
-  private val requiredKey = "messages__error__adviser__email__address__required"
-  private val maxLengthKey = "messages__error__adviser__email__address__length"
-  private val invalidKey = "messages__error__adviser__email__address__invalid"
-
-  private val mapping: Mapping[String] = emailMapping(requiredKey, maxLengthKey, invalidKey)
-  private val fieldName = "email"
-
+  private val requiredEmailKey = "messages__error__adviser__email__address__required"
+  private val maxLengthEmailKey = "messages__error__adviser__email__address__length"
+  private val invalidEmailKey = "messages__error__adviser__email__address__invalid"
+  private val mapping: Mapping[String] = emailMapping(requiredEmailKey, maxLengthEmailKey, invalidEmailKey)
   private val formEmail = Form(
-    fieldName -> mapping
+    email -> mapping
   )
+
+  private val requiredNameKey = "messages__banner__error_required"
+  private val invalidNameKey = "messages__banner__error"
 
   val form = new UrBannerFormProvider()()
 
   "UrBannerFormProvider" must {
 
-    behave like formWithEmailField(formEmail, fieldName, requiredKey, maxLengthKey, invalidKey)
+    behave like formWithEmailField(formEmail, email, requiredEmailKey, maxLengthEmailKey, invalidEmailKey)
 
-    behave like questionForm[URBanner](URBanner.apply("name", "email"))
+    behave like fieldThatBindsValidData(form, name, "Name")
 
+    behave like mandatoryField(form, name, FormError(name, requiredNameKey))
+
+    behave like fieldWithRegex(form, name, "!£$%^&*", FormError(name, invalidNameKey, Seq(regexPersonOrOrganisationName.toString)))
   }
 }
