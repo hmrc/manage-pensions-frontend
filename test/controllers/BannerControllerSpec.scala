@@ -63,7 +63,6 @@ class BannerControllerSpec extends ControllerWithQuestionPageBehaviours with Sca
       val form = formProvider.apply().fill(URBanner("Nigel Smith", "email"))
       val request = FakeRequest(GET, routes.BannerController.onPageLoad.url)
       val result = controller.onPageLoad(request)
-      print(s"\n\n here \n\n ${request.body} \n\n")
       status(result) mustBe OK
       contentAsString(result) mustBe view(form)(request, messages).toString
     }
