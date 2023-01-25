@@ -18,7 +18,7 @@ package controllers
 
 import config.FrontendAppConfig
 import connectors.admin.MinimalConnector
-import connectors.{EmailConnector, EmailNotSent}
+import connectors.{EmailConnector, EmailNotSent, EmailSent}
 import controllers.actions.FakeAuthAction
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.UrBannerFormProvider
@@ -27,7 +27,6 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.data.Form
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.banner
@@ -54,13 +53,13 @@ class BannerControllerSpec extends ControllerWithQuestionPageBehaviours with Sca
       controllerComponents,
       view)
 
-  private val minDetails = MinimalPSAPSP("email", false, None, Some(IndividualDetails("Nigel", None, "Smith")), false, false)
+  private val minDetails = MinimalPSAPSP("email@email.com", false, None, Some(IndividualDetails("Nigel", None, "Smith")), false, false)
 
   "BannerController" must {
 
     "return OK with the view when calling on page load" in {
       when(mockMinimalConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minDetails))
-      val form = formProvider.apply().fill(URBanner("Nigel Smith", "email"))
+      val form = formProvider.apply().fill(URBanner("Nigel Smith", "email@email.com"))
       val request = FakeRequest(GET, routes.BannerController.onPageLoad.url)
       val result = controller.onPageLoad(request)
       status(result) mustBe OK
@@ -79,6 +78,21 @@ class BannerControllerSpec extends ControllerWithQuestionPageBehaviours with Sca
 
       status(result) mustBe BAD_REQUEST
       contentAsString(result) mustBe view(boundForm)(postRequest,messages).toString
+    }
+    "return a redirect when correct information is submitted" in {
+      when(mockMinimalConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minDetails))
+      when(mockEmailConnector.sendEmail(any())(any(), any())).thenReturn(Future.successful(EmailSent))
+
+      val onwardRoute = controllers.routes.BannerConfirmationController.onPageLoad
+
+      val postRequest =
+        FakeRequest()
+          .withFormUrlEncodedBody("indOrgName" -> minDetails.name, "email" -> minDetails.email)
+
+      val result = controller.onSubmit()(postRequest)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).value mustEqual onwardRoute.url
     }
   }
 }

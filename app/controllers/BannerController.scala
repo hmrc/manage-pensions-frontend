@@ -69,7 +69,7 @@ class BannerController @Inject()(
         value => {
           for {
             minDetails <- minConnector.getMinimalPsaDetails(psaId)
-            email <- emailConnector.sendEmail(SendEmailRequest.apply(
+            _ <- emailConnector.sendEmail(SendEmailRequest.apply(
               to = List("david.saunders@digital.hmrc.gov.uk"),
               templateId = "pods_user_research_banner",
               parameters = Map(
@@ -81,9 +81,8 @@ class BannerController @Inject()(
               eventUrl = None
             ))
           } yield {
-            Ok(view(form))
+            Redirect(controllers.routes.BannerConfirmationController.onPageLoad)
           }
-          Future.successful(Redirect(controllers.routes.BannerConfirmationController.onPageLoad))
         }
       )
   }
