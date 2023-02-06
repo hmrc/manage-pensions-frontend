@@ -95,7 +95,7 @@ class BannerController @Inject()(
               eventUrl = None
             ))
           } yield {
-            Redirect(controllers.routes.BannerConfirmationController.onPageLoad)
+            Redirect(controllers.routes.BannerConfirmationController.onPageLoadPsa)
           }
         }
       )
@@ -122,7 +122,7 @@ class BannerController @Inject()(
               eventUrl = None
             ))
           } yield {
-            Redirect(controllers.routes.BannerConfirmationController.onPageLoad)
+            Redirect(controllers.routes.BannerConfirmationController.onPageLoadPsp)
           }
         }
       )

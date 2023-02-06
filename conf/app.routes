@@ -17,7 +17,8 @@ GET         /user-research-banner-psp                                           
 POST        /user-research-banner-psa                                                                        controllers.BannerController.onSubmitPsa
 POST        /user-research-banner-psp                                                                        controllers.BannerController.onSubmitPsp
 
-GET         /user-research-confirmation                                                                      controllers.BannerConfirmationController.onPageLoad
+GET         /user-research-confirmation-psa                                                                      controllers.BannerConfirmationController.onPageLoadPsa
+GET         /user-research-confirmation-psp                                                                      controllers.BannerConfirmationController.onPageLoadPsp
 
 GET         /assets/*file                                                                                    controllers.Assets.versioned(path="/public", file: Asset)
 

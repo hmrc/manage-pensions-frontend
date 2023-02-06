@@ -18,6 +18,7 @@ package controllers
 
 import config.FrontendAppConfig
 import controllers.actions.AuthAction
+import models.AuthEntity.{PSA, PSP}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -36,7 +37,12 @@ class BannerConfirmationController @Inject()(
   extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = authenticate() {
+  def onPageLoadPsa: Action[AnyContent] = authenticate(PSA) {
+    implicit request =>
+      Ok(view())
+  }
+
+  def onPageLoadPsp: Action[AnyContent] = authenticate(PSP) {
     implicit request =>
       Ok(view())
   }

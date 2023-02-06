@@ -85,7 +85,7 @@ class BannerControllerSpec extends ControllerWithQuestionPageBehaviours with Sca
       when(mockMinimalConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minDetails))
       when(mockEmailConnector.sendEmail(any())(any(), any())).thenReturn(Future.successful(EmailSent))
 
-      val onwardRoute = controllers.routes.BannerConfirmationController.onPageLoad
+      val onwardRoute = controllers.routes.BannerConfirmationController.onPageLoadPsa
 
       val postRequest =
         FakeRequest()
