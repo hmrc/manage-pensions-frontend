@@ -37,7 +37,7 @@
 
 @layout(pageTitle = titleWithErrors(form, messages("messages__banner__title"))){
 
-    @formHelper(action = controllers.routes.BannerController.onSubmit, Symbol("autoComplete") -> "off") {
+    @formHelper(action = controllers.routes.BannerController.onSubmitPsp, Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))

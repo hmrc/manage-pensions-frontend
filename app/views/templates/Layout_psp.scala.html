@@ -84,7 +84,8 @@
         serviceName = Some(messages("site.service_name")),
         serviceUrl = Some(routes.SchemesOverviewController.onPageLoad().url),
         signOutUrl = if(canSignOut) Some(routes.LogoutController.onPageLoad.url) else None,
-        phaseBanner = Some(standardBetaBanner(url = appConfig.betaFeedbackUnauthenticatedUrl))
+        phaseBanner = Some(standardBetaBanner(url = appConfig.betaFeedbackUnauthenticatedUrl)),
+        userResearchBanner = Some(UserResearchBanner(url="/manage-pension-schemes/user-research-banner-psp"))
     )),
     cspNonce = CSPNonce.get,
     beforeContentBlock = Some(beforeContentBlock),

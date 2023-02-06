@@ -29,7 +29,7 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import views.html.banner
+import views.html.{banner_psa, banner_psp}
 
 import scala.concurrent.Future
 
@@ -37,7 +37,8 @@ class BannerControllerSpec extends ControllerWithQuestionPageBehaviours with Sca
 
   val appConfig: FrontendAppConfig = mock[FrontendAppConfig]
 
-  private val view = injector.instanceOf[banner]
+  private val viewPsa = injector.instanceOf[banner_psa]
+  private val viewPsp = injector.instanceOf[banner_psp]
   private val formProvider = new UrBannerFormProvider()
   val mockEmailConnector: EmailConnector = mock[EmailConnector]
   val mockMinimalConnector: MinimalConnector = mock[MinimalConnector]
@@ -51,7 +52,8 @@ class BannerControllerSpec extends ControllerWithQuestionPageBehaviours with Sca
       messagesApi,
       FakeAuthAction,
       controllerComponents,
-      view)
+      viewPsa,
+      viewPsp)
 
   private val minDetails = MinimalPSAPSP("email@email.com", false, None, Some(IndividualDetails("Nigel", None, "Smith")), false, false)
 
@@ -60,24 +62,24 @@ class BannerControllerSpec extends ControllerWithQuestionPageBehaviours with Sca
     "return OK with the view when calling on page load" in {
       when(mockMinimalConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minDetails))
       val form = formProvider.apply().fill(URBanner("Nigel Smith", "email@email.com"))
-      val request = FakeRequest(GET, routes.BannerController.onPageLoad.url)
-      val result = controller.onPageLoad(request)
+      val request = FakeRequest(GET, routes.BannerController.onPageLoadPsa.url)
+      val result = controller.onPageLoadPsa(request)
       status(result) mustBe OK
-      contentAsString(result) mustBe view(form)(request, messages).toString
+      contentAsString(result) mustBe viewPsa(form)(request, messages).toString
     }
 
     "return a Bad Request and errors when invalid data is submitted" in {
       when(mockMinimalConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minDetails))
       when(mockEmailConnector.sendEmail(any())(any(), any())).thenReturn(Future.successful(EmailNotSent))
       val postRequest =
-        FakeRequest(POST, routes.BannerController.onSubmit.url).withFormUrlEncodedBody("indOrgName" -> "invalid value")
+        FakeRequest(POST, routes.BannerController.onSubmitPsa.url).withFormUrlEncodedBody("indOrgName" -> "invalid value")
       val boundForm =
         formProvider().bind(Map("indOrgName" -> "invalid value"))
       val result =
-        controller.onSubmit(postRequest)
+        controller.onSubmitPsa(postRequest)
 
       status(result) mustBe BAD_REQUEST
-      contentAsString(result) mustBe view(boundForm)(postRequest,messages).toString
+      contentAsString(result) mustBe viewPsa(boundForm)(postRequest,messages).toString
     }
     "return a redirect when correct information is submitted" in {
       when(mockMinimalConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minDetails))
@@ -89,7 +91,7 @@ class BannerControllerSpec extends ControllerWithQuestionPageBehaviours with Sca
         FakeRequest()
           .withFormUrlEncodedBody("indOrgName" -> minDetails.name, "email" -> minDetails.email)
 
-      val result = controller.onSubmit()(postRequest)
+      val result = controller.onSubmitPsa()(postRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result).value mustEqual onwardRoute.url
