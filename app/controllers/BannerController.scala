@@ -25,6 +25,7 @@ import models.{SendEmailRequest, URBanner}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.domain.{PsaId, PspId}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.banner
 
@@ -49,7 +50,15 @@ class BannerController @Inject()(
   def onPageLoad: Action[AnyContent] = authenticate().async {
     implicit request =>
       val psaId = request.psaIdOrException.id
-      minConnector.getMinimalPsaDetails(psaId).map {
+      val x = (request.psaId, request.pspId) match {
+        case (Some(PsaId(id)),_) =>
+          minConnector.getMinimalPsaDetails(id)
+        case (_, Some(PspId(id))) =>
+          minConnector.getMinimalPspDetails(id)
+        case _ =>
+          throw new RuntimeException
+      }
+      x.map {
         minDetails =>
           val name = if (minDetails.individualDetails.isDefined) minDetails.name else ""
           val fm = form.fill(
