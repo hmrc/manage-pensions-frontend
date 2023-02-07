@@ -52,7 +52,7 @@ class BannerController @Inject()(
     implicit request =>
       minConnector.getMinimalPsaDetails(request.psaIdOrException.id).map {
         minDetails =>
-          val name = if (minDetails.individualDetails.isDefined) minDetails.name else ""
+          val name = minDetails.name
           val fm = form.fill(
             URBanner(
               name,
@@ -65,7 +65,7 @@ class BannerController @Inject()(
     implicit request =>
       minConnector.getMinimalPspDetails(request.pspIdOrException.id).map {
         minDetails =>
-          val name = if (minDetails.individualDetails.isDefined) minDetails.name else ""
+          val name = minDetails.name
           val fm = form.fill(
             URBanner(
               name,
