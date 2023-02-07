@@ -11,6 +11,15 @@ GET         /                                                                   
 
 GET         /index                                                                                           controllers.IndexController.onPageLoad
 
+GET         /user-research-banner-psa                                                                        controllers.BannerController.onPageLoadPsa
+GET         /user-research-banner-psp                                                                        controllers.BannerController.onPageLoadPsp
+
+POST        /user-research-banner-psa                                                                        controllers.BannerController.onSubmitPsa
+POST        /user-research-banner-psp                                                                        controllers.BannerController.onSubmitPsp
+
+GET         /user-research-confirmation-psa                                                                      controllers.BannerConfirmationController.onPageLoadPsa
+GET         /user-research-confirmation-psp                                                                      controllers.BannerConfirmationController.onPageLoadPsp
+
 GET         /assets/*file                                                                                    controllers.Assets.versioned(path="/public", file: Asset)
 
 GET         /language/:lang                                                                                  controllers.LanguageSwitchController.switchToLanguage(lang: String)

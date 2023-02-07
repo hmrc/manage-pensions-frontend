@@ -60,6 +60,8 @@ trait EmailMapping extends Mappings with Transforms {
   }
 }
 
+
+
 object EmailMapping {
   val maxLengthEmail = 132
 

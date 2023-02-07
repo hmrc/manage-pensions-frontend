@@ -73,7 +73,6 @@ class PspDashboardController @Inject()(
             Ok(view(details.name, "site.psp", service.getTiles(pspId, details), Some(subHeading), returnLink))
           }
         }
-
       }
   }
 
