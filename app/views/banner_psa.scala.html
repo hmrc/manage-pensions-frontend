@@ -35,7 +35,7 @@
 
 @(form: Form[URBanner])(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleWithErrors(form, messages("messages__banner__title"))){
+@layout(pageTitle = titleWithErrors(form, messages("messages__banner__title")), showBackLink = false){
 
     @formHelper(action = controllers.routes.BannerController.onSubmitPsa, Symbol("autoComplete") -> "off") {
 
