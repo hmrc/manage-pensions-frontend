@@ -142,6 +142,8 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
     .getString("urls.schemeUrlsPartialHtml")}"
   lazy val penaltiesUrlPartialHtmlUrl: String = s"${servicesConfig.baseUrl("aft-frontend")}${runModeConfiguration.underlying
     .getString("urls.penaltiesPartialHtml")}"
+  lazy val eventReportingUrlPartialHtmlUrl: String = s"${servicesConfig.baseUrl("pension-scheme-event-reporting-frontend")}${runModeConfiguration.underlying
+    .getString("urls.eventReportingPartialHtml")}"
   lazy val migrationUrlsPartialHtmlUrl: String = s"${servicesConfig.baseUrl("migration-frontend")}${runModeConfiguration.underlying
     .getString("urls.migrationUrlsPartialHtml")}"
 
