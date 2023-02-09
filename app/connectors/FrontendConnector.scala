@@ -37,6 +37,9 @@ class FrontendConnector @Inject()(http: HttpClient, config: FrontendAppConfig) {
                            (implicit request: Request[A], ec: ExecutionContext): Future[Html] =
     retrievePartial(config.aftPartialHtmlUrl.format(srn))
 
+  def retrieveEventReportingPartial[A](implicit request: Request[A], ec: ExecutionContext): Future[Html] =
+    retrievePartial(config.eventReportingPartialHtmlUrl)
+
   def retrievePaymentsAndChargesPartial[A](srn: String)
                                           (implicit request: Request[A], ec: ExecutionContext): Future[Html] =
     retrievePartial(config.paymentsAndChargesPartialHtmlUrl.format(srn))
@@ -46,9 +49,6 @@ class FrontendConnector @Inject()(http: HttpClient, config: FrontendAppConfig) {
 
   def retrievePenaltiesUrlPartial[A](implicit request: Request[A], ec: ExecutionContext): Future[Html] =
     retrievePartial(config.penaltiesUrlPartialHtmlUrl)
-
-  def retrieveEventReportingUrlPartial[A](implicit request: Request[A], ec: ExecutionContext): Future[Html] =
-    retrievePartial(config.eventReportingUrlPartialHtmlUrl)
 
   def retrieveMigrationUrlsPartial[A](implicit request: Request[A], ec: ExecutionContext): Future[Html] =
     retrievePartial(config.migrationUrlsPartialHtmlUrl)

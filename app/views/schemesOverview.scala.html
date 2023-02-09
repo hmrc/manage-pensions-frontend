@@ -30,7 +30,6 @@
     schemeCard: CardViewModel,
     adminCard:  CardViewModel,
     penaltiesCardHtml: Option[Html],
-    eventReportingCardHtml: Option[Html],
     migrationHtml: Option[Html],
     subHeading: Option[String] = None,
     returnLink: Option[Link] = None
@@ -52,11 +51,6 @@
                 @penaltiesCardHtml.map { penaltiesCard =>
                     @penaltiesCard
                 }
-
-                @eventReportingCardHtml.map { eventReportCard =>
-                    @eventReportCard
-                }
-
                 @components.card(schemeCard)
 
                 @migrationHtml.map { migrationTile =>

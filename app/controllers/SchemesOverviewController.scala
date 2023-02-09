@@ -67,13 +67,10 @@ class SchemesOverviewController @Inject()(
               for {
                 cards <- service.getTiles(psaId)
                 penaltiesHtml <- service.retrievePenaltiesUrlPartial
-                eventReportingHtml <- service.retrieveEventReportingUrlPartial
                 migrationHtml <- service.retrieveMigrationTile
                 _ <- userAnswersCacheConnector.save(request.externalId, PSANameId, name)
               } yield {
-                Ok(view(
-                  name, "site.psa", cards.head, cards(1), Some(penaltiesHtml), Some(eventReportingHtml),
-                  migrationHtml, Some(subHeading), returnLink(request.pspId)))
+                Ok(view(name, "site.psa", cards.head, cards(1), Some(penaltiesHtml), migrationHtml, Some(subHeading), returnLink(request.pspId)))
               }
             case _ =>
               Future.successful(Redirect(SessionExpiredController.onPageLoad))
