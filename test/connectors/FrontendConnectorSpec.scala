@@ -34,6 +34,7 @@ class FrontendConnectorSpec extends AsyncWordSpec with Matchers with WireMockHel
   implicit val headerCarrier: HeaderCarrierForPartials =
     HeaderCarrierForPartials(hc = HeaderCarrier())
   private val aftPartialUrl = "/manage-pension-scheme-accounting-for-tax/srn/psa-scheme-dashboard-cards"
+  private val erPartialUrl = "/manage-pension-scheme-event-report/event-reporting-partials"
   private val pspSchemeDashboardCardsUrl = "/manage-pension-scheme-accounting-for-tax/psp-scheme-dashboard-cards"
   private val paymentsAndChargesPartialHtmlUrl = "/manage-pension-scheme-accounting-for-tax/srn/payments-and-charges-partial"
   private val schemeUrlsPartialHtmlUrl = "/register-pension-scheme/urls-partial"
@@ -42,13 +43,14 @@ class FrontendConnectorSpec extends AsyncWordSpec with Matchers with WireMockHel
   private val srn = "srn"
   implicit val request: FakeRequest[_] = FakeRequest("", "")
   private val aftHtml: Html = Html("test-aft-html")
+  private val erHtml: Html = Html("test-er-html")
   private val pspSchemeDashboardCardsHtml: Html = Html("test-psp-scheme-dashboard-cards-html")
   private val paymentsAndChargesHtml: Html = Html("test-payments-and-charges-html")
   private val schemeUrlsPartialHtml: Html = Html("test-scheme-partial-html")
   private val retrievePenaltiesUrlPartialHtml: Html = Html("test-penalties-partial-html")
   private val migrationUrlsHtml: Html = Html("test-migration-partial-html")
 
-  "FrontedConnector" when {
+  "FrontendConnector" when {
     "asked to retrieve AFT models" should {
       "call the micro service with the correct uri and return the contents" in {
         server.stubFor(
@@ -65,6 +67,26 @@ class FrontendConnectorSpec extends AsyncWordSpec with Matchers with WireMockHel
 
         connector.retrieveAftPartial(srn).map(aftModel =>
           aftModel mustBe aftHtml
+        )
+      }
+    }
+
+    "asked to retrieve Event Reporting models" should {
+      "call the micro service with the correct uri and return the contents" in {
+        server.stubFor(
+          get(urlEqualTo(erPartialUrl))
+            .willReturn(
+              aResponse()
+                .withStatus(Status.OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(erHtml.toString())
+            )
+        )
+
+        val connector = injector.instanceOf[FrontendConnector]
+
+        connector.retrieveEventReportingPartial.map(erModel =>
+          erModel mustBe erHtml
         )
       }
     }

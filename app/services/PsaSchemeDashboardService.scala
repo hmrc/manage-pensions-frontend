@@ -272,10 +272,6 @@ class PsaSchemeDashboardService @Inject()(
   private def isSchemeOpen(ua: UserAnswers): Boolean = ua.get(SchemeStatusId).getOrElse("").equalsIgnoreCase("open")
 
   private def optToSeq[A](value: Option[A]): Seq[A] = value.fold[Seq[A]](Nil)(x => Seq(x))
-
-  //ER card
-//  def erCard(ua: UserAnswers)(implicit messages: Messages): CardViewModel =
-//    CardViewModel()
 }
 
 case object PsaNameCannotBeRetrievedException extends Exception
