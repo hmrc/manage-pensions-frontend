@@ -67,7 +67,7 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
                 _ <- userAnswersCacheConnector.upsert(request.externalId, updatedUa.json)
               } yield {
                 psaSchemeDashboardService.cards(srn, lock, listOfSchemes, userAnswers).map { cards =>
-                  Ok(view(schemeName, aftHtml, (erHtml), cards))
+                  Ok(view(schemeName, aftHtml, erHtml, cards))
                 }
               }).flatten
             }
