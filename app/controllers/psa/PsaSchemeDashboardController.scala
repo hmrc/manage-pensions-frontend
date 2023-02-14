@@ -63,7 +63,7 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
               val updatedUa = userAnswers.set(SchemeSrnId)(srn.id).flatMap(_.set(SchemeNameId)(schemeName)).asOpt.getOrElse(userAnswers)
               (for {
                 aftHtml <- retrieveAftTilesHtml(srn, schemeStatus)
-                erHtml <- retrieveErTileHtml
+                erHtml <- frontendConnector.retrieveEventReportingPartial
                 _ <- userAnswersCacheConnector.upsert(request.externalId, updatedUa.json)
               } yield {
                 psaSchemeDashboardService.cards(srn, lock, listOfSchemes, userAnswers).map { cards =>
@@ -91,10 +91,6 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
     } else {
       Future.successful(Html(""))
     }
-  }
-
-  private def retrieveErTileHtml(implicit request: AuthenticatedRequest[AnyContent]): Future[Html] = {
-      frontendConnector.retrieveEventReportingPartial
   }
 
   private def getSchemeAndLock(srn: SchemeReferenceNumber)
