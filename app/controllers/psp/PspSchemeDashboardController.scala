@@ -54,7 +54,8 @@ class PspSchemeDashboardController @Inject()(
                                               val controllerComponents: MessagesControllerComponents,
                                               service: PspSchemeDashboardService,
                                               view: pspSchemeDashboard,
-                                              config: FrontendAppConfig
+                                              config: FrontendAppConfig,
+                                              frontendConnector: FrontendConnector
                                             )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport
@@ -78,6 +79,7 @@ class PspSchemeDashboardController @Inject()(
 
           for {
             aftPspSchemeDashboardCards <- aftPspSchemeDashboardCards(schemeStatus, srn, pspDetails.authorisingPSAID)
+            erPspSchemeDashboardCard <- frontendConnector.retrieveEventReportingPartial
             listOfSchemes <- listSchemesConnector.getListOfSchemesForPsp(request.pspIdOrException.id)
             _ <- userAnswersCacheConnector.upsert(request.externalId, userAnswers.json)
           } yield {
@@ -86,6 +88,7 @@ class PspSchemeDashboardController @Inject()(
                 Ok(view(
                   schemeName = (userAnswers.json \ "schemeName").as[String],
                   aftPspSchemeDashboardCards = aftPspSchemeDashboardCards,
+                  evPspSchemeDashboardCard = erPspSchemeDashboardCard,
                   cards = service.getTiles(
                     srn = srn,
                     pstr = (userAnswers.json \ "pstr").as[String],

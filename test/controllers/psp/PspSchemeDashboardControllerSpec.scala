@@ -17,7 +17,7 @@
 package controllers.psp
 
 import config.FrontendAppConfig
-import connectors.UserAnswersCacheConnector
+import connectors.{FrontendConnector, UserAnswersCacheConnector}
 import connectors.admin.MinimalConnector
 import connectors.scheme.{ListOfSchemesConnector, SchemeDetailsConnector}
 import controllers.ControllerSpecBase
@@ -57,6 +57,7 @@ class PspSchemeDashboardControllerSpec
   private val appConfig: FrontendAppConfig = mock[FrontendAppConfig]
   private val minimalConnector: MinimalConnector = mock[MinimalConnector]
   private val errorHandler: ErrorHandler = mock[ErrorHandler]
+  private val frontendConnector = mock[FrontendConnector]
 
   private val view: pspSchemeDashboard = app.injector.instanceOf[pspSchemeDashboard]
 
@@ -76,7 +77,8 @@ class PspSchemeDashboardControllerSpec
       controllerComponents = controllerComponents,
       service = pspSchemeDashboardService,
       view = view,
-      config = appConfig
+      config = appConfig,
+      frontendConnector = frontendConnector
     )
 
   private def practitionerCard(clientReference: Option[String]): PspSchemeDashboardCardViewModel =
@@ -121,11 +123,13 @@ class PspSchemeDashboardControllerSpec
   private def viewAsString(
                             clientReference: Option[String] = None,
                             openDate: Option[String] = None,
-                            aftReturnsCard: Html = aftPspSchemeDashboardCards
+                            aftReturnsCard: Html = aftPspSchemeDashboardCards,
+                            evPspCard: Html = evPspSchemeDashboardCard
                           ): String = view(
     schemeName = schemeName,
     cards = cards(clientReference, openDate),
     aftPspSchemeDashboardCards = aftReturnsCard,
+    evPspSchemeDashboardCard = evPspCard,
     returnLink = Some(returnLink)
   )(
     fakeRequest,
@@ -153,6 +157,8 @@ class PspSchemeDashboardControllerSpec
 
   "PspSchemeDashboardController.onPageLoad" must {
     "return ok and correct cards when start aft is allowed" in {
+      when(frontendConnector.retrieveEventReportingPartial(any(), any()))
+        .thenReturn(Future.successful(evPspSchemeDashboardCard))
       when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
         .thenReturn(Future.successful(ua()))
       when(minimalConnector.getMinimalPspDetails(any())(any(), any()))
@@ -170,6 +176,8 @@ class PspSchemeDashboardControllerSpec
     }
 
     "return ok and correct cards when start aft is not allowed" in {
+      when(frontendConnector.retrieveEventReportingPartial(any(), any()))
+        .thenReturn(Future.successful(evPspSchemeDashboardCard))
       when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
         .thenReturn(Future.successful(ua("pending")))
       when(minimalConnector.getMinimalPspDetails(any())(any(), any()))
@@ -187,6 +195,8 @@ class PspSchemeDashboardControllerSpec
     }
 
     "return ok and correct cards when open date and client ref are populated" in {
+      when(frontendConnector.retrieveEventReportingPartial(any(), any()))
+        .thenReturn(Future.successful(evPspSchemeDashboardCard))
       when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
         .thenReturn(Future.successful(ua()))
       when(minimalConnector.getMinimalPspDetails(any())(any(), any()))
@@ -203,6 +213,8 @@ class PspSchemeDashboardControllerSpec
     }
 
     "return not found when list schemes does not come back" in {
+      when(frontendConnector.retrieveEventReportingPartial(any(), any()))
+        .thenReturn(Future.successful(evPspSchemeDashboardCard))
       when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
         .thenReturn(Future.successful(ua()))
       when(minimalConnector.getMinimalPspDetails(any())(any(), any()))
@@ -304,5 +316,5 @@ object PspSchemeDashboardControllerSpec {
       linkText = "View the registered scheme details"
     )
   private val aftPspSchemeDashboardCards = Html("psp-scheme-dashboard-cards-html")
-
+  private val evPspSchemeDashboardCard = Html("psp-scheme-dashboard-cards-html")
 }
