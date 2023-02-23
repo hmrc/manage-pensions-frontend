@@ -21,15 +21,18 @@ import connectors._
 import connectors.admin.{DelimitedAdminException, MinimalConnector}
 import connectors.scheme.{ListOfSchemesConnector, PensionSchemeVarianceLockConnector, SchemeDetailsConnector}
 import controllers.actions._
-import identifiers.{SchemeNameId, SchemeSrnId, SchemeStatusId}
+import identifiers.{EventReportingId, SchemeNameId, SchemeSrnId, SchemeStatusId}
 import models._
 import models.requests.AuthenticatedRequest
 import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import play.twirl.api.Html
 import services.PsaSchemeDashboardService
+import uk.gov.hmrc.http.SessionKeys
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.UserAnswers
+import utils.annotations.SessionDataCache
 import views.html.psa.psaSchemeDashboard
 
 import javax.inject.Inject
@@ -41,6 +44,7 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
                                              schemeVarianceLockConnector: PensionSchemeVarianceLockConnector,
                                              authenticate: AuthAction,
                                              userAnswersCacheConnector: UserAnswersCacheConnector,
+                                             @SessionDataCache sessionDataCacheConnector: UserAnswersCacheConnector,
                                              val controllerComponents: MessagesControllerComponents,
                                              psaSchemeDashboardService: PsaSchemeDashboardService,
                                              view: psaSchemeDashboard,
@@ -60,13 +64,32 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
             getSchemeAndLock(srn).flatMap { case (userAnswers, lock, listOfSchemes) =>
               val schemeName = userAnswers.get(SchemeNameId).getOrElse("")
               val schemeStatus = userAnswers.get(SchemeStatusId).getOrElse("")
-              val updatedUa = userAnswers.set(SchemeSrnId)(srn.id).flatMap(_.set(SchemeNameId)(schemeName)).asOpt.getOrElse(userAnswers)
+              val updatedUa = userAnswers.set(SchemeSrnId)(srn.id)
+                .flatMap(_.set(SchemeNameId)(schemeName))
+                .asOpt.getOrElse(userAnswers)
+              def pstr = listOfSchemes.schemeDetails.flatMap(_.find(_.referenceNumber.contains(srn))).flatMap(_.pstr)
+              def eventReportingData = (request.session.get(SessionKeys.sessionId), pstr) match {
+                case (Some(sessionId), Some(pstr)) => Some(
+                  EventReporting(
+                    pstr,
+                    schemeName,
+                    routes.PsaSchemeDashboardController.onPageLoad(srn).absoluteURL()
+                  ) -> sessionId
+                )
+                case _ => None
+              }
               (for {
                 aftHtml <- retrieveAftTilesHtml(srn, schemeStatus)
-                erHtml <- frontendConnector.retrieveEventReportingPartial
                 _ <- userAnswersCacheConnector.upsert(request.externalId, updatedUa.json)
+                _ <- eventReportingData.map { case (data, sessionId) =>
+                  sessionDataCacheConnector.upsert(sessionId, Json.toJson(Map(EventReportingId.toString -> data)))
+                }.getOrElse(Future.successful(Json.obj()))
               } yield {
-                psaSchemeDashboardService.cards(srn, lock, listOfSchemes, userAnswers).map { cards =>
+                for {
+                  erHtml <- eventReportingData.map(_ => frontendConnector.retrieveEventReportingPartial)
+                    .getOrElse(Future.successful(Html("")))
+                  cards <- psaSchemeDashboardService.cards(srn, lock, listOfSchemes, userAnswers)
+                } yield {
                   Ok(view(schemeName, aftHtml, erHtml, cards))
                 }
               }).flatten
