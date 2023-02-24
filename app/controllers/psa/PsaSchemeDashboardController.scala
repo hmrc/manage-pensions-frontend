@@ -21,7 +21,7 @@ import connectors._
 import connectors.admin.{DelimitedAdminException, MinimalConnector}
 import connectors.scheme.{ListOfSchemesConnector, PensionSchemeVarianceLockConnector, SchemeDetailsConnector}
 import controllers.actions._
-import identifiers.{EventReportingId, SchemeNameId, SchemeSrnId, SchemeStatusId}
+import identifiers.{SchemeNameId, SchemeSrnId, SchemeStatusId}
 import models._
 import models.requests.AuthenticatedRequest
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -29,9 +29,8 @@ import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import play.twirl.api.Html
 import services.PsaSchemeDashboardService
-import uk.gov.hmrc.http.SessionKeys
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.UserAnswers
+import utils.{EventReportingHelper, UserAnswers}
 import utils.annotations.SessionDataCache
 import views.html.psa.psaSchemeDashboard
 
@@ -67,22 +66,18 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
               val updatedUa = userAnswers.set(SchemeSrnId)(srn.id)
                 .flatMap(_.set(SchemeNameId)(schemeName))
                 .asOpt.getOrElse(userAnswers)
-              def pstr = listOfSchemes.schemeDetails.flatMap(_.find(_.referenceNumber.contains(srn))).flatMap(_.pstr)
-              def eventReportingData = (request.session.get(SessionKeys.sessionId), pstr) match {
-                case (Some(sessionId), Some(pstr)) => Some(
-                  EventReporting(
-                    pstr,
-                    schemeName,
-                    routes.PsaSchemeDashboardController.onPageLoad(srn).absoluteURL()
-                  ) -> sessionId
-                )
-                case _ => None
-              }
+
+              val eventReportingData = EventReportingHelper.eventReportingData(
+                srn,
+                listOfSchemes,
+                schemeName,
+                controllers.psa.routes.PsaSchemeDashboardController.onPageLoad(srn))
+
               (for {
                 aftHtml <- retrieveAftTilesHtml(srn, schemeStatus)
                 _ <- userAnswersCacheConnector.upsert(request.externalId, updatedUa.json)
-                _ <- eventReportingData.map { case (data, sessionId) =>
-                  sessionDataCacheConnector.upsert(sessionId, Json.toJson(Map(EventReportingId.toString -> data)))
+                _ <- eventReportingData.map { data =>
+                  EventReportingHelper.storeData(sessionDataCacheConnector, data)
                 }.getOrElse(Future.successful(Json.obj()))
               } yield {
                 for {

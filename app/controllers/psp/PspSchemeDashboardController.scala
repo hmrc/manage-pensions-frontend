@@ -35,7 +35,8 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import play.twirl.api.Html
 import services.{PspSchemeDashboardService, SchemeDetailsService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.UserAnswers
+import utils.annotations.SessionDataCache
+import utils.{EventReportingHelper, UserAnswers}
 import viewmodels.Message
 import views.html.psp.pspSchemeDashboard
 
@@ -50,6 +51,7 @@ class PspSchemeDashboardController @Inject()(
                                               errorHandler: ErrorHandler,
                                               listSchemesConnector: ListOfSchemesConnector,
                                               userAnswersCacheConnector: UserAnswersCacheConnector,
+                                              @SessionDataCache sessionCacheConnector: UserAnswersCacheConnector,
                                               schemeDetailsService: SchemeDetailsService,
                                               val controllerComponents: MessagesControllerComponents,
                                               service: PspSchemeDashboardService,
@@ -77,18 +79,20 @@ class PspSchemeDashboardController @Inject()(
           val isSchemeOpen: Boolean =
             schemeStatus.equalsIgnoreCase("open")
 
+          val schemeName = (userAnswers.json \ "schemeName").as[String]
+
           for {
             aftPspSchemeDashboardCards <- aftPspSchemeDashboardCards(schemeStatus, srn, pspDetails.authorisingPSAID)
-            erPspSchemeDashboardCard <- frontendConnector.retrieveEventReportingPartial
             listOfSchemes <- listSchemesConnector.getListOfSchemesForPsp(request.pspIdOrException.id)
             _ <- userAnswersCacheConnector.upsert(request.externalId, userAnswers.json)
+            erHtml <- getEventReportingHtml(srn, listOfSchemes, schemeName)
           } yield {
             listOfSchemes match {
               case Right(list) =>
                 Ok(view(
-                  schemeName = (userAnswers.json \ "schemeName").as[String],
+                  schemeName = schemeName,
                   aftPspSchemeDashboardCards = aftPspSchemeDashboardCards,
-                  evPspSchemeDashboardCard = erPspSchemeDashboardCard,
+                  evPspSchemeDashboardCard = erHtml,
                   cards = service.getTiles(
                     srn = srn,
                     pstr = (userAnswers.json \ "pstr").as[String],
@@ -111,6 +115,25 @@ class PspSchemeDashboardController @Inject()(
           Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad))
         }
       }
+  }
+
+  private def getEventReportingHtml(srn:String, list:Either[_,ListOfSchemes], schemeName:String)(implicit authenticatedRequest: AuthenticatedRequest[_]) = {
+    list match {
+      case Left(_) =>
+        Future.successful(Html(""))
+      case Right(value) =>
+        val eventReportingData = EventReportingHelper.eventReportingData(
+          srn,
+          value,
+          schemeName,
+          routes.PspSchemeDashboardController.onPageLoad(srn))
+        eventReportingData.map { data =>
+          EventReportingHelper.storeData(sessionCacheConnector, data).flatMap { _ =>
+            frontendConnector.retrieveEventReportingPartial
+          }
+        }.getOrElse(Future.successful(Html("")))
+    }
+
   }
 
   private def aftPspSchemeDashboardCards(schemeStatus: String, srn: String, authorisingPsaId: String)
