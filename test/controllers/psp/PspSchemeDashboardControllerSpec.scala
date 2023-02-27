@@ -35,7 +35,7 @@ import play.twirl.api.Html
 import services.{PspSchemeDashboardService, SchemeDetailsService}
 import testhelpers.CommonBuilders.{listOfSchemesResponse, pspDetails}
 import uk.gov.hmrc.domain.PspId
-import uk.gov.hmrc.http.HttpResponse
+import uk.gov.hmrc.http.{HttpResponse, SessionKeys}
 import utils.UserAnswers
 import viewmodels.PspSchemeDashboardCardViewModel
 import views.html.psp.pspSchemeDashboard
@@ -61,6 +61,8 @@ class PspSchemeDashboardControllerSpec
 
   private val view: pspSchemeDashboard = app.injector.instanceOf[pspSchemeDashboard]
 
+  private def sessionRequest = fakeRequest.withSession(SessionKeys.sessionId-> "testSessionId")
+
   private def authAction(pspId: String): AuthAction =
     FakeAuthAction.createWithPspId(pspId)
 
@@ -73,6 +75,7 @@ class PspSchemeDashboardControllerSpec
       errorHandler = errorHandler,
       listSchemesConnector = listSchemesConnector,
       userAnswersCacheConnector = userAnswersCacheConnector,
+      sessionCacheConnector = userAnswersCacheConnector,
       schemeDetailsService = schemeDetailsService,
       controllerComponents = controllerComponents,
       service = pspSchemeDashboardService,
@@ -169,7 +172,7 @@ class PspSchemeDashboardControllerSpec
         .thenReturn(cards(None, None))
 
 
-      val result = controller().onPageLoad(srn)(fakeRequest)
+      val result = controller().onPageLoad(srn)(sessionRequest)
 
       status(result) mustBe OK
       contentAsString(result) mustBe viewAsString()
@@ -188,7 +191,7 @@ class PspSchemeDashboardControllerSpec
         .thenReturn(cards(None, None))
 
 
-      val result = controller().onPageLoad(srn)(fakeRequest)
+      val result = controller().onPageLoad(srn)(sessionRequest)
 
       status(result) mustBe OK
       contentAsString(result) mustBe viewAsString(aftReturnsCard = Html(""))
@@ -206,7 +209,7 @@ class PspSchemeDashboardControllerSpec
       when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any())(any()))
         .thenReturn(cards(Some(clientRef), Some(authDate)))
 
-      val result = controller().onPageLoad(srn)(fakeRequest)
+      val result = controller().onPageLoad(srn)(sessionRequest)
 
       status(result) mustBe OK
       contentAsString(result) mustBe viewAsString(Some(clientRef), Some(authDate))
@@ -273,7 +276,7 @@ object PspSchemeDashboardControllerSpec {
   private val psaName = "Test Psa Name"
   private val schemeName = "Test Scheme"
   private val pstr = "Test pstr"
-  private val srn = "Test srn"
+  private val srn = "S1000000456"
   private val authDate = "2020-01-01"
   private val clientRef = "123"
 
@@ -316,5 +319,5 @@ object PspSchemeDashboardControllerSpec {
       linkText = "View the registered scheme details"
     )
   private val aftPspSchemeDashboardCards = Html("psp-scheme-dashboard-cards-html")
-  private val evPspSchemeDashboardCard = Html("psp-scheme-dashboard-cards-html")
+  private val evPspSchemeDashboardCard = Html("ev-scheme-dashboard-cards-html")
 }
