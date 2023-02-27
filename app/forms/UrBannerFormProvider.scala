@@ -25,7 +25,7 @@ import javax.inject.Inject
 
 class UrBannerFormProvider @Inject() extends Mappings with Transforms with EmailMapping {
 
-  private val regexPersonOrOrganisationName =   """^[a-zA-Z\u00C0-\u00FF '??\u2014\u2013\u2010\u002d]{1,107}"""
+  private val regexPersonOrOrganisationName =   """^[a-zA-ZÀ-ÿ '??—–‐-]{1,107}"""
   private val maxLengthName = 35
 
   def apply(): Form[URBanner] =
