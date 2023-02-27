@@ -73,21 +73,19 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
                 schemeName,
                 controllers.psa.routes.PsaSchemeDashboardController.onPageLoad(srn))
 
+              println(eventReportingData)
               (for {
                 aftHtml <- retrieveAftTilesHtml(srn, schemeStatus)
                 _ <- userAnswersCacheConnector.upsert(request.externalId, updatedUa.json)
                 _ <- eventReportingData.map { data =>
                   EventReportingHelper.storeData(sessionDataCacheConnector, data)
                 }.getOrElse(Future.successful(Json.obj()))
+                erHtml <- eventReportingData.map(_ => frontendConnector.retrieveEventReportingPartial)
+                  .getOrElse(Future.successful(Html("")))
+                cards <- psaSchemeDashboardService.cards(srn, lock, listOfSchemes, userAnswers)
               } yield {
-                for {
-                  erHtml <- eventReportingData.map(_ => frontendConnector.retrieveEventReportingPartial)
-                    .getOrElse(Future.successful(Html("")))
-                  cards <- psaSchemeDashboardService.cards(srn, lock, listOfSchemes, userAnswers)
-                } yield {
-                  Ok(view(schemeName, aftHtml, erHtml, cards))
-                }
-              }).flatten
+                Ok(view(schemeName, aftHtml, erHtml, cards))
+              })
             }
         }
       } recoverWith {
