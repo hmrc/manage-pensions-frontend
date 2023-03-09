@@ -84,7 +84,7 @@ class BannerController @Inject()(
           for {
             minDetails <- minConnector.getMinimalPsaDetails(psaId)
             _ <- emailConnector.sendEmail(SendEmailRequest.apply(
-              to = List("david.saunders@digital.hmrc.gov.uk"),
+              to = List(appConfig.urBannerEmail),
               templateId = "pods_user_research_banner",
               parameters = Map(
                 "psaName" -> value.indOrgName,
@@ -111,7 +111,7 @@ class BannerController @Inject()(
           for {
             minDetails <- minConnector.getMinimalPspDetails(pspId)
             _ <- emailConnector.sendEmail(SendEmailRequest.apply(
-              to = List("david.saunders@digital.hmrc.gov.uk"),
+              to = List(appConfig.urBannerEmail),
               templateId = "pods_user_research_banner",
               parameters = Map(
                 "psaName" -> value.indOrgName,

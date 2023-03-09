@@ -25,7 +25,7 @@ import play.api.test.FakeRequest
 
 class UrBannerFormProviderSpec extends FormBehaviours with GuiceOneAppPerSuite with EmailBehaviours {
 
-  private val regexPersonOrOrganisationName =   """^[a-zA-ZÀ-ÿ '??—–‐-]{1,107}"""
+  private val regexPersonOrOrganisationName =   """^[a-zA-ZÀ-ÿ '??—–‐-]{1,135}"""
   private val email = "email"
   private val name = "indOrgName"
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
@@ -79,8 +79,8 @@ class UrBannerFormProviderSpec extends FormBehaviours with GuiceOneAppPerSuite w
     behave like fieldWithMaxLength(
       form,
       name,
-      35,
-      FormError(name, maxLengthNameKey, Seq(35))
+      135,
+      FormError(name, maxLengthNameKey, Seq(135))
     )
   }
 }
