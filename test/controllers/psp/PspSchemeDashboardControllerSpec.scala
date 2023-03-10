@@ -17,7 +17,7 @@
 package controllers.psp
 
 import config.FrontendAppConfig
-import connectors.UserAnswersCacheConnector
+import connectors.{FrontendConnector, UserAnswersCacheConnector}
 import connectors.admin.MinimalConnector
 import connectors.scheme.{ListOfSchemesConnector, SchemeDetailsConnector}
 import controllers.ControllerSpecBase
@@ -35,7 +35,7 @@ import play.twirl.api.Html
 import services.{PspSchemeDashboardService, SchemeDetailsService}
 import testhelpers.CommonBuilders.{listOfSchemesResponse, pspDetails}
 import uk.gov.hmrc.domain.PspId
-import uk.gov.hmrc.http.HttpResponse
+import uk.gov.hmrc.http.{HttpResponse, SessionKeys}
 import utils.UserAnswers
 import viewmodels.PspSchemeDashboardCardViewModel
 import views.html.psp.pspSchemeDashboard
@@ -57,8 +57,11 @@ class PspSchemeDashboardControllerSpec
   private val appConfig: FrontendAppConfig = mock[FrontendAppConfig]
   private val minimalConnector: MinimalConnector = mock[MinimalConnector]
   private val errorHandler: ErrorHandler = mock[ErrorHandler]
+  private val frontendConnector = mock[FrontendConnector]
 
   private val view: pspSchemeDashboard = app.injector.instanceOf[pspSchemeDashboard]
+
+  private def sessionRequest = fakeRequest.withSession(SessionKeys.sessionId-> "testSessionId")
 
   private def authAction(pspId: String): AuthAction =
     FakeAuthAction.createWithPspId(pspId)
@@ -72,11 +75,13 @@ class PspSchemeDashboardControllerSpec
       errorHandler = errorHandler,
       listSchemesConnector = listSchemesConnector,
       userAnswersCacheConnector = userAnswersCacheConnector,
+      sessionCacheConnector = userAnswersCacheConnector,
       schemeDetailsService = schemeDetailsService,
       controllerComponents = controllerComponents,
       service = pspSchemeDashboardService,
       view = view,
-      config = appConfig
+      config = appConfig,
+      frontendConnector = frontendConnector
     )
 
   private def practitionerCard(clientReference: Option[String]): PspSchemeDashboardCardViewModel =
@@ -121,11 +126,13 @@ class PspSchemeDashboardControllerSpec
   private def viewAsString(
                             clientReference: Option[String] = None,
                             openDate: Option[String] = None,
-                            aftReturnsCard: Html = aftPspSchemeDashboardCards
+                            aftReturnsCard: Html = aftPspSchemeDashboardCards,
+                            evPspCard: Html = evPspSchemeDashboardCard
                           ): String = view(
     schemeName = schemeName,
     cards = cards(clientReference, openDate),
     aftPspSchemeDashboardCards = aftReturnsCard,
+    evPspSchemeDashboardCard = evPspCard,
     returnLink = Some(returnLink)
   )(
     fakeRequest,
@@ -153,6 +160,8 @@ class PspSchemeDashboardControllerSpec
 
   "PspSchemeDashboardController.onPageLoad" must {
     "return ok and correct cards when start aft is allowed" in {
+      when(frontendConnector.retrieveEventReportingPartial(any(), any()))
+        .thenReturn(Future.successful(evPspSchemeDashboardCard))
       when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
         .thenReturn(Future.successful(ua()))
       when(minimalConnector.getMinimalPspDetails(any())(any(), any()))
@@ -163,13 +172,15 @@ class PspSchemeDashboardControllerSpec
         .thenReturn(cards(None, None))
 
 
-      val result = controller().onPageLoad(srn)(fakeRequest)
+      val result = controller().onPageLoad(srn)(sessionRequest)
 
       status(result) mustBe OK
       contentAsString(result) mustBe viewAsString()
     }
 
     "return ok and correct cards when start aft is not allowed" in {
+      when(frontendConnector.retrieveEventReportingPartial(any(), any()))
+        .thenReturn(Future.successful(evPspSchemeDashboardCard))
       when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
         .thenReturn(Future.successful(ua("pending")))
       when(minimalConnector.getMinimalPspDetails(any())(any(), any()))
@@ -180,13 +191,15 @@ class PspSchemeDashboardControllerSpec
         .thenReturn(cards(None, None))
 
 
-      val result = controller().onPageLoad(srn)(fakeRequest)
+      val result = controller().onPageLoad(srn)(sessionRequest)
 
       status(result) mustBe OK
       contentAsString(result) mustBe viewAsString(aftReturnsCard = Html(""))
     }
 
     "return ok and correct cards when open date and client ref are populated" in {
+      when(frontendConnector.retrieveEventReportingPartial(any(), any()))
+        .thenReturn(Future.successful(evPspSchemeDashboardCard))
       when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
         .thenReturn(Future.successful(ua()))
       when(minimalConnector.getMinimalPspDetails(any())(any(), any()))
@@ -196,13 +209,15 @@ class PspSchemeDashboardControllerSpec
       when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any())(any()))
         .thenReturn(cards(Some(clientRef), Some(authDate)))
 
-      val result = controller().onPageLoad(srn)(fakeRequest)
+      val result = controller().onPageLoad(srn)(sessionRequest)
 
       status(result) mustBe OK
       contentAsString(result) mustBe viewAsString(Some(clientRef), Some(authDate))
     }
 
     "return not found when list schemes does not come back" in {
+      when(frontendConnector.retrieveEventReportingPartial(any(), any()))
+        .thenReturn(Future.successful(evPspSchemeDashboardCard))
       when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
         .thenReturn(Future.successful(ua()))
       when(minimalConnector.getMinimalPspDetails(any())(any(), any()))
@@ -261,7 +276,7 @@ object PspSchemeDashboardControllerSpec {
   private val psaName = "Test Psa Name"
   private val schemeName = "Test Scheme"
   private val pstr = "Test pstr"
-  private val srn = "Test srn"
+  private val srn = "S1000000456"
   private val authDate = "2020-01-01"
   private val clientRef = "123"
 
@@ -304,5 +319,5 @@ object PspSchemeDashboardControllerSpec {
       linkText = "View the registered scheme details"
     )
   private val aftPspSchemeDashboardCards = Html("psp-scheme-dashboard-cards-html")
-
+  private val evPspSchemeDashboardCard = Html("ev-scheme-dashboard-cards-html")
 }

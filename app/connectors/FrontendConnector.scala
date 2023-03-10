@@ -37,6 +37,9 @@ class FrontendConnector @Inject()(http: HttpClient, config: FrontendAppConfig) {
                            (implicit request: Request[A], ec: ExecutionContext): Future[Html] =
     retrievePartial(config.aftPartialHtmlUrl.format(srn))
 
+  def retrieveEventReportingPartial[A](implicit request: Request[A], ec: ExecutionContext): Future[Html] =
+    retrievePartial(config.eventReportingPartialHtmlUrl)
+
   def retrievePaymentsAndChargesPartial[A](srn: String)
                                           (implicit request: Request[A], ec: ExecutionContext): Future[Html] =
     retrievePartial(config.paymentsAndChargesPartialHtmlUrl.format(srn))
@@ -74,7 +77,7 @@ class FrontendConnector @Inject()(http: HttpClient, config: FrontendAppConfig) {
       case HtmlPartial.Success(_, content) =>
         content
       case HtmlPartial.Failure(_, _) =>
-        logger.warn("Failed to retrieve AFT partial")
+        logger.warn("Failed to retrieve partial")
         Html("")
     }
   }

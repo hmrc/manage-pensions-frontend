@@ -39,6 +39,7 @@ import play.api.libs.json.{JsArray, Json}
 import play.api.test.Helpers.{contentAsString, _}
 import play.twirl.api.Html
 import services.PsaSchemeDashboardService
+import uk.gov.hmrc.http.SessionKeys
 import utils.DateHelper.formatter
 import utils.UserAnswers
 import viewmodels.{CardSubHeading, CardSubHeadingParam, CardViewModel, Message}
@@ -62,6 +63,7 @@ class PsaSchemeDashboardControllerSpec
   private val schemeName = "Benefits Scheme"
   private val srn = SchemeReferenceNumber("S1000000456")
   private val aftHtml = Html("test-aft-html")
+  private val erHtml = Html("test-er-html")
 
   private val mockMinimalPsaConnector: MinimalConnector =
     mock[MinimalConnector]
@@ -71,6 +73,8 @@ class PsaSchemeDashboardControllerSpec
   private val windUpDate = "2020-02-01"
   private val pstr = "pstr"
   private val listOfSchemes: ListOfSchemes = ListOfSchemes("", "", Some(List(SchemeDetails(name, srn, "Open", Some(date), Some(windUpDate), Some(pstr), None))))
+
+  private def sessionRequest = fakeRequest.withSession(SessionKeys.sessionId-> "testSessionId")
 
   private def psaCard(inviteLink: Seq[Link] = inviteLink)
                      (implicit messages: Messages): CardViewModel = CardViewModel(
@@ -140,6 +144,7 @@ class PsaSchemeDashboardControllerSpec
       fakeListOfSchemesConnector,
       fakeSchemeLockConnector,
       FakeAuthAction,
+      FakeUserAnswersCacheConnector,
       FakeUserAnswersCacheConnector,
       controllerComponents,
       mockService,
@@ -230,12 +235,13 @@ class PsaSchemeDashboardControllerSpec
         .thenReturn(Future.successful(Right(listOfSchemes)))
       when(mockService.cards(any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Seq(schemeCard(), psaCard(), pspCard())))
+      when(mockFrontendConnector.retrieveEventReportingPartial(any(), any())).thenReturn(Future(erHtml))
 
-      val result = controller().onPageLoad(srn)(fakeRequest)
+      val result = controller().onPageLoad(srn)(sessionRequest)
       status(result) mustBe OK
 
-      val expected = psaSchemeDashboardView(schemeName, aftHtml = Html(""),
-        Seq(schemeCard(), psaCard(), pspCard()))(fakeRequest, messages).toString()
+      val expected = psaSchemeDashboardView(schemeName, aftHtml = Html(""), erHtml,
+        Seq(schemeCard(), psaCard(), pspCard()))(sessionRequest, messages).toString()
       contentAsString(result) mustBe expected
     }
 
@@ -265,12 +271,13 @@ class PsaSchemeDashboardControllerSpec
       when(mockService.cards(any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Seq(schemeCard(), psaCard(), pspCard())))
       when(mockFrontendConnector.retrieveAftPartial(any())(any(), any())).thenReturn(Future(aftHtml))
+      when(mockFrontendConnector.retrieveEventReportingPartial(any(), any())).thenReturn(Future(erHtml))
 
-      val result = controller().onPageLoad(srn)(fakeRequest)
+      val result = controller().onPageLoad(srn)(sessionRequest)
       status(result) mustBe OK
 
-      val expected = psaSchemeDashboardView(schemeName, aftHtml = aftHtml,
-        Seq(schemeCard(), psaCard(), pspCard()))(fakeRequest, messages).toString()
+      val expected = psaSchemeDashboardView(schemeName, aftHtml = aftHtml, erHtml,
+        Seq(schemeCard(), psaCard(), pspCard()))(sessionRequest, messages).toString()
       contentAsString(result) mustBe expected
     }
   }

@@ -59,8 +59,9 @@ Port: 8204
 
 Link: http://localhost:8204/manage-pension-schemes
 
-Enrolment: `HMRC-PODS-ORG` `PsaId` `A2100005` (local and Staging environments only)
+Enrolment PSA: `HMRC-PODS-ORG` `PsaId` `A2100005` (local and Staging environments only)
 
+Enrolment PSP: `HMRC-PODSPP-ORG` `PspId` `21000005` (local and Staging environments only)
 ## Tests and prototype
 
 [View the prototype here](https://pods-prototype.herokuapp.com/)

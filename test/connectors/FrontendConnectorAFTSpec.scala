@@ -27,7 +27,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.partials.HeaderCarrierForPartials
 import utils.WireMockHelper
 
-class FrontendConnectorSpec extends AsyncWordSpec with Matchers with WireMockHelper with OptionValues {
+class FrontendConnectorAFTSpec extends AsyncWordSpec with Matchers with WireMockHelper with OptionValues {
 
   override protected def portConfigKey: String = "microservice.services.aft-frontend.port"
 
@@ -36,19 +36,17 @@ class FrontendConnectorSpec extends AsyncWordSpec with Matchers with WireMockHel
   private val aftPartialUrl = "/manage-pension-scheme-accounting-for-tax/srn/psa-scheme-dashboard-cards"
   private val pspSchemeDashboardCardsUrl = "/manage-pension-scheme-accounting-for-tax/psp-scheme-dashboard-cards"
   private val paymentsAndChargesPartialHtmlUrl = "/manage-pension-scheme-accounting-for-tax/srn/payments-and-charges-partial"
-  private val schemeUrlsPartialHtmlUrl = "/register-pension-scheme/urls-partial"
   private val retrievePenaltiesUrlPartialHtmlUrl = "/manage-pension-scheme-accounting-for-tax/penalties-partial"
-  private val migrationUrlsHtmlUrl = "/add-pension-scheme/migration-tile"
+
   private val srn = "srn"
   implicit val request: FakeRequest[_] = FakeRequest("", "")
   private val aftHtml: Html = Html("test-aft-html")
   private val pspSchemeDashboardCardsHtml: Html = Html("test-psp-scheme-dashboard-cards-html")
   private val paymentsAndChargesHtml: Html = Html("test-payments-and-charges-html")
-  private val schemeUrlsPartialHtml: Html = Html("test-scheme-partial-html")
   private val retrievePenaltiesUrlPartialHtml: Html = Html("test-penalties-partial-html")
-  private val migrationUrlsHtml: Html = Html("test-migration-partial-html")
 
-  "FrontedConnector" when {
+
+  "FrontendConnector for AFT" when {
     "asked to retrieve AFT models" should {
       "call the micro service with the correct uri and return the contents" in {
         server.stubFor(
@@ -83,30 +81,10 @@ class FrontendConnectorSpec extends AsyncWordSpec with Matchers with WireMockHel
 
         val connector = injector.instanceOf[FrontendConnector]
 
-        connector.retrievePaymentsAndChargesPartial(srn).map(paymentsAndChargesHtml =>
-          paymentsAndChargesHtml mustBe paymentsAndChargesHtml
+        connector.retrievePaymentsAndChargesPartial(srn).map(html =>
+          html mustBe paymentsAndChargesHtml
         )
       }
-    }
-  }
-
-  "asked to retrieve Scheme Urls Partial" should {
-    "call the micro service with the correct uri and return the contents" in {
-      server.stubFor(
-        get(urlEqualTo(schemeUrlsPartialHtmlUrl))
-          .willReturn(
-            aResponse()
-              .withStatus(Status.OK)
-              .withHeader("Content-Type", "application/json")
-              .withBody(schemeUrlsPartialHtml.toString())
-          )
-      )
-
-      val connector = injector.instanceOf[FrontendConnector]
-
-      connector.retrieveSchemeUrlsPartial.map(schemeUrlsPartialHtml =>
-        schemeUrlsPartialHtml mustBe schemeUrlsPartialHtml
-      )
     }
   }
 
@@ -126,26 +104,6 @@ class FrontendConnectorSpec extends AsyncWordSpec with Matchers with WireMockHel
 
       connector.retrievePenaltiesUrlPartial.map(penaltiesHtml =>
         penaltiesHtml mustBe retrievePenaltiesUrlPartialHtml
-      )
-    }
-  }
-
-  "asked to retrieve Migration Urls Partial" should {
-    "call the micro service with the correct uri and return the contents" in {
-      server.stubFor(
-        get(urlEqualTo(migrationUrlsHtmlUrl))
-          .willReturn(
-            aResponse()
-              .withStatus(Status.OK)
-              .withHeader("Content-Type", "application/json")
-              .withBody(migrationUrlsHtml.toString())
-          )
-      )
-
-      val connector = injector.instanceOf[FrontendConnector]
-
-      connector.retrieveMigrationUrlsPartial.map(migrationUrlsHtml =>
-        migrationUrlsHtml mustBe migrationUrlsHtml
       )
     }
   }
