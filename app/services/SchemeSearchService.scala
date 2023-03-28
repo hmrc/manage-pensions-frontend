@@ -55,7 +55,8 @@ class SchemeSearchService @Inject()(listSchemesConnector: ListOfSchemesConnector
             )
 
           filterSearchResults(listOfSchemes.schemeDetails.getOrElse(List.empty[SchemeDetails]))
-        case _ => List.empty[SchemeDetails]
+        case Left(response) =>
+            throw new RuntimeException(s"Response status of ${response.status} returned from list schemes with response: ${response.body}")
       }
   }: Future[List[SchemeDetails]]
 
