@@ -21,7 +21,6 @@ import identifiers.EventReportingId
 import models.{EventReporting, ListOfSchemes}
 import models.requests.AuthenticatedRequest
 import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.Call
 import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -29,17 +28,15 @@ import scala.concurrent.{ExecutionContext, Future}
 object EventReportingHelper {
 
   final case class EventReportingData(data:EventReporting, sessionStorageKey:String)
-  def eventReportingData(srn:String, listOfSchemes: ListOfSchemes, schemeName:String, returnUrl: Call)
+  def eventReportingData(srn:String, listOfSchemes: ListOfSchemes, dataNoPstr: String => EventReporting)
                         (implicit request:AuthenticatedRequest[_]): Option[EventReportingData] = {
     val pstr = listOfSchemes.schemeDetails.flatMap (_.find (_.referenceNumber.contains (srn) ) ).flatMap (_.pstr)
     (request.session.get(SessionKeys.sessionId), pstr) match {
       case (Some(sessionId), Some(pstr)) => Some(
-        EventReportingData(EventReporting(
-          pstr,
-          schemeName,
-          returnUrl.absoluteURL()
-        ),
-        sessionId)
+        EventReportingData(
+          dataNoPstr(pstr),
+          sessionId
+        )
       )
       case _ => None
     }

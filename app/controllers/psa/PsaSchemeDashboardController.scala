@@ -70,8 +70,14 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
               val eventReportingData = EventReportingHelper.eventReportingData(
                 srn,
                 listOfSchemes,
-                schemeName,
-                controllers.psa.routes.PsaSchemeDashboardController.onPageLoad(srn))
+                pstr => EventReporting(
+                  pstr,
+                  schemeName,
+                  controllers.psa.routes.PsaSchemeDashboardController.onPageLoad(srn).absoluteURL(),
+                  Some(request.psaIdOrException.id),
+                  None
+                )
+              )
 
               for {
                 aftHtml <- retrieveAftTilesHtml(srn, schemeStatus)
