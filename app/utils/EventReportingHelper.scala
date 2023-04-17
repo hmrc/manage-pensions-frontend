@@ -28,14 +28,16 @@ import scala.concurrent.{ExecutionContext, Future}
 object EventReportingHelper {
 
   final case class EventReportingData(data:EventReporting, sessionStorageKey:String)
-
   def eventReportingData(srn:String, listOfSchemes: ListOfSchemes, dataNoPstr: String => EventReporting)
                         (implicit request:AuthenticatedRequest[_]): Option[EventReportingData] = {
     val pstr = listOfSchemes.schemeDetails.flatMap (_.find (_.referenceNumber.contains (srn) ) ).flatMap (_.pstr)
     (request.session.get(SessionKeys.sessionId), pstr) match {
-      case (Some(sessionId), Some(pstr)) =>
-        val erData = EventReportingData(dataNoPstr(pstr), sessionId)
-        Some(erData)
+      case (Some(sessionId), Some(pstr)) => Some(
+        EventReportingData(
+          dataNoPstr(pstr),
+          sessionId
+        )
+      )
       case _ => None
     }
   }
