@@ -18,7 +18,7 @@ package models
 
 import play.api.libs.json.{Format, Json}
 
-case class EventReporting(pstr:String, schemeName: String, returnUrl:String)
+case class EventReporting(pstr:String, schemeName: String, returnUrl:String, psaId:Option[String], pspId:Option[String])
 
 object EventReporting {
   implicit val format: Format[EventReporting] = Json.format[EventReporting]

@@ -121,12 +121,17 @@ class PspSchemeDashboardController @Inject()(
     list match {
       case Left(_) =>
         Future.successful(Html(""))
-      case Right(value) =>
+      case Right(listOfSchemes) =>
         val eventReportingData = EventReportingHelper.eventReportingData(
           srn,
-          value,
-          schemeName,
-          routes.PspSchemeDashboardController.onPageLoad(srn))
+          listOfSchemes,
+          pstr => EventReporting(
+            pstr,
+            schemeName,
+            routes.PspSchemeDashboardController.onPageLoad(srn).absoluteURL(),
+            None,
+            Some(authenticatedRequest.pspIdOrException.id)
+          ))
         eventReportingData.map { data =>
           EventReportingHelper.storeData(sessionCacheConnector, data).flatMap { _ =>
             frontendConnector.retrieveEventReportingPartial
