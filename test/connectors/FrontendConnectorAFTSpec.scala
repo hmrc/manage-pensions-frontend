@@ -33,7 +33,8 @@ class FrontendConnectorAFTSpec extends AsyncWordSpec with Matchers with WireMock
 
   implicit val headerCarrier: HeaderCarrierForPartials =
     HeaderCarrierForPartials(hc = HeaderCarrier())
-  private val aftPartialUrl = "/manage-pension-scheme-accounting-for-tax/srn/psa-scheme-dashboard-cards"
+  private val aftPartialUrl = "/manage-pension-scheme-accounting-for-tax/srn/psa-scheme-dashboard-aft-cards"
+  private val finInfoPartialUrl = "/manage-pension-scheme-accounting-for-tax/srn/psa-scheme-dashboard-fin-info-cards"
   private val pspSchemeDashboardCardsUrl = "/manage-pension-scheme-accounting-for-tax/psp-scheme-dashboard-cards"
   private val paymentsAndChargesPartialHtmlUrl = "/manage-pension-scheme-accounting-for-tax/srn/payments-and-charges-partial"
   private val retrievePenaltiesUrlPartialHtmlUrl = "/manage-pension-scheme-accounting-for-tax/penalties-partial"
@@ -41,6 +42,7 @@ class FrontendConnectorAFTSpec extends AsyncWordSpec with Matchers with WireMock
   private val srn = "srn"
   implicit val request: FakeRequest[_] = FakeRequest("", "")
   private val aftHtml: Html = Html("test-aft-html")
+  private val finInfoHtml: Html = Html("test-fininfo-html")
   private val pspSchemeDashboardCardsHtml: Html = Html("test-psp-scheme-dashboard-cards-html")
   private val paymentsAndChargesHtml: Html = Html("test-payments-and-charges-html")
   private val retrievePenaltiesUrlPartialHtml: Html = Html("test-penalties-partial-html")
@@ -48,7 +50,7 @@ class FrontendConnectorAFTSpec extends AsyncWordSpec with Matchers with WireMock
 
   "FrontendConnector for AFT" when {
     "asked to retrieve AFT models" should {
-      "call the micro service with the correct uri and return the contents" in {
+      "call the micro service with the correct uri and return the contents for aft" in {
         server.stubFor(
           get(urlEqualTo(aftPartialUrl))
             .willReturn(
@@ -63,6 +65,24 @@ class FrontendConnectorAFTSpec extends AsyncWordSpec with Matchers with WireMock
 
         connector.retrieveAftPartial(srn).map(aftModel =>
           aftModel mustBe aftHtml
+        )
+      }
+
+      "call the micro service with the correct uri and return the contents for fin info" in {
+        server.stubFor(
+          get(urlEqualTo(finInfoPartialUrl))
+            .willReturn(
+              aResponse()
+                .withStatus(Status.OK)
+                .withHeader("Content-Type", "application/json")
+                .withBody(finInfoHtml.toString())
+            )
+        )
+
+        val connector = injector.instanceOf[FrontendConnector]
+
+        connector.retrieveFinInfoPartial(srn).map(aftModel =>
+          aftModel mustBe finInfoHtml
         )
       }
     }

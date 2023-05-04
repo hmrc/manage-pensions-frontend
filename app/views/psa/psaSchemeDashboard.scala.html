@@ -25,7 +25,7 @@
     appConfig: FrontendAppConfig
 )
 
-@(schemeName: String, aftHtml: Html, erHtml: Html, cards: Seq[CardViewModel], subHeading: Option[String] = None, returnLink: Option[Link] = None)(implicit request: Request[_], messages: Messages)
+@(schemeName: String, aftHtml: Html, finInfoHtml: Html, erHtml: Html, cards: Seq[CardViewModel], subHeading: Option[String] = None, returnLink: Option[Link] = None)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = messages(schemeName), fullWidthLayout = true) {
 
@@ -37,6 +37,7 @@
 
             <div class="flex-container govuk-grid-row">
                 @aftHtml
+                @finInfoHtml
                 @erHtml
                 @for(card <- cards) {
                     @components.card(card)

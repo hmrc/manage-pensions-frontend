@@ -63,6 +63,7 @@ class PsaSchemeDashboardControllerSpec
   private val schemeName = "Benefits Scheme"
   private val srn = SchemeReferenceNumber("S1000000456")
   private val aftHtml = Html("test-aft-html")
+  private val finInfoHtml = Html("test-fininfo-html")
   private val erHtml = Html("test-er-html")
 
   private val mockMinimalPsaConnector: MinimalConnector =
@@ -240,7 +241,7 @@ class PsaSchemeDashboardControllerSpec
       val result = controller().onPageLoad(srn)(sessionRequest)
       status(result) mustBe OK
 
-      val expected = psaSchemeDashboardView(schemeName, aftHtml = Html(""), erHtml,
+      val expected = psaSchemeDashboardView(schemeName, aftHtml = Html(""), finInfoHtml = Html(""), erHtml,
         Seq(schemeCard(), psaCard(), pspCard()))(sessionRequest, messages).toString()
       contentAsString(result) mustBe expected
     }
@@ -271,12 +272,13 @@ class PsaSchemeDashboardControllerSpec
       when(mockService.cards(any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Seq(schemeCard(), psaCard(), pspCard())))
       when(mockFrontendConnector.retrieveAftPartial(any())(any(), any())).thenReturn(Future(aftHtml))
+      when(mockFrontendConnector.retrieveFinInfoPartial(any())(any(), any())).thenReturn(Future(finInfoHtml))
       when(mockFrontendConnector.retrieveEventReportingPartial(any(), any())).thenReturn(Future(erHtml))
 
       val result = controller().onPageLoad(srn)(sessionRequest)
       status(result) mustBe OK
 
-      val expected = psaSchemeDashboardView(schemeName, aftHtml = aftHtml, erHtml,
+      val expected = psaSchemeDashboardView(schemeName, aftHtml = aftHtml, finInfoHtml = finInfoHtml, erHtml,
         Seq(schemeCard(), psaCard(), pspCard()))(sessionRequest, messages).toString()
       contentAsString(result) mustBe expected
     }
