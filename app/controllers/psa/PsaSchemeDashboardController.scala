@@ -16,6 +16,7 @@
 
 package controllers.psa
 
+import audit.AuditServiceImpl
 import config.FrontendAppConfig
 import connectors._
 import connectors.admin.{DelimitedAdminException, MinimalConnector}
@@ -24,6 +25,7 @@ import controllers.actions._
 import identifiers.{SchemeNameId, SchemeSrnId, SchemeStatusId}
 import models._
 import models.requests.AuthenticatedRequest
+import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -52,6 +54,14 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
                                              val appConfig: FrontendAppConfig
                                             )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
+  private val logger = Logger(classOf[PsaSchemeDashboardController])
+
+  private val tileRecover: Future[Html] => Future[Html] = f => f.recover {
+    ex =>
+      logger.warn("Retrieval of tile failed", ex)
+      Html("")
+  }
+
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate().async {
     implicit request =>
 
@@ -67,7 +77,7 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
                 .flatMap(_.set(SchemeNameId)(schemeName))
                 .asOpt.getOrElse(userAnswers)
 
-              val eventReportingData = EventReportingHelper.eventReportingData(
+              val eventReportingData: Option[EventReportingHelper.EventReportingData] = EventReportingHelper.eventReportingData(
                 srn,
                 listOfSchemes,
                 pstr => EventReporting(
@@ -78,9 +88,9 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
                   None
                 )
               )
-
               for {
-                aftHtml <- retrieveAftTilesHtml(srn, schemeStatus)
+                aftHtml <- tileRecover(retrieveAftTilesHtml(srn, schemeStatus))
+                finInfoHtml <- tileRecover(retrieveFinInfoTilesHtml(srn, schemeStatus))
                 _ <- userAnswersCacheConnector.upsert(request.externalId, updatedUa.json)
                 _ <- eventReportingData.map { data =>
                   EventReportingHelper.storeData(sessionDataCacheConnector, data)
@@ -89,7 +99,7 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
                   .getOrElse(Future.successful(Html("")))
                 cards <- psaSchemeDashboardService.cards(srn, lock, listOfSchemes, userAnswers)
               } yield {
-                Ok(view(schemeName, aftHtml, erHtml, cards))
+                Ok(view(schemeName, aftHtml, finInfoHtml, erHtml, cards))
               }
             }
         }
@@ -109,6 +119,20 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
         schemeStatus.equalsIgnoreCase("deregistered")
     ) {
       frontendConnector.retrieveAftPartial(srn)
+    } else {
+      Future.successful(Html(""))
+    }
+  }
+  private def retrieveFinInfoTilesHtml(
+                                    srn: String,
+                                    schemeStatus: String
+                                  )(implicit request: AuthenticatedRequest[AnyContent]): Future[Html] = {
+    if (
+      schemeStatus.equalsIgnoreCase("open") ||
+        schemeStatus.equalsIgnoreCase("wound-up") ||
+        schemeStatus.equalsIgnoreCase("deregistered")
+    ) {
+      frontendConnector.retrieveFinInfoPartial(srn)
     } else {
       Future.successful(Html(""))
     }
