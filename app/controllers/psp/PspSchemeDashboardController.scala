@@ -128,7 +128,7 @@ class PspSchemeDashboardController @Inject()(
           pstr => EventReporting(
             pstr,
             schemeName,
-            routes.PspSchemeDashboardController.onPageLoad(srn).absoluteURL(),
+            config.pspSchemeDashboardUrl.format(srn),
             None,
             Some(authenticatedRequest.pspIdOrException.id)
           ))

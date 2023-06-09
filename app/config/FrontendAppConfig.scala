@@ -198,4 +198,7 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
 
   lazy val urBannerEmail: String = loadConfig("urBannerEmail")
 
+  lazy val psaSchemeDashboardUrl: String = loadConfig("urls.psaSchemeDashboard")
+  lazy val pspSchemeDashboardUrl: String = loadConfig("urls.pspSchemeDashboard")
+
 }

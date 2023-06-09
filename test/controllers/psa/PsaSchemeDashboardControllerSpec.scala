@@ -237,6 +237,7 @@ class PsaSchemeDashboardControllerSpec
       when(mockService.cards(any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Seq(schemeCard(), psaCard(), pspCard())))
       when(mockFrontendConnector.retrieveEventReportingPartial(any(), any())).thenReturn(Future(erHtml))
+      when(mockAppConfig.psaSchemeDashboardUrl).thenReturn(dummyUrl)
 
       val result = controller().onPageLoad(srn)(sessionRequest)
       status(result) mustBe OK

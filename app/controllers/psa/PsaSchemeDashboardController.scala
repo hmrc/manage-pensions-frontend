@@ -83,7 +83,7 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
                 pstr => EventReporting(
                   pstr,
                   schemeName,
-                  controllers.psa.routes.PsaSchemeDashboardController.onPageLoad(srn).absoluteURL(),
+                  appConfig.psaSchemeDashboardUrl.format(srn.id),
                   Some(request.psaIdOrException.id),
                   None
                 )
