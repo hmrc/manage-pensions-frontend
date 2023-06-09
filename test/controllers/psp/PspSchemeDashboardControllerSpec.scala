@@ -170,6 +170,7 @@ class PspSchemeDashboardControllerSpec
         .thenReturn(Future.successful(Right(listOfSchemesResponse)))
       when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any())(any()))
         .thenReturn(cards(None, None))
+      when(appConfig.pspSchemeDashboardUrl).thenReturn("dummyUrl")
 
 
       val result = controller().onPageLoad(srn)(sessionRequest)
@@ -189,6 +190,7 @@ class PspSchemeDashboardControllerSpec
         .thenReturn(Future.successful(Right(listOfSchemesResponse)))
       when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any())(any()))
         .thenReturn(cards(None, None))
+      when(appConfig.pspSchemeDashboardUrl).thenReturn("dummyUrl")
 
 
       val result = controller().onPageLoad(srn)(sessionRequest)
@@ -208,6 +210,7 @@ class PspSchemeDashboardControllerSpec
         .thenReturn(Future.successful(Right(listOfSchemesResponse)))
       when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any())(any()))
         .thenReturn(cards(Some(clientRef), Some(authDate)))
+      when(appConfig.pspSchemeDashboardUrl).thenReturn("dummyUrl")
 
       val result = controller().onPageLoad(srn)(sessionRequest)
 
