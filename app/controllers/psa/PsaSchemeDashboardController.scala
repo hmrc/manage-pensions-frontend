@@ -81,11 +81,12 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
                 srn,
                 listOfSchemes,
                 pstr => EventReporting(
-                  pstr,
-                  schemeName,
-                  appConfig.psaSchemeDashboardUrl.format(srn.id),
-                  Some(request.psaIdOrException.id),
-                  None
+                  pstr = pstr,
+                  schemeName = schemeName,
+                  returnUrl = appConfig.psaSchemeDashboardUrl.format(srn.id),
+                  psaId = Some(request.psaIdOrException.id),
+                  pspId = None,
+                  srn = srn.id
                 )
               )
               for {
