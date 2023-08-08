@@ -126,11 +126,12 @@ class PspSchemeDashboardController @Inject()(
           srn,
           listOfSchemes,
           pstr => EventReporting(
-            pstr,
-            schemeName,
-            config.pspSchemeDashboardUrl.format(srn),
-            None,
-            Some(authenticatedRequest.pspIdOrException.id)
+            pstr = pstr,
+            schemeName = schemeName,
+            returnUrl = config.pspSchemeDashboardUrl.format(srn),
+            psaId = None,
+            pspId = Some(authenticatedRequest.pspIdOrException.id),
+            srn = srn
           ))
         eventReportingData.map { data =>
           EventReportingHelper.storeData(sessionCacheConnector, data).flatMap { _ =>
