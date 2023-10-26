@@ -68,6 +68,7 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val aftUrl: String = servicesConfig.baseUrl("pension-scheme-accounting-for-tax")
   lazy val practitionerUrl: String = servicesConfig.baseUrl("pension-practitioner")
   lazy val managePensionsUrl: String = servicesConfig.baseUrl("manage-pensions-frontend")
+  lazy val eventReportingBackendUrl: String = servicesConfig.baseUrl("pension-scheme-event-reporting")
 
   lazy val loginUrl: String = loadConfig("urls.login")
   lazy val loginContinueUrl: String = loadConfig("urls.loginContinue")
@@ -157,6 +158,8 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
     .getString("urls.authorisePsp")}"
   lazy val deAuthorisePspUrl = s"${servicesConfig.baseUrl("pension-practitioner")}${runModeConfiguration.underlying
     .getString("urls.deAuthorisePsp")}"
+  lazy val createNewEventReportingJourneyUrl = eventReportingBackendUrl + runModeConfiguration.underlying.getString("urls.createNewEventReportingJourneyUrl")
+
 
   lazy val pspDetailsUrl: String = loadConfig("urls.pspDetails")
   lazy val psaUpdateContactDetailsUrl: String = loadConfig("urls.psaUpdateContactDetails")

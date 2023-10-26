@@ -35,8 +35,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import play.twirl.api.Html
 import services.{PspSchemeDashboardService, SchemeDetailsService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.annotations.SessionDataCache
-import utils.{EventReportingHelper, UserAnswers}
+import utils.UserAnswers
 import viewmodels.Message
 import views.html.psp.pspSchemeDashboard
 
@@ -51,7 +50,6 @@ class PspSchemeDashboardController @Inject()(
                                               errorHandler: ErrorHandler,
                                               listSchemesConnector: ListOfSchemesConnector,
                                               userAnswersCacheConnector: UserAnswersCacheConnector,
-                                              @SessionDataCache sessionCacheConnector: UserAnswersCacheConnector,
                                               schemeDetailsService: SchemeDetailsService,
                                               val controllerComponents: MessagesControllerComponents,
                                               service: PspSchemeDashboardService,
@@ -85,7 +83,7 @@ class PspSchemeDashboardController @Inject()(
             aftPspSchemeDashboardCards <- aftPspSchemeDashboardCards(schemeStatus, srn, pspDetails.authorisingPSAID)
             listOfSchemes <- listSchemesConnector.getListOfSchemesForPsp(request.pspIdOrException.id)
             _ <- userAnswersCacheConnector.upsert(request.externalId, userAnswers.json)
-            erHtml <- getEventReportingHtml(srn, listOfSchemes, schemeName)
+            erHtml <- getEventReportingHtml(srn, listOfSchemes, schemeName).map(_.map(_.html(srn)).getOrElse(Html("")))
           } yield {
             listOfSchemes match {
               case Right(list) =>
@@ -120,24 +118,14 @@ class PspSchemeDashboardController @Inject()(
   private def getEventReportingHtml(srn:String, list:Either[_,ListOfSchemes], schemeName:String)(implicit authenticatedRequest: AuthenticatedRequest[_]) = {
     list match {
       case Left(_) =>
-        Future.successful(Html(""))
+        Future.successful(None)
       case Right(listOfSchemes) =>
-        val eventReportingData = EventReportingHelper.eventReportingData(
-          srn,
-          listOfSchemes,
-          pstr => EventReporting(
-            pstr = pstr,
-            schemeName = schemeName,
-            returnUrl = config.pspSchemeDashboardUrl.format(srn),
-            psaId = None,
-            pspId = Some(authenticatedRequest.pspIdOrException.id),
-            srn = srn
+        val pstr = listOfSchemes.schemeDetails.flatMap(_.find(_.referenceNumber.contains(srn))).flatMap(_.pstr)
+        Future.sequence(Option.option2Iterable(
+            pstr.map { pstr => frontendConnector.retrieveEventReportingPartial(pstr) }
           ))
-        eventReportingData.map { data =>
-          EventReportingHelper.storeData(sessionCacheConnector, data).flatMap { _ =>
-            frontendConnector.retrieveEventReportingPartial
-          }
-        }.getOrElse(Future.successful(Html("")))
+          .map(_.headOption)
+          .map(_.flatten)
     }
 
   }

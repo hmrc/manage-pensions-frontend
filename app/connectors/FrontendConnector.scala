@@ -18,12 +18,13 @@ package connectors
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
+import models.TileCard
 import play.api.Logger
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Request
 import play.twirl.api.Html
 import services.HeaderCarrierFunctions
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.HttpClient
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 import uk.gov.hmrc.play.partials.HtmlPartial
 import uk.gov.hmrc.play.partials.HtmlPartial.connectionExceptionsAsHtmlPartialFailure
 
@@ -40,8 +41,8 @@ class FrontendConnector @Inject()(http: HttpClient, config: FrontendAppConfig) {
                            (implicit request: Request[A], ec: ExecutionContext): Future[Html] =
     retrievePartial(config.finInfoPartialHtmlUrl.format(srn))
 
-  def retrieveEventReportingPartial[A](implicit request: Request[A], ec: ExecutionContext): Future[Html] =
-    retrievePartial(config.eventReportingPartialHtmlUrl)
+  def retrieveEventReportingPartial[A](pstr:String)(implicit request: Request[A], ec: ExecutionContext): Future[Option[TileCard]] =
+    retrievePartialJson(config.eventReportingPartialHtmlUrl, Json.toJson(Map("pstr" -> pstr)))
 
   def retrievePaymentsAndChargesPartial[A](srn: String)
                                           (implicit request: Request[A], ec: ExecutionContext): Future[Html] =
@@ -82,6 +83,22 @@ class FrontendConnector @Inject()(http: HttpClient, config: FrontendAppConfig) {
       case HtmlPartial.Failure(_, _) =>
         logger.warn("Failed to retrieve partial")
         Html("")
+    }
+  }
+
+  private def retrievePartialJson[A](url: String, body: JsValue, extraHeaders: Seq[(String, String)] = Seq.empty)
+                                (implicit request: Request[A], ec: ExecutionContext): Future[Option[TileCard]] = {
+
+    implicit val hc: HeaderCarrier =
+      HeaderCarrierFunctions
+        .headerCarrierForPartials(request)
+        .toHeaderCarrier
+        .withExtraHeaders(extraHeaders: _*)
+
+    http.POST[JsValue, HttpResponse](url, body).map { response =>
+      Json.parse(response.body).validate[TileCard].asOpt
+    } recover { error => logger.warn("Could not retrieve partial")
+      None
     }
   }
 

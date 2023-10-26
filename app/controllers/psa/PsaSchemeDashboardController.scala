@@ -16,7 +16,6 @@
 
 package controllers.psa
 
-import audit.AuditServiceImpl
 import config.FrontendAppConfig
 import connectors._
 import connectors.admin.{DelimitedAdminException, MinimalConnector}
@@ -27,13 +26,11 @@ import models._
 import models.requests.AuthenticatedRequest
 import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import play.twirl.api.Html
 import services.PsaSchemeDashboardService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.{EventReportingHelper, UserAnswers}
-import utils.annotations.SessionDataCache
+import utils.UserAnswers
 import views.html.psa.psaSchemeDashboard
 
 import javax.inject.Inject
@@ -45,7 +42,6 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
                                              schemeVarianceLockConnector: PensionSchemeVarianceLockConnector,
                                              authenticate: AuthAction,
                                              userAnswersCacheConnector: UserAnswersCacheConnector,
-                                             @SessionDataCache sessionDataCacheConnector: UserAnswersCacheConnector,
                                              val controllerComponents: MessagesControllerComponents,
                                              psaSchemeDashboardService: PsaSchemeDashboardService,
                                              view: psaSchemeDashboard,
@@ -77,30 +73,22 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
                 .flatMap(_.set(SchemeNameId)(schemeName))
                 .asOpt.getOrElse(userAnswers)
 
-              val eventReportingData: Option[EventReportingHelper.EventReportingData] = EventReportingHelper.eventReportingData(
-                srn,
-                listOfSchemes,
-                pstr => EventReporting(
-                  pstr = pstr,
-                  schemeName = schemeName,
-                  returnUrl = appConfig.psaSchemeDashboardUrl.format(srn.id),
-                  psaId = Some(request.psaIdOrException.id),
-                  pspId = None,
-                  srn = srn.id
-                )
-              )
+
+              val pstr = listOfSchemes.schemeDetails.flatMap(_.find(_.referenceNumber.contains(srn))).flatMap(_.pstr)
               for {
                 aftHtml <- tileRecover(retrieveAftTilesHtml(srn, schemeStatus))
                 finInfoHtml <- tileRecover(retrieveFinInfoTilesHtml(srn, schemeStatus))
                 _ <- userAnswersCacheConnector.upsert(request.externalId, updatedUa.json)
-                _ <- eventReportingData.map { data =>
-                  EventReportingHelper.storeData(sessionDataCacheConnector, data)
-                }.getOrElse(Future.successful(Json.obj()))
-                erHtml <- eventReportingData.map(_ => frontendConnector.retrieveEventReportingPartial)
-                  .getOrElse(Future.successful(Html("")))
+                erHtml <- Future.sequence(Option.option2Iterable(
+                    pstr.map { pstr =>
+                      frontendConnector.retrieveEventReportingPartial(pstr)
+                    }
+                  ))
+                  .map(_.headOption)
+                  .map(_.flatten)
                 cards <- psaSchemeDashboardService.cards(srn, lock, listOfSchemes, userAnswers)
               } yield {
-                Ok(view(schemeName, aftHtml, finInfoHtml, erHtml, cards))
+                Ok(view(schemeName, aftHtml, finInfoHtml, erHtml.map(_.html(srn)).getOrElse(Html("")), cards))
               }
             }
         }

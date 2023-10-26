@@ -16,10 +16,20 @@
 
 package models
 
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.{Json, OFormat}
 
-case class EventReporting(pstr:String, schemeName: String, returnUrl:String, psaId:Option[String], pspId:Option[String], srn: String)
 
-object EventReporting {
-  implicit val format: Format[EventReporting] = Json.format[EventReporting]
+case class TileLink(id:String, title: String, continueUrl: String)
+
+object TileLink {
+  implicit val format: OFormat[TileLink] = Json.format
+}
+case class TileCard(id:String, heading: String, subHeadingHtml: String, links: Seq[TileLink]) {
+  def html(srn: SchemeReferenceNumber) = {
+    views.html.components.tile_card(srn, this)
+  }
+}
+
+object TileCard {
+  implicit val format: OFormat[TileCard] = Json.format
 }

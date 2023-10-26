@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package identifiers
+package models
 
-import models.EventReporting
+import play.api.libs.json.{Json, OFormat}
 
-case object EventReportingId extends TypedIdentifier[EventReporting] {
+case class RequiredEventReportingJourneyData(pstr: String,
+                                             schemeName: String,
+                                             returnUrl: String)
 
-  override def toString: String = "eventReporting"
-
+object RequiredEventReportingJourneyData {
+  implicit val format: OFormat[RequiredEventReportingJourneyData] = Json.format[RequiredEventReportingJourneyData]
 }
