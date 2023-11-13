@@ -28,23 +28,56 @@ import play.api.test.CSRFTokenHelper.addCSRFToken
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import views.html.previouslyRegistered
+import uk.gov.hmrc.auth.core._
+import uk.gov.hmrc.auth.core.authorise.Predicate
+import uk.gov.hmrc.auth.core.retrieve.Retrieval
+import uk.gov.hmrc.http.HeaderCarrier
+
+import scala.concurrent.{ExecutionContext, Future}
 
 class PreviouslyRegisteredControllerSpec extends ControllerWithQuestionPageBehaviours with ScalaFutures with MockitoSugar with BeforeAndAfterEach {
   private val appConfig: FrontendAppConfig = mock[FrontendAppConfig]
   private val dummyUrl = "/url"
-
+  private val tpss_recoveryURL = "/manage-pension-schemes/tpss_recovery"
+  private val enrolmentPSA = Enrolment(
+    key = "HMRC-PSA-ORG",
+    identifiers = Seq(EnrolmentIdentifier(key = "PSAID", value = "A0000000")),
+    state = "",
+    delegatedAuthRule = None
+  )
+  private val enrolmentPSP = Enrolment(
+    key = "HMRC-PP-ORG",
+    identifiers = Seq(EnrolmentIdentifier(key = "PPID", value = "00000000")),
+    state = "",
+    delegatedAuthRule = None
+  )
+  private val enrolmentPODS = Enrolment(
+    key = "HMRC-PODS-ORG",
+    identifiers = Seq(EnrolmentIdentifier(key = "PSAID", value = "A2100005")),
+    state = "",
+    delegatedAuthRule = None
+  )
   private val view = injector.instanceOf[previouslyRegistered]
   private val formProvider = new PreviouslyRegisteredFormProvider()
+
+  private def fakeAuthConnector(stubbedRetrievalResult: Future[_]): AuthConnector = new AuthConnector {
+
+    def authorise[A](predicate: Predicate, retrieval: Retrieval[A])
+                    (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[A] =
+      stubbedRetrievalResult.map(_.asInstanceOf[A])(ec)
+  }
 
   override def beforeEach(): Unit = {
     reset(appConfig)
   }
 
-  def controller(): PreviouslyRegisteredController =
-    new PreviouslyRegisteredController(
-      appConfig, messagesApi, formProvider, controllerComponents, view)
+
 
   "PreviouslyRegisteredController for administrator" must {
+    def controller(): PreviouslyRegisteredController =
+      new PreviouslyRegisteredController(
+        appConfig, fakeAuthConnector(Future.successful(Enrolments(Set(enrolmentPSA)))), messagesApi, formProvider, controllerComponents, view)
+
     "return OK with the view when calling on page load" in {
       val request = addCSRFToken(FakeRequest(GET, routes.PreviouslyRegisteredController.onPageLoadAdministrator().url))
       val result = controller().onPageLoadAdministrator(request)
@@ -62,16 +95,6 @@ class PreviouslyRegisteredControllerSpec extends ControllerWithQuestionPageBehav
       contentAsString(result) mustBe view(boundForm, AdministratorOrPractitioner.Administrator)(postRequest,messages).toString
     }
 
-    "redirect to the correct next page when yes not logged in chosen (recovery url)" in {
-      val postRequest = FakeRequest(POST, routes.PreviouslyRegisteredController.onSubmitAdministrator().url).withFormUrlEncodedBody("value" ->
-        PreviouslyRegistered.PreviouslyRegisteredButNotLoggedIn.toString)
-      when(appConfig.recoverCredentialsPSAUrl).thenReturn(dummyUrl)
-      val result = controller().onSubmitAdministrator(postRequest)
-
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result).value mustBe dummyUrl
-    }
-
     "redirect to the correct next page when yes stopped in chosen" in {
       val postRequest = FakeRequest(POST, routes.PreviouslyRegisteredController.onSubmitAdministrator().url).withFormUrlEncodedBody("value" ->
         PreviouslyRegistered.PreviouslyRegisteredButStoppedBeingAdministrator.toString)
@@ -91,9 +114,37 @@ class PreviouslyRegisteredControllerSpec extends ControllerWithQuestionPageBehav
       status(result) mustBe SEE_OTHER
       redirectLocation(result).value mustBe dummyUrl
     }
+
+    "redirect to the correct next page when yes not logged in chosen (recovery url) for psa" in {
+      val postRequest = FakeRequest(POST, routes.PreviouslyRegisteredController.onSubmitAdministrator().url).withFormUrlEncodedBody("value" ->
+        PreviouslyRegistered.PreviouslyRegisteredButNotLoggedIn.toString)
+      when(appConfig.recoverCredentialsPSAUrl).thenReturn(tpss_recoveryURL)
+      val result = controller().onSubmitAdministrator(postRequest)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).value mustBe tpss_recoveryURL
+    }
+
+    "redirect to the correct next page when yes not logged in chosen (recovery url)" in {
+      val controller :PreviouslyRegisteredController =
+        new PreviouslyRegisteredController(
+          appConfig, fakeAuthConnector(Future.successful(Enrolments(Set(enrolmentPODS)))), messagesApi, formProvider, controllerComponents, view)
+      val postRequest = FakeRequest(POST, routes.PreviouslyRegisteredController.onSubmitAdministrator().url).withFormUrlEncodedBody("value" ->
+        PreviouslyRegistered.PreviouslyRegisteredButNotLoggedIn.toString)
+      when(appConfig.recoverCredentialsPSAUrl).thenReturn(dummyUrl)
+      val result = controller.onSubmitAdministrator(postRequest)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).value mustBe dummyUrl
+    }
   }
 
   "PreviouslyRegisteredController for practitioner" must {
+
+    def controller(): PreviouslyRegisteredController =
+      new PreviouslyRegisteredController(
+        appConfig, fakeAuthConnector(Future.successful(Enrolments(Set(enrolmentPSP)))), messagesApi, formProvider, controllerComponents, view)
+
     "return OK with the view when calling on page load" in {
       val request = addCSRFToken(FakeRequest(GET, routes.PreviouslyRegisteredController.onPageLoadPractitioner().url))
       val result = controller().onPageLoadPractitioner(request)
@@ -111,16 +162,6 @@ class PreviouslyRegisteredControllerSpec extends ControllerWithQuestionPageBehav
       contentAsString(result) mustBe view(boundForm, AdministratorOrPractitioner.Practitioner)(postRequest,messages).toString
     }
 
-    "redirect to the correct next page when yes not logged in chosen (recovery URL)" in {
-      val postRequest = FakeRequest(POST, routes.PreviouslyRegisteredController.onSubmitPractitioner().url).withFormUrlEncodedBody("value" ->
-        PreviouslyRegistered.PreviouslyRegisteredButNotLoggedIn.toString)
-      when(appConfig.recoverCredentialsPSPUrl).thenReturn(dummyUrl)
-      val result = controller().onSubmitPractitioner(postRequest)
-
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result).value mustBe dummyUrl
-    }
-
     "redirect to the correct next page when yes stopped in chosen" in {
       val postRequest = FakeRequest(POST, routes.PreviouslyRegisteredController.onSubmitPractitioner().url).withFormUrlEncodedBody("value" ->
         PreviouslyRegistered.PreviouslyRegisteredButStoppedBeingAdministrator.toString)
@@ -136,6 +177,32 @@ class PreviouslyRegisteredControllerSpec extends ControllerWithQuestionPageBehav
         PreviouslyRegistered.NotPreviousRegistered.toString)
       when(appConfig.registerSchemePractitionerUrl).thenReturn(dummyUrl)
       val result = controller().onSubmitPractitioner(postRequest)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).value mustBe dummyUrl
+    }
+
+
+    "redirect to the correct next page when yes not logged in chosen (recovery URL) for psp" in {
+      val postRequest = FakeRequest(POST, routes.PreviouslyRegisteredController.onSubmitPractitioner().url).withFormUrlEncodedBody("value" ->
+        PreviouslyRegistered.PreviouslyRegisteredButNotLoggedIn.toString)
+      when(appConfig.recoverCredentialsPSPUrl).thenReturn(tpss_recoveryURL)
+      val result = controller().onSubmitPractitioner(postRequest)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).value mustBe tpss_recoveryURL
+    }
+
+
+    "redirect to the correct next page when yes not logged in chosen (recovery URL)" in {
+      val controller : PreviouslyRegisteredController =
+        new PreviouslyRegisteredController(
+          appConfig, fakeAuthConnector(Future.successful(Enrolments(Set(enrolmentPODS)))), messagesApi, formProvider, controllerComponents, view)
+
+      val postRequest = FakeRequest(POST, routes.PreviouslyRegisteredController.onSubmitPractitioner().url).withFormUrlEncodedBody("value" ->
+        PreviouslyRegistered.PreviouslyRegisteredButNotLoggedIn.toString)
+      when(appConfig.recoverCredentialsPSPUrl).thenReturn(dummyUrl)
+      val result = controller.onSubmitPractitioner(postRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result).value mustBe dummyUrl

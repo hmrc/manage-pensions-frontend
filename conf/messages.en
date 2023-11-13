@@ -809,3 +809,6 @@ messages__banner__confirmation__heading = Sign up complete
 messages__banner__confirmation__p1 = Thanks for agreeing to take part in user research.
 messages__banner__confirmation__p2 = What happens next
 messages__banner__confirmation__p3 = A member of the HMRC team will contact you with further details.
+
+messages__tpss_recovery__title = Registering for Managing Pensions Schemes (MPS)
+messages__tpss_recovery__guidance = Before you can register for MPS, you must first enter your details for The Pension Schemes Service (TPSS).

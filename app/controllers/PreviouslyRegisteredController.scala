@@ -23,19 +23,22 @@ import models.{AdministratorOrPractitioner, PreviouslyRegistered}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
+import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions, Enrolments}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.previouslyRegistered
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class PreviouslyRegisteredController @Inject()(
                                                 val appConfig: FrontendAppConfig,
+                                                override val authConnector: AuthConnector,
                                                 override val messagesApi: MessagesApi,
                                                 val formProvider: PreviouslyRegisteredFormProvider,
                                                 val controllerComponents: MessagesControllerComponents,
                                                 view: previouslyRegistered
-                                              )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+                                              )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with AuthorisedFunctions {
 
   private def form(implicit messages: Messages): Form[PreviouslyRegistered] = formProvider()
 
@@ -49,27 +52,61 @@ class PreviouslyRegisteredController @Inject()(
       Ok(view(form, AdministratorOrPractitioner.Practitioner))
   }
 
-  def onSubmitAdministrator: Action[AnyContent] = Action {
+  def onSubmitAdministrator: Action[AnyContent] = Action.async {
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[_]) =>
-          BadRequest(view(formWithErrors, AdministratorOrPractitioner.Administrator)),
+          Future.successful(BadRequest(view(formWithErrors, AdministratorOrPractitioner.Administrator))),
         {
-          case PreviouslyRegisteredButNotLoggedIn => Redirect(appConfig.recoverCredentialsPSAUrl)
-          case _ => Redirect(appConfig.registerSchemeAdministratorUrl)
+          case PreviouslyRegisteredButNotLoggedIn =>
+            authorised().retrieve(Retrievals.allEnrolments) {
+              case enrolments =>
+                isTpssAccountPSA(enrolments) match {
+                  case true => Future.successful(Redirect(routes.TpssRecoveryController.onPageLoad))
+                  case false => Future.successful(Redirect(appConfig.recoverCredentialsPSAUrl))
+                }
+              case _ =>
+                Future.successful(Redirect(appConfig.recoverCredentialsPSAUrl))
+            }
+          case _ => Future.successful(Redirect(appConfig.registerSchemeAdministratorUrl))
         }
       )
   }
 
-  def onSubmitPractitioner: Action[AnyContent] = Action {
+  def onSubmitPractitioner: Action[AnyContent] = Action.async {
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[_]) =>
-          BadRequest(view(formWithErrors, AdministratorOrPractitioner.Practitioner)),
+          Future.successful(BadRequest(view(formWithErrors, AdministratorOrPractitioner.Practitioner))),
         {
-          case PreviouslyRegisteredButNotLoggedIn => Redirect(appConfig.recoverCredentialsPSPUrl)
-          case _ => Redirect(appConfig.registerSchemePractitionerUrl)
+          case PreviouslyRegisteredButNotLoggedIn =>
+            authorised().retrieve(Retrievals.allEnrolments) {
+              case enrolments =>
+                isTpssAccountPSP(enrolments) match {
+                  case true => Future.successful(Redirect(routes.TpssRecoveryController.onPageLoad))
+                  case false => Future.successful(Redirect(appConfig.recoverCredentialsPSPUrl))
+                }
+              case _ =>
+                Future.successful(Redirect(appConfig.recoverCredentialsPSPUrl))
+            }
+          case _ => Future.successful(Redirect(appConfig.registerSchemePractitionerUrl))
         }
       )
+  }
+
+  private def isTpssAccountPSA(enrolments: Enrolments): Boolean = {
+    val psaVal = enrolments.getEnrolment("HMRC-PSA-ORG").flatMap(_.getIdentifier("PSAID")).map(_.value)
+    psaVal match {
+      case Some(tpssVal) if tpssVal.startsWith("A0") => true
+      case _ => false
+    }
+  }
+
+  private def isTpssAccountPSP(enrolments: Enrolments): Boolean = {
+    val pspVal = enrolments.getEnrolment("HMRC-PP-ORG").flatMap(_.getIdentifier("PPID")).map(_.value)
+    pspVal match {
+      case Some(tpssVal) if tpssVal.startsWith("0") => true
+      case _ => false
+    }
   }
 }
