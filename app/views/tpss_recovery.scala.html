@@ -14,8 +14,11 @@
  * limitations under the License.
  *@
 
+@import config.FrontendAppConfig
+
 @this(
-    layout: templates.Layout
+    layout: templates.Layout,
+    appConfig: FrontendAppConfig
 )
 
 @()(implicit request: Request[_], messages: Messages)
@@ -24,6 +27,10 @@
 
     @components.heading(messages("messages__tpss_recovery__title"))
 
-    <p class="govuk-body">@messages("messages__tpss_recovery__guidance")</p>
+    <p class="govuk-body">@messages("messages__tpss_recovery__guidance__p1")
+     <a id="redirect-to-tpss" class="govuk-link"
+        href="@appConfig.tpssEnrolmentRecoveryURL">@messages("messages__tpss_recovery__guidance__p2")
+     </a>
+    </p>
 
 }

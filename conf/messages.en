@@ -811,4 +811,5 @@ messages__banner__confirmation__p2 = What happens next
 messages__banner__confirmation__p3 = A member of the HMRC team will contact you with further details.
 
 messages__tpss_recovery__title = Registering for Managing Pensions Schemes (MPS)
-messages__tpss_recovery__guidance = Before you can register for MPS, you must first enter your details for The Pension Schemes Service (TPSS).
+messages__tpss_recovery__guidance__p1 = Before you can register for MPS, you must first
+messages__tpss_recovery__guidance__p2 = enter your details for The Pension Schemes Service (TPSS).
