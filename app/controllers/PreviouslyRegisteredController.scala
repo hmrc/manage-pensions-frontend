@@ -22,7 +22,7 @@ import models.PreviouslyRegistered.PreviouslyRegisteredButNotLoggedIn
 import models.{AdministratorOrPractitioner, PreviouslyRegistered}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions, Enrolments}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -59,15 +59,7 @@ class PreviouslyRegisteredController @Inject()(
           Future.successful(BadRequest(view(formWithErrors, AdministratorOrPractitioner.Administrator))),
         {
           case PreviouslyRegisteredButNotLoggedIn =>
-            authorised().retrieve(Retrievals.allEnrolments) {
-              case enrolments =>
-                isTpssAccountPSA(enrolments) match {
-                  case true => Future.successful(Redirect(routes.TpssRecoveryController.onPageLoad))
-                  case false => Future.successful(Redirect(appConfig.recoverCredentialsPSAUrl))
-                }
-              case _ =>
-                Future.successful(Redirect(appConfig.recoverCredentialsPSAUrl))
-            }
+            previouslyRegisteredButNotLoggedIn("HMRC-PSA-ORG", "PSAID", "A0", appConfig.recoverCredentialsPSAUrl)
           case _ => Future.successful(Redirect(appConfig.registerSchemeAdministratorUrl))
         }
       )
@@ -80,32 +72,27 @@ class PreviouslyRegisteredController @Inject()(
           Future.successful(BadRequest(view(formWithErrors, AdministratorOrPractitioner.Practitioner))),
         {
           case PreviouslyRegisteredButNotLoggedIn =>
-            authorised().retrieve(Retrievals.allEnrolments) {
-              case enrolments =>
-                isTpssAccountPSP(enrolments) match {
-                  case true => Future.successful(Redirect(routes.TpssRecoveryController.onPageLoad))
-                  case false => Future.successful(Redirect(appConfig.recoverCredentialsPSPUrl))
-                }
-              case _ =>
-                Future.successful(Redirect(appConfig.recoverCredentialsPSPUrl))
-            }
+            previouslyRegisteredButNotLoggedIn("HMRC-PP-ORG", "PPID", "0", appConfig.recoverCredentialsPSPUrl)
           case _ => Future.successful(Redirect(appConfig.registerSchemePractitionerUrl))
         }
       )
   }
 
-  private def isTpssAccountPSA(enrolments: Enrolments): Boolean = {
-    val psaVal = enrolments.getEnrolment("HMRC-PSA-ORG").flatMap(_.getIdentifier("PSAID")).map(_.value)
-    psaVal match {
-      case Some(tpssVal) if tpssVal.startsWith("A0") => true
-      case _ => false
+  private def previouslyRegisteredButNotLoggedIn(enrolmentKey: String, idName: String, idStartsWith: String, recoverCredentialsUrl: String)
+                                                (implicit messagesRequest: MessagesRequest[AnyContent]): Future[Result] = {
+    authorised().retrieve(Retrievals.allEnrolments) {
+      enrolments =>
+        isTpssAccount(enrolments, enrolmentKey, idName, idStartsWith) match {
+          case true => Future.successful(Redirect(routes.TpssRecoveryController.onPageLoad))
+          case _ => Future.successful(Redirect(recoverCredentialsUrl))
+        }
     }
   }
 
-  private def isTpssAccountPSP(enrolments: Enrolments): Boolean = {
-    val pspVal = enrolments.getEnrolment("HMRC-PP-ORG").flatMap(_.getIdentifier("PPID")).map(_.value)
-    pspVal match {
-      case Some(tpssVal) if tpssVal.startsWith("0") => true
+  private def isTpssAccount(enrolments: Enrolments, enrolmentKey: String, idName: String, idStartsWith: String): Boolean = {
+    val psaVal = enrolments.getEnrolment(enrolmentKey).flatMap(_.getIdentifier(idName)).map(_.value)
+    psaVal match {
+      case Some(tpssVal) if tpssVal.startsWith(idStartsWith) => true
       case _ => false
     }
   }

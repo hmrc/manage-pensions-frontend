@@ -38,7 +38,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class PreviouslyRegisteredControllerSpec extends ControllerWithQuestionPageBehaviours with ScalaFutures with MockitoSugar with BeforeAndAfterEach {
   private val appConfig: FrontendAppConfig = mock[FrontendAppConfig]
   private val dummyUrl = "/url"
-  private val tpss_recoveryURL = "/manage-pension-schemes/tpss_recovery"
+  private val tpssRecoveryURL = "/manage-pension-schemes/tpss-recovery"
   private val enrolmentPSA = Enrolment(
     key = "HMRC-PSA-ORG",
     identifiers = Seq(EnrolmentIdentifier(key = "PSAID", value = "A0000000")),
@@ -118,11 +118,11 @@ class PreviouslyRegisteredControllerSpec extends ControllerWithQuestionPageBehav
     "redirect to the correct next page when yes not logged in chosen (recovery url) for psa" in {
       val postRequest = FakeRequest(POST, routes.PreviouslyRegisteredController.onSubmitAdministrator().url).withFormUrlEncodedBody("value" ->
         PreviouslyRegistered.PreviouslyRegisteredButNotLoggedIn.toString)
-      when(appConfig.recoverCredentialsPSAUrl).thenReturn(tpss_recoveryURL)
+      when(appConfig.recoverCredentialsPSAUrl).thenReturn(tpssRecoveryURL)
       val result = controller().onSubmitAdministrator(postRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).value mustBe tpss_recoveryURL
+      redirectLocation(result).value mustBe tpssRecoveryURL
     }
 
     "redirect to the correct next page when yes not logged in chosen (recovery url)" in {
@@ -186,11 +186,11 @@ class PreviouslyRegisteredControllerSpec extends ControllerWithQuestionPageBehav
     "redirect to the correct next page when yes not logged in chosen (recovery URL) for psp" in {
       val postRequest = FakeRequest(POST, routes.PreviouslyRegisteredController.onSubmitPractitioner().url).withFormUrlEncodedBody("value" ->
         PreviouslyRegistered.PreviouslyRegisteredButNotLoggedIn.toString)
-      when(appConfig.recoverCredentialsPSPUrl).thenReturn(tpss_recoveryURL)
+      when(appConfig.recoverCredentialsPSPUrl).thenReturn(tpssRecoveryURL)
       val result = controller().onSubmitPractitioner(postRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).value mustBe tpss_recoveryURL
+      redirectLocation(result).value mustBe tpssRecoveryURL
     }
 
 
