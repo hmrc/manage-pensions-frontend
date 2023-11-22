@@ -80,3 +80,5 @@ POST        /previously-registered                                              
 
 GET         /previously-registered-practitioner                                                                   controllers.PreviouslyRegisteredController.onPageLoadPractitioner()
 POST        /previously-registered-practitioner                                                                   controllers.PreviouslyRegisteredController.onSubmitPractitioner()
+
+GET         /tpss-recovery                                                                   controllers.TpssRecoveryController.onPageLoad

@@ -16,7 +16,6 @@
 
 package controllers.psa
 
-import audit.AuditServiceImpl
 import config.FrontendAppConfig
 import connectors._
 import connectors.admin.{DelimitedAdminException, MinimalConnector}
