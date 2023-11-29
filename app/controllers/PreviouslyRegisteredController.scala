@@ -22,23 +22,20 @@ import models.PreviouslyRegistered.PreviouslyRegisteredButNotLoggedIn
 import models.{AdministratorOrPractitioner, PreviouslyRegistered}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
-import play.api.mvc._
-import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions, Enrolments}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.previouslyRegistered
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 class PreviouslyRegisteredController @Inject()(
                                                 val appConfig: FrontendAppConfig,
-                                                override val authConnector: AuthConnector,
                                                 override val messagesApi: MessagesApi,
                                                 val formProvider: PreviouslyRegisteredFormProvider,
                                                 val controllerComponents: MessagesControllerComponents,
                                                 view: previouslyRegistered
-                                              )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with AuthorisedFunctions {
+                                              )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   private def form(implicit messages: Messages): Form[PreviouslyRegistered] = formProvider()
 
@@ -52,48 +49,27 @@ class PreviouslyRegisteredController @Inject()(
       Ok(view(form, AdministratorOrPractitioner.Practitioner))
   }
 
-  def onSubmitAdministrator: Action[AnyContent] = Action.async {
+  def onSubmitAdministrator: Action[AnyContent] = Action {
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[_]) =>
-          Future.successful(BadRequest(view(formWithErrors, AdministratorOrPractitioner.Administrator))),
+          BadRequest(view(formWithErrors, AdministratorOrPractitioner.Administrator)),
         {
-          case PreviouslyRegisteredButNotLoggedIn =>
-            previouslyRegisteredButNotLoggedIn("HMRC-PSA-ORG", "PSAID", "A0", appConfig.recoverCredentialsPSAUrl)
-          case _ => Future.successful(Redirect(appConfig.registerSchemeAdministratorUrl))
+          case PreviouslyRegisteredButNotLoggedIn => Redirect(appConfig.recoverCredentialsPSAUrl)
+          case _ => Redirect(appConfig.registerSchemeAdministratorUrl)
         }
       )
   }
 
-  def onSubmitPractitioner: Action[AnyContent] = Action.async {
+  def onSubmitPractitioner: Action[AnyContent] = Action {
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[_]) =>
-          Future.successful(BadRequest(view(formWithErrors, AdministratorOrPractitioner.Practitioner))),
+          BadRequest(view(formWithErrors, AdministratorOrPractitioner.Practitioner)),
         {
-          case PreviouslyRegisteredButNotLoggedIn =>
-            previouslyRegisteredButNotLoggedIn("HMRC-PP-ORG", "PPID", "0", appConfig.recoverCredentialsPSPUrl)
-          case _ => Future.successful(Redirect(appConfig.registerSchemePractitionerUrl))
+          case PreviouslyRegisteredButNotLoggedIn => Redirect(appConfig.recoverCredentialsPSPUrl)
+          case _ => Redirect(appConfig.registerSchemePractitionerUrl)
         }
       )
-  }
-
-  private def previouslyRegisteredButNotLoggedIn(enrolmentKey: String, idName: String, idStartsWith: String, recoverCredentialsUrl: String)
-                                                (implicit messagesRequest: MessagesRequest[AnyContent]): Future[Result] = {
-    authorised().retrieve(Retrievals.allEnrolments) {
-      enrolments =>
-        isTpssAccount(enrolments, enrolmentKey, idName, idStartsWith) match {
-          case true => Future.successful(Redirect(routes.TpssRecoveryController.onPageLoad))
-          case _ => Future.successful(Redirect(recoverCredentialsUrl))
-        }
-    }
-  }
-
-  private def isTpssAccount(enrolments: Enrolments, enrolmentKey: String, idName: String, idStartsWith: String): Boolean = {
-    val psaVal = enrolments.getEnrolment(enrolmentKey).flatMap(_.getIdentifier(idName)).map(_.value)
-    psaVal match {
-      case Some(tpssVal) if tpssVal.startsWith(idStartsWith) => true
-      case _ => false
-    }
   }
 }
