@@ -34,11 +34,10 @@ import services.SchemeSearchService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.annotations.SearchPstr
-import utils.{Navigator, UserAnswers}
+import utils.{Navigator, SortSchemes, UserAnswers}
 import views.html.psp.list_schemes
 
 import scala.concurrent.{ExecutionContext, Future}
-
 class ListSchemesController @Inject()(
                                        val appConfig: FrontendAppConfig,
                                        override val messagesApi: MessagesApi,
@@ -50,7 +49,8 @@ class ListSchemesController @Inject()(
                                        val controllerComponents: MessagesControllerComponents,
                                        view: list_schemes,
                                        formProvider: ListSchemesFormProvider,
-                                       schemeSearchService: SchemeSearchService
+                                       schemeSearchService: SchemeSearchService,
+                                       sortSchemes: SortSchemes
                                      )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport {
@@ -64,6 +64,8 @@ class ListSchemesController @Inject()(
                         )(implicit hc: HeaderCarrier,
                           request: OptionalDataRequest[AnyContent]): Future[Result] = {
     val status = if (form.hasErrors) BadRequest else Ok
+    val sortedSchemes = sortSchemes.sort(schemeDetails)
+
     minimalConnector
       .getNameFromPspID(request.pspIdOrException.id)
       .flatMap(_.map {
@@ -74,7 +76,7 @@ class ListSchemesController @Inject()(
               status(
                 view(
                   form,
-                  schemes = schemeDetails,
+                  schemes = sortedSchemes,
                   pspName = name,
                   numberOfSchemes = numberOfSchemes
                 )

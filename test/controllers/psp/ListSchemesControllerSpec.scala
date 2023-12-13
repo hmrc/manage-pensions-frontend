@@ -32,7 +32,7 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.SchemeSearchService
-import utils.FakeNavigator
+import utils.{FakeNavigator, SortSchemes}
 import views.html.psp.list_schemes
 
 import scala.concurrent.Future
@@ -245,14 +245,25 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
         pstr = Some("pstr-7"),
         relationship = None,
         underAppeal = None
+      ),
+      SchemeDetails(
+        name = "scheme-8",
+        referenceNumber = "srn-8",
+        schemeStatus = SchemeStatus.WoundUp.value,
+        openDate = None,
+        windUpDate = None,
+        pstr = Some("pstr-8"),
+        relationship = None,
+        underAppeal = None
       )
     )
   private val view: list_schemes = app.injector.instanceOf[list_schemes]
+  private val sortSchemes: SortSchemes = new SortSchemes
 
   def controller(dataRetrievalAction: DataRetrievalAction = getDataWithPspName()): ListSchemesController =
     new ListSchemesController(
       mockAppConfig, messagesApi, FakeAuthAction, dataRetrievalAction, mockMinimalConnector, navigator,
-      mockUserAnswersCacheConnector, controllerComponents, view, listSchemesFormProvider, mockSchemeSearchService)
+      mockUserAnswersCacheConnector, controllerComponents, view, listSchemesFormProvider, mockSchemeSearchService, sortSchemes)
 
 
   private def testFixture(pspId: String): TestFixture =
@@ -273,7 +284,8 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
           controllerComponents,
           view,
           listSchemesFormProvider,
-          mockSchemeSearchService
+          mockSchemeSearchService,
+          sortSchemes
         )
     }
 

@@ -31,6 +31,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.{PaginationService, SchemeSearchService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.SortSchemes
 import views.html.psa.list_schemes
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -46,7 +47,8 @@ class ListSchemesController @Inject()(
                                        view: list_schemes,
                                        paginationService: PaginationService,
                                        formProvider: ListSchemesFormProvider,
-                                       schemeSearchService: SchemeSearchService
+                                       schemeSearchService: SchemeSearchService,
+                                       sortSchemes: SortSchemes
                                      )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport {
@@ -65,6 +67,7 @@ class ListSchemesController @Inject()(
                         )(implicit hc: HeaderCarrier,
                           request: OptionalDataRequest[AnyContent]): Future[Result] = {
     val status = if (form.hasErrors) BadRequest else Ok
+    val sortedSchemes = sortSchemes.sort(schemeDetails)
 
     minimalPsaConnector.getMinimalPsaDetails(request.psaIdOrException.id).flatMap { minimalDetails =>
       (minimalDetails, MinimalPSAPSP.getNameFromId(minimalDetails)) match {
@@ -75,7 +78,7 @@ class ListSchemesController @Inject()(
             status(
               view(
                 form,
-                schemes = schemeDetails,
+                schemes = sortedSchemes,
                 psaName = name,
                 numberOfSchemes = numberOfSchemes,
                 pagination = pagination,

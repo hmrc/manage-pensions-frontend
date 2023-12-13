@@ -30,6 +30,7 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.test.Helpers._
 import services.{PaginationService, SchemeSearchService}
+import utils.SortSchemes
 import views.html.psa.list_schemes
 
 import scala.concurrent.Future
@@ -393,6 +394,8 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
       )
     )
   private val view: list_schemes = app.injector.instanceOf[list_schemes]
+  private val sortSchemes: SortSchemes = new SortSchemes
+
 
   private def testFixture(psaId: String): TestFixture =
     new TestFixture with MockitoSugar {
@@ -412,7 +415,8 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
           view,
           paginationService,
           listSchemesFormProvider,
-          mockSchemeSearchService
+          mockSchemeSearchService,
+          sortSchemes
         )
     }
 
