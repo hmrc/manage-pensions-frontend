@@ -20,8 +20,9 @@ import models.{SchemeDetails, SchemeStatus}
 
 class SortSchemes {
   def sort(schemes: List[SchemeDetails]): List[SchemeDetails] = {
-    val nonWoundUpSchemes = schemes.filter(_.schemeStatus != SchemeStatus.WoundUp.value).sortBy(_.name.toLowerCase())
-    val woundUpSchemes = schemes.filter(_.schemeStatus == SchemeStatus.WoundUp.value).sortBy(_.name.toLowerCase())
-    nonWoundUpSchemes ++ woundUpSchemes
+    val (woundUpSchemes, nonWoundUpSchemes) = schemes.partition(_.schemeStatus == SchemeStatus.WoundUp.value)
+    val sortedNonWoundUpSchemes = nonWoundUpSchemes.sortBy(_.name.toLowerCase())
+    val sortedWoundUpSchemes = woundUpSchemes.sortBy(_.name.toLowerCase())
+    sortedNonWoundUpSchemes ++ sortedWoundUpSchemes
   }
 }
