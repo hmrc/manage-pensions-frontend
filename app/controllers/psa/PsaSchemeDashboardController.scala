@@ -50,7 +50,9 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
                                              view: psaSchemeDashboard,
                                              frontendConnector: FrontendConnector,
                                              minimalPsaConnector: MinimalConnector,
-                                             val appConfig: FrontendAppConfig
+                                             val appConfig: FrontendAppConfig,
+                                             psaSchemeAction: PsaSchemeAction,
+                                             getData: DataRetrievalAction
                                             )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   private val logger = Logger(classOf[PsaSchemeDashboardController])
@@ -61,7 +63,7 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
       Html("")
   }
 
-  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate().async {
+  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAction(srn)).async {
     implicit request =>
 
       minimalPsaConnector.getMinimalPsaDetails(request.psaIdOrException.id).flatMap { minimalDetails =>
