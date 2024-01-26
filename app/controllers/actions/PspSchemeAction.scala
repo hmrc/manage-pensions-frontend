@@ -18,11 +18,8 @@ package controllers.actions
 
 import connectors.scheme.SchemeDetailsConnector
 import handlers.ErrorHandler
-import identifiers.SchemeSrnId
-import models.SchemeReferenceNumber
-import models.psa.PsaDetails
+import models.{PSPDetails, SchemeReferenceNumber}
 import models.requests.OptionalDataRequest
-import play.api.Logging
 import play.api.mvc.Results.NotFound
 import play.api.mvc.{ActionFunction, Result}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
@@ -31,33 +28,15 @@ import utils.UserAnswers
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class PsaSchemeActionImpl (srnOpt:Option[SchemeReferenceNumber], schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)
+class PspSchemeActionImpl (srn:SchemeReferenceNumber, schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)
                           (implicit val executionContext: ExecutionContext)
-  extends ActionFunction[OptionalDataRequest, OptionalDataRequest] with FrontendHeaderCarrierProvider with Logging {
-
-
+  extends ActionFunction[OptionalDataRequest, OptionalDataRequest] with FrontendHeaderCarrierProvider {
 
   private def notFoundTemplate(implicit request: OptionalDataRequest[_]) = NotFound(errorHandler.notFoundTemplate)
-
   override def invokeBlock[A](request: OptionalDataRequest[A], block: OptionalDataRequest[A] => Future[Result]): Future[Result] = {
-
-    val srn = srnOpt.getOrElse({
-      val ua = request.userAnswers
-        .getOrElse({
-          logger.info("SRN not available in URL and there are no UserAnswers")
-          return Future.successful(notFoundTemplate(request))
-        })
-      SchemeReferenceNumber(
-        ua.get(SchemeSrnId).getOrElse({
-          logger.info("SRN not available in URL schemeSrn is not available in UserAnswers")
-          return Future.successful(notFoundTemplate(request))
-        })
-      )
-    })
-
     getUserAnswers(srn)(request).flatMap { userAnswers =>
 
-      val admins = (userAnswers.json \ "psaDetails").as[Seq[PsaDetails]].map(_.id)
+      val admins = (userAnswers.json \ "pspDetails").as[Seq[PSPDetails]].map(_.pspid)
       if (admins.contains(request.psaIdOrException.id)) {
         block(request)
       } else {
@@ -70,16 +49,16 @@ class PsaSchemeActionImpl (srnOpt:Option[SchemeReferenceNumber], schemeDetailsCo
   private def getUserAnswers(srn: SchemeReferenceNumber)
                             (implicit request: OptionalDataRequest[_]): Future[UserAnswers] =
     request.userAnswers match {
-      case Some(ua) if (ua.json \ "psaDetails").asOpt[Seq[PsaDetails]].nonEmpty => Future.successful(ua)
-      case _ => schemeDetailsConnector.getSchemeDetails(
-        psaId = request.psaIdOrException.id,
-        idNumber = srn,
-        schemeIdType = "srn"
+      case Some(ua) if (ua.json \ "pspDetails").asOpt[Seq[PSPDetails]].nonEmpty => Future.successful(ua)
+      case _ => schemeDetailsConnector.getPspSchemeDetails(
+        pspId = request.pspIdOrException.id,
+        srn = srn
       )
     }
 }
 
 
-class PsaSchemeAction @Inject() (schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)(implicit ec: ExecutionContext){
-  def apply(srn: Option[SchemeReferenceNumber]) = new PsaSchemeActionImpl(srn, schemeDetailsConnector, errorHandler)
+class PspSchemeAction @Inject() (schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)(implicit ec: ExecutionContext){
+  def apply(srn: SchemeReferenceNumber) = new PspSchemeActionImpl(srn, schemeDetailsConnector, errorHandler)
+
 }

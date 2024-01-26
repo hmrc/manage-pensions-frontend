@@ -63,7 +63,8 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
       Html("")
   }
 
-  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAction(srn)).async {
+  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate() andThen
+    getData andThen psaSchemeAction(Some(srn))).async {
     implicit request =>
 
       minimalPsaConnector.getMinimalPsaDetails(request.psaIdOrException.id).flatMap { minimalDetails =>

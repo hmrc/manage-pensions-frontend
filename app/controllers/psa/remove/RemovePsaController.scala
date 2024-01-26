@@ -22,7 +22,7 @@ import connectors.UserAnswersCacheConnector
 import connectors.admin.{DelimitedAdminException, MinimalConnector}
 import connectors.scheme.SchemeDetailsConnector
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaSchemeAction}
 import controllers.psa.remove.routes.{CanNotBeRemovedController, ConfirmRemovePsaController}
 import controllers.routes._
 import identifiers.invitations.PSTRId
@@ -50,12 +50,13 @@ class RemovePsaController @Inject()(
                                      userAnswersCacheConnector: UserAnswersCacheConnector,
                                      minimalPsaConnector: MinimalConnector,
                                      appConfig: FrontendAppConfig,
-                                     val controllerComponents: MessagesControllerComponents
+                                     val controllerComponents: MessagesControllerComponents,
+                                     psaSchemeAction: PsaSchemeAction
                                    )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with Retrievals {
 
-  def onPageLoad: Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
+  def onPageLoad: Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAction(None) andThen requireData).async {
     implicit request =>
       SchemeSrnId.retrieve.map { srn =>
         minimalPsaConnector.getMinimalPsaDetails(request.psaIdOrException.id).flatMap { minimalPsaDetails =>

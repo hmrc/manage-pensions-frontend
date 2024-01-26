@@ -24,6 +24,8 @@ import uk.gov.hmrc.domain.PsaId
 import uk.gov.hmrc.domain.PspId
 import utils.UserAnswers
 
+import scala.language.implicitConversions
+
 class OptionalDataRequest[A](override val request: Request[A],
                                   override val externalId: String,
                                   val userAnswers: Option[UserAnswers],
@@ -46,10 +48,20 @@ object OptionalDataRequest {
   authEntity: AuthEntity) = new OptionalDataRequest[A](request, externalId, userAnswers, psaId, pspId, userType, authEntity)
 }
 
-case class DataRequest[A](request: Request[A], externalId: String, userAnswers: UserAnswers, psaId: Option[PsaId],
-  pspId: Option[PspId] = None)
+case class DataRequest[A](request: Request[A],
+                          externalId: String,
+                          userAnswers: UserAnswers,
+                          psaId: Option[PsaId],
+                          pspId: Option[PspId] = None,
+                          userType: UserType,
+                          authEntity: AuthEntity)
   extends WrappedRequest[A](request) with IdentifiedRequest {
   def psaIdOrException:PsaId = psaId.getOrElse(throw IdNotFound())
   def pspIdOrException:PspId = pspId.getOrElse(throw IdNotFound("PspIdNotFound"))
 }
 
+object DataRequest {
+  implicit def toOptional[A](r: DataRequest[A]):OptionalDataRequest[A] = {
+    OptionalDataRequest(r.request, r.externalId, Some(r.userAnswers), r.psaId, r.pspId, r.userType, r.authEntity)
+  }
+}
