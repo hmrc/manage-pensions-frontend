@@ -19,7 +19,7 @@ package controllers.actions
 import connectors.scheme.SchemeDetailsConnector
 import handlers.ErrorHandler
 import identifiers.SchemeSrnId
-import models.{AuthorisedPractitioner, PSPDetails, SchemeReferenceNumber}
+import models.{AuthorisedPractitioner, SchemeReferenceNumber}
 import models.requests.OptionalDataRequest
 import play.api.Logging
 import play.api.mvc.Results.NotFound
@@ -36,38 +36,43 @@ private class PspSchemeActionImpl (srnOpt:Option[SchemeReferenceNumber], schemeD
 
   private def notFoundTemplate(implicit request: OptionalDataRequest[_]) = NotFound(errorHandler.notFoundTemplate)
   override def invokeBlock[A](request: OptionalDataRequest[A], block: OptionalDataRequest[A] => Future[Result]): Future[Result] = {
-    val srn = srnOpt.getOrElse({
-      val ua = request.userAnswers
-        .getOrElse({
-          logger.info("SRN not available in URL and there are no UserAnswers")
-          return Future.successful(notFoundTemplate(request))
-        })
-      SchemeReferenceNumber(
-        ua.get(SchemeSrnId).getOrElse({
-          logger.info("SRN not available in URL schemeSrn is not available in UserAnswers")
-          return Future.successful(notFoundTemplate(request))
-        })
-      )
-    })
-
-    getUserAnswers(srn)(request).flatMap { userAnswers =>
-
-      val pspDetails = (userAnswers.json \ "pspDetails").as[AuthorisedPractitioner]
-      if (pspDetails.id == request.pspIdOrException.id) {
-        block(request)
+    val retrievedSrn = {
+      if (srnOpt.isDefined) {
+        srnOpt
       } else {
-        Future.successful(notFoundTemplate(request))
+        request.userAnswers.flatMap { ua =>
+          ua.get(SchemeSrnId).map {
+            SchemeReferenceNumber(_)
+          }
+        }
       }
-    } recover {
-      case _ => notFoundTemplate(request)
+    }
+
+    val pspIdOpt = request.pspId
+
+    (retrievedSrn, pspIdOpt) match {
+      case (Some(srn), Some(pspId)) =>
+        getUserAnswers(srn, pspId.id)(request).flatMap { userAnswers =>
+
+          val pspDetails = (userAnswers.json \ "pspDetails").as[AuthorisedPractitioner]
+          if (pspDetails.id == request.pspIdOrException.id) {
+            block(request)
+          } else {
+            Future.successful(notFoundTemplate(request))
+          }
+        } recover {
+          case _ => notFoundTemplate(request)
+        }
+      case _ => Future.successful(notFoundTemplate(request))
     }
   }
-  private def getUserAnswers(srn: SchemeReferenceNumber)
+
+  private def getUserAnswers(srn: SchemeReferenceNumber, pspId: String)
                             (implicit request: OptionalDataRequest[_]): Future[UserAnswers] =
     request.userAnswers match {
-      case Some(ua) if (ua.json \ "pspDetails").asOpt[Seq[PSPDetails]].nonEmpty => Future.successful(ua)
+      case Some(ua) if (ua.json \ "pspDetails").asOpt[AuthorisedPractitioner].nonEmpty => Future.successful(ua)
       case _ => schemeDetailsConnector.getPspSchemeDetails(
-        pspId = request.pspIdOrException.id,
+        pspId = pspId,
         srn = srn
       )
     }
