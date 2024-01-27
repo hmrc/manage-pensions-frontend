@@ -31,7 +31,7 @@ import utils.UserAnswers
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class PsaSchemeActionImpl (srnOpt:Option[SchemeReferenceNumber], schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)
+private class PsaSchemeActionImpl (srnOpt:Option[SchemeReferenceNumber], schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)
                           (implicit val executionContext: ExecutionContext)
   extends ActionFunction[OptionalDataRequest, OptionalDataRequest] with FrontendHeaderCarrierProvider with Logging {
 
@@ -80,6 +80,7 @@ class PsaSchemeActionImpl (srnOpt:Option[SchemeReferenceNumber], schemeDetailsCo
 }
 
 
-class PsaSchemeAction @Inject() (schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)(implicit ec: ExecutionContext){
-  def apply(srn: Option[SchemeReferenceNumber]) = new PsaSchemeActionImpl(srn, schemeDetailsConnector, errorHandler)
+class PsaSchemeAuthAction @Inject()(schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)(implicit ec: ExecutionContext){
+  def apply(srn: Option[SchemeReferenceNumber]): ActionFunction[OptionalDataRequest, OptionalDataRequest] =
+    new PsaSchemeActionImpl(srn, schemeDetailsConnector, errorHandler)
 }
