@@ -20,7 +20,7 @@ import com.google.inject.Inject
 import connectors.UserAnswersCacheConnector
 import connectors.admin.MinimalConnector
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaSchemeAuthAction}
 import identifiers.SchemeNameId
 import identifiers.psp.deauthorise.PspDetailsId
 import models.Index
@@ -39,14 +39,15 @@ class ConfirmPsaDeauthPspController @Inject()(
                                                userAnswersCacheConnector: UserAnswersCacheConnector,
                                                val controllerComponents: MessagesControllerComponents,
                                                minimalPsaConnector: MinimalConnector,
-                                               view: confirmPsaDeauthPsp
+                                               view: confirmPsaDeauthPsp,
+                                               psaSchemeAuthAction: PsaSchemeAuthAction
                                              )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport
     with Retrievals {
 
   def onPageLoad(index: Index): Action[AnyContent] =
-    (authenticate() andThen getData andThen requireData).async {
+    (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
       implicit request =>
 
         (SchemeNameId and PspDetailsId(index)).retrieve.map {

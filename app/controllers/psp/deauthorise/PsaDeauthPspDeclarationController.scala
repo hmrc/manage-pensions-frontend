@@ -21,7 +21,7 @@ import config.FrontendAppConfig
 import connectors.admin.MinimalConnector
 import connectors.{EmailConnector, EmailNotSent, PspConnector, UserAnswersCacheConnector}
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaSchemeAuthAction}
 import controllers.routes._
 import forms.psp.deauthorise.DeauthorisePspDeclarationFormProvider
 import identifiers.invitations.PSTRId
@@ -60,7 +60,8 @@ class PsaDeauthPspDeclarationController @Inject()(
                                                    appConfig: FrontendAppConfig,
                                                    emailConnector: EmailConnector,
                                                    crypto: ApplicationCrypto,
-                                                   view: psaDeauthorisePspDeclaration
+                                                   view: psaDeauthorisePspDeclaration,
+                                                   psaSchemeAuthAction: PsaSchemeAuthAction
                                                  )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport
@@ -71,7 +72,7 @@ class PsaDeauthPspDeclarationController @Inject()(
   private def form: Form[Boolean] = formProvider()
 
   def onPageLoad(index: Index): Action[AnyContent] =
-    (authenticate() andThen getData andThen requireData).async {
+    (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
       implicit request =>
         (SchemeSrnId and SchemeNameId and deauthorise.PspDetailsId(index)).retrieve.map {
           case srn ~ schemeName ~ pspDetails =>
@@ -84,7 +85,7 @@ class PsaDeauthPspDeclarationController @Inject()(
     }
 
   def onSubmit(index: Index): Action[AnyContent] =
-    (authenticate() andThen getData andThen requireData).async {
+    (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
       implicit request =>
         (SchemeSrnId and SchemeNameId and PspDetailsId(index) and PSTRId and PspDeauthDateId(index)).retrieve.map {
           case srn ~ schemeName ~ pspDetails ~ pstr ~ removalDate =>
