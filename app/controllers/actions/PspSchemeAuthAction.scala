@@ -18,8 +18,10 @@ package controllers.actions
 
 import connectors.scheme.SchemeDetailsConnector
 import handlers.ErrorHandler
-import models.{PSPDetails, SchemeReferenceNumber}
+import identifiers.SchemeSrnId
+import models.{AuthorisedPractitioner, PSPDetails, SchemeReferenceNumber}
 import models.requests.OptionalDataRequest
+import play.api.Logging
 import play.api.mvc.Results.NotFound
 import play.api.mvc.{ActionFunction, Result}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
@@ -28,16 +30,30 @@ import utils.UserAnswers
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class PspSchemeActionImpl (srn:SchemeReferenceNumber, schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)
+private class PspSchemeActionImpl (srnOpt:Option[SchemeReferenceNumber], schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)
                           (implicit val executionContext: ExecutionContext)
-  extends ActionFunction[OptionalDataRequest, OptionalDataRequest] with FrontendHeaderCarrierProvider {
+  extends ActionFunction[OptionalDataRequest, OptionalDataRequest] with FrontendHeaderCarrierProvider with Logging {
 
   private def notFoundTemplate(implicit request: OptionalDataRequest[_]) = NotFound(errorHandler.notFoundTemplate)
   override def invokeBlock[A](request: OptionalDataRequest[A], block: OptionalDataRequest[A] => Future[Result]): Future[Result] = {
+    val srn = srnOpt.getOrElse({
+      val ua = request.userAnswers
+        .getOrElse({
+          logger.info("SRN not available in URL and there are no UserAnswers")
+          return Future.successful(notFoundTemplate(request))
+        })
+      SchemeReferenceNumber(
+        ua.get(SchemeSrnId).getOrElse({
+          logger.info("SRN not available in URL schemeSrn is not available in UserAnswers")
+          return Future.successful(notFoundTemplate(request))
+        })
+      )
+    })
+
     getUserAnswers(srn)(request).flatMap { userAnswers =>
 
-      val admins = (userAnswers.json \ "pspDetails").as[Seq[PSPDetails]].map(_.pspid)
-      if (admins.contains(request.psaIdOrException.id)) {
+      val pspDetails = (userAnswers.json \ "pspDetails").as[AuthorisedPractitioner]
+      if (pspDetails.id == request.pspIdOrException.id) {
         block(request)
       } else {
         Future.successful(notFoundTemplate(request))
@@ -58,7 +74,8 @@ class PspSchemeActionImpl (srn:SchemeReferenceNumber, schemeDetailsConnector: Sc
 }
 
 
-class PspSchemeAction @Inject() (schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)(implicit ec: ExecutionContext){
-  def apply(srn: SchemeReferenceNumber) = new PspSchemeActionImpl(srn, schemeDetailsConnector, errorHandler)
+class PspSchemeAuthAction @Inject()(schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)(implicit ec: ExecutionContext){
+  def apply(srn: Option[SchemeReferenceNumber]): ActionFunction[OptionalDataRequest, OptionalDataRequest] =
+    new PspSchemeActionImpl(srn, schemeDetailsConnector, errorHandler)
 
 }

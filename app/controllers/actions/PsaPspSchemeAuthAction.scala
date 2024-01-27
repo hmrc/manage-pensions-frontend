@@ -35,14 +35,14 @@ class PsaPspSchemeActionImpl (srn:SchemeReferenceNumber, schemeDetailsConnector:
   override def invokeBlock[A](request: OptionalDataRequest[A], block: OptionalDataRequest[A] => Future[Result]): Future[Result] = {
     request.psaId -> request.pspId match {
       case (Some(_), None) => new PsaSchemeAuthAction(schemeDetailsConnector, errorHandler).apply(Some(srn)).invokeBlock(request, block)
-      case (None, Some(_)) => new PspSchemeAction(schemeDetailsConnector, errorHandler).apply(srn).invokeBlock(request, block)
+      case (None, Some(_)) => new PspSchemeAuthAction(schemeDetailsConnector, errorHandler).apply(Some(srn)).invokeBlock(request, block)
       case _ => Future.successful(notFoundTemplate(request))
     }
   }
 }
 
 
-class PsaPspSchemeAction @Inject() (schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)(implicit ec: ExecutionContext){
+class PsaPspSchemeAuthAction @Inject()(schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)(implicit ec: ExecutionContext){
   def apply(srn: SchemeReferenceNumber) = new PsaPspSchemeActionImpl(srn, schemeDetailsConnector, errorHandler)
 
 }

@@ -57,7 +57,9 @@ class PspSchemeDashboardController @Inject()(
                                               service: PspSchemeDashboardService,
                                               view: pspSchemeDashboard,
                                               config: FrontendAppConfig,
-                                              frontendConnector: FrontendConnector
+                                              frontendConnector: FrontendConnector,
+                                              pspSchemeAuthAction: PspSchemeAuthAction,
+                                              getData: DataRetrievalAction
                                             )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport
@@ -65,7 +67,7 @@ class PspSchemeDashboardController @Inject()(
 
   private val logger = Logger(classOf[PspSchemeDashboardController])
 
-  def onPageLoad(srn: String): Action[AnyContent] = authenticate(PSP).async {
+  def onPageLoad(srn: String): Action[AnyContent] = (authenticate(PSP) andThen getData andThen pspSchemeAuthAction(Some(srn))).async {
     implicit request =>
       withUserAnswers(srn) { userAnswers =>
         val pspDetails: AuthorisedPractitioner =
