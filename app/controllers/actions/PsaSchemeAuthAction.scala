@@ -41,42 +41,46 @@ private class PsaSchemeActionImpl (srnOpt:Option[SchemeReferenceNumber], schemeD
 
   override def invokeBlock[A](request: OptionalDataRequest[A], block: OptionalDataRequest[A] => Future[Result]): Future[Result] = {
 
-    val srn = srnOpt.getOrElse({
-      val ua = request.userAnswers
-        .getOrElse({
-          logger.info("SRN not available in URL and there are no UserAnswers")
-          return Future.successful(notFoundTemplate(request))
-        })
-      SchemeReferenceNumber(
-        ua.get(SchemeSrnId).getOrElse({
-          logger.info("SRN not available in URL schemeSrn is not available in UserAnswers")
-          return Future.successful(notFoundTemplate(request))
-        })
-      )
-    })
-
-    getUserAnswers(srn)(request).flatMap { userAnswers =>
-
-      val admins = (userAnswers.json \ "psaDetails").as[Seq[PsaDetails]].map(_.id)
-      if (admins.contains(request.psaIdOrException.id)) {
-        block(request)
+    val retrievedSrn = {
+      if(srnOpt.isDefined) {
+        srnOpt
       } else {
-        Future.successful(notFoundTemplate(request))
+        request.userAnswers.flatMap { ua =>
+          ua.get(SchemeSrnId).map { SchemeReferenceNumber(_) }
+        }
       }
-    } recover {
-      case _ => notFoundTemplate(request)
     }
+
+    val psaIdOpt = request.psaId
+
+    (retrievedSrn, psaIdOpt) match {
+      case (Some(srn), Some(psaId)) =>
+        getUserAnswers(srn, psaId.id)(request).flatMap { userAnswers =>
+          val admins = (userAnswers.json \ "psaDetails").as[Seq[PsaDetails]].map(_.id)
+          if (admins.contains(psaId.id)) {
+            block(request)
+          } else {
+            Future.successful(notFoundTemplate(request))
+          }
+        } recover {
+          case _ =>
+            notFoundTemplate(request)
+        }
+      case _ => Future.successful(notFoundTemplate(request))
+    }
+
   }
-  private def getUserAnswers(srn: SchemeReferenceNumber)
-                            (implicit request: OptionalDataRequest[_]): Future[UserAnswers] =
+  private def getUserAnswers(srn: SchemeReferenceNumber, psaId: String)
+                            (implicit request: OptionalDataRequest[_]): Future[UserAnswers] = {
     request.userAnswers match {
       case Some(ua) if (ua.json \ "psaDetails").asOpt[Seq[PsaDetails]].nonEmpty => Future.successful(ua)
       case _ => schemeDetailsConnector.getSchemeDetails(
-        psaId = request.psaIdOrException.id,
+        psaId = psaId,
         idNumber = srn,
         schemeIdType = "srn"
       )
     }
+  }
 }
 
 
