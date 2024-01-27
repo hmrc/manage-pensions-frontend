@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,9 @@
 package controllers
 
 import base.SpecBase
-import controllers.actions.FakeDataRetrievalAction
+import connectors.scheme.SchemeDetailsConnector
+import controllers.actions.{FakeDataRetrievalAction, PsaSchemeAuthAction, PspSchemeAuthAction}
+import handlers.ErrorHandler
 import identifiers.psa.PSANameId
 import identifiers.psp.PSPNameId
 import play.api.inject.guice.GuiceApplicationBuilder
@@ -29,6 +31,10 @@ trait ControllerSpecBase extends SpecBase {
 
   val cacheMapId = "id"
   val psp: Option[PspId] = Some(PspId("00000000"))
+  val psaSchemeAuthAction = new PsaSchemeAuthAction(app.injector.instanceOf[SchemeDetailsConnector], app.injector.instanceOf[ErrorHandler])
+  val pspSchemeAuthAction: PspSchemeAuthAction = app.injector.instanceOf[PspSchemeAuthAction]
+
+
 
   def getEmptyData: FakeDataRetrievalAction = new FakeDataRetrievalAction(Some(Json.obj()))
   def getEmptyDataPsp: FakeDataRetrievalAction = new FakeDataRetrievalAction(Some(Json.obj()), pspId = psp)

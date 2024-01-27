@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import connectors.admin.MinimalConnector
 import connectors.scheme.{ListOfSchemesConnector, PensionSchemeVarianceLockConnector, SchemeDetailsConnector}
 import connectors.{FakeUserAnswersCacheConnector, FrontendConnector}
 import controllers.ControllerSpecBase
-import controllers.actions.FakeAuthAction
+import controllers.actions.{DataRetrievalAction, FakeAuthAction}
 import controllers.invitations.psp.routes.WhatYouWillNeedController
 import controllers.invitations.routes.InviteController
 import controllers.psa.routes.ViewAdministratorsController
@@ -152,7 +152,9 @@ class PsaSchemeDashboardControllerSpec
       psaSchemeDashboardView,
       mockFrontendConnector,
       mockMinimalPsaConnector,
-      mockAppConfig
+      mockAppConfig,
+      psaSchemeAuthAction,
+      app.injector.instanceOf[DataRetrievalAction]
     )
   }
 

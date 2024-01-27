@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ class PsaRemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours 
                  userAnswersCacheConnector: UserAnswersCacheConnector = FakeUserAnswersCacheConnector) = new PsaRemovalDateController(
     frontendAppConfig, messagesApi, userAnswersCacheConnector, navigator, fakeAuth, dataRetrievalAction,
     requiredDataAction, formProvider, fakePsaRemovalConnector,
-    mockedUpdateSchemeCacheConnector, mockedPensionSchemeVarianceLockConnector, controllerComponents, view)
+    mockedUpdateSchemeCacheConnector, mockedPensionSchemeVarianceLockConnector, controllerComponents, view, psaSchemeAuthAction)
 
   private def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
     controller(dataRetrievalAction, fakeAuth).onSubmit()

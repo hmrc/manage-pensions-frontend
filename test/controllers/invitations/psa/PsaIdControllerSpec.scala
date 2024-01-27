@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,14 +39,14 @@ class PsaIdControllerSpec extends ControllerWithQuestionPageBehaviours {
 
     new PsaIdController(
       messagesApi, fakeAuth, navigator, FakeUserAnswersCacheConnector,
-      dataRetrievalAction, requiredDataAction, formProvider, controllerComponents, view).onPageLoad(NormalMode)
+      dataRetrievalAction, requiredDataAction, formProvider, controllerComponents, view, psaSchemeAuthAction).onPageLoad(NormalMode)
   }
 
   def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
     new PsaIdController(
       messagesApi, fakeAuth, navigator, FakeUserAnswersCacheConnector,
-      dataRetrievalAction, requiredDataAction, formProvider, controllerComponents, view).onSubmit(NormalMode)
+      dataRetrievalAction, requiredDataAction, formProvider, controllerComponents, view, psaSchemeAuthAction).onSubmit(NormalMode)
   }
 
   def viewAsString(form: Form[_] = form) = view(form, "xyz", NormalMode)(fakeRequest, messages).toString

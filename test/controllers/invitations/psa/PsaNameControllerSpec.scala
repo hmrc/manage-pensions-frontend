@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,14 +38,14 @@ class PsaNameControllerSpec extends ControllerWithQuestionPageBehaviours {
 
     new PsaNameController(
       messagesApi, FakeUserAnswersCacheConnector, navigator, fakeAuth,
-      dataRetrievalAction, formProvider, controllerComponents, psaNameView).onPageLoad(NormalMode)
+      dataRetrievalAction, formProvider, controllerComponents, psaNameView, psaSchemeAuthAction).onPageLoad(NormalMode)
   }
 
   def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
 
     new PsaNameController(
       messagesApi, FakeUserAnswersCacheConnector, navigator, fakeAuth,
-      dataRetrievalAction, formProvider, controllerComponents, psaNameView).onSubmit(NormalMode)
+      dataRetrievalAction, formProvider, controllerComponents, psaNameView, psaSchemeAuthAction).onSubmit(NormalMode)
   }
 
   private def viewAsString(form: Form[_]): String = psaNameView(form, NormalMode)(fakeRequest, messages).toString

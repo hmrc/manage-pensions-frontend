@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,7 +86,8 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
       mockMinimalConnector, mockEmailConnector, mockAuditService,
       crypto,
       appConfig = frontendAppConfig,
-      controllerComponents, view
+      controllerComponents, view,
+      pspSchemeAuthAction
     )
 
   private def viewAsString(form: Form[Boolean] = form) = view(form, schemeName, srn)(fakeRequest, messages).toString

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ class ConfirmationControllerSpec extends ControllerSpecBase with MockitoSugar {
 
   def controller(dataRetrievalAction: DataRetrievalAction = new FakeDataRetrievalAction(Some(data), pspId = pspId)) =
     new ConfirmationController(messagesApi, FakeAuthAction, dataRetrievalAction, new DataRequiredActionImpl,
-      mockMinimalConnector, FakeUserAnswersCacheConnector, controllerComponents, view)
+      mockMinimalConnector, FakeUserAnswersCacheConnector, controllerComponents, view, pspSchemeAuthAction)
 
   private def viewAsString = view(schemeName, psaName, email)(fakeRequest, messages).toString
 

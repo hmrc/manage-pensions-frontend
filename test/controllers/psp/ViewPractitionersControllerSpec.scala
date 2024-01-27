@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,7 +90,8 @@ class ViewPractitionersControllerSpec extends ControllerSpecBase with MockitoSug
       new DataRequiredActionImpl,
       mockFeatureToggleService,
       controllerComponents,
-      viewPractitionersView
+      viewPractitionersView,
+      psaSchemeAuthAction
     )
 
   private def viewAsString() = viewPractitionersView(schemeName, returnCall, practitionersViewModel,true)(fakeRequest, messages).toString

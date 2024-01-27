@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,11 @@ import config.FrontendAppConfig
 import connectors.FakeUserAnswersCacheConnector
 import connectors.admin.MinimalConnector
 import connectors.scheme.SchemeDetailsConnector
-import controllers.actions.{FakeAuthAction, FakeUnAuthorisedAction}
+import controllers.actions.{DataRetrievalAction, FakeAuthAction, FakeUnAuthorisedAction, PsaSchemeAuthAction}
 import controllers.invitations.psa.routes._
 import controllers.invitations.routes.YouCannotSendAnInviteController
 import controllers.routes._
+import handlers.ErrorHandler
 import identifiers.MinimalSchemeDetailId
 import models._
 import org.mockito.Mockito.when
@@ -93,7 +94,7 @@ class InviteControllerSpec extends SpecBase {
     "redirect to unauthorised page if user is not authenticated" in {
 
       val controller = new InviteController(FakeUnAuthorisedAction, fakeSchemeDetailsConnector,
-        FakeUserAnswersCacheConnector, fakeMinimalPsaConnector(isSuspended = false), controllerComponents, mockAppConfig)
+        FakeUserAnswersCacheConnector, fakeMinimalPsaConnector(isSuspended = false), controllerComponents, mockAppConfig, app.injector.instanceOf[PsaSchemeAuthAction], app.injector.instanceOf[DataRetrievalAction])
 
       val result = controller.onPageLoad(srn)(fakeRequest)
 
@@ -150,5 +151,5 @@ object InviteControllerSpec extends SpecBase with JsonFileReader with MockitoSug
 
   def controller(isSuspended: Boolean, rlsFlag: Boolean = false, deceasedFlag: Boolean = false) =
     new InviteController(mockAuthAction, fakeSchemeDetailsConnector,
-      FakeUserAnswersCacheConnector, fakeMinimalPsaConnector(isSuspended, rlsFlag, deceasedFlag), controllerComponents, mockAppConfig)
+      FakeUserAnswersCacheConnector, fakeMinimalPsaConnector(isSuspended, rlsFlag, deceasedFlag), controllerComponents, mockAppConfig, app.injector.instanceOf[PsaSchemeAuthAction], app.injector.instanceOf[DataRetrievalAction])
 }

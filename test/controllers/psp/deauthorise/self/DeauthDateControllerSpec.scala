@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ class DeauthDateControllerSpec extends ControllerSpecBase {
 
   def controller(dataRetrievalAction: DataRetrievalAction = new FakeDataRetrievalAction(Some(data), pspId = pspId)) =
     new DeauthDateController(messagesApi, FakeUserAnswersCacheConnector, new FakeNavigator(onwardRoute), FakeAuthAction,
-      dataRetrievalAction, new DataRequiredActionImpl, formProvider, controllerComponents, view)
+      dataRetrievalAction, new DataRequiredActionImpl, formProvider, controllerComponents, view, pspSchemeAuthAction)
 
   private def viewAsString(form: Form[_] = form) = view(form, schemeName, srn, formatDate(date))(fakeRequest, messages).toString
 

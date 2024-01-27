@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -99,7 +99,7 @@ class SchemesOverviewServiceSpec extends SpecBase with MockitoSugar with BeforeA
 object SchemesOverviewServiceSpec extends SpecBase with MockitoSugar {
 
   implicit val request: OptionalDataRequest[AnyContent] =
-    OptionalDataRequest(FakeRequest("", ""), "id", Some(UserAnswers()), Some(PsaId("A0000000")))
+    OptionalDataRequest(FakeRequest("", ""), "id", Some(UserAnswers()), Some(PsaId("A0000000")), None, Individual, AuthEntity.PSA)
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
   val html: Html = Html("test-html")

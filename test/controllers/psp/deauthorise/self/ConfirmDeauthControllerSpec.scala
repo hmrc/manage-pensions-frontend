@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ class ConfirmDeauthControllerSpec extends ControllerSpecBase {
 
   def controller(dataRetrievalAction: DataRetrievalAction = new FakeDataRetrievalAction(Some(data))) = new ConfirmDeauthController(
     FakeAuthAction, dataRetrievalAction, new DataRequiredActionImpl, messagesApi, new FakeNavigator(onwardRoute),
-    formProvider, FakeUserAnswersCacheConnector, controllerComponents, view)
+    formProvider, FakeUserAnswersCacheConnector, controllerComponents, view, pspSchemeAuthAction)
 
   private def viewAsString(form: Form[_] = form) = view(form, schemeName, srn, pspName)(fakeRequest, messages).toString
 

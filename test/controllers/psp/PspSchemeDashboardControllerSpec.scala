@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import connectors.{FrontendConnector, UserAnswersCacheConnector}
 import connectors.admin.MinimalConnector
 import connectors.scheme.{ListOfSchemesConnector, SchemeDetailsConnector}
 import controllers.ControllerSpecBase
-import controllers.actions.{AuthAction, FakeAuthAction}
+import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction}
 import handlers.ErrorHandler
 import models.{IndividualDetails, Link, MinimalPSAPSP}
 import org.mockito.ArgumentMatchers.any
@@ -81,7 +81,9 @@ class PspSchemeDashboardControllerSpec
       service = pspSchemeDashboardService,
       view = view,
       config = appConfig,
-      frontendConnector = frontendConnector
+      frontendConnector = frontendConnector,
+      pspSchemeAuthAction,
+      app.injector.instanceOf[DataRetrievalAction]
     )
 
   private def practitionerCard(clientReference: Option[String]): PspSchemeDashboardCardViewModel =

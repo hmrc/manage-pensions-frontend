@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,10 @@ package controllers.invitations
 import config.FrontendAppConfig
 import connectors.FakeUserAnswersCacheConnector
 import connectors.admin.MinimalConnector
+import connectors.scheme.SchemeDetailsConnector
 import controllers.actions._
 import controllers.behaviours.ControllerWithNormalPageBehaviours
+import handlers.ErrorHandler
 import models.{MinimalPSAPSP, MinimalSchemeDetail}
 import play.api.mvc.Call
 import play.api.test.Helpers._
@@ -72,14 +74,14 @@ class InvitationsSuccessControllerSpec extends ControllerWithNormalPageBehaviour
 
     new InvitationSuccessController(
       messagesApi, frontendAppConfig, fakeAuth, dataRetrievalAction, requiredDateAction, FakeUserAnswersCacheConnector, fakeMinimalPsaConnector, navigator,
-      controllerComponents, invitationSuccessView).onPageLoad(testSrn)
+      controllerComponents, invitationSuccessView, psaSchemeAuthAction).onPageLoad(testSrn)
   }
 
   private def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
     new InvitationSuccessController(
       messagesApi, frontendAppConfig, fakeAuth, dataRetrievalAction, requiredDateAction, FakeUserAnswersCacheConnector, fakeMinimalPsaConnector, navigator,
-      controllerComponents, invitationSuccessView).onSubmit(testSrn)
+      controllerComponents, invitationSuccessView, psaSchemeAuthAction).onSubmit(testSrn)
   }
 
   def testExpiryDate(config: FrontendAppConfig): LocalDate = {

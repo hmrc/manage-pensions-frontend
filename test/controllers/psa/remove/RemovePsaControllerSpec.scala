@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import base.SpecBase
 import connectors.FakeUserAnswersCacheConnector
 import connectors.admin.MinimalConnector
 import connectors.scheme.SchemeDetailsConnector
-import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction, FakeUnAuthorisedAction}
+import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction, FakeUnAuthorisedAction, PsaSchemeAuthAction}
 import controllers.psa.remove.routes._
 import identifiers.AssociatedDateId
 import identifiers.invitations.{PSTRId, SchemeNameId}
@@ -52,6 +52,8 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
 
     override def getNameFromPspID(pspId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = ???
   }
+
+  private val psaSchemeAuthAction = app.injector.instanceOf[PsaSchemeAuthAction]
 
   val userAnswersJson: String =
     s"""{
@@ -138,7 +140,8 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
       FakeUserAnswersCacheConnector,
       fakeMinimalPsaConnector(psaMinimalDetails),
       frontendAppConfig,
-      controllerComponents
+      controllerComponents,
+      psaSchemeAuthAction
     )
 
 
@@ -249,7 +252,8 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
       val controller = new RemovePsaController(FakeUnAuthorisedAction, data, new DataRequiredActionImpl,
         fakeSchemeDetailsConnector(), FakeUserAnswersCacheConnector,
         fakeMinimalPsaConnector(psaMinimalSubscription.copy(isPsaSuspended = false)), frontendAppConfig,
-        controllerComponents
+        controllerComponents,
+        psaSchemeAuthAction
       )
 
       val result = controller.onPageLoad(fakeRequest)
