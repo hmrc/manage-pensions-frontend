@@ -21,7 +21,7 @@ import connectors.admin.MinimalConnector
 import connectors.scheme.{ListOfSchemesConnector, PensionSchemeVarianceLockConnector, SchemeDetailsConnector}
 import connectors.{FakeUserAnswersCacheConnector, FrontendConnector}
 import controllers.ControllerSpecBase
-import controllers.actions.{DataRetrievalAction, FakeAuthAction}
+import controllers.actions.FakeAuthAction
 import controllers.invitations.psp.routes.WhatYouWillNeedController
 import controllers.invitations.routes.InviteController
 import controllers.psa.routes.ViewAdministratorsController
@@ -153,8 +153,8 @@ class PsaSchemeDashboardControllerSpec
       mockFrontendConnector,
       mockMinimalPsaConnector,
       mockAppConfig,
-      psaSchemeAuthAction,
-      app.injector.instanceOf[DataRetrievalAction]
+      fakePsaSchemeAuthAction,
+      getDataWithPsaName()
     )
   }
 

@@ -21,7 +21,7 @@ import connectors.{FrontendConnector, UserAnswersCacheConnector}
 import connectors.admin.MinimalConnector
 import connectors.scheme.{ListOfSchemesConnector, SchemeDetailsConnector}
 import controllers.ControllerSpecBase
-import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction}
+import controllers.actions.{AuthAction, FakeAuthAction}
 import handlers.ErrorHandler
 import models.{IndividualDetails, Link, MinimalPSAPSP}
 import org.mockito.ArgumentMatchers.any
@@ -82,8 +82,8 @@ class PspSchemeDashboardControllerSpec
       view = view,
       config = appConfig,
       frontendConnector = frontendConnector,
-      pspSchemeAuthAction,
-      app.injector.instanceOf[DataRetrievalAction]
+      fakePspSchemeAuthAction,
+      getDataWithPspName()
     )
 
   private def practitionerCard(clientReference: Option[String]): PspSchemeDashboardCardViewModel =
@@ -263,16 +263,18 @@ class PspSchemeDashboardControllerSpec
       redirectLocation(result) mustBe Some(controllers.routes.ContactHMRCController.onPageLoad().url)
     }
 
+    /* TODO: No longer relevant after introduction of PspSchemeAuthAction PODS-8442. Refactor this eventually. -Pavel Vjalicin
     "return see other if pspDetails id does match psp id from request" in {
       when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
         .thenReturn(Future.successful(ua()))
       when(minimalConnector.getMinimalPspDetails(any())(any(), any()))
         .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false, deceasedFlag = false)))
 
+
       val result = controller(PspId("00000001")).onPageLoad(srn)(fakeRequest)
 
       status(result) mustBe SEE_OTHER
-    }
+    } */
   }
 }
 

@@ -132,7 +132,7 @@ object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours
 
     new CheckYourAnswersController(
       frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction,
-      checkYourAnswersFactory, fakeSchemeDetailsConnector, fakeInvitationConnector(), controllerComponents, view, psaSchemeAuthAction).onPageLoad()
+      checkYourAnswersFactory, fakeSchemeDetailsConnector, fakeInvitationConnector(), controllerComponents, view, fakePsaSchemeAuthAction).onPageLoad()
   }
 
   def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
@@ -142,7 +142,7 @@ object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours
 
     new CheckYourAnswersController(
       frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction,
-      checkYourAnswersFactory, fakeSchemeDetailsConnector, fakeInvitationConnector(), controllerComponents, view, psaSchemeAuthAction).onSubmit()
+      checkYourAnswersFactory, fakeSchemeDetailsConnector, fakeInvitationConnector(), controllerComponents, view, fakePsaSchemeAuthAction).onSubmit()
   }
 
   def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction, invitationResponse: Future[Unit]): Action[AnyContent] = {
@@ -152,6 +152,6 @@ object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours
 
     new CheckYourAnswersController(
       frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction,
-      checkYourAnswersFactory, fakeSchemeDetailsConnector, fakeInvitationConnector(invitationResponse), controllerComponents, view, psaSchemeAuthAction).onSubmit()
+      checkYourAnswersFactory, fakeSchemeDetailsConnector, fakeInvitationConnector(invitationResponse), controllerComponents, view, fakePsaSchemeAuthAction).onSubmit()
   }
 }

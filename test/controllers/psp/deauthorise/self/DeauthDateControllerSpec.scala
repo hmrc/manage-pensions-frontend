@@ -59,7 +59,7 @@ class DeauthDateControllerSpec extends ControllerSpecBase {
 
   def controller(dataRetrievalAction: DataRetrievalAction = new FakeDataRetrievalAction(Some(data), pspId = pspId)) =
     new DeauthDateController(messagesApi, FakeUserAnswersCacheConnector, new FakeNavigator(onwardRoute), FakeAuthAction,
-      dataRetrievalAction, new DataRequiredActionImpl, formProvider, controllerComponents, view, pspSchemeAuthAction)
+      dataRetrievalAction, new DataRequiredActionImpl, formProvider, controllerComponents, view, fakePspSchemeAuthAction)
 
   private def viewAsString(form: Form[_] = form) = view(form, schemeName, srn, formatDate(date))(fakeRequest, messages).toString
 

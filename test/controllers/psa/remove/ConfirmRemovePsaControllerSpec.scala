@@ -36,7 +36,7 @@ class ConfirmRemovePsaControllerSpec extends ControllerWithQuestionPageBehaviour
   def controller(dataRetrievalAction: DataRetrievalAction = data, fakeAuth: AuthAction = FakeAuthAction,
                  userAnswersCacheConnector: UserAnswersCacheConnector = FakeUserAnswersCacheConnector) = new ConfirmRemovePsaController(
     frontendAppConfig, fakeAuth, messagesApi, navigator, formProvider,
-    userAnswersCacheConnector, dataRetrievalAction, requiredDataAction, controllerComponents, view, psaSchemeAuthAction)
+    userAnswersCacheConnector, dataRetrievalAction, requiredDataAction, controllerComponents, view, fakePsaSchemeAuthAction)
 
   private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
     controller(dataRetrievalAction, fakeAuth).onPageLoad()

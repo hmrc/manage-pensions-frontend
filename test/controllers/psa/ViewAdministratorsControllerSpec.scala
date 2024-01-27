@@ -57,7 +57,7 @@ class ViewAdministratorsControllerSpec extends ControllerSpecBase with BeforeAnd
       controllerComponents,
       schemeDetailsService,
       viewAdministratorsView,
-      psaSchemeAuthAction
+      fakePsaSchemeAuthAction
     )
   }
 

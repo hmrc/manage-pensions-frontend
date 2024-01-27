@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import connectors.scheme.SchemeDetailsConnector
-import controllers.actions.{FakeDataRetrievalAction, PsaSchemeAuthAction, PspSchemeAuthAction}
+import actions.{FakeDataRetrievalAction, FakePsaSchemeAuthAction, FakePspSchemeAuthAction}
 import handlers.ErrorHandler
 import identifiers.psa.PSANameId
 import identifiers.psp.PSPNameId
@@ -31,8 +31,9 @@ trait ControllerSpecBase extends SpecBase {
 
   val cacheMapId = "id"
   val psp: Option[PspId] = Some(PspId("00000000"))
-  val psaSchemeAuthAction = new PsaSchemeAuthAction(app.injector.instanceOf[SchemeDetailsConnector], app.injector.instanceOf[ErrorHandler])
-  val pspSchemeAuthAction: PspSchemeAuthAction = app.injector.instanceOf[PspSchemeAuthAction]
+  val fakePsaSchemeAuthAction = new FakePsaSchemeAuthAction(app.injector.instanceOf[SchemeDetailsConnector], app.injector.instanceOf[ErrorHandler])
+  val fakePspSchemeAuthAction: FakePspSchemeAuthAction =
+    new FakePspSchemeAuthAction(app.injector.instanceOf[SchemeDetailsConnector], app.injector.instanceOf[ErrorHandler])
 
 
 

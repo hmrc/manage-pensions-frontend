@@ -74,14 +74,14 @@ class InvitationsSuccessControllerSpec extends ControllerWithNormalPageBehaviour
 
     new InvitationSuccessController(
       messagesApi, frontendAppConfig, fakeAuth, dataRetrievalAction, requiredDateAction, FakeUserAnswersCacheConnector, fakeMinimalPsaConnector, navigator,
-      controllerComponents, invitationSuccessView, psaSchemeAuthAction).onPageLoad(testSrn)
+      controllerComponents, invitationSuccessView, fakePsaSchemeAuthAction).onPageLoad(testSrn)
   }
 
   private def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
     new InvitationSuccessController(
       messagesApi, frontendAppConfig, fakeAuth, dataRetrievalAction, requiredDateAction, FakeUserAnswersCacheConnector, fakeMinimalPsaConnector, navigator,
-      controllerComponents, invitationSuccessView, psaSchemeAuthAction).onSubmit(testSrn)
+      controllerComponents, invitationSuccessView, fakePsaSchemeAuthAction).onSubmit(testSrn)
   }
 
   def testExpiryDate(config: FrontendAppConfig): LocalDate = {

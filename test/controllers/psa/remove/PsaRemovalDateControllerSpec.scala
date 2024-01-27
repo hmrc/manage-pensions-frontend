@@ -59,7 +59,7 @@ class PsaRemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours 
                  userAnswersCacheConnector: UserAnswersCacheConnector = FakeUserAnswersCacheConnector) = new PsaRemovalDateController(
     frontendAppConfig, messagesApi, userAnswersCacheConnector, navigator, fakeAuth, dataRetrievalAction,
     requiredDataAction, formProvider, fakePsaRemovalConnector,
-    mockedUpdateSchemeCacheConnector, mockedPensionSchemeVarianceLockConnector, controllerComponents, view, psaSchemeAuthAction)
+    mockedUpdateSchemeCacheConnector, mockedPensionSchemeVarianceLockConnector, controllerComponents, view, fakePsaSchemeAuthAction)
 
   private def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
     controller(dataRetrievalAction, fakeAuth).onSubmit()
