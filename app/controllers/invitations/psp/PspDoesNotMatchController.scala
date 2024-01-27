@@ -17,7 +17,7 @@
 package controllers.invitations.psp
 
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaSchemeAuthAction}
 import controllers.psa.routes._
 import identifiers.invitations.psp.PspNameId
 import identifiers.{SchemeNameId, SchemeSrnId}
@@ -36,13 +36,14 @@ class PspDoesNotMatchController @Inject()(
                                            getData: DataRetrievalAction,
                                            requireData: DataRequiredAction,
                                            val controllerComponents: MessagesControllerComponents,
-                                           view: pspDoesNotMatch
+                                           view: pspDoesNotMatch,
+                                           psaSchemeAuthAction: PsaSchemeAuthAction
                                          )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport
     with Retrievals {
 
-  def onPageLoad: Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
+  def onPageLoad: Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
     implicit request =>
       (SchemeNameId and SchemeSrnId and PspNameId).retrieve.map {
         case schemeName ~ srn ~ pspName =>
