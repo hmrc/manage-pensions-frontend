@@ -70,7 +70,7 @@ private class PspSchemeActionImpl (srnOpt:Option[SchemeReferenceNumber], schemeD
   private def getUserAnswers(srn: SchemeReferenceNumber, pspId: String)
                             (implicit request: OptionalDataRequest[_]): Future[UserAnswers] =
     request.userAnswers match {
-      case Some(ua) if (ua.json \ "pspDetails").asOpt[AuthorisedPractitioner].nonEmpty => Future.successful(ua)
+      //case Some(ua) if (ua.json \ "pspDetails").asOpt[AuthorisedPractitioner].nonEmpty => Future.successful(ua)
       case _ => schemeDetailsConnector.getPspSchemeDetails(
         pspId = pspId,
         srn = srn
