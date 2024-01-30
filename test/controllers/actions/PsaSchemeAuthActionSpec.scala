@@ -89,17 +89,7 @@ class PsaSchemeAuthActionSpec
       status(result) mustBe NOT_FOUND
     }
 
-    "retrieve psaDetails from cache before issuing an api call" in {
-      when(schemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any())).thenReturn(Future.failed(new RuntimeException("")))
-      val ua = UserAnswers(
-        Json.toJson(Map("psaDetails" -> Seq(PsaDetails("A0000000", None, None, None))))
-      )
-      val request = OptionalDataRequest(fakeRequest, "", Some(ua), Some(PsaId("A0000000")), None , Individual, AuthEntity.PSA)
-      val result = action.apply(Some(SchemeReferenceNumber("srn"))).invokeBlock(request, { x:OptionalDataRequest[_] => Future.successful(Ok("")) })
-      status(result) mustBe OK
-    }
-
-    "return ok after making an API call and ensuring that PSAId is authorised while no cache is available" in {
+    "return ok after making an API call and ensuring that PSAId is authorised" in {
       when(schemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any())).thenReturn(Future.successful(
         UserAnswers(
           Json.toJson(Map("psaDetails" -> Seq(PsaDetails("A0000000", None, None, None))))

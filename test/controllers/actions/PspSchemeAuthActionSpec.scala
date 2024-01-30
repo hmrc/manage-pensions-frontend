@@ -90,17 +90,7 @@ class PspSchemeAuthActionSpec
         status(result) mustBe NOT_FOUND
       }
 
-      "retrieve pspDetails from cache before issuing an api call" in {
-        when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any())).thenReturn(Future.failed(new RuntimeException("")))
-        val ua = UserAnswers(
-          Json.toJson(Map("pspDetails" -> AuthorisedPractitioner(None, None, None, "", AuthorisingPSA(None, None, None, None), LocalDate.now(), "00000000")))
-        )
-        val request = OptionalDataRequest(fakeRequest, "", Some(ua), None, Some(PspId("00000000")) , Individual, AuthEntity.PSP)
-        val result = action.apply(Some(SchemeReferenceNumber("srn"))).invokeBlock(request, { x:OptionalDataRequest[_] => Future.successful(Ok("")) })
-        status(result) mustBe OK
-      }
-
-      "return ok after making an API call and ensuring that PSpId is authorised while no cache is available" in {
+      "return ok after making an API call and ensuring that PSpId is authorised" in {
         when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any())).thenReturn(Future.successful(
           UserAnswers(
             Json.toJson(Map("pspDetails" -> AuthorisedPractitioner(None, None, None, "", AuthorisingPSA(None, None, None, None), LocalDate.now(), "00000000")))
