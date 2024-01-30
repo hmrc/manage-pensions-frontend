@@ -19,13 +19,12 @@ package controllers.actions
 import connectors.scheme.SchemeDetailsConnector
 import handlers.ErrorHandler
 import identifiers.SchemeSrnId
-import models.{AuthorisedPractitioner, SchemeReferenceNumber}
 import models.requests.OptionalDataRequest
+import models.{AuthorisedPractitioner, SchemeReferenceNumber}
 import play.api.Logging
 import play.api.mvc.Results.NotFound
 import play.api.mvc.{ActionFunction, Result}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
-import utils.UserAnswers
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
