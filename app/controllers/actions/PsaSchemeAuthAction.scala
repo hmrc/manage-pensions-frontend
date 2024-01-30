@@ -55,36 +55,36 @@ private class PsaSchemeActionImpl (srnOpt:Option[SchemeReferenceNumber], schemeD
 
     (retrievedSrn, psaIdOpt) match {
       case (Some(srn), Some(psaId)) =>
-        getUserAnswers(srn, psaId.id)(request).flatMap { userAnswers =>
-          val admins = (userAnswers.json \ "psaDetails").as[Seq[PsaDetails]].map(_.id)
+        val schemeDetails = schemeDetailsConnector.getSchemeDetails(
+            psaId = psaId.id,
+            idNumber = srn,
+            schemeIdType = "srn"
+          )(hc(request), executionContext)
+
+        schemeDetails.flatMap { schemeDetails =>
+          val admins = (schemeDetails.json \ "psaDetails").as[Seq[PsaDetails]].map(_.id)
           if (admins.contains(psaId.id)) {
             block(request)
           } else {
             Future.successful(notFoundTemplate(request))
           }
         } recover {
-          case _ =>
+          case err =>
+            logger.error("scheme details request failed", err)
             notFoundTemplate(request)
         }
       case _ => Future.successful(notFoundTemplate(request))
     }
 
   }
-  private def getUserAnswers(srn: SchemeReferenceNumber, psaId: String)
-                            (implicit request: OptionalDataRequest[_]): Future[UserAnswers] = {
-    request.userAnswers match {
-      //case Some(ua) if (ua.json \ "psaDetails").asOpt[Seq[PsaDetails]].nonEmpty => Future.successful(ua)
-      case _ => schemeDetailsConnector.getSchemeDetails(
-        psaId = psaId,
-        idNumber = srn,
-        schemeIdType = "srn"
-      )
-    }
-  }
 }
 
 
 class PsaSchemeAuthAction @Inject()(schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)(implicit ec: ExecutionContext){
+  /**
+   * @param srn - If empty, srn is expected to be retrieved from Session. If present srn is expected to be retrieved form the URL
+   * @return
+   */
   def apply(srn: Option[SchemeReferenceNumber]): ActionFunction[OptionalDataRequest, OptionalDataRequest] =
     new PsaSchemeActionImpl(srn, schemeDetailsConnector, errorHandler)
 }

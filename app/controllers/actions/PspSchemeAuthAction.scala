@@ -52,9 +52,12 @@ private class PspSchemeActionImpl (srnOpt:Option[SchemeReferenceNumber], schemeD
 
     (retrievedSrn, pspIdOpt) match {
       case (Some(srn), Some(pspId)) =>
-        getUserAnswers(srn, pspId.id)(request).flatMap { userAnswers =>
+        schemeDetailsConnector.getPspSchemeDetails(
+          pspId = pspId.id,
+          srn = srn
+        )(hc(request), executionContext).flatMap { schemeDetails =>
 
-          val pspDetails = (userAnswers.json \ "pspDetails").as[AuthorisedPractitioner]
+          val pspDetails = (schemeDetails.json \ "pspDetails").as[AuthorisedPractitioner]
           if (pspDetails.id == request.pspIdOrException.id) {
             block(request)
           } else {
@@ -66,20 +69,14 @@ private class PspSchemeActionImpl (srnOpt:Option[SchemeReferenceNumber], schemeD
       case _ => Future.successful(notFoundTemplate(request))
     }
   }
-
-  private def getUserAnswers(srn: SchemeReferenceNumber, pspId: String)
-                            (implicit request: OptionalDataRequest[_]): Future[UserAnswers] =
-    request.userAnswers match {
-      //case Some(ua) if (ua.json \ "pspDetails").asOpt[AuthorisedPractitioner].nonEmpty => Future.successful(ua)
-      case _ => schemeDetailsConnector.getPspSchemeDetails(
-        pspId = pspId,
-        srn = srn
-      )
-    }
 }
 
 
 class PspSchemeAuthAction @Inject()(schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)(implicit ec: ExecutionContext){
+  /**
+   * @param srn - If empty, srn is expected to be retrieved from Session. If present srn is expected to be retrieved form the URL
+   * @return
+   */
   def apply(srn: Option[SchemeReferenceNumber]): ActionFunction[OptionalDataRequest, OptionalDataRequest] =
     new PspSchemeActionImpl(srn, schemeDetailsConnector, errorHandler)
 
