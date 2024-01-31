@@ -19,7 +19,7 @@ package controllers.invitations.psa
 import com.google.inject.Inject
 import config.FrontendAppConfig
 import connectors.scheme.SchemeDetailsConnector
-import connectors.{InvitationConnector, NameMatchingFailedException, PsaAlreadyInvitedException}
+import connectors._
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import controllers.invitations.psa.routes._
@@ -33,7 +33,7 @@ import models.{MinimalSchemeDetail, NormalMode, SchemeReferenceNumber}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc._
 import uk.gov.hmrc.domain.PsaId
-import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.annotations.Invitations
 import utils.{CheckYourAnswersFactory, DateHelper, Navigator}
@@ -100,8 +100,6 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
               if (isAssociated) Redirect(routes.PsaAlreadyAssociatedController.onPageLoad()) else result
             )
           }.recoverWith {
-            case _: NameMatchingFailedException =>
-              Future.successful(Redirect(IncorrectPsaDetailsController.onPageLoad()))
             case _ =>
               Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad))
           }
@@ -112,14 +110,13 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
 
   private def invite(invite: Invitation, msd: MinimalSchemeDetail)
                     (implicit hc: HeaderCarrier, request: DataRequest[AnyContent]): Future[Result] = {
-    invitationConnector.invite(invite)
-      .map(_ => Redirect(navigator.nextPage(CheckYourAnswersId(msd.srn), NormalMode, request.userAnswers)))
-      .recoverWith {
-        case _: NotFoundException =>
-          Future.successful(Redirect(IncorrectPsaDetailsController.onPageLoad()))
-        case _: PsaAlreadyInvitedException =>
-          Future.successful(Redirect(InvitationDuplicateController.onPageLoad()))
-      }
+    invitationConnector.invite(invite).map {
+      case InvitationSent => Redirect(navigator.nextPage(CheckYourAnswersId(msd.srn), NormalMode, request.userAnswers))
+      case PsaAlreadyInvitedError => Redirect(InvitationDuplicateController.onPageLoad())
+      case NameMatchingError => Redirect(IncorrectPsaDetailsController.onPageLoad())
+    }.recoverWith {
+      case _ => Future.successful(Redirect(IncorrectPsaDetailsController.onPageLoad()))
+    }
   }
 
   private def getExpireAt: LocalDateTime = DateHelper.dateTimeFromNowToMidnightAfterDays(appConfig.invitationExpiryDays)

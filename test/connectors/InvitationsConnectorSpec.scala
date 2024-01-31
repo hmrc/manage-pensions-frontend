@@ -56,7 +56,7 @@ class InvitationsConnectorSpec extends AsyncFlatSpec with Matchers with WireMock
 
   }
 
-  it should "throw NameMatchingFailedException for a Not Found response if name matching fails" in {
+  it should "return a NameMatchingError if Psa ID and name entered by user are incorrect" in {
 
     server.stubFor(
       post(urlEqualTo(inviteUrl))
@@ -69,16 +69,12 @@ class InvitationsConnectorSpec extends AsyncFlatSpec with Matchers with WireMock
 
     val connector = injector.instanceOf[InvitationConnector]
 
-    recoverToExceptionIf[NameMatchingFailedException] {
-      connector.invite(invitation)
-    } map {
-      _ =>
-        server.findAll(postRequestedFor(urlEqualTo(inviteUrl))).size() shouldBe 1
+    connector.invite(invitation).map { res =>
+      res shouldBe NameMatchingError
     }
-
   }
 
-  it should "throw PsaAlreadyInvitedException for a Forbidden response if Psa already invited" in {
+  it should "return a PsaAlreadyInvitedError if Psa already invited" in {
 
     server.stubFor(
       post(urlEqualTo(inviteUrl))
@@ -91,13 +87,9 @@ class InvitationsConnectorSpec extends AsyncFlatSpec with Matchers with WireMock
 
     val connector = injector.instanceOf[InvitationConnector]
 
-    recoverToExceptionIf[PsaAlreadyInvitedException] {
-      connector.invite(invitation)
-    } map {
-      _ =>
-        server.findAll(postRequestedFor(urlEqualTo(inviteUrl))).size() shouldBe 1
+    connector.invite(invitation).map { res =>
+      res shouldBe PsaAlreadyInvitedError
     }
-
   }
 
   "acceptInvite" should "return successfully when user accepts the invite" in {

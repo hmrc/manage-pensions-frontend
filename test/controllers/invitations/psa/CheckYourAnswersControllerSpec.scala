@@ -18,7 +18,7 @@ package controllers.invitations.psa
 
 import base.JsonFileReader
 import connectors.scheme.SchemeDetailsConnector
-import connectors.{InvitationConnector, NameMatchingFailedException, PsaAlreadyInvitedException}
+import connectors._
 import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction}
 import controllers.behaviours.ControllerWithNormalPageBehaviours
 import controllers.invitations.psa.routes._
@@ -49,14 +49,14 @@ class CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours 
   "calling submit" must {
 
     "redirect to duplicate invitation page if invitation failed with Psa already invited error" in {
-      val result = onSubmitAction(userAnswerUpdated, FakeAuthAction, Future.failed(new PsaAlreadyInvitedException))(FakeRequest())
+      val result = onSubmitAction(userAnswerUpdated, FakeAuthAction, Future.successful(PsaAlreadyInvitedError))(FakeRequest())
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(InvitationDuplicateController.onPageLoad().url)
     }
 
     "redirect to incorrect psa details page if invitation failed with name matching error" in {
-      val result = onSubmitAction(userAnswerUpdated, FakeAuthAction, Future.failed(new NameMatchingFailedException))(FakeRequest())
+      val result = onSubmitAction(userAnswerUpdated, FakeAuthAction, Future.successful(NameMatchingError))(FakeRequest())
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(IncorrectPsaDetailsController.onPageLoad().url)
@@ -71,16 +71,16 @@ class CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours 
 
     "redirect to psa already invited page if scheme already has invitee psa id associated with it and names match" in {
 
-      val result = onSubmitAction(userAnswerUpdatedPsaAlreadyInvited, FakeAuthAction, Future.successful(()))(FakeRequest())
+      val result = onSubmitAction(userAnswerUpdatedPsaAlreadyInvited, FakeAuthAction, Future.successful(InvitationSent))(FakeRequest())
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(PsaAlreadyAssociatedController.onPageLoad().url)
     }
 
-    "redirect to incorrect psa details page if scheme already has invitee psa id associated with it and names don't match" in {
+    "redirect to psa already associated page if scheme already has invitee psa id associated with it and names don't match" in {
 
-      val result = onSubmitAction(userAnswerUpdatedPsaAlreadyInvited, FakeAuthAction, Future.failed(new NameMatchingFailedException))(FakeRequest())
+      val result = onSubmitAction(userAnswerUpdatedPsaAlreadyInvited, FakeAuthAction, Future.successful(NameMatchingError))(FakeRequest())
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(IncorrectPsaDetailsController.onPageLoad().url)
+      redirectLocation(result) mustBe Some(PsaAlreadyAssociatedController.onPageLoad().url)
     }
   }
 }
@@ -116,9 +116,9 @@ object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours
   val config: Configuration = injector.instanceOf[Configuration]
   private val view = injector.instanceOf[check_your_answers_view]
 
-  private def fakeInvitationConnector(response: Future[Unit] = Future.successful(())): InvitationConnector = new InvitationConnector {
+  private def fakeInvitationConnector(response: Future[InvitationStatus] = Future.successful(InvitationSent)): InvitationConnector = new InvitationConnector {
 
-    override def invite(invitation: Invitation)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = response
+    override def invite(invitation: Invitation)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[InvitationStatus] = response
 
     override def acceptInvite(acceptedInvitation: AcceptedInvitation)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = ???
   }
@@ -145,7 +145,7 @@ object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours
       checkYourAnswersFactory, fakeSchemeDetailsConnector, fakeInvitationConnector(), controllerComponents, view).onSubmit()
   }
 
-  def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction, invitationResponse: Future[Unit]): Action[AnyContent] = {
+  def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction, invitationResponse: Future[InvitationStatus]): Action[AnyContent] = {
 
     when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any()))
       .thenReturn(Future.successful(UserAnswers(readJsonFromFile("/data/validSchemeDetailsResponse.json"))))

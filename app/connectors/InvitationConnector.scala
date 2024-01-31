@@ -35,18 +35,20 @@ import scala.util.Failure
 trait InvitationConnector {
 
   def invite(invitation: Invitation)
-            (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit]
+            (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[InvitationStatus]
 
   def acceptInvite(acceptedInvitation: AcceptedInvitation)
                   (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit]
 
 }
 
-abstract class InvitationException extends Exception
+sealed trait InvitationStatus
 
-class NameMatchingFailedException extends InvitationException
+case object InvitationSent extends InvitationStatus
 
-class PsaAlreadyInvitedException extends InvitationException
+case object NameMatchingError extends InvitationStatus
+
+case object PsaAlreadyInvitedError extends InvitationStatus
 
 abstract class AcceptInvitationException extends Exception
 
@@ -67,17 +69,19 @@ class InvitationConnectorImpl @Inject()(http: HttpClient, config: FrontendAppCon
   private val logger = Logger(classOf[InvitationConnectorImpl])
 
   override def invite(invitation: Invitation)
-                     (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
+                     (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[InvitationStatus] = {
     val nameMatchingFailedMessage = "The name and PSA Id do not match"
     val psaAlreadyInvitedMessage = "The invitation is to a PSA already associated with this scheme"
 
     http.POST[Invitation, HttpResponse](config.inviteUrl, invitation) map {
       response =>
         response.status match {
-          case CREATED => ()
-          case NOT_FOUND if response.body.contains(nameMatchingFailedMessage) => throw new NameMatchingFailedException()
-          case FORBIDDEN if response.body.contains(psaAlreadyInvitedMessage) => throw new PsaAlreadyInvitedException()
-          case _ => handleErrorResponse("POST", config.inviteUrl)(response)
+          case CREATED => InvitationSent
+          case NOT_FOUND if response.body.contains(nameMatchingFailedMessage) => NameMatchingError
+          case FORBIDDEN if response.body.contains(psaAlreadyInvitedMessage) => PsaAlreadyInvitedError
+          case _ => {
+            handleErrorResponse("POST", config.inviteUrl)(response)
+          }
         }
     } andThen {
       case Failure(t: Throwable) => logger.warn("Unable to invite PSA to administer scheme", t)
