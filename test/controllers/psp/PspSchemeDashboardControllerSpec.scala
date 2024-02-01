@@ -21,7 +21,7 @@ import connectors.{FrontendConnector, UserAnswersCacheConnector}
 import connectors.admin.MinimalConnector
 import connectors.scheme.{ListOfSchemesConnector, SchemeDetailsConnector}
 import controllers.ControllerSpecBase
-import controllers.actions.{AuthAction, FakeAuthAction}
+import controllers.actions.{AuthAction, FakeAuthAction, PspSchemeAuthAction}
 import handlers.ErrorHandler
 import models.{IndividualDetails, Link, MinimalPSAPSP}
 import org.mockito.ArgumentMatchers.any
@@ -263,8 +263,27 @@ class PspSchemeDashboardControllerSpec
       redirectLocation(result) mustBe Some(controllers.routes.ContactHMRCController.onPageLoad().url)
     }
 
-    /* TODO: No longer relevant after introduction of PspSchemeAuthAction PODS-8442. Refactor this eventually. -Pavel Vjalicin
-    "return see other if pspDetails id does match psp id from request" in {
+    "return not found if psp is not authorised" in {
+
+      def controller(pspId: PspId) = new PspSchemeDashboardController(
+        messagesApi = messagesApi,
+        schemeDetailsConnector = schemeDetailsConnector,
+        authenticate = authAction(pspId.id),
+        minimalConnector = minimalConnector,
+        errorHandler = errorHandler,
+        listSchemesConnector = listSchemesConnector,
+        userAnswersCacheConnector = userAnswersCacheConnector,
+        sessionCacheConnector = userAnswersCacheConnector,
+        schemeDetailsService = schemeDetailsService,
+        controllerComponents = controllerComponents,
+        service = pspSchemeDashboardService,
+        view = view,
+        config = appConfig,
+        frontendConnector = frontendConnector,
+        app.injector.instanceOf[PspSchemeAuthAction],
+        getDataWithPspName()
+      )
+
       when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
         .thenReturn(Future.successful(ua()))
       when(minimalConnector.getMinimalPspDetails(any())(any(), any()))
@@ -273,8 +292,8 @@ class PspSchemeDashboardControllerSpec
 
       val result = controller(PspId("00000001")).onPageLoad(srn)(fakeRequest)
 
-      status(result) mustBe SEE_OTHER
-    } */
+      status(result) mustBe NOT_FOUND
+    }
   }
 }
 
