@@ -102,7 +102,8 @@ object InvitationsDuplicateControllerSpec extends ControllerSpecBase {
       dataRetrievalAction,
       new DataRequiredActionImpl,
       controllerComponents,
-      view
+      view,
+      fakePsaSchemeAuthAction
     )
 
   }
