@@ -58,7 +58,7 @@ class ViewPspClientReferenceControllerSpec extends ControllerSpecBase {
 
   def controller(dataRetrievalAction: DataRetrievalAction = minimalData) = new ViewPspClientReferenceController(
     messagesApi, FakeAuthAction, FakeUserAnswersCacheConnector,
-    dataRetrievalAction, new DataRequiredActionImpl, formProvider, controllerComponents, view
+    dataRetrievalAction, new DataRequiredActionImpl, formProvider, controllerComponents, view, fakePsaSchemeAuthAction
   )
 
   private def viewAsString(form: Form[_]): String =

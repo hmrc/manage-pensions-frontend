@@ -33,14 +33,12 @@ class CanNotBeRemovedController @Inject()(
                                            authenticate: AuthAction,
                                            userAnswersCacheConnector: UserAnswersCacheConnector,
                                            val controllerComponents: MessagesControllerComponents,
-                                           view: cannot_be_removed,
-                                           getData: DataRetrievalAction,
-                                           psaSchemeAuthAction: PsaSchemeAuthAction
+                                           view: cannot_be_removed
                                          )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoadWhereSuspended: Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None)).async {
+  def onPageLoadWhereSuspended: Action[AnyContent] = authenticate().async {
     implicit request =>
       userAnswersCacheConnector.removeAll(request.externalId).map { _ =>
         request.userType match {
@@ -54,7 +52,7 @@ class CanNotBeRemovedController @Inject()(
       }
   }
 
-  def onPageLoadWhereRemovalDelay: Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None)).async {
+  def onPageLoadWhereRemovalDelay: Action[AnyContent] = authenticate().async {
     implicit request =>
       Future.successful(Ok(view(viewModelRemovalDelay)))
   }
