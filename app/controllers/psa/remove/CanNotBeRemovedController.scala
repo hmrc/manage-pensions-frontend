@@ -17,7 +17,7 @@
 package controllers.psa.remove
 
 import connectors.UserAnswersCacheConnector
-import controllers.actions.AuthAction
+import controllers.actions.{AuthAction, DataRetrievalAction, PsaSchemeAuthAction}
 import models.{Individual, Organization}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -33,12 +33,14 @@ class CanNotBeRemovedController @Inject()(
                                            authenticate: AuthAction,
                                            userAnswersCacheConnector: UserAnswersCacheConnector,
                                            val controllerComponents: MessagesControllerComponents,
-                                           view: cannot_be_removed
+                                           view: cannot_be_removed,
+                                           getData: DataRetrievalAction,
+                                           psaSchemeAuthAction: PsaSchemeAuthAction
                                          )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoadWhereSuspended: Action[AnyContent] = authenticate().async {
+  def onPageLoadWhereSuspended: Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None)).async {
     implicit request =>
       userAnswersCacheConnector.removeAll(request.externalId).map { _ =>
         request.userType match {
@@ -52,7 +54,7 @@ class CanNotBeRemovedController @Inject()(
       }
   }
 
-  def onPageLoadWhereRemovalDelay: Action[AnyContent] = authenticate().async {
+  def onPageLoadWhereRemovalDelay: Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None)).async {
     implicit request =>
       Future.successful(Ok(view(viewModelRemovalDelay)))
   }
