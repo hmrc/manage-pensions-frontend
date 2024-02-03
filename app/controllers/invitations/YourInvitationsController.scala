@@ -54,7 +54,7 @@ class YourInvitationsController @Inject()(
       }
   }
 
-  def onSelect(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(Some(srn))).async {
+  def onSelect(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate() andThen getData).async {
     implicit request =>
       userAnswersCacheConnector.removeAll(request.externalId).flatMap { _ =>
         userAnswersCacheConnector.save(request.externalId, SchemeSrnId, srn.id).map { cacheMap =>
