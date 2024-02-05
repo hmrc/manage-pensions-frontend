@@ -49,7 +49,7 @@ class CheckYourAnswersControllerSpec extends ControllerSpecBase with MockitoSuga
 
   def controller(dataRetrievalAction: DataRetrievalAction = data) = new CheckYourAnswersController(
     messagesApi, FakeAuthAction, dataRetrievalAction, new DataRequiredActionImpl,
-    checkYourAnswersFactory, mockMinConnector, mockPspAuthoriseFuzzyMatcher, controllerComponents, view
+    checkYourAnswersFactory, mockMinConnector, mockPspAuthoriseFuzzyMatcher, controllerComponents, view, fakePsaSchemeAuthAction
   )
 
   "Check Your Answers Controller Spec" must {

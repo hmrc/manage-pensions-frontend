@@ -51,7 +51,7 @@ class ConfirmDeauthControllerSpec extends ControllerSpecBase {
 
   def controller(dataRetrievalAction: DataRetrievalAction = new FakeDataRetrievalAction(Some(data))) = new ConfirmDeauthController(
     FakeAuthAction, dataRetrievalAction, new DataRequiredActionImpl, messagesApi, new FakeNavigator(onwardRoute),
-    formProvider, FakeUserAnswersCacheConnector, controllerComponents, view)
+    formProvider, FakeUserAnswersCacheConnector, controllerComponents, view, fakePspSchemeAuthAction)
 
   private def viewAsString(form: Form[_] = form) = view(form, schemeName, srn, pspName)(fakeRequest, messages).toString
 

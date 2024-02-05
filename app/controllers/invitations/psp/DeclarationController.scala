@@ -23,7 +23,7 @@ import connectors.admin.MinimalConnector
 import connectors.scheme.ListOfSchemesConnector
 import connectors.{ActiveRelationshipExistsException, EmailConnector, EmailNotSent, PspConnector}
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaSchemeAuthAction}
 import forms.invitations.psp.DeclarationFormProvider
 import identifiers.invitations.psp.{PspClientReferenceId, PspId, PspNameId}
 import identifiers.{SchemeNameId, SchemeSrnId}
@@ -57,7 +57,8 @@ class DeclarationController @Inject()(
                                        auditService: AuditService,
                                        crypto: ApplicationCrypto,
                                        appConfig: FrontendAppConfig,
-                                       view: declaration
+                                       view: declaration,
+                                       psaSchemeAuthAction: PsaSchemeAuthAction
                                      )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport
@@ -67,12 +68,12 @@ class DeclarationController @Inject()(
 
   val form: Form[Boolean] = formProvider()
 
-  def onPageLoad(): Action[AnyContent] = (auth() andThen getData andThen requireData) {
+  def onPageLoad(): Action[AnyContent] = (auth() andThen getData andThen psaSchemeAuthAction(None) andThen requireData) {
     implicit request =>
       Ok(view(form))
   }
 
-  def onSubmit(): Action[AnyContent] = (auth() andThen getData andThen requireData).async {
+  def onSubmit(): Action[AnyContent] = (auth() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[Boolean]) =>

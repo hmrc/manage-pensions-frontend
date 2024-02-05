@@ -60,7 +60,8 @@ class YourInvitationsControllerSpec extends ControllerSpecBase with MockitoSugar
       FakeUserAnswersCacheConnector,
       navigator,
       controllerComponents,
-      yourInvitationsView
+      yourInvitationsView,
+      fakePsaSchemeAuthAction
     )
   }
 

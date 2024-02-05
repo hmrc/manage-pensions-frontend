@@ -18,7 +18,7 @@ package controllers.psp.deauthorise.self
 
 import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PspSchemeAuthAction}
 import forms.psp.deauthorise.ConfirmDeauthPspFormProvider
 import identifiers.psp.PSPNameId
 import identifiers.psp.deauthorise.self.ConfirmDeauthId
@@ -44,12 +44,13 @@ class ConfirmDeauthController @Inject()(val auth: AuthAction,
                                         val formProvider: ConfirmDeauthPspFormProvider,
                                         val userAnswersCacheConnector: UserAnswersCacheConnector,
                                         val controllerComponents: MessagesControllerComponents,
-                                        view: confirmDeauth
+                                        view: confirmDeauth,
+                                        pspSchemeAuthAction: PspSchemeAuthAction
                                        )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
 
   val form: Form[Boolean] = formProvider()
 
-  def onPageLoad: Action[AnyContent] = (auth(PSP) andThen getData andThen requireData).async {
+  def onPageLoad: Action[AnyContent] = (auth(PSP) andThen getData andThen pspSchemeAuthAction(None) andThen requireData).async {
     implicit request =>
       (SchemeSrnId and SchemeNameId and PSPNameId).retrieve.map {
         case srn ~ schemeName ~ pspName =>
@@ -58,7 +59,7 @@ class ConfirmDeauthController @Inject()(val auth: AuthAction,
       }
   }
 
-  def onSubmit: Action[AnyContent] = (auth(PSP) andThen getData andThen requireData).async {
+  def onSubmit: Action[AnyContent] = (auth(PSP) andThen getData andThen pspSchemeAuthAction(None) andThen requireData).async {
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[Boolean]) =>

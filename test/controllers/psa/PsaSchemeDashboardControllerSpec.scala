@@ -152,7 +152,9 @@ class PsaSchemeDashboardControllerSpec
       psaSchemeDashboardView,
       mockFrontendConnector,
       mockMinimalPsaConnector,
-      mockAppConfig
+      mockAppConfig,
+      fakePsaSchemeAuthAction,
+      getDataWithPsaName()
     )
   }
 

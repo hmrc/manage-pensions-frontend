@@ -34,14 +34,15 @@ class AlreadyAssociatedWithSchemeController @Inject()(
                                                        getData: DataRetrievalAction,
                                                        requireData: DataRequiredAction,
                                                        val controllerComponents: MessagesControllerComponents,
-                                                       view: alreadyAssociatedWithScheme
+                                                       view: alreadyAssociatedWithScheme,
+                                                       psaSchemeAuthAction: PsaSchemeAuthAction
                                                      )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with Retrievals
     with I18nSupport {
 
 
-  def onPageLoad: Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
+  def onPageLoad: Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
     implicit request =>
       (SchemeNameId and PspNameId).retrieve.map {
         case schemeName ~ pspName =>

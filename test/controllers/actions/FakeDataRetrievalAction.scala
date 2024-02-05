@@ -16,6 +16,7 @@
 
 package controllers.actions
 
+import models.{AuthEntity, Individual}
 import models.requests.AuthenticatedRequest
 import models.requests.OptionalDataRequest
 import play.api.libs.json.JsValue
@@ -30,8 +31,10 @@ class FakeDataRetrievalAction(json: Option[JsValue], psaId: String = "A0000000",
 
   override protected def transform[A](request: AuthenticatedRequest[A]): Future[OptionalDataRequest[A]] = json match {
     case None =>
-      Future.successful(OptionalDataRequest(request.request, request.externalId, None, Some(PsaId(psaId)), pspId))
+      Future.successful(OptionalDataRequest(request.request, request.externalId, None, Some(PsaId(psaId)), pspId, Individual, AuthEntity.PSA))
     case Some(cacheMap) =>
-      Future.successful(OptionalDataRequest(request.request, request.externalId, Some(UserAnswers(cacheMap)), Some(PsaId(psaId)), pspId))
+      Future.successful(
+        OptionalDataRequest(request.request, request.externalId, Some(UserAnswers(cacheMap)), Some(PsaId(psaId)), pspId, Individual, AuthEntity.PSA)
+      )
   }
 }

@@ -47,7 +47,8 @@ class PspDeauthDateController @Inject()(
                                          requireData: DataRequiredAction,
                                          formProvider: PspDeauthDateFormProvider,
                                          val controllerComponents: MessagesControllerComponents,
-                                         view: pspDeauthDate
+                                         view: pspDeauthDate,
+                                         psaSchemeAuthAction: PsaSchemeAuthAction
                                        )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport
@@ -56,7 +57,7 @@ class PspDeauthDateController @Inject()(
   private def earliestDateError(date: String) = Message("messages__pspDeauth_date_error__before_earliest_date", date)
 
   def onPageLoad(index: Index): Action[AnyContent] =
-    (authenticate() andThen getData andThen requireData).async {
+    (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
       implicit request =>
 
         (SchemeSrnId and SchemeNameId and deauthorise.PspDetailsId(index)).retrieve.map {
@@ -80,7 +81,7 @@ class PspDeauthDateController @Inject()(
     }
 
   def onSubmit(index: Index): Action[AnyContent] =
-    (authenticate() andThen getData andThen requireData).async {
+    (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
       implicit request =>
         (SchemeSrnId and SchemeNameId and PspDetailsId(index)).retrieve.map {
           case srn ~ schemeName ~ pspDetails =>

@@ -44,7 +44,8 @@ class PspNameController @Inject()(
                                    requireData: DataRequiredAction,
                                    formProvider: PspNameFormProvider,
                                    val controllerComponents: MessagesControllerComponents,
-                                   view: pspName
+                                   view: pspName,
+                                   psaSchemeAuthAction: PsaSchemeAuthAction
                                  )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport
@@ -52,7 +53,7 @@ class PspNameController @Inject()(
 
   val form: Form[String] = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
     implicit request =>
       (SchemeNameId and SchemeSrnId).retrieve.map {
         case schemeName ~ srn =>
@@ -63,7 +64,7 @@ class PspNameController @Inject()(
       }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
     implicit request =>
 
       form.bindFromRequest().fold(

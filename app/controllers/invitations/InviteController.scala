@@ -21,7 +21,7 @@ import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import connectors.admin.{DelimitedAdminException, MinimalConnector}
 import connectors.scheme.SchemeDetailsConnector
-import controllers.actions.AuthAction
+import controllers.actions.{AuthAction, DataRetrievalAction, PsaSchemeAuthAction}
 import identifiers.invitations.PSTRId
 import identifiers.{MinimalSchemeDetailId, SchemeNameId}
 import models.requests.AuthenticatedRequest
@@ -38,10 +38,12 @@ class InviteController @Inject()(
                                   userAnswersCacheConnector: UserAnswersCacheConnector,
                                   minimalPsaConnector: MinimalConnector,
                                   val controllerComponents: MessagesControllerComponents,
-                                  appConfig: FrontendAppConfig
+                                  appConfig: FrontendAppConfig,
+                                  psaSchemeAuthAction: PsaSchemeAuthAction,
+                                  getData: DataRetrievalAction
                                 )(implicit val ec: ExecutionContext) extends FrontendBaseController {
 
-  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate().async {
+  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(Some(srn))).async {
     implicit request =>
 
       minimalPsaConnector.getMinimalPsaDetails(request.psaIdOrException.id).flatMap { minimalPsaDetails =>

@@ -47,7 +47,8 @@ class WhatYouWillNeedControllerSpec extends ControllerSpecBase {
       dataRetrievalAction,
       new DataRequiredActionImpl,
       controllerComponents,
-      whatYouWillNeedView
+      whatYouWillNeedView,
+      fakePsaSchemeAuthAction
     )
 
   private def viewAsString() = whatYouWillNeedView(schemeName, returnCall)(fakeRequest, messages).toString

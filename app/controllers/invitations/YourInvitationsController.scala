@@ -40,7 +40,8 @@ class YourInvitationsController @Inject()(
                                            userAnswersCacheConnector: UserAnswersCacheConnector,
                                            @AcceptInvitation navigator: Navigator,
                                            val controllerComponents: MessagesControllerComponents,
-                                           view: yourInvitations
+                                           view: yourInvitations,
+                                           psaSchemeAuthAction: PsaSchemeAuthAction
                                          )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
 
@@ -53,7 +54,7 @@ class YourInvitationsController @Inject()(
       }
   }
 
-  def onSelect(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate().async {
+  def onSelect(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate() andThen getData).async {
     implicit request =>
       userAnswersCacheConnector.removeAll(request.externalId).flatMap { _ =>
         userAnswersCacheConnector.save(request.externalId, SchemeSrnId, srn.id).map { cacheMap =>

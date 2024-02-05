@@ -45,7 +45,8 @@ class PspHasClientReferenceController @Inject()(
                                                  requireData: DataRequiredAction,
                                                  formProvider: PspHasClientReferenceFormProvider,
                                                  val controllerComponents: MessagesControllerComponents,
-                                                 view: pspHasClientReference
+                                                 view: pspHasClientReference,
+                                                 psaSchemeAuthAction: PsaSchemeAuthAction
                                                )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with Retrievals
@@ -53,7 +54,7 @@ class PspHasClientReferenceController @Inject()(
 
   val form: Form[Boolean] = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
     implicit request =>
       (SchemeNameId and PspNameId and SchemeSrnId).retrieve.map {
         case schemeName ~ pspName ~ srn =>
@@ -64,7 +65,7 @@ class PspHasClientReferenceController @Inject()(
       }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[_]) => {

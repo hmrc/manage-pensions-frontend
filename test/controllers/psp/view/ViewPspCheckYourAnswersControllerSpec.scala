@@ -55,7 +55,7 @@ class ViewPspCheckYourAnswersControllerSpec extends ControllerSpecBase with Mock
 
   def controller(dataRetrievalAction: DataRetrievalAction = data) = new ViewPspCheckYourAnswersController(
     messagesApi, FakeAuthAction, dataRetrievalAction, new DataRequiredActionImpl,
-    mockUpdateClientReferenceConnector, mockSchemeDetailsConnector, controllerComponents, view
+    mockUpdateClientReferenceConnector, mockSchemeDetailsConnector, controllerComponents, view, fakePsaSchemeAuthAction
   )
 
   "Check Your Answers Controller Spec" must {

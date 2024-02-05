@@ -41,7 +41,8 @@ class AlreadyAssociatedWithSchemeControllerSpec extends ControllerSpecBase {
     dataRetrievalAction,
     new DataRequiredActionImpl,
     controllerComponents,
-    view
+    view,
+    fakePsaSchemeAuthAction
   )
 
   private def viewAsString(): String = view("xyz", schemeName)(fakeRequest, messages).toString

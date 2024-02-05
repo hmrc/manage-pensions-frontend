@@ -16,11 +16,12 @@
 
 package controllers.invitations
 
-import base.{JsonFileReader, SpecBase}
+import base.JsonFileReader
 import config.FrontendAppConfig
 import connectors.FakeUserAnswersCacheConnector
 import connectors.admin.MinimalConnector
 import connectors.scheme.SchemeDetailsConnector
+import controllers.ControllerSpecBase
 import controllers.actions.{FakeAuthAction, FakeUnAuthorisedAction}
 import controllers.invitations.psa.routes._
 import controllers.invitations.routes.YouCannotSendAnInviteController
@@ -36,7 +37,7 @@ import utils.UserAnswers
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class InviteControllerSpec extends SpecBase {
+class InviteControllerSpec extends ControllerSpecBase {
 
   import InviteControllerSpec._
 
@@ -93,7 +94,7 @@ class InviteControllerSpec extends SpecBase {
     "redirect to unauthorised page if user is not authenticated" in {
 
       val controller = new InviteController(FakeUnAuthorisedAction, fakeSchemeDetailsConnector,
-        FakeUserAnswersCacheConnector, fakeMinimalPsaConnector(isSuspended = false), controllerComponents, mockAppConfig)
+        FakeUserAnswersCacheConnector, fakeMinimalPsaConnector(isSuspended = false), controllerComponents, mockAppConfig, fakePsaSchemeAuthAction, getDataWithPsaName())
 
       val result = controller.onPageLoad(srn)(fakeRequest)
 
@@ -103,7 +104,7 @@ class InviteControllerSpec extends SpecBase {
   }
 }
 
-object InviteControllerSpec extends SpecBase with JsonFileReader with MockitoSugar {
+object InviteControllerSpec extends ControllerSpecBase with JsonFileReader with MockitoSugar {
   private val email = "test@test.com"
   val srn = "S9000000000"
   val pstr = "24000001IN"
@@ -150,5 +151,5 @@ object InviteControllerSpec extends SpecBase with JsonFileReader with MockitoSug
 
   def controller(isSuspended: Boolean, rlsFlag: Boolean = false, deceasedFlag: Boolean = false) =
     new InviteController(mockAuthAction, fakeSchemeDetailsConnector,
-      FakeUserAnswersCacheConnector, fakeMinimalPsaConnector(isSuspended, rlsFlag, deceasedFlag), controllerComponents, mockAppConfig)
+      FakeUserAnswersCacheConnector, fakeMinimalPsaConnector(isSuspended, rlsFlag, deceasedFlag), controllerComponents, mockAppConfig, fakePsaSchemeAuthAction, getDataWithPsaName())
 }

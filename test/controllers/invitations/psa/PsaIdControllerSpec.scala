@@ -39,14 +39,14 @@ class PsaIdControllerSpec extends ControllerWithQuestionPageBehaviours {
 
     new PsaIdController(
       messagesApi, fakeAuth, navigator, FakeUserAnswersCacheConnector,
-      dataRetrievalAction, requiredDataAction, formProvider, controllerComponents, view).onPageLoad(NormalMode)
+      dataRetrievalAction, requiredDataAction, formProvider, controllerComponents, view, fakePsaSchemeAuthAction).onPageLoad(NormalMode)
   }
 
   def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
     new PsaIdController(
       messagesApi, fakeAuth, navigator, FakeUserAnswersCacheConnector,
-      dataRetrievalAction, requiredDataAction, formProvider, controllerComponents, view).onSubmit(NormalMode)
+      dataRetrievalAction, requiredDataAction, formProvider, controllerComponents, view, fakePsaSchemeAuthAction).onSubmit(NormalMode)
   }
 
   def viewAsString(form: Form[_] = form) = view(form, "xyz", NormalMode)(fakeRequest, messages).toString

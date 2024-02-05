@@ -19,7 +19,7 @@ package controllers.psp.deauthorise
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaSchemeAuthAction}
 import forms.psp.deauthorise.ConfirmDeauthPspFormProvider
 import identifiers.psp.deauthorise
 import identifiers.psp.deauthorise.{ConfirmDeauthorisePspId, PspDetailsId}
@@ -46,7 +46,8 @@ class ConfirmDeauthorisePspController @Inject()(
                                                  val getData: DataRetrievalAction,
                                                  val requireData: DataRequiredAction,
                                                  val controllerComponents: MessagesControllerComponents,
-                                                 view: confirmDeauthorisePsp
+                                                 view: confirmDeauthorisePsp,
+                                                 psaSchemeAuthAction: PsaSchemeAuthAction
                                                )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport
@@ -54,7 +55,7 @@ class ConfirmDeauthorisePspController @Inject()(
 
   val form: Form[Boolean] = formProvider()
 
-  def onPageLoad(index: Index): Action[AnyContent] = (auth() andThen getData andThen requireData).async {
+  def onPageLoad(index: Index): Action[AnyContent] = (auth() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
     implicit request =>
       (SchemeSrnId and SchemeNameId and deauthorise.PspDetailsId(index)).retrieve.map {
         case srn ~ schemeName ~ pspDetails =>
@@ -67,7 +68,7 @@ class ConfirmDeauthorisePspController @Inject()(
       }
   }
 
-  def onSubmit(index: Index): Action[AnyContent] = (auth() andThen getData andThen requireData).async {
+  def onSubmit(index: Index): Action[AnyContent] = (auth() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
     implicit request =>
       (SchemeNameId and SchemeSrnId and PspDetailsId(index)).retrieve.map {
         case schemeName ~ srn ~ pspDetails =>

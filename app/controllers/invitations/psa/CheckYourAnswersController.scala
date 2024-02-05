@@ -21,7 +21,7 @@ import config.FrontendAppConfig
 import connectors.scheme.SchemeDetailsConnector
 import connectors._
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaSchemeAuthAction}
 import controllers.invitations.psa.routes._
 import identifiers.MinimalSchemeDetailId
 import identifiers.invitations.psa.InviteePSAId
@@ -52,10 +52,11 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
                                            schemeDetailsConnector: SchemeDetailsConnector,
                                            invitationConnector: InvitationConnector,
                                            val controllerComponents: MessagesControllerComponents,
-                                           view: check_your_answers_view
+                                           view: check_your_answers_view,
+                                           psaSchemeAuthAction: PsaSchemeAuthAction
                                           )(implicit val ec: ExecutionContext) extends FrontendBaseController with Retrievals with I18nSupport {
 
-  def onPageLoad(): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
+  def onPageLoad(): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
     implicit request =>
 
       MinimalSchemeDetailId.retrieve.map { schemeDetail =>
@@ -81,7 +82,7 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
     }
 
 
-  def onSubmit(): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
+  def onSubmit(): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
     implicit request =>
       (MinimalSchemeDetailId and InviteeNameId and InviteePSAId).retrieve.map {
         case schemeDetails ~ inviteeName ~ inviteePsaId if schemeDetails.pstr.isDefined =>

@@ -47,7 +47,8 @@ class DeauthDateController @Inject()(
                                       requireData: DataRequiredAction,
                                       formProvider: PspDeauthDateFormProvider,
                                       val controllerComponents: MessagesControllerComponents,
-                                      view: deauthDate
+                                      view: deauthDate,
+                                      pspSchemeAuthAction: PspSchemeAuthAction
                                     )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport
@@ -56,7 +57,7 @@ class DeauthDateController @Inject()(
   private def form(relationshipStartDate: LocalDate)(implicit messages: Messages): Form[LocalDate] =
     formProvider(relationshipStartDate, messages("messages__pspDeauth_date_error__before_earliest_date", formatDate(relationshipStartDate)))
 
-  def onPageLoad: Action[AnyContent] = (authenticate(PSP) andThen getData andThen requireData).async {
+  def onPageLoad: Action[AnyContent] = (authenticate(PSP) andThen getData andThen pspSchemeAuthAction(None) andThen requireData).async {
     implicit request =>
       (SchemeNameId and SchemeSrnId and AuthorisedPractitionerId).retrieve.map {
         case schemeName ~ srn ~ psp =>
@@ -66,7 +67,7 @@ class DeauthDateController @Inject()(
       }
   }
 
-  def onSubmit: Action[AnyContent] = (authenticate(PSP) andThen getData andThen requireData).async {
+  def onSubmit: Action[AnyContent] = (authenticate(PSP) andThen getData andThen pspSchemeAuthAction(None) andThen requireData).async {
     implicit request =>
       (SchemeNameId and SchemeSrnId and AuthorisedPractitionerId).retrieve.map {
         case schemeName ~ srn ~ psp =>

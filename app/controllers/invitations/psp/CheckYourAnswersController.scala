@@ -19,7 +19,7 @@ package controllers.invitations.psp
 import com.google.inject.Inject
 import connectors.admin.{MinimalConnector, NoMatchFoundException}
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaSchemeAuthAction}
 import controllers.psa.routes.PsaSchemeDashboardController
 import identifiers.invitations.psp.{PspId, PspNameId}
 import identifiers.{SchemeNameId, SchemeSrnId}
@@ -40,10 +40,11 @@ class CheckYourAnswersController @Inject()(override val messagesApi: MessagesApi
                                            minimalConnector: MinimalConnector,
                                            pspAuthoriseFuzzyMatcher: PspAuthoriseFuzzyMatcher,
                                            val controllerComponents: MessagesControllerComponents,
-                                           view: checkYourAnswersPsp
+                                           view: checkYourAnswersPsp,
+                                           psaSchemeAuthAction: PsaSchemeAuthAction
                                           )(implicit val ec: ExecutionContext) extends FrontendBaseController with Retrievals with I18nSupport {
 
-  def onPageLoad(): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
+  def onPageLoad(): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
     implicit request =>
       (SchemeNameId and SchemeSrnId).retrieve.map {
         case schemeName ~ srn =>
@@ -55,7 +56,7 @@ class CheckYourAnswersController @Inject()(override val messagesApi: MessagesApi
       }
   }
 
-  def onSubmit(): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
+  def onSubmit(): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
     implicit request =>
       (PspNameId and PspId).retrieve.map {
         case pspName ~ pspId =>

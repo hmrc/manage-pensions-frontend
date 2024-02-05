@@ -81,7 +81,8 @@ class PsaDeauthPspDeclarationControllerSpec
       appConfig = frontendAppConfig,
       emailConnector = mockEmailConnector,
       crypto,
-      view = view
+      view = view,
+      fakePsaSchemeAuthAction
     )
 
   override def beforeEach(): Unit = {

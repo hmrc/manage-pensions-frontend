@@ -38,14 +38,14 @@ class PsaNameControllerSpec extends ControllerWithQuestionPageBehaviours {
 
     new PsaNameController(
       messagesApi, FakeUserAnswersCacheConnector, navigator, fakeAuth,
-      dataRetrievalAction, formProvider, controllerComponents, psaNameView).onPageLoad(NormalMode)
+      dataRetrievalAction, formProvider, controllerComponents, psaNameView, fakePsaSchemeAuthAction).onPageLoad(NormalMode)
   }
 
   def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
 
     new PsaNameController(
       messagesApi, FakeUserAnswersCacheConnector, navigator, fakeAuth,
-      dataRetrievalAction, formProvider, controllerComponents, psaNameView).onSubmit(NormalMode)
+      dataRetrievalAction, formProvider, controllerComponents, psaNameView, fakePsaSchemeAuthAction).onSubmit(NormalMode)
   }
 
   private def viewAsString(form: Form[_]): String = psaNameView(form, NormalMode)(fakeRequest, messages).toString

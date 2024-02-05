@@ -17,7 +17,7 @@
 package controllers.psa.remove
 
 import connectors.UserAnswersCacheConnector
-import controllers.actions.AuthAction
+import controllers.actions.{AuthAction, DataRetrievalAction, PsaSchemeAuthAction}
 import models.{Individual, Organization}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}

@@ -56,7 +56,8 @@ class PsaRemovalDateController @Inject()(
                                           updateConnector: UpdateSchemeCacheConnector,
                                           lockConnector: PensionSchemeVarianceLockConnector,
                                           val controllerComponents: MessagesControllerComponents,
-                                          view: removalDate
+                                          view: removalDate,
+                                          psaSchemeAuthAction: PsaSchemeAuthAction
                                         )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport
@@ -87,7 +88,7 @@ class PsaRemovalDateController @Inject()(
     formatRelationshipDate(date).getOrElse(throw new RuntimeException("No relationship date found."))
   }
 
-  def onPageLoad: Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
+  def onPageLoad: Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
     implicit request =>
       (SchemeNameId and PSANameId and SchemeSrnId and AssociatedDateId).retrieve.map {
         case schemeName ~ psaName ~ srn ~ associationDate =>
@@ -107,7 +108,7 @@ class PsaRemovalDateController @Inject()(
       }
   }
 
-  def onSubmit: Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
+  def onSubmit: Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
     implicit request =>
       (SchemeNameId and PSANameId and SchemeSrnId and PSTRId and AssociatedDateId).retrieve.map {
         case schemeName ~ psaName ~ srn ~ pstr ~ associationDate =>

@@ -17,6 +17,7 @@
 package controllers
 
 import identifiers.TypedIdentifier
+import models.{AuthEntity, Individual}
 import models.requests.DataRequest
 import org.scalatest.EitherValues
 import org.scalatest.concurrent.ScalaFutures
@@ -36,7 +37,7 @@ import scala.concurrent.Future
 class RetrievalsSpec extends AnyWordSpec with FrontendBaseController with Retrievals with EitherValues with ScalaFutures with Matchers {
 
   def dataRequest(data: JsValue): DataRequest[AnyContent] =
-    DataRequest(FakeRequest("", ""), "cacheId", UserAnswers(data), Some(PsaId("A0000000")))
+    DataRequest(FakeRequest("", ""), "cacheId", UserAnswers(data), Some(PsaId("A0000000")), None, Individual, AuthEntity.PSA)
 
   val success: String => Future[Result] = { _: String =>
     Future.successful(Ok("Success"))

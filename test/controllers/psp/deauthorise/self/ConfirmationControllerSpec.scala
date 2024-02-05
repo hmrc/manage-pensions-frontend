@@ -46,7 +46,7 @@ class ConfirmationControllerSpec extends ControllerSpecBase with MockitoSugar {
 
   def controller(dataRetrievalAction: DataRetrievalAction = new FakeDataRetrievalAction(Some(data), pspId = pspId)) =
     new ConfirmationController(messagesApi, FakeAuthAction, dataRetrievalAction, new DataRequiredActionImpl,
-      mockMinimalConnector, FakeUserAnswersCacheConnector, controllerComponents, view)
+      mockMinimalConnector, FakeUserAnswersCacheConnector, controllerComponents, view, fakePspSchemeAuthAction)
 
   private def viewAsString = view(schemeName, psaName, email)(fakeRequest, messages).toString
 

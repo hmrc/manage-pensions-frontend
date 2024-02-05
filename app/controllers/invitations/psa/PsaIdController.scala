@@ -44,7 +44,8 @@ class PsaIdController @Inject()(
                                  requireData: DataRequiredAction,
                                  formProvider: PsaIdFormProvider,
                                  val controllerComponents: MessagesControllerComponents,
-                                 view: psaId
+                                 view: psaId,
+                                 psaSchemeAuthAction: PsaSchemeAuthAction
                                )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with Retrievals
@@ -53,7 +54,7 @@ class PsaIdController @Inject()(
   val form = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
-    (authenticate() andThen getData andThen requireData).async {
+    (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
       implicit request =>
 
         InviteeNameId.retrieve.map {
@@ -66,7 +67,7 @@ class PsaIdController @Inject()(
     }
 
   def onSubmit(mode: Mode): Action[AnyContent] =
-    (authenticate() andThen getData andThen requireData).async {
+    (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
       implicit request =>
         form.bindFromRequest().fold(
           (formWithErrors: Form[_]) =>

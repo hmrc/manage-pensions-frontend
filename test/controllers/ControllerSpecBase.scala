@@ -17,7 +17,9 @@
 package controllers
 
 import base.SpecBase
-import controllers.actions.FakeDataRetrievalAction
+import connectors.scheme.SchemeDetailsConnector
+import actions.{FakeDataRetrievalAction, FakePsaSchemeAuthAction, FakePspSchemeAuthAction}
+import handlers.ErrorHandler
 import identifiers.psa.PSANameId
 import identifiers.psp.PSPNameId
 import play.api.inject.guice.GuiceApplicationBuilder
@@ -29,6 +31,11 @@ trait ControllerSpecBase extends SpecBase {
 
   val cacheMapId = "id"
   val psp: Option[PspId] = Some(PspId("00000000"))
+  val fakePsaSchemeAuthAction = new FakePsaSchemeAuthAction(app.injector.instanceOf[SchemeDetailsConnector], app.injector.instanceOf[ErrorHandler])
+  val fakePspSchemeAuthAction: FakePspSchemeAuthAction =
+    new FakePspSchemeAuthAction(app.injector.instanceOf[SchemeDetailsConnector], app.injector.instanceOf[ErrorHandler])
+
+
 
   def getEmptyData: FakeDataRetrievalAction = new FakeDataRetrievalAction(Some(Json.obj()))
   def getEmptyDataPsp: FakeDataRetrievalAction = new FakeDataRetrievalAction(Some(Json.obj()), pspId = psp)

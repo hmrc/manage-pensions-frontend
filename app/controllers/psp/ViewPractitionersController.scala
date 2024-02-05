@@ -18,7 +18,7 @@ package controllers.psp
 
 import com.google.inject.Inject
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaSchemeAuthAction}
 import controllers.psa.routes._
 import identifiers.{SchemeNameId, SchemeSrnId, SeqAuthorisedPractitionerId}
 import models.FeatureToggleName.UpdateClientReference
@@ -41,13 +41,14 @@ class ViewPractitionersController @Inject()(
                                              requireData: DataRequiredAction,
                                              toggleService: FeatureToggleService,
                                              val controllerComponents: MessagesControllerComponents,
-                                             view: viewPractitioners
+                                             view: viewPractitioners,
+                                             psaSchemeAction: PsaSchemeAuthAction
                                            )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport
     with Retrievals {
 
-  def onPageLoad(): Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
+  def onPageLoad(): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAction(None) andThen requireData).async {
     implicit request =>
       (SchemeSrnId and SchemeNameId and SeqAuthorisedPractitionerId).retrieve.map {
         case srn ~ schemeName ~ authorisedPractitioners =>

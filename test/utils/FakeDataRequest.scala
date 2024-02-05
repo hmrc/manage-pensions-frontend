@@ -16,6 +16,7 @@
 
 package utils
 
+import models.{AuthEntity, Individual}
 import models.requests.DataRequest
 import play.api.mvc.AnyContent
 import play.api.mvc.AnyContentAsEmpty
@@ -24,7 +25,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.domain.PsaId
 
 class FakeDataRequest(request: Request[AnyContentAsEmpty.type], externalId: String, answers: UserAnswers, psaId: PsaId)
-  extends DataRequest[AnyContent](request, externalId, answers, Some(psaId))
+  extends DataRequest[AnyContent](request, externalId, answers, Some(psaId), None, Individual, AuthEntity.PSA)
 
 object FakeDataRequest {
   def apply(answers: UserAnswers): FakeDataRequest = {

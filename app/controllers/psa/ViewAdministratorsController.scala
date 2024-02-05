@@ -42,12 +42,13 @@ class ViewAdministratorsController @Inject()(
                                               errorHandler: ErrorHandler,
                                               val controllerComponents: MessagesControllerComponents,
                                               schemeDetailsService: SchemeDetailsService,
-                                              view: viewAdministrators
+                                              view: viewAdministrators,
+                                              psaSchemeAuthAction: PsaSchemeAuthAction
                                             )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate() andThen getData).async {
+  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(Some(srn))).async {
     implicit request =>
       getUserAnswers(srn).map { userAnswers =>
 

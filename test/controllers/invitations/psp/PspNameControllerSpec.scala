@@ -57,14 +57,14 @@ class PspNameControllerSpec extends ControllerWithQuestionPageBehaviours {
   def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
 
     new PspNameController(messagesApi, FakeUserAnswersCacheConnector, navigator, fakeAuth,
-      dataRetrievalAction, requiredDataAction, formProvider, controllerComponents, pspNameView).onPageLoad(NormalMode)
+      dataRetrievalAction, requiredDataAction, formProvider, controllerComponents, pspNameView, fakePsaSchemeAuthAction).onPageLoad(NormalMode)
   }
 
   def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
 
     new PspNameController(
       messagesApi, FakeUserAnswersCacheConnector, navigator, fakeAuth,
-      dataRetrievalAction, requiredDataAction, formProvider, controllerComponents, pspNameView).onSubmit(NormalMode)
+      dataRetrievalAction, requiredDataAction, formProvider, controllerComponents, pspNameView, fakePsaSchemeAuthAction).onSubmit(NormalMode)
   }
 
   private def viewAsString(form: Form[_]): String = pspNameView(form, NormalMode, schemeName, returnCall)(fakeRequest, messages).toString
