@@ -65,6 +65,7 @@ private class PsaSchemeActionImpl (srnOpt:Option[SchemeReferenceNumber], schemeD
           if (admins.contains(psaId.id)) {
             block(request)
           } else {
+            logger.warn("Potentially prevented unauthorised access")
             Future.successful(notFoundTemplate(request))
           }
         } recover {
