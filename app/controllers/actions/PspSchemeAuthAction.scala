@@ -60,10 +60,13 @@ private class PspSchemeActionImpl (srnOpt:Option[SchemeReferenceNumber], schemeD
           if (pspDetails.id == request.pspIdOrException.id) {
             block(request)
           } else {
+            logger.warn("Potentially prevented unauthorised access")
             Future.successful(notFoundTemplate(request))
           }
         } recover {
-          case _ => notFoundTemplate(request)
+          case err =>
+            logger.error("scheme details request failed", err)
+            notFoundTemplate(request)
         }
       case _ => Future.successful(notFoundTemplate(request))
     }
