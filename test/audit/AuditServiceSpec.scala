@@ -16,7 +16,7 @@
 
 package audit
 
-import akka.stream.Materializer
+import org.apache.pekko.stream.Materializer
 import org.scalatest.Inside
 import org.scalatest.flatspec.AsyncFlatSpec
 import org.scalatest.matchers.should.Matchers

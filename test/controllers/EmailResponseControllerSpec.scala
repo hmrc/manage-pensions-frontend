@@ -18,7 +18,6 @@ package controllers
 
 import audit._
 import models.{Sent, _}
-import org.joda.time.DateTime
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
@@ -35,6 +34,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.crypto.{ApplicationCrypto, PlainText}
 
+import java.time.LocalDateTime
 import scala.concurrent.Future
 
 class EmailResponseControllerSpec extends AsyncWordSpec with Matchers with MockitoSugar with BeforeAndAfterEach {
@@ -116,6 +116,6 @@ object EmailResponseControllerSpec {
     ), "Activated", None)
   ))
   private val eventCaptor = ArgumentCaptor.forClass(classOf[AuditEvent])
-  private val emailEvents = EmailEvents(Seq(EmailEvent(Sent, DateTime.now()), EmailEvent(Delivered, DateTime.now()),
-    EmailEvent(PermanentBounce, DateTime.now()), EmailEvent(Opened, DateTime.now()), EmailEvent(Complained, DateTime.now())))
+  private val emailEvents = EmailEvents(Seq(EmailEvent(Sent, LocalDateTime.now()), EmailEvent(Delivered, LocalDateTime.now()),
+    EmailEvent(PermanentBounce, LocalDateTime.now()), EmailEvent(Opened, LocalDateTime.now()), EmailEvent(Complained, LocalDateTime.now())))
 }

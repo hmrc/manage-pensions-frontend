@@ -23,8 +23,6 @@ import controllers.psa.routes.ListSchemesController
 import identifiers.AdministratorOrPractitionerId
 import models.AdministratorOrPractitioner.Administrator
 import models.{Link, MinimalPSAPSP}
-import org.joda.time.format.DateTimeFormat
-import org.joda.time.{DateTime, DateTimeZone}
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.{eq => eqTo, _}
 import org.mockito.Mockito._
@@ -38,6 +36,7 @@ import utils.UserAnswers
 import viewmodels.{CardSubHeading, CardSubHeadingParam, CardViewModel, Message}
 import views.html.schemesOverview
 
+import java.time.{LocalDate, ZoneOffset}
 import scala.concurrent.Future
 
 class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar with BeforeAndAfterEach {
@@ -172,10 +171,10 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
 object SchemesOverviewControllerSpec extends ControllerSpecBase {
   val schemeName = "Test Scheme Name"
   val psaName = "Test Psa Name"
-  private val formatter = DateTimeFormat.forPattern("dd MMMM YYYY")
+//  private val formatter = DateTimeFormatter.ofPattern("dd MMMM YYYY")
   private val psaId = "A0000000"
   val html: Html = Html("test-html")
-  val deleteDate: String = DateTime.now(DateTimeZone.UTC).plusDays(frontendAppConfig.daysDataSaved).toString(formatter)
+  val deleteDate: String = LocalDate.now(ZoneOffset.UTC).plusDays(frontendAppConfig.daysDataSaved).toString
 
   private val adminCard = CardViewModel(
     id = "administrator-card",
