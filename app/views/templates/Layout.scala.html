@@ -88,7 +88,6 @@
         phaseBanner = Some(standardBetaBanner(url = appConfig.betaFeedbackUnauthenticatedUrl)),
         userResearchBanner = Some(UserResearchBanner(url="/manage-pension-schemes/user-research-banner-psa"))
     )),
-    cspNonce = CSPNonce.get,
     beforeContentBlock = Some(beforeContentBlock),
     scriptsBlock = Some(scripts),
     mainContentLayout = if(fullWidthLayout) None else Some(defaultMainContentLayout(_)),

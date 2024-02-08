@@ -18,8 +18,9 @@ package models.psa
 
 import models.SchemeStatus
 import models.SchemeStatus.{Deregistered, Rejected, WoundUp}
-import org.joda.time.LocalDate
 import play.api.libs.json.{Json, OFormat}
+
+import java.time.LocalDate
 
 case class Name(firstName: Option[String], middleName: Option[String], lastName: Option[String])
 
@@ -62,6 +63,6 @@ object PsaSchemeDetails {
     statusesWhereSoleOwnerCanBeRemoved.contains(status) || psaDetails.exists(_.id != psaId)
 
   private def psaNotRemovingOnSameDay(psaId: String, psaDetails: Seq[PsaDetails]): Boolean = {
-    !psaDetails.exists(details => details.id == psaId && details.relationshipDate.exists(new LocalDate(_).isEqual(LocalDate.now())))
+    !psaDetails.exists(details => details.id == psaId && details.relationshipDate.exists(date => LocalDate.parse(date).isEqual(LocalDate.now())))
   }
 }

@@ -18,8 +18,8 @@ package utils
 
 import java.util.concurrent.Callable
 
-import akka.actor.ActorSystem
-import akka.pattern.Patterns.after
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.pattern.Patterns.after
 import config.FrontendAppConfig
 import play.api.Logger
 import uk.gov.hmrc.http.HttpErrorFunctions.is5xx
@@ -55,7 +55,7 @@ trait RetryHelper {
               override def call(): Future[Int] = Future.successful(1)
             }
           ).flatMap { _ =>
-            retryWithBackOff(currentAttempt + 1, wait.toInt, f, config)
+            retryWithBackOff(currentAttempt + 1, wait, f, config)
           }
         } else {
           Future.failed(e)
