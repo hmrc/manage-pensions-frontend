@@ -36,8 +36,6 @@ import uk.gov.hmrc.http.HeaderCarrier
 import utils.UserAnswers
 import viewmodels.{CardSubHeading, CardSubHeadingParam, CardViewModel, Message}
 
-import java.time.format.DateTimeFormatter
-import java.time.{LocalDate, ZoneOffset}
 import scala.concurrent.Future
 
 class SchemesOverviewServiceSpec extends SpecBase with MockitoSugar with BeforeAndAfterEach with ScalaFutures {
@@ -108,9 +106,6 @@ object SchemesOverviewServiceSpec extends SpecBase with MockitoSugar {
   val timestamp: Long = System.currentTimeMillis
   private val psaId = "A0000000"
   private val srn = "srn"
-  private val formatter = DateTimeFormatter.ofPattern("dd MMMM YYYY")
-
-  val deleteDate: String = LocalDate.now(ZoneOffset.UTC).plusDays(frontendAppConfig.daysDataSaved).format(formatter)
 
   def minimalPsaDetails(psaSuspended: Boolean): MinimalPSAPSP = MinimalPSAPSP("test@test.com", psaSuspended, Some("Org Name"), None,
     rlsFlag = false, deceasedFlag = false)
