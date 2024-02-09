@@ -63,6 +63,6 @@ object PsaSchemeDetails {
     statusesWhereSoleOwnerCanBeRemoved.contains(status) || psaDetails.exists(_.id != psaId)
 
   private def psaNotRemovingOnSameDay(psaId: String, psaDetails: Seq[PsaDetails]): Boolean = {
-    !psaDetails.exists(details => details.id == psaId && details.relationshipDate.exists(date => LocalDate.parse(date).isEqual(LocalDate.now())))
+    !psaDetails.exists(details => details.id == psaId && details.relationshipDate.exists(dateStr => LocalDate.parse(dateStr).isEqual(LocalDate.now())))
   }
 }
