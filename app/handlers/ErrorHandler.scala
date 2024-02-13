@@ -17,7 +17,7 @@
 package handlers
 
 import com.google.inject.Inject
-import connectors.admin.DelimitedAdminException
+import connectors.admin.{DelimitedAdminException, DelimitedPractitionerException}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{Request, RequestHeader, Result}
@@ -41,6 +41,7 @@ class ErrorHandler @Inject()(
 
   override def onServerError(request: RequestHeader, exception: Throwable): Future[Result] = {
     exception match {
+      case _: DelimitedPractitionerException => Future.successful(Redirect(controllers.routes.DelimitedAdministratorController.pspOnPageLoad))
       case _: DelimitedAdminException => Future.successful(Redirect(controllers.routes.DelimitedAdministratorController.onPageLoad))
       case _ => super.onServerError(request, exception)
     }

@@ -24,16 +24,21 @@ import play.api.mvc.Action
 import play.api.mvc.AnyContent
 import play.api.mvc.MessagesControllerComponents
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.delimitedAdministrator
+import views.html.{delimitedAdministrator, delimitedPractitioner}
 
 import scala.concurrent.ExecutionContext
 
 class DelimitedAdministratorController @Inject()(val appConfig: FrontendAppConfig,
                                        override val messagesApi: MessagesApi,
                                        val controllerComponents: MessagesControllerComponents,
-                                       view: delimitedAdministrator)(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+                                       view: delimitedAdministrator,
+                                       viewPsp: delimitedPractitioner)(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = Action { implicit request =>
     Ok(view())
+  }
+
+  def pspOnPageLoad: Action[AnyContent] = Action { implicit request =>
+    Ok(viewPsp())
   }
 }

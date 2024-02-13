@@ -74,6 +74,7 @@ POST        /email-response-psp-deauth/:encryptedPsaId/:encryptedPspId/:encrypte
 POST        /email-response-psp-self-deauth/:encryptedPspId/:encryptedPstr/:encryptedEmail                   controllers.EmailResponseController.retrieveStatusForPSPSelfDeauthorisation(encryptedPspId, encryptedPstr, encryptedEmail)
 
 GET         /cannot-access-de-registered                                                                     controllers.DelimitedAdministratorController.onPageLoad
+GET         /cannot-access-de-registered-psp                                                                 controllers.DelimitedAdministratorController.pspOnPageLoad
 
 GET         /previously-registered                                                                   controllers.PreviouslyRegisteredController.onPageLoadAdministrator()
 POST        /previously-registered                                                                   controllers.PreviouslyRegisteredController.onSubmitAdministrator()
