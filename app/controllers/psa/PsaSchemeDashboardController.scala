@@ -18,7 +18,7 @@ package controllers.psa
 
 import config.FrontendAppConfig
 import connectors._
-import connectors.admin.{DelimitedAdminException, MinimalConnector}
+import connectors.admin.MinimalConnector
 import connectors.scheme.{ListOfSchemesConnector, PensionSchemeVarianceLockConnector, SchemeDetailsConnector}
 import controllers.actions._
 import identifiers.{SchemeNameId, SchemeSrnId, SchemeStatusId}
@@ -31,8 +31,8 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import play.twirl.api.Html
 import services.PsaSchemeDashboardService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.{EventReportingHelper, UserAnswers}
 import utils.annotations.SessionDataCache
+import utils.{EventReportingHelper, UserAnswers}
 import views.html.psa.psaSchemeDashboard
 
 import javax.inject.Inject
@@ -106,9 +106,6 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
               }
             }
         }
-      } recoverWith {
-        case _: DelimitedAdminException =>
-          Future.successful(Redirect(controllers.routes.DelimitedAdministratorController.onPageLoad))
       }
   }
 

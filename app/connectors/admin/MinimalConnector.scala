@@ -66,7 +66,8 @@ class MinimalConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig
       case None => throw new NoMatchFoundException
       case Some(m) => m
     } andThen {
-       case Failure(t: Throwable) => logger.warn("Unable to get minimal details", t)
+      case Failure(t: DelimitedAdminException) => ()
+      case Failure(t: Throwable) => logger.warn("Unable to get minimal details", t)
     }
   }
 
@@ -86,7 +87,7 @@ class MinimalConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig
     }
 
   val delimitedErrorMsg: String = "DELIMITED_PSAID"
-
+  val PspDelimitedErrorMsg: String = "DELIMITED_PSPID"
   override def getPsaNameFromPsaID(psaId: String)
                                   (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] =
     getMinimalPsaDetails(psaId).map(MinimalPSAPSP.getNameFromId)

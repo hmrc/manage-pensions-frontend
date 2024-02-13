@@ -17,11 +17,15 @@
 package handlers
 
 import com.google.inject.Inject
+import connectors.admin.DelimitedAdminException
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.Request
+import play.api.mvc.Results.Redirect
+import play.api.mvc.{Request, RequestHeader, Result}
 import play.twirl.api.Html
 import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
 import views.html._
+
+import scala.concurrent.Future
 
 class ErrorHandler @Inject()(
                               val messagesApi: MessagesApi,
@@ -34,4 +38,12 @@ class ErrorHandler @Inject()(
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit rh: Request[_]): Html =
     view(pageTitle, heading, message)
+
+  override def onServerError(request: RequestHeader, exception: Throwable): Future[Result] = {
+    exception match {
+      case _: DelimitedAdminException => Future.successful(Redirect(controllers.routes.DelimitedAdministratorController.onPageLoad))
+      case _ => super.onServerError(request, exception)
+    }
+
+  }
 }

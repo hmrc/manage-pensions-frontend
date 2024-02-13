@@ -18,7 +18,6 @@ package controllers
 
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
-import connectors.admin.DelimitedAdminException
 import controllers.actions._
 import controllers.psp.routes._
 import controllers.routes.{ContactHMRCController, SchemesOverviewController, SessionExpiredController}
@@ -76,9 +75,6 @@ class SchemesOverviewController @Inject()(
               Future.successful(Redirect(SessionExpiredController.onPageLoad))
           }
         }
-      } recoverWith {
-        case _: DelimitedAdminException =>
-          Future.successful(Redirect(controllers.routes.DelimitedAdministratorController.onPageLoad))
       }
   }
 
