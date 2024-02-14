@@ -20,7 +20,7 @@ import base.SpecBase
 import connectors.FakeUserAnswersCacheConnector
 import connectors.admin.MinimalConnector
 import connectors.scheme.SchemeDetailsConnector
-import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction, FakePsaSchemeAuthAction, FakeUnAuthorisedAction, PsaSchemeAuthAction}
+import controllers.actions._
 import controllers.psa.remove.routes._
 import handlers.ErrorHandler
 import identifiers.AssociatedDateId
