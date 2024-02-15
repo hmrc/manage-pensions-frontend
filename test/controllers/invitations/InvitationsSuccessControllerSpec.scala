@@ -19,10 +19,8 @@ package controllers.invitations
 import config.FrontendAppConfig
 import connectors.FakeUserAnswersCacheConnector
 import connectors.admin.MinimalConnector
-import connectors.scheme.SchemeDetailsConnector
 import controllers.actions._
 import controllers.behaviours.ControllerWithNormalPageBehaviours
-import handlers.ErrorHandler
 import models.{MinimalPSAPSP, MinimalSchemeDetail}
 import play.api.mvc.Call
 import play.api.test.Helpers._

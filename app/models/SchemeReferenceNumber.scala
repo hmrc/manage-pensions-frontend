@@ -16,7 +16,7 @@
 
 package models
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 import play.api.mvc.PathBindable
 
 import scala.language.implicitConversions
@@ -50,6 +50,6 @@ object SchemeReferenceNumber {
 
   case class InvalidSchemeReferenceNumberException() extends Exception
 
-  implicit val format = Json.format[SchemeReferenceNumber]
+  implicit val format: OFormat[SchemeReferenceNumber] = Json.format[SchemeReferenceNumber]
 
 }
