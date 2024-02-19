@@ -23,7 +23,7 @@ import connectors.admin.{DelimitedAdminException, MinimalConnector}
 import connectors.scheme.SchemeDetailsConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaSchemeAuthAction}
-import controllers.psa.remove.routes.{CanNotBeRemovedController, ConfirmRemovePsaController}
+import controllers.psa.remove.routes._
 import controllers.routes._
 import identifiers.invitations.PSTRId
 import identifiers.psa.PSANameId
@@ -88,6 +88,9 @@ class RemovePsaController @Inject()(
     } yield {
       Redirect(ConfirmRemovePsaController.onPageLoad())
     }
+  } recoverWith {
+    case _: IllegalArgumentException =>
+      Future.successful(Redirect(MissingPstrController.onPageLoad()))
   }
 
   private def getPsaName(minimalPsaDetails: MinimalPSAPSP): String = {

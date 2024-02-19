@@ -227,16 +227,15 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
       FakeUserAnswersCacheConnector.verify(AssociatedDateId, LocalDate.parse("2018-10-01"))
     }
 
-    "throw IllegalArgumentException if pstr is not found" in {
+    "redirect to PSTR missing page if no PSTR available" in {
+
       val result = controller(schemeDetailsConnector = fakeSchemeDetailsConnector(userAnswersJsonWithoutPstr)).
         onPageLoad(fakeRequest)
 
-      ScalaFutures.whenReady(result.failed) { e =>
-        e mustBe a[IllegalArgumentException]
-        e.getMessage mustEqual "PSTR missing while removing PSA"
-      }
+      redirectLocation(result) mustBe Some(controllers.psa.remove.routes.MissingPstrController.onPageLoad().url)
     }
 
+    // TODO: fix if PSA name missing
     "throw IllegalArgumentException if psa name is not found" in {
       val result = controller(psaMinimalDetails = psaMinimalSubscription.copy(isPsaSuspended = false,
         organisationName = None, individualDetails = None),
