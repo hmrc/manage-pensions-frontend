@@ -19,7 +19,7 @@ package controllers.psa.remove
 import com.google.inject.{Inject, Singleton}
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
-import connectors.admin.{DelimitedAdminException, MinimalConnector}
+import connectors.admin.MinimalConnector
 import connectors.scheme.SchemeDetailsConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaSchemeAuthAction}
@@ -69,9 +69,6 @@ class RemovePsaController @Inject()(
           } else {
             renderPage(request, srn, minimalPsaDetails)
           }
-        } recoverWith {
-          case _: DelimitedAdminException =>
-            Future.successful(Redirect(controllers.routes.DelimitedAdministratorController.onPageLoad))
         }
       }
   }

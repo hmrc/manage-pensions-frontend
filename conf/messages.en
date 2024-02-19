@@ -722,6 +722,9 @@ messages__cannotAccessPageAsAdministrator__administrator = Continue in administr
 messages__delimitedAdmin__title = You cannot access this service using this scheme administrator ID
 messages__delimitedAdmin__p = This scheme administrator ID is no longer valid as the administrator using it is no longer registered on this service.
 messages__delimitedAdmin__link = Contact HMRC for help
+messages__delimitedPractitioner__title = You cannot access this service using this scheme practitioner ID
+messages__delimitedPractitioner__p = This scheme practitioner ID is no longer valid as the practitioner using it is no longer registered on this service.
+messages__delimitedPractitioner__link = Contact HMRC for help
 messages__summary_list_action = Action
 
 

@@ -19,7 +19,7 @@ package controllers.invitations
 import com.google.inject.{Inject, Singleton}
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
-import connectors.admin.{DelimitedAdminException, MinimalConnector}
+import connectors.admin.MinimalConnector
 import connectors.scheme.SchemeDetailsConnector
 import controllers.actions.{AuthAction, DataRetrievalAction, PsaSchemeAuthAction}
 import identifiers.invitations.PSTRId
@@ -63,9 +63,6 @@ class InviteController @Inject()(
             case None => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad))
           }
         }
-      } recoverWith {
-        case _: DelimitedAdminException =>
-          Future.successful(Redirect(controllers.routes.DelimitedAdministratorController.onPageLoad))
       }
   }
 

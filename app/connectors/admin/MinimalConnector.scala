@@ -66,7 +66,9 @@ class MinimalConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig
       case None => throw new NoMatchFoundException
       case Some(m) => m
     } andThen {
-       case Failure(t: Throwable) => logger.warn("Unable to get minimal details", t)
+      case Failure(_: DelimitedAdminException) => ()
+      case Failure(_: DelimitedPractitionerException) => ()
+      case Failure(t: Throwable) => logger.warn("Unable to get minimal details", t)
     }
   }
 
@@ -80,13 +82,14 @@ class MinimalConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig
             case JsError(errors) => throw JsResultException(errors)
           }
         case NOT_FOUND => None
+        case FORBIDDEN if response.body.contains(pspDelimitedErrorMsg) => throw new DelimitedPractitionerException
         case FORBIDDEN if response.body.contains(delimitedErrorMsg) => throw new DelimitedAdminException
         case _ => handleErrorResponse("GET", config.minimalPsaDetailsUrl)(response)
       }
     }
 
-  val delimitedErrorMsg: String = "DELIMITED_PSAID"
-
+  private val delimitedErrorMsg: String = "DELIMITED_PSAID"
+  private val pspDelimitedErrorMsg: String = "DELIMITED_PSPID"
   override def getPsaNameFromPsaID(psaId: String)
                                   (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] =
     getMinimalPsaDetails(psaId).map(MinimalPSAPSP.getNameFromId)
@@ -100,5 +103,7 @@ class MinimalConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig
   }
 }
 
+class DelimitedPractitionerException
+  extends Exception("The practitioner has already de-registered. The minimal details API has returned a DELIMITED PSP response")
 class DelimitedAdminException extends
   Exception("The administrator has already de-registered. The minimal details API has returned a DELIMITED PSA response")
