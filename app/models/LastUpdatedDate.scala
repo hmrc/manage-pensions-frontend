@@ -16,10 +16,10 @@
 
 package models
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class LastUpdatedDate(timestamp: Long)
 
 object LastUpdatedDate {
-  implicit val format = Json.format[LastUpdatedDate]
+  implicit val format: OFormat[LastUpdatedDate] = Json.format[LastUpdatedDate]
 }
