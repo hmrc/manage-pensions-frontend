@@ -17,7 +17,7 @@
 package controllers.psa
 
 import config.FrontendAppConfig
-import connectors.admin.MinimalConnector
+import connectors.admin.{FeatureToggleConnector, MinimalConnector, ToggleDetails}
 import connectors.scheme.{ListOfSchemesConnector, PensionSchemeVarianceLockConnector, SchemeDetailsConnector}
 import connectors.{FakeUserAnswersCacheConnector, FrontendConnector}
 import controllers.ControllerSpecBase
@@ -74,6 +74,7 @@ class PsaSchemeDashboardControllerSpec
   private val windUpDate = "2020-02-01"
   private val pstr = "pstr"
   private val listOfSchemes: ListOfSchemes = ListOfSchemes("", "", Some(List(SchemeDetails(name, srn, "Open", Some(date), Some(windUpDate), Some(pstr), None))))
+  private val mockFeatureToggleConnector = mock[FeatureToggleConnector]
 
   private def sessionRequest = fakeRequest.withSession(SessionKeys.sessionId-> "testSessionId")
 
@@ -154,7 +155,8 @@ class PsaSchemeDashboardControllerSpec
       mockMinimalPsaConnector,
       mockAppConfig,
       fakePsaSchemeAuthAction,
-      getDataWithPsaName()
+      getDataWithPsaName(),
+      mockFeatureToggleConnector
     )
   }
 
@@ -224,8 +226,10 @@ class PsaSchemeDashboardControllerSpec
     reset(fakeListOfSchemesConnector)
     reset(fakeSchemeLockConnector)
     reset(mockService)
+    reset(mockFeatureToggleConnector)
     when(fakeSchemeLockConnector.isLockByPsaIdOrSchemeId(eqTo("A0000000"), any())(any(), any()))
       .thenReturn(Future.successful(Some(VarianceLock)))
+    when(mockFeatureToggleConnector.getNewAftFeatureToggle(any())(any())).thenReturn(Future.successful(ToggleDetails("test", Some("test"), false)))
   }
 
   "PsaSchemeDashboardController" must {

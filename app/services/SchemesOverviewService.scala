@@ -49,8 +49,8 @@ class SchemesOverviewService @Inject()(
       )
     }
 
-  def retrievePenaltiesUrlPartial[A](implicit request: Request[A], ec: ExecutionContext): Future[Html] =
-    frontendConnector.retrievePenaltiesUrlPartial
+  def retrievePenaltiesUrlPartial[A](hideTile: Boolean)(implicit request: Request[A], ec: ExecutionContext): Future[Html] =
+    if(!hideTile) frontendConnector.retrievePenaltiesUrlPartial else Future.successful(Html(""))
 
   def retrieveMigrationTile[A](implicit request: Request[A], ec: ExecutionContext): Future[Option[Html]] =
     frontendConnector.retrieveMigrationUrlsPartial.map(Some(_))
