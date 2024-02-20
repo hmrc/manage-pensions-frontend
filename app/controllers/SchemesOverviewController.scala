@@ -18,7 +18,7 @@ package controllers
 
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
-import connectors.admin.DelimitedAdminException
+import connectors.admin.FeatureToggleConnector
 import controllers.actions._
 import controllers.psp.routes._
 import controllers.routes.{ContactHMRCController, SchemesOverviewController, SessionExpiredController}
@@ -49,7 +49,8 @@ class SchemesOverviewController @Inject()(
                                            @SessionDataCache sessionDataCacheConnector: UserAnswersCacheConnector,
                                            val controllerComponents: MessagesControllerComponents,
                                            config: FrontendAppConfig,
-                                           view: schemesOverview
+                                           view: schemesOverview,
+                                           featureToggleConnector: FeatureToggleConnector
                                          )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = (authenticate() andThen getData).async {
@@ -65,8 +66,9 @@ class SchemesOverviewController @Inject()(
           service.getPsaName(psaId).flatMap {
             case Some(name) =>
               for {
+                hideAftTile <- featureToggleConnector.getNewAftFeatureToggle("hide-tile").map(_.isEnabled)
                 cards <- service.getTiles(psaId)
-                penaltiesHtml <- service.retrievePenaltiesUrlPartial
+                penaltiesHtml <- service.retrievePenaltiesUrlPartial(hideAftTile)
                 migrationHtml <- service.retrieveMigrationTile
                 _ <- userAnswersCacheConnector.save(request.externalId, PSANameId, name)
               } yield {
@@ -76,9 +78,6 @@ class SchemesOverviewController @Inject()(
               Future.successful(Redirect(SessionExpiredController.onPageLoad))
           }
         }
-      } recoverWith {
-        case _: DelimitedAdminException =>
-          Future.successful(Redirect(controllers.routes.DelimitedAdministratorController.onPageLoad))
       }
   }
 

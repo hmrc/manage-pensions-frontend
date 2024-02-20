@@ -18,7 +18,7 @@ package controllers.psa
 
 import config.FrontendAppConfig
 import connectors._
-import connectors.admin.{DelimitedAdminException, MinimalConnector}
+import connectors.admin.{FeatureToggleConnector, MinimalConnector}
 import connectors.scheme.{ListOfSchemesConnector, PensionSchemeVarianceLockConnector, SchemeDetailsConnector}
 import controllers.actions._
 import identifiers.{SchemeNameId, SchemeSrnId, SchemeStatusId}
@@ -31,8 +31,8 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import play.twirl.api.Html
 import services.PsaSchemeDashboardService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.{EventReportingHelper, UserAnswers}
 import utils.annotations.SessionDataCache
+import utils.{EventReportingHelper, UserAnswers}
 import views.html.psa.psaSchemeDashboard
 
 import javax.inject.Inject
@@ -52,7 +52,8 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
                                              minimalPsaConnector: MinimalConnector,
                                              val appConfig: FrontendAppConfig,
                                              psaSchemeAction: PsaSchemeAuthAction,
-                                             getData: DataRetrievalAction
+                                             getData: DataRetrievalAction,
+                                             featureToggleConnector: FeatureToggleConnector
                                             )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   private val logger = Logger(classOf[PsaSchemeDashboardController])
@@ -92,8 +93,9 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
                 )
               )
               for {
-                aftHtml <- tileRecover(retrieveAftTilesHtml(srn, schemeStatus))
-                finInfoHtml <- tileRecover(retrieveFinInfoTilesHtml(srn, schemeStatus))
+                hideAftTile <- featureToggleConnector.getNewAftFeatureToggle("hide-tile").map(_.isEnabled)
+                aftHtml <- tileRecover(retrieveAftTilesHtml(srn, schemeStatus, hideAftTile))
+                finInfoHtml <- tileRecover(retrieveFinInfoTilesHtml(srn, schemeStatus, hideAftTile))
                 _ <- userAnswersCacheConnector.upsert(request.externalId, updatedUa.json)
                 _ <- eventReportingData.map { data =>
                   EventReportingHelper.storeData(sessionDataCacheConnector, data)
@@ -106,20 +108,18 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
               }
             }
         }
-      } recoverWith {
-        case _: DelimitedAdminException =>
-          Future.successful(Redirect(controllers.routes.DelimitedAdministratorController.onPageLoad))
       }
   }
 
   private def retrieveAftTilesHtml(
                                     srn: String,
-                                    schemeStatus: String
+                                    schemeStatus: String,
+                                    hideTile: Boolean
                                   )(implicit request: AuthenticatedRequest[AnyContent]): Future[Html] = {
     if (
-      schemeStatus.equalsIgnoreCase("open") ||
+      (schemeStatus.equalsIgnoreCase("open") ||
         schemeStatus.equalsIgnoreCase("wound-up") ||
-        schemeStatus.equalsIgnoreCase("deregistered")
+        schemeStatus.equalsIgnoreCase("deregistered")) && !hideTile
     ) {
       frontendConnector.retrieveAftPartial(srn)
     } else {
@@ -128,12 +128,13 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
   }
   private def retrieveFinInfoTilesHtml(
                                     srn: String,
-                                    schemeStatus: String
+                                    schemeStatus: String,
+                                    hideTile: Boolean
                                   )(implicit request: AuthenticatedRequest[AnyContent]): Future[Html] = {
     if (
-      schemeStatus.equalsIgnoreCase("open") ||
+      (schemeStatus.equalsIgnoreCase("open") ||
         schemeStatus.equalsIgnoreCase("wound-up") ||
-        schemeStatus.equalsIgnoreCase("deregistered")
+        schemeStatus.equalsIgnoreCase("deregistered")) && !hideTile
     ) {
       frontendConnector.retrieveFinInfoPartial(srn)
     } else {

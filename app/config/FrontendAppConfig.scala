@@ -62,6 +62,9 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   def aftFeatureToggleUrl(toggle: String): String =
     s"$aftUrl${runModeConfiguration.underlying.getString("urls.featureToggle").format(toggle)}"
 
+  def newAftFeatureToggleUrl(toggle: String): String =
+    s"$aftUrl${runModeConfiguration.underlying.getString("urls.newFeatureToggle").format(toggle)}"
+
   lazy val authUrl: String = servicesConfig.baseUrl("auth")
   lazy val pensionsSchemeUrl: String = servicesConfig.baseUrl("pensions-scheme")
   lazy val pensionAdminUrl: String = servicesConfig.baseUrl("pension-administrator")

@@ -17,16 +17,17 @@
 package controllers
 
 import play.api.test.Helpers._
-import views.html.delimitedAdministrator
+import views.html.{delimitedAdministrator, delimitedPractitioner}
 
 
 class DelimitedAdministratorControllerSpec extends ControllerSpecBase {
 
   val view: delimitedAdministrator = app.injector.instanceOf[delimitedAdministrator]
+  val viewPsp: delimitedPractitioner = app.injector.instanceOf[delimitedPractitioner]
 
 
   def controller: DelimitedAdministratorController =
-    new DelimitedAdministratorController(frontendAppConfig, messagesApi, controllerComponents, view)
+    new DelimitedAdministratorController(frontendAppConfig, messagesApi, controllerComponents, view, viewPsp)
 
   private def viewAsString() = view()(fakeRequest, messages).toString
 

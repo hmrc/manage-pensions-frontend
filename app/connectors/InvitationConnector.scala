@@ -78,6 +78,7 @@ class InvitationConnectorImpl @Inject()(http: HttpClient, config: FrontendAppCon
         response.status match {
           case CREATED => InvitationSent
           case NOT_FOUND if response.body.contains(nameMatchingFailedMessage) => NameMatchingError
+          case FORBIDDEN if response.body.contains("DELIMITED_PSAID") => NameMatchingError
           case FORBIDDEN if response.body.contains(psaAlreadyInvitedMessage) => PsaAlreadyInvitedError
           case _ => {
             handleErrorResponse("POST", config.inviteUrl)(response)
