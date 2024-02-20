@@ -20,22 +20,33 @@ import controllers.actions.AuthAction
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.psa.remove.missingPstr
+import views.html.psa.remove.missingInfo
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class MissingPstrController @Inject()(
+class MissingInfoController @Inject()(
                                            override val messagesApi: MessagesApi,
                                            authenticate: AuthAction,
                                            val controllerComponents: MessagesControllerComponents,
-                                           view: missingPstr
+                                           view: missingInfo
                                          )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = authenticate().async {
-    implicit request =>
-      Future.successful(Ok(view()))
+  import MissingInfoController._
+
+  def onPageLoad(tuple: (String, String)): Action[AnyContent] = authenticate().async {
+    implicit request => Future.successful(Ok(view(tuple._1, tuple._2)))
   }
+
+  def onPageLoadPstr: Action[AnyContent] = onPageLoad(pstrTuple)
+  def onPageLoadPsaName: Action[AnyContent] = onPageLoad(psaNameTuple)
+  def onPageLoadSchemeName: Action[AnyContent] = onPageLoad(schemeNameTuple)
+}
+
+object MissingInfoController {
+  private val pstrTuple       = ("messages__missing__pstr__p1", "messages__missing__pstr__p2")
+  private val psaNameTuple    = ("messages__missing__psa__name__p1", "messages__missing__psa__name__p2")
+  private val schemeNameTuple = ("messages__missing__scheme__name__p1", "messages__missing__scheme__name__p2")
 }

@@ -814,6 +814,10 @@ messages__tpss_recovery__title = Registering for Managing Pension Schemes (MPS)
 messages__tpss_recovery__guidance__p1 = Before you can register for MPS, you must first
 messages__tpss_recovery__guidance__p2 = enter your details for the Pension Schemes Online service.
 
-messages__missing__pstr__title = This PSA cannot be removed from the scheme
+messages__psa__cannot__be__removed__title = This PSA cannot be removed from the scheme
 messages__missing__pstr__p1 = The Pension Scheme Tax Reference (PSTR) for this scheme is missing, therefore it is not possible to remove this PSA from the scheme.
 messages__missing__pstr__p2 = This may be because the scheme has not yet been assigned a PSTR.
+messages__missing__psa__name__p1 = (??? The PSA name is missing), therefore it is not possible to remove this PSA from the scheme.
+messages__missing__psa__name__p2 = This may be because (??? PSA name dependent systems not responding).
+messages__missing__scheme__name__p1 = (??? The scheme name is missing), therefore it is not possible to remove this PSA from the scheme.
+messages__missing__scheme__name__p2 = This may be because (??? SCHEME name dependent systems not responding).

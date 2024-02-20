@@ -32,4 +32,6 @@ POST        /practitioner-deauthorise-self/declaration            controllers.ps
 
 GET         /practitioner-deauthorise-self/confirmation           controllers.psp.deauthorise.self.ConfirmationController.onPageLoad()
 
-GET         /cannot-remove-missing-pstr                           controllers.psa.remove.MissingPstrController.onPageLoad()
+GET         /cannot-remove-missing-pstr                           controllers.psa.remove.MissingInfoController.onPageLoadPstr()
+GET         /cannot-remove-missing-psa-name                       controllers.psa.remove.MissingInfoController.onPageLoadPsaName()
+GET         /cannot-remove-missing-scheme-name                    controllers.psa.remove.MissingInfoController.onPageLoadSchemeName()

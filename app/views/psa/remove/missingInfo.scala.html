@@ -21,15 +21,15 @@
     appConfig: FrontendAppConfig
 )
 
-@()(implicit request: Request[_], messages: Messages)
+@(p1: String, p2: String)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = messages("messages__missing__pstr__title")) {
+@layout(pageTitle = messages("messages__psa__cannot__be__removed__title")) {
 
-    @components.heading(messages("messages__missing__pstr__title"))
+    @components.heading(messages("messages__psa__cannot__be__removed__title"))
 
-    <p class="govuk-body">@messages("messages__missing__pstr__p1")</p>
+    <p class="govuk-body">@messages(p1)</p>
 
-    <p class="govuk-body">@messages("messages__missing__pstr__p2")</p>
+    <p class="govuk-body">@messages(p2)</p>
 
     <p class="govuk-body">
         <a id="return-to-schemes" class="govuk-link"
