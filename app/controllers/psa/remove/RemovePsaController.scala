@@ -144,7 +144,7 @@ object RemovePsaController {
 
   private val renderPageRecoverAndRedirect: PartialFunction[Throwable, Future[Result]] = {
     case _: MissingPstrException       => Future.successful(Redirect(MissingInfoController.onPageLoadPstr()))
-    case _: MissingPsaNameException    => Future.successful(Redirect(MissingInfoController.onPageLoadPsaName()))
-    case _: MissingSchemeNameException => Future.successful(Redirect(MissingInfoController.onPageLoadSchemeName()))
+    case _: MissingPsaNameException    => Future.successful(Redirect(MissingInfoController.onPageLoadOther()))
+    case _: MissingSchemeNameException => Future.successful(Redirect(MissingInfoController.onPageLoadOther()))
   }
 }

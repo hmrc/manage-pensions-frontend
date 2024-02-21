@@ -268,7 +268,7 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
         organisationName = None, individualDetails = None),
         schemeDetailsConnector = fakeSchemeDetailsConnector()).onPageLoad(fakeRequest)
 
-      redirectLocation(result) mustBe Some(controllers.psa.remove.routes.MissingInfoController.onPageLoadPsaName().url)
+      redirectLocation(result) mustBe Some(controllers.psa.remove.routes.MissingInfoController.onPageLoadOther().url)
     }
 
     "redirect to scheme name missing page if scheme name not available" in {
@@ -276,7 +276,7 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
       val result = controller(schemeDetailsConnector = fakeSchemeDetailsConnector(userAnswersJsonWithoutSchemeName)).
         onPageLoad(fakeRequest)
 
-      redirectLocation(result) mustBe Some(controllers.psa.remove.routes.MissingInfoController.onPageLoadSchemeName().url)
+      redirectLocation(result) mustBe Some(controllers.psa.remove.routes.MissingInfoController.onPageLoadOther().url)
     }
 
     "redirect to unauthorised page if user is not authenticated" in {

@@ -36,17 +36,15 @@ class MissingInfoController @Inject()(
 
   import MissingInfoController._
 
-  def onPageLoad(tuple: (String, String)): Action[AnyContent] = authenticate().async {
-    implicit request => Future.successful(Ok(view(tuple._1, tuple._2)))
+  def onPageLoad(list: List[String]): Action[AnyContent] = authenticate().async {
+    implicit request => Future.successful(Ok(view(list)))
   }
 
-  def onPageLoadPstr: Action[AnyContent] = onPageLoad(pstrTuple)
-  def onPageLoadPsaName: Action[AnyContent] = onPageLoad(psaNameTuple)
-  def onPageLoadSchemeName: Action[AnyContent] = onPageLoad(schemeNameTuple)
+  def onPageLoadPstr: Action[AnyContent] = onPageLoad(pstrKeys)
+  def onPageLoadOther: Action[AnyContent] = onPageLoad(otherKey)
 }
 
 object MissingInfoController {
-  private val pstrTuple       = ("messages__missing__pstr__p1", "messages__missing__pstr__p2")
-  private val psaNameTuple    = ("messages__missing__psa__name__p1", "messages__missing__psa__name__p2")
-  private val schemeNameTuple = ("messages__missing__scheme__name__p1", "messages__missing__scheme__name__p2")
+  private val pstrKeys  = List("messages__missing__pstr__p1", "messages__missing__pstr__p2")
+  private val otherKey  = List("messages__missing__information__p1")
 }

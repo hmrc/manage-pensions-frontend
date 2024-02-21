@@ -21,15 +21,15 @@
     appConfig: FrontendAppConfig
 )
 
-@(p1: String, p2: String)(implicit request: Request[_], messages: Messages)
+@(list: List[String])(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = messages("messages__psa__cannot__be__removed__title")) {
 
     @components.heading(messages("messages__psa__cannot__be__removed__title"))
 
-    <p class="govuk-body">@messages(p1)</p>
-
-    <p class="govuk-body">@messages(p2)</p>
+    @for(str <- list) {
+        <p class="govuk-body">@messages(str)</p>
+    }
 
     <p class="govuk-body">
         <a id="return-to-schemes" class="govuk-link"
