@@ -98,6 +98,7 @@ class MinimalConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig
                                (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = {
     retrieveMinimalDetails(hc.withExtraHeaders("pspId" -> pspId))
       .map(_.flatMap( MinimalPSAPSP.getNameFromId)) andThen {
+      case Failure(_: DelimitedPractitionerException) => ()
       case Failure(t: Throwable) => logger.warn("Unable to get minimal details", t)
     }
   }
