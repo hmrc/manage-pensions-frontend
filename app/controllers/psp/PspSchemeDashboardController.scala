@@ -18,7 +18,7 @@ package controllers.psp
 
 import config.FrontendAppConfig
 import connectors._
-import connectors.admin.MinimalConnector
+import connectors.admin.{FeatureToggleConnector, MinimalConnector}
 import connectors.scheme.{ListOfSchemesConnector, SchemeDetailsConnector}
 import controllers.Retrievals
 import controllers.actions._
@@ -59,7 +59,8 @@ class PspSchemeDashboardController @Inject()(
                                               config: FrontendAppConfig,
                                               frontendConnector: FrontendConnector,
                                               pspSchemeAuthAction: PspSchemeAuthAction,
-                                              getData: DataRetrievalAction
+                                              getData: DataRetrievalAction,
+                                              featureToggleConnector: FeatureToggleConnector
                                             )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport
@@ -84,7 +85,8 @@ class PspSchemeDashboardController @Inject()(
           val schemeName = (userAnswers.json \ "schemeName").as[String]
 
           for {
-            aftPspSchemeDashboardCards <- aftPspSchemeDashboardCards(schemeStatus, srn, pspDetails.authorisingPSAID)
+            hideAftTile <- featureToggleConnector.getNewAftFeatureToggle("hide-tile").map(_.isEnabled)
+            aftPspSchemeDashboardCards <- aftPspSchemeDashboardCards(schemeStatus, srn, pspDetails.authorisingPSAID, hideAftTile)
             listOfSchemes <- listSchemesConnector.getListOfSchemesForPsp(request.pspIdOrException.id)
             _ <- userAnswersCacheConnector.upsert(request.externalId, userAnswers.json)
             erHtml <- getEventReportingHtml(srn, listOfSchemes, schemeName)
@@ -144,12 +146,12 @@ class PspSchemeDashboardController @Inject()(
 
   }
 
-  private def aftPspSchemeDashboardCards(schemeStatus: String, srn: String, authorisingPsaId: String)
+  private def aftPspSchemeDashboardCards(schemeStatus: String, srn: String, authorisingPsaId: String, hideTile: Boolean)
                                         (implicit request: AuthenticatedRequest[AnyContent]): Future[Html] =
     if (
-      schemeStatus.equalsIgnoreCase("open") ||
+      (schemeStatus.equalsIgnoreCase("open") ||
         schemeStatus.equalsIgnoreCase("wound-up") ||
-        schemeStatus.equalsIgnoreCase("deregistered")
+        schemeStatus.equalsIgnoreCase("deregistered")) && !hideTile
     ) {
       schemeDetailsService.retrievePspSchemeDashboardCards(srn, request.pspIdOrException.id, authorisingPsaId)
     } else {

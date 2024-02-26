@@ -17,6 +17,7 @@
 package controllers
 
 import config._
+import connectors.admin.{FeatureToggleConnector, ToggleDetails}
 import connectors.{SessionDataCacheConnector, UserAnswersCacheConnector}
 import controllers.actions._
 import controllers.psa.routes.ListSchemesController
@@ -49,11 +50,18 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
   private val mockSessionDataCacheConnector: SessionDataCacheConnector = mock[SessionDataCacheConnector]
 
   private val view: schemesOverview = app.injector.instanceOf[schemesOverview]
+  private val mockFeatureToggleConnector = mock[FeatureToggleConnector]
 
   def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): SchemesOverviewController =
     new SchemesOverviewController(messagesApi, fakeSchemesOverviewService, FakeAuthAction,
-      dataRetrievalAction, fakeUserAnswersCacheConnector, mockSessionDataCacheConnector, controllerComponents, appConfig, view)
+      dataRetrievalAction, fakeUserAnswersCacheConnector, mockSessionDataCacheConnector, controllerComponents, appConfig, view, mockFeatureToggleConnector)
 
+
+  override def beforeEach(): Unit = {
+    reset(mockFeatureToggleConnector)
+    when(mockFeatureToggleConnector.getNewAftFeatureToggle(any())(any())).thenReturn(Future.successful(ToggleDetails("test", Some("test"), false)))
+    super.beforeEach()
+  }
   def viewAsString(): String = view(
     name = psaName,
     title = "site.psa",
@@ -84,7 +92,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
           .thenReturn(Future.successful(Some(psaName)))
         when(fakeSchemesOverviewService.getPsaMinimalDetails(any())(any()))
           .thenReturn(Future.successful(minimalDetails()))
-        when(fakeSchemesOverviewService.retrievePenaltiesUrlPartial(any(), any()))
+        when(fakeSchemesOverviewService.retrievePenaltiesUrlPartial(any())(any(), any()))
           .thenReturn(Future.successful(html))
         when(fakeSchemesOverviewService.retrieveMigrationTile(any(), any()))
           .thenReturn(Future.successful(Some(html)))
@@ -135,7 +143,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
           .thenReturn(Future.successful(Some(psaName)))
         when(fakeSchemesOverviewService.getPsaMinimalDetails(any())(any()))
           .thenReturn(Future.successful(minimalDetails()))
-        when(fakeSchemesOverviewService.retrievePenaltiesUrlPartial(any(), any()))
+        when(fakeSchemesOverviewService.retrievePenaltiesUrlPartial(any())(any(), any()))
           .thenReturn(Future.successful(html))
         when(fakeUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(Json.obj()))
         when(fakeUserAnswersCacheConnector.upsert(any(), any())(any(), any()))

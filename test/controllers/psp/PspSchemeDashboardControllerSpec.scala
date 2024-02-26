@@ -18,7 +18,7 @@ package controllers.psp
 
 import config.FrontendAppConfig
 import connectors.{FrontendConnector, UserAnswersCacheConnector}
-import connectors.admin.MinimalConnector
+import connectors.admin.{FeatureToggleConnector, MinimalConnector, ToggleDetails}
 import connectors.scheme.{ListOfSchemesConnector, SchemeDetailsConnector}
 import controllers.ControllerSpecBase
 import controllers.actions.{AuthAction, FakeAuthAction, PspSchemeAuthAction}
@@ -60,6 +60,7 @@ class PspSchemeDashboardControllerSpec
   private val frontendConnector = mock[FrontendConnector]
 
   private val view: pspSchemeDashboard = app.injector.instanceOf[pspSchemeDashboard]
+  private val mockFeatureToggleConnector = mock[FeatureToggleConnector]
 
   private def sessionRequest = fakeRequest.withSession(SessionKeys.sessionId-> "testSessionId")
 
@@ -83,7 +84,8 @@ class PspSchemeDashboardControllerSpec
       config = appConfig,
       frontendConnector = frontendConnector,
       fakePspSchemeAuthAction,
-      getDataWithPspName()
+      getDataWithPspName(),
+      mockFeatureToggleConnector
     )
 
   private def practitionerCard(clientReference: Option[String]): PspSchemeDashboardCardViewModel =
@@ -150,6 +152,7 @@ class PspSchemeDashboardControllerSpec
     reset(appConfig)
     reset(minimalConnector)
     reset(errorHandler)
+    reset(mockFeatureToggleConnector)
     when(userAnswersCacheConnector.removeAll(any())(any(), any()))
       .thenReturn(Future.successful(Ok("")))
     when(schemeDetailsService.retrievePspSchemeDashboardCards(any(), any(), any())(any()))
@@ -158,6 +161,7 @@ class PspSchemeDashboardControllerSpec
       .thenReturn(Future.successful(JsBoolean(true)))
     when(appConfig.pspTaskListUrl)
       .thenReturn("/foo")
+    when(mockFeatureToggleConnector.getNewAftFeatureToggle(any())(any())).thenReturn(Future.successful(ToggleDetails("test", Some("test"), false)))
   }
 
   "PspSchemeDashboardController.onPageLoad" must {
@@ -281,7 +285,8 @@ class PspSchemeDashboardControllerSpec
         config = appConfig,
         frontendConnector = frontendConnector,
         app.injector.instanceOf[PspSchemeAuthAction],
-        getDataWithPspName()
+        getDataWithPspName(),
+        mockFeatureToggleConnector
       )
 
       when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
