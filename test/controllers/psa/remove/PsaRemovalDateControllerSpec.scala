@@ -88,8 +88,6 @@ class PsaRemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours 
       val sv = SchemeVariance(psaId = "A0000000", srn = srn)
 
       when(mockedPensionSchemeVarianceLockConnector.getLockByPsa(ArgumentMatchers.eq("A0000000"))(any(), any())).thenReturn(Future.successful(Some(sv)))
-      when(mockedPensionSchemeVarianceLockConnector.
-        releaseLock(ArgumentMatchers.eq("A0000000"), ArgumentMatchers.eq(srn))(any(), any())).thenReturn(Future.successful(()))
       when(mockedUpdateSchemeCacheConnector.removeAll(ArgumentMatchers.eq(srn))(any(), any())).thenReturn(Future.successful(Ok("")))
 
       val result = onSubmitAction(data, FakeAuthAction)(postRequest)
