@@ -31,3 +31,6 @@ GET         /practitioner-deauthorise-self/declaration            controllers.ps
 POST        /practitioner-deauthorise-self/declaration            controllers.psp.deauthorise.self.DeclarationController.onSubmit()
 
 GET         /practitioner-deauthorise-self/confirmation           controllers.psp.deauthorise.self.ConfirmationController.onPageLoad()
+
+GET         /cannot-remove-missing-pstr                           controllers.psa.remove.MissingInfoController.onPageLoadPstr()
+GET         /cannot-remove-missing-information                    controllers.psa.remove.MissingInfoController.onPageLoadOther()

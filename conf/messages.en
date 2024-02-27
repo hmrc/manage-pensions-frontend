@@ -816,3 +816,8 @@ messages__banner__confirmation__p3 = A member of the HMRC team will contact you 
 messages__tpss_recovery__title = Registering for Managing Pension Schemes (MPS)
 messages__tpss_recovery__guidance__p1 = Before you can register for MPS, you must first
 messages__tpss_recovery__guidance__p2 = enter your details for the Pension Schemes Online service.
+
+messages__psa__cannot__be__removed__title = This scheme administrator cannot be removed
+messages__missing__pstr__p1 = The Pension Scheme Tax Reference (PSTR) for this scheme is missing, therefore it is not possible to remove this scheme administrator.
+messages__missing__pstr__p2 = This may be because the scheme has not yet been assigned a PSTR.
+messages__missing__information__p1 = Please try again later.

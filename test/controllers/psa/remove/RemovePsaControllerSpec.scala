@@ -111,6 +111,33 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
        }
        """.stripMargin
 
+  val userAnswersJsonWithoutSchemeName: String =
+    s"""{
+         "benefits": "opt1",
+         "schemeType": {
+           "schemeTypeDetails": "test scheme name",
+           "name": "master"
+         },
+         "psaDetails" :[
+           {
+           "id":"A0000000",
+           "individual":{
+               "firstName": "Taylor",
+               "middleName": "Middle",
+               "lastName": "Rayon"
+             },
+             "organisationOrPartnershipName": "partnetship name",
+             "relationshipDate": "2018-10-01"
+           }
+         ],
+         "schemeStatus" : "Pending",
+         "pstr" : "test pstr",
+         "isAboutBenefitsAndInsuranceComplete": true,
+         "isAboutMembersComplete": true,
+         "isBeforeYouStartComplete": true
+       }
+       """.stripMargin
+
   def fakeSchemeDetailsConnector(json: String = userAnswersJson): SchemeDetailsConnector =
     new SchemeDetailsConnector {
 
@@ -227,25 +254,29 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
       FakeUserAnswersCacheConnector.verify(AssociatedDateId, LocalDate.parse("2018-10-01"))
     }
 
-    "throw IllegalArgumentException if pstr is not found" in {
+    "redirect to PSTR missing page if PSTR not available" in {
+
       val result = controller(schemeDetailsConnector = fakeSchemeDetailsConnector(userAnswersJsonWithoutPstr)).
         onPageLoad(fakeRequest)
 
-      ScalaFutures.whenReady(result.failed) { e =>
-        e mustBe a[IllegalArgumentException]
-        e.getMessage mustEqual "PSTR missing while removing PSA"
-      }
+      redirectLocation(result) mustBe Some(controllers.psa.remove.routes.MissingInfoController.onPageLoadPstr().url)
     }
 
-    "throw IllegalArgumentException if psa name is not found" in {
+    "redirect to PSA name missing page if PSA name not available" in {
+
       val result = controller(psaMinimalDetails = psaMinimalSubscription.copy(isPsaSuspended = false,
         organisationName = None, individualDetails = None),
         schemeDetailsConnector = fakeSchemeDetailsConnector()).onPageLoad(fakeRequest)
 
-      ScalaFutures.whenReady(result.failed) { e =>
-        e mustBe a[IllegalArgumentException]
-        e.getMessage mustEqual "Organisation or Individual PSA Name missing"
-      }
+      redirectLocation(result) mustBe Some(controllers.psa.remove.routes.MissingInfoController.onPageLoadOther().url)
+    }
+
+    "redirect to scheme name missing page if scheme name not available" in {
+
+      val result = controller(schemeDetailsConnector = fakeSchemeDetailsConnector(userAnswersJsonWithoutSchemeName)).
+        onPageLoad(fakeRequest)
+
+      redirectLocation(result) mustBe Some(controllers.psa.remove.routes.MissingInfoController.onPageLoadOther().url)
     }
 
     "redirect to unauthorised page if user is not authenticated" in {

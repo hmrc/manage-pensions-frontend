@@ -23,7 +23,7 @@ import connectors.admin.MinimalConnector
 import connectors.scheme.SchemeDetailsConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaSchemeAuthAction}
-import controllers.psa.remove.routes.{CanNotBeRemovedController, ConfirmRemovePsaController}
+import controllers.psa.remove.routes._
 import controllers.routes._
 import identifiers.invitations.PSTRId
 import identifiers.psa.PSANameId
@@ -34,6 +34,7 @@ import models.requests.DataRequest
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json.{JsArray, JsPath, __}
+import play.api.mvc.Results.Redirect
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -55,6 +56,8 @@ class RemovePsaController @Inject()(
                                    )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with Retrievals {
+
+  import RemovePsaController._
 
   def onPageLoad: Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAction(None) andThen requireData).async {
     implicit request =>
@@ -85,18 +88,17 @@ class RemovePsaController @Inject()(
     } yield {
       Redirect(ConfirmRemovePsaController.onPageLoad())
     }
-  }
+  } recoverWith renderPageRecoverAndRedirect
 
   private def getPsaName(minimalPsaDetails: MinimalPSAPSP): String = {
     (minimalPsaDetails.individualDetails, minimalPsaDetails.organisationName) match {
       case (Some(individualDetails), _) => individualDetails.fullName
       case (_, Some(orgName)) => orgName
-      case _ => throw new IllegalArgumentException("Organisation or Individual PSA Name missing")
+      case _ => throw MissingPsaNameException("Organisation or Individual PSA Name missing")
     }
   }
 
-  private def getPstr(pstr: Option[String]): String =
-    pstr.getOrElse(throw new IllegalArgumentException("PSTR missing while removing PSA"))
+  private def getPstr(pstr: Option[String]): String = pstr.getOrElse(throw MissingPstrException("PSTR missing while removing PSA"))
 
   private def getSchemeNameAndPstr(srn: String, request: DataRequest[AnyContent])
                                   (implicit hd: HeaderCarrier): Future[SchemeInfo] = {
@@ -121,7 +123,7 @@ class RemovePsaController @Inject()(
         None
       }
       SchemeInfo(
-        userAnswers.get(SchemeNameId).getOrElse(throw new IllegalArgumentException("SchemeName missing while removing PSA")),
+        userAnswers.get(SchemeNameId).getOrElse(throw MissingSchemeNameException("SchemeName missing while removing PSA")),
         getPstr(userAnswers.get(PSTRId)),
         associatedDate.getOrElse(appConfig.earliestDatePsaRemoval)
       )
@@ -129,6 +131,20 @@ class RemovePsaController @Inject()(
   }
 
 
-  case class SchemeInfo(schemeName: String, pstr: String, associatedDate: LocalDate)
+}
 
+object RemovePsaController {
+
+  private case class SchemeInfo(schemeName: String, pstr: String, associatedDate: LocalDate)
+
+  private case class MissingPstrException(message: String) extends IllegalArgumentException
+  private case class MissingPsaNameException(message: String) extends IllegalArgumentException
+  private case class MissingSchemeNameException(message: String) extends IllegalArgumentException
+
+
+  private val renderPageRecoverAndRedirect: PartialFunction[Throwable, Future[Result]] = {
+    case _: MissingPstrException       => Future.successful(Redirect(MissingInfoController.onPageLoadPstr()))
+    case _: MissingPsaNameException    => Future.successful(Redirect(MissingInfoController.onPageLoadOther()))
+    case _: MissingSchemeNameException => Future.successful(Redirect(MissingInfoController.onPageLoadOther()))
+  }
 }
