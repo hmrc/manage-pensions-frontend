@@ -247,7 +247,8 @@ class AuthActionSpec
         val controller = new Harness(authAction)
         val result = controller.onPageLoad()(fakeRequest)
         status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
+        redirectLocation(result) mustBe
+          Some("http://localhost:9938/mdtp/uplift?origin=pods&confidenceLevel=250&completionURL=/test-url&failureURL=/manage-pension-schemes/unauthorised")
       }
     }
 

@@ -19,11 +19,13 @@ package config
 import java.time.LocalDate
 import com.google.inject.{Inject, Singleton}
 import controllers.routes
-import play.api.{Configuration, Mode, Environment}
+import play.api.{Configuration, Environment, Mode}
 import play.api.i18n.Lang
 import play.api.mvc.Call
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import models.ReportTechnicalIssue
+import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl.idFunctor
+import uk.gov.hmrc.play.bootstrap.binders.{OnlyRelative, RedirectUrl}
 
 @Singleton
 class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environment: Environment, servicesConfig: ServicesConfig) {
@@ -204,5 +206,9 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
 
   lazy val psaSchemeDashboardUrl: String = loadConfig("urls.psaSchemeDashboard")
   lazy val pspSchemeDashboardUrl: String = loadConfig("urls.pspSchemeDashboard")
-
+  def identityValidationFrontEndEntry(relativeCompletionURL: RedirectUrl, relativeFailureURL: RedirectUrl): String = {
+    val url = loadConfig("urls.ivUpliftEntry")
+    val query = s"?origin=pods&confidenceLevel=250&completionURL=${relativeCompletionURL.get(OnlyRelative).url}&failureURL=${relativeFailureURL.get(OnlyRelative).url}"
+    url + query
+  }
 }
