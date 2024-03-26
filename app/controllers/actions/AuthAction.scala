@@ -35,7 +35,6 @@ import uk.gov.hmrc.auth.core.retrieve._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.domain.{PsaId, PspId}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import utils.UserAnswers
 import utils.annotations.SessionDataCache
@@ -48,8 +47,7 @@ class AuthImpl(
                 config: FrontendAppConfig,
                 val parser: BodyParsers.Default,
                 authEntity: AuthEntity,
-                administratorOrPractitionerCheck: Boolean,
-                minimalConfidenceLevel: Option[ConfidenceLevel]
+                administratorOrPractitionerCheck: Boolean
               )(implicit val executionContext: ExecutionContext)
   extends Auth
     with AuthorisedFunctions {
@@ -57,9 +55,7 @@ class AuthImpl(
   override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
-    val auth = minimalConfidenceLevel.map { cl => authorised(cl) }.getOrElse(authorised())
-
-    auth.retrieve(
+    authorised().retrieve(
       Retrievals.externalId and Retrievals.allEnrolments and Retrievals.affinityGroup
     ) {
       case Some(id) ~ enrolments ~ Some(affinityGroup) =>
@@ -72,10 +68,7 @@ class AuthImpl(
       case _: InsufficientEnrolments =>
         Redirect(UnauthorisedController.onPageLoad)
       case _: InsufficientConfidenceLevel =>
-        val completionURL = RedirectUrl(request.uri)
-        val failureURL = RedirectUrl(controllers.routes.UnauthorisedController.onPageLoad.url)
-        val url = config.identityValidationFrontEndEntry(completionURL, failureURL)
-        SeeOther(url)
+        Redirect(UnauthorisedController.onPageLoad)
       case _: UnsupportedAuthProvider =>
         Redirect(UnauthorisedController.onPageLoad)
       case _: UnsupportedAffinityGroup =>
@@ -186,13 +179,7 @@ class AuthActionImpl @Inject()(
   extends AuthAction {
 
   override def apply(authEntity: AuthEntity): Auth =
-    new AuthImpl(authConnector,
-      sessionDataCacheConnector,
-      config,
-      parser,
-      authEntity,
-      administratorOrPractitionerCheck = true,
-      minimalConfidenceLevel = Some(ConfidenceLevel.L250))
+    new AuthImpl(authConnector, sessionDataCacheConnector, config, parser, authEntity, administratorOrPractitionerCheck = true)
 }
 
 class AuthActionNoAdministratorOrPractitionerCheckImpl @Inject()(
@@ -204,13 +191,7 @@ class AuthActionNoAdministratorOrPractitionerCheckImpl @Inject()(
   extends AuthAction {
 
   override def apply(authEntity: AuthEntity): Auth =
-    new AuthImpl(authConnector,
-      sessionDataCacheConnector,
-      config,
-      parser,
-      authEntity,
-      administratorOrPractitionerCheck = false,
-      minimalConfidenceLevel = None)
+    new AuthImpl(authConnector, sessionDataCacheConnector, config, parser, authEntity, administratorOrPractitionerCheck = false)
 }
 
 trait AuthAction {
