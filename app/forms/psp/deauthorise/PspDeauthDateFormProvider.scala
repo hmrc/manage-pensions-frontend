@@ -19,7 +19,7 @@ package forms.psp.deauthorise
 import forms.mappings._
 import play.api.data.Form
 
-import java.time.LocalDate
+import java.time.Instant
 import javax.inject.Inject
 
 
@@ -37,7 +37,7 @@ class PspDeauthDateFormProvider @Inject() extends DateMapping with Constraints {
     "messages__pspDeauth_date_error__common"
   )
 
-  def apply(relationshipStartDate: LocalDate, earliestDateError: String): Form[LocalDate] =
+  def apply(relationshipStartDate: Instant, earliestDateError: String): Form[Instant] =
     Form(
       "pspDeauthDate" -> dateMapping(dateErrors)
         .verifying(

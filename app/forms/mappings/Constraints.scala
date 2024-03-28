@@ -19,7 +19,7 @@ package forms.mappings
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import utils.countryOptions.CountryOptions
 
-import java.time.LocalDate
+import java.time.Instant
 import scala.language.implicitConversions
 
 trait Constraints {
@@ -139,13 +139,13 @@ trait Constraints {
           .getOrElse(Invalid(errorKey))
     }
 
-  protected def nonFutureDate(errorKey: String): Constraint[LocalDate] =
+  protected def nonFutureDate(errorKey: String): Constraint[Instant] =
     Constraint {
-      case date if !LocalDate.now().isBefore(date) => Valid
+      case date if !Instant.now().isBefore(date) => Valid
       case _ => Invalid(errorKey)
     }
 
-  protected def afterGivenDate(errorKey: String, givenDate: LocalDate): Constraint[LocalDate] =
+  protected def afterGivenDate(errorKey: String, givenDate: Instant): Constraint[Instant] =
     Constraint {
       case date if date.isBefore(givenDate) => Invalid(errorKey)
       case _ => Valid

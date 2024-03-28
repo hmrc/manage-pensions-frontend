@@ -19,8 +19,8 @@ package identifiers.psp.deauthorise
 import identifiers.TypedIdentifier
 import models.Index
 
-import java.time.LocalDate
+import java.time.Instant
 
-case class PspDeauthDateId(index: Index) extends TypedIdentifier[LocalDate] {
+case class PspDeauthDateId(index: Index) extends TypedIdentifier[Instant] {
   override def toString: String = "removalDate"
 }

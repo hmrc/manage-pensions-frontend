@@ -39,7 +39,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
-import java.time.LocalDate
+import java.time.{Instant, ZoneId}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -117,15 +117,17 @@ class RemovePsaController @Inject()(
 
       val psa = admins.filter(_.psaId.contains(request.psaIdOrException.id))
 
+      val earliestDatePsaRemoval: Instant = appConfig.earliestDatePsaRemoval.atStartOfDay(ZoneId.of("UTC")).toInstant
+
       val associatedDate = if (psa.nonEmpty) {
-        psa.head.relationshipDate.map(LocalDate.parse(_))
+        psa.head.relationshipDate.map(Instant.parse(_))
       } else {
         None
       }
       SchemeInfo(
         userAnswers.get(SchemeNameId).getOrElse(throw MissingSchemeNameException("SchemeName missing while removing PSA")),
         getPstr(userAnswers.get(PSTRId)),
-        associatedDate.getOrElse(appConfig.earliestDatePsaRemoval)
+        associatedDate.getOrElse(earliestDatePsaRemoval)
       )
     }
   }
@@ -135,7 +137,7 @@ class RemovePsaController @Inject()(
 
 object RemovePsaController {
 
-  private case class SchemeInfo(schemeName: String, pstr: String, associatedDate: LocalDate)
+  private case class SchemeInfo(schemeName: String, pstr: String, associatedDate: Instant)
 
   private case class MissingPstrException(message: String) extends IllegalArgumentException
   private case class MissingPsaNameException(message: String) extends IllegalArgumentException

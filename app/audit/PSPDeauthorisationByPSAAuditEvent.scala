@@ -16,12 +16,13 @@
 
 package audit
 
-import java.time.LocalDate
 import play.api.libs.json.{JsObject, Json}
 import utils.DateHelper
 
+import java.time.Instant
+
 case class PSPDeauthorisationByPSAAuditEvent(
-                                              ceaseDate: LocalDate,
+                                              ceaseDate: Instant,
                                               psaId: String,
                                               pspId: String,
                                               pstr: String
@@ -29,7 +30,7 @@ case class PSPDeauthorisationByPSAAuditEvent(
   override def auditType: String = "PensionSchemeAdministratorDeauthorisePractitioner"
 
   override def details: JsObject = Json.obj(
-    "ceaseDate" -> ceaseDate.format(DateHelper.auditFormatter),
+    "ceaseDate" -> DateHelper.auditFormatter.format(ceaseDate),
     "ceaseNumber" -> pspId,
     "initiatedIDType" -> "PSAID",
     "initiatedIDNumber" -> psaId,

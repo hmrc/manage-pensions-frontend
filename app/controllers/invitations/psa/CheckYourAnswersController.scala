@@ -18,8 +18,8 @@ package controllers.invitations.psa
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
-import connectors.scheme.SchemeDetailsConnector
 import connectors._
+import connectors.scheme.SchemeDetailsConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaSchemeAuthAction}
 import controllers.invitations.psa.routes._
@@ -39,7 +39,7 @@ import utils.annotations.Invitations
 import utils.{CheckYourAnswersFactory, DateHelper, Navigator}
 import views.html.check_your_answers_view
 
-import java.time.LocalDateTime
+import java.time.Instant
 import scala.concurrent.{ExecutionContext, Future}
 
 class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
@@ -120,6 +120,6 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
     }
   }
 
-  private def getExpireAt: LocalDateTime = DateHelper.dateTimeFromNowToMidnightAfterDays(appConfig.invitationExpiryDays)
+  private def getExpireAt: Instant = DateHelper.dateTimeFromNowToMidnightAfterDays(appConfig.invitationExpiryDays)
 
 }

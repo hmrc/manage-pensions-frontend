@@ -18,9 +18,9 @@ package models
 
 import play.api.libs.json.{Format, Json}
 
-import java.time.LocalDate
+import java.time.Instant
 
-case class Scheme(pstr: String, openDate: LocalDate)
+case class Scheme(pstr: String, openDate: Instant)
 
 object Scheme {
   implicit val format: Format[Scheme] = Json.format[Scheme]

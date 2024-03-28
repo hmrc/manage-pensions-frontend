@@ -18,9 +18,9 @@ package models.psa.remove
 
 import play.api.libs.json.{Json, OFormat}
 
-import java.time.LocalDate
+import java.time.Instant
 
-case class PsaToBeRemovedFromScheme(psaId: String, pstr: String, removalDate: LocalDate)
+case class PsaToBeRemovedFromScheme(psaId: String, pstr: String, removalDate: Instant)
 
 object PsaToBeRemovedFromScheme {
   implicit val formats: OFormat[PsaToBeRemovedFromScheme] = Json.format[PsaToBeRemovedFromScheme]

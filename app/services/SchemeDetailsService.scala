@@ -16,14 +16,14 @@
 
 package services
 
-import java.time.LocalDate
+import java.time.{Instant, LocalDate}
 import com.google.inject.Inject
 import connectors.FrontendConnector
 import connectors.admin.MinimalConnector
 import connectors.scheme.PensionSchemeVarianceLockConnector
 import identifiers.SchemeStatusId
 import identifiers.psa.ListOfPSADetailsId
-import models.SchemeStatus.{WoundUp, Deregistered, Open}
+import models.SchemeStatus.{Deregistered, Open, WoundUp}
 import models._
 import models.psa.PsaSchemeDetails
 import models.requests.AuthenticatedRequest
@@ -92,7 +92,7 @@ class SchemeDetailsService @Inject()(frontendConnector: FrontendConnector,
         listOfSchemes =>
           val currentScheme = listOfSchemes.filter(_.referenceNumber.contains(srn))
           if (currentScheme.nonEmpty) {
-            currentScheme.head.openDate.map(date => LocalDate.parse(date).format(DateHelper.formatter))
+            currentScheme.head.openDate.map(date => DateHelper.formatter.format(Instant.parse(date)))
           } else {
             None
           }

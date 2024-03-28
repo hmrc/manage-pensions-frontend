@@ -55,7 +55,7 @@ class PspSchemeDashboardService @Inject()(
                               )(implicit messages: Messages): PspSchemeDashboardCardViewModel = {
 
     val authedBy: String = loggedInPsp.authorisingPSA.name
-    val relationshipStartDate: String = loggedInPsp.relationshipStartDate.format(DateHelper.formatter)
+    val relationshipStartDate: String = DateHelper.formatter.format(loggedInPsp.relationshipStartDate)
 
     PspSchemeDashboardCardViewModel(
       id = "practitioner-card",

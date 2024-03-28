@@ -16,10 +16,10 @@
 
 package identifiers.psp.deauthorise.self
 
-import java.time.LocalDate
-
 import identifiers.TypedIdentifier
 
-case object DeauthDateId extends TypedIdentifier[LocalDate] {
+import java.time.Instant
+
+case object DeauthDateId extends TypedIdentifier[Instant] {
   override def toString: String = "pspSelfDeauthDate"
 }

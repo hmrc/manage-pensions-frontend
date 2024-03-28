@@ -34,7 +34,7 @@ import utils.annotations.PspSelfDeauth
 import utils.{Navigator, UserAnswers}
 import views.html.psp.deauthorisation.self.deauthDate
 
-import java.time.LocalDate
+import java.time.Instant
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -54,14 +54,14 @@ class DeauthDateController @Inject()(
     with I18nSupport
     with Retrievals {
 
-  private def form(relationshipStartDate: LocalDate)(implicit messages: Messages): Form[LocalDate] =
+  private def form(relationshipStartDate: Instant)(implicit messages: Messages): Form[Instant] =
     formProvider(relationshipStartDate, messages("messages__pspDeauth_date_error__before_earliest_date", formatDate(relationshipStartDate)))
 
   def onPageLoad: Action[AnyContent] = (authenticate(PSP) andThen getData andThen pspSchemeAuthAction(None) andThen requireData).async {
     implicit request =>
       (SchemeNameId and SchemeSrnId and AuthorisedPractitionerId).retrieve.map {
         case schemeName ~ srn ~ psp =>
-          val authDate: LocalDate = psp.relationshipStartDate
+          val authDate: Instant = psp.relationshipStartDate
           val preparedForm = request.userAnswers.get(DeauthDateId).fold(form(authDate))(form(authDate).fill)
           Future.successful(Ok(view(preparedForm, schemeName, srn, formatDate(authDate))))
       }
@@ -72,7 +72,7 @@ class DeauthDateController @Inject()(
       (SchemeNameId and SchemeSrnId and AuthorisedPractitionerId).retrieve.map {
         case schemeName ~ srn ~ psp =>
 
-          val authDate: LocalDate = psp.relationshipStartDate
+          val authDate: Instant = psp.relationshipStartDate
 
           form(authDate).bindFromRequest().fold(
             (formWithErrors: Form[_]) =>

@@ -17,15 +17,15 @@
 package controllers.testonly
 
 import com.google.inject.{Inject, Singleton}
-import play.api.data.Form
 import play.api.data.Forms._
+import play.api.data.{Form, Mapping}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateHelper
 import views.html.testOnly.date_test
 
-import java.time.LocalDate
+import java.time.{Instant, LocalDate, ZoneOffset, ZonedDateTime}
 
 @Singleton
 class DateTestController @Inject()(
@@ -34,7 +34,22 @@ class DateTestController @Inject()(
                                     val controllerComponents: MessagesControllerComponents
                                   ) extends FrontendBaseController with I18nSupport {
 
-  val form: Form[Option[LocalDate]] = Form("date" -> optional(localDate("d MMMM yyyy")))
+  def toInstant(date: (Int, Int, Int)): Instant =
+    LocalDate.of(date._3, date._2, date._1).atStartOfDay().toInstant(ZoneOffset.UTC)
+
+  def fromInstant(date: Instant): (Int, Int, Int) = {
+    val zonedDateTime = ZonedDateTime.from(date)
+    (zonedDateTime.getDayOfMonth, zonedDateTime.getMonthValue, zonedDateTime.getYear)
+  }
+
+  val dateMapping: Mapping[Instant] = (tuple(
+    "day" -> number,
+    "month" -> number,
+    "year" -> number
+  )).transform[Instant](toInstant, fromInstant)
+
+
+  val form: Form[Option[Instant]] = Form("date" -> optional(dateMapping))
 
   def present: Action[AnyContent] = Action {
     implicit request =>

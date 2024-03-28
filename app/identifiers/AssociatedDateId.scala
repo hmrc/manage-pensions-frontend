@@ -16,8 +16,8 @@
 
 package identifiers
 
-import java.time.LocalDate
+import java.time.Instant
 
-case object AssociatedDateId extends TypedIdentifier[LocalDate] {
+case object AssociatedDateId extends TypedIdentifier[Instant] {
   override def toString: String = "associatedDate"
 }

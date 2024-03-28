@@ -32,7 +32,8 @@ import utils.annotations.Invitations
 import utils.{Navigator, UserAnswers}
 import views.html.invitations.invitation_success
 
-import java.time.LocalDate
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -65,7 +66,7 @@ class InvitationSuccessController @Inject()(
                 inviteeName,
                 minimalPsaDetails.email,
                 schemeDetail.schemeName,
-                LocalDate.now().plusDays(frontendAppConfig.invitationExpiryDays),
+                Instant.now().plus(frontendAppConfig.invitationExpiryDays, ChronoUnit.DAYS),
                 continue
               ))
             }

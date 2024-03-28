@@ -19,7 +19,7 @@ package forms.psa.remove
 import forms.mappings._
 import play.api.data.Form
 
-import java.time.LocalDate
+import java.time.Instant
 import javax.inject.Inject
 
 
@@ -38,7 +38,7 @@ class RemovalDateFormProvider @Inject() extends DateMapping with Constraints {
     "messages__removal_date_error__common"
   )
 
-  def apply(associationDate: LocalDate, earliestDate: LocalDate): Form[LocalDate] =
+  def apply(associationDate: Instant, earliestDate: Instant): Form[Instant] =
     Form(
       "removalDate" -> dateMapping(dateErrors)
         .verifying(

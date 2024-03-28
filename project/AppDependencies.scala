@@ -10,7 +10,8 @@ object AppDependencies {
     "uk.gov.hmrc"                   %% "domain-play-30"                % "9.0.0",
     "uk.gov.hmrc"                   %% "play-partials-play-30"         % "9.1.0",
     "uk.gov.hmrc"                   %% "play-frontend-hmrc-play-30"    % "8.4.0",
-    "com.fasterxml.jackson.module"  %% "jackson-module-scala"          % "2.16.1"
+    "com.fasterxml.jackson.module"  %% "jackson-module-scala"          % "2.16.1",
+    "uk.gov.hmrc.mongo"             %% "hmrc-mongo-play-30"            % "1.7.0",
   )
 
   val test: Seq[ModuleID] = Seq(

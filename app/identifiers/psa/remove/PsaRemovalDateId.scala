@@ -18,8 +18,8 @@ package identifiers.psa.remove
 
 import identifiers.TypedIdentifier
 
-import java.time.LocalDate
+import java.time.Instant
 
-case object PsaRemovalDateId extends TypedIdentifier[LocalDate] {
+case object PsaRemovalDateId extends TypedIdentifier[Instant] {
   override def toString: String = "removal"
 }

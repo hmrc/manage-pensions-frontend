@@ -22,14 +22,14 @@ import play.api.data.Forms.{of, tuple}
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import play.api.data.{FieldMapping, Mapping}
 
-import java.time.{DateTimeException, LocalDate}
+import java.time._
 import scala.util.{Failure, Success, Try}
 
 trait DateMapping extends Formatters with Constraints {
 
   def validDate(genericError: String): Constraint[(Int, Int, Int)] = Constraint {
     input =>
-      Try(toLocalDate(input)) match {
+      Try(toInstant(input)) match {
         case Failure(ex) if ex.isInstanceOf[DateTimeException] =>
           Invalid(notRealDate)
         case Failure(_) =>
@@ -39,7 +39,7 @@ trait DateMapping extends Formatters with Constraints {
       }
   }
 
-  def dateMapping(errors: DateErrors): Mapping[LocalDate] = tuple(
+  def dateMapping(errors: DateErrors): Mapping[Instant] = tuple(
     "day" -> int(requiredKey = errors.dayBlank, wholeNumberKey = "error.date.day_invalid", nonNumericKey =
       "error.date.day_invalid"),
     "month" -> int(requiredKey = errors.monthBlank, wholeNumberKey = "error.date.month_invalid",
@@ -47,14 +47,16 @@ trait DateMapping extends Formatters with Constraints {
     "year" -> int(requiredKey = errors.yearBlank, wholeNumberKey = "error.date.year_invalid", nonNumericKey
     = "error.date.year_invalid")
   ).verifying(validDate(errors.genericError))
-    .transform[LocalDate](toLocalDate, fromLocalDate)
+    .transform[Instant](toInstant, fromInstant)
 
 
-  def toLocalDate(date: (Int, Int, Int)): LocalDate =
-    LocalDate.of(date._3, date._2, date._1)
+  def toInstant(date: (Int, Int, Int)): Instant =
+    LocalDate.of(date._3, date._2, date._1).atStartOfDay().toInstant(ZoneOffset.UTC)
 
-  def fromLocalDate(date: LocalDate): (Int, Int, Int) =
-    (date.getDayOfMonth, date.getMonthValue, date.getYear)
+  def fromInstant(date: Instant): (Int, Int, Int) = {
+    val zonedDateTime = ZonedDateTime.from(date)
+    (zonedDateTime.getDayOfMonth, zonedDateTime.getMonthValue, zonedDateTime.getYear)
+  }
 
   protected def int(requiredKey: String = "error.required",
                     wholeNumberKey: String = "error.wholeNumber",

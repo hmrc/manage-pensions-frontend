@@ -39,7 +39,7 @@ import utils.annotations.RemovePSA
 import utils.{DateHelper, Navigator, UserAnswers}
 import views.html.psa.remove.removalDate
 
-import java.time.LocalDate
+import java.time.{Instant, ZoneOffset}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -63,8 +63,8 @@ class PsaRemovalDateController @Inject()(
     with I18nSupport
     with Retrievals {
 
-  def form(schemeOpenDate: LocalDate): Form[LocalDate] =
-    formProvider(schemeOpenDate, appConfig.earliestDatePsaRemoval)
+  def form(schemeOpenDate: Instant): Form[Instant] =
+    formProvider(schemeOpenDate, appConfig.earliestDatePsaRemoval.atStartOfDay().toInstant(ZoneOffset.UTC))
 
   private def getRelationshipDate(ua: UserAnswers, psaId: String): Option[String] = {
     ua.get(ListOfPSADetailsId) match {
@@ -76,7 +76,7 @@ class PsaRemovalDateController @Inject()(
   private def formatRelationshipDate(relationshipDateString: Option[String]): Option[String] = {
     relationshipDateString match {
       case Some(dateString) =>
-        val relationshipDate: LocalDate = LocalDate.parse(dateString)
+        val relationshipDate: Instant = Instant.parse(dateString)
         val formattedDate: String = DateHelper.formatDate(relationshipDate)
         Some(formattedDate)
       case None => None

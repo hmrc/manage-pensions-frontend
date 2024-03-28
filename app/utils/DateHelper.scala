@@ -16,32 +16,32 @@
 
 package utils
 
+import java.time.{Instant, ZoneId}
 import java.time.format.DateTimeFormatter
-import java.time.LocalDate
-import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 import java.util.concurrent.atomic.AtomicReference
 
 object DateHelper {
 
-  private val mockDate: AtomicReference[Option[LocalDate]] = new AtomicReference(None)
+  private val mockDate: AtomicReference[Option[Instant]] = new AtomicReference(None)
 
-  def currentDate: LocalDate = mockDate.get().getOrElse(LocalDate.now())
-  def setDate(date: Option[LocalDate]): Unit = mockDate.set(date)
-  def overriddenDate: Option[LocalDate] = mockDate.get()
+  def currentDate: Instant = mockDate.get().getOrElse(Instant.now())
+  def setDate(date: Option[Instant]): Unit = mockDate.set(date)
+  def overriddenDate: Option[Instant] = mockDate.get()
 
   val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
   val auditFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
   val startDateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMMM")
   val endDateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
-  def formatDate(date: LocalDate): String = {
-    date.format(formatter)
+  def formatDate(date: Instant): String = {
+    formatter.format(date.atZone(ZoneId.of("UTC")))
   }
 
-  def dateTimeFromNowToMidnightAfterDays(daysAhead: Int): LocalDateTime =
-    currentDate.plusDays(daysAhead + 1).atStartOfDay()
+  def dateTimeFromNowToMidnightAfterDays(daysAhead: Int): Instant =
+    currentDate.plus(daysAhead + 1, ChronoUnit.DAYS)
 
-  def displayExpiryDate(date: LocalDate): String = {
-    formatDate(date.minusDays(1))
+  def displayExpiryDate(date: Instant): String = {
+    formatDate(date.minus(1, ChronoUnit.DAYS))
   }
 
 

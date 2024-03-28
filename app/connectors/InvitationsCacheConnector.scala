@@ -105,8 +105,10 @@ class InvitationsCacheConnectorImpl @Inject()(
           response.status match {
             case NOT_FOUND =>
               Future.successful(List.empty)
-            case OK =>
+            case OK => {
+              println(s"\n\n\n\n\n\n the response body is: ${response.body}")
               Future.successful(Json.parse(response.body).as[List[Invitation]])
+            }
             case _ =>
               Future.failed(new HttpException(response.body, response.status))
           }

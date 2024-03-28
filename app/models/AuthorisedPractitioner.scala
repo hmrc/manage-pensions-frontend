@@ -16,10 +16,9 @@
 
 package models
 
-import java.time.LocalDate
+import play.api.libs.json.{Json, OFormat}
 
-import play.api.libs.json.Json
-import play.api.libs.json.OFormat
+import java.time.Instant
 
 case class AuthorisingPSA(
                            firstName: Option[String],
@@ -60,7 +59,7 @@ case class AuthorisedPractitioner(
                                    individual: Option[AuthorisingIndividual],
                                    authorisingPSAID: String,
                                    authorisingPSA: AuthorisingPSA,
-                                   relationshipStartDate: LocalDate,
+                                   relationshipStartDate: Instant,
                                    id: String
                                  ) {
   def name: String = (individual, organisationOrPartnershipName) match {

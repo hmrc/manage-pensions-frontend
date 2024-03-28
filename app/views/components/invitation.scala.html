@@ -17,13 +17,12 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
-@import java.time.LocalDate
+@import java.time.Instant
 @import utils.DateHelper._
-@import java.time.LocalDateTime
 
 @(
     schemeName: String,
-    expiryDate: LocalDateTime,
+    expiryDate: Instant,
     id: String,
     srn: String
 )(implicit messages: Messages)
@@ -31,7 +30,7 @@
 <li>
     <div>
         <h2 class="govuk-heading-m">@schemeName</h2>
-        <p class="govuk-body">@messages("messages__yourInvitations__scheme_expiry_date", displayExpiryDate(expiryDate.toLocalDate))</p>
+        <p class="govuk-body">@messages("messages__yourInvitations__scheme_expiry_date", displayExpiryDate(expiryDate))</p>
         <a class="govuk-link" id= "accept-invitation-@id" href="@controllers.invitations.routes.YourInvitationsController.onSelect(srn)">
             @messages("messages__yourInvitations__accept_link")
             <span class="govuk-visually-hidden">@messages("messages__yourInvitations__accept_link_hidden", schemeName)</span>
