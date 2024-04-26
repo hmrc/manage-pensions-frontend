@@ -25,7 +25,7 @@
     appConfig: FrontendAppConfig
 )
 
-@(schemeName: String, aftHtml: Html, finInfoHtml: Html, erHtml: Html, cards: Seq[CardViewModel], subHeading: Option[String] = None, returnLink: Option[Link] = None)(implicit request: Request[_], messages: Messages)
+@(schemeName: String, pstrValue: String, openDateValue: String, aftHtml: Html, finInfoHtml: Html, erHtml: Html, cards: Seq[CardViewModel], subHeading: Option[String] = None, returnLink: Option[Link] = None)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = messages(schemeName), fullWidthLayout = true) {
 
@@ -35,6 +35,22 @@
             
             @components.heading(messages(schemeName))
 
+            <table id="schemeHdr" class="govuk-table" role="table">
+                <tr>
+                    <td>
+                        <p class="card-sub-heading bold govuk-body-m">
+                            <span class="font-xsmall">Pension Scheme Tax Reference:</span><br>
+                            <span class="font-small govuk-!-font-size-19 govuk-!-font-weight-bold  font-small bold">@messages(pstrValue)</span>
+                        </p>
+                    </td>
+                    <td>
+                        <p class="card-sub-heading bold govuk-body-m">
+                            <span class="font-xsmall">Registration for Tax:</span><br>
+                            <span class="font-small govuk-!-font-size-19 govuk-!-font-weight-bold  font-small bold">@messages(openDateValue)</span>
+                        </p>
+                    </td>
+                </tr>
+            </table>
             <div class="flex-container govuk-grid-row">
                 @aftHtml
                 @finInfoHtml

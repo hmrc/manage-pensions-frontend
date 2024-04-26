@@ -75,11 +75,16 @@ class PsaSchemeDashboardService @Inject()(
     case _ => Future.successful(None)
   }
 
-  def cards(srn: String, lock: Option[Lock], list: ListOfSchemes, ua: UserAnswers)
+  def cards(interimDashboard: Boolean, srn: String, lock: Option[Lock], list: ListOfSchemes, ua: UserAnswers)
            (implicit messages: Messages, request: AuthenticatedRequest[AnyContent]): Future[Seq[CardViewModel]] = {
     val currentScheme = getSchemeDetailsFromListOfSchemes(srn, list)
     optionLockedSchemeName(lock).map { otherOptionSchemeName =>
-      Seq(schemeCard(srn, currentScheme, lock, ua, otherOptionSchemeName)) ++ Seq(psaCard(srn, ua)) ++ pspCard(ua, currentScheme.map(_.schemeStatus))
+      val seqSchemeCard = if(interimDashboard){
+        Seq()
+      } else {
+        Seq(schemeCard(srn, currentScheme, lock, ua, otherOptionSchemeName))
+      }
+      seqSchemeCard ++ Seq(psaCard(srn, ua)) ++ pspCard(ua, currentScheme.map(_.schemeStatus))
     }
   }
 

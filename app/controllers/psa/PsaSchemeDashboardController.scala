@@ -74,6 +74,9 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
           case (_, true) => Future.successful(Redirect(appConfig.psaUpdateContactDetailsUrl))
           case _ =>
             getSchemeAndLock(srn).flatMap { case (userAnswers, lock, listOfSchemes) =>
+              val currentScheme =  listOfSchemes.schemeDetails.flatMap(_.find(_.referenceNumber.contains(srn)))
+              val pstrValue = currentScheme.head.pstr.head
+              val openDateValue = currentScheme.head.openDate.head
               val schemeName = userAnswers.get(SchemeNameId).getOrElse("")
               val schemeStatus = userAnswers.get(SchemeStatusId).getOrElse("")
               val updatedUa = userAnswers.set(SchemeSrnId)(srn.id)
@@ -102,9 +105,10 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
                 }.getOrElse(Future.successful(Json.obj()))
                 erHtml <- eventReportingData.map(_ => frontendConnector.retrieveEventReportingPartial)
                   .getOrElse(Future.successful(Html("")))
-                cards <- psaSchemeDashboardService.cards(srn, lock, listOfSchemes, userAnswers)
+                interimDashboard <- featureToggleConnector.getNewPensionsSchemeFeatureToggle("interim-dashboard").map(_.isEnabled)
+                cards <- psaSchemeDashboardService.cards(interimDashboard, srn, lock, listOfSchemes, userAnswers)
               } yield {
-                Ok(view(schemeName, aftHtml, finInfoHtml, erHtml, cards))
+                Ok(view(schemeName, pstrValue, openDateValue, aftHtml, finInfoHtml, erHtml, cards))
               }
             }
         }
