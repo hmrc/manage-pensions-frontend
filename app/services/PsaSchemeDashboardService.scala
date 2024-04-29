@@ -52,7 +52,7 @@ class PsaSchemeDashboardService @Inject()(
   private implicit def hc(implicit request: RequestHeader): HeaderCarrier =
     HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
-  private def optionLockedSchemeName(lock: Option[Lock])(implicit request: AuthenticatedRequest[AnyContent]): Future[Option[String]] = lock match {
+  def optionLockedSchemeName(lock: Option[Lock])(implicit request: AuthenticatedRequest[AnyContent]): Future[Option[String]] = lock match {
     case Some(PsaLock) =>
       val psaId = request.psaIdOrException.id
       lockConnector.getLockByPsa(psaId)(hc(request), implicitly).flatMap { lockedSchemeVariance =>
@@ -111,12 +111,12 @@ class PsaSchemeDashboardService @Inject()(
       case _ => None
     }
 
-  private def schemeDetailsLink(srn: String,
-                                ua: UserAnswers,
-                                optionLock: Option[Lock],
-                                optionSchemeName: Option[String],
-                                lockedSchemeName: Option[String])
-                               (implicit messages: Messages): Link = {
+  def schemeDetailsLink(srn: String,
+                        ua: UserAnswers,
+                        optionLock: Option[Lock],
+                        optionSchemeName: Option[String],
+                        lockedSchemeName: Option[String])
+                       (implicit messages: Messages): Link = {
     val viewOrChangeLinkText = messages("messages__psaSchemeDash__view_change_details_link")
     val viewLinkText = messages("messages__psaSchemeDash__view_details_link")
 

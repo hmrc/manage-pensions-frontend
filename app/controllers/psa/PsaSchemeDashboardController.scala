@@ -75,8 +75,6 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
           case _ =>
             getSchemeAndLock(srn).flatMap { case (userAnswers, lock, listOfSchemes) =>
               val currentScheme =  listOfSchemes.schemeDetails.flatMap(_.find(_.referenceNumber.contains(srn)))
-              val pstrValue = currentScheme.head.pstr.head
-              val openDateValue = currentScheme.head.openDate.head
               val schemeName = userAnswers.get(SchemeNameId).getOrElse("")
               val schemeStatus = userAnswers.get(SchemeStatusId).getOrElse("")
               val updatedUa = userAnswers.set(SchemeSrnId)(srn.id)
@@ -107,8 +105,11 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
                   .getOrElse(Future.successful(Html("")))
                 interimDashboard <- featureToggleConnector.getNewPensionsSchemeFeatureToggle("interim-dashboard").map(_.isEnabled)
                 cards <- psaSchemeDashboardService.cards(interimDashboard, srn, lock, listOfSchemes, userAnswers)
+                schemeLink <- psaSchemeDashboardService.optionLockedSchemeName(lock).map { otherOptionSchemeName =>
+                  psaSchemeDashboardService.schemeDetailsLink(srn, userAnswers, lock, currentScheme.map(_.name), otherOptionSchemeName)
+                }
               } yield {
-                Ok(view(schemeName, pstrValue, openDateValue, aftHtml, finInfoHtml, erHtml, cards))
+                Ok(view(schemeName, interimDashboard, currentScheme, schemeStatus, schemeLink, aftHtml, finInfoHtml, erHtml, cards))
               }
             }
         }

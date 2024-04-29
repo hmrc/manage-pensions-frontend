@@ -230,6 +230,7 @@ class PsaSchemeDashboardControllerSpec
     when(fakeSchemeLockConnector.isLockByPsaIdOrSchemeId(eqTo("A0000000"), any())(any(), any()))
       .thenReturn(Future.successful(Some(VarianceLock)))
     when(mockFeatureToggleConnector.getNewAftFeatureToggle(any())(any())).thenReturn(Future.successful(ToggleDetails("test", Some("test"), false)))
+    when(mockFeatureToggleConnector.getNewPensionsSchemeFeatureToggle(any())(any())).thenReturn(Future.successful(ToggleDetails("test", Some("test"), false)))
   }
 
   "PsaSchemeDashboardController" must {
@@ -240,15 +241,18 @@ class PsaSchemeDashboardControllerSpec
         .thenReturn(Future.successful(ua))
       when(fakeListOfSchemesConnector.getListOfSchemes(any())(any(), any()))
         .thenReturn(Future.successful(Right(listOfSchemes)))
-      when(mockService.cards(any(), any(), any(), any())(any(), any()))
+      when(mockService.cards(any(),any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Seq(schemeCard(), psaCard(), pspCard())))
       when(mockFrontendConnector.retrieveEventReportingPartial(any(), any())).thenReturn(Future(erHtml))
       when(mockAppConfig.psaSchemeDashboardUrl).thenReturn(dummyUrl)
+      when(mockService.optionLockedSchemeName(any())(any())).thenReturn(Future.successful(None))
+      val cuurentScheme = listOfSchemes.schemeDetails.flatMap(_.find(_.referenceNumber.contains(srn)))
 
+      val schemeLink = Link("view-details", dummyUrl, messages("messages__psaSchemeDash__view_details_link"))
       val result = controller().onPageLoad(srn)(sessionRequest)
       status(result) mustBe OK
 
-      val expected = psaSchemeDashboardView(schemeName, aftHtml = Html(""), finInfoHtml = Html(""), erHtml,
+      val expected = psaSchemeDashboardView(schemeName, false, cuurentScheme, "", schemeLink, aftHtml = Html(""), finInfoHtml = Html(""), erHtml,
         Seq(schemeCard(), psaCard(), pspCard()))(sessionRequest, messages).toString()
       contentAsString(result) mustBe expected
     }
@@ -276,16 +280,18 @@ class PsaSchemeDashboardControllerSpec
         .thenReturn(Future.successful(userAnswers(Open.value)))
       when(fakeListOfSchemesConnector.getListOfSchemes(any())(any(), any()))
         .thenReturn(Future.successful(Right(listOfSchemes)))
-      when(mockService.cards(any(), any(), any(), any())(any(), any()))
+      when(mockService.cards(any(), any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Seq(schemeCard(), psaCard(), pspCard())))
       when(mockFrontendConnector.retrieveAftPartial(any())(any(), any())).thenReturn(Future(aftHtml))
       when(mockFrontendConnector.retrieveFinInfoPartial(any())(any(), any())).thenReturn(Future(finInfoHtml))
       when(mockFrontendConnector.retrieveEventReportingPartial(any(), any())).thenReturn(Future(erHtml))
-
+      when(mockService.optionLockedSchemeName(any())(any())).thenReturn(Future.successful(None))
+      val currentScheme = listOfSchemes.schemeDetails.flatMap(_.find(_.referenceNumber.contains(srn)))
+      val schemeLink = Link("view-details", dummyUrl, messages("messages__psaSchemeDash__view_details_link"))
       val result = controller().onPageLoad(srn)(sessionRequest)
       status(result) mustBe OK
 
-      val expected = psaSchemeDashboardView(schemeName, aftHtml = aftHtml, finInfoHtml = finInfoHtml, erHtml,
+      val expected = psaSchemeDashboardView(schemeName, false, currentScheme, "" ,schemeLink,aftHtml = aftHtml, finInfoHtml = finInfoHtml, erHtml,
         Seq(schemeCard(), psaCard(), pspCard()))(sessionRequest, messages).toString()
       contentAsString(result) mustBe expected
     }
