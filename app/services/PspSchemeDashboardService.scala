@@ -38,16 +38,19 @@ class PspSchemeDashboardService @Inject()(
     minimalConnector.getMinimalPspDetails(pspId)
 
   def getTiles(
+                interimDashboard: Boolean,
                 srn: String,
                 pstr: String,
                 openDate: Option[String],
                 loggedInPsp: AuthorisedPractitioner,
                 clientReference: Option[String]
-              )(implicit messages: Messages): Seq[PspSchemeDashboardCardViewModel] =
-    Seq(
-      schemeCard(srn, pstr, openDate),
-      practitionerCard(loggedInPsp, clientReference)
-    )
+              )(implicit messages: Messages): Seq[PspSchemeDashboardCardViewModel] = {
+    if (interimDashboard) {
+      Seq(practitionerCard(loggedInPsp, clientReference))
+    } else {
+      Seq(schemeCard(srn, pstr, openDate), practitionerCard(loggedInPsp, clientReference))
+    }
+  }
 
   private def practitionerCard(
                                 loggedInPsp: AuthorisedPractitioner,

@@ -118,13 +118,21 @@ class PspSchemeDashboardControllerSpec
     )
 
   private def cards(
+                     interimDashboard: Boolean,
                      clientReference: Option[String],
                      openDate: Option[String]
-                   ): Seq[PspSchemeDashboardCardViewModel] =
-    Seq(
-      practitionerCard(clientReference),
-      schemeCard(openDate)
-    )
+                   ): Seq[PspSchemeDashboardCardViewModel] = {
+    if(interimDashboard) {
+      Seq(
+        practitionerCard(clientReference)
+      )
+    } else {
+      Seq(
+        practitionerCard(clientReference),
+        schemeCard(openDate)
+      )
+    }
+  }
 
 
   private def viewAsString(
@@ -134,9 +142,14 @@ class PspSchemeDashboardControllerSpec
                             evPspCard: Html = evPspSchemeDashboardCard
                           ): String = view(
     schemeName = schemeName,
-    cards = cards(clientReference, openDate),
+    interimDashboard = interimDashboard,
+    pstr = pstr,
+    isSchemeOpen = isSchemeOpen,
+    openDate = openDate,
+    schemeViewURL = "",
     aftPspSchemeDashboardCards = aftReturnsCard,
     evPspSchemeDashboardCard = evPspCard,
+    cards = cards(interimDashboard, clientReference, openDate),
     returnLink = Some(returnLink)
   )(
     fakeRequest,
@@ -162,6 +175,7 @@ class PspSchemeDashboardControllerSpec
     when(appConfig.pspTaskListUrl)
       .thenReturn("/foo")
     when(mockFeatureToggleConnector.getNewAftFeatureToggle(any())(any())).thenReturn(Future.successful(ToggleDetails("test", Some("test"), false)))
+    when(mockFeatureToggleConnector.getNewPensionsSchemeFeatureToggle(any())(any())).thenReturn(Future.successful(ToggleDetails("test", Some("test"), false)))
   }
 
   "PspSchemeDashboardController.onPageLoad" must {
@@ -174,8 +188,8 @@ class PspSchemeDashboardControllerSpec
         .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false, deceasedFlag = false)))
       when(listSchemesConnector.getListOfSchemesForPsp(any())(any(), any()))
         .thenReturn(Future.successful(Right(listOfSchemesResponse)))
-      when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any())(any()))
-        .thenReturn(cards(None, None))
+      when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any(), any())(any()))
+        .thenReturn(cards(false, None, None))
       when(appConfig.pspSchemeDashboardUrl).thenReturn("dummyUrl")
 
 
@@ -194,8 +208,8 @@ class PspSchemeDashboardControllerSpec
         .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false, deceasedFlag = false)))
       when(listSchemesConnector.getListOfSchemesForPsp(any())(any(), any()))
         .thenReturn(Future.successful(Right(listOfSchemesResponse)))
-      when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any())(any()))
-        .thenReturn(cards(None, None))
+      when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any(), any())(any()))
+        .thenReturn(cards(false, None, None))
       when(appConfig.pspSchemeDashboardUrl).thenReturn("dummyUrl")
 
 
@@ -214,8 +228,8 @@ class PspSchemeDashboardControllerSpec
         .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false, deceasedFlag = false)))
       when(listSchemesConnector.getListOfSchemesForPsp(any())(any(), any()))
         .thenReturn(Future.successful(Right(listOfSchemesResponse)))
-      when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any())(any()))
-        .thenReturn(cards(Some(clientRef), Some(authDate)))
+      when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any(), any())(any()))
+        .thenReturn(cards(false, Some(clientRef), Some(authDate)))
       when(appConfig.pspSchemeDashboardUrl).thenReturn("dummyUrl")
 
       val result = controller().onPageLoad(srn)(sessionRequest)
@@ -310,6 +324,8 @@ object PspSchemeDashboardControllerSpec {
   private val srn = "S1000000456"
   private val authDate = "2020-01-01"
   private val clientRef = "123"
+  private val interimDashboard = false
+  private val isSchemeOpen = false
 
   private def minimalPsaDetails(rlsFlag: Boolean, deceasedFlag: Boolean): MinimalPSAPSP =
     MinimalPSAPSP(
