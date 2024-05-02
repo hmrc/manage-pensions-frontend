@@ -62,7 +62,7 @@ class PspSchemeDashboardControllerSpec
   private val view: pspSchemeDashboard = app.injector.instanceOf[pspSchemeDashboard]
   private val mockFeatureToggleConnector = mock[FeatureToggleConnector]
 
-  private def sessionRequest = fakeRequest.withSession(SessionKeys.sessionId-> "testSessionId")
+  private def sessionRequest = fakeRequest.withSession(SessionKeys.sessionId -> "testSessionId")
 
   private def authAction(pspId: String): AuthAction =
     FakeAuthAction.createWithPspId(pspId)
@@ -122,7 +122,7 @@ class PspSchemeDashboardControllerSpec
                      clientReference: Option[String],
                      openDate: Option[String]
                    ): Seq[PspSchemeDashboardCardViewModel] = {
-    if(interimDashboard) {
+    if (interimDashboard) {
       Seq(
         practitionerCard(clientReference)
       )
@@ -139,14 +139,16 @@ class PspSchemeDashboardControllerSpec
                             clientReference: Option[String] = None,
                             openDate: Option[String] = None,
                             aftReturnsCard: Html = aftPspSchemeDashboardCards,
-                            evPspCard: Html = evPspSchemeDashboardCard
+                            evPspCard: Html = evPspSchemeDashboardCard,
+                            interimDashboard: Boolean = interimDashboard,
+                            isSchemeOpen: Boolean = isSchemeOpen
                           ): String = view(
     schemeName = schemeName,
     interimDashboard = interimDashboard,
     pstr = pstr,
     isSchemeOpen = isSchemeOpen,
     openDate = openDate,
-    schemeViewURL = "",
+    schemeViewURL = "dummyUrl",
     aftPspSchemeDashboardCards = aftReturnsCard,
     evPspSchemeDashboardCard = evPspCard,
     cards = cards(interimDashboard, clientReference, openDate),
@@ -179,7 +181,7 @@ class PspSchemeDashboardControllerSpec
   }
 
   "PspSchemeDashboardController.onPageLoad" must {
-    "return ok and correct cards when start aft is allowed" in {
+    "return ok and correct cards when start aft is allowed and interim dashboard toggle is off" in {
       when(frontendConnector.retrieveEventReportingPartial(any(), any()))
         .thenReturn(Future.successful(evPspSchemeDashboardCard))
       when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
@@ -197,6 +199,29 @@ class PspSchemeDashboardControllerSpec
 
       status(result) mustBe OK
       contentAsString(result) mustBe viewAsString()
+    }
+
+    "return ok and correct cards when start aft is allowed and interim dashboard toggle is on" in {
+      when(frontendConnector.retrieveEventReportingPartial(any(), any()))
+        .thenReturn(Future.successful(evPspSchemeDashboardCard))
+      when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
+        .thenReturn(Future.successful(ua()))
+      when(minimalConnector.getMinimalPspDetails(any())(any(), any()))
+        .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false, deceasedFlag = false)))
+      when(listSchemesConnector.getListOfSchemesForPsp(any())(any(), any()))
+        .thenReturn(Future.successful(Right(listOfSchemesResponse)))
+      when(mockFeatureToggleConnector.getNewPensionsSchemeFeatureToggle(any())(any())).thenReturn(Future.successful(ToggleDetails("test", Some("test"), true)))
+      when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any(), any())(any()))
+        .thenReturn(cards(true, None, None))
+      when(schemeDetailsService.openedDate(any(), any(), any())).thenReturn(Some(authDate))
+      when(appConfig.pspTaskListUrl).thenReturn("dummyUrl")
+      when(appConfig.pspSchemeDashboardUrl).thenReturn("dummyUrl")
+
+
+      val result = controller().onPageLoad(srn)(sessionRequest)
+
+      status(result) mustBe OK
+      contentAsString(result) mustBe viewAsString(isSchemeOpen = true, openDate = Some(authDate), interimDashboard = true)
     }
 
     "return ok and correct cards when start aft is not allowed" in {
@@ -219,7 +244,7 @@ class PspSchemeDashboardControllerSpec
       contentAsString(result) mustBe viewAsString(aftReturnsCard = Html(""))
     }
 
-    "return ok and correct cards when open date and client ref are populated" in {
+    "return ok and correct cards when open date and client ref are populated and interim dashboard toggle is off" in {
       when(frontendConnector.retrieveEventReportingPartial(any(), any()))
         .thenReturn(Future.successful(evPspSchemeDashboardCard))
       when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
@@ -236,6 +261,28 @@ class PspSchemeDashboardControllerSpec
 
       status(result) mustBe OK
       contentAsString(result) mustBe viewAsString(Some(clientRef), Some(authDate))
+    }
+
+    "return ok and correct cards when open date and client ref are populated and interim dashboard toggle is on" in {
+      when(frontendConnector.retrieveEventReportingPartial(any(), any()))
+        .thenReturn(Future.successful(evPspSchemeDashboardCard))
+      when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
+        .thenReturn(Future.successful(ua()))
+      when(minimalConnector.getMinimalPspDetails(any())(any(), any()))
+        .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false, deceasedFlag = false)))
+      when(listSchemesConnector.getListOfSchemesForPsp(any())(any(), any()))
+        .thenReturn(Future.successful(Right(listOfSchemesResponse)))
+      when(mockFeatureToggleConnector.getNewPensionsSchemeFeatureToggle(any())(any())).thenReturn(Future.successful(ToggleDetails("test", Some("test"), true)))
+      when(schemeDetailsService.openedDate(any(), any(), any())).thenReturn(Some(authDate))
+      when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any(), any())(any()))
+        .thenReturn(cards(true, Some(clientRef), Some(authDate)))
+      when(appConfig.pspTaskListUrl).thenReturn("dummyUrl")
+      when(appConfig.pspSchemeDashboardUrl).thenReturn("dummyUrl")
+
+      val result = controller().onPageLoad(srn)(sessionRequest)
+
+      status(result) mustBe OK
+      contentAsString(result) mustBe viewAsString(interimDashboard = true, clientReference = Some(clientRef), isSchemeOpen = true, openDate = Some(authDate))
     }
 
     "return not found when list schemes does not come back" in {

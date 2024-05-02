@@ -342,6 +342,7 @@ messages__error__declaration__required = You need to agree to all the declaratio
 messages__psaSchemeDash__title = Pension scheme summary
 messages__psaSchemeDash__pstr = Pension Scheme Tax Reference:
 messages__psaSchemeDash__regDate = Registration for Tax:
+messages__psaSchemeDash__status = Status:
 messages__psaSchemeDash__view_details_link = View the registered scheme details
 messages__psaSchemeDash__view_change_details_link = View or change the registered scheme details
 

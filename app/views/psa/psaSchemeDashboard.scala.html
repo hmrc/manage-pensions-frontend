@@ -49,6 +49,7 @@
                         </p>
                     } else {
                         <p class="card-sub-heading bold govuk-body-m">
+                            <span class="font-xsmall">@messages("messages__psaSchemeDash__status")</span><br>
                             <span class="font-small govuk-!-font-size-19 govuk-!-font-weight-bold  font-small bold">@messages(schemeStatus)</span>
                         </p>
                     }
@@ -77,7 +78,7 @@
             @if(interimDashboard == true){
             <p class="govuk-body">
                 <a id="@schemeLink.id" class="govuk-link" href="@schemeLink.url">
-                    @schemeLink.linkText.resolve
+                    @messages(schemeLink.linkText)
                 </a>
             </p>
             }
