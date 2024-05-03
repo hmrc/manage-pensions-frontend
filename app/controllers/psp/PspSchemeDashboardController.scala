@@ -68,6 +68,7 @@ class PspSchemeDashboardController @Inject()(
 
   private val logger = Logger(classOf[PspSchemeDashboardController])
 
+  //scalastyle:off method.length
   def onPageLoad(srn: String): Action[AnyContent] = (authenticate(PSP) andThen getData andThen pspSchemeAuthAction(Some(srn))).async {
     implicit request =>
       withUserAnswers(srn) { userAnswers =>
@@ -83,23 +84,30 @@ class PspSchemeDashboardController @Inject()(
             schemeStatus.equalsIgnoreCase("open")
 
           val schemeName = (userAnswers.json \ "schemeName").as[String]
-
+          val pstr = (userAnswers.json \ "pstr").as[String]
           for {
             hideAftTile <- featureToggleConnector.getNewAftFeatureToggle("hide-tile").map(_.isEnabled)
             aftPspSchemeDashboardCards <- aftPspSchemeDashboardCards(schemeStatus, srn, pspDetails.authorisingPSAID, hideAftTile)
             listOfSchemes <- listSchemesConnector.getListOfSchemesForPsp(request.pspIdOrException.id)
             _ <- userAnswersCacheConnector.upsert(request.externalId, userAnswers.json)
             erHtml <- getEventReportingHtml(srn, listOfSchemes, schemeName)
+            interimDashboard <- featureToggleConnector.getNewPensionsSchemeFeatureToggle("interim-dashboard").map(_.isEnabled)
           } yield {
             listOfSchemes match {
               case Right(list) =>
                 Ok(view(
                   schemeName = schemeName,
+                  interimDashboard = interimDashboard,
+                  pstr = pstr,
+                  isSchemeOpen = isSchemeOpen,
+                  openDate = schemeDetailsService.openedDate(srn, list, isSchemeOpen),
+                  schemeViewURL = config.pspTaskListUrl.format(srn),
                   aftPspSchemeDashboardCards = aftPspSchemeDashboardCards,
                   evPspSchemeDashboardCard = erHtml,
                   cards = service.getTiles(
+                    interimDashboard = interimDashboard,
                     srn = srn,
-                    pstr = (userAnswers.json \ "pstr").as[String],
+                    pstr = pstr,
                     openDate = schemeDetailsService.openedDate(srn, list, isSchemeOpen),
                     loggedInPsp = pspDetails,
                     clientReference = clientReference
@@ -121,7 +129,7 @@ class PspSchemeDashboardController @Inject()(
       }
   }
 
-  private def getEventReportingHtml(srn:String, list:Either[_,ListOfSchemes], schemeName:String)(implicit authenticatedRequest: AuthenticatedRequest[_]) = {
+  private def getEventReportingHtml(srn: String, list: Either[_, ListOfSchemes], schemeName: String)(implicit authenticatedRequest: AuthenticatedRequest[_]) = {
     list match {
       case Left(_) =>
         Future.successful(Html(""))

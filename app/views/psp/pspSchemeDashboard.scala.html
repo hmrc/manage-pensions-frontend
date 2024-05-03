@@ -26,7 +26,7 @@
     appConfig: FrontendAppConfig
 )
 
-@(schemeName: String, aftPspSchemeDashboardCards: Html, evPspSchemeDashboardCard:Html, cards: Seq[PspSchemeDashboardCardViewModel], returnLink: Option[Link] = None)(implicit request: Request[_], messages: Messages)
+@(schemeName: String, interimDashboard: Boolean, pstr: String, isSchemeOpen: Boolean, openDate:Option[String], schemeViewURL: String, aftPspSchemeDashboardCards: Html, evPspSchemeDashboardCard:Html, cards: Seq[PspSchemeDashboardCardViewModel], returnLink: Option[Link] = None)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = schemeName, fullWidthLayout = true) {
 
@@ -37,6 +37,30 @@
             @hmrcPageHeading(PageHeading(
                 text = schemeName
             ))
+            @if(interimDashboard == true){
+            <table id="schemeHeader" class="govuk-table" role="table">
+                <tr role="row">
+                    <td class="govuk-table__cell govuk-!-width-one-third">
+                        <p class="card-sub-heading bold govuk-body-m">
+                            <span class="font-xsmall">@messages("messages__pspSchemeDashboard__scheme__subHeading_pstr")</span><br>
+                            <span class="font-small govuk-!-font-size-19 govuk-!-font-weight-bold  font-small bold">@messages(pstr)</span>
+                        </p>
+                    </td>
+                    <td class="govuk-table__cell govuk-!-width-two-third">
+                        @if(isSchemeOpen) {
+                            @openDate.map { date =>
+                                <p class="card-sub-heading bold govuk-body-m">
+                                    <span class="font-xsmall">@messages("messages__pspSchemeDashboard__scheme__subHeading_regForTax")</span><br>
+                                    <span class="font-small govuk-!-font-size-19 govuk-!-font-weight-bold  font-small bold">
+                                        @messages(date)
+                                    </span>
+                                </p>
+                            }
+                        }
+                    </td>
+                </tr>
+            </table>
+            }
 
             <div class="flex-container govuk-grid-row">
                 @aftPspSchemeDashboardCards
@@ -45,7 +69,13 @@
                     @components.pspSchemeDashboardCard(card)
                 }
             </div>
-
+            @if(interimDashboard == true){
+                <p class="govuk-body">
+                    <a id="view-details" class="govuk-link" href="@schemeViewURL">
+                        @messages("messages__pspSchemeDashboard__view_details_link")
+                    </a>
+                </p>
+            }
             @returnLink.map { ret =>
                 <p class="govuk-body">
                     <a id="@ret.id" class="govuk-link" href="@ret.url">@messages(ret.linkText)</a>

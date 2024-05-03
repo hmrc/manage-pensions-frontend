@@ -76,7 +76,7 @@ class PsaSchemeDashboardControllerSpec
   private val listOfSchemes: ListOfSchemes = ListOfSchemes("", "", Some(List(SchemeDetails(name, srn, "Open", Some(date), Some(windUpDate), Some(pstr), None))))
   private val mockFeatureToggleConnector = mock[FeatureToggleConnector]
 
-  private def sessionRequest = fakeRequest.withSession(SessionKeys.sessionId-> "testSessionId")
+  private def sessionRequest = fakeRequest.withSession(SessionKeys.sessionId -> "testSessionId")
 
   private def psaCard(inviteLink: Seq[Link] = inviteLink)
                      (implicit messages: Messages): CardViewModel = CardViewModel(
@@ -230,26 +230,54 @@ class PsaSchemeDashboardControllerSpec
     when(fakeSchemeLockConnector.isLockByPsaIdOrSchemeId(eqTo("A0000000"), any())(any(), any()))
       .thenReturn(Future.successful(Some(VarianceLock)))
     when(mockFeatureToggleConnector.getNewAftFeatureToggle(any())(any())).thenReturn(Future.successful(ToggleDetails("test", Some("test"), false)))
+    when(mockFeatureToggleConnector.getNewPensionsSchemeFeatureToggle(any())(any())).thenReturn(Future.successful(ToggleDetails("test", Some("test"), false)))
   }
 
   "PsaSchemeDashboardController" must {
     "return OK and the correct view for a GET and NO financial info html if status is NOT open" in {
       when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
       val ua = userAnswers(Open.value).set(SchemeStatusId)(Rejected.value).asOpt.get
+      val currentScheme = listOfSchemes.schemeDetails.flatMap(_.find(_.referenceNumber.contains(srn)))
+      val schemeLink = Link(id = "view-details", url = dummyUrl, linkText = Message("messages__psaSchemeDash__view_details_link"))
       when(fakeSchemeDetailsConnector.getSchemeDetails(eqTo("A0000000"), any(), any())(any(), any()))
         .thenReturn(Future.successful(ua))
       when(fakeListOfSchemesConnector.getListOfSchemes(any())(any(), any()))
         .thenReturn(Future.successful(Right(listOfSchemes)))
-      when(mockService.cards(any(), any(), any(), any())(any(), any()))
+      when(mockService.cards(any(), any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Seq(schemeCard(), psaCard(), pspCard())))
       when(mockFrontendConnector.retrieveEventReportingPartial(any(), any())).thenReturn(Future(erHtml))
       when(mockAppConfig.psaSchemeDashboardUrl).thenReturn(dummyUrl)
-
+      when(mockService.optionLockedSchemeName(any())(any())).thenReturn(Future.successful(None))
       val result = controller().onPageLoad(srn)(sessionRequest)
       status(result) mustBe OK
 
-      val expected = psaSchemeDashboardView(schemeName, aftHtml = Html(""), finInfoHtml = Html(""), erHtml,
+      val expected = psaSchemeDashboardView(schemeName, false, currentScheme, "Rejected", schemeLink, aftHtml = Html(""), finInfoHtml = Html(""), erHtml,
         Seq(schemeCard(), psaCard(), pspCard()))(sessionRequest, messages).toString()
+      contentAsString(result) mustBe expected
+    }
+
+    "return OK and the correct view for a GET and NO financial info html if status is NOT open and interimDashboard toggle On" in {
+      when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
+      val ua = userAnswers(Open.value).set(SchemeStatusId)(Rejected.value).asOpt.get
+      val currentScheme = listOfSchemes.schemeDetails.flatMap(_.find(_.referenceNumber.contains(srn)))
+      val schemeLink = Link(id = "view-details", url = dummyUrl, linkText = "messages__psaSchemeDash__view_details_link")
+      when(fakeSchemeDetailsConnector.getSchemeDetails(eqTo("A0000000"), any(), any())(any(), any()))
+        .thenReturn(Future.successful(ua))
+      when(fakeListOfSchemesConnector.getListOfSchemes(any())(any(), any()))
+        .thenReturn(Future.successful(Right(listOfSchemes)))
+      when(mockService.cards(any(), any(), any(), any(), any())(any(), any()))
+        .thenReturn(Future.successful(Seq(psaCard(), pspCard())))
+      when(mockFrontendConnector.retrieveEventReportingPartial(any(), any())).thenReturn(Future(erHtml))
+      when(mockAppConfig.psaSchemeDashboardUrl).thenReturn(dummyUrl)
+      when(mockAppConfig.viewSchemeDetailsUrl).thenReturn(dummyUrl)
+      when(mockService.optionLockedSchemeName(any())(any())).thenReturn(Future.successful(None))
+      when(mockService.schemeDetailsLink(any(), any(), any(), any(), any())(any())).thenReturn(schemeLink)
+      when(mockFeatureToggleConnector.getNewPensionsSchemeFeatureToggle(any())(any())).thenReturn(Future.successful(ToggleDetails("test", Some("test"), true)))
+      val result = controller().onPageLoad(srn)(sessionRequest)
+      status(result) mustBe OK
+
+      val expected = psaSchemeDashboardView(schemeName, true, currentScheme, "Rejected", schemeLink, aftHtml = Html(""), finInfoHtml = Html(""), erHtml,
+        Seq(psaCard(), pspCard()))(sessionRequest, messages).toString()
       contentAsString(result) mustBe expected
     }
 
@@ -271,23 +299,51 @@ class PsaSchemeDashboardControllerSpec
     }
 
     "return OK and the correct view for a GET and scheme is open" in {
+      val currentScheme = listOfSchemes.schemeDetails.flatMap(_.find(_.referenceNumber.contains(srn)))
+      val schemeLink = Link("view-details", dummyUrl, messages("messages__psaSchemeDash__view_details_link"))
       when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
       when(fakeSchemeDetailsConnector.getSchemeDetails(eqTo("A0000000"), any(), any())(any(), any()))
         .thenReturn(Future.successful(userAnswers(Open.value)))
       when(fakeListOfSchemesConnector.getListOfSchemes(any())(any(), any()))
         .thenReturn(Future.successful(Right(listOfSchemes)))
-      when(mockService.cards(any(), any(), any(), any())(any(), any()))
+      when(mockService.cards(any(), any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Seq(schemeCard(), psaCard(), pspCard())))
       when(mockFrontendConnector.retrieveAftPartial(any())(any(), any())).thenReturn(Future(aftHtml))
       when(mockFrontendConnector.retrieveFinInfoPartial(any())(any(), any())).thenReturn(Future(finInfoHtml))
       when(mockFrontendConnector.retrieveEventReportingPartial(any(), any())).thenReturn(Future(erHtml))
+      when(mockService.optionLockedSchemeName(any())(any())).thenReturn(Future.successful(None))
+      val result = controller().onPageLoad(srn)(sessionRequest)
+      status(result) mustBe OK
+
+      val expected = psaSchemeDashboardView(schemeName, false, currentScheme, "Open", schemeLink, aftHtml = aftHtml, finInfoHtml = finInfoHtml, erHtml,
+        Seq(schemeCard(), psaCard(), pspCard()))(sessionRequest, messages).toString()
+      contentAsString(result) mustBe expected
+    }
+
+    "return OK and the correct view for a GET and scheme is open and interimDashboard toggle On" in {
+      val currentScheme = listOfSchemes.schemeDetails.flatMap(_.find(_.referenceNumber.contains(srn)))
+      val schemeLink = Link("view-details", dummyUrl, messages("messages__psaSchemeDash__view_details_link"))
+      when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
+      when(fakeSchemeDetailsConnector.getSchemeDetails(eqTo("A0000000"), any(), any())(any(), any()))
+        .thenReturn(Future.successful(userAnswers(Open.value)))
+      when(fakeListOfSchemesConnector.getListOfSchemes(any())(any(), any()))
+        .thenReturn(Future.successful(Right(listOfSchemes)))
+      when(mockService.cards(any(), any(), any(), any(), any())(any(), any()))
+        .thenReturn(Future.successful(Seq(psaCard(), pspCard())))
+      when(mockFrontendConnector.retrieveAftPartial(any())(any(), any())).thenReturn(Future(aftHtml))
+      when(mockFrontendConnector.retrieveFinInfoPartial(any())(any(), any())).thenReturn(Future(finInfoHtml))
+      when(mockFrontendConnector.retrieveEventReportingPartial(any(), any())).thenReturn(Future(erHtml))
+      when(mockService.optionLockedSchemeName(any())(any())).thenReturn(Future.successful(None))
+      when(mockService.schemeDetailsLink(any(), any(), any(), any(), any())(any())).thenReturn(schemeLink)
+      when(mockFeatureToggleConnector.getNewPensionsSchemeFeatureToggle(any())(any())).thenReturn(Future.successful(ToggleDetails("test", Some("test"), true)))
 
       val result = controller().onPageLoad(srn)(sessionRequest)
       status(result) mustBe OK
 
-      val expected = psaSchemeDashboardView(schemeName, aftHtml = aftHtml, finInfoHtml = finInfoHtml, erHtml,
-        Seq(schemeCard(), psaCard(), pspCard()))(sessionRequest, messages).toString()
+      val expected = psaSchemeDashboardView(schemeName, true, currentScheme, "Open", schemeLink, aftHtml = aftHtml, finInfoHtml = finInfoHtml, erHtml,
+        Seq(psaCard(), pspCard()))(sessionRequest, messages).toString()
       contentAsString(result) mustBe expected
     }
+
   }
 }

@@ -62,7 +62,15 @@ class FeatureToggleConnector @Inject()(http: HttpClient, config: FrontendAppConf
   }
 
   def getNewAftFeatureToggle(toggleName: String)(implicit hc: HeaderCarrier): Future[ToggleDetails] = {
-    http.GET[HttpResponse](config.newAftFeatureToggleUrl(toggleName))(implicitly, hc, implicitly).map { response =>
+    getNewFeatureToggle(config.newAftFeatureToggleUrl(toggleName), toggleName)
+  }
+
+  def getNewPensionsSchemeFeatureToggle(toggleName: String)(implicit hc: HeaderCarrier): Future[ToggleDetails] = {
+    getNewFeatureToggle(config.newPensionsSchemeFeatureToggleUrl(toggleName), toggleName)
+  }
+
+  private def getNewFeatureToggle(configURL: String, toggleName: String)(implicit hc: HeaderCarrier): Future[ToggleDetails] = {
+    http.GET[HttpResponse](configURL)(implicitly, hc, implicitly).map { response =>
       val toggleOpt = response.status match {
         case NO_CONTENT => None
         case OK =>
