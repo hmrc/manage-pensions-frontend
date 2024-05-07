@@ -80,7 +80,7 @@ class PsaSchemeDashboardService @Inject()(
     val currentScheme = getSchemeDetailsFromListOfSchemes(srn, list)
     optionLockedSchemeName(lock).map { otherOptionSchemeName =>
       val seqSchemeCard = if(interimDashboard){
-        Seq()
+        Seq(psrCard(srn))
       } else {
         Seq(schemeCard(srn, currentScheme, lock, ua, otherOptionSchemeName))
       }
@@ -100,6 +100,21 @@ class PsaSchemeDashboardService @Inject()(
       heading = Message("messages__psaSchemeDash__scheme_details_head"),
       subHeadings = optToSeq(pstrSubHead(currentScheme)) ++ optToSeq(dateSubHead(currentScheme, ua)),
       links = Seq(schemeDetailsLink(srn, ua, lock, currentScheme.map(_.name), lockedSchemeName))
+    )
+  }
+
+  private[services] def psrCard(srn: String)
+                               (implicit messages: Messages): CardViewModel = {
+
+    CardViewModel(
+      id = "psr_details",
+      heading = Message("messages__psr_details_head"),
+      links = Seq(
+        Link(
+          id = "psr-details",
+          url = appConfig.psrPartialHtmlUrl.format(srn),
+          linkText = messages("messages__psr__view_details_link")
+        ))
     )
   }
 

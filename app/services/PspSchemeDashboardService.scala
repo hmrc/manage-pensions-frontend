@@ -46,7 +46,7 @@ class PspSchemeDashboardService @Inject()(
                 clientReference: Option[String]
               )(implicit messages: Messages): Seq[PspSchemeDashboardCardViewModel] = {
     if (interimDashboard) {
-      Seq(practitionerCard(loggedInPsp, clientReference))
+      Seq(psrCard(srn), practitionerCard(loggedInPsp, clientReference))
     } else {
       Seq(schemeCard(srn, pstr, openDate), practitionerCard(loggedInPsp, clientReference))
     }
@@ -102,5 +102,18 @@ class PspSchemeDashboardService @Inject()(
         url = appConfig.pspTaskListUrl.format(srn),
         linkText = Message("messages__pspSchemeDashboard__view_details_link")
       ))
+    )
+
+  private def psrCard(srn: String)
+                               (implicit messages: Messages): PspSchemeDashboardCardViewModel =
+    PspSchemeDashboardCardViewModel(
+      id = "psr_details",
+      heading = Message("messages__psr_details_head"),
+      links = Seq(
+        Link(
+          id = "psr-details",
+          url = appConfig.psrPartialHtmlUrl.format(srn),
+          linkText = messages("messages__psr__view_details_link")
+        ))
     )
 }
