@@ -111,7 +111,7 @@ class PsaSchemeDashboardService @Inject()(
       heading = Message("messages__psr_details_head"),
       links = Seq(
         Link(
-          id = "psr-details",
+          id = "psr-view-details",
           url = appConfig.psrPartialHtmlUrl.format(srn),
           linkText = messages("messages__psr__view_details_link")
         ))

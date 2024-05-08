@@ -61,6 +61,7 @@ class PsaSchemeDashboardServiceSpec
     reset(mockPensionSchemeVarianceLockConnector)
     reset(mockSchemeDetailsConnector)
     when(mockAppConfig.viewSchemeDetailsUrl).thenReturn(dummyUrl)
+    when(mockAppConfig.psrPartialHtmlUrl).thenReturn(dummyUrl)
     when(mockPensionSchemeVarianceLockConnector.getLockByPsa(any())(any(), any())).thenReturn(Future.successful(None))
     when(mockSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any())).thenReturn(Future.successful(UserAnswers()))
     super.beforeEach()
@@ -92,6 +93,13 @@ class PsaSchemeDashboardServiceSpec
       val ua = UserAnswers().set(SchemeStatusId)(Rejected.value).asOpt.get
 
       service.schemeCard(srn, currentScheme(Open), Some(SchemeLock), ua, None) mustBe closedSchemeCard()
+    }
+  }
+
+  "psrCard" must {
+    "return psr card view model" in {
+      service.psrCard(srn) mustBe
+        psrCard("messages__psr__view_details_link")
     }
   }
 
@@ -184,6 +192,15 @@ object PsaSchemeDashboardServiceSpec {
     subHeadings = pstrSubHead ++ dateSubHead,
     links = Seq(Link(
       id = "view-details", url = dummyUrl, linkText = messages(linkText), notification = notificationText
+    ))
+  )
+
+  private def psrCard(linkText: String = "messages__psr__view_details_link")
+                     (implicit messages: Messages): CardViewModel = CardViewModel(
+    id = "psr_details",
+    heading = Message("messages__psr_details_head"),
+    links = Seq(Link(
+      id = "psr-view-details", url = dummyUrl, linkText = messages(linkText)
     ))
   )
 
