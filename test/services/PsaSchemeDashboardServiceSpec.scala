@@ -34,6 +34,7 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.i18n.Messages
 import play.api.libs.json.{JsArray, Json}
+import play.twirl.api.Html
 import utils.DateHelper.formatter
 import utils.UserAnswers
 import viewmodels._
@@ -96,10 +97,10 @@ class PsaSchemeDashboardServiceSpec
     }
   }
 
-  "psrCard" must {
-    "return psr card view model" in {
-      service.psrCard(srn) mustBe
-        psrCard("messages__psr__view_details_link")
+  "manageReportsEventsCard" must {
+    "return manage reports events card view model" in {
+      service.manageReportsEventsCard(srn, aftHtml, erHtml) mustBe
+        manageReportsEventsCard(aftHtml, erHtml)
     }
   }
 
@@ -135,6 +136,8 @@ object PsaSchemeDashboardServiceSpec {
   private val date = "2020-01-01"
   private val windUpDate = "2020-02-01"
   private val dummyUrl = "dummy"
+  private val aftHtml = Html("")
+  private val erHtml = Html("")
 
   private def userAnswers(schemeStatus: String): UserAnswers = UserAnswers(Json.obj(
     PSTRId.toString -> pstr,
@@ -195,14 +198,41 @@ object PsaSchemeDashboardServiceSpec {
     ))
   )
 
-  private def psrCard(linkText: String = "messages__psr__view_details_link")
-                     (implicit messages: Messages): CardViewModel = CardViewModel(
-    id = "psr_details",
-    heading = Message("messages__psr_details_head"),
-    links = Seq(Link(
-      id = "psr-view-details", url = dummyUrl, linkText = messages(linkText)
-    ))
-  )
+  private def manageReportsEventsCard(aftHtml:Html, erHtml:Html)
+                     (implicit messages: Messages): CardViewModel = {
+
+
+    val aftLink = if (aftHtml.equals(Html(""))) {
+      Seq()
+    } else {
+      Seq(Link(
+        id = "aft-view-link",
+        url = dummyUrl,
+        linkText = messages("messages__aft__view_details_link")
+      ))
+    }
+    val erLink = if (erHtml.equals(Html(""))) {
+      Seq()
+    } else {
+      Seq(Link(
+        id = "er-view-link",
+        url = dummyUrl,
+        linkText = messages("messages__er__view_details_link")
+      ))
+    }
+    val psrLink = Seq(
+      Link(
+        id = "psr-view-details",
+        url = dummyUrl,
+        linkText = messages("messages__psr__view_details_link")
+      ))
+
+    CardViewModel(
+      id = "manage_reports_returns",
+      heading = Message("messages__manage_reports_and_returns_head"),
+      links =  aftLink ++ erLink ++ psrLink
+    )
+  }
 
   private def closedSchemeCard(linkText: String = "messages__psaSchemeDash__view_details_link")(implicit messages: Messages): CardViewModel = CardViewModel(
     id = "scheme_details",
