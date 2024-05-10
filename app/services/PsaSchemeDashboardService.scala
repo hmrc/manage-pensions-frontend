@@ -37,7 +37,7 @@ import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import utils.DateHelper._
 import utils.UserAnswers
 import viewmodels.{CardSubHeading, CardSubHeadingParam, CardViewModel, Message}
-
+import play.twirl.api.Html
 import java.time.LocalDate
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -75,12 +75,13 @@ class PsaSchemeDashboardService @Inject()(
     case _ => Future.successful(None)
   }
 
-  def cards(interimDashboard: Boolean, srn: String, lock: Option[Lock], list: ListOfSchemes, ua: UserAnswers)
+  def cards(interimDashboard: Boolean, aftHtml:Html, erHtml:Html, srn: String,
+            lock: Option[Lock], list: ListOfSchemes, ua: UserAnswers)
            (implicit messages: Messages, request: AuthenticatedRequest[AnyContent]): Future[Seq[CardViewModel]] = {
     val currentScheme = getSchemeDetailsFromListOfSchemes(srn, list)
     optionLockedSchemeName(lock).map { otherOptionSchemeName =>
       val seqSchemeCard = if(interimDashboard){
-        Seq(psrCard(srn))
+        Seq(manageReportsEventsCard(srn, aftHtml, erHtml))
       } else {
         Seq(schemeCard(srn, currentScheme, lock, ua, otherOptionSchemeName))
       }
@@ -103,18 +104,39 @@ class PsaSchemeDashboardService @Inject()(
     )
   }
 
-  private[services] def psrCard(srn: String)
+  private[services] def manageReportsEventsCard(srn: String, aftHtml:Html, erHtml:Html)
                                (implicit messages: Messages): CardViewModel = {
+    val aftLink = if (aftHtml.equals(Html(""))) {
+      Seq()
+    } else {
+      Seq(Link(
+        id = "aft-view-link",
+        url = appConfig.psrPartialHtmlUrl.format(srn),
+        linkText = messages("messages__aft__view_details_link")
+      ))
+    }
+    val erLink = if (erHtml.equals(Html(""))) {
+      Seq()
+    } else {
+      Seq(Link(
+        id = "er-view-link",
+        url = appConfig.psrPartialHtmlUrl.format(srn),
+        linkText = messages("messages__er__view_details_link")
+      ))
+    }
+
+    val psrLink = Seq(
+      Link(
+        id = "psr-view-details",
+        url = appConfig.psrPartialHtmlUrl.format(srn),
+        linkText = messages("messages__psr__view_details_link")
+      ))
+
 
     CardViewModel(
-      id = "psr_details",
-      heading = Message("messages__psr_details_head"),
-      links = Seq(
-        Link(
-          id = "psr-view-details",
-          url = appConfig.psrPartialHtmlUrl.format(srn),
-          linkText = messages("messages__psr__view_details_link")
-        ))
+      id = "manage_reports_returns",
+      heading = Message("messages__manage_reports_and_returns_head"),
+      links =  aftLink ++ erLink ++ psrLink
     )
   }
 

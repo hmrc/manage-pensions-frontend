@@ -104,7 +104,7 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
                 erHtml <- eventReportingData.map(_ => frontendConnector.retrieveEventReportingPartial)
                   .getOrElse(Future.successful(Html("")))
                 interimDashboard <- featureToggleConnector.getNewPensionsSchemeFeatureToggle("interim-dashboard").map(_.isEnabled)
-                cards <- psaSchemeDashboardService.cards(interimDashboard, srn, lock, listOfSchemes, userAnswers)
+                cards <- psaSchemeDashboardService.cards(interimDashboard, aftHtml, erHtml, srn, lock, listOfSchemes, userAnswers)
                 schemeLink <- psaSchemeDashboardService.optionLockedSchemeName(lock).map { otherOptionSchemeName =>
                   psaSchemeDashboardService.schemeDetailsLink(srn, userAnswers, lock, currentScheme.map(_.name), otherOptionSchemeName)
                 }
