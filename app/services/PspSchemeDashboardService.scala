@@ -21,6 +21,7 @@ import connectors.admin.MinimalConnector
 import controllers.psp.deauthorise.self.routes._
 import models.{AuthorisedPractitioner, Link, MinimalPSAPSP}
 import play.api.i18n.Messages
+import play.twirl.api.Html
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.DateHelper
 import viewmodels.{Message, PspSchemeDashboardCardViewModel}
@@ -39,6 +40,7 @@ class PspSchemeDashboardService @Inject()(
 
   def getTiles(
                 interimDashboard: Boolean,
+                erHtml: Html,
                 srn: String,
                 pstr: String,
                 openDate: Option[String],
@@ -46,7 +48,7 @@ class PspSchemeDashboardService @Inject()(
                 clientReference: Option[String]
               )(implicit messages: Messages): Seq[PspSchemeDashboardCardViewModel] = {
     if (interimDashboard) {
-      Seq(psrCard(srn), practitionerCard(loggedInPsp, clientReference))
+      Seq(manageReportsEventsCard(srn, erHtml), practitionerCard(loggedInPsp, clientReference))
     } else {
       Seq(schemeCard(srn, pstr, openDate), practitionerCard(loggedInPsp, clientReference))
     }
@@ -104,16 +106,36 @@ class PspSchemeDashboardService @Inject()(
       ))
     )
 
-  private def psrCard(srn: String)
+  private def manageReportsEventsCard(srn: String, erHtml:Html)
                                (implicit messages: Messages): PspSchemeDashboardCardViewModel =
-    PspSchemeDashboardCardViewModel(
-      id = "psr_details",
-      heading = Message("messages__psr_details_head"),
-      links = Seq(
+    {
+      val aftLink = Seq(Link(
+          id = "aft-view-link",
+          url = appConfig.psrPartialHtmlUrl.format(srn),
+          linkText = messages("messages__aft__view_details_link")
+        ))
+
+      val erLink = if (erHtml.equals(Html(""))) {
+        Seq()
+      } else {
+        Seq(Link(
+          id = "er-view-link",
+          url = appConfig.psrPartialHtmlUrl.format(srn),
+          linkText = messages("messages__er__view_details_link")
+        ))
+      }
+
+      val psrLink = Seq(
         Link(
           id = "psr-view-details",
           url = appConfig.psrPartialHtmlUrl.format(srn),
           linkText = messages("messages__psr__view_details_link")
         ))
-    )
+
+      PspSchemeDashboardCardViewModel(
+        id = "manage_reports_returns",
+        heading = Message("messages__manage_reports_and_returns_head"),
+        links = aftLink ++ erLink ++ psrLink
+      )
+    }
 }

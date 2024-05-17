@@ -104,6 +104,10 @@ class PspSchemeDashboardControllerSpec
       html = None
     )
 
+  private def manageReportsEventsCard(): Unit = {
+
+  }
+
   private def schemeCard(openDate: Option[String]): PspSchemeDashboardCardViewModel =
     PspSchemeDashboardCardViewModel(
       id = "scheme-card",
@@ -190,7 +194,7 @@ class PspSchemeDashboardControllerSpec
         .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false, deceasedFlag = false)))
       when(listSchemesConnector.getListOfSchemesForPsp(any())(any(), any()))
         .thenReturn(Future.successful(Right(listOfSchemesResponse)))
-      when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any(), any())(any()))
+      when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any(), any(), any())(any()))
         .thenReturn(cards(false, None, None))
       when(appConfig.pspSchemeDashboardUrl).thenReturn("dummyUrl")
 
@@ -211,7 +215,7 @@ class PspSchemeDashboardControllerSpec
       when(listSchemesConnector.getListOfSchemesForPsp(any())(any(), any()))
         .thenReturn(Future.successful(Right(listOfSchemesResponse)))
       when(mockFeatureToggleConnector.getNewPensionsSchemeFeatureToggle(any())(any())).thenReturn(Future.successful(ToggleDetails("test", Some("test"), true)))
-      when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any(), any())(any()))
+      when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any(), any(), any())(any()))
         .thenReturn(cards(true, None, None))
       when(schemeDetailsService.openedDate(any(), any(), any())).thenReturn(Some(authDate))
       when(appConfig.pspTaskListUrl).thenReturn("dummyUrl")
@@ -233,7 +237,7 @@ class PspSchemeDashboardControllerSpec
         .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false, deceasedFlag = false)))
       when(listSchemesConnector.getListOfSchemesForPsp(any())(any(), any()))
         .thenReturn(Future.successful(Right(listOfSchemesResponse)))
-      when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any(), any())(any()))
+      when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any(), any(), any())(any()))
         .thenReturn(cards(false, None, None))
       when(appConfig.pspSchemeDashboardUrl).thenReturn("dummyUrl")
 
@@ -253,7 +257,7 @@ class PspSchemeDashboardControllerSpec
         .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false, deceasedFlag = false)))
       when(listSchemesConnector.getListOfSchemesForPsp(any())(any(), any()))
         .thenReturn(Future.successful(Right(listOfSchemesResponse)))
-      when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any(), any())(any()))
+      when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any(), any(), any())(any()))
         .thenReturn(cards(false, Some(clientRef), Some(authDate)))
       when(appConfig.pspSchemeDashboardUrl).thenReturn("dummyUrl")
 
@@ -274,7 +278,7 @@ class PspSchemeDashboardControllerSpec
         .thenReturn(Future.successful(Right(listOfSchemesResponse)))
       when(mockFeatureToggleConnector.getNewPensionsSchemeFeatureToggle(any())(any())).thenReturn(Future.successful(ToggleDetails("test", Some("test"), true)))
       when(schemeDetailsService.openedDate(any(), any(), any())).thenReturn(Some(authDate))
-      when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any(), any())(any()))
+      when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any(), any(), any())(any()))
         .thenReturn(cards(true, Some(clientRef), Some(authDate)))
       when(appConfig.pspTaskListUrl).thenReturn("dummyUrl")
       when(appConfig.pspSchemeDashboardUrl).thenReturn("dummyUrl")
