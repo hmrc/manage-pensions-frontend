@@ -28,6 +28,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.i18n.Messages
 import play.api.libs.json.{JsBoolean, Json}
 import play.api.mvc.Results.Ok
 import play.api.test.Helpers._
@@ -104,7 +105,38 @@ class PspSchemeDashboardControllerSpec
       html = None
     )
 
-  private def manageReportsEventsCard(): Unit = {
+  private def manageReportsEventsCard(erHtml: Html)
+                                     (implicit messages: Messages): PspSchemeDashboardCardViewModel = {
+
+    val aftLink = Seq(Link(
+      id = "aft-view-link",
+      url = dummyUrl,
+      linkText = messages("messages__aft__view_details_link")
+    ))
+
+    val erLink = if (erHtml.equals(Html(""))) {
+      Seq()
+    } else {
+      Seq(Link(
+        id = "er-view-link",
+        url = dummyUrl,
+        linkText = messages("messages__er__view_details_link")
+      ))
+    }
+
+    val psrLink = Seq(
+      Link(
+        id = "psr-view-details",
+        url = dummyUrl,
+        linkText = messages("messages__psr__view_details_link")
+      ))
+
+
+    PspSchemeDashboardCardViewModel(
+      id = "manage_reports_returns",
+      heading = messages("messages__manage_reports_and_returns_head"),
+      links = aftLink ++ erLink ++ psrLink
+    )
 
   }
 
@@ -123,11 +155,13 @@ class PspSchemeDashboardControllerSpec
 
   private def cards(
                      interimDashboard: Boolean,
+                     evPspCard: Html,
                      clientReference: Option[String],
                      openDate: Option[String]
                    ): Seq[PspSchemeDashboardCardViewModel] = {
     if (interimDashboard) {
       Seq(
+        manageReportsEventsCard(evPspCard),
         practitionerCard(clientReference)
       )
     } else {
@@ -155,7 +189,7 @@ class PspSchemeDashboardControllerSpec
     schemeViewURL = "dummyUrl",
     aftPspSchemeDashboardCards = aftReturnsCard,
     evPspSchemeDashboardCard = evPspCard,
-    cards = cards(interimDashboard, clientReference, openDate),
+    cards = cards(interimDashboard, evPspCard, clientReference, openDate),
     returnLink = Some(returnLink)
   )(
     fakeRequest,
@@ -195,7 +229,7 @@ class PspSchemeDashboardControllerSpec
       when(listSchemesConnector.getListOfSchemesForPsp(any())(any(), any()))
         .thenReturn(Future.successful(Right(listOfSchemesResponse)))
       when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any(), any(), any())(any()))
-        .thenReturn(cards(false, None, None))
+        .thenReturn(cards(false, evPspSchemeDashboardCard, None, None))
       when(appConfig.pspSchemeDashboardUrl).thenReturn("dummyUrl")
 
 
@@ -216,7 +250,7 @@ class PspSchemeDashboardControllerSpec
         .thenReturn(Future.successful(Right(listOfSchemesResponse)))
       when(mockFeatureToggleConnector.getNewPensionsSchemeFeatureToggle(any())(any())).thenReturn(Future.successful(ToggleDetails("test", Some("test"), true)))
       when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any(), any(), any())(any()))
-        .thenReturn(cards(true, None, None))
+        .thenReturn(cards(true, evPspSchemeDashboardCard, None, None))
       when(schemeDetailsService.openedDate(any(), any(), any())).thenReturn(Some(authDate))
       when(appConfig.pspTaskListUrl).thenReturn("dummyUrl")
       when(appConfig.pspSchemeDashboardUrl).thenReturn("dummyUrl")
@@ -238,7 +272,7 @@ class PspSchemeDashboardControllerSpec
       when(listSchemesConnector.getListOfSchemesForPsp(any())(any(), any()))
         .thenReturn(Future.successful(Right(listOfSchemesResponse)))
       when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any(), any(), any())(any()))
-        .thenReturn(cards(false, None, None))
+        .thenReturn(cards(false, evPspSchemeDashboardCard, None, None))
       when(appConfig.pspSchemeDashboardUrl).thenReturn("dummyUrl")
 
 
@@ -258,7 +292,7 @@ class PspSchemeDashboardControllerSpec
       when(listSchemesConnector.getListOfSchemesForPsp(any())(any(), any()))
         .thenReturn(Future.successful(Right(listOfSchemesResponse)))
       when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any(), any(), any())(any()))
-        .thenReturn(cards(false, Some(clientRef), Some(authDate)))
+        .thenReturn(cards(false, evPspSchemeDashboardCard, Some(clientRef), Some(authDate)))
       when(appConfig.pspSchemeDashboardUrl).thenReturn("dummyUrl")
 
       val result = controller().onPageLoad(srn)(sessionRequest)
@@ -279,7 +313,7 @@ class PspSchemeDashboardControllerSpec
       when(mockFeatureToggleConnector.getNewPensionsSchemeFeatureToggle(any())(any())).thenReturn(Future.successful(ToggleDetails("test", Some("test"), true)))
       when(schemeDetailsService.openedDate(any(), any(), any())).thenReturn(Some(authDate))
       when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any(), any(), any())(any()))
-        .thenReturn(cards(true, Some(clientRef), Some(authDate)))
+        .thenReturn(cards(true, evPspSchemeDashboardCard, Some(clientRef), Some(authDate)))
       when(appConfig.pspTaskListUrl).thenReturn("dummyUrl")
       when(appConfig.pspSchemeDashboardUrl).thenReturn("dummyUrl")
 
@@ -397,6 +431,7 @@ object PspSchemeDashboardControllerSpec {
         "schemeStatus" -> schemeStatus
       )
     )
+  private val dummyUrl = "dummy"
 
   private val returnLink: Link =
     Link(

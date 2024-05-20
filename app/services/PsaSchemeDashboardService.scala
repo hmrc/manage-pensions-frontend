@@ -75,13 +75,13 @@ class PsaSchemeDashboardService @Inject()(
     case _ => Future.successful(None)
   }
 
-  def cards(interimDashboard: Boolean, aftHtml:Html, erHtml:Html, srn: String,
+  def cards(interimDashboard: Boolean, erHtml:Html, srn: String,
             lock: Option[Lock], list: ListOfSchemes, ua: UserAnswers)
            (implicit messages: Messages, request: AuthenticatedRequest[AnyContent]): Future[Seq[CardViewModel]] = {
     val currentScheme = getSchemeDetailsFromListOfSchemes(srn, list)
     optionLockedSchemeName(lock).map { otherOptionSchemeName =>
       val seqSchemeCard = if(interimDashboard){
-        Seq(manageReportsEventsCard(srn, aftHtml, erHtml))
+        Seq(manageReportsEventsCard(srn, erHtml))
       } else {
         Seq(schemeCard(srn, currentScheme, lock, ua, otherOptionSchemeName))
       }
@@ -104,17 +104,14 @@ class PsaSchemeDashboardService @Inject()(
     )
   }
 
-  private[services] def manageReportsEventsCard(srn: String, aftHtml:Html, erHtml:Html)
+  private[services] def manageReportsEventsCard(srn: String, erHtml:Html)
                                (implicit messages: Messages): CardViewModel = {
-    val aftLink = if (aftHtml.equals(Html(""))) {
-      Seq()
-    } else {
-      Seq(Link(
+    val aftLink = Seq(Link(
         id = "aft-view-link",
         url = appConfig.psrPartialHtmlUrl.format(srn),
         linkText = messages("messages__aft__view_details_link")
       ))
-    }
+
     val erLink = if (erHtml.equals(Html(""))) {
       Seq()
     } else {

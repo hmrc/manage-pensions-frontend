@@ -99,8 +99,8 @@ class PsaSchemeDashboardServiceSpec
 
   "manageReportsEventsCard" must {
     "return manage reports events card view model" in {
-      service.manageReportsEventsCard(srn, aftHtml, erHtml) mustBe
-        manageReportsEventsCard(aftHtml, erHtml)
+      service.manageReportsEventsCard(srn, erHtml) mustBe
+        manageReportsEventsCard(erHtml)
     }
   }
 
@@ -136,7 +136,6 @@ object PsaSchemeDashboardServiceSpec {
   private val date = "2020-01-01"
   private val windUpDate = "2020-02-01"
   private val dummyUrl = "dummy"
-  private val aftHtml = Html("")
   private val erHtml = Html("")
 
   private def userAnswers(schemeStatus: String): UserAnswers = UserAnswers(Json.obj(
@@ -198,19 +197,14 @@ object PsaSchemeDashboardServiceSpec {
     ))
   )
 
-  private def manageReportsEventsCard(aftHtml:Html, erHtml:Html)
+  private def manageReportsEventsCard(erHtml:Html)
                      (implicit messages: Messages): CardViewModel = {
-
-
-    val aftLink = if (aftHtml.equals(Html(""))) {
-      Seq()
-    } else {
-      Seq(Link(
+    val aftLink = Seq(Link(
         id = "aft-view-link",
         url = dummyUrl,
         linkText = messages("messages__aft__view_details_link")
       ))
-    }
+
     val erLink = if (erHtml.equals(Html(""))) {
       Seq()
     } else {

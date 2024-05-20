@@ -95,7 +95,8 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
               )
               for {
                 hideAftTile <- featureToggleConnector.getNewAftFeatureToggle("hide-tile").map(_.isEnabled)
-                aftHtml <- tileRecover(retrieveAftTilesHtml(srn, schemeStatus, hideAftTile))
+                interimDashboard <- featureToggleConnector.getNewPensionsSchemeFeatureToggle("interim-dashboard").map(_.isEnabled)
+                aftHtml <- tileRecover(retrieveAftTilesHtml(srn, schemeStatus, hideAftTile, interimDashboard))
                 finInfoHtml <- tileRecover(retrieveFinInfoTilesHtml(srn, schemeStatus, hideAftTile))
                 _ <- userAnswersCacheConnector.upsert(request.externalId, updatedUa.json)
                 _ <- eventReportingData.map { data =>
@@ -103,8 +104,7 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
                 }.getOrElse(Future.successful(Json.obj()))
                 erHtml <- eventReportingData.map(_ => frontendConnector.retrieveEventReportingPartial)
                   .getOrElse(Future.successful(Html("")))
-                interimDashboard <- featureToggleConnector.getNewPensionsSchemeFeatureToggle("interim-dashboard").map(_.isEnabled)
-                cards <- psaSchemeDashboardService.cards(interimDashboard, aftHtml, erHtml, srn, lock, listOfSchemes, userAnswers)
+                cards <- psaSchemeDashboardService.cards(interimDashboard, erHtml, srn, lock, listOfSchemes, userAnswers)
                 schemeLink <- psaSchemeDashboardService.optionLockedSchemeName(lock).map { otherOptionSchemeName =>
                   psaSchemeDashboardService.schemeDetailsLink(srn, userAnswers, lock, currentScheme.map(_.name), otherOptionSchemeName)
                 }
@@ -119,12 +119,13 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
   private def retrieveAftTilesHtml(
                                     srn: String,
                                     schemeStatus: String,
-                                    hideTile: Boolean
+                                    hideTile: Boolean,
+                                    interimDashboard: Boolean
                                   )(implicit request: AuthenticatedRequest[AnyContent]): Future[Html] = {
     if (
       (schemeStatus.equalsIgnoreCase("open") ||
         schemeStatus.equalsIgnoreCase("wound-up") ||
-        schemeStatus.equalsIgnoreCase("deregistered")) && !hideTile
+        schemeStatus.equalsIgnoreCase("deregistered")) && !hideTile && !interimDashboard
     ) {
       frontendConnector.retrieveAftPartial(srn)
     } else {

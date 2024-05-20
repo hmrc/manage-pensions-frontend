@@ -63,6 +63,7 @@ class PsaSchemeDashboardControllerSpec
   private val schemeName = "Benefits Scheme"
   private val srn = SchemeReferenceNumber("S1000000456")
   private val aftHtml = Html("test-aft-html")
+  private val aftEmptyHtml = Html("")
   private val finInfoHtml = Html("test-fininfo-html")
   private val erHtml = Html("test-er-html")
 
@@ -243,7 +244,7 @@ class PsaSchemeDashboardControllerSpec
         .thenReturn(Future.successful(ua))
       when(fakeListOfSchemesConnector.getListOfSchemes(any())(any(), any()))
         .thenReturn(Future.successful(Right(listOfSchemes)))
-      when(mockService.cards(any(), any(), any(), any(), any(), any(), any())(any(), any()))
+      when(mockService.cards(any(), any(), any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Seq(schemeCard(), psaCard(), pspCard())))
       when(mockFrontendConnector.retrieveEventReportingPartial(any(), any())).thenReturn(Future(erHtml))
       when(mockAppConfig.psaSchemeDashboardUrl).thenReturn(dummyUrl)
@@ -265,7 +266,7 @@ class PsaSchemeDashboardControllerSpec
         .thenReturn(Future.successful(ua))
       when(fakeListOfSchemesConnector.getListOfSchemes(any())(any(), any()))
         .thenReturn(Future.successful(Right(listOfSchemes)))
-      when(mockService.cards(any(), any(), any(), any(), any(), any(), any())(any(), any()))
+      when(mockService.cards(any(), any(), any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Seq(psaCard(), pspCard())))
       when(mockFrontendConnector.retrieveEventReportingPartial(any(), any())).thenReturn(Future(erHtml))
       when(mockAppConfig.psaSchemeDashboardUrl).thenReturn(dummyUrl)
@@ -306,7 +307,7 @@ class PsaSchemeDashboardControllerSpec
         .thenReturn(Future.successful(userAnswers(Open.value)))
       when(fakeListOfSchemesConnector.getListOfSchemes(any())(any(), any()))
         .thenReturn(Future.successful(Right(listOfSchemes)))
-      when(mockService.cards(any(), any(), any(), any(), any(), any(), any())(any(), any()))
+      when(mockService.cards(any(), any(), any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Seq(schemeCard(), psaCard(), pspCard())))
       when(mockFrontendConnector.retrieveAftPartial(any())(any(), any())).thenReturn(Future(aftHtml))
       when(mockFrontendConnector.retrieveFinInfoPartial(any())(any(), any())).thenReturn(Future(finInfoHtml))
@@ -328,7 +329,7 @@ class PsaSchemeDashboardControllerSpec
         .thenReturn(Future.successful(userAnswers(Open.value)))
       when(fakeListOfSchemesConnector.getListOfSchemes(any())(any(), any()))
         .thenReturn(Future.successful(Right(listOfSchemes)))
-      when(mockService.cards(any(), any(), any(), any(), any(), any(), any())(any(), any()))
+      when(mockService.cards(any(), any(), any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Seq(psaCard(), pspCard())))
       when(mockFrontendConnector.retrieveAftPartial(any())(any(), any())).thenReturn(Future(aftHtml))
       when(mockFrontendConnector.retrieveFinInfoPartial(any())(any(), any())).thenReturn(Future(finInfoHtml))
@@ -340,7 +341,7 @@ class PsaSchemeDashboardControllerSpec
       val result = controller().onPageLoad(srn)(sessionRequest)
       status(result) mustBe OK
 
-      val expected = psaSchemeDashboardView(schemeName, true, currentScheme, "Open", schemeLink, aftHtml = aftHtml, finInfoHtml = finInfoHtml, erHtml,
+      val expected = psaSchemeDashboardView(schemeName, true, currentScheme, "Open", schemeLink, aftHtml = aftEmptyHtml, finInfoHtml = finInfoHtml, erHtml,
         Seq(psaCard(), pspCard()))(sessionRequest, messages).toString()
       contentAsString(result) mustBe expected
     }
