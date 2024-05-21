@@ -106,6 +106,7 @@ class PspSchemeDashboardController @Inject()(
                   evPspSchemeDashboardCard = erHtml,
                   cards = service.getTiles(
                     interimDashboard = interimDashboard,
+                    erHtml = erHtml,
                     srn = srn,
                     pstr = pstr,
                     openDate = schemeDetailsService.openedDate(srn, list, isSchemeOpen),

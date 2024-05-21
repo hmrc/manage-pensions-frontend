@@ -69,8 +69,10 @@
             }
             <div class="flex-container govuk-grid-row">
                 @aftHtml
+                @if(interimDashboard == false){
+                    @erHtml
+                }
                 @finInfoHtml
-                @erHtml
                 @for(card <- cards) {
                     @components.card(card)
                 }

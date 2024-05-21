@@ -64,7 +64,9 @@
 
             <div class="flex-container govuk-grid-row">
                 @aftPspSchemeDashboardCards
-                @evPspSchemeDashboardCard
+                @if(interimDashboard == false){
+                    @evPspSchemeDashboardCard
+                }
                 @for(card <- cards) {
                     @components.pspSchemeDashboardCard(card)
                 }
