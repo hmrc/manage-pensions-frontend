@@ -63,6 +63,7 @@ class PsaSchemeDashboardServiceSpec
     reset(mockSchemeDetailsConnector)
     when(mockAppConfig.viewSchemeDetailsUrl).thenReturn(dummyUrl)
     when(mockAppConfig.psrPartialHtmlUrl).thenReturn(dummyUrl)
+    when(mockAppConfig.aftOverviewHtmlUrl).thenReturn(dummyUrl)
     when(mockPensionSchemeVarianceLockConnector.getLockByPsa(any())(any(), any())).thenReturn(Future.successful(None))
     when(mockSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any())).thenReturn(Future.successful(UserAnswers()))
     super.beforeEach()
