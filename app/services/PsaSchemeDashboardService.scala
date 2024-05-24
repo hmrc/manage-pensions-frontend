@@ -108,7 +108,7 @@ class PsaSchemeDashboardService @Inject()(
                                (implicit messages: Messages): CardViewModel = {
     val aftLink = Seq(Link(
         id = "aft-view-link",
-        url = appConfig.psrPartialHtmlUrl.format(srn),
+        url = appConfig.aftOverviewHtmlUrl.format(srn),
         linkText = messages("messages__aft__view_details_link")
       ))
 
