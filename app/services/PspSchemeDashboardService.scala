@@ -120,7 +120,7 @@ class PspSchemeDashboardService @Inject()(
       } else {
         Seq(Link(
           id = "er-view-link",
-          url = appConfig.psrPartialHtmlUrl.format(srn),
+          url = appConfig.eventReportingOverviewHtmlUrl.format(srn),
           linkText = messages("messages__er__view_details_link")
         ))
       }
