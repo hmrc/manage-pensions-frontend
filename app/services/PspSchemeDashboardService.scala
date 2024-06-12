@@ -128,7 +128,7 @@ class PspSchemeDashboardService @Inject()(
       val psrLink = Seq(
         Link(
           id = "psr-view-details",
-          url = appConfig.psrPartialHtmlUrl.format(srn),
+          url = appConfig.psrOverviewUrl.format(srn),
           linkText = messages("messages__psr__view_details_link")
         ))
 

@@ -62,7 +62,7 @@ class PsaSchemeDashboardServiceSpec
     reset(mockPensionSchemeVarianceLockConnector)
     reset(mockSchemeDetailsConnector)
     when(mockAppConfig.viewSchemeDetailsUrl).thenReturn(dummyUrl)
-    when(mockAppConfig.psrPartialHtmlUrl).thenReturn(dummyUrl)
+    when(mockAppConfig.psrOverviewUrl).thenReturn(dummyUrl)
     when(mockAppConfig.aftOverviewHtmlUrl).thenReturn(dummyUrl)
     when(mockAppConfig.eventReportingOverviewHtmlUrl).thenReturn(dummyUrl)
     when(mockPensionSchemeVarianceLockConnector.getLockByPsa(any())(any(), any())).thenReturn(Future.successful(None))
