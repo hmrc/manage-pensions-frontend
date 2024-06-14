@@ -80,12 +80,11 @@ class PsaSchemeDashboardService @Inject()(
            (implicit messages: Messages, request: AuthenticatedRequest[AnyContent]): Future[Seq[CardViewModel]] = {
     val currentScheme = getSchemeDetailsFromListOfSchemes(srn, list)
     optionLockedSchemeName(lock).map { otherOptionSchemeName =>
-      val seqSchemeCard = if(interimDashboard){
-        Seq(manageReportsEventsCard(srn, erHtml))
+        if(interimDashboard){
+        Seq(manageReportsEventsCard(srn, erHtml))++ Seq(psaCardForInterimDashboard(srn, ua))
       } else {
-        Seq(schemeCard(srn, currentScheme, lock, ua, otherOptionSchemeName))
+        Seq(schemeCard(srn, currentScheme, lock, ua, otherOptionSchemeName)) ++ Seq(psaCard(srn, ua)) ++ pspCard(ua, currentScheme.map(_.schemeStatus))
       }
-      seqSchemeCard ++ Seq(psaCard(srn, ua)) ++ pspCard(ua, currentScheme.map(_.schemeStatus))
     }
   }
 
@@ -239,6 +238,31 @@ class PsaSchemeDashboardService @Inject()(
       )
     )
 
+  def psaCardForInterimDashboard(srn: String, ua: UserAnswers)
+             (implicit messages: Messages): CardViewModel =
+    CardViewModel(
+      id = "psa_psp_list",
+      heading = Message("messages__psaSchemeDash__psa_psp_list_head"),
+      subHeadings = latestMergedPsaSubHeading(ua) ++ latestPsaSubHeadingDate(ua),
+      links = invitePsaLink(isSchemeOpen(ua), srn) ++ Seq(
+        Link(
+          id = "view-psa-list",
+          url = ViewAdministratorsController.onPageLoad(srn).url,
+          linkText = Message("messages__psaSchemeDash__view_psa")
+        ),
+        Link(
+          id = "authorise",
+          url = WhatYouWillNeedController.onPageLoad().url,
+          linkText = Message("messages__pspAuthorise__link")
+        ),
+        Link(
+          id = "view-practitioners",
+          url = ViewPractitionersController.onPageLoad().url,
+          linkText = Message("messages__pspViewOrDeauthorise__link")
+        )
+      )
+    )
+
   private def invitePsaLink(isSchemeOpen: Boolean, srn: String): Seq[Link] =
     if (isSchemeOpen) {
       Seq(Link(
@@ -253,8 +277,19 @@ class PsaSchemeDashboardService @Inject()(
   private def latestPsaSubHeading(ua: UserAnswers)(implicit messages: Messages): Seq[CardSubHeading] =
     latestPsa(ua).fold[Seq[CardSubHeading]](Nil) { psa =>
       Seq(CardSubHeading(
-        subHeading = psa.relationshipDate.fold(messages("messages__psaSchemeDash__added"))(date =>
+        subHeading = psa.relationshipDate.fold(messages("messages__psaSchemeDash__addedOn"))(date =>
           messages("messages__psaSchemeDash__addedOn", LocalDate.parse(date).format(formatter))),
+        subHeadingClasses = "card-sub-heading",
+        subHeadingParams = Seq(CardSubHeadingParam(
+          subHeadingParam = psa.getPsaName.getOrElse(throw PsaNameCannotBeRetrievedException),
+          subHeadingParamClasses = "font-small bold"))))
+    }
+
+  private def latestMergedPsaSubHeading(ua: UserAnswers)(implicit messages: Messages): Seq[CardSubHeading] =
+    latestPsa(ua).fold[Seq[CardSubHeading]](Nil) { psa =>
+      Seq(CardSubHeading(
+        subHeading = psa.relationshipDate.fold(messages("messages__psaSchemeDash__registered_by"))(date =>
+          messages("messages__psaSchemeDash__registered_by", LocalDate.parse(date).format(formatter))),
         subHeadingClasses = "card-sub-heading",
         subHeadingParams = Seq(CardSubHeadingParam(
           subHeadingParam = psa.getPsaName.getOrElse(throw PsaNameCannotBeRetrievedException),
@@ -306,6 +341,15 @@ class PsaSchemeDashboardService @Inject()(
         subHeadingParams = Seq(CardSubHeadingParam(
           subHeadingParam = psp.name,
           subHeadingParamClasses = "font-small bold"))))
+    }
+
+  private def latestPsaSubHeadingDate(ua: UserAnswers)(implicit messages: Messages): Seq[CardSubHeading] =
+    latestPsa(ua).fold[Seq[CardSubHeading]](Nil) { psa =>
+      Seq(CardSubHeading(
+        subHeading = psa.relationshipDate.fold(messages("messages__psaSchemeDash__addedOn_date"))(date =>
+        messages("messages__psaSchemeDash__addedOn_date", LocalDate.parse(date).format(formatter))),
+        subHeadingClasses = "card-sub-heading",
+        subHeadingParams = Seq.empty[CardSubHeadingParam] ))
     }
 
   private def isSchemeOpen(ua: UserAnswers): Boolean = ua.get(SchemeStatusId).getOrElse("").equalsIgnoreCase("open")
