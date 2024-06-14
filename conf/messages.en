@@ -358,7 +358,7 @@ messages__psaSchemeDash__view_change_details_link_notification_psa-unknown_schem
 messages__psaSchemeDash__psa_making_changes = You cannot make changes to this scheme at the moment. {0} is making changes to this scheme.
 messages__psaSchemeDash__opened_date_head = This scheme was opened on:
 messages__psaSchemeDash__scheme_details_head = Pension scheme details
-messages__psaSchemeDash__psa_list_head = Manage scheme administrators
+messages__psaSchemeDash__psa_list_head = Pension scheme administrators
 messages__psaSchemeDash__psa_psp_list_head = Manage scheme administrators and practitioners
 messages__psaSchemeDash__invite_link = Invite a scheme administrator
 messages__psaSchemeDash__view_psa = View or remove a scheme administrator

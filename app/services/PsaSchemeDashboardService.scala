@@ -277,7 +277,7 @@ class PsaSchemeDashboardService @Inject()(
   private def latestPsaSubHeading(ua: UserAnswers)(implicit messages: Messages): Seq[CardSubHeading] =
     latestPsa(ua).fold[Seq[CardSubHeading]](Nil) { psa =>
       Seq(CardSubHeading(
-        subHeading = psa.relationshipDate.fold(messages("messages__psaSchemeDash__addedOn"))(date =>
+        subHeading = psa.relationshipDate.fold(messages("messages__psaSchemeDash__added"))(date =>
           messages("messages__psaSchemeDash__addedOn", LocalDate.parse(date).format(formatter))),
         subHeadingClasses = "card-sub-heading",
         subHeadingParams = Seq(CardSubHeadingParam(
