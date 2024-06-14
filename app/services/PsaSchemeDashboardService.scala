@@ -18,6 +18,7 @@ package services
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
+import connectors.EventReportingConnector
 import connectors.scheme.{PensionSchemeVarianceLockConnector, SchemeDetailsConnector}
 import controllers.invitations.psp.routes._
 import controllers.invitations.routes._
@@ -38,13 +39,17 @@ import utils.DateHelper._
 import utils.UserAnswers
 import viewmodels.{CardSubHeading, CardSubHeadingParam, CardViewModel, Message}
 import play.twirl.api.Html
+import services.PsaSchemeDashboardService.{maxEndDateAsString, minStartDateAsString}
+
 import java.time.LocalDate
 import scala.concurrent.{ExecutionContext, Future}
+import scala.reflect.runtime.universe.Try
 
 class PsaSchemeDashboardService @Inject()(
                                            appConfig: FrontendAppConfig,
                                            lockConnector: PensionSchemeVarianceLockConnector,
-                                           schemeDetailsConnector: SchemeDetailsConnector
+                                           schemeDetailsConnector: SchemeDetailsConnector,
+                                           eventReportingConnector: EventReportingConnector,
                                          )(implicit val ec: ExecutionContext) {
 
   private val logger = Logger(classOf[PsaSchemeDashboardService])
@@ -53,6 +58,7 @@ class PsaSchemeDashboardService @Inject()(
     HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
   def optionLockedSchemeName(lock: Option[Lock])(implicit request: AuthenticatedRequest[AnyContent]): Future[Option[String]] = lock match {
+
     case Some(PsaLock) =>
       val psaId = request.psaIdOrException.id
       lockConnector.getLockByPsa(psaId)(hc(request), implicitly).flatMap { lockedSchemeVariance =>
@@ -79,13 +85,33 @@ class PsaSchemeDashboardService @Inject()(
             lock: Option[Lock], list: ListOfSchemes, ua: UserAnswers)
            (implicit messages: Messages, request: AuthenticatedRequest[AnyContent]): Future[Seq[CardViewModel]] = {
     val currentScheme = getSchemeDetailsFromListOfSchemes(srn, list)
-    optionLockedSchemeName(lock).map { otherOptionSchemeName =>
-      val seqSchemeCard = if(interimDashboard){
-        Seq(manageReportsEventsCard(srn, erHtml))
-      } else {
-        Seq(schemeCard(srn, currentScheme, lock, ua, otherOptionSchemeName))
-      }
-      seqSchemeCard ++ Seq(psaCard(srn, ua)) ++ pspCard(ua, currentScheme.map(_.schemeStatus))
+
+    val pstr = currentScheme match {
+      case Some(cs) if (cs.referenceNumber.contains(srn)) => cs.pstr.getOrElse("")
+      case None => "Pstr Not Found"
+    }
+
+    for {
+      seqEROverview <- eventReportingConnector.getOverview(pstr, "ER", minStartDateAsString, maxEndDateAsString).map(x =>
+        if(x.size == 1) {
+          s"PSR due ${x.head.periodEndDate}"
+        } else if (x.size > 1) {
+          "Multiple pension scheme returns due"
+        } else {
+          ""
+        }
+      )
+
+      optionLockedSchemeName <- optionLockedSchemeName(lock)
+
+    } yield (seqEROverview, optionLockedSchemeName) match {
+      case (seqEROverview, lockedSchemeName) =>
+        val schemeCards = if (interimDashboard) {
+          Seq(manageReportsEventsCard(srn, erHtml, seqEROverview))
+        } else {
+          Seq(schemeCard(srn, currentScheme, lock, ua, lockedSchemeName))
+        }
+        schemeCards ++ Seq(psaCard(srn, ua)) ++ pspCard(ua, currentScheme.map(_.schemeStatus))
     }
   }
 
@@ -104,7 +130,7 @@ class PsaSchemeDashboardService @Inject()(
     )
   }
 
-  private[services] def manageReportsEventsCard(srn: String, erHtml:Html)
+  private[services] def manageReportsEventsCard(srn: String, erHtml:Html, seqEROverview: String)
                                (implicit messages: Messages): CardViewModel = {
     val aftLink = Seq(Link(
         id = "aft-view-link",
@@ -133,6 +159,12 @@ class PsaSchemeDashboardService @Inject()(
     CardViewModel(
       id = "manage_reports_returns",
       heading = Message("messages__manage_reports_and_returns_head"),
+      subHeadings =       Seq(CardSubHeading(
+        subHeading = Message("messages__manage_reports_and_returns_subhead"),
+        subHeadingClasses = "card-sub-heading",
+        subHeadingParams = Seq(CardSubHeadingParam(
+          subHeadingParam = seqEROverview,
+          subHeadingParamClasses = "font-small bold")))),
       links =  aftLink ++ erLink ++ psrLink
     )
   }
@@ -314,3 +346,11 @@ class PsaSchemeDashboardService @Inject()(
 }
 
 case object PsaNameCannotBeRetrievedException extends Exception
+
+case class SchemeAndEROverview(seqEROverview: Seq[EROverview], schemeDetails: SchemeDetails)
+
+object PsaSchemeDashboardService {
+  val minStartDateAsString = "2000-04-06"
+  val maxEndDateAsString = s"${LocalDate.now().getYear + 1}-04-05"
+}
+

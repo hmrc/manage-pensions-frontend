@@ -37,6 +37,7 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
     throw new Exception(s"Could not find config '$key'"))
 
   private def loadConfig(key: String): String = runModeConfiguration.get[String](key)
+  lazy val eventReportingUrl: String = servicesConfig.baseUrl("pension-scheme-event-reporting")
 
 
   lazy val appName: String = runModeConfiguration.underlying.getString("appName")

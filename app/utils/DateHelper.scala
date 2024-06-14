@@ -28,6 +28,7 @@ object DateHelper {
   def currentDate: LocalDate = mockDate.get().getOrElse(LocalDate.now())
   def setDate(date: Option[LocalDate]): Unit = mockDate.set(date)
   def overriddenDate: Option[LocalDate] = mockDate.get()
+  def today: LocalDate = mockDate.get().getOrElse(LocalDate.now())
 
   val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
   val auditFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
