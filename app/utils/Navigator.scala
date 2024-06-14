@@ -41,7 +41,7 @@ abstract class Navigator {
   }
 
   private[this] def defaultPage(id: Identifier, mode: Mode): Call = {
-    logger.warn(s"No navigation defined for id $id in mode $mode")
+    logger.error(s"No navigation defined for id $id in mode $mode")
     controllers.routes.IndexController.onPageLoad
   }
 }
