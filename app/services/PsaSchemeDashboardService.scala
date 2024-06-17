@@ -94,7 +94,7 @@ class PsaSchemeDashboardService @Inject()(
     for {
       seqEROverview <- eventReportingConnector.getOverview(pstr, "ER", minStartDateAsString, maxEndDateAsString).map(x =>
         if(x.size == 1) {
-          (x.head.psrDueDate).map( x => messages("messages__manage_reports_and_returns_psr_due", x.format(formatter))).getOrElse("")
+          (x.head.psrDueDate).map(x => messages("messages__manage_reports_and_returns_psr_due", x.format(formatter))).getOrElse("")
         } else if (x.size > 1) {
           (x.head.psrDueDate).map( x => messages("messages__manage_reports_and_returns_multiple_due")).getOrElse("")
         } else {

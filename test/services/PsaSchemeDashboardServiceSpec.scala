@@ -18,6 +18,7 @@ package services
 
 import base.SpecBase
 import config.FrontendAppConfig
+import connectors.EventReportingConnector
 import connectors.scheme.{PensionSchemeVarianceLockConnector, SchemeDetailsConnector}
 import controllers.invitations.psp.routes._
 import controllers.invitations.routes._
@@ -53,20 +54,34 @@ class PsaSchemeDashboardServiceSpec
   private val mockAppConfig = mock[FrontendAppConfig]
   private val mockPensionSchemeVarianceLockConnector = mock[PensionSchemeVarianceLockConnector]
   private val mockSchemeDetailsConnector = mock[SchemeDetailsConnector]
-
+  private val mockEventReportingConnector = mock[EventReportingConnector]
+  val overview1 = EROverview(
+    LocalDate.of(2022, 4, 6),
+    LocalDate.of(2023, 4, 5),
+    TaxYear("2022"),
+    tpssReportPresent = false,
+    Some(EROverviewVersion(
+      3,
+      submittedVersionAvailable = false,
+      compiledVersionAvailable = true)),
+      Some(LocalDate.of(2024, 4, 6)),
+      Some(LocalDate.of(2024, 4, 6)),
+      Some("PSA"))
   private def service: PsaSchemeDashboardService =
-    new PsaSchemeDashboardService(mockAppConfig, mockPensionSchemeVarianceLockConnector, mockSchemeDetailsConnector)
+    new PsaSchemeDashboardService(mockAppConfig, mockPensionSchemeVarianceLockConnector, mockSchemeDetailsConnector, mockEventReportingConnector)
 
   override def beforeEach(): Unit = {
     reset(mockAppConfig)
     reset(mockPensionSchemeVarianceLockConnector)
     reset(mockSchemeDetailsConnector)
+    reset(mockEventReportingConnector)
     when(mockAppConfig.viewSchemeDetailsUrl).thenReturn(dummyUrl)
     when(mockAppConfig.psrOverviewUrl).thenReturn(dummyUrl)
     when(mockAppConfig.aftOverviewHtmlUrl).thenReturn(dummyUrl)
     when(mockAppConfig.eventReportingOverviewHtmlUrl).thenReturn(dummyUrl)
     when(mockPensionSchemeVarianceLockConnector.getLockByPsa(any())(any(), any())).thenReturn(Future.successful(None))
     when(mockSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any())).thenReturn(Future.successful(UserAnswers()))
+    when(mockEventReportingConnector.getOverview(any(), any(), any(), any())(any())).thenReturn(Future.successful(Seq(overview1)))
     super.beforeEach()
   }
 
@@ -101,7 +116,7 @@ class PsaSchemeDashboardServiceSpec
 
   "manageReportsEventsCard" must {
     "return manage reports events card view model" in {
-      service.manageReportsEventsCard(srn, erHtml) mustBe
+      service.manageReportsEventsCard(srn, erHtml, "") mustBe
         manageReportsEventsCard(erHtml)
     }
   }
