@@ -94,9 +94,9 @@ class PsaSchemeDashboardService @Inject()(
     for {
       seqEROverview <- eventReportingConnector.getOverview(pstr, "ER", minStartDateAsString, maxEndDateAsString).map(x =>
         if(x.size == 1) {
-          s"PSR due ${x.head.periodEndDate}"
+          (x.head.psrDueDate).map( x => messages("messages__manage_reports_and_returns_psr_due", x.format(formatter))).getOrElse("")
         } else if (x.size > 1) {
-          "Multiple pension scheme returns due"
+          (x.head.psrDueDate).map( x => messages("messages__manage_reports_and_returns_multiple_due")).getOrElse("")
         } else {
           ""
         }
@@ -156,15 +156,21 @@ class PsaSchemeDashboardService @Inject()(
       ))
 
 
-    CardViewModel(
-      id = "manage_reports_returns",
-      heading = Message("messages__manage_reports_and_returns_head"),
-      subHeadings =       Seq(CardSubHeading(
+    val subHeading: Seq[CardSubHeading] = if(seqEROverview.isBlank){
+      Seq.empty
+    }
+    else{
+      Seq(CardSubHeading(
         subHeading = Message("messages__manage_reports_and_returns_subhead"),
         subHeadingClasses = "card-sub-heading",
         subHeadingParams = Seq(CardSubHeadingParam(
           subHeadingParam = seqEROverview,
-          subHeadingParamClasses = "font-small bold")))),
+          subHeadingParamClasses = "font-small bold"))))
+    }
+    CardViewModel(
+      id = "manage_reports_returns",
+      heading = Message("messages__manage_reports_and_returns_head"),
+      subHeadings =    subHeading,
       links =  aftLink ++ erLink ++ psrLink
     )
   }

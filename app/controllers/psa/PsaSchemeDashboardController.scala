@@ -68,7 +68,6 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
     getData andThen psaSchemeAction(Some(srn))).async {
     implicit request =>
 
-      //request.
       minimalPsaConnector.getMinimalPsaDetails(request.psaIdOrException.id).flatMap { minimalDetails =>
         (minimalDetails.deceasedFlag, minimalDetails.rlsFlag) match {
           case (true, _) => Future.successful(Redirect(controllers.routes.ContactHMRCController.onPageLoad()))

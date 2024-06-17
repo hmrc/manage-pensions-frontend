@@ -52,7 +52,10 @@ case class EROverview(
                        periodEndDate: LocalDate,
                        taxYear: TaxYear,
                        tpssReportPresent: Boolean,
-                       versionDetails: Option[EROverviewVersion]
+                       versionDetails: Option[EROverviewVersion],
+                       ntfDateOfIssue: Option[LocalDate],
+                       psrDueDate: Option[LocalDate],
+                       psrReportType: Option[String]
                      )
 
 object EROverview {
@@ -62,15 +65,22 @@ object EROverview {
       (JsPath \ "tpssReportPresent").readNullable[Boolean].flatMap {
         case Some(true) => Reads(_ => JsSuccess(true))
         case _ => Reads(_ => JsSuccess(false))
-      } and EROverviewVersion.rds
+      } and EROverviewVersion.rds and
+      (JsPath \ "ntfDateOfIssue").readNullable[String] and
+      (JsPath \ "psrDueDate").readNullable[String] and
+      (JsPath \ "psrReportType").readNullable[String]
     ) (
-    (startDate, endDate, tpssReport, versionDetails) =>
+    (startDate, endDate, tpssReport, versionDetails, ntfDateOfIssue, psrDueDate, psrReportType) =>
       EROverview(
         LocalDate.parse(startDate),
         LocalDate.parse(endDate),
-        TaxYear( LocalDate.parse(startDate).getYear.toString ),
+        TaxYear( LocalDate.parse(startDate).getYear.toString),
         tpssReport,
-        versionDetails))
+        versionDetails,
+        ntfDateOfIssue.map(x => LocalDate.parse(x)),
+        psrDueDate.map(LocalDate.parse(_)),
+        psrReportType,
+      ))
 
   implicit val formats: Format[EROverview] = Json.format[EROverview]
 }
