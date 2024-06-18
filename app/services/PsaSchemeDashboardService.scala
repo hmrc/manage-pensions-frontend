@@ -115,12 +115,11 @@ class PsaSchemeDashboardService @Inject()(
       seqErOverview <- seqErOverviewFuture
       optionLockedSchemeName <- optionLockedSchemeNameFuture
     } yield {
-      val schemeCards = if (interimDashboard) {
-        Seq(manageReportsEventsCard(srn, erHtml, seqErOverview))
+      if (interimDashboard) {
+        Seq(manageReportsEventsCard(srn, erHtml, seqErOverview)) ++ Seq(psaCardForInterimDashboard(srn, ua))
       } else {
-        Seq(schemeCard(srn, currentScheme, lock, ua, optionLockedSchemeName))
+        Seq(schemeCard(srn, currentScheme, lock, ua, optionLockedSchemeName)) ++ Seq(psaCard(srn, ua)) ++ pspCard(ua, currentScheme.map(_.schemeStatus))
       }
-      schemeCards ++ Seq(psaCard(srn, ua)) ++ pspCard(ua, currentScheme.map(_.schemeStatus))
     }
   }
 
@@ -255,6 +254,52 @@ class PsaSchemeDashboardService @Inject()(
     }
     else {
       None
+    }
+
+  def psaCardForInterimDashboard(srn: String, ua: UserAnswers)
+                                (implicit messages: Messages): CardViewModel =
+    CardViewModel(
+      id = "psa_psp_list",
+      heading = Message("messages__psaSchemeDash__psa_psp_list_head"),
+      subHeadings = latestMergedPsaSubHeading(ua) ++ latestPsaSubHeadingDate(ua),
+      links = invitePsaLink(isSchemeOpen(ua), srn) ++ Seq(
+        Link(
+          id = "view-psa-list",
+          url = ViewAdministratorsController.onPageLoad(srn).url,
+          linkText = Message("messages__psaSchemeDash__view_psa")
+        ),
+        Link(
+          id = "authorise",
+          url = WhatYouWillNeedController.onPageLoad().url,
+          linkText = Message("messages__pspAuthorise__link")
+        ),
+        Link(
+          id = "view-practitioners",
+          url = ViewPractitionersController.onPageLoad().url,
+          linkText = Message("messages__pspViewOrDeauthorise__link")
+        )
+      )
+    )
+
+  private def latestMergedPsaSubHeading(ua: UserAnswers)(implicit messages: Messages): Seq[CardSubHeading] =
+    latestPsa(ua).fold[Seq[CardSubHeading]](Nil) { psa =>
+      Seq(CardSubHeading(
+        subHeading = psa.relationshipDate.fold(messages("messages__psaSchemeDash__registered_by"))(date =>
+          messages("messages__psaSchemeDash__registered_by", LocalDate.parse(date).format(formatter))),
+        subHeadingClasses = "card-sub-heading",
+        subHeadingParams = Seq(CardSubHeadingParam(
+          subHeadingParam = psa.getPsaName.getOrElse(throw PsaNameCannotBeRetrievedException),
+          subHeadingParamClasses = "font-small bold"))))
+    }
+
+
+  private def latestPsaSubHeadingDate(ua: UserAnswers)(implicit messages: Messages): Seq[CardSubHeading] =
+    latestPsa(ua).fold[Seq[CardSubHeading]](Nil) { psa =>
+      Seq(CardSubHeading(
+        subHeading = psa.relationshipDate.fold(messages("messages__psaSchemeDash__addedOn_date"))(date =>
+          messages("messages__psaSchemeDash__addedOn_date", LocalDate.parse(date).format(formatter))),
+        subHeadingClasses = "card-sub-heading",
+        subHeadingParams = Seq.empty[CardSubHeadingParam] ))
     }
 
   private def pstrSubHead(currentScheme: Option[SchemeDetails])(implicit messages: Messages): Option[CardSubHeading] = {
