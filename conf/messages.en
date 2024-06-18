@@ -362,6 +362,7 @@ messages__psaSchemeDash__psa_making_changes = You cannot make changes to this sc
 messages__psaSchemeDash__opened_date_head = This scheme was opened on:
 messages__psaSchemeDash__scheme_details_head = Pension scheme details
 messages__psaSchemeDash__psa_list_head = Pension scheme administrators
+messages__psaSchemeDash__psa_psp_list_head = Manage scheme administrators and practitioners
 messages__psaSchemeDash__invite_link = Invite a scheme administrator
 messages__psaSchemeDash__view_psa = View or remove a scheme administrator
 messages__psaSchemeDash__invite_p1 = To add a pension administrator they must be registered with the managing pension scheme service. You will need the name and administrator ID. They will get an invitation that they will have to accept.
@@ -370,6 +371,8 @@ messages__psaSchemeDash__remove = Remove
 messages__psaSchemeDash__visuallyhidden_remove = Cannot remove {0}
 messages__psaSchemeDash__psp_heading = Pension scheme practitioners
 messages__psaSchemeDash__addedOn = Added on {0}:
+messages__psaSchemeDash__addedOn_date = Added on {0}
+messages__psaSchemeDash__registered_by = Scheme registered by:
 messages__psaSchemeDash__added = Added:
 
 messages__check__your__answer__main__containt__label = You are adding this scheme administrator to {0}.

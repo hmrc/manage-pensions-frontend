@@ -33,6 +33,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.i18n.Messages
 import play.api.libs.json.{JsArray, Json}
@@ -161,6 +162,17 @@ class PsaSchemeDashboardServiceSpec
     "return model when scheme is not open" in {
       val ua = userAnswers(Rejected.value)
       service.psaCard(srn, ua) mustBe psaCard(Nil)
+    }
+  }
+
+  "psaCardInterimDashboard" must {
+    "return model when scheme is open" in {
+      service.psaCardForInterimDashboard(srn, userAnswers(Open.value)) mustBe psaCardForInterimDashboard()
+    }
+
+    "return model when scheme is not open" in {
+      val ua = userAnswers(Rejected.value)
+      service.psaCardForInterimDashboard(srn, ua) mustBe psaCardForInterimDashboard(Nil)
     }
   }
 
@@ -400,6 +412,40 @@ object PsaSchemeDashboardServiceSpec {
     )
   )
 
+
+  def psaCardForInterimDashboard(inviteLink: Seq[Link] = inviteLink)
+                                (implicit messages: Messages): CardViewModel =
+    CardViewModel(
+      id = "psa_psp_list",
+      heading = Message("messages__psaSchemeDash__psa_psp_list_head"),
+      subHeadings =  Seq(CardSubHeading(
+        subHeading = messages("messages__psaSchemeDash__registered_by", LocalDate.parse("2018-07-01").format(formatter)),
+        subHeadingClasses = "card-sub-heading",
+        subHeadingParams =Seq(CardSubHeadingParam(
+          subHeadingParam = "Tony A Smith",
+          subHeadingParamClasses = "font-small bold")))) ++ Seq(CardSubHeading(
+          subHeading = messages("messages__psaSchemeDash__addedOn_date", LocalDate.parse("2018-07-01").format(formatter)),
+          subHeadingClasses = "card-sub-heading",
+          subHeadingParams = Seq.empty[CardSubHeadingParam] )),
+      links = inviteLink ++ Seq(
+        Link(
+          id = "view-psa-list",
+          url = ViewAdministratorsController.onPageLoad(srn).url,
+          linkText = Message("messages__psaSchemeDash__view_psa")
+        ),
+        Link(
+          id = "authorise",
+          url = WhatYouWillNeedController.onPageLoad().url,
+          linkText = Message("messages__pspAuthorise__link")
+        ),
+        Link(
+          id = "view-practitioners",
+          url = ViewPractitionersController.onPageLoad().url,
+          linkText = Message("messages__pspViewOrDeauthorise__link")
+        )
+      )
+    )
+
   private def inviteLink = Seq(Link(
     id = "invite",
     url = InviteController.onPageLoad(srn).url,
@@ -435,4 +481,3 @@ object PsaSchemeDashboardServiceSpec {
   )
 
 }
-
