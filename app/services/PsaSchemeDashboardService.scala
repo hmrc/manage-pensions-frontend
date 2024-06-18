@@ -49,7 +49,7 @@ class PsaSchemeDashboardService @Inject()(
                                            appConfig: FrontendAppConfig,
                                            lockConnector: PensionSchemeVarianceLockConnector,
                                            schemeDetailsConnector: SchemeDetailsConnector,
-                                           eventReportingConnector: EventReportingConnector,
+                                           eventReportingConnector: EventReportingConnector
                                          )(implicit val ec: ExecutionContext) {
 
   private val logger = Logger(classOf[PsaSchemeDashboardService])
@@ -81,41 +81,50 @@ class PsaSchemeDashboardService @Inject()(
     case _ => Future.successful(None)
   }
 
-  def cards(interimDashboard: Boolean, erHtml:Html, srn: String,
-            lock: Option[Lock], list: ListOfSchemes, ua: UserAnswers)
-           (implicit messages: Messages, request: AuthenticatedRequest[AnyContent]): Future[Seq[CardViewModel]] = {
-    val currentScheme = getSchemeDetailsFromListOfSchemes(srn, list)
+  def cards(
+             interimDashboard: Boolean,
+             erHtml: Html,
+             srn: String,
+             lock: Option[Lock],
+             list: ListOfSchemes,
+             ua: UserAnswers
+           )(implicit messages: Messages, request: AuthenticatedRequest[AnyContent]): Future[Seq[CardViewModel]] = {
+
+    val currentScheme: Option[SchemeDetails] = getSchemeDetailsFromListOfSchemes(srn, list)
 
     val pstr = currentScheme match {
-      case Some(cs) if (cs.referenceNumber.contains(srn)) => cs.pstr.getOrElse("")
+      case Some(cs) if cs.referenceNumber.contains(srn) => cs.pstr.getOrElse("")
       case None => "Pstr Not Found"
     }
 
+    val seqErOverviewFuture: Future[String] = eventReportingConnector.getOverview(
+      pstr, "ER", minStartDateAsString, maxEndDateAsString
+    ).map {
+      case x if x.size == 1 =>
+        x.head.psrDueDate.map(date => messages("messages__manage_reports_and_returns_psr_due", date.format(formatter)))
+          .getOrElse("")
+      case x if x.size > 1 =>
+        x.head.psrDueDate.map(_ => messages("messages__manage_reports_and_returns_multiple_due"))
+          .getOrElse("")
+      case _ => ""
+    }
+
+    val optionLockedSchemeNameFuture = optionLockedSchemeName(lock)
+
     for {
-      seqEROverview <- eventReportingConnector.getOverview(pstr, "ER", minStartDateAsString, maxEndDateAsString).map(x =>
-        if(x.size == 1) {
-          (x.head.psrDueDate).map(x => messages("messages__manage_reports_and_returns_psr_due", x.format(formatter))).getOrElse("")
-        } else if (x.size > 1) {
-          (x.head.psrDueDate).map( x => messages("messages__manage_reports_and_returns_multiple_due")).getOrElse("")
-        } else {
-          ""
-        }
-      )
-
-      optionLockedSchemeName <- optionLockedSchemeName(lock)
-
-    } yield (seqEROverview, optionLockedSchemeName) match {
-      case (seqEROverview, lockedSchemeName) =>
-        val schemeCards = if (interimDashboard) {
-          Seq(manageReportsEventsCard(srn, erHtml, seqEROverview))
-        } else {
-          Seq(schemeCard(srn, currentScheme, lock, ua, lockedSchemeName))
-        }
-        schemeCards ++ Seq(psaCard(srn, ua)) ++ pspCard(ua, currentScheme.map(_.schemeStatus))
+      seqErOverview <- seqErOverviewFuture
+      optionLockedSchemeName <- optionLockedSchemeNameFuture
+    } yield {
+      val schemeCards = if (interimDashboard) {
+        Seq(manageReportsEventsCard(srn, erHtml, seqErOverview))
+      } else {
+        Seq(schemeCard(srn, currentScheme, lock, ua, optionLockedSchemeName))
+      }
+      schemeCards ++ Seq(psaCard(srn, ua)) ++ pspCard(ua, currentScheme.map(_.schemeStatus))
     }
   }
 
-  //Scheme details card
+
   private[services] def schemeCard(srn: String,
                                    currentScheme: Option[SchemeDetails],
                                    lock: Option[Lock],
@@ -352,8 +361,6 @@ class PsaSchemeDashboardService @Inject()(
 }
 
 case object PsaNameCannotBeRetrievedException extends Exception
-
-case class SchemeAndEROverview(seqEROverview: Seq[EROverview], schemeDetails: SchemeDetails)
 
 object PsaSchemeDashboardService {
   val minStartDateAsString = "2000-04-06"

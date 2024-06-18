@@ -18,7 +18,6 @@ package models
 
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
-
 import java.time.LocalDate
 
 case class EROverviewVersion(
@@ -35,16 +34,14 @@ object EROverviewVersion {
         (JsPath \ "versionDetails" \ "numberOfVersions").read[Int] and
           (JsPath \ "versionDetails" \ "submittedVersionAvailable").read[Boolean] and
           (JsPath \ "versionDetails" \ "compiledVersionAvailable").read[Boolean]
-        ) (
+        )(
         (noOfVersions, isSubmitted, isCompiled) =>
-          Some(EROverviewVersion(
-            noOfVersions,
-            isSubmitted,
-            isCompiled
-          )))
+          Some(EROverviewVersion(noOfVersions, isSubmitted, isCompiled))
+      )
     }
   }
-    implicit val formats: Format[EROverviewVersion] = Json.format[EROverviewVersion]
+
+  implicit val formats: Format[EROverviewVersion] = Json.format[EROverviewVersion]
 }
 
 case class EROverview(
@@ -63,24 +60,33 @@ object EROverview {
     (JsPath \ "periodStartDate").read[String] and
       (JsPath \ "periodEndDate").read[String] and
       (JsPath \ "tpssReportPresent").readNullable[Boolean].flatMap {
-        case Some(true) => Reads(_ => JsSuccess(true))
-        case _ => Reads(_ => JsSuccess(false))
+        case Some(true) => Reads(__ => JsSuccess(true))
+        case _ => Reads(__ => JsSuccess(false))
       } and EROverviewVersion.rds and
       (JsPath \ "ntfDateOfIssue").readNullable[String] and
       (JsPath \ "psrDueDate").readNullable[String] and
       (JsPath \ "psrReportType").readNullable[String]
-    ) (
-    (startDate, endDate, tpssReport, versionDetails, ntfDateOfIssue, psrDueDate, psrReportType) =>
+    )(
+    (
+      startDate,
+      endDate,
+      tpssReport,
+      versionDetails,
+      ntfDateOfIssue,
+      psrDueDate,
+      psrReportType
+    ) =>
       EROverview(
         LocalDate.parse(startDate),
         LocalDate.parse(endDate),
-        TaxYear( LocalDate.parse(startDate).getYear.toString),
+        TaxYear(LocalDate.parse(startDate).getYear.toString),
         tpssReport,
         versionDetails,
-        ntfDateOfIssue.map(x => LocalDate.parse(x)),
-        psrDueDate.map(LocalDate.parse(_)),
-        psrReportType,
-      ))
+        ntfDateOfIssue.map(LocalDate.parse),
+        psrDueDate.map(LocalDate.parse),
+        psrReportType
+      )
+  )
 
   implicit val formats: Format[EROverview] = Json.format[EROverview]
 }
