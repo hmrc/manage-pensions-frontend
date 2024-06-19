@@ -25,7 +25,7 @@ import controllers.psa.routes._
 import controllers.psp.routes._
 import identifiers.invitations.PSTRId
 import identifiers.{SchemeNameId, SchemeStatusId}
-import models.SchemeStatus.{Open, Rejected}
+import models.SchemeStatus.{Open, Rejected, Pending}
 import models._
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
@@ -127,6 +127,16 @@ class PsaSchemeDashboardServiceSpec
       val ua = userAnswers(Rejected.value)
       service.psaCardForInterimDashboard(srn, ua) mustBe psaCardForInterimDashboard(Nil)
     }
+
+    "return model when relationship date does not exist" in {
+      val ua = userAnswers(Pending.value, psaDetailsWithNoDate)
+      service.psaCardForInterimDashboard(srn, ua) mustBe psaCardForInterimDashboard(Nil).copy(subHeadings =Seq(CardSubHeading(
+        subHeading = messages("messages__psaSchemeDash__registered_by"),
+        subHeadingClasses = "card-sub-heading",
+        subHeadingParams =Seq(CardSubHeadingParam(
+          subHeadingParam = "Tony A Smith",
+          subHeadingParamClasses = "font-small bold")))) )
+    }
   }
 
   "pspCard" must {
@@ -152,28 +162,46 @@ object PsaSchemeDashboardServiceSpec {
   private val dummyUrl = "dummy"
   private val erHtml = Html("")
 
-  private def userAnswers(schemeStatus: String): UserAnswers = UserAnswers(Json.obj(
+
+  private val psaDetails: JsArray =  JsArray(
+    Seq(
+      Json.obj(
+        "id" -> "A0000000",
+        "organisationOrPartnershipName" -> "partnership name 2",
+        "relationshipDate" -> "2018-07-01"
+      ),
+      Json.obj(
+        "id" -> "A0000001",
+        "individual" -> Json.obj(
+          "firstName" -> "Tony",
+          "middleName" -> "A",
+          "lastName" -> "Smith"
+        ),
+        "relationshipDate" -> "2018-07-01"
+      )
+    )
+  )
+  private val psaDetailsWithNoDate: JsArray =  JsArray(
+    Seq(
+      Json.obj(
+        "id" -> "A0000000",
+        "organisationOrPartnershipName" -> "partnership name 2"
+      ),
+      Json.obj(
+        "id" -> "A0000001",
+        "individual" -> Json.obj(
+          "firstName" -> "Tony",
+          "middleName" -> "A",
+          "lastName" -> "Smith"
+        )
+      )
+    )
+  )
+  private def userAnswers(schemeStatus: String, psaDetailsToUse: JsArray = psaDetails): UserAnswers = UserAnswers(Json.obj(
     PSTRId.toString -> pstr,
     "schemeStatus" -> schemeStatus,
     SchemeNameId.toString -> schemeName,
-    "psaDetails" -> JsArray(
-      Seq(
-        Json.obj(
-          "id" -> "A0000000",
-          "organisationOrPartnershipName" -> "partnership name 2",
-          "relationshipDate" -> "2018-07-01"
-        ),
-        Json.obj(
-          "id" -> "A0000001",
-          "individual" -> Json.obj(
-            "firstName" -> "Tony",
-            "middleName" -> "A",
-            "lastName" -> "Smith"
-          ),
-          "relationshipDate" -> "2018-07-01"
-        )
-      )
-    ),
+    "psaDetails" -> psaDetailsToUse,
     "pspDetails" -> JsArray(
       Seq(
         Json.obj(

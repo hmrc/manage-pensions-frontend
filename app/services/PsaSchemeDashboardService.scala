@@ -337,12 +337,13 @@ class PsaSchemeDashboardService @Inject()(
     }
 
   private def latestPsaSubHeadingDate(ua: UserAnswers)(implicit messages: Messages): Seq[CardSubHeading] =
-    latestPsa(ua).fold[Seq[CardSubHeading]](Nil) { psa =>
-      Seq(CardSubHeading(
-        subHeading = psa.relationshipDate.fold(messages("messages__psaSchemeDash__addedOn_date"))(date =>
-        messages("messages__psaSchemeDash__addedOn_date", LocalDate.parse(date).format(formatter))),
-        subHeadingClasses = "card-sub-heading",
-        subHeadingParams = Seq.empty[CardSubHeadingParam] ))
+    latestPsa(ua).fold[Seq[CardSubHeading]](Nil){ psa =>
+      psa.relationshipDate.fold[Seq[CardSubHeading]](Nil){ date =>
+        Seq(CardSubHeading(
+          subHeading = messages("messages__psaSchemeDash__addedOn_date", LocalDate.parse(date).format(formatter)),
+          subHeadingClasses = "card-sub-heading",
+          subHeadingParams = Seq.empty[CardSubHeadingParam] ))
+      }
     }
 
   private def isSchemeOpen(ua: UserAnswers): Boolean = ua.get(SchemeStatusId).getOrElse("").equalsIgnoreCase("open")
