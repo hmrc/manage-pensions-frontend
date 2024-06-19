@@ -18,7 +18,7 @@ package services
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
-import connectors.EventReportingConnector
+import connectors.PensionSchemeReturnConnector
 import connectors.scheme.{PensionSchemeVarianceLockConnector, SchemeDetailsConnector}
 import controllers.invitations.psp.routes._
 import controllers.invitations.routes._
@@ -49,7 +49,7 @@ class PsaSchemeDashboardService @Inject()(
                                            appConfig: FrontendAppConfig,
                                            lockConnector: PensionSchemeVarianceLockConnector,
                                            schemeDetailsConnector: SchemeDetailsConnector,
-                                           eventReportingConnector: EventReportingConnector
+                                           eventReportingConnector: PensionSchemeReturnConnector
                                          )(implicit val ec: ExecutionContext) {
 
   private val logger = Logger(classOf[PsaSchemeDashboardService])
@@ -98,7 +98,7 @@ class PsaSchemeDashboardService @Inject()(
     }
 
     val seqErOverviewFuture: Future[String] = eventReportingConnector.getOverview(
-      pstr, "ER", minStartDateAsString, maxEndDateAsString
+      pstr, "PSR", minStartDateAsString, maxEndDateAsString
     ).map {
       case x if x.size == 1 =>
         x.head.psrDueDate.map(date => messages("messages__manage_reports_and_returns_psr_due", date.format(formatter)))

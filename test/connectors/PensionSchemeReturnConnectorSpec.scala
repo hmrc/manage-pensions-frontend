@@ -18,20 +18,18 @@ package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import connectors.admin.ToggleDetails
-import models.{EROverview, EROverviewVersion, TaxYear}
+import models.EROverview
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsArray, JsResultException, Json}
-import play.api.mvc.Results.{BadRequest, NoContent}
-import play.api.test.Helpers.running
 import uk.gov.hmrc.http._
-import utils.{Enumerable, UserAnswers, WireMockHelper}
+import utils.{Enumerable, WireMockHelper}
 
 import java.time.LocalDate
 
-class EventReportingConnectorSpec
+class PensionSchemeReturnConnectorSpec
   extends AsyncWordSpec
     with Matchers
     with WireMockHelper
@@ -41,7 +39,7 @@ class EventReportingConnectorSpec
 
   private implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
-  override protected def portConfigKey: String = "microservice.services.pension-scheme-event-reporting.port"
+  override protected def portConfigKey: String = "microservice.services.pensions-scheme-return.port"
 
   private def application: Application =
     new GuiceApplicationBuilder()
@@ -59,9 +57,11 @@ class EventReportingConnectorSpec
   private val toggleDetails1 = ToggleDetails("event-reporting", Some("event reporting toggle"), isEnabled = true)
   private val getFeatureTogglePath = "/admin/get-toggle"
 
-  private lazy val connector: EventReportingConnector = injector.instanceOf[EventReportingConnector]
-  private val getOverviewUrl = "/pension-scheme-event-reporting/overview"
-  private val getVersionUrl = "/pension-scheme-event-reporting/versions"
+  private lazy val connector: PensionSchemeReturnConnector = injector.instanceOf[PensionSchemeReturnConnector]
+  val startDate = "2022-04-06"
+  val endDate = "2023-04-05"
+  private val getOverviewUrl = s"/pension-scheme-return/psr/overview/$pstr?fromDate=$startDate&toDate=$endDate"
+
 
 
 
@@ -72,12 +72,6 @@ class EventReportingConnectorSpec
         Json.obj(
           "periodStartDate" -> "2022-04-06",
           "periodEndDate" -> "2023-04-05",
-          "versionDetails" -> Json.obj(
-            "numberOfVersions" -> 3,
-            "submittedVersionAvailable" -> false,
-            "compiledVersionAvailable" -> true,
-
-          ),
           "ntfDateOfIssue" ->  "2024-12-06",
           "psrDueDate" ->  "2025-03-31",
           "psrReportType" ->  "Standard"
@@ -85,11 +79,6 @@ class EventReportingConnectorSpec
         Json.obj(
           "periodStartDate" -> "2022-04-06",
           "periodEndDate" -> "2023-04-05",
-          "versionDetails" -> Json.obj(
-            "numberOfVersions" -> 3,
-            "submittedVersionAvailable" -> true,
-            "compiledVersionAvailable" -> true
-          ),
           "psrDueDate" ->  "2025-03-31",
           "psrReportType" ->  "PSA"
         )
@@ -98,12 +87,6 @@ class EventReportingConnectorSpec
       val overview1 = EROverview(
         LocalDate.of(2022, 4, 6),
         LocalDate.of(2023, 4, 5),
-        TaxYear("2022"),
-        tpssReportPresent = false,
-        Some(EROverviewVersion(
-          3,
-          submittedVersionAvailable = false,
-          compiledVersionAvailable = true)),
         Some(LocalDate.of(2024, 12, 6)),
         Some(LocalDate.of(2025, 3, 31)),
         Some("Standard"))
@@ -111,12 +94,6 @@ class EventReportingConnectorSpec
       val overview2 =  EROverview(
         LocalDate.of(2022, 4, 6),
         LocalDate.of(2023, 4, 5),
-        TaxYear("2022"),
-        tpssReportPresent = false,
-        Some(EROverviewVersion(
-          3,
-          submittedVersionAvailable = true,
-          compiledVersionAvailable = true)),
         None,
         Some(LocalDate.of(2025, 3, 31)),
         Some("PSA"))
@@ -140,15 +117,11 @@ class EventReportingConnectorSpec
     "return JsResultException when the backend has returned errors" in {
       val erOverviewResponseJson: JsArray = Json.arr(
         Json.obj(
-          "periodStartDate" -> "2022-04-06",
-          "versionDetails" -> Json.obj(
-            "numberOfVersions" -> 3,
-            "submittedVersionAvailable" -> false,
-            "compiledVersionAvailable" -> true
-          )
+          "periodStartDate" -> "2022-04-06"
         )
       )
 
+      println(s"********************* $getOverviewUrl")
       server.stubFor(
         get(urlEqualTo(getOverviewUrl))
           .willReturn(

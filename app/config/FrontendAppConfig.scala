@@ -38,6 +38,7 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
 
   private def loadConfig(key: String): String = runModeConfiguration.get[String](key)
   lazy val eventReportingUrl: String = servicesConfig.baseUrl("pension-scheme-event-reporting")
+  lazy val pensionSchemeUrl: String = servicesConfig.baseUrl("pensions-scheme")
 
 
   lazy val appName: String = runModeConfiguration.underlying.getString("appName")
@@ -71,6 +72,7 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
 
   lazy val authUrl: String = servicesConfig.baseUrl("auth")
   lazy val pensionsSchemeUrl: String = servicesConfig.baseUrl("pensions-scheme")
+  lazy val pensionsSchemeReturnUrl: String = servicesConfig.baseUrl("pensions-scheme-return")
   lazy val pensionAdminUrl: String = servicesConfig.baseUrl("pension-administrator")
   lazy val aftUrl: String = servicesConfig.baseUrl("pension-scheme-accounting-for-tax")
   lazy val practitionerUrl: String = servicesConfig.baseUrl("pension-practitioner")

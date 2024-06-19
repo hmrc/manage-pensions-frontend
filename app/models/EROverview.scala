@@ -31,25 +31,30 @@ object EROverviewVersion {
     (JsPath \ "tpssReportPresent").readNullable[Boolean].flatMap {
       case Some(true) => Reads(_ => JsSuccess(None))
       case _ => (
-        (JsPath \ "versionDetails" \ "numberOfVersions").read[Int] and
-          (JsPath \ "versionDetails" \ "submittedVersionAvailable").read[Boolean] and
-          (JsPath \ "versionDetails" \ "compiledVersionAvailable").read[Boolean]
+        (JsPath \ "numberOfVersions").read[Int] and
+          (JsPath \ "submittedVersionAvailable").read[String] and
+          (JsPath \ "compiledVersionAvailable").read[String]
         )(
         (noOfVersions, isSubmitted, isCompiled) =>
-          Some(EROverviewVersion(noOfVersions, isSubmitted, isCompiled))
+          Some(EROverviewVersion(noOfVersions, stringToBoolean(isSubmitted), stringToBoolean(isCompiled)))
       )
     }
   }
 
   implicit val formats: Format[EROverviewVersion] = Json.format[EROverviewVersion]
+
+  def stringToBoolean(str: String): Boolean = {
+    str.trim.toLowerCase match {
+      case "Yes" =>true
+      case "No" => false
+      case _ => false
+    }
+  }
 }
 
 case class EROverview(
                        periodStartDate: LocalDate,
                        periodEndDate: LocalDate,
-                       taxYear: TaxYear,
-                       tpssReportPresent: Boolean,
-                       versionDetails: Option[EROverviewVersion],
                        ntfDateOfIssue: Option[LocalDate],
                        psrDueDate: Option[LocalDate],
                        psrReportType: Option[String]
@@ -59,10 +64,6 @@ object EROverview {
   implicit val rds: Reads[EROverview] = (
     (JsPath \ "periodStartDate").read[String] and
       (JsPath \ "periodEndDate").read[String] and
-      (JsPath \ "tpssReportPresent").readNullable[Boolean].flatMap {
-        case Some(true) => Reads(__ => JsSuccess(true))
-        case _ => Reads(__ => JsSuccess(false))
-      } and EROverviewVersion.rds and
       (JsPath \ "ntfDateOfIssue").readNullable[String] and
       (JsPath \ "psrDueDate").readNullable[String] and
       (JsPath \ "psrReportType").readNullable[String]
@@ -70,8 +71,6 @@ object EROverview {
     (
       startDate,
       endDate,
-      tpssReport,
-      versionDetails,
       ntfDateOfIssue,
       psrDueDate,
       psrReportType
@@ -79,9 +78,6 @@ object EROverview {
       EROverview(
         LocalDate.parse(startDate),
         LocalDate.parse(endDate),
-        TaxYear(LocalDate.parse(startDate).getYear.toString),
-        tpssReport,
-        versionDetails,
         ntfDateOfIssue.map(LocalDate.parse),
         psrDueDate.map(LocalDate.parse),
         psrReportType

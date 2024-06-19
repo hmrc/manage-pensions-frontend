@@ -30,7 +30,7 @@ import utils.HttpResponseHelper
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Failure
 
-class EventReportingConnector @Inject()(
+class PensionSchemeReturnConnector @Inject()(
                                          config: FrontendAppConfig,
                                          http: HttpClient
                                        )(implicit ec: ExecutionContext) extends HttpResponseHelper {
@@ -40,24 +40,20 @@ class EventReportingConnector @Inject()(
                  (implicit headerCarrier: HeaderCarrier): Future[Seq[EROverview]] = {
 
     val headers: Seq[(String, String)] = Seq(
-      "Content-Type" -> "application/json",
-      "pstr" -> pstr,
-      "reportType" -> reportType,
-      "startDate" -> startDate,
-      "endDate" -> endDate
+      "Content-Type" -> "application/json"
     )
 
-    def eventOverviewUrl = s"${config.eventReportingUrl}/pension-scheme-event-reporting/overview"
-
+    def psrOverviewUrl = s"${config.pensionsSchemeReturnUrl}/pension-scheme-return/psr/overview/$pstr?fromDate=$startDate&toDate=$endDate"
 
     val hc: HeaderCarrier = headerCarrier.withExtraHeaders(headers: _*)
 
-    http.GET[HttpResponse](eventOverviewUrl)(implicitly, hc, implicitly)
+    http.GET[HttpResponse](psrOverviewUrl)(implicitly, hc, implicitly)
       .map { response =>
         response.status match {
           case OK =>
             Json.parse(response.body).validate[Seq[EROverview]](Reads.seq(EROverview.rds)) match {
-              case JsSuccess(data, _) => data
+              case JsSuccess(data, _) =>
+                data
               case JsError(errors) => throw JsResultException(errors)
             }
           case _ => throw new HttpException(response.body, response.status)
