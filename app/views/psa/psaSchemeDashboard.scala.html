@@ -34,38 +34,28 @@
     <div class="govuk-grid-row">
 
         <div class="govuk-grid-column-full">
-            
             @components.heading(messages(schemeName))
-
             @if(interimDashboard == true){
-            <table id="schemeHeader" class="govuk-table" role="table">
-                <tr>
-                    <td class="govuk-table__cell govuk-!-width-one-third">
+            <div class="govuk-grid-row govuk-!-margin-bottom-4">
+                <div class="govuk-grid-column-one-third">
                     @if(currentScheme.exists(_.pstr.nonEmpty) &&
-                        (schemeStatus.equalsIgnoreCase("open") || schemeStatus.equalsIgnoreCase("wound-up") || schemeStatus.equalsIgnoreCase("Deregistered"))) {
-                        <p class="card-sub-heading bold govuk-body-m">
-                            <span class="font-xsmall">@messages("messages__psaSchemeDash__pstr")</span><br>
-                            <span class="font-small govuk-!-font-size-19 govuk-!-font-weight-bold  font-small bold">@messages(currentScheme.head.pstr.head)</span>
-                        </p>
+                    (schemeStatus.equalsIgnoreCase("open") || schemeStatus.equalsIgnoreCase("wound-up") || schemeStatus.equalsIgnoreCase("Deregistered"))) {
+                    <span class="govuk-caption-m govuk-!-margin-bottom-1">@messages("messages__psaSchemeDash__pstr")</span>
+                    <h1 class="govuk-heading-m govuk-!-margin-top-0">@messages(currentScheme.head.pstr.head)</h1>
                     } else {
-                        <p class="card-sub-heading bold govuk-body-m">
-                            <span class="font-xsmall">@messages("messages__psaSchemeDash__status")</span><br>
-                            <span class="font-small govuk-!-font-size-19 govuk-!-font-weight-bold  font-small bold">@messages(schemeStatus)</span>
-                        </p>
+                    <span class="govuk-caption-m govuk-!-margin-bottom-1">@messages("messages__psaSchemeDash__status")</span>
+                    <h1 class="govuk-heading-m govuk-!-margin-top-0">@messages(schemeStatus)</h1>
                     }
-                    </td>
-                    <td class="govuk-table__cell govuk-!-width-two-third">
+                </div>
+                <div class="govuk-grid-column-one-third">
                     @if(schemeStatus.equalsIgnoreCase("open")) {
-                        <p class="card-sub-heading bold govuk-body-m">
-                            <span class="font-xsmall">@messages("messages__psaSchemeDash__regDate")</span><br>
-                            <span class="font-small govuk-!-font-size-19 govuk-!-font-weight-bold  font-small bold">
-                                @messages(currentScheme.flatMap(_.openDate.map(LocalDate.parse(_).format(formatter))).getOrElse(""))
-                            </span>
-                        </p>
-                     }
-                    </td>
-                </tr>
-            </table>
+                    <span class="govuk-caption-m govuk-!-margin-bottom-1">@messages("messages__psaSchemeDash__interim_dashboard_regDate")</span>
+                    <h1 class="govuk-heading-m govuk-!-margin-top-0">
+                        @messages(currentScheme.flatMap(_.openDate.map(LocalDate.parse(_).format(formatter))).getOrElse(""))
+                    </h1>
+                    }
+                </div>
+            </div>
             }
             <div class="flex-container govuk-grid-row">
                 @aftHtml
