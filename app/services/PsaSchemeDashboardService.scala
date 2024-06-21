@@ -58,7 +58,6 @@ class PsaSchemeDashboardService @Inject()(
     HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
   def optionLockedSchemeName(lock: Option[Lock])(implicit request: AuthenticatedRequest[AnyContent]): Future[Option[String]] = lock match {
-
     case Some(PsaLock) =>
       val psaId = request.psaIdOrException.id
       lockConnector.getLockByPsa(psaId)(hc(request), implicitly).flatMap { lockedSchemeVariance =>
@@ -67,14 +66,14 @@ class PsaSchemeDashboardService @Inject()(
             schemeDetailsConnector.getSchemeDetails(psaId, lockedSrn, "srn").map { ua =>
               ua.get(SchemeNameId) match {
                 case sn@Some(_) => sn
-                case _ => logger.warn(
+                case _ => logger.info(
                   s"PSA $psaId has a lock on a scheme. Scheme lock info: $lockedSchemeVariance but " +
                     s"no scheme name found for $lockedSrn")
                   None
               }
             }
           case None =>
-            logger.warn(s"PSA $psaId has a lock on a scheme. Scheme lock info: $lockedSchemeVariance but no SRN present")
+            logger.info(s"PSA $psaId has a lock on a scheme. Scheme lock info: $lockedSchemeVariance but no SRN present")
             Future.successful(None)
         }
       }
@@ -123,7 +122,7 @@ class PsaSchemeDashboardService @Inject()(
     }
   }
 
-
+  //Scheme details card
   private[services] def schemeCard(srn: String,
                                    currentScheme: Option[SchemeDetails],
                                    lock: Option[Lock],
@@ -211,14 +210,7 @@ class PsaSchemeDashboardService @Inject()(
       viewLinkText
     } else {
 
-      logger.warn(s"Pension-scheme : $srn -- Lock-Status : ${optionLock.getOrElse("No-Lock-Found").toString}")
-
-      ua.get(ListOfPSADetailsId).map {
-        listOfPSADetails =>
-          listOfPSADetails.map { psaDetails =>
-            logger.warn(s"Pension-scheme : $srn -- PsaDetails-ID : ${psaDetails.id}")
-          }
-      }
+      logger.info(s"Pension-scheme : $srn -- Lock-Status : ${optionLock.getOrElse("No-Lock-Found").toString}")
 
       optionLock match {
         case Some(VarianceLock) | None => viewOrChangeLinkText
@@ -399,6 +391,7 @@ class PsaSchemeDashboardService @Inject()(
           subHeadingParam = psp.name,
           subHeadingParamClasses = "font-small bold"))))
     }
+
 
   private def isSchemeOpen(ua: UserAnswers): Boolean = ua.get(SchemeStatusId).getOrElse("").equalsIgnoreCase("open")
 
