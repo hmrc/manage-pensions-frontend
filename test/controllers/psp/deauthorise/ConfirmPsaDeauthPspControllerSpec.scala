@@ -34,9 +34,7 @@ import views.html.psp.deauthorisation.confirmPsaDeauthPsp
 import scala.concurrent.Future
 
 class ConfirmPsaDeauthPspControllerSpec
-  extends ControllerWithNormalPageBehaviours
-    with MockitoSugar
-    with BeforeAndAfterEach {
+  extends ControllerWithNormalPageBehaviours with MockitoSugar with BeforeAndAfterEach {
 
   import ConfirmPsaDeauthPspControllerSpec._
 
@@ -45,11 +43,14 @@ class ConfirmPsaDeauthPspControllerSpec
 
   override def beforeEach(): Unit = {
     reset(mockMinimalPsaConnector)
-    when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minPsa))
+    when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any()))
+      .thenReturn(Future.successful(minPsa))
   }
 
-  def onPageLoadAction(dataRetrievalAction: DataRetrievalAction = sessionData,
-                       fakeAuth: AuthAction = FakeAuthAction): Action[AnyContent] =
+  def onPageLoadAction(
+                        dataRetrievalAction: DataRetrievalAction = sessionData,
+                        fakeAuth: AuthAction = FakeAuthAction
+                      ): Action[AnyContent] =
     new ConfirmPsaDeauthPspController(
       messagesApi = messagesApi,
       authenticate = fakeAuth,
@@ -70,7 +71,6 @@ class ConfirmPsaDeauthPspControllerSpec
     )(base.fakeRequest, base.messages).toString()
 
   "ConfirmPsaDeauthPspController" should {
-
     behave like controllerWithOnPageLoadMethod(
       onPageLoadAction = onPageLoadAction,
       emptyData = getEmptyData,
@@ -124,11 +124,9 @@ object ConfirmPsaDeauthPspControllerSpec {
 
   private val data = Json.obj(
     SchemeNameId.toString -> schemeName,
-    SeqAuthorisedPractitionerId.toString -> practitioners,
+    SeqAuthorisedPractitionerId.toString -> practitioners
   )
 
   private val sessionData: FakeDataRetrievalAction =
     new FakeDataRetrievalAction(Some(data))
 }
-
-
