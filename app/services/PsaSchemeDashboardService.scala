@@ -49,7 +49,7 @@ class PsaSchemeDashboardService @Inject()(
                                            appConfig: FrontendAppConfig,
                                            lockConnector: PensionSchemeVarianceLockConnector,
                                            schemeDetailsConnector: SchemeDetailsConnector,
-                                           eventReportingConnector: PensionSchemeReturnConnector
+                                           pensionSchemeReturnConnector: PensionSchemeReturnConnector
                                          )(implicit val ec: ExecutionContext) {
 
   private val logger = Logger(classOf[PsaSchemeDashboardService])
@@ -97,7 +97,7 @@ class PsaSchemeDashboardService @Inject()(
       case None => "Pstr Not Found"
     }
 
-    val seqErOverviewFuture: Future[String] = eventReportingConnector.getOverview(
+    val seqErOverviewFuture: Future[String] = pensionSchemeReturnConnector.getOverview(
       pstr, "PSR", minStartDateAsString, maxEndDateAsString
     ).map {
       case x if x.size == 1 =>

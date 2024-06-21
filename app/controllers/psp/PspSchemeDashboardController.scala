@@ -33,6 +33,7 @@ import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import play.twirl.api.Html
+import services.PsaSchemeDashboardService.{maxEndDateAsString, minStartDateAsString}
 import services.{PspSchemeDashboardService, SchemeDetailsService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.annotations.SessionDataCache
@@ -60,7 +61,8 @@ class PspSchemeDashboardController @Inject()(
                                               frontendConnector: FrontendConnector,
                                               pspSchemeAuthAction: PspSchemeAuthAction,
                                               getData: DataRetrievalAction,
-                                              featureToggleConnector: FeatureToggleConnector
+                                              featureToggleConnector: FeatureToggleConnector,
+                                              pensionSchemeReturnConnector: PensionSchemeReturnConnector
                                             )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport
@@ -86,6 +88,7 @@ class PspSchemeDashboardController @Inject()(
           val schemeName = (userAnswers.json \ "schemeName").as[String]
           val pstr = (userAnswers.json \ "pstr").as[String]
           for {
+            eqOverview <-  pensionSchemeReturnConnector.getOverview(pstr, "PSR", minStartDateAsString, maxEndDateAsString)
             hideAftTile <- featureToggleConnector.getNewAftFeatureToggle("hide-tile").map(_.isEnabled)
             aftPspSchemeDashboardCards <- aftPspSchemeDashboardCards(schemeStatus, srn, pspDetails.authorisingPSAID, hideAftTile)
             listOfSchemes <- listSchemesConnector.getListOfSchemesForPsp(request.pspIdOrException.id)
@@ -111,7 +114,8 @@ class PspSchemeDashboardController @Inject()(
                     pstr = pstr,
                     openDate = schemeDetailsService.openedDate(srn, list, isSchemeOpen),
                     loggedInPsp = pspDetails,
-                    clientReference = clientReference
+                    clientReference = clientReference,
+                    eqOverview
                   ),
                   returnLink = Some(Link(
                     id = "return-search-schemes",
