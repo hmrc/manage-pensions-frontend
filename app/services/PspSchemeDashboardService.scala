@@ -19,12 +19,13 @@ package services
 import config.FrontendAppConfig
 import connectors.admin.MinimalConnector
 import controllers.psp.deauthorise.self.routes._
-import models.{AuthorisedPractitioner, Link, MinimalPSAPSP}
+import models.{AuthorisedPractitioner, EROverview, Link, MinimalPSAPSP}
 import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.DateHelper
-import viewmodels.{Message, PspSchemeDashboardCardViewModel}
+import utils.DateHelper.formatter
+import viewmodels.{CardSubHeading, CardSubHeadingParam, Message, PspSchemeDashboardCardViewModel}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -45,10 +46,19 @@ class PspSchemeDashboardService @Inject()(
                 pstr: String,
                 openDate: Option[String],
                 loggedInPsp: AuthorisedPractitioner,
-                clientReference: Option[String]
+                clientReference: Option[String],
+                seqErOverview: Seq[EROverview]
               )(implicit messages: Messages): Seq[PspSchemeDashboardCardViewModel] = {
     if (interimDashboard) {
-      Seq(manageReportsEventsCard(srn, erHtml), practitionerCard(loggedInPsp, clientReference))
+    val subHeadingMessage = if (seqErOverview.size == 1) {
+          seqErOverview.head.psrDueDate.map(date => messages("messages__manage_reports_and_returns_psr_due", date.format(formatter))).getOrElse("")
+      } else if (seqErOverview.size > 1) {
+          messages("messages__manage_reports_and_returns_multiple_due")
+      }
+      else{
+        ""
+      }
+      Seq(manageReportsEventsCard(srn, erHtml, subHeadingMessage), practitionerCard(loggedInPsp, clientReference))
     } else {
       Seq(schemeCard(srn, pstr, openDate), practitionerCard(loggedInPsp, clientReference))
     }
@@ -106,7 +116,7 @@ class PspSchemeDashboardService @Inject()(
       ))
     )
 
-  private def manageReportsEventsCard(srn: String, erHtml:Html)
+  private def manageReportsEventsCard(srn: String, erHtml:Html, subHeadingPstr: String)
                                (implicit messages: Messages): PspSchemeDashboardCardViewModel =
     {
       val aftLink = Seq(Link(
@@ -132,9 +142,22 @@ class PspSchemeDashboardService @Inject()(
           linkText = messages("messages__psr__view_details_link")
         ))
 
+      val subHead: Seq[CardSubHeading] = if(subHeadingPstr.isBlank){
+        Seq.empty
+      }
+      else{
+        Seq(CardSubHeading(
+          subHeading = Message("messages__manage_reports_and_returns_subhead"),
+          subHeadingClasses = "card-sub-heading",
+          subHeadingParams = Seq(CardSubHeadingParam(
+            subHeadingParam = subHeadingPstr,
+            subHeadingParamClasses = "font-small bold"))))
+      }
+
       PspSchemeDashboardCardViewModel(
         id = "manage_reports_returns",
         heading = Message("messages__manage_reports_and_returns_head"),
+        subHeadings =    subHead.map(x => x.subHeading -> x.subHeadingParams.head.subHeadingParam),
         links = aftLink ++ erLink ++ psrLink
       )
     }
