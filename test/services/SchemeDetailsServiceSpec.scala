@@ -166,7 +166,7 @@ object SchemeDetailsServiceSpec {
 
   private val srn = "srn"
   private val pstr = "pstr"
-  private val psaId = "A0000000"
+  val psaId = "A0000000"
   private val name = "test-name"
   private val date = "2020-01-01"
   private val windUpDate = "2020-02-01"

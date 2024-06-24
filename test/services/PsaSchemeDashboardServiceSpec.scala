@@ -18,6 +18,7 @@ package services
 
 import base.SpecBase
 import config.FrontendAppConfig
+import connectors.PensionSchemeReturnConnector
 import connectors.scheme.{PensionSchemeVarianceLockConnector, SchemeDetailsConnector}
 import controllers.invitations.psp.routes._
 import controllers.invitations.routes._
@@ -27,6 +28,7 @@ import identifiers.invitations.PSTRId
 import identifiers.{SchemeNameId, SchemeStatusId}
 import models.SchemeStatus.{Open, Rejected, Pending}
 import models._
+import models.requests.AuthenticatedRequest
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
@@ -35,9 +37,13 @@ import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.i18n.Messages
 import play.api.libs.json.{JsArray, Json}
+import play.api.mvc.AnyContent
 import play.twirl.api.Html
+import services.SchemeDetailsServiceSpec.psaId
+import uk.gov.hmrc.domain.PsaId
 import utils.DateHelper.formatter
 import utils.UserAnswers
+import viewmodels.Message.{Literal, Resolvable}
 import viewmodels._
 
 import java.time.LocalDate
@@ -50,24 +56,59 @@ class PsaSchemeDashboardServiceSpec
     with ScalaFutures {
 
   import PsaSchemeDashboardServiceSpec._
+  implicit val authReq: AuthenticatedRequest[AnyContent] = AuthenticatedRequest(fakeRequest, "id", Some(PsaId(psaId)), None, Individual)
 
   private val mockAppConfig = mock[FrontendAppConfig]
   private val mockPensionSchemeVarianceLockConnector = mock[PensionSchemeVarianceLockConnector]
   private val mockSchemeDetailsConnector = mock[SchemeDetailsConnector]
+  private val mockEventReportingConnector = mock[PensionSchemeReturnConnector]
+  def listOfSchemes: ListOfSchemes = ListOfSchemes("", "", Some(fullSchemes))
 
+  def fullSchemes: List[SchemeDetails] =
+    List(
+      SchemeDetails(
+        name = "scheme-1",
+        referenceNumber = "srn-1",
+        schemeStatus = SchemeStatus.Deregistered.value,
+        openDate = None,
+        windUpDate = None,
+        pstr = Some("24000001IN"),
+        relationship = None,
+        underAppeal = None
+      ),
+      SchemeDetails(
+        name = "scheme-2",
+        referenceNumber = "S2400000005",
+        schemeStatus = SchemeStatus.Deregistered.value,
+        openDate = None,
+        windUpDate = None,
+        pstr = Some("pstr-1"),
+        relationship = None,
+        underAppeal = None
+      )
+    )
+
+  val overview1 = EROverview(
+    LocalDate.of(2022, 4, 6),
+    LocalDate.of(2023, 4, 5),
+      Some(LocalDate.of(2024, 4, 6)),
+      Some(LocalDate.of(2024, 4, 6)),
+      Some("PSA"))
   private def service: PsaSchemeDashboardService =
-    new PsaSchemeDashboardService(mockAppConfig, mockPensionSchemeVarianceLockConnector, mockSchemeDetailsConnector)
+    new PsaSchemeDashboardService(mockAppConfig, mockPensionSchemeVarianceLockConnector, mockSchemeDetailsConnector, mockEventReportingConnector)
 
   override def beforeEach(): Unit = {
     reset(mockAppConfig)
     reset(mockPensionSchemeVarianceLockConnector)
     reset(mockSchemeDetailsConnector)
+    reset(mockEventReportingConnector)
     when(mockAppConfig.viewSchemeDetailsUrl).thenReturn(dummyUrl)
     when(mockAppConfig.psrOverviewUrl).thenReturn(dummyUrl)
     when(mockAppConfig.aftOverviewHtmlUrl).thenReturn(dummyUrl)
     when(mockAppConfig.eventReportingOverviewHtmlUrl).thenReturn(dummyUrl)
     when(mockPensionSchemeVarianceLockConnector.getLockByPsa(any())(any(), any())).thenReturn(Future.successful(None))
     when(mockSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any())).thenReturn(Future.successful(UserAnswers()))
+    when(mockEventReportingConnector.getOverview(any(), any(), any(), any())(any())).thenReturn(Future.successful(Seq(overview1)))
     super.beforeEach()
   }
 
@@ -102,7 +143,7 @@ class PsaSchemeDashboardServiceSpec
 
   "manageReportsEventsCard" must {
     "return manage reports events card view model" in {
-      service.manageReportsEventsCard(srn, erHtml) mustBe
+      service.manageReportsEventsCard(srn, erHtml, "") mustBe
         manageReportsEventsCard(erHtml)
     }
   }
@@ -148,6 +189,86 @@ class PsaSchemeDashboardServiceSpec
       service.pspCard(userAnswers(Rejected.value), Some(Rejected.value)) mustBe Nil
     }
   }
+
+
+  "PsaSchemeDashboardService" must {
+
+    "handle different no seqEROverview correctly" in {
+      val mockEventReportingConnector = mock[PensionSchemeReturnConnector]
+      when(mockEventReportingConnector.getOverview(any(), any(), any(), any())(any())).thenReturn(Future.successful(Seq.empty))
+
+      val service = new PsaSchemeDashboardService(mockAppConfig, mockPensionSchemeVarianceLockConnector, mockSchemeDetailsConnector, mockEventReportingConnector)
+
+      val actualReturn = service.cards(interimDashboard = true, erHtml = Html(""), srn = "test", lock = None, list =
+        ListOfSchemes("", "", Some(fullSchemes)), ua = UserAnswers()) .map(_.head).futureValue
+
+      val expectedReturn = CardViewModel("manage_reports_returns","Manage reports and returns",List.empty,
+        List(Link("aft-view-link","dummy",Literal("Accounting for Tax (AFT) return"),None,None),
+          Link("psr-view-details","dummy",Literal("Pension scheme return (PSR)"),None,None)),None)
+
+      compareCardViewModels(actualReturn, expectedReturn)
+
+
+    }
+    "handle different one seqEROverview correctly" in {
+      val mockEventReportingConnector = mock[PensionSchemeReturnConnector]
+      when(mockEventReportingConnector.getOverview(any(), any(), any(), any())(any())).thenReturn(Future.successful(Seq(overview1)))
+
+      val service = new PsaSchemeDashboardService(mockAppConfig, mockPensionSchemeVarianceLockConnector, mockSchemeDetailsConnector, mockEventReportingConnector)
+
+      val actualReturn = service.cards(interimDashboard = true, erHtml = Html(""), srn = "test", lock = None, list =
+        ListOfSchemes("", "", Some(fullSchemes)), ua = UserAnswers()) .map(_.head).futureValue
+
+      val expectedReturn = CardViewModel("manage_reports_returns","Manage reports and returns",List(CardSubHeading("Notice to file:","card-sub-heading",
+        List(CardSubHeadingParam("PSR due 6 April 2024","font-small bold")))),
+        List(Link("aft-view-link","dummy",Literal("Accounting for Tax (AFT) return"),None,None),
+          Link("psr-view-details","dummy",Literal("Pension scheme return (PSR)"),None,None)),None)
+
+      compareCardViewModels(actualReturn, expectedReturn)
+
+
+    }
+
+    "handle different multiple seqEROverview correctly" in {
+      val mockEventReportingConnector = mock[PensionSchemeReturnConnector]
+      when(mockEventReportingConnector.getOverview(any(), any(), any(), any())(any())).thenReturn(Future.successful(Seq(overview1, overview1)))
+
+      val service = new PsaSchemeDashboardService(mockAppConfig, mockPensionSchemeVarianceLockConnector, mockSchemeDetailsConnector, mockEventReportingConnector)
+
+      val actualReturn = service.cards(interimDashboard = true, erHtml = Html(""), srn = "test", lock = None, list =
+        ListOfSchemes("", "", Some(fullSchemes)), ua = UserAnswers()) .map(_.head).futureValue
+
+      val expectedReturn = CardViewModel("manage_reports_returns","Manage reports and returns",List(CardSubHeading("Notice to file:","card-sub-heading",
+        List(CardSubHeadingParam("Multiple pension scheme returns due","font-small bold")))),
+        List(Link("aft-view-link","dummy",Literal("Accounting for Tax (AFT) return"),None,None),
+          Link("psr-view-details","dummy",Literal("Pension scheme return (PSR)"),None,None)),None)
+
+      compareCardViewModels(actualReturn, expectedReturn)
+
+
+    }
+  }
+
+  def compareCardViewModels(card1: CardViewModel, card2: CardViewModel): Unit = {
+    assert(card1.id == card2.id, s"Different id: ${card1.id} vs ${card2.id}")
+
+    assert(card1.subHeadings == card2.subHeadings, s"Different subHeadings: ${card1.subHeadings} vs ${card2.subHeadings}")
+    if (card1.subHeadings != card2.subHeadings) {
+      card1.subHeadings.zip(card2.subHeadings).zipWithIndex.foreach { case ((sh1, sh2), idx) =>
+        assert(sh1 == sh2, s"Different subHeading at index $idx: $sh1 vs $sh2")
+      }
+    }
+
+    assert(card1.links == card2.links, s"Different links: ${card1.links} vs ${card2.links}")
+    if (card1.links != card2.links) {
+      card1.links.zip(card2.links).zipWithIndex.foreach { case ((link1, link2), idx) =>
+        assert(link1 == link2, s"Different link at index $idx: $link1 vs $link2")
+      }
+    }
+
+  }
+
+
 
 }
 

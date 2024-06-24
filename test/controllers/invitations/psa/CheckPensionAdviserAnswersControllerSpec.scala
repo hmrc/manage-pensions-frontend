@@ -28,8 +28,9 @@ import utils.countryOptions.CountryOptions
 import utils.{CheckYourAnswersFactory, UserAnswers}
 import views.html.check_your_answers
 
-class CheckPensionAdviserAnswersControllerSpec extends ControllerWithNormalPageBehaviours with MockitoSugar {
-  //scalastyle:off magic.number
+class CheckPensionAdviserAnswersControllerSpec
+  extends ControllerWithNormalPageBehaviours with MockitoSugar {
+
   private val adviserName = "test name"
   private val userAnswer = UserAnswers()
     .adviserName(adviserName)
@@ -43,32 +44,53 @@ class CheckPensionAdviserAnswersControllerSpec extends ControllerWithNormalPageB
 
   private val view = injector.instanceOf[check_your_answers]
 
+  private val adviserLabel = "messages__check__your__answer__adviser__name__label"
+  private val siteChange = "site.change"
+
   val sections = Seq(
     SummaryListRow(
-      key = Key(Text(messages("messages__check__your__answer__adviser__name__label")), classes = "govuk-!-width-one-half"),
+      key = Key(Text(messages(adviserLabel)), classes = "govuk-!-width-one-half"),
       value = Value(Text(adviserName)),
-      actions = Some(Actions("", items = Seq(ActionItem(href = AdviserDetailsController.onPageLoad(CheckMode).url,
-        content = Text(messages("site.change")), visuallyHiddenText = Some(messages("messages__check__your__answer__adviser__name__label"))))))
-    ),
+      actions = Some(Actions("", items = Seq(
+        ActionItem(
+          href = AdviserDetailsController.onPageLoad(CheckMode).url,
+          content = Text(messages(siteChange)),
+          visuallyHiddenText = Some(messages(adviserLabel))
+        )
+      )))
+    )
   )
 
-  def viewAsString(): String = view(sections, None, call)(fakeRequest, messages).toString
+  def viewAsString(): String =
+    view(sections, None, call)(fakeRequest, messages).toString
 
-  def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
-
+  def onPageLoadAction(
+                        dataRetrievalAction: DataRetrievalAction,
+                        fakeAuth: AuthAction
+                      ): Action[AnyContent] = {
     new CheckPensionAdviserAnswersController(
-      frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction,
-      checkYourAnswersFactory, controllerComponents, view).onPageLoad()
+      frontendAppConfig, messagesApi, fakeAuth, navigator,
+      dataRetrievalAction, requiredDateAction, checkYourAnswersFactory,
+      controllerComponents, view
+    ).onPageLoad()
   }
 
-  def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
-
+  def onSubmitAction(
+                      dataRetrievalAction: DataRetrievalAction,
+                      fakeAuth: AuthAction
+                    ): Action[AnyContent] = {
     new CheckPensionAdviserAnswersController(
-      frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction,
-      checkYourAnswersFactory, controllerComponents, view).onSubmit()
+      frontendAppConfig, messagesApi, fakeAuth, navigator,
+      dataRetrievalAction, requiredDateAction, checkYourAnswersFactory,
+      controllerComponents, view
+    ).onSubmit()
   }
 
-  behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, Some(userAnswer), () => viewAsString())
+  behave like controllerWithOnPageLoadMethod(
+    onPageLoadAction, getEmptyData, Some(userAnswer), () => viewAsString()
+  )
 
-  behave like controllerWithOnSubmitMethod(onSubmitAction, getEmptyData, None, None)
+  behave like controllerWithOnSubmitMethod(
+    onSubmitAction, getEmptyData, None, None
+  )
 }
