@@ -38,28 +38,20 @@
                 text = schemeName
             ))
             @if(interimDashboard == true){
-            <table id="schemeHeader" class="govuk-table" role="table">
-                <tr role="row">
-                    <td class="govuk-table__cell govuk-!-width-one-third">
-                        <p class="card-sub-heading bold govuk-body-m">
-                            <span class="font-xsmall">@messages("messages__pspSchemeDashboard__scheme__subHeading_pstr")</span><br>
-                            <span class="font-small govuk-!-font-size-19 govuk-!-font-weight-bold  font-small bold">@messages(pstr)</span>
-                        </p>
-                    </td>
-                    <td class="govuk-table__cell govuk-!-width-two-third">
-                        @if(isSchemeOpen) {
-                            @openDate.map { date =>
-                                <p class="card-sub-heading bold govuk-body-m">
-                                    <span class="font-xsmall">@messages("messages__pspSchemeDashboard__scheme__subHeading_regForTax")</span><br>
-                                    <span class="font-small govuk-!-font-size-19 govuk-!-font-weight-bold  font-small bold">
-                                        @messages(date)
-                                    </span>
-                                </p>
-                            }
+            <div class="govuk-grid-row govuk-!-margin-bottom-4">
+                <div class="govuk-grid-column-one-third">
+                    <span class="govuk-caption-m govuk-!-margin-bottom-1">@messages("messages__pspSchemeDashboard__scheme__subHeading_pstr")</span>
+                    <h1 class="govuk-heading-m govuk-!-margin-top-0">@messages(pstr)</h1>
+                </div>
+                <div class="govuk-grid-column-one-third">
+                @if(isSchemeOpen) {
+                        @openDate.map { date =>
+                            <span class="govuk-caption-m govuk-!-margin-bottom-1">@messages("messages__pspSchemeDashboard__scheme__subHeading_interim_dashboard_regForTax")</span>
+                            <h1 class="govuk-heading-m govuk-!-margin-top-0">@messages(date)</h1>
                         }
-                    </td>
-                </tr>
-            </table>
+                    }
+                </div>
+            </div>
             }
 
             <div class="flex-container govuk-grid-row">

@@ -342,6 +342,7 @@ messages__error__declaration__required = You need to agree to all the declaratio
 messages__psaSchemeDash__title = Pension scheme summary
 messages__psaSchemeDash__pstr = Pension Scheme Tax Reference:
 messages__psaSchemeDash__regDate = Registration for Tax:
+messages__psaSchemeDash__interim_dashboard_regDate = Registered:
 messages__psaSchemeDash__status = Status:
 messages__psaSchemeDash__view_details_link = View the registered scheme details
 messages__psaSchemeDash__view_change_details_link = View or change the registered scheme details
@@ -351,7 +352,7 @@ messages__manage_reports_and_returns_multiple_due =  Multiple pension scheme ret
 messages__manage_reports_and_returns_subhead = Notice to file:
 messages__aft__view_details_link = Accounting for Tax (AFT) return
 messages__er__view_details_link = Event reporting
-messages__psr__view_details_link = Pension scheme return (PSR)
+messages__psr__view_details_link = Pension scheme return
 
 messages__psaSchemeDash__view_change_details_link_notification_scheme = Another user is editing {0}. It must be saved and closed before changes can be made to another scheme.
 messages__psaSchemeDash__view_change_details_link_notification_psa = {0} is being edited. It must be saved and closed before changes can be made to another scheme.
@@ -674,6 +675,7 @@ messages__pspSchemeDashboard__details__deAuth_Link_screenReaderAlternative = Dee
 messages__pspSchemeDashboard__scheme_heading = Pension scheme details
 messages__pspSchemeDashboard__scheme__subHeading_pstr = Pension Scheme Tax Reference:
 messages__pspSchemeDashboard__scheme__subHeading_regForTax = Registration for Tax:
+messages__pspSchemeDashboard__scheme__subHeading_interim_dashboard_regForTax = Registered:
 messages__pspSchemeDashboard__view_details_link = View the registered scheme details
 
 messages__pspSchemeDashboard__aftReturns_heading = Accounting for Tax returns
