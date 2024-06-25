@@ -204,7 +204,7 @@ class PsaSchemeDashboardServiceSpec
 
       val expectedReturn = CardViewModel("manage_reports_returns","Manage reports and returns",List.empty,
         List(Link("aft-view-link","dummy",Literal("Accounting for Tax (AFT) return"),None,None),
-          Link("psr-view-details","dummy",Literal("Pension scheme return (PSR)"),None,None)),None)
+          Link("psr-view-details","dummy",Literal("Pension scheme return"),None,None)),None)
 
       compareCardViewModels(actualReturn, expectedReturn)
 
@@ -222,7 +222,7 @@ class PsaSchemeDashboardServiceSpec
       val expectedReturn = CardViewModel("manage_reports_returns","Manage reports and returns",List(CardSubHeading("Notice to file:","card-sub-heading",
         List(CardSubHeadingParam("PSR due 6 April 2024","font-small bold")))),
         List(Link("aft-view-link","dummy",Literal("Accounting for Tax (AFT) return"),None,None),
-          Link("psr-view-details","dummy",Literal("Pension scheme return (PSR)"),None,None)),None)
+          Link("psr-view-details","dummy",Literal("Pension scheme return"),None,None)),None)
 
       compareCardViewModels(actualReturn, expectedReturn)
 
@@ -241,7 +241,7 @@ class PsaSchemeDashboardServiceSpec
       val expectedReturn = CardViewModel("manage_reports_returns","Manage reports and returns",List(CardSubHeading("Notice to file:","card-sub-heading",
         List(CardSubHeadingParam("Multiple pension scheme returns due","font-small bold")))),
         List(Link("aft-view-link","dummy",Literal("Accounting for Tax (AFT) return"),None,None),
-          Link("psr-view-details","dummy",Literal("Pension scheme return (PSR)"),None,None)),None)
+          Link("psr-view-details","dummy",Literal("Pension scheme return"),None,None)),None)
 
       compareCardViewModels(actualReturn, expectedReturn)
 
