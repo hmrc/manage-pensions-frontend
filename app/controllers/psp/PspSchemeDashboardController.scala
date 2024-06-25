@@ -35,6 +35,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import play.twirl.api.Html
 import services.PsaSchemeDashboardService.{maxEndDateAsString, minStartDateAsString}
 import services.{PspSchemeDashboardService, SchemeDetailsService}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.annotations.SessionDataCache
 import utils.{EventReportingHelper, UserAnswers}
@@ -88,13 +89,13 @@ class PspSchemeDashboardController @Inject()(
           val schemeName = (userAnswers.json \ "schemeName").as[String]
           val pstr = (userAnswers.json \ "pstr").as[String]
           for {
-            eqOverview <-  pensionSchemeReturnConnector.getOverview(pstr, "PSR", minStartDateAsString, maxEndDateAsString)
+            interimDashboard <- featureToggleConnector.getNewPensionsSchemeFeatureToggle("interim-dashboard").map(_.isEnabled)
+            eqOverview <-  getOverview(interimDashboard, pstr)
             hideAftTile <- featureToggleConnector.getNewAftFeatureToggle("hide-tile").map(_.isEnabled)
             aftPspSchemeDashboardCards <- aftPspSchemeDashboardCards(schemeStatus, srn, pspDetails.authorisingPSAID, hideAftTile)
             listOfSchemes <- listSchemesConnector.getListOfSchemesForPsp(request.pspIdOrException.id)
             _ <- userAnswersCacheConnector.upsert(request.externalId, userAnswers.json)
             erHtml <- getEventReportingHtml(srn, listOfSchemes, schemeName)
-            interimDashboard <- featureToggleConnector.getNewPensionsSchemeFeatureToggle("interim-dashboard").map(_.isEnabled)
           } yield {
             listOfSchemes match {
               case Right(list) =>
@@ -134,6 +135,14 @@ class PspSchemeDashboardController @Inject()(
       }
   }
 
+  private def getOverview(interimDashboard: Boolean,
+                          pstr: String)(implicit hc: HeaderCarrier) = {
+    if (interimDashboard) {
+      pensionSchemeReturnConnector.getOverview(pstr, "PSR", minStartDateAsString, maxEndDateAsString)
+    } else {
+      Future.successful(Seq.empty)
+    }
+  }
   private def getEventReportingHtml(srn: String, list: Either[_, ListOfSchemes], schemeName: String)(implicit authenticatedRequest: AuthenticatedRequest[_]) = {
     list match {
       case Left(_) =>
