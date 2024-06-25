@@ -96,7 +96,7 @@ class PsaSchemeDashboardService @Inject()(
       case None => "Pstr Not Found"
     }
 
-    val seqErOverviewFuture: Future[String] = getErOverViewAsString(pstr)
+    val seqErOverviewFuture: Future[String] = getErOverViewAsString(pstr, interimDashboard)
 
     val optionLockedSchemeNameFuture = optionLockedSchemeName(lock)
 
@@ -112,17 +112,22 @@ class PsaSchemeDashboardService @Inject()(
     }
   }
 
-  private def getErOverViewAsString(pstr: String)(implicit hc: HeaderCarrier, messages: Messages): Future[String] = {
-    pensionSchemeReturnConnector.getOverview(
-      pstr, "PSR", minStartDateAsString, maxEndDateAsString
-    ).map {
-      case x if x.size == 1 =>
-        x.head.psrDueDate.map(date => messages("messages__manage_reports_and_returns_psr_due", date.format(formatter)))
-          .getOrElse("")
-      case x if x.size > 1 =>
-        x.head.psrDueDate.map(_ => messages("messages__manage_reports_and_returns_multiple_due"))
-          .getOrElse("")
-      case _ => ""
+  private def getErOverViewAsString(pstr: String,
+                                    interimDashboard: Boolean)(implicit hc: HeaderCarrier, messages: Messages): Future[String] = {
+    if(interimDashboard) {
+      pensionSchemeReturnConnector.getOverview(
+        pstr, "PSR", minStartDateAsString, maxEndDateAsString
+      ).map {
+        case x if x.size == 1 =>
+          x.head.psrDueDate.map(date => messages("messages__manage_reports_and_returns_psr_due", date.format(formatter)))
+            .getOrElse("")
+        case x if x.size > 1 =>
+          x.head.psrDueDate.map(_ => messages("messages__manage_reports_and_returns_multiple_due"))
+            .getOrElse("")
+        case _ => ""
+      }
+    }else {
+      Future.successful("")
     }
   }
 
