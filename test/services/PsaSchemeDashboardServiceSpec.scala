@@ -144,7 +144,7 @@ class PsaSchemeDashboardServiceSpec
   "manageReportsEventsCard" must {
     "return manage reports events card view model" in {
       service.manageReportsEventsCard(srn, erHtml, "") mustBe
-        manageReportsEventsCard(erHtml)
+        manageReportsEventsCard(erHtml, "")
     }
   }
 
@@ -203,8 +203,7 @@ class PsaSchemeDashboardServiceSpec
         ListOfSchemes("", "", Some(fullSchemes)), ua = UserAnswers()) .map(_.head).futureValue
 
       val expectedReturn = CardViewModel("manage_reports_returns","Manage reports and returns",List.empty,
-        List(Link("aft-view-link","dummy",Literal("Accounting for Tax (AFT) return"),None,None),
-          Link("psr-view-details","dummy",Literal("Pension scheme return"),None,None)),None)
+        List(Link("aft-view-link","dummy",Literal("Accounting for Tax (AFT) return"),None,None)),None)
 
       compareCardViewModels(actualReturn, expectedReturn)
 
@@ -360,7 +359,7 @@ object PsaSchemeDashboardServiceSpec {
     ))
   )
 
-  private def manageReportsEventsCard(erHtml:Html)
+  private def manageReportsEventsCard(erHtml:Html, subHeadingPstr: String)
                      (implicit messages: Messages): CardViewModel = {
     val aftLink = Seq(Link(
         id = "aft-view-link",
@@ -387,7 +386,7 @@ object PsaSchemeDashboardServiceSpec {
     CardViewModel(
       id = "manage_reports_returns",
       heading = Message("messages__manage_reports_and_returns_head"),
-      links =  aftLink ++ erLink ++ psrLink
+      links =  if(subHeadingPstr.isBlank) { aftLink ++ erLink } else { aftLink ++ erLink ++ psrLink }
     )
   }
 

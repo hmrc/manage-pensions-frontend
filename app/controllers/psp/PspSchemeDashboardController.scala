@@ -137,7 +137,7 @@ class PspSchemeDashboardController @Inject()(
 
   private def getOverview(interimDashboard: Boolean,
                           pstr: String)(implicit hc: HeaderCarrier) = {
-    if (interimDashboard) {
+    if (interimDashboard && pstr.nonEmpty) {
       pensionSchemeReturnConnector.getOverview(pstr, "PSR", minStartDateAsString, maxEndDateAsString)
     } else {
       Future.successful(Seq.empty)
