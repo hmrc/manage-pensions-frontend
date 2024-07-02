@@ -114,7 +114,7 @@ class PsaSchemeDashboardService @Inject()(
 
   private def getErOverViewAsString(pstr: String,
                                     interimDashboard: Boolean)(implicit hc: HeaderCarrier, messages: Messages): Future[String] = {
-    if(interimDashboard) {
+    if(interimDashboard && pstr.nonEmpty) {
       pensionSchemeReturnConnector.getOverview(
         pstr, "PSR", minStartDateAsString, maxEndDateAsString
       ).map {
@@ -172,10 +172,9 @@ class PsaSchemeDashboardService @Inject()(
       ))
 
 
-    val subHeading: Seq[CardSubHeading] = if(seqEROverview.isBlank){
+    val subHeading: Seq[CardSubHeading] = if (seqEROverview.isBlank) {
       Seq.empty
-    }
-    else{
+    } else {
       Seq(CardSubHeading(
         subHeading = Message("messages__manage_reports_and_returns_subhead"),
         subHeadingClasses = "card-sub-heading",
@@ -186,8 +185,12 @@ class PsaSchemeDashboardService @Inject()(
     CardViewModel(
       id = "manage_reports_returns",
       heading = Message("messages__manage_reports_and_returns_head"),
-      subHeadings =    subHeading,
-      links =  aftLink ++ erLink ++ psrLink
+      subHeadings = subHeading,
+      links = if (seqEROverview.isBlank) {
+        aftLink ++ erLink
+      } else {
+        aftLink ++ erLink ++ psrLink
+      }
     )
   }
 

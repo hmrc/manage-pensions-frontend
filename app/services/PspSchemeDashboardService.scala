@@ -120,10 +120,10 @@ class PspSchemeDashboardService @Inject()(
                                (implicit messages: Messages): PspSchemeDashboardCardViewModel =
     {
       val aftLink = Seq(Link(
-          id = "aft-view-link",
-          url = appConfig.aftOverviewHtmlUrl.format(srn),
-          linkText = messages("messages__aft__view_details_link")
-        ))
+        id = "aft-view-link",
+        url = appConfig.aftOverviewHtmlUrl.format(srn),
+        linkText = messages("messages__aft__view_details_link")
+      ))
 
       val erLink = if (erHtml.equals(Html(""))) {
         Seq()
@@ -142,10 +142,9 @@ class PspSchemeDashboardService @Inject()(
           linkText = messages("messages__psr__view_details_link")
         ))
 
-      val subHead: Seq[CardSubHeading] = if(subHeadingPstr.isBlank){
+      val subHead: Seq[CardSubHeading] = if (subHeadingPstr.isBlank) {
         Seq.empty
-      }
-      else{
+      } else {
         Seq(CardSubHeading(
           subHeading = Message("messages__manage_reports_and_returns_subhead"),
           subHeadingClasses = "card-sub-heading",
@@ -157,8 +156,12 @@ class PspSchemeDashboardService @Inject()(
       PspSchemeDashboardCardViewModel(
         id = "manage_reports_returns",
         heading = Message("messages__manage_reports_and_returns_head"),
-        subHeadings =    subHead.map(x => x.subHeading -> x.subHeadingParams.head.subHeadingParam),
-        links = aftLink ++ erLink ++ psrLink
+        subHeadings = subHead.map(x => x.subHeading -> x.subHeadingParams.head.subHeadingParam),
+        links = if (subHeadingPstr.isBlank) {
+          aftLink ++ erLink
+        } else {
+          aftLink ++ erLink ++ psrLink
+        }
       )
     }
 }
