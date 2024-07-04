@@ -28,7 +28,6 @@ import identifiers.invitations.{PSTRId, SchemeNameId}
 import models._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
-import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
 import play.api.test.Helpers._
