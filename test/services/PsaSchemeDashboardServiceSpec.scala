@@ -33,7 +33,6 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.i18n.Messages
 import play.api.libs.json.{JsArray, Json}
@@ -43,7 +42,7 @@ import services.SchemeDetailsServiceSpec.psaId
 import uk.gov.hmrc.domain.PsaId
 import utils.DateHelper.formatter
 import utils.UserAnswers
-import viewmodels.Message.{Literal, Resolvable}
+import viewmodels.Message.Literal
 import viewmodels._
 
 import java.time.LocalDate
