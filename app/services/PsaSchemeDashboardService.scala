@@ -43,7 +43,6 @@ import services.PsaSchemeDashboardService.{maxEndDateAsString, minStartDateAsStr
 
 import java.time.LocalDate
 import scala.concurrent.{ExecutionContext, Future}
-import scala.reflect.runtime.universe.Try
 
 class PsaSchemeDashboardService @Inject()(
                                            appConfig: FrontendAppConfig,

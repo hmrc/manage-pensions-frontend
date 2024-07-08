@@ -19,6 +19,7 @@
 @import uk.gov.hmrc.hmrcfrontend.views.Aliases.UserResearchBanner
 @import config.FrontendAppConfig
 @import controllers.routes
+@import views.html.helper.CSPNonce
 
 @this(
     appConfig: FrontendAppConfig,
@@ -62,9 +63,9 @@
 }
 
 @scripts = {
-    <script src='@controllers.routes.Assets.versioned("lib/govuk-frontend/govuk/all.js")'></script>
-    <script src='@controllers.routes.Assets.versioned("lib/hmrc-frontend/hmrc/all.js")'></script>
-    <script src='@routes.Assets.versioned("javascripts/application.js")'> </script>
+    <script @CSPNonce.attr src='@controllers.routes.Assets.versioned("lib/govuk-frontend/govuk/all.js")'></script>
+    <script @CSPNonce.attr src='@controllers.routes.Assets.versioned("lib/hmrc-frontend/hmrc/all.js")'></script>
+    <script @CSPNonce.attr src='@routes.Assets.versioned("javascripts/application.js")'> </script>
 }
 
 @mainContentWithGetHelp = {

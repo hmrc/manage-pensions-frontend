@@ -19,22 +19,17 @@ package connectors
 import com.google.inject.Inject
 import config.FrontendAppConfig
 import models.EROverview
-import play.api.Logger
 import play.api.http.Status._
 import play.api.libs.json._
-import play.api.mvc.Result
-import play.api.mvc.Results.{BadRequest, NoContent}
 import uk.gov.hmrc.http._
 import utils.HttpResponseHelper
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Failure
 
 class PensionSchemeReturnConnector @Inject()(
                                          config: FrontendAppConfig,
                                          http: HttpClient
                                        )(implicit ec: ExecutionContext) extends HttpResponseHelper {
-
 
   def getOverview(pstr: String, reportType: String, startDate: String, endDate: String)
                  (implicit headerCarrier: HeaderCarrier): Future[Seq[EROverview]] = {
@@ -60,7 +55,6 @@ class PensionSchemeReturnConnector @Inject()(
         }
       }
   }
-
 
 }
 
