@@ -287,8 +287,8 @@ class PsaSchemeDashboardService @Inject()(
   private def latestMergedPsaSubHeading(ua: UserAnswers)(implicit messages: Messages): Seq[CardSubHeading] =
     latestPsa(ua).fold[Seq[CardSubHeading]](Nil) { psa =>
       Seq(CardSubHeading(
-        subHeading = psa.relationshipDate.fold(messages("messages__psaSchemeDash__registered_by"))(date =>
-          messages("messages__psaSchemeDash__registered_by", LocalDate.parse(date).format(formatter))),
+        subHeading = psa.relationshipDate.fold(messages("messages__psaSchemeDash__main_scheme_admin"))(date =>
+          messages("messages__psaSchemeDash__main_scheme_admin", LocalDate.parse(date).format(formatter))),
         subHeadingClasses = "card-sub-heading",
         subHeadingParams = Seq(CardSubHeadingParam(
           subHeadingParam = psa.getPsaName.getOrElse(throw PsaNameCannotBeRetrievedException),
