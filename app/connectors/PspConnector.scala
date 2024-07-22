@@ -73,6 +73,7 @@ class PspConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig)
           case _ => handleErrorResponse("POST", config.authorisePspUrl)(response)
         }
     } andThen {
+      case Failure(_: ActiveRelationshipExistsException) =>
       case Failure(t: Throwable) => logger.warn("Unable to authorise psp", t)
     }
   }
