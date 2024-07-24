@@ -373,8 +373,8 @@ messages__psaSchemeDash__visuallyhidden_remove = Cannot remove {0}
 messages__psaSchemeDash__psp_heading = Pension scheme practitioners
 messages__psaSchemeDash__addedOn = Added on {0}:
 messages__psaSchemeDash__addedOn_date = Added on {0}
-messages__psaSchemeDash__main_scheme_admin = Main scheme administrator:
-messages__pspSchemeDash__main_scheme_admin = Main scheme administrator:
+messages__psaSchemeDash__main_scheme_admin = Primary scheme administrator:
+messages__pspSchemeDash__main_scheme_admin = Primary scheme administrator:
 messages__psaSchemeDash__added = Added:
 
 messages__check__your__answer__main__containt__label = You are adding this scheme administrator to {0}.
