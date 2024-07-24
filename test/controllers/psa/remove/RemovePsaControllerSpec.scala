@@ -20,6 +20,7 @@ import base.SpecBase
 import connectors.FakeUserAnswersCacheConnector
 import connectors.admin.MinimalConnector
 import connectors.scheme.SchemeDetailsConnector
+import controllers.ControllerSpecBase
 import controllers.actions._
 import controllers.psa.remove.routes._
 import handlers.ErrorHandler
@@ -37,7 +38,7 @@ import utils.UserAnswers
 import java.time.LocalDate
 import scala.concurrent.{ExecutionContext, Future}
 
-class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
+class RemovePsaControllerSpec extends ControllerSpecBase with MockitoSugar {
 
   import RemovePsaControllerSpec._
 
@@ -53,7 +54,7 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
     override def getNameFromPspID(pspId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = ???
   }
 
-  private val fakePsaSchemeAuthAction = new FakePsaSchemeAuthAction(app.injector.instanceOf[SchemeDetailsConnector], app.injector.instanceOf[ErrorHandler])
+  private val mockPsaSchemeAuthAction = new FakePsaSchemeAuthAction(app.injector.instanceOf[SchemeDetailsConnector], app.injector.instanceOf[ErrorHandler])
 
   val userAnswersJson: String =
     s"""{
@@ -137,6 +138,21 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
        }
        """.stripMargin
 
+
+
+  def controller(dataRetrievalAction: DataRetrievalAction = data,
+                 psaMinimalDetails: MinimalPSAPSP = psaMinimalSubscription,
+                 schemeDetailsConnector: SchemeDetailsConnector) =
+    new RemovePsaController(FakeAuthAction, dataRetrievalAction,
+      new DataRequiredActionImpl,
+      schemeDetailsConnector,
+      FakeUserAnswersCacheConnector,
+      fakeMinimalPsaConnector(psaMinimalDetails),
+      frontendAppConfig,
+      controllerComponents,
+      mockPsaSchemeAuthAction
+    )
+
   def fakeSchemeDetailsConnector(json: String = userAnswersJson): SchemeDetailsConnector =
     new SchemeDetailsConnector {
 
@@ -149,6 +165,9 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
         Future.apply(UserAnswers(Json.parse(json)))(ec)
       }
 
+      def isPsaAssociated(psaOrPspId: String, idType: String, srn: String)
+                         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Boolean]] = ???
+
       override def getPspSchemeDetails(pspId: String, srn: String)
                                       (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[UserAnswers] = ???
 
@@ -157,19 +176,6 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
                                            schemeIdType: String)
                                           (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = ???
     }
-
-  def controller(dataRetrievalAction: DataRetrievalAction = data,
-                 psaMinimalDetails: MinimalPSAPSP = psaMinimalSubscription,
-                 schemeDetailsConnector: SchemeDetailsConnector) =
-    new RemovePsaController(FakeAuthAction, dataRetrievalAction,
-      new DataRequiredActionImpl,
-      schemeDetailsConnector,
-      FakeUserAnswersCacheConnector,
-      fakeMinimalPsaConnector(psaMinimalDetails),
-      frontendAppConfig,
-      controllerComponents,
-      fakePsaSchemeAuthAction
-    )
 
 
   "RemovePsaController calling onPageLoad" must {
@@ -284,7 +290,7 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
         fakeSchemeDetailsConnector(), FakeUserAnswersCacheConnector,
         fakeMinimalPsaConnector(psaMinimalSubscription.copy(isPsaSuspended = false)), frontendAppConfig,
         controllerComponents,
-        fakePsaSchemeAuthAction
+        mockPsaSchemeAuthAction
       )
 
       val result = controller.onPageLoad(fakeRequest)

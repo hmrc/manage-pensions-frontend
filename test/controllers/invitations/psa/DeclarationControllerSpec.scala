@@ -48,7 +48,7 @@ class DeclarationControllerSpec
   import DeclarationControllerSpec._
 
   val config: Configuration = injector.instanceOf[Configuration]
-  private val fakeSchemeDetailsConnector: SchemeDetailsConnector = mock[SchemeDetailsConnector]
+  private val mockSchemeDetailsConnector: SchemeDetailsConnector = mock[SchemeDetailsConnector]
   private val fakeInvitationCacheConnector = mock[InvitationsCacheConnector]
   private val fakeInvitationConnector = mock[InvitationConnector]
   private val view = injector.instanceOf[declaration]
@@ -60,7 +60,7 @@ class DeclarationControllerSpec
     dataRetrievalAction,
     new DataRequiredActionImpl,
     FakeUserAnswersCacheConnector,
-    fakeSchemeDetailsConnector,
+    mockSchemeDetailsConnector,
     fakeInvitationCacheConnector,
     fakeInvitationConnector,
     new FakeNavigator(onwardRoute),
@@ -69,7 +69,7 @@ class DeclarationControllerSpec
   )
 
   override def beforeEach(): Unit = {
-    reset(fakeSchemeDetailsConnector)
+    reset(mockSchemeDetailsConnector)
     reset(fakeInvitationCacheConnector)
     reset(fakeInvitationConnector)
   }
@@ -84,7 +84,7 @@ class DeclarationControllerSpec
     "on a GET" must {
 
       "return OK and the correct view with non rac dac master trust scheme" in {
-        when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any()))
+        when(mockSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any()))
           .thenReturn(Future.successful(schemeDetailsResponse))
         val result = controller(data).onPageLoad()(fakeRequest)
 
@@ -93,7 +93,7 @@ class DeclarationControllerSpec
         FakeUserAnswersCacheConnector.verify(SchemeNameId, "Open Single Trust Scheme with Indiv Establisher and Trustees")
         FakeUserAnswersCacheConnector.verify(IsMasterTrustId, true)
         FakeUserAnswersCacheConnector.verify(PSTRId, "24000001IN")
-        verify(fakeSchemeDetailsConnector, times(1)).getSchemeDetails(any(), any(), any())(any(), any())
+        verify(mockSchemeDetailsConnector, times(1)).getSchemeDetails(any(), any(), any())(any(), any())
       }
 
       "return OK and the correct view with racdac scheme" in {
@@ -101,7 +101,7 @@ class DeclarationControllerSpec
         val data = new FakeDataRetrievalAction(Some(UserAnswers().
           haveWorkingKnowledge(true).srn(srn).pstr(pstr).json))
 
-        when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any()))
+        when(mockSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any()))
           .thenReturn(Future.successful(uaSchemeDetails))
         val result = controller(data).onPageLoad()(fakeRequest)
 
@@ -110,14 +110,14 @@ class DeclarationControllerSpec
         FakeUserAnswersCacheConnector.verify(SchemeNameId, "rac dac scheme")
         FakeUserAnswersCacheConnector.verify(IsMasterTrustId, false)
         FakeUserAnswersCacheConnector.verify(PSTRId, pstr)
-        verify(fakeSchemeDetailsConnector, times(1)).getSchemeDetails(any(), any(), any())(any(), any())
+        verify(mockSchemeDetailsConnector, times(1)).getSchemeDetails(any(), any(), any())(any(), any())
       }
 
       "throw IllegalArgumentException if scheme type is missing for non rac dac scheme" in {
         val uaSchemeDetails = UserAnswers().set(GetSchemeNameId)("rac dac scheme").flatMap(_.set(PSTRId)(pstr)).asOpt.get
         val data = new FakeDataRetrievalAction(Some(UserAnswers().
           haveWorkingKnowledge(true).srn(srn).pstr(pstr).json))
-        when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any()))
+        when(mockSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any()))
           .thenReturn(Future.successful(uaSchemeDetails))
         val result = controller(data).onPageLoad()(fakeRequest)
 

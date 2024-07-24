@@ -19,6 +19,7 @@ package controllers
 import base.SpecBase
 import connectors.scheme.SchemeDetailsConnector
 import actions.{FakeDataRetrievalAction, FakePsaSchemeAuthAction, FakePspSchemeAuthAction}
+import controllers.invitations.InviteControllerSpec.readJsonFromFile
 import handlers.ErrorHandler
 import identifiers.psa.PSANameId
 import identifiers.psp.PSPNameId
@@ -26,6 +27,10 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.inject.guice.GuiceableModule
 import play.api.libs.json.Json
 import uk.gov.hmrc.domain.PspId
+import uk.gov.hmrc.http.HeaderCarrier
+import utils.UserAnswers
+
+import scala.concurrent.{ExecutionContext, Future}
 
 trait ControllerSpecBase extends SpecBase {
 
@@ -54,5 +59,29 @@ trait ControllerSpecBase extends SpecBase {
   protected def applicationBuilder(modules: Seq[GuiceableModule] = Seq.empty): GuiceApplicationBuilder =
     new GuiceApplicationBuilder()
       .overrides(modules: _*)
+
+  def fakeSchemeDetailsConnector: SchemeDetailsConnector = new SchemeDetailsConnector {
+
+    override def getSchemeDetails(psaId: String,
+                                  idNumber: String,
+                                  schemeIdType: String
+                                 )(implicit hc: HeaderCarrier,
+                                   ec: ExecutionContext): Future[UserAnswers] =
+      Future.successful(UserAnswers(readJsonFromFile("/data/validSchemeDetailsUserAnswers.json")))
+
+    override def getPspSchemeDetails(pspId: String, srn: String)
+                                    (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[UserAnswers] = ???
+
+    override def getSchemeDetailsRefresh(psaId: String,
+                                         idNumber: String,
+                                         schemeIdType: String)
+                                        (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = ???
+
+    override def isPsaAssociated(psaOrPspId: String,
+                                 idType: String,
+                                 srn: String)
+                                (implicit hc: HeaderCarrier,
+                                 ec: ExecutionContext): Future[Option[Boolean]] = ???
+  }
 
 }

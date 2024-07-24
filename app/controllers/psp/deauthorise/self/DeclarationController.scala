@@ -22,7 +22,7 @@ import config.FrontendAppConfig
 import connectors.admin.MinimalConnector
 import connectors.{EmailConnector, EmailNotSent, PspConnector}
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PspSchemeAuthAction}
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaPspSchemeAuthAction}
 import controllers.psp.deauthorise.self.routes._
 import controllers.routes._
 import forms.psp.deauthorise.DeauthorisePspDeclarationFormProvider
@@ -58,7 +58,7 @@ class DeclarationController @Inject()(
                                        appConfig: FrontendAppConfig,
                                        val controllerComponents: MessagesControllerComponents,
                                        view: declaration,
-                                       pspSchemeAuthAction: PspSchemeAuthAction
+                                       psaPspSchemeAuthAction: PsaPspSchemeAuthAction
                                      )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport
@@ -67,7 +67,7 @@ class DeclarationController @Inject()(
 
   private val logger = Logger(classOf[DeclarationController])
 
-  def onPageLoad(): Action[AnyContent] = (auth(PSP) andThen getData andThen pspSchemeAuthAction(None) andThen requireData).async {
+  def onPageLoad(): Action[AnyContent] = (auth(PSP) andThen getData andThen psaPspSchemeAuthAction(None) andThen requireData).async {
     implicit request =>
       (SchemeSrnId and SchemeNameId).retrieve.map {
         case srn ~ schemeName =>
@@ -75,7 +75,7 @@ class DeclarationController @Inject()(
       }
   }
 
-  def onSubmit(): Action[AnyContent] = (auth(PSP) andThen getData andThen pspSchemeAuthAction(None) andThen requireData).async {
+  def onSubmit(): Action[AnyContent] = (auth(PSP) andThen getData andThen psaPspSchemeAuthAction(None) andThen requireData).async {
     implicit request =>
       (SchemeSrnId and SchemeNameId and PSTRId and DeauthDateId and AuthorisedPractitionerId).retrieve.map {
         case srn ~ schemeName ~ pstr ~ removalDate ~ authorisedPractitioner =>

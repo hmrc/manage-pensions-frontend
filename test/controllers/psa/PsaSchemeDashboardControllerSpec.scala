@@ -54,7 +54,7 @@ class PsaSchemeDashboardControllerSpec
     with BeforeAndAfterEach {
 
   private val psaSchemeDashboardView: psaSchemeDashboard = app.injector.instanceOf[psaSchemeDashboard]
-  private val fakeSchemeDetailsConnector: SchemeDetailsConnector = mock[SchemeDetailsConnector]
+  override  val fakeSchemeDetailsConnector: SchemeDetailsConnector = mock[SchemeDetailsConnector]
   private val mockFrontendConnector: FrontendConnector = mock[FrontendConnector]
   private val fakeListOfSchemesConnector: ListOfSchemesConnector = mock[ListOfSchemesConnector]
   private val fakeSchemeLockConnector: PensionSchemeVarianceLockConnector = mock[PensionSchemeVarianceLockConnector]

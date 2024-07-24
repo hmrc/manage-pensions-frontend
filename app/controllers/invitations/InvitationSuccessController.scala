@@ -20,7 +20,7 @@ import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import connectors.admin.MinimalConnector
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaSchemeAuthAction}
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaPspSchemeAuthAction}
 import identifiers.MinimalSchemeDetailId
 import identifiers.invitations.psa.InviteePSAId
 import identifiers.invitations.{InvitationSuccessId, InviteeNameId}
@@ -47,11 +47,11 @@ class InvitationSuccessController @Inject()(
                                              @Invitations navigator: Navigator,
                                              val controllerComponents: MessagesControllerComponents,
                                              view: invitation_success,
-                                             psaSchemeAuthAction: PsaSchemeAuthAction
+                                             psaPspSchemeAuthAction: PsaPspSchemeAuthAction
                                            )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] =
-    (authenticate() andThen getData andThen psaSchemeAuthAction(Some(srn)) andThen requireData).async {
+    (authenticate() andThen getData andThen psaPspSchemeAuthAction(Some(srn)) andThen requireData).async {
     implicit request =>
 
       val continue = controllers.invitations.routes.InvitationSuccessController.onSubmit(srn)
@@ -75,7 +75,7 @@ class InvitationSuccessController @Inject()(
       }
   }
 
-  def onSubmit(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(Some(srn))).async {
+  def onSubmit(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate() andThen getData andThen psaPspSchemeAuthAction(Some(srn))).async {
     _ => Future.successful(Redirect(navigator.nextPage(InvitationSuccessId(srn), NormalMode, UserAnswers())))
   }
 }

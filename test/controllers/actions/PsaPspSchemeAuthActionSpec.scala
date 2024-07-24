@@ -37,12 +37,12 @@ import utils.UserAnswers
 import java.time.LocalDate
 import scala.concurrent.Future
 
-class PspSchemeAuthActionSpec
+class PsaPspSchemeAuthActionSpec
   extends SpecBase with MockitoSugar with BeforeAndAfterAll with ScalaFutures {
 
     private val errorHandler = mock[ErrorHandler]
     private val schemeDetailsConnector = mock[SchemeDetailsConnector]
-    private val action = new PspSchemeAuthAction(schemeDetailsConnector, errorHandler)
+    private val action = new PsaPspSchemeAuthAction(schemeDetailsConnector, errorHandler)
     private val notFoundTemplateResult = Html("")
 
     override def beforeAll(): Unit = {
@@ -73,17 +73,15 @@ class PspSchemeAuthActionSpec
       }
 
       "return not found if getSchemeDetails fails" in {
-        when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any())).thenReturn(Future.failed(new RuntimeException("")))
+        when(schemeDetailsConnector.isPsaAssociated(any(), any(), any())(any(), any())).thenReturn(Future.failed(new RuntimeException("")))
         val request = OptionalDataRequest(fakeRequest, "", None, None, Some(PspId("00000000")) , Individual, AuthEntity.PSP)
         val result = action.apply(Some(SchemeReferenceNumber("srn"))).invokeBlock(request, { x:OptionalDataRequest[_] => Future.successful(Ok("")) })
         status(result) mustBe NOT_FOUND
       }
 
       "return not found if current pspId is missing from list of scheme admins" in {
-        when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any())).thenReturn(Future.successful(
-          UserAnswers(
-            Json.toJson(Map("pspDetails" -> AuthorisedPractitioner(None, None, None, "", AuthorisingPSA(None, None, None, None), LocalDate.now(), "00000000")))
-          )
+        when(schemeDetailsConnector.isPsaAssociated(any(), any(), any())(any(), any())).thenReturn(Future.successful(
+          Some(false)
         ))
         val request = OptionalDataRequest(fakeRequest, "", None, None, Some(PspId("00000001")) , Individual, AuthEntity.PSP)
         val result = action.apply(Some(SchemeReferenceNumber("srn"))).invokeBlock(request, { x:OptionalDataRequest[_] => Future.successful(Ok("")) })
@@ -91,10 +89,8 @@ class PspSchemeAuthActionSpec
       }
 
       "return ok after making an API call and ensuring that PSpId is authorised" in {
-        when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any())).thenReturn(Future.successful(
-          UserAnswers(
-            Json.toJson(Map("pspDetails" -> AuthorisedPractitioner(None, None, None, "", AuthorisingPSA(None, None, None, None), LocalDate.now(), "00000000")))
-          )))
+        when(schemeDetailsConnector.isPsaAssociated(any(), any(), any())(any(), any())).thenReturn(Future.successful(
+          Some(true)))
         val request = OptionalDataRequest(fakeRequest, "", None, None, Some(PspId("00000000")) , Individual, AuthEntity.PSP)
         val result = action.apply(Some(SchemeReferenceNumber("srn"))).invokeBlock(request, { x:OptionalDataRequest[_] => Future.successful(Ok("")) })
         status(result) mustBe OK

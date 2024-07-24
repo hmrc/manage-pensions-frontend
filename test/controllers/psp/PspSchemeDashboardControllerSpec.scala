@@ -21,7 +21,7 @@ import connectors.{FrontendConnector, PensionSchemeReturnConnector, UserAnswersC
 import connectors.admin.{FeatureToggleConnector, MinimalConnector, ToggleDetails}
 import connectors.scheme.{ListOfSchemesConnector, SchemeDetailsConnector}
 import controllers.ControllerSpecBase
-import controllers.actions.{AuthAction, FakeAuthAction, PspSchemeAuthAction}
+import controllers.actions.{AuthAction, FakeAuthAction, PsaPspSchemeAuthAction}
 import handlers.ErrorHandler
 import models.{EROverview, IndividualDetails, Link, MinimalPSAPSP}
 import org.mockito.ArgumentMatchers.any
@@ -395,7 +395,7 @@ class PspSchemeDashboardControllerSpec
         view = view,
         config = appConfig,
         frontendConnector = frontendConnector,
-        app.injector.instanceOf[PspSchemeAuthAction],
+        app.injector.instanceOf[PsaPspSchemeAuthAction],
         getDataWithPspName(),
         mockFeatureToggleConnector,
         mockPensionSchemeReturnConnector

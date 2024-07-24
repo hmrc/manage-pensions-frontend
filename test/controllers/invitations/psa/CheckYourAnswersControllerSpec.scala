@@ -112,7 +112,7 @@ object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours
   private val countryOptions = new CountryOptions(environment, frontendAppConfig)
   private val checkYourAnswersFactory = new CheckYourAnswersFactory(countryOptions)
 
-  private val fakeSchemeDetailsConnector: SchemeDetailsConnector = mock[SchemeDetailsConnector]
+  private val mockSchemeDetailsConnector: SchemeDetailsConnector = mock[SchemeDetailsConnector]
   val config: Configuration = injector.instanceOf[Configuration]
   private val view = injector.instanceOf[check_your_answers_view]
 
@@ -132,26 +132,26 @@ object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours
 
     new CheckYourAnswersController(
       frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction,
-      checkYourAnswersFactory, fakeSchemeDetailsConnector, fakeInvitationConnector(), controllerComponents, view, fakePsaSchemeAuthAction).onPageLoad()
+      checkYourAnswersFactory, mockSchemeDetailsConnector, fakeInvitationConnector(), controllerComponents, view, fakePsaSchemeAuthAction).onPageLoad()
   }
 
   def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
 
-    when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any()))
+    when(mockSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any()))
       .thenReturn(Future.successful(UserAnswers(readJsonFromFile("/data/validSchemeDetailsResponse.json"))))
 
     new CheckYourAnswersController(
       frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction,
-      checkYourAnswersFactory, fakeSchemeDetailsConnector, fakeInvitationConnector(), controllerComponents, view, fakePsaSchemeAuthAction).onSubmit()
+      checkYourAnswersFactory, mockSchemeDetailsConnector, fakeInvitationConnector(), controllerComponents, view, fakePsaSchemeAuthAction).onSubmit()
   }
 
   def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction, invitationResponse: Future[InvitationStatus]): Action[AnyContent] = {
 
-    when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any()))
+    when(mockSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any()))
       .thenReturn(Future.successful(UserAnswers(readJsonFromFile("/data/validSchemeDetailsResponse.json"))))
 
     new CheckYourAnswersController(
       frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction,
-      checkYourAnswersFactory, fakeSchemeDetailsConnector, fakeInvitationConnector(invitationResponse), controllerComponents, view, fakePsaSchemeAuthAction).onSubmit()
+      checkYourAnswersFactory, mockSchemeDetailsConnector, fakeInvitationConnector(invitationResponse), controllerComponents, view, fakePsaSchemeAuthAction).onSubmit()
   }
 }

@@ -35,7 +35,7 @@ class AlreadyAssociatedWithSchemeController @Inject()(
                                                        requireData: DataRequiredAction,
                                                        val controllerComponents: MessagesControllerComponents,
                                                        view: alreadyAssociatedWithScheme,
-                                                       psaSchemeAuthAction: PsaSchemeAuthAction
+                                                       psaSchemeAuthAction: PsaPspSchemeAuthAction
                                                      )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with Retrievals

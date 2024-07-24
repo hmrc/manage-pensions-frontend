@@ -18,7 +18,7 @@ package controllers.psp.deauthorise.self
 
 import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PspSchemeAuthAction}
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaPspSchemeAuthAction}
 import forms.psp.deauthorise.ConfirmDeauthPspFormProvider
 import identifiers.psp.PSPNameId
 import identifiers.psp.deauthorise.self.ConfirmDeauthId
@@ -45,7 +45,7 @@ class ConfirmDeauthController @Inject()(val auth: AuthAction,
                                         val userAnswersCacheConnector: UserAnswersCacheConnector,
                                         val controllerComponents: MessagesControllerComponents,
                                         view: confirmDeauth,
-                                        pspSchemeAuthAction: PspSchemeAuthAction
+                                        pspSchemeAuthAction: PsaPspSchemeAuthAction
                                        )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
 
   val form: Form[Boolean] = formProvider()

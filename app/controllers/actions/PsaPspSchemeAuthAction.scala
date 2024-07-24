@@ -18,8 +18,11 @@ package controllers.actions
 
 import connectors.scheme.SchemeDetailsConnector
 import handlers.ErrorHandler
+import identifiers.SchemeSrnId
 import models.SchemeReferenceNumber
+import models.psa.PsaDetails
 import models.requests.OptionalDataRequest
+import play.api.Logging
 import play.api.mvc.Results.NotFound
 import play.api.mvc.{ActionFunction, Result}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
@@ -27,22 +30,69 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvi
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class PsaPspSchemeActionImpl (srn:SchemeReferenceNumber, schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)
+private class PsaPspSchemeActionImpl (srnOpt:Option[SchemeReferenceNumber], schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)
                           (implicit val executionContext: ExecutionContext)
-  extends ActionFunction[OptionalDataRequest, OptionalDataRequest] with FrontendHeaderCarrierProvider {
+  extends ActionFunction[OptionalDataRequest, OptionalDataRequest] with FrontendHeaderCarrierProvider with Logging {
+
+
 
   private def notFoundTemplate(implicit request: OptionalDataRequest[_]) = NotFound(errorHandler.notFoundTemplate)
+
   override def invokeBlock[A](request: OptionalDataRequest[A], block: OptionalDataRequest[A] => Future[Result]): Future[Result] = {
-    request.psaId -> request.pspId match {
-      case (Some(_), None) => new PsaSchemeAuthAction(schemeDetailsConnector, errorHandler).apply(Some(srn)).invokeBlock(request, block)
-      case (None, Some(_)) => new PspSchemeAuthAction(schemeDetailsConnector, errorHandler).apply(Some(srn)).invokeBlock(request, block)
+
+    val retrievedSrn = {
+      if(srnOpt.isDefined) {
+        srnOpt
+      } else {
+        request.userAnswers.flatMap { ua =>
+          ua.get(SchemeSrnId).map { SchemeReferenceNumber(_) }
+        }
+      }
+    }
+
+    val psaIdOpt = request.psaId
+    val pspIdOpt = request.pspId
+
+    (retrievedSrn, psaIdOpt, pspIdOpt) match {
+    case (Some(srn), Some(psaId), None) =>
+        schemaDetailConnectorCall(srn, psaId.id, "psa", request, block)
+      case (Some(srn), None, Some(pspId)) =>
+        schemaDetailConnectorCall(srn, pspId.id, "psp", request, block)
       case _ => Future.successful(notFoundTemplate(request))
+    }
+
+  }
+
+  private def schemaDetailConnectorCall[A](srn: SchemeReferenceNumber,
+                                           psaOrPspId: String,
+                                           idType: String,
+                                           request: OptionalDataRequest[A],
+                                           block: OptionalDataRequest[A] => Future[Result]) = {
+    val isAssociated = schemeDetailsConnector.isPsaAssociated(
+      psaOrPspId = psaOrPspId,
+      idType = idType,
+      srn = srn
+    )(hc(request), executionContext)
+
+    isAssociated.flatMap {
+      case Some(true) => block(request)
+      case _ =>
+        logger.warn("Potentially prevented unauthorised access")
+        Future.successful(notFoundTemplate(request))
+    } recover {
+      case err =>
+        logger.error("isPsaOrPspid associated with scheme, request failed", err)
+        notFoundTemplate(request)
     }
   }
 }
 
 
 class PsaPspSchemeAuthAction @Inject()(schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)(implicit ec: ExecutionContext){
-  def apply(srn: SchemeReferenceNumber) = new PsaPspSchemeActionImpl(srn, schemeDetailsConnector, errorHandler)
-
+  /**
+   * @param srn - If empty, srn is expected to be retrieved from Session. If present srn is expected to be retrieved form the URL
+   * @return
+   */
+  def apply(srn: Option[SchemeReferenceNumber]): ActionFunction[OptionalDataRequest, OptionalDataRequest] =
+    new PsaPspSchemeActionImpl(srn, schemeDetailsConnector, errorHandler)
 }

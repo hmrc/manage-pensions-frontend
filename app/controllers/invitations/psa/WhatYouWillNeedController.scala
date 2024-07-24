@@ -18,7 +18,7 @@ package controllers.invitations.psa
 
 import com.google.inject.Inject
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaSchemeAuthAction}
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaPspSchemeAuthAction}
 import controllers.invitations.psa.routes._
 import controllers.psa.routes._
 import identifiers.{SchemeNameId, SchemeSrnId}
@@ -37,14 +37,14 @@ class WhatYouWillNeedController @Inject()(
                                            requireData: DataRequiredAction,
                                            val controllerComponents: MessagesControllerComponents,
                                            view: whatYouWillNeed,
-                                           psaSchemeAction: PsaSchemeAuthAction
+                                           psaPspSchemeAction: PsaPspSchemeAuthAction
                                          )
   extends FrontendBaseController
     with I18nSupport
     with Retrievals {
 
   def onPageLoad(): Action[AnyContent] =
-    (authenticate() andThen getData andThen psaSchemeAction(None) andThen requireData).async {
+    (authenticate() andThen getData andThen psaPspSchemeAction(None) andThen requireData).async {
       implicit request =>
         (SchemeSrnId and SchemeNameId).retrieve.map {
           case srn ~ schemeName =>
@@ -53,7 +53,7 @@ class WhatYouWillNeedController @Inject()(
         }
     }
 
-  def onSubmit(): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAction(None)).async {
+  def onSubmit(): Action[AnyContent] = (authenticate() andThen getData andThen psaPspSchemeAction(None)).async {
     Future.successful(Redirect(PsaNameController.onPageLoad(NormalMode)))
   }
 }

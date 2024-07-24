@@ -41,7 +41,7 @@ class PsaNameController @Inject()(
                                    formProvider: PsaNameFormProvider,
                                    val controllerComponents: MessagesControllerComponents,
                                    view: psaName,
-                                   psaSchemeAction: PsaSchemeAuthAction
+                                   psaPspSchemeAction: PsaPspSchemeAuthAction
                                  )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport {
@@ -49,7 +49,7 @@ class PsaNameController @Inject()(
   private val form = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
-    (authenticate() andThen getData andThen psaSchemeAction(None)).async {
+    (authenticate() andThen getData andThen psaPspSchemeAction(None)).async {
       implicit request =>
 
         val value = request.userAnswers.flatMap(_.get(InviteeNameId))
@@ -59,7 +59,7 @@ class PsaNameController @Inject()(
     }
 
   def onSubmit(mode: Mode): Action[AnyContent] =
-    (authenticate() andThen getData andThen psaSchemeAction(None)).async {
+    (authenticate() andThen getData andThen psaPspSchemeAction(None)).async {
       implicit request =>
 
         form.bindFromRequest().fold(

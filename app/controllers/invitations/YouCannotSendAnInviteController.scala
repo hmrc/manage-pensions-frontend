@@ -36,10 +36,10 @@ class YouCannotSendAnInviteController @Inject()(appConfig: FrontendAppConfig,
                                                 requireData: DataRequiredAction,
                                                 val controllerComponents: MessagesControllerComponents,
                                                 view: youCannotSendAnInvite,
-                                                psaSchemeAuthAction: PsaSchemeAuthAction)(implicit val ec: ExecutionContext) extends
+                                                psaPspSchemeAuthAction: PsaPspSchemeAuthAction)(implicit val ec: ExecutionContext) extends
   FrontendBaseController with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (authenticate() andThen getData  andThen psaSchemeAuthAction(None)) {
+  def onPageLoad: Action[AnyContent] = (authenticate() andThen getData  andThen psaPspSchemeAuthAction(None)) {
     implicit request =>
       Ok(view())
   }
