@@ -27,6 +27,7 @@ import identifiers.invitations.psp.PspNameId
 import models.NormalMode
 import models.SchemeReferenceNumber
 import play.api.data.Form
+import play.api.libs.json.Json
 import play.api.mvc.Action
 import play.api.mvc.AnyContent
 import utils.UserAnswers
@@ -73,7 +74,7 @@ class PspNameControllerSpec extends ControllerWithQuestionPageBehaviours {
   behave like controllerWithOnPageLoadMethod(onPageLoadAction, userAnswer.dataRetrievalAction, userAnswerWithPspName.dataRetrievalAction,
     form, form.fill("xyz"), viewAsString)
 
-  behave like controllerWithOnSubmitMethod(onSubmitAction, userAnswerWithPspName.dataRetrievalAction, form.bind(Map("pspName" -> "")),
+  behave like controllerWithOnSubmitMethod(onSubmitAction, userAnswerWithPspName.dataRetrievalAction, form.bind(Json.obj(), 0),
     viewAsString, postRequest)
 
 }
