@@ -22,6 +22,7 @@ import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.invitations.psa.PsaIdFormProvider
 import models.NormalMode
 import play.api.data.Form
+import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import utils.UserAnswers
 import views.html.invitations.psa.psaId
@@ -55,7 +56,7 @@ class PsaIdControllerSpec extends ControllerWithQuestionPageBehaviours {
   behave like controllerWithOnPageLoadMethod(onPageLoadAction, userAnswer.dataRetrievalAction,
     userAnswerWithPsaId.dataRetrievalAction, form, form.fill("A0000000"), viewAsString)
 
-  behave like controllerWithOnSubmitMethod(onSubmitAction, userAnswerWithPsaId.dataRetrievalAction, form.bind(Map("psaId" -> "")), viewAsString, postRequest)
+  behave like controllerWithOnSubmitMethod(onSubmitAction, userAnswerWithPsaId.dataRetrievalAction, form.bind(Json.obj(), 0), viewAsString, postRequest)
 
   behave like controllerWithOnPageLoadMethodMissingRequiredData(onPageLoadAction, getEmptyData)
 

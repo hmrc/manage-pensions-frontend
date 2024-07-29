@@ -16,6 +16,7 @@
 
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.FormGroup
 
 @this(
     govukInput: GovukInput
@@ -51,7 +52,7 @@
         classes = cssAdjust,
         content = Text(label)
     ),
-    formGroupClasses = groupClass.getOrElse(""),
+    formGroup = FormGroup(classes = Some(groupClass.getOrElse(""))),
     hint = hint.map(hintValue => Hint(content = HtmlContent(hintValue))),
     classes = inputClass.fold("govuk-!-width-one-half")(classes => classes),
     pattern = if (numericField) { Some("[0-9]*") } else { None },
