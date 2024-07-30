@@ -28,6 +28,7 @@ import identifiers.invitations.psp.PspNameId
 import models.NormalMode
 import models.SchemeReferenceNumber
 import play.api.data.Form
+import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import utils.UserAnswers
 import views.html.invitations.psp.pspId
@@ -43,6 +44,7 @@ class PspIdControllerSpec extends ControllerWithQuestionPageBehaviours {
     .set(SchemeNameId)(schemeName).asOpt.value
     .set(SchemeSrnId)(srn).asOpt.value
   val userAnswerWithPspId: UserAnswers = userAnswer.set(PspId)("00000000").asOpt.value
+  val userAnswersWithInvalidPspId: UserAnswers =  userAnswer.set(PspId)("328074107107510751209").asOpt.value
   private val postRequest = FakeRequest().withJsonBody(userAnswerWithPspId.json)
   private val view = injector.instanceOf[pspId]
 
@@ -69,7 +71,7 @@ class PspIdControllerSpec extends ControllerWithQuestionPageBehaviours {
   behave like controllerWithOnPageLoadMethod(onPageLoadAction, userAnswer.dataRetrievalAction,
     userAnswerWithPspId.dataRetrievalAction, form, form.fill("00000000"), viewAsString)
 
-  behave like controllerWithOnSubmitMethod(onSubmitAction, userAnswerWithPspId.dataRetrievalAction, form.bind(Map("pspId" -> "")), viewAsString, postRequest)
+  behave like controllerWithOnSubmitMethod(onSubmitAction, userAnswerWithPspId.dataRetrievalAction, form.bind(Json.obj(), 0), viewAsString, postRequest)
 
   behave like controllerWithOnPageLoadMethodMissingRequiredData(onPageLoadAction, getEmptyData)
 

@@ -22,6 +22,7 @@ import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.invitations.psa.PsaNameFormProvider
 import models.NormalMode
 import play.api.data.Form
+import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent}
 import utils.{UserAnswers, _}
 import views.html.invitations.psa.psaName
@@ -53,7 +54,7 @@ class PsaNameControllerSpec extends ControllerWithQuestionPageBehaviours {
 
   behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, userAnswer.dataRetrievalAction, form, form.fill("xyz"), viewAsString)
 
-  behave like controllerWithOnSubmitMethod(onSubmitAction, getEmptyData, form.bind(Map("psaName" -> "")), viewAsString, postRequest)
+  behave like controllerWithOnSubmitMethod(onSubmitAction, getEmptyData, form.bind(Json.obj(), 0), viewAsString, postRequest)
 
 }
 

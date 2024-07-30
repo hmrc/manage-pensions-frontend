@@ -20,9 +20,9 @@ import connectors.FakeUserAnswersCacheConnector
 import controllers.actions.{DataRetrievalAction, _}
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.invitations.psa.AdviserDetailsFormProvider
-import identifiers.invitations.psa.AdviserNameId
 import models.NormalMode
 import play.api.data.Form
+import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, AnyContentAsJson}
 import play.api.test.FakeRequest
 import utils.{FakeNavigator, UserAnswers}
@@ -60,7 +60,7 @@ class AdviserDetailsControllerSpec extends ControllerWithQuestionPageBehaviours 
 
   behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, userAnswer.dataRetrievalAction, form, form.fill("test"), viewAsString)
 
-  behave like controllerWithOnSubmitMethod(onSubmitAction, getEmptyData, form.bind(Map(AdviserNameId.toString -> "")), viewAsString, postRequest)
+  behave like controllerWithOnSubmitMethod(onSubmitAction, getEmptyData, form.bind(Json.obj(), 0), viewAsString, postRequest)
 
 }
 
