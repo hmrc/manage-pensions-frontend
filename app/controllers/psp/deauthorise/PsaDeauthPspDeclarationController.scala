@@ -71,8 +71,8 @@ class PsaDeauthPspDeclarationController @Inject()(
 
   private def form: Form[Boolean] = formProvider()
 
-  def onPageLoad(index: Index): Action[AnyContent] =
-    (authenticate() andThen getData andThen psaPspSchemeAuthAction(None) andThen requireData).async {
+  def onPageLoad(index: Index, srn: SchemeReferenceNumber): Action[AnyContent] =
+    (authenticate() andThen getData andThen psaPspSchemeAuthAction(srn) andThen requireData).async {
       implicit request =>
         (SchemeSrnId and SchemeNameId and deauthorise.PspDetailsId(index)).retrieve.map {
           case srn ~ schemeName ~ pspDetails =>
@@ -84,8 +84,8 @@ class PsaDeauthPspDeclarationController @Inject()(
         }
     }
 
-  def onSubmit(index: Index): Action[AnyContent] =
-    (authenticate() andThen getData andThen psaPspSchemeAuthAction(None) andThen requireData).async {
+  def onSubmit(index: Index, srn: SchemeReferenceNumber): Action[AnyContent] =
+    (authenticate() andThen getData andThen psaPspSchemeAuthAction(srn) andThen requireData).async {
       implicit request =>
         (SchemeSrnId and SchemeNameId and PspDetailsId(index) and PSTRId and PspDeauthDateId(index)).retrieve.map {
           case srn ~ schemeName ~ pspDetails ~ pstr ~ removalDate =>

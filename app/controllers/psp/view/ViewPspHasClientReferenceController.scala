@@ -51,7 +51,8 @@ class ViewPspHasClientReferenceController @Inject()(
 
   val form: Form[Boolean] = formProvider()
 
-  def onPageLoad(mode: Mode, index: Int): Action[AnyContent] = (authenticate() andThen getData andThen psaPspSchemeAuthAction(None) andThen requireData).async {
+  def onPageLoad(mode: Mode, index: Int, srn: SchemeReferenceNumber): Action[AnyContent] =
+            (authenticate() andThen getData andThen psaPspSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
       (SchemeSrnId and SchemeNameId and PspDetailsId(index)).retrieve.map {
         case srn ~ schemeName ~ pspDetail =>
@@ -70,7 +71,8 @@ class ViewPspHasClientReferenceController @Inject()(
       }
   }
 
-  def onSubmit(mode: Mode, index: Int): Action[AnyContent] = (authenticate() andThen getData andThen psaPspSchemeAuthAction(None) andThen requireData).async {
+  def onSubmit(mode: Mode, index: Int, srn: SchemeReferenceNumber): Action[AnyContent] =
+              (authenticate() andThen getData andThen psaPspSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[_]) => {
@@ -82,7 +84,9 @@ class ViewPspHasClientReferenceController @Inject()(
         },
         value =>
           if (value) {
-            Future.successful(Redirect(controllers.psp.view.routes.ViewPspClientReferenceController.onPageLoad(mode, index)))
+            SchemeSrnId.retrieve.map { srn =>
+              Future.successful(Redirect(controllers.psp.view.routes.ViewPspClientReferenceController.onPageLoad(mode, index, srn)))
+            }
           } else {
             PspDetailsId(index).retrieve.map {
               pspDetail =>

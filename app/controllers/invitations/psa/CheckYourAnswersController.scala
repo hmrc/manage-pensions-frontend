@@ -56,7 +56,8 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
                                            psaSchemeAuthAction: PsaPspSchemeAuthAction
                                           )(implicit val ec: ExecutionContext) extends FrontendBaseController with Retrievals with I18nSupport {
 
-  def onPageLoad(): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
+  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] =
+                (authenticate() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
 
       MinimalSchemeDetailId.retrieve.map { schemeDetail =>
@@ -82,7 +83,8 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
     }
 
 
-  def onSubmit(): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
+  def onSubmit(srn: SchemeReferenceNumber): Action[AnyContent] =
+              (authenticate() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
       (MinimalSchemeDetailId and InviteeNameId and InviteePSAId).retrieve.map {
         case schemeDetails ~ inviteeName ~ inviteePsaId if schemeDetails.pstr.isDefined =>
@@ -98,7 +100,7 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
 
           isSchemeAssociatedWithInvitee(request.psaIdOrException.id, schemeDetails.srn, inviteePsaId).flatMap { isAssociated =>
             invite(invitation, schemeDetails).map(result =>
-              if (isAssociated) Redirect(routes.PsaAlreadyAssociatedController.onPageLoad()) else result
+              if (isAssociated) Redirect(routes.PsaAlreadyAssociatedController.onPageLoad(schemeDetails.srn)) else result
             )
           }.recoverWith {
             case _ =>
@@ -113,10 +115,10 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
                     (implicit hc: HeaderCarrier, request: DataRequest[AnyContent]): Future[Result] = {
     invitationConnector.invite(invite).map {
       case InvitationSent => Redirect(navigator.nextPage(CheckYourAnswersId(msd.srn), NormalMode, request.userAnswers))
-      case PsaAlreadyInvitedError => Redirect(InvitationDuplicateController.onPageLoad())
-      case NameMatchingError => Redirect(IncorrectPsaDetailsController.onPageLoad())
+      case PsaAlreadyInvitedError => Redirect(InvitationDuplicateController.onPageLoad(msd.srn))
+      case NameMatchingError => Redirect(IncorrectPsaDetailsController.onPageLoad(msd.srn))
     }.recoverWith {
-      case _ => Future.successful(Redirect(IncorrectPsaDetailsController.onPageLoad()))
+      case _ => Future.successful(Redirect(IncorrectPsaDetailsController.onPageLoad(msd.srn)))
     }
   }
 

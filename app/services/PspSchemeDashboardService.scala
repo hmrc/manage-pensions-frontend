@@ -19,7 +19,7 @@ package services
 import config.FrontendAppConfig
 import connectors.admin.MinimalConnector
 import controllers.psp.deauthorise.self.routes._
-import models.{AuthorisedPractitioner, EROverview, Link, MinimalPSAPSP}
+import models.{AuthorisedPractitioner, EROverview, Link, MinimalPSAPSP, SchemeReferenceNumber}
 import play.api.i18n.Messages
 import play.twirl.api.Html
 import uk.gov.hmrc.http.HeaderCarrier
@@ -58,15 +58,16 @@ class PspSchemeDashboardService @Inject()(
       else{
         ""
       }
-      Seq(manageReportsEventsCard(srn, erHtml, subHeadingMessage), practitionerCard(loggedInPsp, clientReference))
+      Seq(manageReportsEventsCard(srn, erHtml, subHeadingMessage), practitionerCard(loggedInPsp, clientReference, srn: SchemeReferenceNumber))
     } else {
-      Seq(schemeCard(srn, pstr, openDate), practitionerCard(loggedInPsp, clientReference))
+      Seq(schemeCard(srn, pstr, openDate), practitionerCard(loggedInPsp, clientReference, srn))
     }
   }
 
   private def practitionerCard(
                                 loggedInPsp: AuthorisedPractitioner,
-                                clientReference: Option[String]
+                                clientReference: Option[String],
+                                srn: SchemeReferenceNumber
                               )(implicit messages: Messages): PspSchemeDashboardCardViewModel = {
 
     val authedBy: String = loggedInPsp.authorisingPSA.name
@@ -87,7 +88,7 @@ class PspSchemeDashboardService @Inject()(
       links = Seq(
         Link(
           id = "deauthorise-yourself",
-          url = ConfirmDeauthController.onPageLoad().url,
+          url = ConfirmDeauthController.onPageLoad(srn).url,
           linkText = Message("messages__pspSchemeDashboard__details__deAuth_Link"),
           hiddenText = Some(Message("messages__pspSchemeDashboard__details__deAuth_Link_screenReaderAlternative"))
         )

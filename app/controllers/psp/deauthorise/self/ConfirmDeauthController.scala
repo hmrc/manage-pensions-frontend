@@ -24,7 +24,7 @@ import identifiers.psp.PSPNameId
 import identifiers.psp.deauthorise.self.ConfirmDeauthId
 import identifiers.{SchemeNameId, SchemeSrnId}
 import models.AuthEntity.PSP
-import models.NormalMode
+import models.{NormalMode, SchemeReferenceNumber}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -50,7 +50,8 @@ class ConfirmDeauthController @Inject()(val auth: AuthAction,
 
   val form: Form[Boolean] = formProvider()
 
-  def onPageLoad: Action[AnyContent] = (auth(PSP) andThen getData andThen pspSchemeAuthAction(None) andThen requireData).async {
+  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] =
+                (auth(PSP) andThen getData andThen pspSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
       (SchemeSrnId and SchemeNameId and PSPNameId).retrieve.map {
         case srn ~ schemeName ~ pspName =>
@@ -59,7 +60,7 @@ class ConfirmDeauthController @Inject()(val auth: AuthAction,
       }
   }
 
-  def onSubmit: Action[AnyContent] = (auth(PSP) andThen getData andThen pspSchemeAuthAction(None) andThen requireData).async {
+  def onSubmit(srn: SchemeReferenceNumber): Action[AnyContent] = (auth(PSP) andThen getData andThen pspSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[Boolean]) =>

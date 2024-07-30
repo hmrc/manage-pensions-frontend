@@ -18,6 +18,8 @@ package controllers.invitations
 
 import config.FrontendAppConfig
 import controllers.actions._
+import models.SchemeReferenceNumber
+
 import javax.inject.Inject
 import play.api.i18n.I18nSupport
 import play.api.i18n.MessagesApi
@@ -39,7 +41,7 @@ class YouCannotSendAnInviteController @Inject()(appConfig: FrontendAppConfig,
                                                 psaPspSchemeAuthAction: PsaPspSchemeAuthAction)(implicit val ec: ExecutionContext) extends
   FrontendBaseController with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (authenticate() andThen getData  andThen psaPspSchemeAuthAction(None)) {
+  def onPageLoad(srn:SchemeReferenceNumber): Action[AnyContent] = (authenticate() andThen getData  andThen psaPspSchemeAuthAction(Some(srn))) {
     implicit request =>
       Ok(view())
   }

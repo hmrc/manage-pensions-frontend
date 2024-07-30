@@ -43,8 +43,8 @@ class WhatYouWillNeedController @Inject()(
     with I18nSupport
     with Retrievals {
 
-  def onPageLoad(): Action[AnyContent] =
-    (authenticate() andThen getData andThen psaPspSchemeAction(None) andThen requireData).async {
+  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] =
+    (authenticate() andThen getData andThen psaPspSchemeAction(Some(srn)) andThen requireData).async {
       implicit request =>
         (SchemeSrnId and SchemeNameId).retrieve.map {
           case srn ~ schemeName =>

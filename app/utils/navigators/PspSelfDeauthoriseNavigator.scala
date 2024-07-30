@@ -33,7 +33,11 @@ class PspSelfDeauthoriseNavigator @Inject()(val dataCacheConnector: UserAnswersC
 
   override def routeMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
     case ConfirmDeauthId => confirmDeauthPspRoutes(ua)
-    case DeauthDateId => DeclarationController.onPageLoad()
+    case DeauthDateId =>
+      ua.get(SchemeSrnId) match {
+        case Some(srn) => DeclarationController.onPageLoad(srn)
+        case _ => SessionExpiredController.onPageLoad
+      }
   }
 
   private def confirmDeauthPspRoutes(userAnswers: UserAnswers): Call = {

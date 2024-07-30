@@ -45,8 +45,8 @@ class DeauthorisePSPNavigator @Inject()(val dataCacheConnector: UserAnswersCache
     (userAnswers.get(ConfirmDeauthorisePspId(index)), userAnswers.get(SchemeSrnId)) match {
       case (Some(false), Some(srn)) =>
         PsaSchemeDashboardController.onPageLoad(srn)
-      case (Some(true), _) =>
-        PspDeauthDateController.onPageLoad(index)
+      case (Some(true), Some(srn)) =>
+        PspDeauthDateController.onPageLoad(index, srn)
       case _ =>
         SessionExpiredController.onPageLoad
     }

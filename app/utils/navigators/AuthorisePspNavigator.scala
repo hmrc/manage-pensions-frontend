@@ -17,7 +17,7 @@
 package utils.navigators
 
 import controllers.invitations.psp.routes._
-import identifiers.Identifier
+import identifiers.{Identifier, SchemeSrnId}
 import identifiers.invitations.psp._
 import models.{CheckMode, Mode, NormalMode}
 import play.api.mvc.Call
@@ -36,10 +36,15 @@ class AuthorisePspNavigator @Inject() extends Navigator {
   }
 
   override protected def editRouteMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
-    case PspNameId => CheckYourAnswersController.onPageLoad()
-    case PspId => CheckYourAnswersController.onPageLoad()
-    case PspHasClientReferenceId => pspHasClientReferenceRoutes(ua, CheckMode)
-    case PspClientReferenceId => CheckYourAnswersController.onPageLoad()
+    ua.get(SchemeSrnId) match {
+      case Some(srn) => {
+        case PspNameId => CheckYourAnswersController.onPageLoad(srn)
+        case PspId => CheckYourAnswersController.onPageLoad(srn)
+        case PspHasClientReferenceId => pspHasClientReferenceRoutes(ua, CheckMode)
+        case PspClientReferenceId => CheckYourAnswersController.onPageLoad(srn)
+      }
+      case _ => controllers.routes.SessionExpiredController.onPageLoad()
+    }
   }
 
   private def pspHasClientReferenceRoutes(userAnswers: UserAnswers, mode: Mode): Call = {

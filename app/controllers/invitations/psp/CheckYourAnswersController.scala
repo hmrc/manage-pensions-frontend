@@ -44,7 +44,7 @@ class CheckYourAnswersController @Inject()(override val messagesApi: MessagesApi
                                            psaSchemeAuthAction: PsaPspSchemeAuthAction
                                           )(implicit val ec: ExecutionContext) extends FrontendBaseController with Retrievals with I18nSupport {
 
-  def onPageLoad(): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
+  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
       (SchemeNameId and SchemeSrnId).retrieve.map {
         case schemeName ~ srn =>
@@ -56,14 +56,14 @@ class CheckYourAnswersController @Inject()(override val messagesApi: MessagesApi
       }
   }
 
-  def onSubmit(): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
+  def onSubmit(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
       (PspNameId and PspId).retrieve.map {
         case pspName ~ pspId =>
           minimalConnector.getNameFromPspID(pspId).map {
             case Some(minPspName) if pspAuthoriseFuzzyMatcher.matches(pspName, minPspName) =>
               Redirect(routes.DeclarationController.onPageLoad())
-            case _ => Redirect(routes.PspDoesNotMatchController.onPageLoad())
+            case _ => Redirect(routes.PspDoesNotMatchController.onPageLoad(srn))
           }.recoverWith {
             case _: DelimitedPractitionerException => Future.successful(Redirect(routes.PspDoesNotMatchController.onPageLoad()))
             case _: NoMatchFoundException => Future.successful(Redirect(routes.PspDoesNotMatchController.onPageLoad()))

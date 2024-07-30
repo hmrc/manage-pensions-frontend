@@ -24,7 +24,7 @@ import forms.psp.deauthorise.ConfirmDeauthPspFormProvider
 import identifiers.psp.deauthorise
 import identifiers.psp.deauthorise.{ConfirmDeauthorisePspId, PspDetailsId}
 import identifiers.{SchemeNameId, SchemeSrnId}
-import models.{Index, NormalMode}
+import models.{Index, NormalMode, SchemeReferenceNumber}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -55,7 +55,7 @@ class ConfirmDeauthorisePspController @Inject()(
 
   val form: Form[Boolean] = formProvider()
 
-  def onPageLoad(index: Index): Action[AnyContent] = (auth() andThen getData andThen psaPspSchemeAuthAction(None) andThen requireData).async {
+  def onPageLoad(index: Index, srn: SchemeReferenceNumber): Action[AnyContent] = (auth() andThen getData andThen psaPspSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
       (SchemeSrnId and SchemeNameId and deauthorise.PspDetailsId(index)).retrieve.map {
         case srn ~ schemeName ~ pspDetails =>
@@ -68,7 +68,7 @@ class ConfirmDeauthorisePspController @Inject()(
       }
   }
 
-  def onSubmit(index: Index): Action[AnyContent] = (auth() andThen getData andThen psaPspSchemeAuthAction(None) andThen requireData).async {
+  def onSubmit(index: Index, srn: SchemeReferenceNumber): Action[AnyContent] = (auth() andThen getData andThen psaPspSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
       (SchemeNameId and SchemeSrnId and PspDetailsId(index)).retrieve.map {
         case schemeName ~ srn ~ pspDetails =>

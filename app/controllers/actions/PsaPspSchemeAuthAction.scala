@@ -30,7 +30,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvi
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-private class PsaPspSchemeActionImpl (srnOpt:Option[SchemeReferenceNumber], schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)
+private class PsaPspSchemeActionImpl (srn: SchemeReferenceNumber, schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)
                           (implicit val executionContext: ExecutionContext)
   extends ActionFunction[OptionalDataRequest, OptionalDataRequest] with FrontendHeaderCarrierProvider with Logging {
 
@@ -40,23 +40,13 @@ private class PsaPspSchemeActionImpl (srnOpt:Option[SchemeReferenceNumber], sche
 
   override def invokeBlock[A](request: OptionalDataRequest[A], block: OptionalDataRequest[A] => Future[Result]): Future[Result] = {
 
-    val retrievedSrn = {
-      if(srnOpt.isDefined) {
-        srnOpt
-      } else {
-        request.userAnswers.flatMap { ua =>
-          ua.get(SchemeSrnId).map { SchemeReferenceNumber(_) }
-        }
-      }
-    }
-
     val psaIdOpt = request.psaId
     val pspIdOpt = request.pspId
 
-    (retrievedSrn, psaIdOpt, pspIdOpt) match {
-    case (Some(srn), Some(psaId), None) =>
+    (psaIdOpt, pspIdOpt) match {
+    case (Some(psaId), None) =>
         schemaDetailConnectorCall(srn, psaId.id, "psa", request, block)
-      case (Some(srn), None, Some(pspId)) =>
+      case (None, Some(pspId)) =>
         schemaDetailConnectorCall(srn, pspId.id, "psp", request, block)
       case _ => Future.successful(notFoundTemplate(request))
     }
@@ -90,9 +80,9 @@ private class PsaPspSchemeActionImpl (srnOpt:Option[SchemeReferenceNumber], sche
 
 class PsaPspSchemeAuthAction @Inject()(schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)(implicit ec: ExecutionContext){
   /**
-   * @param srn - If empty, srn is expected to be retrieved from Session. If present srn is expected to be retrieved form the URL
+   * @param srn - srn is always passed
    * @return
    */
-  def apply(srn: Option[SchemeReferenceNumber]): ActionFunction[OptionalDataRequest, OptionalDataRequest] =
+  def apply(srn: SchemeReferenceNumber): ActionFunction[OptionalDataRequest, OptionalDataRequest] =
     new PsaPspSchemeActionImpl(srn, schemeDetailsConnector, errorHandler)
 }

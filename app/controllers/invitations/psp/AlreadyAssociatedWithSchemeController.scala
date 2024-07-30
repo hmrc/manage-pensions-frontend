@@ -21,6 +21,7 @@ import controllers.Retrievals
 import controllers.actions._
 import identifiers.SchemeNameId
 import identifiers.invitations.psp.PspNameId
+import models.SchemeReferenceNumber
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -42,7 +43,7 @@ class AlreadyAssociatedWithSchemeController @Inject()(
     with I18nSupport {
 
 
-  def onPageLoad: Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
+  def onPageLoad(srn: SchemeReferenceNumber) = (authenticate() andThen getData andThen psaSchemeAuthAction(Some(srn)) andThen requireData).async {
     implicit request =>
       (SchemeNameId and PspNameId).retrieve.map {
         case schemeName ~ pspName =>

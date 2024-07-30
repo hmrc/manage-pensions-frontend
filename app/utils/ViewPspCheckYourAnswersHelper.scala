@@ -17,7 +17,7 @@
 package utils
 
 import controllers.psp.view.routes._
-import models.CheckMode
+import models.{CheckMode, SchemeReferenceNumber}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist._
@@ -41,11 +41,11 @@ class ViewPspCheckYourAnswersHelper extends Enumerable.Implicits {
       )
   }
 
-  def pspClientReference(clientRef:Option[String],index:Int)(implicit messages: Messages): SummaryListRow = {
+  def pspClientReference(clientRef:Option[String],index:Int, srn: SchemeReferenceNumber)(implicit messages: Messages): SummaryListRow = {
       SummaryListRow(
         key = Key(Text(messages("messages__check__your__answer__psp_client_reference__label")), classes = "govuk-!-width-one-half"),
         value = Value(Text(messages(getClientReference(clientRef)))),
-        actions = Some(Actions("", items = Seq(ActionItem(href = ViewPspHasClientReferenceController.onPageLoad(CheckMode,index).url,
+        actions = Some(Actions("", items = Seq(ActionItem(href = ViewPspHasClientReferenceController.onPageLoad(CheckMode,index, srn).url,
           content = Text(messages("site.change")), visuallyHiddenText = Some(messages("messages__check__your__answer__psp_client_reference__label"))))))
       )
   }

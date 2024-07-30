@@ -43,7 +43,7 @@ class PspDoesNotMatchController @Inject()(
     with I18nSupport
     with Retrievals {
 
-  def onPageLoad: Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
+  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
       (SchemeNameId and SchemeSrnId and PspNameId).retrieve.map {
         case schemeName ~ srn ~ pspName =>

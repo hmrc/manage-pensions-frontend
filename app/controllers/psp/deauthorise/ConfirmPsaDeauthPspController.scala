@@ -23,7 +23,7 @@ import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaPspSchemeAuthAction}
 import identifiers.SchemeNameId
 import identifiers.psp.deauthorise.PspDetailsId
-import models.Index
+import models.{Index, SchemeReferenceNumber}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -46,8 +46,8 @@ class ConfirmPsaDeauthPspController @Inject()(
     with I18nSupport
     with Retrievals {
 
-  def onPageLoad(index: Index): Action[AnyContent] =
-    (authenticate() andThen getData andThen psaPspSchemeAuthAction(None) andThen requireData).async {
+  def onPageLoad(index: Index, srn: SchemeReferenceNumber): Action[AnyContent] =
+    (authenticate() andThen getData andThen psaPspSchemeAuthAction(srn) andThen requireData).async {
       implicit request =>
 
         (SchemeNameId and PspDetailsId(index)).retrieve.map {

@@ -48,7 +48,7 @@ class InviteController @Inject()(
 
       minimalPsaConnector.getMinimalPsaDetails(request.psaIdOrException.id).flatMap { minimalPsaDetails =>
         if (minimalPsaDetails.isPsaSuspended) {
-          Future.successful(Redirect(controllers.invitations.routes.YouCannotSendAnInviteController.onPageLoad()))
+          Future.successful(Redirect(controllers.invitations.routes.YouCannotSendAnInviteController.onPageLoad(srn)))
         } else if (minimalPsaDetails.deceasedFlag) {
           Future.successful(Redirect(controllers.routes.ContactHMRCController.onPageLoad()))
         } else if (minimalPsaDetails.rlsFlag) {
@@ -58,7 +58,7 @@ class InviteController @Inject()(
             case Some(schemeDetails) =>
               val minimalSchemeDetail = MinimalSchemeDetail(srn, schemeDetails.pstr, schemeDetails.name)
               userAnswersCacheConnector.save(request.externalId, MinimalSchemeDetailId, minimalSchemeDetail).map { _ =>
-                Redirect(controllers.invitations.psa.routes.WhatYouWillNeedController.onPageLoad())
+                Redirect(controllers.invitations.psa.routes.WhatYouWillNeedController.onPageLoad(srn))
               }
             case None => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad))
           }

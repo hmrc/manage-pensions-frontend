@@ -17,31 +17,31 @@ POST       /do-you-have-client-reference                        controllers.invi
 GET        /change-do-you-have-client-reference                 controllers.invitations.psp.PspHasClientReferenceController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-do-you-have-client-reference                 controllers.invitations.psp.PspHasClientReferenceController.onSubmit(mode: Mode = CheckMode)
 
-GET        /client-reference                                    controllers.invitations.psp.PspClientReferenceController.onPageLoad(mode: Mode = NormalMode)
-POST       /client-reference                                    controllers.invitations.psp.PspClientReferenceController.onSubmit(mode: Mode = NormalMode)
-GET        /change-client-reference                             controllers.invitations.psp.PspClientReferenceController.onPageLoad(mode: Mode = CheckMode)
-POST       /change-client-reference                             controllers.invitations.psp.PspClientReferenceController.onSubmit(mode: Mode = CheckMode)
+GET        /client-reference/:srn                               controllers.invitations.psp.PspClientReferenceController.onPageLoad(mode: Mode = NormalMode, srn: SchemeReferenceNumber)
+POST       /client-reference/:srn                               controllers.invitations.psp.PspClientReferenceController.onSubmit(mode: Mode = NormalMode, srn: SchemeReferenceNumber)
+GET        /change-client-reference/:srn                        controllers.invitations.psp.PspClientReferenceController.onPageLoad(mode: Mode = CheckMode, srn: SchemeReferenceNumber)
+POST       /change-client-reference/:srn                        controllers.invitations.psp.PspClientReferenceController.onSubmit(mode: Mode = CheckMode, srn: SchemeReferenceNumber)
 
-GET        /check-your-answers                                  controllers.invitations.psp.CheckYourAnswersController.onPageLoad()
-POST       /check-your-answers                                  controllers.invitations.psp.CheckYourAnswersController.onSubmit()
+GET        /check-your-answers/:srn                             controllers.invitations.psp.CheckYourAnswersController.onPageLoad(srn: SchemeReferenceNumber)
+POST       /check-your-answers/:srn                             controllers.invitations.psp.CheckYourAnswersController.onSubmit(srn: SchemeReferenceNumber)
 
 GET        /:index/change-check-your-answers                    controllers.psp.view.ViewPspCheckYourAnswersController.onPageLoad(index: Int)
 POST       /:index/change-check-your-answers                    controllers.psp.view.ViewPspCheckYourAnswersController.onSubmit(index: Int)
 
-GET        /:index/do-you-have-client-reference                 controllers.psp.view.ViewPspHasClientReferenceController.onPageLoad(mode: Mode = NormalMode,index: Int)
+GET        /:index/do-you-have-client-reference/:srn            controllers.psp.view.ViewPspHasClientReferenceController.onPageLoad(mode: Mode = NormalMode,index: Int, srn: SchemeReferenceNumber)
 POST       /:index/do-you-have-client-reference                 controllers.psp.view.ViewPspHasClientReferenceController.onSubmit(mode: Mode = NormalMode,index: Int)
-GET        /:index/change-do-you-have-client-reference          controllers.psp.view.ViewPspHasClientReferenceController.onPageLoad(mode: Mode = CheckMode,index: Int)
+GET        /:index/change-do-you-have-client-reference/:srn     controllers.psp.view.ViewPspHasClientReferenceController.onPageLoad(mode: Mode = CheckMode,index: Int, srn: SchemeReferenceNumber)
 POST       /:index/change-do-you-have-client-reference          controllers.psp.view.ViewPspHasClientReferenceController.onSubmit(mode: Mode = CheckMode,index: Int)
 
-GET        /:index/client-reference                             controllers.psp.view.ViewPspClientReferenceController.onPageLoad(mode: Mode = NormalMode,index: Int)
+GET        /:index/client-reference/:srn                        controllers.psp.view.ViewPspClientReferenceController.onPageLoad(mode: Mode = NormalMode,index: Int, srn: SchemeReferenceNumber)
 POST       /:index/client-reference                             controllers.psp.view.ViewPspClientReferenceController.onSubmit(mode: Mode = NormalMode,index: Int)
-GET        /:index/change-client-reference                      controllers.psp.view.ViewPspClientReferenceController.onPageLoad(mode: Mode = CheckMode,index: Int)
+GET        /:index/change-client-reference/:srn                 controllers.psp.view.ViewPspClientReferenceController.onPageLoad(mode: Mode = CheckMode,index: Int, srn: SchemeReferenceNumber)
 POST       /:index/change-client-reference                      controllers.psp.view.ViewPspClientReferenceController.onSubmit(mode: Mode = CheckMode,index: Int)
 
 GET        /declaration                                         controllers.invitations.psp.DeclarationController.onPageLoad()
 POST       /declaration                                         controllers.invitations.psp.DeclarationController.onSubmit()
 
-GET        /practitioner-is-authorised                          controllers.invitations.psp.ConfirmationController.onPageLoad()
+GET        /practitioner-is-authorised/:srn                     controllers.invitations.psp.ConfirmationController.onPageLoad(srn: SchemeReferenceNumber)
 GET        /do-not-match-our-records                            controllers.invitations.psp.PspDoesNotMatchController.onPageLoad()
 
-GET        /already-associated                                  controllers.invitations.psp.AlreadyAssociatedWithSchemeController.onPageLoad
+GET        /already-associated/:srn                             controllers.invitations.psp.AlreadyAssociatedWithSchemeController.onPageLoad(srn: SchemeReferenceNumber)

@@ -20,6 +20,7 @@ import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaPspSchemeAuthAction}
 import identifiers.MinimalSchemeDetailId
 import identifiers.invitations.InviteeNameId
+import models.SchemeReferenceNumber
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -42,7 +43,8 @@ class PsaAlreadyAssociatedController @Inject()(
     with I18nSupport
     with Retrievals {
 
-  def onPageLoad(): Action[AnyContent] = (authenticate() andThen getData andThen psaPspSchemeAuthAction(None) andThen requireData).async {
+  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] =
+                (authenticate() andThen getData andThen psaPspSchemeAuthAction(Some(srn)) andThen requireData).async {
     implicit request =>
       (InviteeNameId and MinimalSchemeDetailId).retrieve.map {
         case name ~ schemeDetails =>
