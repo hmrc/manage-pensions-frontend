@@ -37,13 +37,19 @@ import play.api.http.Status.NOT_FOUND
 import play.api.libs.typedmap.TypedKey
 import play.api.mvc._
 import play.api.routing.Router.Routes
-import play.api.routing.SimpleRouter
-import play.mvc.Action
+import play.api.routing.{Router, SimpleRouter}
+import play.core.routing.Include
 import routers.SrnRouter.srnTypedKey
 
 import javax.inject.Inject
 import scala.util.{Success, Try}
+
 class SrnRouter @Inject() (srnRoutes: srn.Routes, errorHandler: play.api.http.HttpErrorHandler, Action: DefaultActionBuilder) extends SimpleRouter {
+  private var _prefix = "/"
+  override def withPrefix(prefix: String): Router = {
+    _prefix = prefix
+    super.withPrefix(prefix)
+  }
 
   override def routes: Routes = {
     case requestHeader =>
@@ -55,21 +61,29 @@ class SrnRouter @Inject() (srnRoutes: srn.Routes, errorHandler: play.api.http.Ht
       srnString match {
         case Success(srn) if SchemeReferenceNumber.srnValid(srn) =>
           def modifyRequestFunc(requestHeader: RequestHeader) = requestHeader.addAttr(srnTypedKey, SchemeReferenceNumber(srn))
-          val srnPathPrefix = "/" + srn + "/"
-          val srnRoutesPf = srnRoutes.withPrefix(srnPathPrefix).routes
-
-          if(srnRoutesPf.isDefinedAt(requestHeader))
+          var srnRoutesWithPrefix: Include = null
+          var srnPathPrefix = ""
+          val possiblePrefixPaths = _prefix + splitPath(1)
+          possiblePrefixPaths.split("/").filter(_ != "").reverse.zipWithIndex.foreach { case (path, index) =>
+            srnPathPrefix = "/" + path + srnPathPrefix
+            val include = Include(srnRoutes.withPrefix(srnPathPrefix))
+            if(index == 0) srnRoutesWithPrefix = include
+          }
+          val srnRoutesPf = srnRoutesWithPrefix.router.routes
+          if(srnRoutesPf.isDefinedAt(requestHeader)) {
             Handler.Stage.modifyRequest(
               modifyRequestFunc,
               srnRoutesPf(requestHeader)
             )
-          else {
+          } else {
             handleWrongPath
           }
         case _ => handleWrongPath
 
       }
   }
+
+  override def documentation: Seq[(String, String, String)] = srnRoutes.documentation
 }
 
 object SrnRouter {

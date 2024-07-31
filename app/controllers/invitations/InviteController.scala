@@ -24,9 +24,10 @@ import connectors.scheme.SchemeDetailsConnector
 import controllers.actions.{AuthAction, DataRetrievalAction, PsaSchemeAuthAction}
 import identifiers.invitations.PSTRId
 import identifiers.{MinimalSchemeDetailId, SchemeNameId}
-import models.requests.AuthenticatedRequest
+import models.requests.{AuthenticatedRequest, OptionalDataRequest}
 import models.{MinimalSchemeDetail, SchemeReferenceNumber}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import routers.SrnRouter.srnTypedKey
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -43,27 +44,23 @@ class InviteController @Inject()(
                                   getData: DataRetrievalAction
                                 )(implicit val ec: ExecutionContext) extends FrontendBaseController {
 
-  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(Some(srn))).async {
-    implicit request =>
+  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate() andThen getData).async {
+    request =>
+      psaSchemeAuthAction.apply(Some(request.attrs(srnTypedKey))).invokeBlock(request, { implicit request:OptionalDataRequest[_] =>
+        minimalPsaConnector.getMinimalPsaDetails(request.psaIdOrException.id).flatMap { minimalPsaDetails =>
 
-      minimalPsaConnector.getMinimalPsaDetails(request.psaIdOrException.id).flatMap { minimalPsaDetails =>
-        if (minimalPsaDetails.isPsaSuspended) {
-          Future.successful(Redirect(controllers.invitations.routes.YouCannotSendAnInviteController.onPageLoad()))
-        } else if (minimalPsaDetails.deceasedFlag) {
-          Future.successful(Redirect(controllers.routes.ContactHMRCController.onPageLoad()))
-        } else if (minimalPsaDetails.rlsFlag) {
-          Future.successful(Redirect(appConfig.psaUpdateContactDetailsUrl))
-        } else {
-          getSchemeDetails(srn) flatMap {
-            case Some(schemeDetails) =>
-              val minimalSchemeDetail = MinimalSchemeDetail(srn, schemeDetails.pstr, schemeDetails.name)
-              userAnswersCacheConnector.save(request.externalId, MinimalSchemeDetailId, minimalSchemeDetail).map { _ =>
-                Redirect(controllers.invitations.psa.routes.WhatYouWillNeedController.onPageLoad())
-              }
-            case None => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad))
-          }
+            getSchemeDetails(srn) flatMap {
+              case Some(schemeDetails) =>
+                val minimalSchemeDetail = MinimalSchemeDetail(srn, schemeDetails.pstr, schemeDetails.name)
+                userAnswersCacheConnector.save(request.externalId, MinimalSchemeDetailId, minimalSchemeDetail).map { _ =>
+                  Redirect(controllers.invitations.psa.routes.WhatYouWillNeedController.onPageLoad())
+                }
+              case None => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad))
+            }
+
         }
-      }
+      })
+
   }
 
   private def getSchemeDetails(srn: SchemeReferenceNumber)(implicit request: AuthenticatedRequest[_]): Future[Option[SchemeDetails]] =

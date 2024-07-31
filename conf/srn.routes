@@ -1,2 +1,4 @@
+->          /invitations                                                                                     invitations.Routes
+->          /authorise-psp                                                                                   pspInvitations.Routes
 GET / controllers.SrnController.index()
 GET /val controllers.SrnController.index2()

@@ -2,8 +2,6 @@
 
 
 ->          /hmrc-frontend                                                                                   hmrcfrontend.Routes
-->          /invitations                                                                                     invitations.Routes
-->          /authorise-psp                                                                                   pspInvitations.Routes
 ->          /guidance-triage                                                                                 triage.Routes
 ->          /pensions-guidance-triage                                                                        triagev2.Routes
 ->          /                                                                                                remove.Routes
@@ -84,4 +82,4 @@ GET         /previously-registered-practitioner                                 
 POST        /previously-registered-practitioner                                                                   controllers.PreviouslyRegisteredController.onSubmitPractitioner()
 
 GET         /tpss-recovery                                                                   controllers.TpssRecoveryController.onPageLoad
--> / routers.SrnRouter
+->          /                           routers.SrnRouter

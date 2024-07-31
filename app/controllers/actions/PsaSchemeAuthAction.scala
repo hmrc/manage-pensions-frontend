@@ -61,6 +61,7 @@ private class PsaSchemeActionImpl (srnOpt:Option[SchemeReferenceNumber], schemeD
           )(hc(request), executionContext)
 
         schemeDetails.flatMap { schemeDetails =>
+          println(schemeDetails)
           val admins = (schemeDetails.json \ "psaDetails").as[Seq[PsaDetails]].map(_.id)
           if (admins.contains(psaId.id)) {
             block(request)
