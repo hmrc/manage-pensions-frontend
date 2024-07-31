@@ -1,5 +1,6 @@
 # microservice specific routes
 
+
 ->          /hmrc-frontend                                                                                   hmrcfrontend.Routes
 ->          /invitations                                                                                     invitations.Routes
 ->          /authorise-psp                                                                                   pspInvitations.Routes
@@ -83,3 +84,4 @@ GET         /previously-registered-practitioner                                 
 POST        /previously-registered-practitioner                                                                   controllers.PreviouslyRegisteredController.onSubmitPractitioner()
 
 GET         /tpss-recovery                                                                   controllers.TpssRecoveryController.onPageLoad
+-> / routers.SrnRouter

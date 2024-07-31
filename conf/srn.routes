@@ -1,0 +1,2 @@
+GET / controllers.SrnController.index()
+GET /val controllers.SrnController.index2()
