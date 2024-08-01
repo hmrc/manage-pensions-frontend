@@ -87,6 +87,18 @@ private class PsaPspSchemeActionImpl (srnOpt:Option[SchemeReferenceNumber], sche
   }
 }
 
+private class ErrorActionImpl (errorHandler: ErrorHandler)(implicit val executionContext: ExecutionContext)
+                              extends ActionFunction[OptionalDataRequest, OptionalDataRequest]
+                                 with FrontendHeaderCarrierProvider with Logging {
+
+    private def notFoundTemplate(implicit request: OptionalDataRequest[_]) = NotFound(errorHandler.notFoundTemplate)
+
+    override def invokeBlock[A](request: OptionalDataRequest[A], block: OptionalDataRequest[A] => Future[Result]): Future[Result] = {
+      Future.successful(notFoundTemplate(request))
+  }
+}
+
+
 
 class PsaPspSchemeAuthAction @Inject()(schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)(implicit ec: ExecutionContext){
   /**
@@ -107,7 +119,7 @@ class PspSchemeAuthAction @Inject()(schemeDetailsConnector: SchemeDetailsConnect
     if(request.pspId.isDefined) {
       new PsaPspSchemeActionImpl(srn, schemeDetailsConnector, errorHandler)
     } else {
-      ???
+      new ErrorActionImpl(errorHandler)
     }
   }
 }
@@ -122,7 +134,7 @@ class PsaSchemeAuthAction @Inject()(schemeDetailsConnector: SchemeDetailsConnect
     if (request.psaId.isDefined) {
       new PsaPspSchemeActionImpl(srn, schemeDetailsConnector, errorHandler)
     } else {
-      ???
+      new ErrorActionImpl(errorHandler)
     }
   }
 }
