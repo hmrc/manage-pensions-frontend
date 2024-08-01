@@ -43,7 +43,7 @@ class ViewAdministratorsController @Inject()(
                                               val controllerComponents: MessagesControllerComponents,
                                               schemeDetailsService: SchemeDetailsService,
                                               view: viewAdministrators,
-                                              psaPspSchemeAuthAction: PsaPspSchemeAuthAction
+                                              psaPspSchemeAuthAction: PsaSchemeAuthAction
                                             )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport {

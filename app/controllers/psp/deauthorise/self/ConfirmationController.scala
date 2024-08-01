@@ -20,7 +20,7 @@ import com.google.inject.Inject
 import connectors.UserAnswersCacheConnector
 import connectors.admin.MinimalConnector
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaPspSchemeAuthAction}
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PspSchemeAuthAction}
 import identifiers.{AuthorisedPractitionerId, SchemeNameId}
 import models.AuthEntity.PSP
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -38,7 +38,7 @@ class ConfirmationController @Inject()(override val messagesApi: MessagesApi,
                                        userAnswersCacheConnector: UserAnswersCacheConnector,
                                        val controllerComponents: MessagesControllerComponents,
                                        view: confirmation,
-                                       pspSchemeAuthAction: PsaPspSchemeAuthAction
+                                       pspSchemeAuthAction: PspSchemeAuthAction
                                       )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport

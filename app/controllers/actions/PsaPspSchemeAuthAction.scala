@@ -100,14 +100,14 @@ private class ErrorActionImpl (errorHandler: ErrorHandler)(implicit val executio
 
 
 
-class PsaPspSchemeAuthAction @Inject()(schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)(implicit ec: ExecutionContext){
-  /**
-   * @param srn - If empty, srn is expected to be retrieved from Session. If present srn is expected to be retrieved form the URL
-   * @return
-   */
-  def apply(srn: Option[SchemeReferenceNumber]): ActionFunction[OptionalDataRequest, OptionalDataRequest] =
-    new PsaPspSchemeActionImpl(srn, schemeDetailsConnector, errorHandler)
-}
+//class PsaPspSchemeAuthAction @Inject()(schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)(implicit ec: ExecutionContext){
+//  /**
+//   * @param srn - If empty, srn is expected to be retrieved from Session. If present srn is expected to be retrieved form the URL
+//   * @return
+//   */
+//  def apply(srn: Option[SchemeReferenceNumber]): ActionFunction[OptionalDataRequest, OptionalDataRequest] =
+//    new PsaPspSchemeActionImpl(srn, schemeDetailsConnector, errorHandler)
+//}
 
 class PspSchemeAuthAction @Inject()(schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)
                                    (implicit ec: ExecutionContext, request: OptionalDataRequest[AnyContent]){

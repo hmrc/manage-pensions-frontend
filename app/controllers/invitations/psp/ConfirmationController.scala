@@ -18,7 +18,7 @@ package controllers.invitations.psp
 
 import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaPspSchemeAuthAction}
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PspSchemeAuthAction}
 import identifiers.SchemeNameId
 import identifiers.invitations.psp.PspNameId
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -37,7 +37,7 @@ class ConfirmationController @Inject()(
                                         userAnswersCacheConnector: UserAnswersCacheConnector,
                                         val controllerComponents: MessagesControllerComponents,
                                         view: confirmation,
-                                        psaSchemeAuthAction: PsaPspSchemeAuthAction
+                                        psaSchemeAuthAction: PspSchemeAuthAction
                                       )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
 
   def onPageLoad: Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {

@@ -51,7 +51,7 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
                                              frontendConnector: FrontendConnector,
                                              minimalPsaConnector: MinimalConnector,
                                              val appConfig: FrontendAppConfig,
-                                             psaSchemeAction: PsaPspSchemeAuthAction,
+                                             psaSchemeAction: PsaSchemeAuthAction,
                                              getData: DataRetrievalAction,
                                              featureToggleConnector: FeatureToggleConnector
                                             )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {

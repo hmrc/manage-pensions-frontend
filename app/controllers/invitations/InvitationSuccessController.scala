@@ -20,7 +20,7 @@ import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import connectors.admin.MinimalConnector
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaPspSchemeAuthAction}
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaSchemeAuthAction}
 import identifiers.MinimalSchemeDetailId
 import identifiers.invitations.psa.InviteePSAId
 import identifiers.invitations.{InvitationSuccessId, InviteeNameId}
@@ -47,7 +47,7 @@ class InvitationSuccessController @Inject()(
                                              @Invitations navigator: Navigator,
                                              val controllerComponents: MessagesControllerComponents,
                                              view: invitation_success,
-                                             psaPspSchemeAuthAction: PsaPspSchemeAuthAction
+                                             psaPspSchemeAuthAction: PsaSchemeAuthAction
                                            )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] =

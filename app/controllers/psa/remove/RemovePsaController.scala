@@ -22,7 +22,7 @@ import connectors.UserAnswersCacheConnector
 import connectors.admin.MinimalConnector
 import connectors.scheme.SchemeDetailsConnector
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaPspSchemeAuthAction}
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaSchemeAuthAction}
 import controllers.psa.remove.routes._
 import controllers.routes._
 import identifiers.invitations.PSTRId
@@ -52,7 +52,7 @@ class RemovePsaController @Inject()(
                                      minimalPsaConnector: MinimalConnector,
                                      appConfig: FrontendAppConfig,
                                      val controllerComponents: MessagesControllerComponents,
-                                     psaPspSchemeAction: PsaPspSchemeAuthAction
+                                     psaPspSchemeAction: PsaSchemeAuthAction
                                    )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with Retrievals {

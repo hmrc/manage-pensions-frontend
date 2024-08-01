@@ -43,7 +43,7 @@ class ViewPspHasClientReferenceController @Inject()(
                                                      dataCacheConnector: UserAnswersCacheConnector,
                                                      val controllerComponents: MessagesControllerComponents,
                                                      view: pspHasClientReference,
-                                                     psaPspSchemeAuthAction: PsaPspSchemeAuthAction
+                                                     psaPspSchemeAuthAction: PsaSchemeAuthAction
                                                    )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with Retrievals

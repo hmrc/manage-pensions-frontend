@@ -57,7 +57,7 @@ class PsaRemovalDateController @Inject()(
                                           lockConnector: PensionSchemeVarianceLockConnector,
                                           val controllerComponents: MessagesControllerComponents,
                                           view: removalDate,
-                                          psaSchemeAuthAction: PsaPspSchemeAuthAction
+                                          psaSchemeAuthAction: PsaSchemeAuthAction
                                         )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport

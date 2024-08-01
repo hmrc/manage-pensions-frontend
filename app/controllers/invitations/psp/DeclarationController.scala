@@ -23,7 +23,7 @@ import connectors.admin.MinimalConnector
 import connectors.scheme.ListOfSchemesConnector
 import connectors.{ActiveRelationshipExistsException, EmailConnector, EmailNotSent, PspConnector}
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaPspSchemeAuthAction}
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PspSchemeAuthAction}
 import forms.invitations.psp.DeclarationFormProvider
 import identifiers.invitations.psp.{PspClientReferenceId, PspId, PspNameId}
 import identifiers.{SchemeNameId, SchemeSrnId}
@@ -58,7 +58,7 @@ class DeclarationController @Inject()(
                                        crypto: ApplicationCrypto,
                                        appConfig: FrontendAppConfig,
                                        view: declaration,
-                                       psaSchemeAuthAction: PsaPspSchemeAuthAction
+                                       psaSchemeAuthAction: PspSchemeAuthAction
                                      )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport

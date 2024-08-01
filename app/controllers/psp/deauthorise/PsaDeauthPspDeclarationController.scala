@@ -21,7 +21,7 @@ import config.FrontendAppConfig
 import connectors.admin.MinimalConnector
 import connectors.{EmailConnector, EmailNotSent, PspConnector, UserAnswersCacheConnector}
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaPspSchemeAuthAction}
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaSchemeAuthAction}
 import controllers.routes._
 import forms.psp.deauthorise.DeauthorisePspDeclarationFormProvider
 import identifiers.invitations.PSTRId
@@ -61,7 +61,7 @@ class PsaDeauthPspDeclarationController @Inject()(
                                                    emailConnector: EmailConnector,
                                                    crypto: ApplicationCrypto,
                                                    view: psaDeauthorisePspDeclaration,
-                                                   psaPspSchemeAuthAction: PsaPspSchemeAuthAction
+                                                   psaPspSchemeAuthAction: PsaSchemeAuthAction
                                                  )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport

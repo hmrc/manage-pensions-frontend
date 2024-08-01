@@ -20,7 +20,7 @@ import com.google.inject.Inject
 import connectors.UserAnswersCacheConnector
 import connectors.admin.MinimalConnector
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaPspSchemeAuthAction}
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaSchemeAuthAction}
 import identifiers.SchemeNameId
 import identifiers.psp.deauthorise.PspDetailsId
 import models.Index
@@ -40,7 +40,7 @@ class ConfirmPsaDeauthPspController @Inject()(
                                                val controllerComponents: MessagesControllerComponents,
                                                minimalPsaConnector: MinimalConnector,
                                                view: confirmPsaDeauthPsp,
-                                               psaPspSchemeAuthAction: PsaPspSchemeAuthAction
+                                               psaPspSchemeAuthAction: PsaSchemeAuthAction
                                              )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport

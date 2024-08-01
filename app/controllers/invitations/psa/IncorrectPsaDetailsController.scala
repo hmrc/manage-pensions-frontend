@@ -18,7 +18,7 @@ package controllers.invitations.psa
 
 import config.FrontendAppConfig
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaPspSchemeAuthAction}
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaSchemeAuthAction}
 import identifiers.MinimalSchemeDetailId
 import identifiers.invitations.InviteeNameId
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -37,7 +37,7 @@ class IncorrectPsaDetailsController @Inject()(
                                                requireData: DataRequiredAction,
                                                val controllerComponents: MessagesControllerComponents,
                                                view: incorrectPsaDetails,
-                                               psaPspSchemeAuthAction: PsaPspSchemeAuthAction
+                                               psaPspSchemeAuthAction: PsaSchemeAuthAction
                                              )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport

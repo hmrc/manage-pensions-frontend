@@ -19,7 +19,7 @@ package controllers.invitations.psp
 import com.google.inject.Inject
 import connectors.admin.{DelimitedPractitionerException, MinimalConnector, NoMatchFoundException}
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaPspSchemeAuthAction}
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PspSchemeAuthAction}
 import controllers.psa.routes.PsaSchemeDashboardController
 import identifiers.invitations.psp.{PspId, PspNameId}
 import identifiers.{SchemeNameId, SchemeSrnId}
@@ -41,7 +41,7 @@ class CheckYourAnswersController @Inject()(override val messagesApi: MessagesApi
                                            pspAuthoriseFuzzyMatcher: PspAuthoriseFuzzyMatcher,
                                            val controllerComponents: MessagesControllerComponents,
                                            view: checkYourAnswersPsp,
-                                           psaSchemeAuthAction: PsaPspSchemeAuthAction
+                                           psaSchemeAuthAction: PspSchemeAuthAction
                                           )(implicit val ec: ExecutionContext) extends FrontendBaseController with Retrievals with I18nSupport {
 
   def onPageLoad(): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {

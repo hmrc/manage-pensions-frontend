@@ -19,7 +19,7 @@ package controllers.psa.remove
 import com.google.inject.Inject
 import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaPspSchemeAuthAction}
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaSchemeAuthAction}
 import identifiers.invitations.SchemeNameId
 import identifiers.psa.PSANameId
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -37,7 +37,7 @@ class ConfirmRemovedController @Inject()(
                                           userAnswersCacheConnector: UserAnswersCacheConnector,
                                           val controllerComponents: MessagesControllerComponents,
                                           view: confirmRemoved,
-                                          psaPspSchemeAuthAction: PsaPspSchemeAuthAction
+                                          psaPspSchemeAuthAction: PsaSchemeAuthAction
                                         )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
 
   def onPageLoad(): Action[AnyContent] = (authenticate() andThen getData andThen psaPspSchemeAuthAction(None) andThen requireData).async {

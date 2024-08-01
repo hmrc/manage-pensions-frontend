@@ -19,7 +19,7 @@ package controllers.psa.remove
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaPspSchemeAuthAction}
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaSchemeAuthAction}
 import forms.psa.remove.ConfirmRemovePsaFormProvider
 import identifiers.SchemeSrnId
 import identifiers.invitations.SchemeNameId
@@ -48,7 +48,7 @@ class ConfirmRemovePsaController @Inject()(
                                             val requireData: DataRequiredAction,
                                             val controllerComponents: MessagesControllerComponents,
                                             view: confirmRemovePsa,
-                                            psaPspSchemeAuthAction: PsaPspSchemeAuthAction
+                                            psaPspSchemeAuthAction: PsaSchemeAuthAction
                                           )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport

@@ -46,7 +46,7 @@ class PspHasClientReferenceController @Inject()(
                                                  formProvider: PspHasClientReferenceFormProvider,
                                                  val controllerComponents: MessagesControllerComponents,
                                                  view: pspHasClientReference,
-                                                 psaSchemeAuthAction: PsaPspSchemeAuthAction
+                                                 psaSchemeAuthAction: PspSchemeAuthAction
                                                )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with Retrievals

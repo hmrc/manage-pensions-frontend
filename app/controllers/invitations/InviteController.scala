@@ -21,7 +21,7 @@ import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import connectors.admin.MinimalConnector
 import connectors.scheme.SchemeDetailsConnector
-import controllers.actions.{AuthAction, DataRetrievalAction, PsaPspSchemeAuthAction}
+import controllers.actions.{AuthAction, DataRetrievalAction, PsaSchemeAuthAction}
 import identifiers.invitations.PSTRId
 import identifiers.{MinimalSchemeDetailId, SchemeNameId}
 import models.requests.AuthenticatedRequest
@@ -39,7 +39,7 @@ class InviteController @Inject()(
                                   minimalPsaConnector: MinimalConnector,
                                   val controllerComponents: MessagesControllerComponents,
                                   appConfig: FrontendAppConfig,
-                                  psaPspSchemeAuthAction: PsaPspSchemeAuthAction,
+                                  psaPspSchemeAuthAction: PsaSchemeAuthAction,
                                   getData: DataRetrievalAction
                                 )(implicit val ec: ExecutionContext) extends FrontendBaseController {
 

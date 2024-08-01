@@ -21,7 +21,7 @@ import config.FrontendAppConfig
 import connectors.scheme.SchemeDetailsConnector
 import connectors._
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaPspSchemeAuthAction}
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaSchemeAuthAction}
 import controllers.invitations.psa.routes._
 import identifiers.MinimalSchemeDetailId
 import identifiers.invitations.psa.InviteePSAId
@@ -53,7 +53,7 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
                                            invitationConnector: InvitationConnector,
                                            val controllerComponents: MessagesControllerComponents,
                                            view: check_your_answers_view,
-                                           psaSchemeAuthAction: PsaPspSchemeAuthAction
+                                           psaSchemeAuthAction: PsaSchemeAuthAction
                                           )(implicit val ec: ExecutionContext) extends FrontendBaseController with Retrievals with I18nSupport {
 
   def onPageLoad(): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {

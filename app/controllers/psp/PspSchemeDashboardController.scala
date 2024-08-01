@@ -60,7 +60,7 @@ class PspSchemeDashboardController @Inject()(
                                               view: pspSchemeDashboard,
                                               config: FrontendAppConfig,
                                               frontendConnector: FrontendConnector,
-                                              psaPspSchemeAuthAction: PsaPspSchemeAuthAction,
+                                              psaPspSchemeAuthAction: PspSchemeAuthAction,
                                               getData: DataRetrievalAction,
                                               featureToggleConnector: FeatureToggleConnector,
                                               pensionSchemeReturnConnector: PensionSchemeReturnConnector

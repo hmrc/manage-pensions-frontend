@@ -18,7 +18,7 @@ package controllers.psp
 
 import com.google.inject.Inject
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaPspSchemeAuthAction}
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PspSchemeAuthAction}
 import controllers.psa.routes._
 import identifiers.{SchemeNameId, SchemeSrnId, SeqAuthorisedPractitionerId}
 import models.FeatureToggleName.UpdateClientReference
@@ -42,7 +42,7 @@ class ViewPractitionersController @Inject()(
                                              toggleService: FeatureToggleService,
                                              val controllerComponents: MessagesControllerComponents,
                                              view: viewPractitioners,
-                                             psaPspSchemeAction: PsaPspSchemeAuthAction
+                                             psaPspSchemeAction: PspSchemeAuthAction
                                            )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport

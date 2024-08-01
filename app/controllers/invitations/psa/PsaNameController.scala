@@ -41,7 +41,7 @@ class PsaNameController @Inject()(
                                    formProvider: PsaNameFormProvider,
                                    val controllerComponents: MessagesControllerComponents,
                                    view: psaName,
-                                   psaPspSchemeAction: PsaPspSchemeAuthAction
+                                   psaPspSchemeAction: PsaSchemeAuthAction
                                  )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport {

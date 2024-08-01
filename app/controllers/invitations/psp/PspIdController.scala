@@ -46,7 +46,7 @@ class PspIdController @Inject()(
                                  formProvider: PspIdFormProvider,
                                  val controllerComponents: MessagesControllerComponents,
                                  view: pspId,
-                                 psaSchemeAuthAction: PsaPspSchemeAuthAction
+                                 psaSchemeAuthAction: PspSchemeAuthAction
                                )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with Retrievals

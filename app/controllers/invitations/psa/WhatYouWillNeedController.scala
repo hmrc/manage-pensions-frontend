@@ -18,7 +18,7 @@ package controllers.invitations.psa
 
 import com.google.inject.Inject
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaPspSchemeAuthAction}
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaSchemeAuthAction}
 import controllers.invitations.psa.routes._
 import controllers.psa.routes._
 import identifiers.{SchemeNameId, SchemeSrnId}
@@ -37,7 +37,7 @@ class WhatYouWillNeedController @Inject()(
                                            requireData: DataRequiredAction,
                                            val controllerComponents: MessagesControllerComponents,
                                            view: whatYouWillNeed,
-                                           psaPspSchemeAction: PsaPspSchemeAuthAction
+                                           psaPspSchemeAction: PsaSchemeAuthAction
                                          )
   extends FrontendBaseController
     with I18nSupport

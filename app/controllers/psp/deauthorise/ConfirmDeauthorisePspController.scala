@@ -19,7 +19,7 @@ package controllers.psp.deauthorise
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaPspSchemeAuthAction}
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PspSchemeAuthAction}
 import forms.psp.deauthorise.ConfirmDeauthPspFormProvider
 import identifiers.psp.deauthorise
 import identifiers.psp.deauthorise.{ConfirmDeauthorisePspId, PspDetailsId}
@@ -47,7 +47,7 @@ class ConfirmDeauthorisePspController @Inject()(
                                                  val requireData: DataRequiredAction,
                                                  val controllerComponents: MessagesControllerComponents,
                                                  view: confirmDeauthorisePsp,
-                                                 psaPspSchemeAuthAction: PsaPspSchemeAuthAction
+                                                 psaPspSchemeAuthAction: PspSchemeAuthAction
                                                )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport
