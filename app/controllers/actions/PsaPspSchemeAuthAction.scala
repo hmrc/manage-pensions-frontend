@@ -24,7 +24,7 @@ import models.psa.PsaDetails
 import models.requests.OptionalDataRequest
 import play.api.Logging
 import play.api.mvc.Results.NotFound
-import play.api.mvc.{ActionFunction, Result}
+import play.api.mvc.{ActionFunction, AnyContent, Result}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvider
 
 import javax.inject.Inject
@@ -96,3 +96,35 @@ class PsaPspSchemeAuthAction @Inject()(schemeDetailsConnector: SchemeDetailsConn
   def apply(srn: Option[SchemeReferenceNumber]): ActionFunction[OptionalDataRequest, OptionalDataRequest] =
     new PsaPspSchemeActionImpl(srn, schemeDetailsConnector, errorHandler)
 }
+
+class PspSchemeAuthAction @Inject()(schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)
+                                   (implicit ec: ExecutionContext, request: OptionalDataRequest[AnyContent]){
+  /**
+   * @param srn - If empty, srn is expected to be retrieved from Session. If present srn is expected to be retrieved form the URL
+   * @return
+   */
+  def apply(srn: Option[SchemeReferenceNumber]): ActionFunction[OptionalDataRequest, OptionalDataRequest] = {
+    if(request.pspId.isDefined) {
+      new PsaPspSchemeActionImpl(srn, schemeDetailsConnector, errorHandler)
+    } else {
+      ???
+    }
+  }
+}
+
+class PsaSchemeAuthAction @Inject()(schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)
+                                   (implicit ec: ExecutionContext, request: OptionalDataRequest[AnyContent]){
+  /**
+   * @param srn - If empty, srn is expected to be retrieved from Session. If present srn is expected to be retrieved form the URL
+   * @return
+   */
+  def apply(srn: Option[SchemeReferenceNumber]): ActionFunction[OptionalDataRequest, OptionalDataRequest] = {
+    if (request.psaId.isDefined) {
+      new PsaPspSchemeActionImpl(srn, schemeDetailsConnector, errorHandler)
+    } else {
+      ???
+    }
+  }
+}
+
+
