@@ -26,7 +26,7 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 
-private class FakePspSchemeActionImpl()
+private class FakeErrorActionImpl()
                                   (implicit val executionContext: ExecutionContext)
   extends ActionFunction[OptionalDataRequest, OptionalDataRequest] {
 
@@ -35,7 +35,7 @@ private class FakePspSchemeActionImpl()
     block(request)
   }
 }
-class FakePspSchemeAuthAction @Inject()(schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler, errorAction: ErrorAction)
-                                       (implicit ec: ExecutionContext, request: OptionalDataRequest[AnyContent])
-                                        extends PspSchemeAuthAction(schemeDetailsConnector, errorHandler, errorAction) {
+class FakeErrorAction @Inject()(errorHandler: ErrorHandler)
+                                       (implicit ec: ExecutionContext)
+                                        extends ErrorAction(errorHandler) {
 }

@@ -27,11 +27,14 @@ import handlers.ErrorHandler
 import identifiers.AssociatedDateId
 import identifiers.invitations.{PSTRId, SchemeNameId}
 import models._
+import models.requests.OptionalDataRequest
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
+import play.api.mvc.AnyContent
 import play.api.test.Helpers._
+import services.SchemesOverviewServiceSpec.request
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.UserAnswers
 
@@ -54,7 +57,10 @@ class RemovePsaControllerSpec extends ControllerSpecBase with MockitoSugar {
     override def getNameFromPspID(pspId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = ???
   }
 
-  private val mockPsaSchemeAuthAction = new FakePsaSchemeAuthAction(app.injector.instanceOf[SchemeDetailsConnector], app.injector.instanceOf[ErrorHandler])
+  private val mockPsaSchemeAuthAction = new FakePsaSchemeAuthAction(app.injector.instanceOf[SchemeDetailsConnector],
+                                                                    app.injector.instanceOf[ErrorHandler],
+                                                                    fakeErrorHandlerAction)
+
 
   val userAnswersJson: String =
     s"""{

@@ -100,16 +100,18 @@ private class ErrorActionImpl (errorHandler: ErrorHandler)(implicit val executio
 
 
 
-//class PsaPspSchemeAuthAction @Inject()(schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)(implicit ec: ExecutionContext){
-//  /**
-//   * @param srn - If empty, srn is expected to be retrieved from Session. If present srn is expected to be retrieved form the URL
-//   * @return
-//   */
-//  def apply(srn: Option[SchemeReferenceNumber]): ActionFunction[OptionalDataRequest, OptionalDataRequest] =
-//    new PsaPspSchemeActionImpl(srn, schemeDetailsConnector, errorHandler)
-//}
+class PsaPspSchemeAuthAction @Inject()(schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)(implicit ec: ExecutionContext){
+  /**
+   * @param srn - If empty, srn is expected to be retrieved from Session. If present srn is expected to be retrieved form the URL
+   * @return
+   */
+  def apply(srn: Option[SchemeReferenceNumber]): ActionFunction[OptionalDataRequest, OptionalDataRequest] =
+    new PsaPspSchemeActionImpl(srn, schemeDetailsConnector, errorHandler)
+}
 
-class PspSchemeAuthAction @Inject()(schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)
+class PspSchemeAuthAction @Inject()(schemeDetailsConnector: SchemeDetailsConnector,
+                                    errorHandler: ErrorHandler,
+                                    errorAction: ErrorAction)
                                    (implicit ec: ExecutionContext, request: OptionalDataRequest[AnyContent]){
   /**
    * @param srn - If empty, srn is expected to be retrieved from Session. If present srn is expected to be retrieved form the URL
@@ -119,12 +121,14 @@ class PspSchemeAuthAction @Inject()(schemeDetailsConnector: SchemeDetailsConnect
     if(request.pspId.isDefined) {
       new PsaPspSchemeActionImpl(srn, schemeDetailsConnector, errorHandler)
     } else {
-      new ErrorActionImpl(errorHandler)
+      errorAction.apply()
     }
   }
 }
 
-class PsaSchemeAuthAction @Inject()(schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)
+class PsaSchemeAuthAction @Inject()(schemeDetailsConnector: SchemeDetailsConnector,
+                                    errorHandler: ErrorHandler,
+                                    errorAction: ErrorAction)
                                    (implicit ec: ExecutionContext, request: OptionalDataRequest[AnyContent]){
   /**
    * @param srn - If empty, srn is expected to be retrieved from Session. If present srn is expected to be retrieved form the URL
@@ -134,9 +138,16 @@ class PsaSchemeAuthAction @Inject()(schemeDetailsConnector: SchemeDetailsConnect
     if (request.psaId.isDefined) {
       new PsaPspSchemeActionImpl(srn, schemeDetailsConnector, errorHandler)
     } else {
-      new ErrorActionImpl(errorHandler)
+      errorAction.apply()
     }
   }
 }
 
+
+class ErrorAction @Inject()(errorHandler: ErrorHandler)
+                                   (implicit ec: ExecutionContext){
+  def apply(): ActionFunction[OptionalDataRequest, OptionalDataRequest] = {
+      new ErrorActionImpl(errorHandler)
+  }
+}
 

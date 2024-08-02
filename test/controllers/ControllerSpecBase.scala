@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import connectors.scheme.SchemeDetailsConnector
-import actions.{FakeDataRetrievalAction, FakePsaSchemeAuthAction, FakePspSchemeAuthAction}
+import actions.{FakeDataRetrievalAction, FakeErrorAction, FakePsaSchemeAuthAction, FakePspSchemeAuthAction}
 import controllers.invitations.InviteControllerSpec.readJsonFromFile
 import handlers.ErrorHandler
 import identifiers.psa.PSANameId
@@ -26,6 +26,7 @@ import identifiers.psp.PSPNameId
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.inject.guice.GuiceableModule
 import play.api.libs.json.Json
+import services.SchemesOverviewServiceSpec.request
 import uk.gov.hmrc.domain.PspId
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.UserAnswers
@@ -36,9 +37,12 @@ trait ControllerSpecBase extends SpecBase {
 
   val cacheMapId = "id"
   val psp: Option[PspId] = Some(PspId("00000000"))
-  val fakePsaSchemeAuthAction = new FakePsaSchemeAuthAction(app.injector.instanceOf[SchemeDetailsConnector], app.injector.instanceOf[ErrorHandler])
+  val fakePsaSchemeAuthAction = new FakePsaSchemeAuthAction(app.injector.instanceOf[SchemeDetailsConnector],
+                                                            app.injector.instanceOf[ErrorHandler],
+                                                            fakeErrorHandlerAction)
+  val fakeErrorHandlerAction = new FakeErrorAction(app.injector.instanceOf[ErrorHandler])
   val fakePspSchemeAuthAction: FakePspSchemeAuthAction =
-    new FakePspSchemeAuthAction(app.injector.instanceOf[SchemeDetailsConnector], app.injector.instanceOf[ErrorHandler])
+    new FakePspSchemeAuthAction(app.injector.instanceOf[SchemeDetailsConnector], app.injector.instanceOf[ErrorHandler], fakeErrorHandlerAction)
 
 
 

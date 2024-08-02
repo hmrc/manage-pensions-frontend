@@ -91,7 +91,7 @@ class ViewPractitionersControllerSpec extends ControllerSpecBase with MockitoSug
       mockFeatureToggleService,
       controllerComponents,
       viewPractitionersView,
-      fakePsaSchemeAuthAction
+      fakePspSchemeAuthAction
     )
 
   private def viewAsString() = viewPractitionersView(schemeName, returnCall, practitionersViewModel,true)(fakeRequest, messages).toString

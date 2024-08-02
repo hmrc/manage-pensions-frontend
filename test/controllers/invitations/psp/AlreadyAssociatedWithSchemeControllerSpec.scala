@@ -42,7 +42,7 @@ class AlreadyAssociatedWithSchemeControllerSpec extends ControllerSpecBase {
     new DataRequiredActionImpl,
     controllerComponents,
     view,
-    fakePsaSchemeAuthAction
+    fakePspSchemeAuthAction
   )
 
   private def viewAsString(): String = view("xyz", schemeName)(fakeRequest, messages).toString

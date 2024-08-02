@@ -54,7 +54,7 @@ class PspHasClientReferenceControllerSpec extends ControllerSpecBase {
 
   def controller(dataRetrievalAction: DataRetrievalAction = minimalData) = new PspHasClientReferenceController(
     messagesApi, FakeAuthAction, new FakeNavigator(onwardRoute), FakeUserAnswersCacheConnector,
-    dataRetrievalAction, new DataRequiredActionImpl, formProvider, controllerComponents, view, fakePsaSchemeAuthAction
+    dataRetrievalAction, new DataRequiredActionImpl, formProvider, controllerComponents, view, fakePspSchemeAuthAction
   )
 
   private def viewAsString(form: Form[_] = form): String = view(form, "xyz", NormalMode, schemeName, returnCall,onSubmitCall)(fakeRequest, messages).toString

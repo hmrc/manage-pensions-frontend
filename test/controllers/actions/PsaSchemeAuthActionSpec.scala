@@ -32,6 +32,7 @@ import play.api.libs.json.Json
 import play.api.mvc.Results.Ok
 import play.api.test.Helpers._
 import play.twirl.api.Html
+import services.SchemesOverviewServiceSpec.request
 import uk.gov.hmrc.domain.PsaId
 import utils.UserAnswers
 
@@ -42,7 +43,8 @@ class PsaSchemeAuthActionSpec
 
   private val errorHandler = mock[ErrorHandler]
   private val schemeDetailsConnector = mock[SchemeDetailsConnector]
-  private val action = new PsaPspSchemeAuthAction(schemeDetailsConnector, errorHandler)
+  private val errorAction = mock[ErrorAction]
+  private val action = new PsaSchemeAuthAction(schemeDetailsConnector, errorHandler, errorAction)
   private val notFoundTemplateResult = Html("")
 
   override def beforeAll(): Unit = {

@@ -20,7 +20,7 @@ import connectors.scheme.SchemeDetailsConnector
 import handlers.ErrorHandler
 import models.SchemeReferenceNumber
 import models.requests.OptionalDataRequest
-import play.api.mvc.{ActionFunction, Result}
+import play.api.mvc.{ActionFunction, AnyContent, Result}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -35,7 +35,8 @@ private class FakePsaSchemeActionImpl()
     block(request)
   }
 }
-class FakePsaSchemeAuthAction @Inject()(schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)
-                                       (implicit ec: ExecutionContext) extends PsaSchemeAuthAction(schemeDetailsConnector, errorHandler) {
+class FakePsaSchemeAuthAction @Inject()(schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler, errorAction: ErrorAction)
+                                       (implicit ec: ExecutionContext, request: OptionalDataRequest[AnyContent])
+                                        extends PsaSchemeAuthAction(schemeDetailsConnector, errorHandler, errorAction) {
   override def apply(srn: Option[SchemeReferenceNumber]): ActionFunction[OptionalDataRequest, OptionalDataRequest] = new FakePsaSchemeActionImpl()
 }
