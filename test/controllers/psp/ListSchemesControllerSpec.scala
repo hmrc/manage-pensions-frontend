@@ -29,7 +29,6 @@ import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.mvc.Call
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.SchemeSearchService
 import utils.FakeNavigator
@@ -54,7 +53,7 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar wit
 
       val fixture = testFixture(pspIdNoSchemes)
 
-      val result = fixture.controller.onPageLoad(None)(fakeRequest)
+      val result = fixture.controller.onPageLoad(fakeRequest)
 
       status(result) mustBe OK
 
@@ -79,8 +78,14 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar wit
       val postRequest = fakeRequest.withFormUrlEncodedBody(("searchText", searchText))
       val result = fixture.controller.onSearch(postRequest)
 
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result).value mustBe controllers.psp.routes.ListSchemesController.onPageLoad(Some(searchText)).toString
+      status(result) mustBe OK
+      val expected = viewAsString(
+        schemes = fullSchemes,
+        numberOfSchemes = fullSchemes.length,
+        Some(searchText)
+      )
+
+      contentAsString(result) mustBe expected
     }
 
     "return BADREQUEST and error when no value is entered into search" in {
@@ -111,8 +116,13 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar wit
         fakeRequest.withFormUrlEncodedBody(("searchText", incorrectSearchText))
       val result = fixture.controller.onSearch(postRequest)
 
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result).value mustBe controllers.psp.routes.ListSchemesController.onPageLoad(Some(incorrectSearchText)).toString
+      val expected = viewAsString(
+        schemes = List.empty,
+        numberOfSchemes = 0,
+        Some(incorrectSearchText)
+      )
+
+      contentAsString(result) mustBe expected
     }
   }
 }
@@ -130,7 +140,6 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
     mock[MinimalConnector]
   val mockUserAnswersCacheConnector: UserAnswersCacheConnector = mock[UserAnswersCacheConnector]
   private val nextCall = Call("POST", "www.example.com")
-  private val navigator = new FakeNavigator(nextCall, NormalMode)
   private val mockAppConfig: FrontendAppConfig = mock[FrontendAppConfig]
   private val listSchemesFormProvider = new ListSchemesFormProvider
   private val mockSchemeSearchService = mock[SchemeSearchService]
