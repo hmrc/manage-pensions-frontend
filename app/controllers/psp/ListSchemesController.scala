@@ -45,7 +45,6 @@ class ListSchemesController @Inject()(
                                        authenticate: AuthAction,
                                        getData: DataRetrievalAction,
                                        minimalConnector: MinimalConnector,
-                                       @SearchPstr navigator: Navigator,
                                        userAnswersCacheConnector: UserAnswersCacheConnector,
                                        val controllerComponents: MessagesControllerComponents,
                                        view: list_schemes,
@@ -60,7 +59,7 @@ class ListSchemesController @Inject()(
   private def renderView(
                           schemeDetails: List[SchemeDetails],
                           numberOfSchemes: Int,
-                          form: Form[_]
+                          form: Form[String]
                         )(implicit hc: HeaderCarrier,
                           request: OptionalDataRequest[AnyContent]): Future[Result] = {
     val status = if (form.hasErrors) BadRequest else Ok
@@ -88,7 +87,7 @@ class ListSchemesController @Inject()(
   }
 
   private def searchAndRenderView(
-                                   form: Form[_],
+                                   form: Form[String],
                                    pageNumber: Int,
                                    searchText: Option[String]
                                  )(implicit request: OptionalDataRequest[AnyContent]): Future[Result] = {
@@ -101,29 +100,36 @@ class ListSchemesController @Inject()(
     }
   }
 
-  def onPageLoad: Action[AnyContent] = (authenticate(PSP) andThen getData).async {
+  def onPageLoad(search: Option[String] = None): Action[AnyContent] = (authenticate(PSP) andThen getData).async {
     implicit request =>
-      renderView(
-        schemeDetails = Nil,
-        numberOfSchemes = 0,
-        form = form
-      )
 
-  }
+      search match {
+        case None =>
+          searchAndRenderView(
+            searchText = None,
+            pageNumber = 1,
+            form = form
+          )
+        case Some(value) =>
+          form
+            .bind(Map("searchText" -> value))
+            .fold(
+              (formWithErrors: Form[String]) =>
+                renderView(
+                  schemeDetails = Nil,
+                  numberOfSchemes = 0,
+                  form = formWithErrors
+                ),
+              value => {
+                searchAndRenderView(
+                  searchText = Some(value),
+                  pageNumber = 1,
+                  form = form.fill(value)
+                )
+              }
+            )
+      }
 
-  def onSubmit: Action[AnyContent] = (authenticate(PSP) andThen getData).async {
-    implicit request =>
-      form.bindFromRequest().fold(
-        (formWithErrors: Form[_]) => renderView(
-          schemeDetails = Nil,
-          numberOfSchemes = 0,
-          form = formWithErrors
-        ),
-        value => {
-          val uaUpdated = request.userAnswers.get.set(SearchPSTRId)(value).asOpt.getOrElse(UserAnswers())
-          Future.successful(Redirect(navigator.nextPage(SearchPSTRId, NormalMode, uaUpdated)))
-        }
-      )
   }
 
   def onSearch: Action[AnyContent] = (authenticate(PSP) andThen getData).async {
@@ -131,21 +137,14 @@ class ListSchemesController @Inject()(
       form
         .bindFromRequest()
         .fold(
-          (formWithErrors: Form[_]) =>
+          (formWithErrors: Form[String]) =>
             renderView(
               schemeDetails = Nil,
               numberOfSchemes = 0,
               form = formWithErrors
             ),
           value => {
-            Future.successful(
-              Redirect(controllers.routes.SessionExpiredController.onPageLoad)
-            )
-            searchAndRenderView(
-              searchText = Some(value),
-              pageNumber = 1,
-              form = form.fill(value)
-            )
+            Future.successful(Redirect(controllers.psp.routes.ListSchemesController.onPageLoad(Some(value))))
           }
         )
   }

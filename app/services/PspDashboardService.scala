@@ -65,7 +65,7 @@ class PspDashboardService @Inject()(appConfig: FrontendAppConfig,
       heading = Message("messages__pspDashboard__scheme_heading"),
       links = Seq(Link(
         "search-schemes",
-        controllers.psp.routes.ListSchemesController.onPageLoad.url,
+        controllers.psp.routes.ListSchemesController.onPageLoad(None).url,
         Message("messages__pspDashboard__search_scheme")))
     )
 }

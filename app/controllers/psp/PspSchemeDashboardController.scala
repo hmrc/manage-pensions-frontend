@@ -120,7 +120,7 @@ class PspSchemeDashboardController @Inject()(
                   ),
                   returnLink = Some(Link(
                     id = "return-search-schemes",
-                    url = controllers.psp.routes.ListSchemesController.onPageLoad.url,
+                    url = controllers.psp.routes.ListSchemesController.onPageLoad(None).url,
                     linkText = Message("messages__psaSchemeDash__return_link").resolve
                   ))
                 ))

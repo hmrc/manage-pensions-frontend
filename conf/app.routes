@@ -34,11 +34,8 @@ GET         /keep-alive                                                         
 
 GET         /you-need-to-register                                                                            controllers.YouNeedToRegisterController.onPageLoad()
 
-GET         /list-psp                                                                                        controllers.psp.ListSchemesController.onPageLoad
-
-POST        /list-psp                                                                                        controllers.psp.ListSchemesController.onSubmit
-
-POST         /psp-list-results                                                                                controllers.psp.ListSchemesController.onSearch
+GET         /list-psp                                                                                        controllers.psp.ListSchemesController.onPageLoad(search:Option[String] ?= None)
+POST         /list-psp                                                                                       controllers.psp.ListSchemesController.onSearch
 
 GET         /your-pension-schemes                                                                            controllers.psa.ListSchemesController.onPageLoad
 
