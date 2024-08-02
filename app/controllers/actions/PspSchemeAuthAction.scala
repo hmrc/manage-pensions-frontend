@@ -34,6 +34,7 @@ private class PspSchemeActionImpl (srnOpt:Option[SchemeReferenceNumber], schemeD
   extends ActionFunction[OptionalDataRequest, OptionalDataRequest] with FrontendHeaderCarrierProvider with Logging {
 
   private def notFoundTemplate(implicit request: OptionalDataRequest[_]) = NotFound(errorHandler.notFoundTemplate)
+
   override def invokeBlock[A](request: OptionalDataRequest[A], block: OptionalDataRequest[A] => Future[Result]): Future[Result] = {
     val retrievedSrn = {
       if (srnOpt.isDefined) {
@@ -51,24 +52,30 @@ private class PspSchemeActionImpl (srnOpt:Option[SchemeReferenceNumber], schemeD
 
     (retrievedSrn, pspIdOpt) match {
       case (Some(srn), Some(pspId)) =>
-        schemeDetailsConnector.getPspSchemeDetails(
-          pspId = pspId.id,
-          srn = srn
-        )(hc(request), executionContext).flatMap { schemeDetails =>
-
-          val pspDetails = (schemeDetails.json \ "pspDetails").as[AuthorisedPractitioner]
-          if (pspDetails.id == request.pspIdOrException.id) {
-            block(request)
-          } else {
-            logger.warn("Potentially prevented unauthorised access")
-            Future.successful(notFoundTemplate(request))
-          }
-        } recover {
-          case err =>
-            logger.error("scheme details request failed", err)
-            notFoundTemplate(request)
-        }
+        schemaDetailConnectorCall(srn, pspId.id, request, block)
       case _ => Future.successful(notFoundTemplate(request))
+    }
+  }
+
+  private def schemaDetailConnectorCall[A](srn: SchemeReferenceNumber,
+                                           psaOrPspId: String,
+                                           request: OptionalDataRequest[A],
+                                           block: OptionalDataRequest[A] => Future[Result]) = {
+    val isAssociated = schemeDetailsConnector.isPsaAssociated(
+      psaOrPspId = psaOrPspId,
+      idType = "psp",
+      srn = srn
+    )(hc(request), executionContext)
+
+    isAssociated.flatMap {
+      case Some(true) => block(request)
+      case _ =>
+        logger.warn("Potentially prevented unauthorised access")
+        Future.successful(notFoundTemplate(request))
+    } recover {
+      case err =>
+        logger.error("isPsaOrPspid associated with scheme, request failed", err)
+        notFoundTemplate(request)
     }
   }
 }

@@ -156,6 +156,11 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
                                            idNumber: String,
                                            schemeIdType: String)
                                           (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = ???
+
+      override def isPsaAssociated(psaOrPspId: String, idType: String, srn: String)
+                                  (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Boolean]] =
+        Future.successful(Some(true))
+
     }
 
   def controller(dataRetrievalAction: DataRetrievalAction = data,
