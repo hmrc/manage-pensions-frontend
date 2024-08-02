@@ -54,7 +54,7 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar wit
 
       val fixture = testFixture(pspIdNoSchemes)
 
-      val result = fixture.controller.onPageLoad(fakeRequest)
+      val result = fixture.controller.onPageLoad(None)(fakeRequest)
 
       status(result) mustBe OK
 
@@ -65,21 +65,6 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar wit
       )
     }
   }
-
-  "onSubmit" when {
-
-    when(mockMinimalConnector.getNameFromPspID(any())(any(), any())).thenReturn(Future.successful(Some(pspName)))
-    "return OK and the correct view when there are schemes" in {
-      val searchText = "24000001IN"
-      val onwardRoute = Call("POST", "www.example.com")
-      when(mockSchemeSearchService.searchPsp(any(), ArgumentMatchers.eq(Some(searchText)))(any(), any())).thenReturn(Future.successful(fullSchemes))
-      val postRequest = FakeRequest(POST, routes.ListSchemesController.onSubmit.url).withFormUrlEncodedBody("searchText" -> searchText)
-      val result = controller().onSubmit(postRequest)
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result).value mustBe onwardRoute.url
-    }
-  }
-
 
   "onSearch" when {
 
@@ -94,15 +79,8 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar wit
       val postRequest = fakeRequest.withFormUrlEncodedBody(("searchText", searchText))
       val result = fixture.controller.onSearch(postRequest)
 
-      status(result) mustBe OK
-
-      val expected = viewAsString(
-        schemes = fullSchemes,
-        numberOfSchemes = fullSchemes.length,
-        Some(searchText)
-      )
-
-      contentAsString(result) mustBe expected
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).value mustBe controllers.psp.routes.ListSchemesController.onPageLoad(Some(searchText)).toString
     }
 
     "return BADREQUEST and error when no value is entered into search" in {
@@ -133,15 +111,8 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar wit
         fakeRequest.withFormUrlEncodedBody(("searchText", incorrectSearchText))
       val result = fixture.controller.onSearch(postRequest)
 
-      status(result) mustBe OK
-
-      val expected = viewAsString(
-        schemes = List.empty,
-        numberOfSchemes = 0,
-        Some(incorrectSearchText)
-      )
-
-      contentAsString(result) mustBe expected
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result).value mustBe controllers.psp.routes.ListSchemesController.onPageLoad(Some(incorrectSearchText)).toString
     }
   }
 }
@@ -251,7 +222,7 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
 
   def controller(dataRetrievalAction: DataRetrievalAction = getDataWithPspName()): ListSchemesController =
     new ListSchemesController(
-      mockAppConfig, messagesApi, FakeAuthAction, dataRetrievalAction, mockMinimalConnector, navigator,
+      mockAppConfig, messagesApi, FakeAuthAction, dataRetrievalAction, mockMinimalConnector,
       mockUserAnswersCacheConnector, controllerComponents, view, listSchemesFormProvider, mockSchemeSearchService)
 
 
@@ -268,7 +239,6 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
           authAction(pspId),
           getDataWithPspName(pspId),
           mockMinimalConnector,
-          navigator,
           FakeUserAnswersCacheConnector,
           controllerComponents,
           view,

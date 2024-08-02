@@ -23,18 +23,15 @@ import connectors.admin.MinimalConnector
 import controllers.actions.{AuthAction, DataRetrievalAction}
 import forms.psp.ListSchemesFormProvider
 import identifiers.psa.PSANameId
-import identifiers.psp.SearchPSTRId
 import models.AuthEntity.PSP
 import models.requests.OptionalDataRequest
-import models.{NormalMode, SchemeDetails}
+import models.SchemeDetails
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.SchemeSearchService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.annotations.SearchPstr
-import utils.{Navigator, UserAnswers}
 import views.html.psp.list_schemes
 
 import scala.concurrent.{ExecutionContext, Future}
