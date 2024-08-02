@@ -97,43 +97,20 @@ class ListSchemesController @Inject()(
     }
   }
 
-  def onPageLoad(search: Option[String] = None): Action[AnyContent] = (authenticate(PSP) andThen getData).async {
+  def onPageLoad: Action[AnyContent] = (authenticate(PSP) andThen getData).async {
     implicit request =>
-
-      search match {
-        case None =>
-          renderView(
-            schemeDetails = Nil,
-            numberOfSchemes = 0,
-            form = form
-          )
-        case Some(value) =>
-          form
-            .bind(Map("searchText" -> value))
-            .fold(
-              (formWithErrors: Form[String]) =>
-                renderView(
-                  schemeDetails = Nil,
-                  numberOfSchemes = 0,
-                  form = formWithErrors
-                ),
-              value => {
-                searchAndRenderView(
-                  searchText = Some(value),
-                  pageNumber = 1,
-                  form = form.fill(value)
-                )
-              }
-            )
-      }
-
+      renderView(
+        schemeDetails = Nil,
+        numberOfSchemes = 0,
+        form = form
+      )
   }
 
   def onSearch: Action[AnyContent] = (authenticate(PSP) andThen getData).async {
     implicit request =>
-      form
-        .bindFromRequest()
-        .fold(
+      val _form = form.bindFromRequest()
+
+        _form.fold(
           (formWithErrors: Form[String]) =>
             renderView(
               schemeDetails = Nil,
@@ -141,7 +118,7 @@ class ListSchemesController @Inject()(
               form = formWithErrors
             ),
           value => {
-            Future.successful(Redirect(controllers.psp.routes.ListSchemesController.onPageLoad(Some(value))))
+            searchAndRenderView(_form, 1, Some(value))
           }
         )
   }

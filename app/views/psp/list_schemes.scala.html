@@ -117,7 +117,7 @@
 
         @if(form("searchText").value.exists(_.nonEmpty)) {
             <p class="govuk-body govuk-margin-bottom-3">
-                <a id="clear-search-link" class="govuk-link" href="@ListSchemesController.onPageLoad(Some(form.data("searchText")))"> @messages("messages__listSchemes__searchText_clearlink")</a>
+                <a id="clear-search-link" class="govuk-link" href="@ListSchemesController.onPageLoad"> @messages("messages__listSchemes__searchText_clearlink")</a>
             </p>
         }
 
