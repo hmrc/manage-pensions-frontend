@@ -105,9 +105,9 @@ class ListSchemesController @Inject()(
 
       search match {
         case None =>
-          searchAndRenderView(
-            searchText = None,
-            pageNumber = 1,
+          renderView(
+            schemeDetails = Nil,
+            numberOfSchemes = 0,
             form = form
           )
         case Some(value) =>
