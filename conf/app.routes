@@ -35,13 +35,9 @@ GET         /keep-alive                                                         
 GET         /you-need-to-register                                                                            controllers.YouNeedToRegisterController.onPageLoad()
 
 GET         /list-psp                                                                                        controllers.psp.ListSchemesController.onPageLoad
-
-POST        /list-psp                                                                                        controllers.psp.ListSchemesController.onSubmit
-
-POST         /psp-list-results                                                                                controllers.psp.ListSchemesController.onSearch
+POST         /list-psp                                                                                       controllers.psp.ListSchemesController.onSearch
 
 GET         /your-pension-schemes                                                                            controllers.psa.ListSchemesController.onPageLoad
-
 POST        /your-pension-schemes                                                                            controllers.psa.ListSchemesController.onSearch
 
 GET         /your-pension-schemes/page/:pageNumber                                                           controllers.psa.ListSchemesController.onPageLoadWithPageNumber(pageNumber: Int)

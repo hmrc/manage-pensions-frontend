@@ -23,18 +23,15 @@ import connectors.admin.MinimalConnector
 import controllers.actions.{AuthAction, DataRetrievalAction}
 import forms.psp.ListSchemesFormProvider
 import identifiers.psa.PSANameId
-import identifiers.psp.SearchPSTRId
 import models.AuthEntity.PSP
 import models.requests.OptionalDataRequest
-import models.{NormalMode, SchemeDetails}
+import models.SchemeDetails
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.SchemeSearchService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import utils.annotations.SearchPstr
-import utils.{Navigator, UserAnswers}
 import views.html.psp.list_schemes
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -45,7 +42,6 @@ class ListSchemesController @Inject()(
                                        authenticate: AuthAction,
                                        getData: DataRetrievalAction,
                                        minimalConnector: MinimalConnector,
-                                       @SearchPstr navigator: Navigator,
                                        userAnswersCacheConnector: UserAnswersCacheConnector,
                                        val controllerComponents: MessagesControllerComponents,
                                        view: list_schemes,
@@ -60,7 +56,7 @@ class ListSchemesController @Inject()(
   private def renderView(
                           schemeDetails: List[SchemeDetails],
                           numberOfSchemes: Int,
-                          form: Form[_]
+                          form: Form[String]
                         )(implicit hc: HeaderCarrier,
                           request: OptionalDataRequest[AnyContent]): Future[Result] = {
     val status = if (form.hasErrors) BadRequest else Ok
@@ -88,7 +84,7 @@ class ListSchemesController @Inject()(
   }
 
   private def searchAndRenderView(
-                                   form: Form[_],
+                                   form: Form[String],
                                    pageNumber: Int,
                                    searchText: Option[String]
                                  )(implicit request: OptionalDataRequest[AnyContent]): Future[Result] = {
@@ -108,44 +104,21 @@ class ListSchemesController @Inject()(
         numberOfSchemes = 0,
         form = form
       )
-
-  }
-
-  def onSubmit: Action[AnyContent] = (authenticate(PSP) andThen getData).async {
-    implicit request =>
-      form.bindFromRequest().fold(
-        (formWithErrors: Form[_]) => renderView(
-          schemeDetails = Nil,
-          numberOfSchemes = 0,
-          form = formWithErrors
-        ),
-        value => {
-          val uaUpdated = request.userAnswers.get.set(SearchPSTRId)(value).asOpt.getOrElse(UserAnswers())
-          Future.successful(Redirect(navigator.nextPage(SearchPSTRId, NormalMode, uaUpdated)))
-        }
-      )
   }
 
   def onSearch: Action[AnyContent] = (authenticate(PSP) andThen getData).async {
     implicit request =>
-      form
-        .bindFromRequest()
-        .fold(
-          (formWithErrors: Form[_]) =>
+      val _form = form.bindFromRequest()
+
+        _form.fold(
+          (formWithErrors: Form[String]) =>
             renderView(
               schemeDetails = Nil,
               numberOfSchemes = 0,
               form = formWithErrors
             ),
           value => {
-            Future.successful(
-              Redirect(controllers.routes.SessionExpiredController.onPageLoad)
-            )
-            searchAndRenderView(
-              searchText = Some(value),
-              pageNumber = 1,
-              form = form.fill(value)
-            )
+            searchAndRenderView(_form, 1, Some(value))
           }
         )
   }

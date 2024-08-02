@@ -32,7 +32,7 @@
     appConfig: FrontendAppConfig
 )
 
-@(form: Form[_], schemes: List[SchemeDetails], pspName: String, numberOfSchemes: Int)(implicit request: Request[_], messages: Messages)
+@(form: Form[String], schemes: List[SchemeDetails], pspName: String, numberOfSchemes: Int)(implicit request: Request[_], messages: Messages)
 
 @button_content = @{
     if(form("searchText").value.exists(_.length > 0)) {
