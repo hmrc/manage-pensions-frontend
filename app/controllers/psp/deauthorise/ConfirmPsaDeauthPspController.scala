@@ -40,14 +40,14 @@ class ConfirmPsaDeauthPspController @Inject()(
                                                val controllerComponents: MessagesControllerComponents,
                                                minimalPsaConnector: MinimalConnector,
                                                view: confirmPsaDeauthPsp,
-                                               psaPspSchemeAuthAction: PsaSchemeAuthAction
+                                               psaSchemeAuthAction: PsaSchemeAuthAction
                                              )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport
     with Retrievals {
 
   def onPageLoad(index: Index): Action[AnyContent] =
-    (authenticate() andThen getData andThen psaPspSchemeAuthAction(None) andThen requireData).async {
+    (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
       implicit request =>
 
         (SchemeNameId and PspDetailsId(index)).retrieve.map {

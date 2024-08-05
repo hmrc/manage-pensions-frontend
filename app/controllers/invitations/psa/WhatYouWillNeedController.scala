@@ -37,14 +37,14 @@ class WhatYouWillNeedController @Inject()(
                                            requireData: DataRequiredAction,
                                            val controllerComponents: MessagesControllerComponents,
                                            view: whatYouWillNeed,
-                                           psaPspSchemeAction: PsaSchemeAuthAction
+                                           psaSchemeAction: PsaSchemeAuthAction
                                          )
   extends FrontendBaseController
     with I18nSupport
     with Retrievals {
 
   def onPageLoad(): Action[AnyContent] =
-    (authenticate() andThen getData andThen psaPspSchemeAction(None) andThen requireData).async {
+    (authenticate() andThen getData andThen psaSchemeAction(None) andThen requireData).async {
       implicit request =>
         (SchemeSrnId and SchemeNameId).retrieve.map {
           case srn ~ schemeName =>
@@ -53,7 +53,7 @@ class WhatYouWillNeedController @Inject()(
         }
     }
 
-  def onSubmit(): Action[AnyContent] = (authenticate() andThen getData andThen psaPspSchemeAction(None)).async {
+  def onSubmit(): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAction(None)).async {
     Future.successful(Redirect(PsaNameController.onPageLoad(NormalMode)))
   }
 }

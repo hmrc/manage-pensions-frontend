@@ -16,7 +16,6 @@
 
 package controllers.psa.remove
 
-import base.SpecBase
 import connectors.FakeUserAnswersCacheConnector
 import connectors.admin.MinimalConnector
 import connectors.scheme.SchemeDetailsConnector
@@ -27,12 +26,10 @@ import handlers.ErrorHandler
 import identifiers.AssociatedDateId
 import identifiers.invitations.{PSTRId, SchemeNameId}
 import models._
-import models.requests.OptionalDataRequest
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
-import play.api.mvc.AnyContent
 import play.api.test.Helpers._
 import services.SchemesOverviewServiceSpec.request
 import uk.gov.hmrc.http.HeaderCarrier

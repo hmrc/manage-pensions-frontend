@@ -52,14 +52,14 @@ class RemovePsaController @Inject()(
                                      minimalPsaConnector: MinimalConnector,
                                      appConfig: FrontendAppConfig,
                                      val controllerComponents: MessagesControllerComponents,
-                                     psaPspSchemeAction: PsaSchemeAuthAction
+                                     psaSchemeAction: PsaSchemeAuthAction
                                    )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with Retrievals {
 
   import RemovePsaController._
 
-  def onPageLoad: Action[AnyContent] = (authenticate() andThen getData andThen psaPspSchemeAction(None) andThen requireData).async {
+  def onPageLoad: Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAction(None) andThen requireData).async {
     implicit request =>
       SchemeSrnId.retrieve.map { srn =>
         minimalPsaConnector.getMinimalPsaDetails(request.psaIdOrException.id).flatMap { minimalPsaDetails =>

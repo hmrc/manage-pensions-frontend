@@ -58,7 +58,7 @@ class DeclarationController @Inject()(
                                        appConfig: FrontendAppConfig,
                                        val controllerComponents: MessagesControllerComponents,
                                        view: declaration,
-                                       psaPspSchemeAuthAction: PspSchemeAuthAction
+                                       pspSchemeAuthAction: PspSchemeAuthAction
                                      )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport
@@ -67,7 +67,7 @@ class DeclarationController @Inject()(
 
   private val logger = Logger(classOf[DeclarationController])
 
-  def onPageLoad(): Action[AnyContent] = (auth(PSP) andThen getData andThen psaPspSchemeAuthAction(None) andThen requireData).async {
+  def onPageLoad(): Action[AnyContent] = (auth(PSP) andThen getData andThen pspSchemeAuthAction(None) andThen requireData).async {
     implicit request =>
       (SchemeSrnId and SchemeNameId).retrieve.map {
         case srn ~ schemeName =>
@@ -75,7 +75,7 @@ class DeclarationController @Inject()(
       }
   }
 
-  def onSubmit(): Action[AnyContent] = (auth(PSP) andThen getData andThen psaPspSchemeAuthAction(None) andThen requireData).async {
+  def onSubmit(): Action[AnyContent] = (auth(PSP) andThen getData andThen pspSchemeAuthAction(None) andThen requireData).async {
     implicit request =>
       (SchemeSrnId and SchemeNameId and PSTRId and DeauthDateId and AuthorisedPractitionerId).retrieve.map {
         case srn ~ schemeName ~ pstr ~ removalDate ~ authorisedPractitioner =>

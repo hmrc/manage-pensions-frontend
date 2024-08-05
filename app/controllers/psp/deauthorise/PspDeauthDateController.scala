@@ -48,7 +48,7 @@ class PspDeauthDateController @Inject()(
                                          formProvider: PspDeauthDateFormProvider,
                                          val controllerComponents: MessagesControllerComponents,
                                          view: pspDeauthDate,
-                                         psaSchemeAuthAction: PspSchemeAuthAction
+                                         psaSchemeAuthAction: PsaSchemeAuthAction
                                        )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport

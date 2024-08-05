@@ -39,11 +39,11 @@ class InviteController @Inject()(
                                   minimalPsaConnector: MinimalConnector,
                                   val controllerComponents: MessagesControllerComponents,
                                   appConfig: FrontendAppConfig,
-                                  psaPspSchemeAuthAction: PsaSchemeAuthAction,
+                                  psaSchemeAuthAction: PsaSchemeAuthAction,
                                   getData: DataRetrievalAction
                                 )(implicit val ec: ExecutionContext) extends FrontendBaseController {
 
-  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate() andThen getData andThen psaPspSchemeAuthAction(Some(srn))).async {
+  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(Some(srn))).async {
     implicit request =>
 
       minimalPsaConnector.getMinimalPsaDetails(request.psaIdOrException.id).flatMap { minimalPsaDetails =>

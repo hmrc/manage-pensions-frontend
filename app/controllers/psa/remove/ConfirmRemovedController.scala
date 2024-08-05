@@ -37,10 +37,10 @@ class ConfirmRemovedController @Inject()(
                                           userAnswersCacheConnector: UserAnswersCacheConnector,
                                           val controllerComponents: MessagesControllerComponents,
                                           view: confirmRemoved,
-                                          psaPspSchemeAuthAction: PsaSchemeAuthAction
+                                          psaSchemeAuthAction: PsaSchemeAuthAction
                                         )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
 
-  def onPageLoad(): Action[AnyContent] = (authenticate() andThen getData andThen psaPspSchemeAuthAction(None) andThen requireData).async {
+  def onPageLoad(): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
     implicit request =>
 
       (PSANameId and SchemeNameId).retrieve.map {

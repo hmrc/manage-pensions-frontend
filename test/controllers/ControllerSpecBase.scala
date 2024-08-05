@@ -37,10 +37,11 @@ trait ControllerSpecBase extends SpecBase {
 
   val cacheMapId = "id"
   val psp: Option[PspId] = Some(PspId("00000000"))
+  val fakeErrorHandlerAction = new FakeErrorAction(app.injector.instanceOf[ErrorHandler])
   val fakePsaSchemeAuthAction = new FakePsaSchemeAuthAction(app.injector.instanceOf[SchemeDetailsConnector],
                                                             app.injector.instanceOf[ErrorHandler],
                                                             fakeErrorHandlerAction)
-  val fakeErrorHandlerAction = new FakeErrorAction(app.injector.instanceOf[ErrorHandler])
+
   val fakePspSchemeAuthAction: FakePspSchemeAuthAction =
     new FakePspSchemeAuthAction(app.injector.instanceOf[SchemeDetailsConnector], app.injector.instanceOf[ErrorHandler], fakeErrorHandlerAction)
 

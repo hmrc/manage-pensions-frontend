@@ -48,7 +48,7 @@ class ConfirmRemovePsaController @Inject()(
                                             val requireData: DataRequiredAction,
                                             val controllerComponents: MessagesControllerComponents,
                                             view: confirmRemovePsa,
-                                            psaPspSchemeAuthAction: PsaSchemeAuthAction
+                                            psaSchemeAuthAction: PsaSchemeAuthAction
                                           )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport
@@ -56,7 +56,7 @@ class ConfirmRemovePsaController @Inject()(
 
   val form: Form[Boolean] = formProvider()
 
-  def onPageLoad: Action[AnyContent] = (auth() andThen getData andThen psaPspSchemeAuthAction(None) andThen requireData).async {
+  def onPageLoad: Action[AnyContent] = (auth() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
     implicit request =>
       (SchemeSrnId and SchemeNameId and PSANameId).retrieve.map {
         case srn ~ schemeName ~ psaName =>
@@ -65,7 +65,7 @@ class ConfirmRemovePsaController @Inject()(
       }
   }
 
-  def onSubmit: Action[AnyContent] = (auth() andThen getData andThen psaPspSchemeAuthAction(None) andThen requireData).async {
+  def onSubmit: Action[AnyContent] = (auth() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[Boolean]) =>

@@ -59,7 +59,7 @@ class PspDeauthDateControllerSpec
       formProvider = formProvider,
       controllerComponents = controllerComponents,
       view = view,
-      fakePspSchemeAuthAction
+      fakePsaSchemeAuthAction
     )
 
   private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {

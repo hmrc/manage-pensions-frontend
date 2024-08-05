@@ -49,7 +49,7 @@ class ConfirmDeauthorisePspControllerSpec extends ControllerWithQuestionPageBeha
     requiredDataAction,
     controllerComponents,
     view,
-    fakePspSchemeAuthAction
+    fakePsaSchemeAuthAction
   )
 
   private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {

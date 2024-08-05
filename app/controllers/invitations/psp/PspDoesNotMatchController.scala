@@ -17,7 +17,7 @@
 package controllers.invitations.psp
 
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PspSchemeAuthAction}
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaSchemeAuthAction}
 import controllers.psa.routes._
 import identifiers.invitations.psp.PspNameId
 import identifiers.{SchemeNameId, SchemeSrnId}
@@ -37,7 +37,7 @@ class PspDoesNotMatchController @Inject()(
                                            requireData: DataRequiredAction,
                                            val controllerComponents: MessagesControllerComponents,
                                            view: pspDoesNotMatch,
-                                           psaSchemeAuthAction: PspSchemeAuthAction
+                                           psaSchemeAuthAction: PsaSchemeAuthAction
                                          )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport

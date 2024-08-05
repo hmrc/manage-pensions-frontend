@@ -36,13 +36,13 @@ class PsaAlreadyAssociatedController @Inject()(
                                                 requireData: DataRequiredAction,
                                                 val controllerComponents: MessagesControllerComponents,
                                                 view: psa_already_associated,
-                                                psaPspSchemeAuthAction: PsaSchemeAuthAction
+                                                psaSchemeAuthAction: PsaSchemeAuthAction
                                               )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport
     with Retrievals {
 
-  def onPageLoad(): Action[AnyContent] = (authenticate() andThen getData andThen psaPspSchemeAuthAction(None) andThen requireData).async {
+  def onPageLoad(): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
     implicit request =>
       (InviteeNameId and MinimalSchemeDetailId).retrieve.map {
         case name ~ schemeDetails =>

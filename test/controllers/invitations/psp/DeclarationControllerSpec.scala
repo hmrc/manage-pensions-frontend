@@ -101,7 +101,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
     crypto,
     frontendAppConfig,
     view,
-    fakePspSchemeAuthAction
+    fakePsaSchemeAuthAction
   )
 
   private def viewAsString(form: Form[_] = form) = view(form)(fakeRequest, messages).toString

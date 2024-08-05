@@ -44,10 +44,10 @@ class ViewPspCheckYourAnswersController @Inject()(override val messagesApi: Mess
                                                   schemeDetailsConnector: SchemeDetailsConnector,
                                                   val controllerComponents: MessagesControllerComponents,
                                                   view: checkYourAnswersPsp,
-                                                  psaPspSchemeAuthAction: PsaSchemeAuthAction
+                                                  psaSchemeAuthAction: PsaSchemeAuthAction
                                                  )(implicit val ec: ExecutionContext) extends FrontendBaseController with Retrievals with I18nSupport {
 
-  def onPageLoad(index: Int): Action[AnyContent] = (authenticate() andThen getData andThen psaPspSchemeAuthAction(None) andThen requireData).async {
+  def onPageLoad(index: Int): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
     implicit request =>
       (SchemeSrnId and SchemeNameId and PspDetailsId(index)).retrieve.map {
         case srn ~ schemeName ~ pspDetail =>
@@ -64,7 +64,7 @@ class ViewPspCheckYourAnswersController @Inject()(override val messagesApi: Mess
       }
   }
 
-  def onSubmit(index: Int): Action[AnyContent] = (authenticate() andThen getData andThen psaPspSchemeAuthAction(None) andThen requireData).async {
+  def onSubmit(index: Int): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
     implicit request =>
       (SchemeSrnId and PSTRId and PspDetailsId(index)).retrieve.map {
         case srn ~ pstr ~ pspDetail =>

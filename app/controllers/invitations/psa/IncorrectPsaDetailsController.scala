@@ -37,14 +37,14 @@ class IncorrectPsaDetailsController @Inject()(
                                                requireData: DataRequiredAction,
                                                val controllerComponents: MessagesControllerComponents,
                                                view: incorrectPsaDetails,
-                                               psaPspSchemeAuthAction: PsaSchemeAuthAction
+                                               psaSchemeAuthAction: PsaSchemeAuthAction
                                              )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport
     with Retrievals {
 
   def onPageLoad(): Action[AnyContent] =
-    (authenticate() andThen getData andThen psaPspSchemeAuthAction(None) andThen requireData).async {
+    (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
       implicit request =>
 
         (InviteeNameId and MinimalSchemeDetailId).retrieve.map {
