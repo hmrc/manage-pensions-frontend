@@ -140,6 +140,10 @@ object InviteControllerSpec extends ControllerSpecBase with JsonFileReader with 
                                    ec: ExecutionContext): Future[UserAnswers] =
       Future.successful(UserAnswers(readJsonFromFile("/data/validSchemeDetailsUserAnswers.json")))
 
+    override def isPsaAssociated(psaOrPspId: String, idType: String, srn: String)
+                                      (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Boolean]] =
+                                       Future.successful(Some(true))
+
     override def getPspSchemeDetails(pspId: String, srn: String)
                                     (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[UserAnswers] = ???
 
