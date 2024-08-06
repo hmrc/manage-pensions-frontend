@@ -52,35 +52,35 @@ class CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours 
       val result = onSubmitAction(userAnswerUpdated, FakeAuthAction, Future.successful(PsaAlreadyInvitedError))(FakeRequest())
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(InvitationDuplicateController.onPageLoad().url)
+      redirectLocation(result) mustBe Some(InvitationDuplicateController.onPageLoad(srn).url)
     }
 
     "redirect to incorrect psa details page if invitation failed with name matching error" in {
       val result = onSubmitAction(userAnswerUpdated, FakeAuthAction, Future.successful(NameMatchingError))(FakeRequest())
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(IncorrectPsaDetailsController.onPageLoad().url)
+      redirectLocation(result) mustBe Some(IncorrectPsaDetailsController.onPageLoad(srn).url)
     }
 
     "redirect to incorrect psa details page if psa id not found" in {
       val result = onSubmitAction(userAnswerUpdated, FakeAuthAction, Future.failed(new NotFoundException("not found")))(FakeRequest())
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(IncorrectPsaDetailsController.onPageLoad().url)
+      redirectLocation(result) mustBe Some(IncorrectPsaDetailsController.onPageLoad(srn).url)
     }
 
     "redirect to psa already invited page if scheme already has invitee psa id associated with it and names match" in {
 
       val result = onSubmitAction(userAnswerUpdatedPsaAlreadyInvited, FakeAuthAction, Future.successful(InvitationSent))(FakeRequest())
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(PsaAlreadyAssociatedController.onPageLoad().url)
+      redirectLocation(result) mustBe Some(PsaAlreadyAssociatedController.onPageLoad(srn).url)
     }
 
     "redirect to psa already associated page if scheme already has invitee psa id associated with it and names don't match" in {
 
       val result = onSubmitAction(userAnswerUpdatedPsaAlreadyInvited, FakeAuthAction, Future.successful(NameMatchingError))(FakeRequest())
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(PsaAlreadyAssociatedController.onPageLoad().url)
+      redirectLocation(result) mustBe Some(PsaAlreadyAssociatedController.onPageLoad(srn).url)
     }
   }
 }
@@ -90,7 +90,6 @@ object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours
   private val testPstr = "test-pstr"
   private val testSchemeName = "test-scheme-name"
   private val testSchemeDetail = MinimalSchemeDetail(testSrn, Some(testPstr), testSchemeName)
-  private val srn = "S9000000000"
 
   private val userAnswer = UserAnswers()
     .minimalSchemeDetails(testSchemeDetail)
@@ -123,7 +122,7 @@ object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours
     override def acceptInvite(acceptedInvitation: AcceptedInvitation)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = ???
   }
 
-  def call: Call = CheckYourAnswersController.onSubmit()
+  def call: Call = CheckYourAnswersController.onSubmit(srn)
 
   def viewAsString(): String = view(Seq(), call,
     Some("messages__check__your__answer__main__containt__label"), Some(testSchemeName))(fakeRequest, messages).toString
@@ -132,7 +131,7 @@ object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours
 
     new CheckYourAnswersController(
       frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction,
-      checkYourAnswersFactory, fakeSchemeDetailsConnector, fakeInvitationConnector(), controllerComponents, view, fakePsaSchemeAuthAction).onPageLoad()
+      checkYourAnswersFactory, fakeSchemeDetailsConnector, fakeInvitationConnector(), controllerComponents, view, fakePsaSchemeAuthAction).onPageLoad(srn)
   }
 
   def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
@@ -142,7 +141,7 @@ object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours
 
     new CheckYourAnswersController(
       frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction,
-      checkYourAnswersFactory, fakeSchemeDetailsConnector, fakeInvitationConnector(), controllerComponents, view, fakePsaSchemeAuthAction).onSubmit()
+      checkYourAnswersFactory, fakeSchemeDetailsConnector, fakeInvitationConnector(), controllerComponents, view, fakePsaSchemeAuthAction).onSubmit(srn)
   }
 
   def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction, invitationResponse: Future[InvitationStatus]): Action[AnyContent] = {
@@ -152,6 +151,6 @@ object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours
 
     new CheckYourAnswersController(
       frontendAppConfig, messagesApi, fakeAuth, navigator, dataRetrievalAction, requiredDateAction,
-      checkYourAnswersFactory, fakeSchemeDetailsConnector, fakeInvitationConnector(invitationResponse), controllerComponents, view, fakePsaSchemeAuthAction).onSubmit()
+      checkYourAnswersFactory, fakeSchemeDetailsConnector, fakeInvitationConnector(invitationResponse), controllerComponents, view, fakePsaSchemeAuthAction).onSubmit(srn)
   }
 }

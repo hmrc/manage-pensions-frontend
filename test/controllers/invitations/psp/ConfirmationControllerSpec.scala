@@ -44,7 +44,7 @@ class ConfirmationControllerSpec extends ControllerWithNormalPageBehaviours {
 
     new ConfirmationController(
       messagesApi, fakeAuth, dataRetrievalAction, requiredDateAction, FakeUserAnswersCacheConnector,
-      controllerComponents, confirmationView, fakePsaSchemeAuthAction).onPageLoad()
+      controllerComponents, confirmationView, fakePsaSchemeAuthAction).onPageLoad(srn)
   }
 
 

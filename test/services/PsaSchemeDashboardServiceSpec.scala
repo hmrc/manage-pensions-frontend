@@ -181,11 +181,11 @@ class PsaSchemeDashboardServiceSpec
 
   "pspCard" must {
     "return model when psps are present and scheme status is open" in {
-      service.pspCard(userAnswers(Open.value), Some(Open.value)) mustBe List(pspCard())
+      service.pspCard(userAnswers(Open.value), Some(Open.value), srn) mustBe List(pspCard())
     }
 
     "return empty list when psps are present and scheme status is not open" in {
-      service.pspCard(userAnswers(Rejected.value), Some(Rejected.value)) mustBe Nil
+      service.pspCard(userAnswers(Rejected.value), Some(Rejected.value), srn) mustBe Nil
     }
   }
 
@@ -271,7 +271,7 @@ class PsaSchemeDashboardServiceSpec
 }
 
 object PsaSchemeDashboardServiceSpec {
-  private val srn = "srn"
+  val srn: SchemeReferenceNumber = SchemeReferenceNumber("AB123456C")
   private val pstr = "pstr"
   private val schemeName = "Benefits Scheme"
   private val anotherSchemeName = "Another scheme"
@@ -455,12 +455,12 @@ object PsaSchemeDashboardServiceSpec {
         ),
         Link(
           id = "authorise",
-          url = WhatYouWillNeedController.onPageLoad().url,
+          url = WhatYouWillNeedController.onPageLoad(srn).url,
           linkText = Message("messages__pspAuthorise__link")
         ),
         Link(
           id = "view-practitioners",
-          url = ViewPractitionersController.onPageLoad().url,
+          url = ViewPractitionersController.onPageLoad(srn).url,
           linkText = Message("messages__pspViewOrDeauthorise__link")
         )
       )
@@ -482,9 +482,9 @@ object PsaSchemeDashboardServiceSpec {
         subHeadingParam = "Practitioner Individual",
         subHeadingParamClasses = "font-small bold")))),
     links = Seq(
-      Link("authorise", WhatYouWillNeedController.onPageLoad().url,
+      Link("authorise", WhatYouWillNeedController.onPageLoad(srn).url,
         Message("messages__pspAuthorise__link")),
-      Link("view-practitioners", ViewPractitionersController.onPageLoad().url,
+      Link("view-practitioners", ViewPractitionersController.onPageLoad(srn).url,
         linkText = Message("messages__pspViewOrDeauthorise__link")
       ))
   )

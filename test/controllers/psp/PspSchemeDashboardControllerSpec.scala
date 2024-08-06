@@ -23,7 +23,7 @@ import connectors.scheme.{ListOfSchemesConnector, SchemeDetailsConnector}
 import controllers.ControllerSpecBase
 import controllers.actions.{AuthAction, FakeAuthAction, PspSchemeAuthAction}
 import handlers.ErrorHandler
-import models.{EROverview, IndividualDetails, Link, MinimalPSAPSP}
+import models.{EROverview, IndividualDetails, Link, MinimalPSAPSP, SchemeReferenceNumber}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
@@ -419,7 +419,7 @@ object PspSchemeDashboardControllerSpec {
   private val psaName = "Test Psa Name"
   private val schemeName = "Test Scheme"
   private val pstr = "Test pstr"
-  private val srn = "S1000000456"
+  val srn: SchemeReferenceNumber = SchemeReferenceNumber("AB123456C")
   private val authDate = "2020-01-01"
   private val clientRef = "123"
   private val interimDashboard = false
@@ -455,7 +455,7 @@ object PspSchemeDashboardControllerSpec {
   private val deauthoriseLink: Link =
     Link(
       id = "deauthorise-yourself",
-      url = controllers.psp.deauthorise.self.routes.ConfirmDeauthController.onPageLoad().url,
+      url = controllers.psp.deauthorise.self.routes.ConfirmDeauthController.onPageLoad(srn).url,
       linkText = "De Authorise yourself"
     )
   private val searchSchemeLink: Link =

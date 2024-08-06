@@ -41,6 +41,8 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
 
   import RemovePsaControllerSpec._
 
+  val srn: SchemeReferenceNumber = SchemeReferenceNumber("AB123456C")
+
   def fakeMinimalPsaConnector(psaMinimalSubscription: MinimalPSAPSP = psaMinimalSubscription): MinimalConnector = new MinimalConnector {
     override def getMinimalPsaDetails(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP] =
       Future.successful(psaMinimalSubscription)
@@ -193,17 +195,17 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
       (ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(ua))
 
-      val result = controller(schemeDetailsConnector = sdc).onPageLoad(fakeRequest)
+      val result = controller(schemeDetailsConnector = sdc).onPageLoad(srn)(fakeRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(ConfirmRemovePsaController.onPageLoad().url)
+      redirectLocation(result) mustBe Some(ConfirmRemovePsaController.onPageLoad(srn).url)
     }
 
 
     "redirect to unable to remove psa page if PSA is suspended" in {
 
       val result = controller(psaMinimalDetails = psaMinimalSubscription.copy(isPsaSuspended = true),
-        schemeDetailsConnector = fakeSchemeDetailsConnector()).onPageLoad(fakeRequest)
+        schemeDetailsConnector = fakeSchemeDetailsConnector()).onPageLoad(srn)(fakeRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(CanNotBeRemovedController.onPageLoadWhereSuspended().url)
@@ -212,7 +214,7 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
     "redirect to update contact address page if PSA has RLS flag set and deceased flag is false" in {
 
       val result = controller(psaMinimalDetails = psaMinimalSubscription.copy(rlsFlag = true),
-        schemeDetailsConnector = fakeSchemeDetailsConnector()).onPageLoad(fakeRequest)
+        schemeDetailsConnector = fakeSchemeDetailsConnector()).onPageLoad(srn)(fakeRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(frontendAppConfig.psaUpdateContactDetailsUrl)
@@ -221,7 +223,7 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
     "redirect to contact hmrc page if PSA has both deceased and RLS flags set" in {
 
       val result = controller(psaMinimalDetails = psaMinimalSubscription.copy(rlsFlag = true, deceasedFlag = true),
-        schemeDetailsConnector = fakeSchemeDetailsConnector()).onPageLoad(fakeRequest)
+        schemeDetailsConnector = fakeSchemeDetailsConnector()).onPageLoad(srn)(fakeRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.routes.ContactHMRCController.onPageLoad().url)
@@ -230,7 +232,7 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
     "redirect to contact HMRC page if PSA has deceased flag set" in {
 
       val result = controller(psaMinimalDetails = psaMinimalSubscription.copy(deceasedFlag = true),
-        schemeDetailsConnector = fakeSchemeDetailsConnector()).onPageLoad(fakeRequest)
+        schemeDetailsConnector = fakeSchemeDetailsConnector()).onPageLoad(srn)(fakeRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.routes.ContactHMRCController.onPageLoad().url)
@@ -240,7 +242,7 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
 
       val result = controller(UserAnswers().dataRetrievalAction,
         psaMinimalDetails = psaMinimalSubscription.copy(isPsaSuspended = false),
-        schemeDetailsConnector = fakeSchemeDetailsConnector()).onPageLoad(fakeRequest)
+        schemeDetailsConnector = fakeSchemeDetailsConnector()).onPageLoad(srn)(fakeRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad.url)
@@ -248,10 +250,10 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
 
     "save scheme name pstr, then redirect to remove as scheme administrator page if PSA is not suspended" in {
       val result = controller(psaMinimalDetails = psaMinimalSubscription.copy(isPsaSuspended = false),
-        schemeDetailsConnector = fakeSchemeDetailsConnector()).onPageLoad(fakeRequest)
+        schemeDetailsConnector = fakeSchemeDetailsConnector()).onPageLoad(srn)(fakeRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(ConfirmRemovePsaController.onPageLoad().url)
+      redirectLocation(result) mustBe Some(ConfirmRemovePsaController.onPageLoad(srn).url)
 
       FakeUserAnswersCacheConnector.verify(SchemeNameId, "Test Scheme name")
       FakeUserAnswersCacheConnector.verify(PSTRId, "test pstr")
@@ -261,7 +263,7 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
     "redirect to PSTR missing page if PSTR not available" in {
 
       val result = controller(schemeDetailsConnector = fakeSchemeDetailsConnector(userAnswersJsonWithoutPstr)).
-        onPageLoad(fakeRequest)
+        onPageLoad(srn)(fakeRequest)
 
       redirectLocation(result) mustBe Some(controllers.psa.remove.routes.MissingInfoController.onPageLoadPstr().url)
     }
@@ -270,7 +272,7 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
 
       val result = controller(psaMinimalDetails = psaMinimalSubscription.copy(isPsaSuspended = false,
         organisationName = None, individualDetails = None),
-        schemeDetailsConnector = fakeSchemeDetailsConnector()).onPageLoad(fakeRequest)
+        schemeDetailsConnector = fakeSchemeDetailsConnector()).onPageLoad(srn)(fakeRequest)
 
       redirectLocation(result) mustBe Some(controllers.psa.remove.routes.MissingInfoController.onPageLoadOther().url)
     }
@@ -278,7 +280,7 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
     "redirect to scheme name missing page if scheme name not available" in {
 
       val result = controller(schemeDetailsConnector = fakeSchemeDetailsConnector(userAnswersJsonWithoutSchemeName)).
-        onPageLoad(fakeRequest)
+        onPageLoad(srn)(fakeRequest)
 
       redirectLocation(result) mustBe Some(controllers.psa.remove.routes.MissingInfoController.onPageLoadOther().url)
     }
@@ -292,7 +294,7 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
         fakePsaSchemeAuthAction
       )
 
-      val result = controller.onPageLoad(fakeRequest)
+      val result = controller.onPageLoad(srn)(fakeRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(controllers.routes.UnauthorisedController.onPageLoad.url)

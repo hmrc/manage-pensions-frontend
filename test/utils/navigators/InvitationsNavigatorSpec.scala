@@ -25,7 +25,7 @@ import identifiers.invitations.CheckYourAnswersId
 import identifiers.invitations.InvitationSuccessId
 import identifiers.invitations.InviteeNameId
 import identifiers.invitations.psa.InviteePSAId
-import models.NormalMode
+import models.{NormalMode, SchemeReferenceNumber}
 import models.requests.IdentifiedRequest
 import org.scalatest.OptionValues
 import org.scalatest.prop.TableFor4
@@ -60,11 +60,12 @@ class InvitationsNavigatorSpec
 
 object InvitationsNavigatorSpec extends OptionValues {
   private val testSrn = "test-srn"
+  val srn: SchemeReferenceNumber = SchemeReferenceNumber("AB123456C")
   lazy val emptyAnswers = UserAnswers(Json.obj())
-  lazy val checkYourAnswer: Call = CheckYourAnswersController.onPageLoad()
+  lazy val checkYourAnswer: Call = CheckYourAnswersController.onPageLoad(srn)
   lazy val invitationSuccess: Call = InvitationSuccessController.onPageLoad(testSrn)
   lazy val schemeDetails: Call = PsaSchemeDashboardController.onPageLoad(testSrn)
-  lazy val psaIdPage: Call = PsaIdController.onPageLoad(NormalMode)
+  lazy val psaIdPage: Call = PsaIdController.onPageLoad(NormalMode, srn)
 
   implicit val ex: IdentifiedRequest = new IdentifiedRequest() {
     val externalId: String = "test-external-id"

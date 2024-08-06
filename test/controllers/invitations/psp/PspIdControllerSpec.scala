@@ -38,7 +38,6 @@ class PspIdControllerSpec extends ControllerWithQuestionPageBehaviours {
   val formProvider = new PspIdFormProvider()
   val form: Form[String] = formProvider()
   private val schemeName = "Test Scheme"
-  private val srn = "srn"
   private val userAnswer = UserAnswers()
     .set(PspNameId)("xyz").asOpt.value
     .set(SchemeNameId)(schemeName).asOpt.value
@@ -55,17 +54,17 @@ class PspIdControllerSpec extends ControllerWithQuestionPageBehaviours {
 
     new PspIdController(
       messagesApi, fakeAuth, navigator, FakeUserAnswersCacheConnector,
-      dataRetrievalAction, requiredDataAction, formProvider, controllerComponents, view, fakePsaSchemeAuthAction).onPageLoad(NormalMode)
+      dataRetrievalAction, requiredDataAction, formProvider, controllerComponents, view, fakePsaSchemeAuthAction).onPageLoad(NormalMode, srn)
   }
 
   def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
 
     new PspIdController(
       messagesApi, fakeAuth, navigator, FakeUserAnswersCacheConnector,
-      dataRetrievalAction, requiredDataAction, formProvider, controllerComponents, view, fakePsaSchemeAuthAction).onSubmit(NormalMode)
+      dataRetrievalAction, requiredDataAction, formProvider, controllerComponents, view, fakePsaSchemeAuthAction).onSubmit(NormalMode, srn)
   }
 
-  def viewAsString(form: Form[_] = form) = view(form, "xyz", NormalMode, schemeName, returnCall)(fakeRequest, messages).toString
+  def viewAsString(form: Form[_] = form) = view(form, "xyz", NormalMode, schemeName, srn, returnCall)(fakeRequest, messages).toString
 
 
   behave like controllerWithOnPageLoadMethod(onPageLoadAction, userAnswer.dataRetrievalAction,

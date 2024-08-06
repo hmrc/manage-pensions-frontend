@@ -35,7 +35,7 @@ class InvitationsDuplicateControllerSpec extends ControllerSpecBase {
     "return 200 Ok and correct content on successful GET" in {
 
       val fixture = testFixture()
-      val result = fixture.controller.onPageLoad()(fakeRequest)
+      val result = fixture.controller.onPageLoad(srn)(fakeRequest)
 
       status(result) mustBe OK
       contentAsString(result) mustBe viewAsString(this)
@@ -45,7 +45,7 @@ class InvitationsDuplicateControllerSpec extends ControllerSpecBase {
     "redirect to Unauthorised when not authenticated on GET" in {
 
       val fixture = unauthorisedTestFixture()
-      val result = fixture.controller.onPageLoad()(fakeRequest)
+      val result = fixture.controller.onPageLoad(srn)(fakeRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(UnauthorisedController.onPageLoad.url)
@@ -55,7 +55,7 @@ class InvitationsDuplicateControllerSpec extends ControllerSpecBase {
     "redirect to session expired when there is no user data on GET" in {
 
       val fixture = noDataTestFixture()
-      val result = fixture.controller.onPageLoad()(fakeRequest)
+      val result = fixture.controller.onPageLoad(srn)(fakeRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(SessionExpiredController.onPageLoad.url)

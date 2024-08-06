@@ -51,18 +51,18 @@ class AlreadyAssociatedWithSchemeControllerSpec extends ControllerSpecBase {
     "on a GET" must {
 
       "return OK and the correct view" in {
-        val result = controller().onPageLoad()(fakeRequest)
+        val result = controller().onPageLoad(srn)(fakeRequest)
         status(result) mustBe OK
         contentAsString(result) mustBe viewAsString()
       }
 
       "redirect to the session expired page if there is no psp name" in {
-        val result = controller(getEmptyData).onPageLoad()(fakeRequest)
+        val result = controller(getEmptyData).onPageLoad(srn)(fakeRequest)
         redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
 
       "redirect to the session expired page if there is no existing data" in {
-        val result = controller(dontGetAnyData).onPageLoad()(fakeRequest)
+        val result = controller(dontGetAnyData).onPageLoad(srn)(fakeRequest)
         redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
     }

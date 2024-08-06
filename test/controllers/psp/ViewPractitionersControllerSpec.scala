@@ -94,14 +94,14 @@ class ViewPractitionersControllerSpec extends ControllerSpecBase with MockitoSug
       fakePsaSchemeAuthAction
     )
 
-  private def viewAsString() = viewPractitionersView(schemeName, returnCall, practitionersViewModel,true)(fakeRequest, messages).toString
+  private def viewAsString() = viewPractitionersView(schemeName, returnCall, practitionersViewModel, true, srn.id)(fakeRequest, messages).toString
 
   "ViewPractitionersController" must {
     "return OK and the correct view for a GET" in {
        val toggle: Enabled = Enabled(UpdateClientReference)
       when(mockFeatureToggleService.get(any())(any(), any()))
         .thenReturn(Future.successful(toggle))
-      val result = controller().onPageLoad()(fakeRequest)
+      val result = controller().onPageLoad(srn)(fakeRequest)
       status(result) mustBe OK
       contentAsString(result) mustBe viewAsString()
     }

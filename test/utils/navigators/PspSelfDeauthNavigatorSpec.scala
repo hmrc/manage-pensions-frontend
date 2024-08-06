@@ -23,6 +23,7 @@ import controllers.psp.routes._
 import controllers.routes._
 import identifiers.Identifier
 import identifiers.psp.deauthorise.self.{ConfirmDeauthId, DeauthDateId}
+import models.SchemeReferenceNumber
 import org.scalatest.prop.TableFor4
 import play.api.libs.json.Json
 import play.api.mvc.Call
@@ -49,7 +50,7 @@ class PspSelfDeauthNavigatorSpec extends SpecBase with NavigatorBehaviour {
 }
 
 object PspSelfDeauthNavigatorSpec {
-  private val srn = "test srn"
+  val srn: SchemeReferenceNumber = SchemeReferenceNumber("AB123456C")
   private lazy val emptyAnswers = UserAnswers(Json.obj())
   private lazy val deauthPsp = UserAnswers().srn(srn).set(ConfirmDeauthId)(true).asOpt.get
   private lazy val dontDeauthPsp = UserAnswers().srn(srn).set(ConfirmDeauthId)(false).asOpt.get
@@ -58,8 +59,8 @@ object PspSelfDeauthNavigatorSpec {
 
   private val sessionExpiredPage = SessionExpiredController.onPageLoad
   private val schemeDashboardPage = PspSchemeDashboardController.onPageLoad(srn)
-  private val deauthDatePage = DeauthDateController.onPageLoad()
-  private val declarationPage = DeclarationController.onPageLoad()
+  private val deauthDatePage = DeauthDateController.onPageLoad(srn)
+  private val declarationPage = DeclarationController.onPageLoad(srn)
 }
 
 

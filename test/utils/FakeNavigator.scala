@@ -17,7 +17,7 @@
 package utils
 
 import identifiers.Identifier
-import models.{Mode, NormalMode}
+import models.{Mode, NormalMode, SchemeReferenceNumber}
 import play.api.mvc.Call
 
 class FakeNavigator(val desiredRoute: Call, mode: Mode = NormalMode) extends Navigator {
@@ -31,11 +31,11 @@ class FakeNavigator(val desiredRoute: Call, mode: Mode = NormalMode) extends Nav
     desiredRoute
   }
 
-  override protected def routeMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
+  override protected def routeMap(ua: UserAnswers, srn: SchemeReferenceNumber): PartialFunction[Identifier, Call] = {
     case _ => controllers.routes.IndexController.onPageLoad
   }
 
-  override protected def editRouteMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
+  override protected def editRouteMap(ua: UserAnswers, srn: SchemeReferenceNumber): PartialFunction[Identifier, Call] = {
     case _ => controllers.routes.IndexController.onPageLoad
   }
 

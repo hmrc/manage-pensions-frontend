@@ -17,6 +17,7 @@
 package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
+import models.SchemeReferenceNumber
 import org.scalatest.OptionValues
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
@@ -33,13 +34,13 @@ class FrontendConnectorAFTSpec extends AsyncWordSpec with Matchers with WireMock
 
   implicit val headerCarrier: HeaderCarrierForPartials =
     HeaderCarrierForPartials(hc = HeaderCarrier())
-  private val aftPartialUrl = "/manage-pension-scheme-accounting-for-tax/srn/psa-scheme-dashboard-aft-cards"
-  private val finInfoPartialUrl = "/manage-pension-scheme-accounting-for-tax/srn/psa-scheme-dashboard-fin-info-cards"
+  private val aftPartialUrl = "/manage-pension-scheme-accounting-for-tax/AB123456C/psa-scheme-dashboard-aft-cards"
+  private val finInfoPartialUrl = "/manage-pension-scheme-accounting-for-tax/AB123456C/psa-scheme-dashboard-fin-info-cards"
   private val pspSchemeDashboardCardsUrl = "/manage-pension-scheme-accounting-for-tax/psp-scheme-dashboard-cards"
-  private val paymentsAndChargesPartialHtmlUrl = "/manage-pension-scheme-accounting-for-tax/srn/payments-and-charges-partial"
+  private val paymentsAndChargesPartialHtmlUrl = "/manage-pension-scheme-accounting-for-tax/AB123456C/payments-and-charges-partial"
   private val retrievePenaltiesUrlPartialHtmlUrl = "/manage-pension-scheme-accounting-for-tax/penalties-partial"
 
-  private val srn = "srn"
+  val srn: SchemeReferenceNumber = SchemeReferenceNumber("AB123456C")
   implicit val request: FakeRequest[_] = FakeRequest("", "")
   private val aftHtml: Html = Html("test-aft-html")
   private val finInfoHtml: Html = Html("test-fininfo-html")

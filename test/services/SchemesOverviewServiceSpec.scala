@@ -105,7 +105,7 @@ object SchemesOverviewServiceSpec extends SpecBase with MockitoSugar {
   val schemeName = "Test Scheme Name"
   val timestamp: Long = System.currentTimeMillis
   private val psaId = "A0000000"
-  private val srn = "srn"
+  val srn: SchemeReferenceNumber = SchemeReferenceNumber("AB123456C")
 
   def minimalPsaDetails(psaSuspended: Boolean): MinimalPSAPSP = MinimalPSAPSP("test@test.com", psaSuspended, Some("Org Name"), None,
     rlsFlag = false, deceasedFlag = false)

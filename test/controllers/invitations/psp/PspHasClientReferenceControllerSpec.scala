@@ -38,7 +38,6 @@ class PspHasClientReferenceControllerSpec extends ControllerSpecBase {
 
   def onwardRoute: Call = Call("GET", "/foo")
   private val schemeName = "Test Scheme"
-  private val srn = "srn"
   private val userAnswer = UserAnswers()
     .set(PspNameId)("xyz").asOpt.value
     .set(SchemeNameId)(schemeName).asOpt.value
@@ -47,7 +46,7 @@ class PspHasClientReferenceControllerSpec extends ControllerSpecBase {
   val minimalData = new FakeDataRetrievalAction(Some(userAnswer.json))
 
   private def returnCall = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber("srn"))
-  private def onSubmitCall = PspHasClientReferenceController.onSubmit(NormalMode)
+  private def onSubmitCall = PspHasClientReferenceController.onSubmit(NormalMode, srn)
 
 
   private val view = injector.instanceOf[pspHasClientReference]
@@ -63,24 +62,24 @@ class PspHasClientReferenceControllerSpec extends ControllerSpecBase {
     "on a GET" must {
 
       "return OK and the correct view" in {
-        val result = controller().onPageLoad(NormalMode)(fakeRequest)
+        val result = controller().onPageLoad(NormalMode, srn)(fakeRequest)
         status(result) mustBe OK
         contentAsString(result) mustBe viewAsString()
       }
 
       "populate the view correctly on a GET if the question has previously been answered" in {
         val data = new FakeDataRetrievalAction(Some(userAnswerWithPspHasClientRef.json))
-        val result = controller(data).onPageLoad(NormalMode)(fakeRequest)
+        val result = controller(data).onPageLoad(NormalMode, srn)(fakeRequest)
         contentAsString(result) mustBe viewAsString(form.fill(true))
       }
 
       "redirect to the session expired page if there is no psp name" in {
-        val result = controller(getEmptyData).onPageLoad(NormalMode)(fakeRequest)
+        val result = controller(getEmptyData).onPageLoad(NormalMode, srn)(fakeRequest)
         redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
 
       "redirect to the session expired page if there is no existing data" in {
-        val result = controller(dontGetAnyData).onPageLoad(NormalMode)(fakeRequest)
+        val result = controller(dontGetAnyData).onPageLoad(NormalMode, srn)(fakeRequest)
         redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
     }
@@ -89,7 +88,7 @@ class PspHasClientReferenceControllerSpec extends ControllerSpecBase {
       "save the data and redirect to the next page if valid data is submitted" in {
         val postRequest = fakeRequest.withFormUrlEncodedBody(("hasReference", "true"))
 
-        val result = controller().onSubmit(NormalMode)(postRequest)
+        val result = controller().onSubmit(NormalMode, srn)(postRequest)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(onwardRoute.url)
@@ -98,7 +97,7 @@ class PspHasClientReferenceControllerSpec extends ControllerSpecBase {
       "save the data and redirect to the next page if valid data(False) is submitted" in {
         val postRequest = fakeRequest.withFormUrlEncodedBody(("hasReference", "false"))
 
-        val result = controller().onSubmit(NormalMode)(postRequest)
+        val result = controller().onSubmit(NormalMode, srn)(postRequest)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(onwardRoute.url)
@@ -108,19 +107,19 @@ class PspHasClientReferenceControllerSpec extends ControllerSpecBase {
         val postRequest = fakeRequest.withFormUrlEncodedBody(("hasReference", ""))
         val boundForm = form.bind(Map("hasReference" -> ""))
 
-        val result = controller().onSubmit(NormalMode)(postRequest)
+        val result = controller().onSubmit(NormalMode, srn)(postRequest)
 
         status(result) mustBe BAD_REQUEST
         contentAsString(result) mustBe viewAsString(boundForm)
       }
 
       "redirect to the session expired page if there is no psp name" in {
-        val result = controller(getEmptyData).onSubmit(NormalMode)(fakeRequest)
+        val result = controller(getEmptyData).onSubmit(NormalMode, srn)(fakeRequest)
         redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
 
       "redirect to the session expired page if there is no existing data" in {
-        val result = controller(dontGetAnyData).onSubmit(NormalMode)(fakeRequest)
+        val result = controller(dontGetAnyData).onSubmit(NormalMode, srn)(fakeRequest)
         redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
     }

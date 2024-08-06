@@ -61,7 +61,6 @@ class PsaSchemeDashboardControllerSpec
   private val mockService: PsaSchemeDashboardService = mock[PsaSchemeDashboardService]
 
   private val schemeName = "Benefits Scheme"
-  private val srn = SchemeReferenceNumber("S1000000456")
   private val aftHtml = Html("test-aft-html")
   private val aftEmptyHtml = Html("")
   private val finInfoHtml = Html("test-fininfo-html")
@@ -113,9 +112,9 @@ class PsaSchemeDashboardControllerSpec
         subHeadingParam = "Practitioner Individual",
         subHeadingParamClasses = "font-small bold")))),
     links = Seq(
-      Link("authorise", WhatYouWillNeedController.onPageLoad().url,
+      Link("authorise", WhatYouWillNeedController.onPageLoad(srn).url,
         Message("messages__pspAuthorise__link")),
-      Link("view-practitioners", ViewPractitionersController.onPageLoad().url,
+      Link("view-practitioners", ViewPractitionersController.onPageLoad(srn).url,
         linkText = Message("messages__pspViewOrDeauthorise__link")
       ))
   )

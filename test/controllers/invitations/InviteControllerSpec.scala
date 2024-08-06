@@ -49,7 +49,7 @@ class InviteControllerSpec extends ControllerSpecBase {
       val result = controller(isSuspended = true).onPageLoad(srn)(fakeRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(YouCannotSendAnInviteController.onPageLoad().url)
+      redirectLocation(result) mustBe Some(YouCannotSendAnInviteController.onPageLoad(srn).url)
 
       FakeUserAnswersCacheConnector.verifyNot(MinimalSchemeDetailId)
     }
@@ -86,7 +86,7 @@ class InviteControllerSpec extends ControllerSpecBase {
       val result = controller(isSuspended = false).onPageLoad(srn)(fakeRequest)
 
       status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(WhatYouWillNeedController.onPageLoad().url)
+      redirectLocation(result) mustBe Some(WhatYouWillNeedController.onPageLoad(srn).url)
 
       FakeUserAnswersCacheConnector.verify(MinimalSchemeDetailId, MinimalSchemeDetail(srn, Some(pstr), schemeName))
     }
@@ -106,7 +106,7 @@ class InviteControllerSpec extends ControllerSpecBase {
 
 object InviteControllerSpec extends ControllerSpecBase with JsonFileReader with MockitoSugar {
   private val email = "test@test.com"
-  val srn = "S9000000000"
+  val localSrn = "S9000000000"
   val pstr = "24000001IN"
   val schemeName = "Open Single Trust Scheme with Indiv Establisher and Trustees"
 
