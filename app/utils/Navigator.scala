@@ -16,8 +16,8 @@
 
 package utils
 
-import identifiers.Identifier
-import models.{CheckMode, Mode, NormalMode}
+import identifiers.{Identifier, SchemeSrnId}
+import models.{CheckMode, Mode, NormalMode, SchemeReferenceNumber}
 import play.api.Logger
 import play.api.mvc.Call
 
@@ -25,15 +25,15 @@ abstract class Navigator {
 
   private val logger = Logger(classOf[Navigator])
 
-  protected def routeMap(ua: UserAnswers): PartialFunction[Identifier, Call]
+  protected def routeMap(ua: UserAnswers, srn: SchemeReferenceNumber): PartialFunction[Identifier, Call]
 
-  protected def editRouteMap(ua: UserAnswers): PartialFunction[Identifier, Call]
+  protected def editRouteMap(ua: UserAnswers, srn: SchemeReferenceNumber): PartialFunction[Identifier, Call]
 
   def nextPage(id: Identifier, mode: Mode, userAnswers: UserAnswers): Call = {
     val navigateTo = {
-      mode match {
-        case NormalMode => routeMap(userAnswers).lift
-        case CheckMode => editRouteMap(userAnswers).lift
+      (mode, userAnswers.get(SchemeSrnId)) match {
+        case (NormalMode, Some(srn)) => routeMap(userAnswers, srn).lift
+        case (CheckMode, Some(srn)) => editRouteMap(userAnswers, srn).lift
       }
     }
 

@@ -23,7 +23,7 @@ import forms.psp.deauthorise.PspDeauthDateFormProvider
 import identifiers.psp.deauthorise.self.DeauthDateId
 import identifiers.{AuthorisedPractitionerId, SchemeNameId, SchemeSrnId}
 import models.AuthEntity.PSP
-import models.NormalMode
+import models.{NormalMode, SchemeReferenceNumber}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.libs.json.Reads._
@@ -57,7 +57,7 @@ class DeauthDateController @Inject()(
   private def form(relationshipStartDate: LocalDate)(implicit messages: Messages): Form[LocalDate] =
     formProvider(relationshipStartDate, messages("messages__pspDeauth_date_error__before_earliest_date", formatDate(relationshipStartDate)))
 
-  def onPageLoad: Action[AnyContent] = (authenticate(PSP) andThen getData andThen pspSchemeAuthAction(None) andThen requireData).async {
+  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate(PSP) andThen getData andThen pspSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
       (SchemeNameId and SchemeSrnId and AuthorisedPractitionerId).retrieve.map {
         case schemeName ~ srn ~ psp =>
@@ -67,7 +67,7 @@ class DeauthDateController @Inject()(
       }
   }
 
-  def onSubmit: Action[AnyContent] = (authenticate(PSP) andThen getData andThen pspSchemeAuthAction(None) andThen requireData).async {
+  def onSubmit(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate(PSP) andThen getData andThen pspSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
       (SchemeNameId and SchemeSrnId and AuthorisedPractitionerId).retrieve.map {
         case schemeName ~ srn ~ psp =>

@@ -72,7 +72,7 @@ class PspSchemeDashboardController @Inject()(
   private val logger = Logger(classOf[PspSchemeDashboardController])
 
   //scalastyle:off method.length
-  def onPageLoad(srn: String): Action[AnyContent] = (authenticate(PSP) andThen getData andThen pspSchemeAuthAction(Some(srn))).async {
+  def onPageLoad(srn: String): Action[AnyContent] = (authenticate(PSP) andThen getData andThen pspSchemeAuthAction(srn)).async {
     implicit request =>
       withUserAnswers(srn) { userAnswers =>
         val pspDetails: AuthorisedPractitioner =

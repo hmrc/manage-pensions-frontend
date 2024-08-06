@@ -40,17 +40,17 @@ class WhatYouWillNeedController @Inject()(
                                            psaSchemeAuthAction: PsaSchemeAuthAction
                                          ) extends FrontendBaseController with I18nSupport with Retrievals {
 
-  def onPageLoad(): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
+  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
       (SchemeSrnId and SchemeNameId).retrieve.map {
         case srn ~ schemeName =>
           val returnCall = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(srn))
-          Future.successful(Ok(view(schemeName, returnCall)))
+          Future.successful(Ok(view(schemeName, srn, returnCall)))
       }
   }
 
-  def onSubmit(): Action[AnyContent] = authenticate().async {
-    Future.successful(Redirect(PspNameController.onPageLoad(NormalMode)))
+  def onSubmit(srn: SchemeReferenceNumber): Action[AnyContent] = authenticate().async {
+    Future.successful(Redirect(PspNameController.onPageLoad(NormalMode, srn)))
   }
 
 }

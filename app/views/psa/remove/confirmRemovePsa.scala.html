@@ -35,7 +35,7 @@
 
 @layout(pageTitle = titleWithErrors(form, messages("messages__confirmRemovePsa__title"))){
 
-    @formHelper(action = ConfirmRemovePsaController.onSubmit(), Symbol("autoComplete") -> "off") {
+    @formHelper(action = ConfirmRemovePsaController.onSubmit(srn), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))

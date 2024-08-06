@@ -18,9 +18,8 @@ package controllers.actions
 
 import connectors.scheme.SchemeDetailsConnector
 import handlers.ErrorHandler
-import identifiers.SchemeSrnId
+import models.SchemeReferenceNumber
 import models.requests.OptionalDataRequest
-import models.{AuthorisedPractitioner, SchemeReferenceNumber}
 import play.api.Logging
 import play.api.mvc.Results.NotFound
 import play.api.mvc.{ActionFunction, Result}
@@ -29,29 +28,18 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvi
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-private class PspSchemeActionImpl (srnOpt:Option[SchemeReferenceNumber], schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)
+private class PspSchemeActionImpl (srn:SchemeReferenceNumber, schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)
                           (implicit val executionContext: ExecutionContext)
   extends ActionFunction[OptionalDataRequest, OptionalDataRequest] with FrontendHeaderCarrierProvider with Logging {
 
   private def notFoundTemplate(implicit request: OptionalDataRequest[_]) = NotFound(errorHandler.notFoundTemplate)
 
   override def invokeBlock[A](request: OptionalDataRequest[A], block: OptionalDataRequest[A] => Future[Result]): Future[Result] = {
-    val retrievedSrn = {
-      if (srnOpt.isDefined) {
-        srnOpt
-      } else {
-        request.userAnswers.flatMap { ua =>
-          ua.get(SchemeSrnId).map {
-            SchemeReferenceNumber(_)
-          }
-        }
-      }
-    }
 
     val pspIdOpt = request.pspId
 
-    (retrievedSrn, pspIdOpt) match {
-      case (Some(srn), Some(pspId)) =>
+    pspIdOpt match {
+      case Some(pspId) =>
         schemaDetailConnectorCall(srn, pspId.id, request, block)
       case _ => Future.successful(notFoundTemplate(request))
     }
@@ -86,7 +74,7 @@ class PspSchemeAuthAction @Inject()(schemeDetailsConnector: SchemeDetailsConnect
    * @param srn - If empty, srn is expected to be retrieved from Session. If present srn is expected to be retrieved form the URL
    * @return
    */
-  def apply(srn: Option[SchemeReferenceNumber]): ActionFunction[OptionalDataRequest, OptionalDataRequest] =
+  def apply(srn: SchemeReferenceNumber): ActionFunction[OptionalDataRequest, OptionalDataRequest] =
     new PspSchemeActionImpl(srn, schemeDetailsConnector, errorHandler)
 
 }

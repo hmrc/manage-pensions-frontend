@@ -48,7 +48,7 @@ class ViewPractitionersController @Inject()(
     with I18nSupport
     with Retrievals {
 
-  def onPageLoad(): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAction(None) andThen requireData).async {
+  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAction(srn) andThen requireData).async {
     implicit request =>
       (SchemeSrnId and SchemeNameId and SeqAuthorisedPractitionerId).retrieve.map {
         case srn ~ schemeName ~ authorisedPractitioners =>
@@ -62,7 +62,7 @@ class ViewPractitionersController @Inject()(
           )
           val returnCall = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(srn))
           isUpdateClientReferenceEnabled.flatMap { isUpdateClientReference =>
-            Future.successful(Ok(view(schemeName, returnCall, authorisedPractitionerViewModelSeq, isUpdateClientReference)))
+            Future.successful(Ok(view(schemeName, returnCall, authorisedPractitionerViewModelSeq, isUpdateClientReference, srn)))
           }
       }
   }

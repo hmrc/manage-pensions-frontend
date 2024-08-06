@@ -47,16 +47,17 @@ class ViewPspCheckYourAnswersController @Inject()(override val messagesApi: Mess
                                                   psaSchemeAuthAction: PsaSchemeAuthAction
                                                  )(implicit val ec: ExecutionContext) extends FrontendBaseController with Retrievals with I18nSupport {
 
-  def onPageLoad(index: Int): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
+  def onPageLoad(index: Int, srn: SchemeReferenceNumber): Action[AnyContent] =
+                (authenticate() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
       (SchemeSrnId and SchemeNameId and PspDetailsId(index)).retrieve.map {
         case srn ~ schemeName ~ pspDetail =>
           if (pspDetail.authorisingPSAID == request.psaIdOrException.id) {
             val helper: ViewPspCheckYourAnswersHelper = new ViewPspCheckYourAnswersHelper()
             val sections = Seq(helper.pspName(pspDetail.name), helper.pspId(pspDetail.id),
-              helper.pspClientReference(pspDetail.clientReference, index))
+              helper.pspClientReference(pspDetail.clientReference, index, srn))
 
-            Future.successful(Ok(view(sections, controllers.psp.view.routes.ViewPspCheckYourAnswersController.onSubmit(index),
+            Future.successful(Ok(view(sections, controllers.psp.view.routes.ViewPspCheckYourAnswersController.onSubmit(index, srn),
               schemeName = schemeName, returnCall = returnCall(srn))))
           } else {
             Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad))
@@ -64,7 +65,8 @@ class ViewPspCheckYourAnswersController @Inject()(override val messagesApi: Mess
       }
   }
 
-  def onSubmit(index: Int): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
+  def onSubmit(index: Int, srn: SchemeReferenceNumber): Action[AnyContent] =
+              (authenticate() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
       (SchemeSrnId and PSTRId and PspDetailsId(index)).retrieve.map {
         case srn ~ pstr ~ pspDetail =>
@@ -89,10 +91,10 @@ class ViewPspCheckYourAnswersController @Inject()(override val messagesApi: Mess
                       .flatMap {
                         _ =>
                           schemeDetailsConnector.getSchemeDetailsRefresh(request.psaIdOrException.id, srn, "srn").flatMap {
-                            _ => Future.successful(Redirect(controllers.psp.routes.ViewPractitionersController.onPageLoad()))
+                            _ => Future.successful(Redirect(controllers.psp.routes.ViewPractitionersController.onPageLoad(srn)))
                           }
                       }
-                  case _ => Future.successful(Redirect(controllers.psp.routes.ViewPractitionersController.onPageLoad()))
+                  case _ => Future.successful(Redirect(controllers.psp.routes.ViewPractitionersController.onPageLoad(srn)))
                 }
               }
             }

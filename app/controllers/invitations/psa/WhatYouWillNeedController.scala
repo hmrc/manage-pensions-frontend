@@ -43,17 +43,17 @@ class WhatYouWillNeedController @Inject()(
     with I18nSupport
     with Retrievals {
 
-  def onPageLoad(): Action[AnyContent] =
-    (authenticate() andThen getData andThen psaSchemeAction(None) andThen requireData).async {
+  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] =
+    (authenticate() andThen getData andThen psaSchemeAction(srn) andThen requireData).async {
       implicit request =>
         (SchemeSrnId and SchemeNameId).retrieve.map {
           case srn ~ schemeName =>
             val returnCall = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(srn))
-            Future.successful(Ok(view(schemeName, returnCall)))
+            Future.successful(Ok(view(schemeName, srn, returnCall)))
         }
     }
 
-  def onSubmit(): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAction(None)).async {
-    Future.successful(Redirect(PsaNameController.onPageLoad(NormalMode)))
+  def onSubmit(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAction(srn)).async {
+    Future.successful(Redirect(PsaNameController.onPageLoad(NormalMode, srn)))
   }
 }

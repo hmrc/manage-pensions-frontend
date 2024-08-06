@@ -35,7 +35,7 @@
 
 @layout(pageTitle = titleWithErrors(form, messages("messages__confirmDeauthorisePsp__title"))) {
 
-    @formHelper(action = ConfirmDeauthorisePspController.onSubmit(index), Symbol("autoComplete") -> "off") {
+    @formHelper(action = ConfirmDeauthorisePspController.onSubmit(index, srn), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))

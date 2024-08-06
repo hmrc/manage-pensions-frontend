@@ -22,6 +22,7 @@ import controllers.psp.routes._
 import controllers.routes._
 import identifiers.psp.deauthorise.self.{ConfirmDeauthId, DeauthDateId}
 import identifiers.{Identifier, SchemeSrnId}
+import models.SchemeReferenceNumber
 import play.api.mvc.Call
 import utils.{Navigator, UserAnswers}
 
@@ -31,20 +32,20 @@ import javax.inject.{Inject, Singleton}
 class PspSelfDeauthoriseNavigator @Inject()(val dataCacheConnector: UserAnswersCacheConnector)
   extends Navigator {
 
-  override def routeMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
+  override def routeMap(ua: UserAnswers, srn: SchemeReferenceNumber): PartialFunction[Identifier, Call] = {
     case ConfirmDeauthId => confirmDeauthPspRoutes(ua)
-    case DeauthDateId => DeclarationController.onPageLoad()
+    case DeauthDateId => DeclarationController.onPageLoad(srn)
   }
 
   private def confirmDeauthPspRoutes(userAnswers: UserAnswers): Call = {
     (userAnswers.get(ConfirmDeauthId), userAnswers.get(SchemeSrnId)) match {
       case (Some(false), Some(srn)) => PspSchemeDashboardController.onPageLoad(srn)
-      case (Some(true), _) => DeauthDateController.onPageLoad()
+      case (Some(true), Some(srn)) => DeauthDateController.onPageLoad(srn)
       case _ => SessionExpiredController.onPageLoad
     }
   }
 
-  override protected def editRouteMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
+  override protected def editRouteMap(ua: UserAnswers, srn: SchemeReferenceNumber): PartialFunction[Identifier, Call] = {
     case _ => SessionExpiredController.onPageLoad
   }
 }

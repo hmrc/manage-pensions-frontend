@@ -30,7 +30,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvi
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-private class PsaSchemeActionImpl (srnOpt:Option[SchemeReferenceNumber], schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)
+private class PsaSchemeActionImpl (srn:SchemeReferenceNumber, schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)
                           (implicit val executionContext: ExecutionContext)
   extends ActionFunction[OptionalDataRequest, OptionalDataRequest] with FrontendHeaderCarrierProvider with Logging {
 
@@ -40,20 +40,11 @@ private class PsaSchemeActionImpl (srnOpt:Option[SchemeReferenceNumber], schemeD
 
   override def invokeBlock[A](request: OptionalDataRequest[A], block: OptionalDataRequest[A] => Future[Result]): Future[Result] = {
 
-    val retrievedSrn = {
-      if(srnOpt.isDefined) {
-        srnOpt
-      } else {
-        request.userAnswers.flatMap { ua =>
-          ua.get(SchemeSrnId).map { SchemeReferenceNumber(_) }
-        }
-      }
-    }
 
     val psaIdOpt = request.psaId
 
-    (retrievedSrn, psaIdOpt) match {
-      case (Some(srn), Some(psaId)) =>
+    psaIdOpt match {
+      case Some(psaId) =>
         schemaDetailConnectorCall(srn, psaId.id, request, block)
       case _ => Future.successful(notFoundTemplate(request))
     }
@@ -91,6 +82,6 @@ class PsaSchemeAuthAction @Inject()(schemeDetailsConnector: SchemeDetailsConnect
    * @param srn - If empty, srn is expected to be retrieved from Session. If present srn is expected to be retrieved form the URL
    * @return
    */
-  def apply(srn: Option[SchemeReferenceNumber]): ActionFunction[OptionalDataRequest, OptionalDataRequest] =
+  def apply(srn: SchemeReferenceNumber): ActionFunction[OptionalDataRequest, OptionalDataRequest] =
     new PsaSchemeActionImpl(srn, schemeDetailsConnector, errorHandler)
 }

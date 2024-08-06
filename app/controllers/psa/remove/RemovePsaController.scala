@@ -28,7 +28,7 @@ import controllers.routes._
 import identifiers.invitations.PSTRId
 import identifiers.psa.PSANameId
 import identifiers.{AssociatedDateId, SchemeNameId, SchemeSrnId}
-import models.MinimalPSAPSP
+import models.{MinimalPSAPSP, SchemeReferenceNumber}
 import models.psa.PsaAssociatedDate
 import models.requests.DataRequest
 import play.api.libs.functional.syntax._
@@ -59,7 +59,8 @@ class RemovePsaController @Inject()(
 
   import RemovePsaController._
 
-  def onPageLoad: Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAction(None) andThen requireData).async {
+  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] =
+                (authenticate() andThen getData andThen psaSchemeAction(srn) andThen requireData).async {
     implicit request =>
       SchemeSrnId.retrieve.map { srn =>
         minimalPsaConnector.getMinimalPsaDetails(request.psaIdOrException.id).flatMap { minimalPsaDetails =>
@@ -86,7 +87,7 @@ class RemovePsaController @Inject()(
       _ <- userAnswersCacheConnector.save(request.externalId, PSTRId, scheme.pstr)
       _ <- userAnswersCacheConnector.save(request.externalId, AssociatedDateId, scheme.associatedDate)
     } yield {
-      Redirect(ConfirmRemovePsaController.onPageLoad())
+      Redirect(ConfirmRemovePsaController.onPageLoad(srn))
     }
   } recoverWith renderPageRecoverAndRedirect
 

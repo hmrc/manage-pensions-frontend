@@ -29,11 +29,11 @@
     button: components.govuk_button
 )
 
-@(form: Form[_])(implicit request: Request[_], messages: Messages)
+@(form: Form[_], srn: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleWithErrors(form, messages("messages__psp_declaration__title"))) {
 
-    @formHelper(action = DeclarationController.onSubmit(), Symbol("autoComplete") -> "off") {
+    @formHelper(action = DeclarationController.onSubmit(srn), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form, mapping = Map("declaration" -> "declaration")))
