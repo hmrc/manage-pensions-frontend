@@ -62,7 +62,7 @@ class RemovePsaController @Inject()(
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] =
                 (authenticate() andThen getData andThen psaSchemeAction(srn) andThen requireData).async {
     implicit request =>
-      SchemeSrnId.retrieve.map { srn =>
+      SchemeSrnId.retrieve.map { srnFetched =>
         minimalPsaConnector.getMinimalPsaDetails(request.psaIdOrException.id).flatMap { minimalPsaDetails =>
           if (minimalPsaDetails.isPsaSuspended) {
             Future.successful(Redirect(CanNotBeRemovedController.onPageLoadWhereSuspended()))
@@ -71,7 +71,7 @@ class RemovePsaController @Inject()(
           } else if (minimalPsaDetails.rlsFlag) {
             Future.successful(Redirect(appConfig.psaUpdateContactDetailsUrl))
           } else {
-            renderPage(request, srn, minimalPsaDetails)
+            renderPage(request, srnFetched, minimalPsaDetails)
           }
         }
       }

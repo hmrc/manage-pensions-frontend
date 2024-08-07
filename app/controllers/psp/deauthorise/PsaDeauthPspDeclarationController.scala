@@ -74,8 +74,8 @@ class PsaDeauthPspDeclarationController @Inject()(
   def onPageLoad(index: Index, srn: SchemeReferenceNumber): Action[AnyContent] =
     (authenticate() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData).async {
       implicit request =>
-        (SchemeSrnId and SchemeNameId and deauthorise.PspDetailsId(index)).retrieve.map {
-          case srn ~ schemeName ~ pspDetails =>
+        (SchemeNameId and deauthorise.PspDetailsId(index)).retrieve.map {
+          case schemeName ~ pspDetails =>
             if (pspDetails.authorisingPSAID == request.psaIdOrException.id) {
               Future.successful(Ok(view(form, schemeName, srn, index)))
             } else {
@@ -87,8 +87,8 @@ class PsaDeauthPspDeclarationController @Inject()(
   def onSubmit(index: Index, srn: SchemeReferenceNumber): Action[AnyContent] =
     (authenticate() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData).async {
       implicit request =>
-        (SchemeSrnId and SchemeNameId and PspDetailsId(index) and PSTRId and PspDeauthDateId(index)).retrieve.map {
-          case srn ~ schemeName ~ pspDetails ~ pstr ~ removalDate =>
+        (SchemeNameId and PspDetailsId(index) and PSTRId and PspDeauthDateId(index)).retrieve.map {
+          case schemeName ~ pspDetails ~ pstr ~ removalDate =>
             if (pspDetails.authorisingPSAID == request.psaIdOrException.id) {
               form.bindFromRequest().fold(
                 (formWithErrors: Form[Boolean]) =>

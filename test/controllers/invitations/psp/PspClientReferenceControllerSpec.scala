@@ -46,7 +46,7 @@ class PspClientReferenceControllerSpec extends ControllerSpecBase {
   val userAnswerWithPspClientRef: UserAnswers = userAnswer.set(PspClientReferenceId)("A0000000").asOpt.value
   val minimalData = new FakeDataRetrievalAction(Some(userAnswer.json))
 
-  private val returnCall = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber("srn"))
+  private val returnCall = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber("AB123456C"))
   private val onSubmitCall = PspClientReferenceController.onSubmit(NormalMode, srn)
 
 

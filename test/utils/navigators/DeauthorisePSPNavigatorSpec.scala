@@ -54,7 +54,7 @@ class DeauthorisePSPNavigatorSpec extends SpecBase with NavigatorBehaviour {
 
 object DeauthorisePSPNavigatorSpec {
   val srn: SchemeReferenceNumber = SchemeReferenceNumber("AB123456C")
-  private lazy val emptyAnswers: UserAnswers = UserAnswers(Json.obj())
+  private lazy val emptyAnswers: UserAnswers = UserAnswers(Json.obj()).srn(srn)
   private lazy val deauthPsp: UserAnswers = UserAnswers().srn(srn).set(deauthorise.ConfirmDeauthorisePspId(0))(true).asOpt.get
   private lazy val dontDeauthPsp: UserAnswers = UserAnswers().srn(srn).set(deauthorise.ConfirmDeauthorisePspId(0))(false).asOpt.get
 

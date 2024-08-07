@@ -69,16 +69,16 @@ class DeclarationController @Inject()(
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = (auth(PSP) andThen getData andThen pspSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
-      (SchemeSrnId and SchemeNameId).retrieve.map {
-        case srn ~ schemeName =>
+      SchemeNameId.retrieve.map {
+        case schemeName =>
           Future.successful(Ok(view(form, schemeName, srn)))
       }
   }
 
   def onSubmit(srn: SchemeReferenceNumber): Action[AnyContent] = (auth(PSP) andThen getData andThen pspSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
-      (SchemeSrnId and SchemeNameId and PSTRId and DeauthDateId and AuthorisedPractitionerId).retrieve.map {
-        case srn ~ schemeName ~ pstr ~ removalDate ~ authorisedPractitioner =>
+      (SchemeNameId and PSTRId and DeauthDateId and AuthorisedPractitionerId).retrieve.map {
+        case schemeName ~ pstr ~ removalDate ~ authorisedPractitioner =>
           form.bindFromRequest().fold(
             (formWithErrors: Form[Boolean]) =>
               Future.successful(BadRequest(view(formWithErrors, schemeName, srn))),

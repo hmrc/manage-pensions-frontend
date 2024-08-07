@@ -60,8 +60,10 @@ class PspDeauthDateController @Inject()(
     (authenticate() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData).async {
       implicit request =>
 
-        (SchemeSrnId and SchemeNameId and deauthorise.PspDetailsId(index)).retrieve.map {
-          case srn ~ schemeName ~ pspDetails =>
+        println(s"*************************** ${request.userAnswers}")
+        (SchemeNameId and deauthorise.PspDetailsId(index)).retrieve.map {
+          case schemeName ~ pspDetails =>
+            println(s">>>>>>>>>>>>>>>>>> $srn >>> $schemeName   $pspDetails")
             if (pspDetails.authorisingPSAID == request.psaIdOrException.id) {
               Future.successful(Ok(view(
                 form = formProvider(
@@ -83,8 +85,8 @@ class PspDeauthDateController @Inject()(
   def onSubmit(index: Index, srn: SchemeReferenceNumber): Action[AnyContent] =
     (authenticate() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData).async {
       implicit request =>
-        (SchemeSrnId and SchemeNameId and PspDetailsId(index)).retrieve.map {
-          case srn ~ schemeName ~ pspDetails =>
+        (SchemeNameId and PspDetailsId(index)).retrieve.map {
+          case schemeName ~ pspDetails =>
             formProvider(
               relationshipStartDate = pspDetails.relationshipStartDate,
               earliestDateError = earliestDateError(formatDate(pspDetails.relationshipStartDate)).resolve

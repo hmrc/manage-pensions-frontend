@@ -51,7 +51,7 @@ class PspSelfDeauthNavigatorSpec extends SpecBase with NavigatorBehaviour {
 
 object PspSelfDeauthNavigatorSpec {
   val srn: SchemeReferenceNumber = SchemeReferenceNumber("AB123456C")
-  private lazy val emptyAnswers = UserAnswers(Json.obj())
+  private lazy val emptyAnswers = UserAnswers(Json.obj()).srn(srn)
   private lazy val deauthPsp = UserAnswers().srn(srn).set(ConfirmDeauthId)(true).asOpt.get
   private lazy val dontDeauthPsp = UserAnswers().srn(srn).set(ConfirmDeauthId)(false).asOpt.get
 

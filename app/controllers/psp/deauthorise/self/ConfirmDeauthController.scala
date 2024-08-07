@@ -52,8 +52,8 @@ class ConfirmDeauthController @Inject()(val auth: AuthAction,
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = (auth(PSP) andThen getData andThen pspSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
-      (SchemeSrnId and SchemeNameId and PSPNameId).retrieve.map {
-        case srn ~ schemeName ~ pspName =>
+      (SchemeNameId and PSPNameId).retrieve.map {
+        case schemeName ~ pspName =>
           val preparedForm = request.userAnswers.get(ConfirmDeauthId).fold(form)(form.fill)
           Future.successful(Ok(view(preparedForm, schemeName, srn, pspName)))
       }
@@ -64,8 +64,8 @@ class ConfirmDeauthController @Inject()(val auth: AuthAction,
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[Boolean]) =>
-          (SchemeNameId and SchemeSrnId and PSPNameId).retrieve.map {
-            case schemeName ~ srn ~ pspName =>
+          (SchemeNameId and PSPNameId).retrieve.map {
+            case schemeName ~ pspName =>
               Future.successful(BadRequest(view(formWithErrors, schemeName, srn, pspName)))
           },
         value =>

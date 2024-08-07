@@ -289,7 +289,6 @@ class PspSchemeDashboardControllerSpec
 
 
       val result = controller().onPageLoad(srn)(sessionRequest)
-
       status(result) mustBe OK
       contentAsString(result) mustBe viewAsString(aftReturnsCard = Html(""))
     }

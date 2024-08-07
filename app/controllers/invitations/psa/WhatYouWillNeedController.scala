@@ -46,8 +46,8 @@ class WhatYouWillNeedController @Inject()(
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] =
     (authenticate() andThen getData andThen psaSchemeAction(srn) andThen requireData).async {
       implicit request =>
-        (SchemeSrnId and SchemeNameId).retrieve.map {
-          case srn ~ schemeName =>
+        SchemeNameId.retrieve.map {
+          case schemeName =>
             val returnCall = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(srn))
             Future.successful(Ok(view(schemeName, srn, returnCall)))
         }

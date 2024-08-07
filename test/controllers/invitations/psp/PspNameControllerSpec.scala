@@ -51,7 +51,7 @@ class PspNameControllerSpec extends ControllerWithQuestionPageBehaviours {
   private val pspNameView = injector.instanceOf[pspName]
 
 
-  private val returnCall = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber("srn"))
+  private val returnCall = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber("AB123456C"))
 
 
   def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {

@@ -48,7 +48,7 @@ class ViewPspHasClientReferenceControllerSpec extends ControllerSpecBase {
 
   val minimalData = new FakeDataRetrievalAction(Some(userAnswer.json))
 
-  private def returnCall: Call = controllers.psa.routes.PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber("srn"))
+  private def returnCall: Call = controllers.psa.routes.PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber("AB123456C"))
 
   private def onSubmitCall: Call = ViewPspHasClientReferenceController.onSubmit(CheckMode, 0, srn)
 

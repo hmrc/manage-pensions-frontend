@@ -304,7 +304,7 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
 
 object RemovePsaControllerSpec {
 
-  private val userAnswer = UserAnswers().srn("S9000000000")
+  private val userAnswer = UserAnswers().srn("AB123456C")
   private val data = userAnswer.dataRetrievalAction
 
   private val psaMinimalSubscription = MinimalPSAPSP("test@test.com", isPsaSuspended = false, None, Some(IndividualDetails("First", Some("Middle"), "Last")),

@@ -52,11 +52,11 @@ class AuthorisePspNavigatorSpec extends SpecBase with NavigatorBehaviour {
 }
 
 object AuthorisePspNavigatorSpec extends OptionValues {
-  lazy val emptyAnswers: UserAnswers = UserAnswers(Json.obj())
+  lazy val emptyAnswers: UserAnswers = UserAnswers(Json.obj()).srn(srn)
   val srn: SchemeReferenceNumber = SchemeReferenceNumber("AB123456C")
 
-  private lazy val pspHasClientRefUserAns: UserAnswers = UserAnswers().srn("srn").set(PspHasClientReferenceId)(true).asOpt.get
-  private lazy val pspHasClientRefUserAnsNo: UserAnswers = UserAnswers().srn("srn").set(PspHasClientReferenceId)(false).asOpt.get
+  private lazy val pspHasClientRefUserAns: UserAnswers = UserAnswers().srn("AB123456C").set(PspHasClientReferenceId)(true).asOpt.get
+  private lazy val pspHasClientRefUserAnsNo: UserAnswers = UserAnswers().srn("AB123456C").set(PspHasClientReferenceId)(false).asOpt.get
   lazy val checkYourAnswer: Call = CheckYourAnswersController.onPageLoad(srn)
   lazy val pspIdPage: Call = PspIdController.onPageLoad(NormalMode, srn)
    def pspClientRefPage(mode:Mode): Call = PspClientReferenceController.onPageLoad(mode, srn)

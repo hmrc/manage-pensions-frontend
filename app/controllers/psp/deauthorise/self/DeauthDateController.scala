@@ -59,8 +59,8 @@ class DeauthDateController @Inject()(
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate(PSP) andThen getData andThen pspSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
-      (SchemeNameId and SchemeSrnId and AuthorisedPractitionerId).retrieve.map {
-        case schemeName ~ srn ~ psp =>
+      (SchemeNameId and AuthorisedPractitionerId).retrieve.map {
+        case schemeName ~ psp =>
           val authDate: LocalDate = psp.relationshipStartDate
           val preparedForm = request.userAnswers.get(DeauthDateId).fold(form(authDate))(form(authDate).fill)
           Future.successful(Ok(view(preparedForm, schemeName, srn, formatDate(authDate))))
@@ -69,8 +69,8 @@ class DeauthDateController @Inject()(
 
   def onSubmit(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate(PSP) andThen getData andThen pspSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
-      (SchemeNameId and SchemeSrnId and AuthorisedPractitionerId).retrieve.map {
-        case schemeName ~ srn ~ psp =>
+      (SchemeNameId and AuthorisedPractitionerId).retrieve.map {
+        case schemeName ~ psp =>
 
           val authDate: LocalDate = psp.relationshipStartDate
 

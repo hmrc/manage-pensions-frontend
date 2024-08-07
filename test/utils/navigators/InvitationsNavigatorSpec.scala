@@ -61,7 +61,7 @@ class InvitationsNavigatorSpec
 object InvitationsNavigatorSpec extends OptionValues {
   private val testSrn = "test-srn"
   val srn: SchemeReferenceNumber = SchemeReferenceNumber("AB123456C")
-  lazy val emptyAnswers = UserAnswers(Json.obj())
+  lazy val emptyAnswers = UserAnswers(Json.obj()).srn(srn)
   lazy val checkYourAnswer: Call = CheckYourAnswersController.onPageLoad(srn)
   lazy val invitationSuccess: Call = InvitationSuccessController.onPageLoad(testSrn)
   lazy val schemeDetails: Call = PsaSchemeDashboardController.onPageLoad(testSrn)

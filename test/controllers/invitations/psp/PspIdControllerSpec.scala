@@ -47,7 +47,7 @@ class PspIdControllerSpec extends ControllerWithQuestionPageBehaviours {
   private val postRequest = FakeRequest().withJsonBody(userAnswerWithPspId.json)
   private val view = injector.instanceOf[pspId]
 
-  private val returnCall = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber("srn"))
+  private val returnCall = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber("AB123456C"))
 
 
   def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {

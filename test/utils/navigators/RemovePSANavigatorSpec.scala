@@ -52,7 +52,7 @@ class RemovePSANavigatorSpec extends SpecBase with NavigatorBehaviour {
 
 object RemovePSANavigatorSpec {
   val srn: SchemeReferenceNumber = SchemeReferenceNumber("AB123456C")
-  private lazy val emptyAnswers = UserAnswers(Json.obj())
+  private lazy val emptyAnswers = UserAnswers(Json.obj()).srn(srn)
   private lazy val removePsa = UserAnswers().srn(srn).confirmRemovePsa(isChecked = true)
   private lazy val dontRemovePsa = UserAnswers().srn(srn).confirmRemovePsa(isChecked = false)
 

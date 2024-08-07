@@ -31,11 +31,10 @@ import views.html.invitations.psp.whatYouWillNeed
 class WhatYouWillNeedControllerSpec extends ControllerSpecBase {
 
   val schemeName  = "Test Scheme name"
-  val schemeSrn  = "12345"
-  val returnCall: Call  = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(schemeSrn))
+  val returnCall: Call  = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(srn))
 
   val validData = new FakeDataRetrievalAction(Some(Json.obj(
-    SchemeSrnId.toString -> schemeSrn,
+    SchemeSrnId.toString -> srn,
     SchemeNameId.toString -> schemeName
   )))
 

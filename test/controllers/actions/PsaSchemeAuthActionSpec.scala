@@ -59,14 +59,14 @@ class PsaSchemeAuthActionSpec
 
     "return not found if PSAId not found" in {
       val request = OptionalDataRequest(fakeRequest, "", None, None, None , Individual, AuthEntity.PSA)
-      val result = action.apply((SchemeReferenceNumber("srn"))).invokeBlock(request, { x: OptionalDataRequest[_] => Future.successful(Ok("")) })
+      val result = action.apply((SchemeReferenceNumber("AB123456C"))).invokeBlock(request, { x: OptionalDataRequest[_] => Future.successful(Ok("")) })
       status(result) mustBe NOT_FOUND
     }
 
     "return not found if getSchemeDetails fails" in {
       when(schemeDetailsConnector.isPsaAssociated(any(), any(), any())(any(), any())).thenReturn(Future.failed(new RuntimeException("")))
       val request = OptionalDataRequest(fakeRequest, "", None, Some(PsaId("A0000000")), None , Individual, AuthEntity.PSA)
-      val result = action.apply((SchemeReferenceNumber("srn"))).invokeBlock(request, { x:OptionalDataRequest[_] => Future.successful(Ok("")) })
+      val result = action.apply((SchemeReferenceNumber("AB123456C"))).invokeBlock(request, { x:OptionalDataRequest[_] => Future.successful(Ok("")) })
       status(result) mustBe NOT_FOUND
     }
 
@@ -74,7 +74,7 @@ class PsaSchemeAuthActionSpec
       when(schemeDetailsConnector.isPsaAssociated(any(), any(), any())(any(), any())).thenReturn(Future.successful(Some(false)))
 
       val request = OptionalDataRequest(fakeRequest, "", None, Some(PsaId("A0000001")), None , Individual, AuthEntity.PSA)
-      val result = action.apply((SchemeReferenceNumber("srn"))).invokeBlock(request, { x:OptionalDataRequest[_] => Future.successful(Ok("")) })
+      val result = action.apply((SchemeReferenceNumber("AB123456C"))).invokeBlock(request, { x:OptionalDataRequest[_] => Future.successful(Ok("")) })
       status(result) mustBe NOT_FOUND
     }
 
@@ -82,7 +82,7 @@ class PsaSchemeAuthActionSpec
       when(schemeDetailsConnector.isPsaAssociated(any(), any(), any())(any(), any())).thenReturn(Future.successful(Some(true)))
 
       val request = OptionalDataRequest(fakeRequest, "", None, Some(PsaId("A0000000")), None , Individual, AuthEntity.PSA)
-      val result = action.apply((SchemeReferenceNumber("srn"))).invokeBlock(request, { x:OptionalDataRequest[_] => Future.successful(Ok("")) })
+      val result = action.apply((SchemeReferenceNumber("AB123456C"))).invokeBlock(request, { x:OptionalDataRequest[_] => Future.successful(Ok("")) })
       status(result) mustBe OK
     }
   }
