@@ -45,7 +45,7 @@ import scala.concurrent.Future
 class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar with BeforeAndAfterEach with JsonFileReader
   with RecoverMethods {
 
-  def onwardRoute: Call = controllers.invitations.psp.routes.ConfirmationController.onPageLoad()
+  def onwardRoute: Call = controllers.invitations.psp.routes.ConfirmationController.onPageLoad(srn)
 
   val formProvider = new DeclarationFormProvider()
   val form: Form[Boolean] = formProvider()
@@ -62,7 +62,6 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
   private val mockMinimalConnector = mock[MinimalConnector]
   private val mockAuditService = mock[AuditService]
 
-  val srn: String = "srn"
   val pstr: String = "pstr"
   val pspName: String = "psp-name"
   val schemeName: String = "scheme-name"
@@ -104,21 +103,21 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
     fakePsaSchemeAuthAction
   )
 
-  private def viewAsString(form: Form[_] = form) = view(form)(fakeRequest, messages).toString
+  private def viewAsString(form: Form[_] = form) = view(form, srn)(fakeRequest, messages).toString
 
   "Declaration Controller" when {
 
     "on a GET" must {
 
       "return OK and the correct view" in {
-        val result = controller().onPageLoad()(fakeRequest)
+        val result = controller().onPageLoad(srn)(fakeRequest)
 
         status(result) mustBe OK
         contentAsString(result) mustBe viewAsString()
       }
 
       "redirect to Session Expired page if there is no cached data" in {
-        val result = controller(dontGetAnyData).onPageLoad()(fakeRequest)
+        val result = controller(dontGetAnyData).onPageLoad(srn)(fakeRequest)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).value mustBe sessionExpired
@@ -135,7 +134,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
         when(mockMinimalConnector.getMinimalPsaDetails(any())(any(), any()))
           .thenReturn(Future.successful(minPsa))
 
-        val result = controller(data).onSubmit()(fakeRequest.withFormUrlEncodedBody("declaration" -> "true"))
+        val result = controller(data).onSubmit(srn)(fakeRequest.withFormUrlEncodedBody("declaration" -> "true"))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).value mustBe onwardRoute.url
 
@@ -173,13 +172,13 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
 
       "return Bad Request if invalid data is submitted" in {
         val formWithErrors = form.withError("declaration", messages("messages__error__psp_declaration__required"))
-        val result = controller().onSubmit()(fakeRequest)
+        val result = controller().onSubmit(srn)(fakeRequest)
         status(result) mustBe BAD_REQUEST
         contentAsString(result) mustBe viewAsString(formWithErrors)
       }
 
       "redirect to Session Expired page if there is no cached data" in {
-        val result = controller(dontGetAnyData).onSubmit()(fakeRequest)
+        val result = controller(dontGetAnyData).onSubmit(srn)(fakeRequest)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result).value mustBe sessionExpired
@@ -193,9 +192,9 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
         when(mockMinimalConnector.getMinimalPsaDetails(any())(any(), any()))
           .thenReturn(Future.successful(minPsa))
 
-        val result = controller(data).onSubmit()(fakeRequest.withFormUrlEncodedBody("declaration" -> "true"))
+        val result = controller(data).onSubmit(srn)(fakeRequest.withFormUrlEncodedBody("declaration" -> "true"))
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).value mustBe controllers.invitations.psp.routes.AlreadyAssociatedWithSchemeController.onPageLoad.url
+        redirectLocation(result).value mustBe controllers.invitations.psp.routes.AlreadyAssociatedWithSchemeController.onPageLoad(srn).url
       }
 
     }

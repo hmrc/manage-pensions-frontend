@@ -48,7 +48,7 @@ class ViewAdministratorsController @Inject()(
   extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(Some(srn))).async {
+  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(srn)).async {
     implicit request =>
       getUserAnswers(srn).map { userAnswers =>
 

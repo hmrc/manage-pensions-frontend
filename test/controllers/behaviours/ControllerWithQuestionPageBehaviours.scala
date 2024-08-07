@@ -106,6 +106,7 @@ class ControllerWithQuestionPageBehaviours extends ControllerSpecBase {
 
         status(result) mustBe BAD_REQUEST
         contentAsString(result) mustBe errorView(form)
+
       }
     }
   }

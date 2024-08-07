@@ -30,7 +30,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendHeaderCarrierProvi
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-private class PsaSchemeActionImpl (srnOpt:Option[SchemeReferenceNumber], schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)
+private class PsaSchemeActionImpl (srn:SchemeReferenceNumber, schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)
                           (implicit val executionContext: ExecutionContext)
   extends ActionFunction[OptionalDataRequest, OptionalDataRequest] with FrontendHeaderCarrierProvider with Logging {
 
@@ -40,44 +40,41 @@ private class PsaSchemeActionImpl (srnOpt:Option[SchemeReferenceNumber], schemeD
 
   override def invokeBlock[A](request: OptionalDataRequest[A], block: OptionalDataRequest[A] => Future[Result]): Future[Result] = {
 
-    val retrievedSrn = {
-      if(srnOpt.isDefined) {
-        srnOpt
-      } else {
-        request.userAnswers.flatMap { ua =>
-          ua.get(SchemeSrnId).map { SchemeReferenceNumber(_) }
-        }
-      }
-    }
 
     val psaIdOpt = request.psaId
 
-    (retrievedSrn, psaIdOpt) match {
-      case (Some(srn), Some(psaId)) =>
-        val schemeDetails = schemeDetailsConnector.getSchemeDetails(
-            psaId = psaId.id,
-            idNumber = srn,
-            schemeIdType = "srn"
-          )(hc(request), executionContext)
-
-        schemeDetails.flatMap { schemeDetails =>
-          val admins = (schemeDetails.json \ "psaDetails").as[Seq[PsaDetails]].map(_.id)
-          if (admins.contains(psaId.id)) {
-            block(request)
-          } else {
-            logger.warn("Potentially prevented unauthorised access")
-            Future.successful(notFoundTemplate(request))
-          }
-        } recover {
-          case err =>
-            logger.error("scheme details request failed", err)
-            notFoundTemplate(request)
-        }
+    psaIdOpt match {
+      case Some(psaId) =>
+        schemaDetailConnectorCall(srn, psaId.id, request, block)
       case _ => Future.successful(notFoundTemplate(request))
     }
 
   }
+
+  private def schemaDetailConnectorCall[A](srn: SchemeReferenceNumber,
+                                           psaOrPspId: String,
+                                           request: OptionalDataRequest[A],
+                                           block: OptionalDataRequest[A] => Future[Result]) = {
+    val isAssociated = schemeDetailsConnector.isPsaAssociated(
+      psaOrPspId = psaOrPspId,
+      idType = "psa",
+      srn = srn
+    )(hc(request), executionContext)
+
+    isAssociated.flatMap {
+      case Some(true) => block(request)
+      case _ =>
+        logger.warn("Potentially prevented unauthorised access")
+        Future.successful(notFoundTemplate(request))
+    } recover {
+      case err =>
+        logger.error("isPsaOrPspid associated with scheme, request failed", err)
+        notFoundTemplate(request)
+    }
+  }
 }
+
+
 
 
 class PsaSchemeAuthAction @Inject()(schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)(implicit ec: ExecutionContext){
@@ -85,6 +82,6 @@ class PsaSchemeAuthAction @Inject()(schemeDetailsConnector: SchemeDetailsConnect
    * @param srn - If empty, srn is expected to be retrieved from Session. If present srn is expected to be retrieved form the URL
    * @return
    */
-  def apply(srn: Option[SchemeReferenceNumber]): ActionFunction[OptionalDataRequest, OptionalDataRequest] =
+  def apply(srn: SchemeReferenceNumber): ActionFunction[OptionalDataRequest, OptionalDataRequest] =
     new PsaSchemeActionImpl(srn, schemeDetailsConnector, errorHandler)
 }

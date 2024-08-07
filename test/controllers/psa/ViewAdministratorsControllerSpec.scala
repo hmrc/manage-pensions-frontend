@@ -115,7 +115,7 @@ private object ViewAdministratorsControllerSpec extends MockitoSugar {
 
   private val schemeName = "Benefits Scheme"
   private val pstr = Some("10000678RE")
-  private val srn = SchemeReferenceNumber("S1000000456")
+  val srn: SchemeReferenceNumber = SchemeReferenceNumber("AB123456C")
 
   private val administrators =
     Some(

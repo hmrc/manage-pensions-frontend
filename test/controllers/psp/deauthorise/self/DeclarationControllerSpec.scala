@@ -53,10 +53,9 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
   private val mockMinimalConnector = mock[MinimalConnector]
   private val mockAuditService = mock[AuditService]
 
-  private def onwardRoute = controllers.psp.deauthorise.self.routes.ConfirmationController.onPageLoad()
+  private def onwardRoute = controllers.psp.deauthorise.self.routes.ConfirmationController.onPageLoad(srn)
 
   private val schemeName = "test-scheme"
-  private val srn = "srn"
   private val pstr = "pstr"
   private val pspId = "00000000"
   private val optionalPspId = Some(PspId(pspId))
@@ -103,18 +102,18 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
     "on a GET" must {
 
       "return OK and the correct view" in {
-        val result = controller().onPageLoad()(fakeRequest)
+        val result = controller().onPageLoad(srn)(fakeRequest)
         status(result) mustBe OK
         contentAsString(result) mustBe viewAsString()
       }
 
       "redirect to the session expired page if there is no required data" in {
-        val result = controller(getEmptyData).onPageLoad()(fakeRequest)
+        val result = controller(getEmptyData).onPageLoad(srn)(fakeRequest)
         redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
 
       "redirect to the session expired page if there is no existing data" in {
-        val result = controller(dontGetAnyData).onPageLoad()(fakeRequest)
+        val result = controller(dontGetAnyData).onPageLoad(srn)(fakeRequest)
         redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
     }
@@ -131,7 +130,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
         doNothing().when(mockAuditService).sendEvent(emailAuditEventCaptor.capture())(any(), any())
 
         val postRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.obj("declaration" -> true))
-        val result = controller().onSubmit()(postRequest)
+        val result = controller().onSubmit(srn)(postRequest)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(onwardRoute.url)
@@ -159,7 +158,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
           .thenReturn(Future.successful(minPspIndividual))
         when(mockEmailConnector.sendEmail(any())(any(), any())).thenReturn(Future.successful(EmailSent))
         val postRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.obj("declaration" -> true))
-        val result = controller().onSubmit()(postRequest)
+        val result = controller().onSubmit(srn)(postRequest)
 
         val emailAuditEventCaptor = ArgumentCaptor.forClass(classOf[PSPSelfDeauthorisationEmailAuditEvent])
         doNothing().when(mockAuditService).sendEvent(emailAuditEventCaptor.capture())(any(), any())
@@ -187,19 +186,19 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
         val postRequest = fakeRequest.withFormUrlEncodedBody(("value", ""))
         val boundForm = form.bind(Map("value" -> ""))
 
-        val result = controller().onSubmit()(postRequest)
+        val result = controller().onSubmit(srn)(postRequest)
 
         status(result) mustBe BAD_REQUEST
         contentAsString(result) mustBe viewAsString(boundForm)
       }
 
       "redirect to the session expired page if there is no required data" in {
-        val result = controller(getEmptyData).onSubmit()(fakeRequest)
+        val result = controller(getEmptyData).onSubmit(srn)(fakeRequest)
         redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
 
       "redirect to the session expired page if there is no existing data" in {
-        val result = controller(dontGetAnyData).onSubmit()(fakeRequest)
+        val result = controller(dontGetAnyData).onSubmit(srn)(fakeRequest)
         redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
     }

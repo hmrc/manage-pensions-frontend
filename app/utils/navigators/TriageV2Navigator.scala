@@ -20,6 +20,7 @@ import config.FrontendAppConfig
 import controllers.triagev2.routes._
 import identifiers.Identifier
 import identifiers.triagev2._
+import models.SchemeReferenceNumber
 import models.triagev2.WhatDoYouWantToDo.{FileAccountingForTaxReturn, FileEventReport, FilePensionSchemeReturn, ManageExistingScheme}
 import models.triagev2.WhatRole.{PSA, PSP}
 import models.triagev2.WhichServiceYouWantToView.{IamUnsure, ManagingPensionSchemes, PensionSchemesOnline}
@@ -32,7 +33,7 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class TriageV2Navigator @Inject()(appConfig: FrontendAppConfig) extends Navigator with Enumerable.Implicits {
 
-  override def routeMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
+  override def routeMap(ua: UserAnswers, srn: SchemeReferenceNumber): PartialFunction[Identifier, Call] = {
 
     case WhatRoleId => whatRoleRoutes(ua)
     case WhichServiceYouWantToViewId => whichServiceYouWantToViewRoutes(ua)
@@ -77,7 +78,7 @@ class TriageV2Navigator @Inject()(appConfig: FrontendAppConfig) extends Navigato
       case _ => controllers.routes.SessionExpiredController.onPageLoad
     }
 
-  override protected def editRouteMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
+  override protected def editRouteMap(ua: UserAnswers, srn: SchemeReferenceNumber): PartialFunction[Identifier, Call] = {
     case _ => controllers.routes.SessionExpiredController.onPageLoad
   }
 }

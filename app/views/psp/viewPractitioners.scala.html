@@ -31,11 +31,12 @@
     hmrcPageHeading : HmrcPageHeading
 )
 
-@(schemeName: String, returnCall: Call, practitioners: Seq[AuthorisedPractitionerViewModel], isUpdateClientReference: Boolean)(implicit request: Request[_], messages: Messages)
+@(schemeName: String, returnCall: Call, practitioners: Seq[AuthorisedPractitionerViewModel],
+   isUpdateClientReference: Boolean, srn: String)(implicit request: Request[_], messages: Messages)
 
 @deauthorisedLink(pspName: String, index: Index, authorisedByLoggedInPsa:Boolean) = {
     @if(authorisedByLoggedInPsa){
-        <a class="govuk-link" href="@ConfirmDeauthorisePspController.onPageLoad(index)">
+        <a class="govuk-link" href="@ConfirmDeauthorisePspController.onPageLoad(index, srn)">
             <span aria-hidden="true">
                 @messages("messages__viewPractitioners__deAuthoriseLinkText")
             </span>
@@ -52,7 +53,7 @@
 
 @viewLink(pspName: String,index: Index, authorisedByLoggedInPsa:Boolean) = {
     @if(authorisedByLoggedInPsa){
-        <a id="view-link" class="govuk-link" href="@ViewPspCheckYourAnswersController.onPageLoad(index)">
+        <a id="view-link" class="govuk-link" href="@ViewPspCheckYourAnswersController.onPageLoad(index, srn)">
             <span aria-hidden="true">
                 @messages("messages__viewPractitioners__viewLinkText")
             </span>
@@ -157,7 +158,7 @@
     </div>
 
     <p class="govuk-body govuk-margin-top-5">
-        <a id="authorise" class="govuk-link" href="@WhatYouWillNeedController.onPageLoad()">
+        <a id="authorise" class="govuk-link" href="@WhatYouWillNeedController.onPageLoad(srn)">
             @messages("messages__pspAuthorise__link")
         </a>
     </p>

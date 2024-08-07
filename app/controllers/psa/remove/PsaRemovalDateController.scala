@@ -27,7 +27,7 @@ import identifiers.invitations.{PSTRId, SchemeNameId}
 import identifiers.psa.remove.PsaRemovalDateId
 import identifiers.psa.{ListOfPSADetailsId, PSANameId}
 import identifiers.{AssociatedDateId, SchemeSrnId}
-import models.NormalMode
+import models.{NormalMode, SchemeReferenceNumber}
 import models.psa.remove.PsaToBeRemovedFromScheme
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -88,7 +88,8 @@ class PsaRemovalDateController @Inject()(
     formatRelationshipDate(date).getOrElse(throw new RuntimeException("No relationship date found."))
   }
 
-  def onPageLoad: Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
+  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] =
+                (authenticate() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
       (SchemeNameId and PSANameId and SchemeSrnId and AssociatedDateId).retrieve.map {
         case schemeName ~ psaName ~ srn ~ associationDate =>
@@ -108,7 +109,8 @@ class PsaRemovalDateController @Inject()(
       }
   }
 
-  def onSubmit: Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
+  def onSubmit(srn: SchemeReferenceNumber): Action[AnyContent] =
+              (authenticate() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
       (SchemeNameId and PSANameId and SchemeSrnId and PSTRId and AssociatedDateId).retrieve.map {
         case schemeName ~ psaName ~ srn ~ pstr ~ associationDate =>

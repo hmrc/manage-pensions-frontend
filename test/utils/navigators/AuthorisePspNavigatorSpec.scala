@@ -20,7 +20,7 @@ import base.SpecBase
 import controllers.invitations.psp.routes._
 import identifiers.Identifier
 import identifiers.invitations.psp._
-import models.{CheckMode, Mode, NormalMode}
+import models.{CheckMode, Mode, NormalMode, SchemeReferenceNumber}
 import models.requests.IdentifiedRequest
 import org.scalatest.OptionValues
 import org.scalatest.prop.TableFor4
@@ -52,13 +52,15 @@ class AuthorisePspNavigatorSpec extends SpecBase with NavigatorBehaviour {
 }
 
 object AuthorisePspNavigatorSpec extends OptionValues {
-  lazy val emptyAnswers: UserAnswers = UserAnswers(Json.obj())
-  private lazy val pspHasClientRefUserAns: UserAnswers = UserAnswers().srn("srn").set(PspHasClientReferenceId)(true).asOpt.get
-  private lazy val pspHasClientRefUserAnsNo: UserAnswers = UserAnswers().srn("srn").set(PspHasClientReferenceId)(false).asOpt.get
-  lazy val checkYourAnswer: Call = CheckYourAnswersController.onPageLoad()
-  lazy val pspIdPage: Call = PspIdController.onPageLoad(NormalMode)
-   def pspClientRefPage(mode:Mode): Call = PspClientReferenceController.onPageLoad(mode)
-   def pspHasClientRefPage(mode:Mode): Call = PspHasClientReferenceController.onPageLoad(mode)
+  lazy val emptyAnswers: UserAnswers = UserAnswers(Json.obj()).srn(srn)
+  val srn: SchemeReferenceNumber = SchemeReferenceNumber("AB123456C")
+
+  private lazy val pspHasClientRefUserAns: UserAnswers = UserAnswers().srn("AB123456C").set(PspHasClientReferenceId)(true).asOpt.get
+  private lazy val pspHasClientRefUserAnsNo: UserAnswers = UserAnswers().srn("AB123456C").set(PspHasClientReferenceId)(false).asOpt.get
+  lazy val checkYourAnswer: Call = CheckYourAnswersController.onPageLoad(srn)
+  lazy val pspIdPage: Call = PspIdController.onPageLoad(NormalMode, srn)
+   def pspClientRefPage(mode:Mode): Call = PspClientReferenceController.onPageLoad(mode, srn)
+   def pspHasClientRefPage(mode:Mode): Call = PspHasClientReferenceController.onPageLoad(mode, srn)
 
   implicit val ex: IdentifiedRequest = new IdentifiedRequest() {
     val externalId: String = "test-external-id"

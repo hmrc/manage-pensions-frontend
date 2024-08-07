@@ -25,11 +25,11 @@
     button: components.govuk_button
 )
 
-@(schemeName: String, returnCall: Call)(implicit request: Request[_], messages: Messages)
+@(schemeName: String, srn: String, returnCall: Call)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = s"${messages("messages__whatYouWillNeed__title")}") {
 
-    @formHelper(action = WhatYouWillNeedController.onSubmit(), Symbol("autoComplete") -> "off") {
+    @formHelper(action = WhatYouWillNeedController.onSubmit(srn), Symbol("autoComplete") -> "off") {
 
         @components.heading(messages("messages__whatYouWillNeed__heading"))
 

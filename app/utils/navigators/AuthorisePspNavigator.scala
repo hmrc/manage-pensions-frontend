@@ -19,7 +19,7 @@ package utils.navigators
 import controllers.invitations.psp.routes._
 import identifiers.Identifier
 import identifiers.invitations.psp._
-import models.{CheckMode, Mode, NormalMode}
+import models.{CheckMode, Mode, NormalMode, SchemeReferenceNumber}
 import play.api.mvc.Call
 import utils.{Navigator, UserAnswers}
 
@@ -28,26 +28,26 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class AuthorisePspNavigator @Inject() extends Navigator {
 
-  override def routeMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
-    case PspNameId => PspIdController.onPageLoad(NormalMode)
-    case PspId => PspHasClientReferenceController.onPageLoad(NormalMode)
-    case PspHasClientReferenceId => pspHasClientReferenceRoutes(ua, NormalMode)
-    case PspClientReferenceId => CheckYourAnswersController.onPageLoad()
+  override def routeMap(ua: UserAnswers, srn: SchemeReferenceNumber): PartialFunction[Identifier, Call] = {
+    case PspNameId => PspIdController.onPageLoad(NormalMode, srn)
+    case PspId => PspHasClientReferenceController.onPageLoad(NormalMode, srn)
+    case PspHasClientReferenceId => pspHasClientReferenceRoutes(ua, NormalMode, srn)
+    case PspClientReferenceId => CheckYourAnswersController.onPageLoad(srn)
   }
 
-  override protected def editRouteMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
-    case PspNameId => CheckYourAnswersController.onPageLoad()
-    case PspId => CheckYourAnswersController.onPageLoad()
-    case PspHasClientReferenceId => pspHasClientReferenceRoutes(ua, CheckMode)
-    case PspClientReferenceId => CheckYourAnswersController.onPageLoad()
+  override protected def editRouteMap(ua: UserAnswers, srn: SchemeReferenceNumber): PartialFunction[Identifier, Call] = {
+    case PspNameId => CheckYourAnswersController.onPageLoad(srn)
+    case PspId => CheckYourAnswersController.onPageLoad(srn)
+    case PspHasClientReferenceId => pspHasClientReferenceRoutes(ua, CheckMode, srn)
+    case PspClientReferenceId => CheckYourAnswersController.onPageLoad(srn)
   }
 
-  private def pspHasClientReferenceRoutes(userAnswers: UserAnswers, mode: Mode): Call = {
+  private def pspHasClientReferenceRoutes(userAnswers: UserAnswers, mode: Mode, srn: SchemeReferenceNumber): Call = {
     userAnswers.get(PspHasClientReferenceId) match {
       case Some(true) =>
-        PspClientReferenceController.onPageLoad(mode)
+        PspClientReferenceController.onPageLoad(mode, srn)
       case Some(false) =>
-        CheckYourAnswersController.onPageLoad()
+        CheckYourAnswersController.onPageLoad(srn)
       case _ =>
         controllers.routes.SessionExpiredController.onPageLoad
     }

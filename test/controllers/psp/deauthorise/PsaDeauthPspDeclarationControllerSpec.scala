@@ -25,7 +25,7 @@ import forms.psp.deauthorise.DeauthorisePspDeclarationFormProvider
 import identifiers.invitations.PSTRId
 import identifiers.psp.deauthorise
 import identifiers.{SchemeNameId, SchemeSrnId, SeqAuthorisedPractitionerId}
-import models.{IndividualDetails, MinimalPSAPSP, SendEmailRequest}
+import models.{IndividualDetails, MinimalPSAPSP, SchemeReferenceNumber, SendEmailRequest}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.mockito.{ArgumentCaptor, ArgumentMatchers}
@@ -99,15 +99,15 @@ class PsaDeauthPspDeclarationControllerSpec
   }
 
   private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
-    controller(dataRetrievalAction, fakeAuth).onPageLoad(0)
+    controller(dataRetrievalAction, fakeAuth).onPageLoad(0, srn)
   }
 
   private def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
-    controller(dataRetrievalAction, fakeAuth).onSubmit(0)
+    controller(dataRetrievalAction, fakeAuth).onSubmit(0, srn)
   }
 
   private def onSaveAction(userAnswersConnector: UserAnswersCacheConnector): Action[AnyContent] = {
-    controller(userAnswersCacheConnector = userAnswersConnector).onSubmit(0)
+    controller(userAnswersCacheConnector = userAnswersConnector).onSubmit(0, srn)
   }
 
   private def viewAsString(form: Form[Boolean]): String =
@@ -188,7 +188,7 @@ class PsaDeauthPspDeclarationControllerSpec
 
 object PsaDeauthPspDeclarationControllerSpec {
   private val schemeName = "test scheme name"
-  private val srn = "test srn"
+  val srn: SchemeReferenceNumber = SchemeReferenceNumber("AB123456C")
   private val pstr = "pstr"
   private val practitioners = JsArray(
     Seq(

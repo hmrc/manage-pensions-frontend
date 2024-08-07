@@ -44,7 +44,6 @@ class DeauthDateControllerSpec extends ControllerSpecBase {
   private def onwardRoute = Call("GET", "/foo")
 
   private val schemeName = "test-scheme"
-  private val srn = "srn"
   private val ceaseDate = LocalDate.now()
   private val pspId = Some(PspId("00000000"))
 
@@ -67,7 +66,7 @@ class DeauthDateControllerSpec extends ControllerSpecBase {
     "on a GET" must {
 
       "return OK and the correct view" in {
-        val result = controller().onPageLoad()(fakeRequest)
+        val result = controller().onPageLoad(srn)(fakeRequest)
         status(result) mustBe OK
         contentAsString(result) mustBe viewAsString()
       }
@@ -75,17 +74,17 @@ class DeauthDateControllerSpec extends ControllerSpecBase {
       "populate the view correctly on a GET if the question has previously been answered" in {
 
         val dataRetrieval = new FakeDataRetrievalAction(Some(data ++ Json.obj(DeauthDateId.toString -> ceaseDate)), pspId = pspId)
-        val result = controller(dataRetrieval).onPageLoad()(fakeRequest)
+        val result = controller(dataRetrieval).onPageLoad(srn)(fakeRequest)
         contentAsString(result) mustBe viewAsString(form.fill(ceaseDate))
       }
 
       "redirect to the session expired page if there is no required data" in {
-        val result = controller(getEmptyData).onPageLoad()(fakeRequest)
+        val result = controller(getEmptyData).onPageLoad(srn)(fakeRequest)
         redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
 
       "redirect to the session expired page if there is no existing data" in {
-        val result = controller(dontGetAnyData).onPageLoad()(fakeRequest)
+        val result = controller(dontGetAnyData).onPageLoad(srn)(fakeRequest)
         redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
     }
@@ -97,7 +96,7 @@ class DeauthDateControllerSpec extends ControllerSpecBase {
           "pspDeauthDate.month" -> ceaseDate.getMonthValue.toString,
           "pspDeauthDate.year" -> ceaseDate.getYear.toString)
         )
-        val result = controller().onSubmit()(postRequest)
+        val result = controller().onSubmit(srn)(postRequest)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(onwardRoute.url)
@@ -108,19 +107,19 @@ class DeauthDateControllerSpec extends ControllerSpecBase {
         val postRequest = fakeRequest.withFormUrlEncodedBody(("pspDeauthDate", "yes"))
         val boundForm = form.bind(Map("pspDeauthDate" -> "yes"))
 
-        val result = controller().onSubmit()(postRequest)
+        val result = controller().onSubmit(srn)(postRequest)
 
         status(result) mustBe BAD_REQUEST
         contentAsString(result) mustBe viewAsString(boundForm)
       }
 
       "redirect to the session expired page if there is no required data" in {
-        val result = controller(getEmptyData).onSubmit()(fakeRequest)
+        val result = controller(getEmptyData).onSubmit(srn)(fakeRequest)
         redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
 
       "redirect to the session expired page if there is no existing data" in {
-        val result = controller(dontGetAnyData).onSubmit()(fakeRequest)
+        val result = controller(dontGetAnyData).onSubmit(srn)(fakeRequest)
         redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
     }

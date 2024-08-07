@@ -29,7 +29,7 @@ class YouCannotSendAnInviteControllerSpec extends ControllerWithNormalPageBehavi
 
     new YouCannotSendAnInviteController(
       frontendAppConfig, messagesApi, fakeAuth, dataRetrievalAction, requiredDateAction,
-      controllerComponents, youCannotSendAnInviteView, fakePsaSchemeAuthAction).onPageLoad()
+      controllerComponents, youCannotSendAnInviteView, fakePsaSchemeAuthAction).onPageLoad(srn)
   }
 
   private def viewAsString(): String = youCannotSendAnInviteView()(fakeRequest, messages).toString

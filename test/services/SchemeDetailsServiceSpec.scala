@@ -164,7 +164,7 @@ class SchemeDetailsServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
 
 object SchemeDetailsServiceSpec {
 
-  private val srn = "srn"
+  val srn: SchemeReferenceNumber = SchemeReferenceNumber("AB123456C")
   private val pstr = "pstr"
   val psaId = "A0000000"
   private val name = "test-name"

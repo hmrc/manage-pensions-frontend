@@ -23,6 +23,7 @@ import controllers.psa.routes._
 import controllers.routes._
 import identifiers.Identifier
 import identifiers.psa.remove.{ConfirmRemovePsaId, PsaRemovalDateId}
+import models.SchemeReferenceNumber
 import org.scalatest.prop.TableFor4
 import play.api.libs.json.Json
 import play.api.mvc.Call
@@ -50,8 +51,8 @@ class RemovePSANavigatorSpec extends SpecBase with NavigatorBehaviour {
 }
 
 object RemovePSANavigatorSpec {
-  private val srn = "test srn"
-  private lazy val emptyAnswers = UserAnswers(Json.obj())
+  val srn: SchemeReferenceNumber = SchemeReferenceNumber("AB123456C")
+  private lazy val emptyAnswers = UserAnswers(Json.obj()).srn(srn)
   private lazy val removePsa = UserAnswers().srn(srn).confirmRemovePsa(isChecked = true)
   private lazy val dontRemovePsa = UserAnswers().srn(srn).confirmRemovePsa(isChecked = false)
 
@@ -59,8 +60,8 @@ object RemovePSANavigatorSpec {
 
   private val sessionExpiredPage = SessionExpiredController.onPageLoad
   private val schemeDetailsPage = PsaSchemeDashboardController.onPageLoad(srn)
-  private val removalDatePage = PsaRemovalDateController.onPageLoad
-  private val confirmRemovedPage = ConfirmRemovedController.onPageLoad()
+  private val removalDatePage = PsaRemovalDateController.onPageLoad(srn)
+  private val confirmRemovedPage = ConfirmRemovedController.onPageLoad(srn)
 }
 
 

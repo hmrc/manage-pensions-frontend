@@ -37,5 +37,5 @@ private class FakePspSchemeActionImpl()
 }
 class FakePspSchemeAuthAction @Inject()(schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)
                                        (implicit ec: ExecutionContext) extends PspSchemeAuthAction(schemeDetailsConnector, errorHandler) {
-  override def apply(srn: Option[SchemeReferenceNumber]): ActionFunction[OptionalDataRequest, OptionalDataRequest] = new FakePspSchemeActionImpl()
+  override def apply(srn: SchemeReferenceNumber): ActionFunction[OptionalDataRequest, OptionalDataRequest] = new FakePspSchemeActionImpl()
 }

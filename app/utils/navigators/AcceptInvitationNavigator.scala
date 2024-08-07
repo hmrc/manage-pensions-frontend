@@ -21,7 +21,7 @@ import controllers.invitations.routes._
 import identifiers.invitations._
 import identifiers.invitations.psa._
 import identifiers.{Identifier, SchemeSrnId}
-import models.NormalMode
+import models.{NormalMode, SchemeReferenceNumber}
 import play.api.mvc.Call
 import utils.{Navigator, UserAnswers}
 
@@ -31,7 +31,7 @@ import javax.inject.{Inject, Singleton}
 class AcceptInvitationNavigator @Inject() extends Navigator {
 
   //scalastyle:off cyclomatic.complexity
-  override def routeMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
+  override def routeMap(ua: UserAnswers, srn: SchemeReferenceNumber): PartialFunction[Identifier, Call] = {
     case SchemeSrnId =>
       DoYouHaveWorkingKnowledgeController.onPageLoad(NormalMode)
     case DoYouHaveWorkingKnowledgeId =>
@@ -65,7 +65,7 @@ class AcceptInvitationNavigator @Inject() extends Navigator {
     }
   }
 
-  override protected def editRouteMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
+  override protected def editRouteMap(ua: UserAnswers, srn: SchemeReferenceNumber): PartialFunction[Identifier, Call] = {
     case AdviserNameId | AdviserEmailId | AdviserAddressId =>
       CheckPensionAdviserAnswersController.onPageLoad()
   }

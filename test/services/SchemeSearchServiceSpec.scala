@@ -18,9 +18,7 @@ package services
 
 import base.SpecBase
 import connectors.scheme.ListOfSchemesConnector
-import models.ListOfSchemes
-import models.SchemeDetails
-import models.SchemeStatus
+import models.{ListOfSchemes, SchemeDetails, SchemeReferenceNumber, SchemeStatus}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -39,7 +37,7 @@ class SchemeSearchServiceSpec extends SpecBase with MockitoSugar with ScalaFutur
   private val mockSchemesConnector = mock[ListOfSchemesConnector]
   private val mockFuzzyMatching = mock[SchemeFuzzyMatcher]
   private val pstr = "24000001IN"
-  private val srn = "S2400000005"
+  val srn: SchemeReferenceNumber = SchemeReferenceNumber("AB123456C")
   private val schemeSearchService = new SchemeSearchService(mockSchemesConnector, mockFuzzyMatching)
 
   "Search" must {

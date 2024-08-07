@@ -22,7 +22,7 @@ import controllers.psp.deauthorise.routes._
 import controllers.routes._
 import identifiers.psp.deauthorise._
 import identifiers.{Identifier, SchemeSrnId}
-import models.Index
+import models.{Index, SchemeReferenceNumber}
 import play.api.mvc.Call
 import utils.{Navigator, UserAnswers}
 
@@ -32,27 +32,27 @@ import javax.inject.{Inject, Singleton}
 class DeauthorisePSPNavigator @Inject()(val dataCacheConnector: UserAnswersCacheConnector)
   extends Navigator {
 
-  override def routeMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
+  override def routeMap(ua: UserAnswers, srn: SchemeReferenceNumber): PartialFunction[Identifier, Call] = {
     case ConfirmDeauthorisePspId(index) =>
-      confirmDeauthPspRoutes(ua, index)
+      confirmDeauthPspRoutes(ua, index, srn)
     case PspDeauthDateId(index) =>
-      PsaDeauthPspDeclarationController.onPageLoad(index)
+      PsaDeauthPspDeclarationController.onPageLoad(index, srn)
     case PsaDeauthorisePspDeclarationId(index) =>
-      ConfirmPsaDeauthPspController.onPageLoad(index)
+      ConfirmPsaDeauthPspController.onPageLoad(index, srn)
   }
 
-  private def confirmDeauthPspRoutes(userAnswers: UserAnswers, index: Index): Call = {
+  private def confirmDeauthPspRoutes(userAnswers: UserAnswers, index: Index, srn: SchemeReferenceNumber): Call = {
     (userAnswers.get(ConfirmDeauthorisePspId(index)), userAnswers.get(SchemeSrnId)) match {
       case (Some(false), Some(srn)) =>
         PsaSchemeDashboardController.onPageLoad(srn)
       case (Some(true), _) =>
-        PspDeauthDateController.onPageLoad(index)
+        PspDeauthDateController.onPageLoad(index, srn)
       case _ =>
         SessionExpiredController.onPageLoad
     }
   }
 
-  override protected def editRouteMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
+  override protected def editRouteMap(ua: UserAnswers, srn: SchemeReferenceNumber): PartialFunction[Identifier, Call] = {
     case _ =>
       SessionExpiredController.onPageLoad
   }

@@ -6,17 +6,17 @@ POST        /having-pensions-working-knowledge               controllers.invitat
 GET         /change-having-pensions-working-knowledge        controllers.invitations.DoYouHaveWorkingKnowledgeController.onPageLoad(mode: Mode = CheckMode)
 POST        /change-having-pensions-working-knowledge        controllers.invitations.DoYouHaveWorkingKnowledgeController.onSubmit(mode: Mode = CheckMode)
 
-GET         /no-psa-match                                    controllers.invitations.psa.IncorrectPsaDetailsController.onPageLoad()
+GET         /no-psa-match/:srn                               controllers.invitations.psa.IncorrectPsaDetailsController.onPageLoad(srn: SchemeReferenceNumber)
 
-GET         /name-of-invited-psa                             controllers.invitations.psa.PsaNameController.onPageLoad(mode: Mode = NormalMode)
-POST        /name-of-invited-psa                             controllers.invitations.psa.PsaNameController.onSubmit(mode: Mode = NormalMode)
-GET         /change-name-of-invited-psa                      controllers.invitations.psa.PsaNameController.onPageLoad(mode: Mode = CheckMode)
-POST        /change-name-of-invited-psa                      controllers.invitations.psa.PsaNameController.onSubmit(mode: Mode = CheckMode)
+GET         /name-of-invited-psa/:srn                        controllers.invitations.psa.PsaNameController.onPageLoad(mode: Mode = NormalMode, srn: SchemeReferenceNumber)
+POST        /name-of-invited-psa/:srn                        controllers.invitations.psa.PsaNameController.onSubmit(mode: Mode = NormalMode, srn: SchemeReferenceNumber)
+GET         /change-name-of-invited-psa/:srn                 controllers.invitations.psa.PsaNameController.onPageLoad(mode: Mode = CheckMode, srn: SchemeReferenceNumber)
+POST        /change-name-of-invited-psa/:srn                 controllers.invitations.psa.PsaNameController.onSubmit(mode: Mode = CheckMode, srn: SchemeReferenceNumber)
 
-GET         /psa-id-of-invited-psa                           controllers.invitations.psa.PsaIdController.onPageLoad(mode: Mode = NormalMode)
-POST        /psa-id-of-invited-psa                           controllers.invitations.psa.PsaIdController.onSubmit(mode: Mode = NormalMode)
-GET         /change-psa-id-of-invited-psa                    controllers.invitations.psa.PsaIdController.onPageLoad(mode: Mode = CheckMode)
-POST        /change-psa-id-of-invited-psa                    controllers.invitations.psa.PsaIdController.onSubmit(mode: Mode = CheckMode)
+GET         /psa-id-of-invited-psa/:srn                      controllers.invitations.psa.PsaIdController.onPageLoad(mode: Mode = NormalMode, srn: SchemeReferenceNumber)
+POST        /psa-id-of-invited-psa/:srn                      controllers.invitations.psa.PsaIdController.onSubmit(mode: Mode = NormalMode, srn: SchemeReferenceNumber)
+GET         /change-psa-id-of-invited-psa/:srn               controllers.invitations.psa.PsaIdController.onPageLoad(mode: Mode = CheckMode, srn: SchemeReferenceNumber)
+POST        /change-psa-id-of-invited-psa/:srn               controllers.invitations.psa.PsaIdController.onSubmit(mode: Mode = CheckMode, srn: SchemeReferenceNumber)
 
 GET         /invite-sent/:srn                                controllers.invitations.InvitationSuccessController.onPageLoad(srn: SchemeReferenceNumber)
 POST        /invite-sent/:srn                                controllers.invitations.InvitationSuccessController.onSubmit(srn: SchemeReferenceNumber)
@@ -34,8 +34,8 @@ POST        /change-who-has-working-knowledge                controllers.invitat
 GET         /pension-adviser-postcode                        controllers.invitations.psa.AdviserAddressPostcodeLookupController.onPageLoad()
 POST        /pension-adviser-postcode                        controllers.invitations.psa.AdviserAddressPostcodeLookupController.onSubmit()
 
-GET         /check-your-answers                              controllers.invitations.psa.CheckYourAnswersController.onPageLoad()
-POST        /check-your-answers                              controllers.invitations.psa.CheckYourAnswersController.onSubmit()
+GET         /check-your-answers/:srn                         controllers.invitations.psa.CheckYourAnswersController.onPageLoad(srn: SchemeReferenceNumber)
+POST        /check-your-answers/:srn                         controllers.invitations.psa.CheckYourAnswersController.onSubmit(srn: SchemeReferenceNumber)
 
 GET         /confirm-pension-adviser-address                 controllers.invitations.psa.AdviserManualAddressController.onPageLoad(mode: Mode = NormalMode, prepopulated: Boolean = true)
 POST        /confirm-pension-adviser-address                 controllers.invitations.psa.AdviserManualAddressController.onSubmit(mode: Mode = NormalMode, prepopulated: Boolean = true)
@@ -44,10 +44,10 @@ POST        /enter-pension-adviser-address                   controllers.invitat
 GET         /change-pension-adviser-address                  controllers.invitations.psa.AdviserManualAddressController.onPageLoad(mode: Mode = CheckMode, prepopulated: Boolean = true)
 POST        /change-pension-adviser-address                  controllers.invitations.psa.AdviserManualAddressController.onSubmit(mode: Mode = CheckMode, prepopulated: Boolean = true)
 
-GET         /cannot-send-invite                              controllers.invitations.YouCannotSendAnInviteController.onPageLoad()
+GET         /cannot-send-invite/:srn                         controllers.invitations.YouCannotSendAnInviteController.onPageLoad(srn: SchemeReferenceNumber)
 
-GET         /psa-already-invited                             controllers.invitations.psa.InvitationDuplicateController.onPageLoad()
-GET         /administrator-already-associated                controllers.invitations.psa.PsaAlreadyAssociatedController.onPageLoad()
+GET         /psa-already-invited/:srn                        controllers.invitations.psa.InvitationDuplicateController.onPageLoad(srn: SchemeReferenceNumber)
+GET         /administrator-already-associated/:srn           controllers.invitations.psa.PsaAlreadyAssociatedController.onPageLoad(srn: SchemeReferenceNumber)
 
 GET         /declaration                                     controllers.invitations.psa.DeclarationController.onPageLoad()
 POST        /declaration                                     controllers.invitations.psa.DeclarationController.onSubmit()
@@ -65,7 +65,7 @@ POST        /check-pension-adviser-answers                   controllers.invitat
 GET         /your-invitations                                controllers.invitations.YourInvitationsController.onPageLoad()
 GET         /your-invitations/:srn                           controllers.invitations.YourInvitationsController.onSelect(srn: SchemeReferenceNumber)
 
-GET         /what-you-will-need                              controllers.invitations.psa.WhatYouWillNeedController.onPageLoad()
-POST        /what-you-will-need                              controllers.invitations.psa.WhatYouWillNeedController.onSubmit()
+GET         /what-you-will-need/:srn                         controllers.invitations.psa.WhatYouWillNeedController.onPageLoad(srn: SchemeReferenceNumber)
+POST        /what-you-will-need/:srn                         controllers.invitations.psa.WhatYouWillNeedController.onSubmit(srn: SchemeReferenceNumber)
 
 

@@ -22,7 +22,7 @@ import controllers.psa.routes._
 import identifiers.Identifier
 import identifiers.invitations._
 import identifiers.invitations.psa.InviteePSAId
-import models.NormalMode
+import models.{NormalMode, SchemeReferenceNumber}
 import play.api.mvc.Call
 import utils.{Navigator, UserAnswers}
 
@@ -31,15 +31,15 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class InvitationNavigator @Inject() extends Navigator {
 
-  override def routeMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
-    case InviteeNameId => PsaIdController.onPageLoad(NormalMode)
-    case InviteePSAId => CheckYourAnswersController.onPageLoad()
+  override def routeMap(ua: UserAnswers, srn: SchemeReferenceNumber): PartialFunction[Identifier, Call] = {
+    case InviteeNameId => PsaIdController.onPageLoad(NormalMode, srn)
+    case InviteePSAId => CheckYourAnswersController.onPageLoad(srn)
     case CheckYourAnswersId(srn) => InvitationSuccessController.onPageLoad(srn)
     case InvitationSuccessId(srn) => PsaSchemeDashboardController.onPageLoad(srn)
   }
 
-  override protected def editRouteMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
-    case InviteeNameId => CheckYourAnswersController.onPageLoad()
-    case InviteePSAId => CheckYourAnswersController.onPageLoad()
+  override protected def editRouteMap(ua: UserAnswers, srn: SchemeReferenceNumber): PartialFunction[Identifier, Call] = {
+    case InviteeNameId => CheckYourAnswersController.onPageLoad(srn)
+    case InviteePSAId => CheckYourAnswersController.onPageLoad(srn)
   }
 }

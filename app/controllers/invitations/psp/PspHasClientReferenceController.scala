@@ -54,24 +54,26 @@ class PspHasClientReferenceController @Inject()(
 
   val form: Form[Boolean] = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
+  def onPageLoad(mode: Mode, srn: SchemeReferenceNumber): Action[AnyContent] =
+                (authenticate() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
       (SchemeNameId and PspNameId and SchemeSrnId).retrieve.map {
         case schemeName ~ pspName ~ srn =>
           val value = request.userAnswers.get(PspHasClientReferenceId)
           val preparedForm = value.fold(form)(form.fill)
 
-          Future.successful(Ok(view(preparedForm, pspName, mode, schemeName, returnCall(srn), PspHasClientReferenceController.onSubmit(mode))))
+          Future.successful(Ok(view(preparedForm, pspName, mode, schemeName, returnCall(srn), PspHasClientReferenceController.onSubmit(mode, srn))))
       }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
+  def onSubmit(mode: Mode, srn: SchemeReferenceNumber): Action[AnyContent] =
+               (authenticate() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[_]) => {
           (SchemeNameId and PspNameId and SchemeSrnId).retrieve.map {
             case schemeName ~ pspName ~ srn =>
-              Future.successful(BadRequest(view(formWithErrors, pspName, mode, schemeName, returnCall(srn), PspHasClientReferenceController.onSubmit(mode))))
+              Future.successful(BadRequest(view(formWithErrors, pspName, mode, schemeName, returnCall(srn), PspHasClientReferenceController.onSubmit(mode, srn))))
           }
         },
         value =>

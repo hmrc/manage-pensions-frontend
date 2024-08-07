@@ -246,7 +246,7 @@ object InvitationsConnectorSpec {
 
   private implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 
-  private val srn = SchemeReferenceNumber("S0987654321")
+  val srn: SchemeReferenceNumber = SchemeReferenceNumber("AB123456C")
   private val pstr = "test-pstr"
   private val schemeName = "test-scheme-name"
   private val inviterPsaId = PsaId("A7654321")

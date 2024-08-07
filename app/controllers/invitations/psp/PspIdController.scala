@@ -54,7 +54,8 @@ class PspIdController @Inject()(
 
   val form: Form[String] = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
+  def onPageLoad(mode: Mode, srn: SchemeReferenceNumber): Action[AnyContent] =
+                (authenticate() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
 
       (SchemeNameId and PspNameId and SchemeSrnId).retrieve.map {
@@ -62,17 +63,18 @@ class PspIdController @Inject()(
           val value = request.userAnswers.get(PspId)
           val preparedForm = value.fold(form)(form.fill)
 
-          Future.successful(Ok(view(preparedForm, pspName, mode, schemeName, returnCall(srn))))
+          Future.successful(Ok(view(preparedForm, pspName, mode, schemeName, srn, returnCall(srn))))
       }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
+  def onSubmit(mode: Mode, srn: SchemeReferenceNumber): Action[AnyContent] =
+              (authenticate() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[_]) =>
           (SchemeNameId and PspNameId and SchemeSrnId).retrieve.map {
             case schemeName ~ pspName ~ srn =>
-              Future.successful(BadRequest(view(formWithErrors, pspName, mode, schemeName, returnCall(srn))))
+              Future.successful(BadRequest(view(formWithErrors, pspName, mode, schemeName, srn, returnCall(srn))))
           },
         value =>
           dataCacheConnector.save(request.externalId, PspId, value).map(

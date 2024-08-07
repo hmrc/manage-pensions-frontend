@@ -22,7 +22,7 @@ import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.psp.deauthorise.ConfirmDeauthPspFormProvider
 import identifiers.psp.deauthorise
 import identifiers.{SchemeNameId, SchemeSrnId, SeqAuthorisedPractitionerId}
-import models.Index
+import models.{Index, SchemeReferenceNumber}
 import play.api.data.Form
 import play.api.libs.json.{JsArray, Json}
 import play.api.mvc.{Action, AnyContent}
@@ -53,15 +53,15 @@ class ConfirmDeauthorisePspControllerSpec extends ControllerWithQuestionPageBeha
   )
 
   private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
-    controller(dataRetrievalAction, fakeAuth).onPageLoad(Index(0))
+    controller(dataRetrievalAction, fakeAuth).onPageLoad(Index(0), srn)
   }
 
   private def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
-    controller(dataRetrievalAction, fakeAuth).onSubmit(Index(0))
+    controller(dataRetrievalAction, fakeAuth).onSubmit(Index(0), srn)
   }
 
   private def onSaveAction(userAnswersCacheConnector: UserAnswersCacheConnector): Action[AnyContent] = {
-    controller(userAnswersCacheConnector = userAnswersCacheConnector).onSubmit(Index(0))
+    controller(userAnswersCacheConnector = userAnswersCacheConnector).onSubmit(Index(0), srn)
   }
 
   private def viewAsString(form: Form[_]) = view(
@@ -105,7 +105,7 @@ object ConfirmDeauthorisePspControllerSpec {
   private val form = formProvider()
   private val postRequest = FakeRequest().withJsonBody(Json.obj("value" -> true))
   private val schemeName = "test scheme name"
-  private val srn = "test srn"
+  val srn: SchemeReferenceNumber = SchemeReferenceNumber("AB123456C")
 
   private val practitioners = JsArray(
     Seq(

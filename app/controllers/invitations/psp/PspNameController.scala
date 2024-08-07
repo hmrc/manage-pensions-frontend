@@ -53,24 +53,24 @@ class PspNameController @Inject()(
 
   val form: Form[String] = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
+  def onPageLoad(mode: Mode, srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
       (SchemeNameId and SchemeSrnId).retrieve.map {
         case schemeName ~ srn =>
           val value = request.userAnswers.get(PspNameId)
           val preparedForm = value.fold(form)(form.fill)
 
-          Future.successful(Ok(view(preparedForm, mode, schemeName, returnCall(srn))))
+          Future.successful(Ok(view(preparedForm, mode, schemeName, srn, returnCall(srn))))
       }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
+  def onSubmit(mode: Mode, srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
 
       form.bindFromRequest().fold(
         (formWithErrors: Form[_]) =>
           (SchemeNameId and SchemeSrnId).retrieve.map { case schemeName ~ srn =>
-            Future.successful(BadRequest(view(formWithErrors, mode, schemeName, returnCall(srn))))
+            Future.successful(BadRequest(view(formWithErrors, mode, schemeName, srn, returnCall(srn))))
           },
 
         value => {

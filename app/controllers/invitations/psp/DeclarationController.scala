@@ -28,7 +28,7 @@ import forms.invitations.psp.DeclarationFormProvider
 import identifiers.invitations.psp.{PspClientReferenceId, PspId, PspNameId}
 import identifiers.{SchemeNameId, SchemeSrnId}
 import models.requests.DataRequest
-import models.{MinimalPSAPSP, SendEmailRequest, Sent}
+import models.{MinimalPSAPSP, SchemeReferenceNumber, SendEmailRequest, Sent}
 import play.api.Logger
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -68,16 +68,16 @@ class DeclarationController @Inject()(
 
   val form: Form[Boolean] = formProvider()
 
-  def onPageLoad(): Action[AnyContent] = (auth() andThen getData andThen psaSchemeAuthAction(None) andThen requireData) {
+  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = (auth() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData) {
     implicit request =>
-      Ok(view(form))
+      Ok(view(form, srn))
   }
 
-  def onSubmit(): Action[AnyContent] = (auth() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
+  def onSubmit(srn: SchemeReferenceNumber): Action[AnyContent] = (auth() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[Boolean]) =>
-          Future.successful(BadRequest(view(formWithErrors))),
+          Future.successful(BadRequest(view(formWithErrors, srn))),
         _ => inviteEmailAndRedirect()
       )
   }
@@ -108,12 +108,12 @@ class DeclarationController @Inject()(
                       pstr = pstr
                     )
                   )
-                  Redirect(routes.ConfirmationController.onPageLoad())
+                  Redirect(routes.ConfirmationController.onPageLoad(srn))
                 }
               }
             } recoverWith {
               case _: ActiveRelationshipExistsException =>
-                Future.successful(Redirect(controllers.invitations.psp.routes.AlreadyAssociatedWithSchemeController.onPageLoad))
+                Future.successful(Redirect(controllers.invitations.psp.routes.AlreadyAssociatedWithSchemeController.onPageLoad(srn)))
             }
           case _ =>
             Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad))

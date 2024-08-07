@@ -56,15 +56,15 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
                                            psaSchemeAuthAction: PsaSchemeAuthAction
                                           )(implicit val ec: ExecutionContext) extends FrontendBaseController with Retrievals with I18nSupport {
 
-  def onPageLoad(): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
+  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
 
       MinimalSchemeDetailId.retrieve.map { schemeDetail =>
 
         val checkYourAnswersHelper = checkYourAnswersFactory.checkYourAnswersHelper(request.userAnswers)
-        val sections = Seq(checkYourAnswersHelper.psaName, checkYourAnswersHelper.psaId).flatten
+        val sections = Seq(checkYourAnswersHelper.psaName(srn), checkYourAnswersHelper.psaId(srn)).flatten
 
-        Future.successful(Ok(view(sections, CheckYourAnswersController.onSubmit(),
+        Future.successful(Ok(view(sections, CheckYourAnswersController.onSubmit(srn),
           Some("messages__check__your__answer__main__containt__label"), Some(schemeDetail.schemeName))))
 
       }
@@ -82,7 +82,7 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
     }
 
 
-  def onSubmit(): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
+  def onSubmit(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
       (MinimalSchemeDetailId and InviteeNameId and InviteePSAId).retrieve.map {
         case schemeDetails ~ inviteeName ~ inviteePsaId if schemeDetails.pstr.isDefined =>
@@ -97,8 +97,8 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
           )
 
           isSchemeAssociatedWithInvitee(request.psaIdOrException.id, schemeDetails.srn, inviteePsaId).flatMap { isAssociated =>
-            invite(invitation, schemeDetails).map(result =>
-              if (isAssociated) Redirect(routes.PsaAlreadyAssociatedController.onPageLoad()) else result
+            invite(invitation, schemeDetails, srn).map(result =>
+              if (isAssociated) Redirect(routes.PsaAlreadyAssociatedController.onPageLoad(srn)) else result
             )
           }.recoverWith {
             case _ =>
@@ -109,14 +109,14 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
       }
   }
 
-  private def invite(invite: Invitation, msd: MinimalSchemeDetail)
+  private def invite(invite: Invitation, msd: MinimalSchemeDetail, srn: SchemeReferenceNumber)
                     (implicit hc: HeaderCarrier, request: DataRequest[AnyContent]): Future[Result] = {
     invitationConnector.invite(invite).map {
       case InvitationSent => Redirect(navigator.nextPage(CheckYourAnswersId(msd.srn), NormalMode, request.userAnswers))
-      case PsaAlreadyInvitedError => Redirect(InvitationDuplicateController.onPageLoad())
-      case NameMatchingError => Redirect(IncorrectPsaDetailsController.onPageLoad())
+      case PsaAlreadyInvitedError => Redirect(InvitationDuplicateController.onPageLoad(srn))
+      case NameMatchingError => Redirect(IncorrectPsaDetailsController.onPageLoad(srn))
     }.recoverWith {
-      case _ => Future.successful(Redirect(IncorrectPsaDetailsController.onPageLoad()))
+      case _ => Future.successful(Redirect(IncorrectPsaDetailsController.onPageLoad(srn)))
     }
   }
 

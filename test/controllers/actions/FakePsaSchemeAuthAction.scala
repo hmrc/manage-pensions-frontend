@@ -37,5 +37,5 @@ private class FakePsaSchemeActionImpl()
 }
 class FakePsaSchemeAuthAction @Inject()(schemeDetailsConnector: SchemeDetailsConnector, errorHandler: ErrorHandler)
                                        (implicit ec: ExecutionContext) extends PsaSchemeAuthAction(schemeDetailsConnector, errorHandler) {
-  override def apply(srn: Option[SchemeReferenceNumber]): ActionFunction[OptionalDataRequest, OptionalDataRequest] = new FakePsaSchemeActionImpl()
+  override def apply(srn: SchemeReferenceNumber): ActionFunction[OptionalDataRequest, OptionalDataRequest] = new FakePsaSchemeActionImpl()
 }

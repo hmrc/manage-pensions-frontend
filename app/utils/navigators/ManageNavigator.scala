@@ -20,6 +20,7 @@ import controllers.psp.routes._
 import controllers.routes._
 import identifiers.{AdministratorOrPractitionerId, Identifier}
 import models.AdministratorOrPractitioner.{Administrator, Practitioner}
+import models.SchemeReferenceNumber
 import play.api.mvc.Call
 import utils.{Enumerable, Navigator, UserAnswers}
 
@@ -28,7 +29,7 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class ManageNavigator @Inject()() extends Navigator with Enumerable.Implicits {
 
-  override def routeMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
+  override def routeMap(ua: UserAnswers, srn: SchemeReferenceNumber): PartialFunction[Identifier, Call] = {
     case AdministratorOrPractitionerId =>
       ua.get(AdministratorOrPractitionerId) match {
         case Some(Administrator) => SchemesOverviewController.onPageLoad()
@@ -37,5 +38,5 @@ class ManageNavigator @Inject()() extends Navigator with Enumerable.Implicits {
       }
   }
 
-  override protected def editRouteMap(ua: UserAnswers): PartialFunction[Identifier, Call] = routeMap(ua)
+  override protected def editRouteMap(ua: UserAnswers, srn: SchemeReferenceNumber): PartialFunction[Identifier, Call] = routeMap(ua, srn)
 }

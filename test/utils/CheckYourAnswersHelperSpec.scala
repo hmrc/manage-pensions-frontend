@@ -18,7 +18,7 @@ package utils
 
 import base.SpecBase
 import controllers.invitations.psa.routes._
-import models.{Address, CheckMode}
+import models.{Address, CheckMode, SchemeReferenceNumber}
 import org.scalatest.matchers.must.Matchers
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist._
@@ -28,6 +28,8 @@ class CheckYourAnswersHelperSpec extends SpecBase with Matchers {
 
   val userAnswers: UserAnswers = UserAnswers()
 
+  val srn: SchemeReferenceNumber = SchemeReferenceNumber("AB123456C")
+
   private val countryOptions = new CountryOptions(environment, frontendAppConfig)
 
   def getHelper(userAnswers: UserAnswers = userAnswers) = new CheckYourAnswersHelper(userAnswers, countryOptions)
@@ -36,16 +38,16 @@ class CheckYourAnswersHelperSpec extends SpecBase with Matchers {
 
     "return none if data is not present" in {
 
-      getHelper(userAnswers).psaName mustBe None
+      getHelper(userAnswers).psaName(srn) mustBe None
     }
 
     "return answer row if data present" in {
 
-      getHelper(userAnswers.inviteeName("abc")).psaName mustBe Some(
+      getHelper(userAnswers.inviteeName("abc")).psaName(srn) mustBe Some(
         SummaryListRow(
           key = Key(Text(messages("messages__check__your__answer__psa__name__label")), classes = "govuk-!-width-one-half"),
           value = Value(Text("abc")),
-          actions = Some(Actions("", items = Seq(ActionItem(href = PsaNameController.onPageLoad(CheckMode).url,
+          actions = Some(Actions("", items = Seq(ActionItem(href = PsaNameController.onPageLoad(CheckMode, srn).url,
             content = Text(messages("site.change")), visuallyHiddenText = Some(messages("messages__check__your__answer__psa__name__label"))))))
         )
       )
@@ -56,16 +58,16 @@ class CheckYourAnswersHelperSpec extends SpecBase with Matchers {
 
     "return none if data is not present" in {
 
-      getHelper(userAnswers).psaId mustBe None
+      getHelper(userAnswers).psaId(srn) mustBe None
     }
 
     "return answer row if data present" in {
 
-      getHelper(userAnswers.inviteeId("A0000000")).psaId mustBe Some(
+      getHelper(userAnswers.inviteeId("A0000000")).psaId(srn) mustBe Some(
         SummaryListRow(
           key = Key(Text(messages("messages__check__your__answer__psa__id__label")), classes = "govuk-!-width-one-half"),
           value = Value(Text("A0000000")),
-          actions = Some(Actions("", items = Seq(ActionItem(href = PsaIdController.onPageLoad(CheckMode).url,
+          actions = Some(Actions("", items = Seq(ActionItem(href = PsaIdController.onPageLoad(CheckMode, srn).url,
             content = Text(messages("site.change")), visuallyHiddenText = Some(messages("messages__check__your__answer__psa__id__label"))))))
         )
       )

@@ -52,7 +52,7 @@ object ConfirmRemovedControllerSpec extends ControllerSpecBase {
       controllerComponents,
       confirmRemovedView,
       fakePsaSchemeAuthAction
-    ).onPageLoad()
+    ).onPageLoad(srn)
 
   val validData: Option[DataRetrievalAction] = {
     Some(

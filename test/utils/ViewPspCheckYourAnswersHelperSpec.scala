@@ -17,7 +17,7 @@
 package utils
 
 import base.SpecBase
-import models.CheckMode
+import models.{CheckMode, SchemeReferenceNumber}
 import org.scalatest.matchers.must.Matchers
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist._
@@ -25,6 +25,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist._
 class ViewPspCheckYourAnswersHelperSpec extends SpecBase with Matchers {
 
   val userAnswers: UserAnswers = UserAnswers()
+  val srn: SchemeReferenceNumber = SchemeReferenceNumber("AB123456C")
 
   private val pspName = "pspName"
   private val pspId = "0000000"
@@ -59,19 +60,19 @@ class ViewPspCheckYourAnswersHelperSpec extends SpecBase with Matchers {
 
   "calling pspClientReference" must {
     "return answer row for ClientReference with Reference value " in {
-      getHelper.pspClientReference(Some(clientRef), 0) mustBe SummaryListRow(
+      getHelper.pspClientReference(Some(clientRef), 0, srn) mustBe SummaryListRow(
         key = Key(Text(messages("messages__check__your__answer__psp_client_reference__label")), classes = "govuk-!-width-one-half"),
         value = Value(Text(clientRef)),
-        actions = Some(Actions("", items = Seq(ActionItem(href = controllers.psp.view.routes.ViewPspHasClientReferenceController.onPageLoad(CheckMode, 0).url,
+        actions = Some(Actions("", items = Seq(ActionItem(href = controllers.psp.view.routes.ViewPspHasClientReferenceController.onPageLoad(CheckMode, 0, srn).url,
           content = Text(messages("site.change")), visuallyHiddenText = Some(messages("messages__check__your__answer__psp_client_reference__label"))))))
       )
     }
 
     "return answer row for ClientReference with Reference None " in {
-      getHelper.pspClientReference(None, 0) mustBe SummaryListRow(
+      getHelper.pspClientReference(None, 0, srn) mustBe SummaryListRow(
         key = Key(Text(messages("messages__check__your__answer__psp_client_reference__label")), classes = "govuk-!-width-one-half"),
         value = Value(Text(messages("messages__none"))),
-        actions = Some(Actions("", items = Seq(ActionItem(href = controllers.psp.view.routes.ViewPspHasClientReferenceController.onPageLoad(CheckMode, 0).url,
+        actions = Some(Actions("", items = Seq(ActionItem(href = controllers.psp.view.routes.ViewPspHasClientReferenceController.onPageLoad(CheckMode, 0, srn).url,
           content = Text(messages("site.change")), visuallyHiddenText = Some(messages("messages__check__your__answer__psp_client_reference__label"))))))
       )
     }

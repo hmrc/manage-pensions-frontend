@@ -24,7 +24,7 @@ import forms.psp.deauthorise.ConfirmDeauthPspFormProvider
 import identifiers.psp.deauthorise
 import identifiers.psp.deauthorise.{ConfirmDeauthorisePspId, PspDetailsId}
 import identifiers.{SchemeNameId, SchemeSrnId}
-import models.{Index, NormalMode}
+import models.{Index, NormalMode, SchemeReferenceNumber}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -55,10 +55,11 @@ class ConfirmDeauthorisePspController @Inject()(
 
   val form: Form[Boolean] = formProvider()
 
-  def onPageLoad(index: Index): Action[AnyContent] = (auth() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
+  def onPageLoad(index: Index, srn: SchemeReferenceNumber): Action[AnyContent] =
+                 (auth() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
-      (SchemeSrnId and SchemeNameId and deauthorise.PspDetailsId(index)).retrieve.map {
-        case srn ~ schemeName ~ pspDetails =>
+      (SchemeNameId and deauthorise.PspDetailsId(index)).retrieve.map {
+        case schemeName ~ pspDetails =>
           val preparedForm = request.userAnswers.get(deauthorise.ConfirmDeauthorisePspId(index)).fold(form)(form.fill)
           if (pspDetails.authorisingPSAID == request.psaIdOrException.id) {
             Future.successful(Ok(view(preparedForm, schemeName, srn, pspDetails.name, index)))
@@ -68,10 +69,11 @@ class ConfirmDeauthorisePspController @Inject()(
       }
   }
 
-  def onSubmit(index: Index): Action[AnyContent] = (auth() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
+  def onSubmit(index: Index, srn: SchemeReferenceNumber): Action[AnyContent] =
+              (auth() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
-      (SchemeNameId and SchemeSrnId and PspDetailsId(index)).retrieve.map {
-        case schemeName ~ srn ~ pspDetails =>
+      (SchemeNameId and PspDetailsId(index)).retrieve.map {
+        case schemeName ~ pspDetails =>
           form.bindFromRequest().fold(
             (formWithErrors: Form[Boolean]) =>
               Future.successful(BadRequest(view(formWithErrors, schemeName, srn, pspDetails.name, index))),

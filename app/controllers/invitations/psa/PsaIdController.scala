@@ -23,7 +23,7 @@ import controllers.actions._
 import forms.invitations.psa.PsaIdFormProvider
 import identifiers.invitations.InviteeNameId
 import identifiers.invitations.psa.InviteePSAId
-import models.Mode
+import models.{Mode, SchemeReferenceNumber}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -53,8 +53,8 @@ class PsaIdController @Inject()(
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] =
-    (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
+  def onPageLoad(mode: Mode, srn: SchemeReferenceNumber): Action[AnyContent] =
+    (authenticate() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData).async {
       implicit request =>
 
         InviteeNameId.retrieve.map {
@@ -62,18 +62,18 @@ class PsaIdController @Inject()(
             val value = request.userAnswers.get(InviteePSAId)
             val preparedForm = value.fold(form)(form.fill)
 
-            Future.successful(Ok(view(preparedForm, psaName, mode)))
+            Future.successful(Ok(view(preparedForm, psaName, mode, srn)))
         }
     }
 
-  def onSubmit(mode: Mode): Action[AnyContent] =
-    (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
+  def onSubmit(mode: Mode, srn: SchemeReferenceNumber): Action[AnyContent] =
+    (authenticate() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData).async {
       implicit request =>
         form.bindFromRequest().fold(
           (formWithErrors: Form[_]) =>
             InviteeNameId.retrieve.map {
               psaName =>
-                Future.successful(BadRequest(view(formWithErrors, psaName, mode)))
+                Future.successful(BadRequest(view(formWithErrors, psaName, mode, srn)))
             },
           value =>
             dataCacheConnector.save(request.externalId, InviteePSAId, value).map(

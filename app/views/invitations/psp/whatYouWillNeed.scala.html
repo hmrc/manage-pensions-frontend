@@ -24,11 +24,11 @@
     button: components.govuk_button
 )
 
-@(schemeName: String, returnCall: Call)(implicit request: Request[_], messages: Messages)
+@(schemeName: String, srn: String, returnCall: Call)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = s"${messages("messages__pspWhatYouWillNeed__title")}") {
 
-    @formHelper(action = controllers.invitations.psp.routes.WhatYouWillNeedController.onSubmit(), Symbol("autoComplete") -> "off") {
+    @formHelper(action = controllers.invitations.psp.routes.WhatYouWillNeedController.onSubmit(srn), Symbol("autoComplete") -> "off") {
 
         @components.heading(messages("messages__pspWhatYouWillNeed__title"))
 

@@ -51,7 +51,8 @@ class ViewPspHasClientReferenceController @Inject()(
 
   val form: Form[Boolean] = formProvider()
 
-  def onPageLoad(mode: Mode, index: Int): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
+  def onPageLoad(mode: Mode, index: Int, srn: SchemeReferenceNumber): Action[AnyContent] =
+                (authenticate() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
       (SchemeSrnId and SchemeNameId and PspDetailsId(index)).retrieve.map {
         case srn ~ schemeName ~ pspDetail =>
@@ -63,33 +64,34 @@ class ViewPspHasClientReferenceController @Inject()(
             }
             val preparedForm = hasClientRef.fold(form)(form.fill)
             Future.successful(Ok(view(preparedForm, pspDetail.name, mode, schemeName, returnCall(srn),
-              ViewPspHasClientReferenceController.onSubmit(mode, index))))
+              ViewPspHasClientReferenceController.onSubmit(mode, index, srn))))
           } else {
             Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad))
           }
       }
   }
 
-  def onSubmit(mode: Mode, index: Int): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
+  def onSubmit(mode: Mode, index: Int, srn: SchemeReferenceNumber): Action[AnyContent] =
+               (authenticate() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[_]) => {
           (SchemeSrnId and SchemeNameId and PspDetailsId(index)).retrieve.map {
             case srn ~ schemeName ~ pspDetail =>
               Future.successful(BadRequest(view(formWithErrors, pspDetail.name, mode, schemeName, returnCall(srn),
-                ViewPspHasClientReferenceController.onSubmit(mode, index))))
+                ViewPspHasClientReferenceController.onSubmit(mode, index, srn))))
           }
         },
         value =>
           if (value) {
-            Future.successful(Redirect(controllers.psp.view.routes.ViewPspClientReferenceController.onPageLoad(mode, index)))
+            Future.successful(Redirect(controllers.psp.view.routes.ViewPspClientReferenceController.onPageLoad(mode, index, srn)))
           } else {
             PspDetailsId(index).retrieve.map {
               pspDetail =>
                 if (pspDetail.authorisingPSAID == request.psaIdOrException.id) {
                   val updatedPspDetail = pspDetail.copy(clientReference = None)
                   dataCacheConnector.save(request.externalId, PspDetailsId(index), updatedPspDetail).map(_ =>
-                    Redirect(controllers.psp.view.routes.ViewPspCheckYourAnswersController.onPageLoad(index))
+                    Redirect(controllers.psp.view.routes.ViewPspCheckYourAnswersController.onPageLoad(index, srn))
                   )
                 } else {
                   Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad))

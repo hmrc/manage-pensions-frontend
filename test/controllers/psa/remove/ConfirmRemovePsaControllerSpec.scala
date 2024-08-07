@@ -21,6 +21,7 @@ import controllers.actions._
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.psa.remove.ConfirmRemovePsaFormProvider
 import identifiers.psa.remove.ConfirmRemovePsaId
+import models.SchemeReferenceNumber
 import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent}
@@ -39,15 +40,15 @@ class ConfirmRemovePsaControllerSpec extends ControllerWithQuestionPageBehaviour
     userAnswersCacheConnector, dataRetrievalAction, requiredDataAction, controllerComponents, view, fakePsaSchemeAuthAction)
 
   private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
-    controller(dataRetrievalAction, fakeAuth).onPageLoad()
+    controller(dataRetrievalAction, fakeAuth).onPageLoad(srn)
   }
 
   private def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
-    controller(dataRetrievalAction, fakeAuth).onSubmit()
+    controller(dataRetrievalAction, fakeAuth).onSubmit(srn)
   }
 
   private def onSaveAction(userAnswersConnector: UserAnswersCacheConnector): Action[AnyContent] = {
-    controller(userAnswersCacheConnector = userAnswersConnector).onSubmit()
+    controller(userAnswersCacheConnector = userAnswersConnector).onSubmit(srn)
   }
 
   private def viewAsString(form: Form[Boolean]) = view(form, schemeName,
@@ -66,9 +67,8 @@ object ConfirmRemovePsaControllerSpec {
   private val form = formProvider()
   private val postRequest = FakeRequest().withJsonBody(Json.obj("value" -> true))
   private val schemeName = "test scheme name"
-  private val srn = "test srn"
   private val psaName = "test psa name"
-
+  val srn: SchemeReferenceNumber = SchemeReferenceNumber("AB123456C")
   private val userAnswer = UserAnswers().schemeName(schemeName).srn(srn).psaName(psaName)
   private val data = userAnswer.dataRetrievalAction
   private val validData = userAnswer.confirmRemovePsa(true).dataRetrievalAction

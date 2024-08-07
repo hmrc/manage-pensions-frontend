@@ -41,11 +41,11 @@ class ViewPspCheckYourAnswersHelper extends Enumerable.Implicits {
       )
   }
 
-  def pspClientReference(clientRef:Option[String],index:Int)(implicit messages: Messages): SummaryListRow = {
+  def pspClientReference(clientRef:Option[String],index:Int, srn: String)(implicit messages: Messages): SummaryListRow = {
       SummaryListRow(
         key = Key(Text(messages("messages__check__your__answer__psp_client_reference__label")), classes = "govuk-!-width-one-half"),
         value = Value(Text(messages(getClientReference(clientRef)))),
-        actions = Some(Actions("", items = Seq(ActionItem(href = ViewPspHasClientReferenceController.onPageLoad(CheckMode,index).url,
+        actions = Some(Actions("", items = Seq(ActionItem(href = ViewPspHasClientReferenceController.onPageLoad(CheckMode,index, srn).url,
           content = Text(messages("site.change")), visuallyHiddenText = Some(messages("messages__check__your__answer__psp_client_reference__label"))))))
       )
   }

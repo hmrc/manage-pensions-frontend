@@ -49,7 +49,7 @@ class PspDoesNotMatchControllerSpec extends ControllerWithNormalPageBehaviours {
 
     new PspDoesNotMatchController(
       messagesApi, fakeAuth, dataRetrievalAction, requiredDateAction,
-      controllerComponents, pspDoesNotMatchView, fakePsaSchemeAuthAction).onPageLoad()
+      controllerComponents, pspDoesNotMatchView, fakePsaSchemeAuthAction).onPageLoad(srn)
   }
 
   def redirectionCall(): Call = onwardRoute

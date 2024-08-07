@@ -23,7 +23,7 @@ import forms.psp.deauthorise.PspDeauthDateFormProvider
 import identifiers.psp.deauthorise
 import identifiers.psp.deauthorise.{PspDeauthDateId, PspDetailsId}
 import identifiers.{SchemeNameId, SchemeSrnId}
-import models.{Index, NormalMode}
+import models.{Index, NormalMode, SchemeReferenceNumber}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.Reads._
@@ -56,12 +56,12 @@ class PspDeauthDateController @Inject()(
 
   private def earliestDateError(date: String) = Message("messages__pspDeauth_date_error__before_earliest_date", date)
 
-  def onPageLoad(index: Index): Action[AnyContent] =
-    (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
+  def onPageLoad(index: Index, srn: SchemeReferenceNumber): Action[AnyContent] =
+    (authenticate() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData).async {
       implicit request =>
 
-        (SchemeSrnId and SchemeNameId and deauthorise.PspDetailsId(index)).retrieve.map {
-          case srn ~ schemeName ~ pspDetails =>
+        (SchemeNameId and deauthorise.PspDetailsId(index)).retrieve.map {
+          case schemeName ~ pspDetails =>
             if (pspDetails.authorisingPSAID == request.psaIdOrException.id) {
               Future.successful(Ok(view(
                 form = formProvider(
@@ -80,11 +80,11 @@ class PspDeauthDateController @Inject()(
         }
     }
 
-  def onSubmit(index: Index): Action[AnyContent] =
-    (authenticate() andThen getData andThen psaSchemeAuthAction(None) andThen requireData).async {
+  def onSubmit(index: Index, srn: SchemeReferenceNumber): Action[AnyContent] =
+    (authenticate() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData).async {
       implicit request =>
-        (SchemeSrnId and SchemeNameId and PspDetailsId(index)).retrieve.map {
-          case srn ~ schemeName ~ pspDetails =>
+        (SchemeNameId and PspDetailsId(index)).retrieve.map {
+          case schemeName ~ pspDetails =>
             formProvider(
               relationshipStartDate = pspDetails.relationshipStartDate,
               earliestDateError = earliestDateError(formatDate(pspDetails.relationshipStartDate)).resolve

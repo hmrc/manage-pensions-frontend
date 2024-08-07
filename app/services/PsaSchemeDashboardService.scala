@@ -25,7 +25,7 @@ import controllers.invitations.routes._
 import controllers.psa.routes._
 import controllers.psp.routes._
 import identifiers.psa.ListOfPSADetailsId
-import identifiers.{SchemeNameId, SchemeStatusId, SeqAuthorisedPractitionerId}
+import identifiers.{SchemeNameId, SchemeSrnId, SchemeStatusId, SeqAuthorisedPractitionerId}
 import models.SchemeStatus.Open
 import models._
 import models.psa.PsaDetails
@@ -106,7 +106,7 @@ class PsaSchemeDashboardService @Inject()(
       if (interimDashboard) {
         Seq(manageReportsEventsCard(srn, erHtml, seqErOverview)) ++ Seq(psaCardForInterimDashboard(srn, ua))
       } else {
-        Seq(schemeCard(srn, currentScheme, lock, ua, optionLockedSchemeName)) ++ Seq(psaCard(srn, ua)) ++ pspCard(ua, currentScheme.map(_.schemeStatus))
+        Seq(schemeCard(srn, currentScheme, lock, ua, optionLockedSchemeName)) ++ Seq(psaCard(srn, ua)) ++ pspCard(ua, currentScheme.map(_.schemeStatus), srn)
       }
     }
   }
@@ -273,12 +273,12 @@ class PsaSchemeDashboardService @Inject()(
         ),
         Link(
           id = "authorise",
-          url = WhatYouWillNeedController.onPageLoad().url,
+          url = WhatYouWillNeedController.onPageLoad(srn).url,
           linkText = Message("messages__pspAuthorise__link")
         ),
         Link(
           id = "view-practitioners",
-          url = ViewPractitionersController.onPageLoad().url,
+          url = ViewPractitionersController.onPageLoad(srn).url,
           linkText = Message("messages__pspViewOrDeauthorise__link")
         )
       )
@@ -361,7 +361,7 @@ class PsaSchemeDashboardService @Inject()(
     ua.get(ListOfPSADetailsId) flatMap (_.sortBy(_.relationshipDate).reverse.headOption)
 
   //PSP card
-  def pspCard(ua: UserAnswers, schemeStatus: Option[String])
+  def pspCard(ua: UserAnswers, schemeStatus: Option[String], srn: SchemeReferenceNumber)
              (implicit messages: Messages): Seq[CardViewModel] =
     schemeStatus match {
       case Some(Open.value) =>
@@ -370,19 +370,19 @@ class PsaSchemeDashboardService @Inject()(
           heading = Message("messages__psaSchemeDash__psp_heading"),
           subHeadings = latestPspSubHeading(ua),
           links = Seq(
-            Link("authorise", WhatYouWillNeedController.onPageLoad().url, Message("messages__pspAuthorise__link"))
-          ) ++ viewPspLink(ua)
+            Link("authorise", WhatYouWillNeedController.onPageLoad(srn).url, Message("messages__pspAuthorise__link"))
+          ) ++ viewPspLink(ua, srn: SchemeReferenceNumber)
         ))
       case _ =>
         Nil
     }
 
 
-  private def viewPspLink(ua: UserAnswers): Seq[Link] =
+  private def viewPspLink(ua: UserAnswers, srn: SchemeReferenceNumber): Seq[Link] =
     latestPsp(ua).fold[Seq[Link]](Nil) { _ =>
       Seq(Link(
         id = "view-practitioners",
-        url = ViewPractitionersController.onPageLoad().url,
+        url = ViewPractitionersController.onPageLoad(srn).url,
         linkText = Message("messages__pspViewOrDeauthorise__link")
       ))
     }

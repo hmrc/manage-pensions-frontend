@@ -18,7 +18,7 @@ package utils
 
 import identifiers.{Identifier, TypedIdentifier}
 import models.requests.IdentifiedRequest
-import models.{CheckMode, NormalMode}
+import models.{CheckMode, NormalMode, SchemeReferenceNumber}
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.mvc.Call
@@ -71,11 +71,11 @@ object NavigatorSpec {
 
   class TestNavigator extends Navigator {
 
-    override protected def routeMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
+    override protected def routeMap(ua: UserAnswers, srn: SchemeReferenceNumber): PartialFunction[Identifier, Call] = {
       case `testExistId` => testExistNormalModeCall
     }
 
-    override protected def editRouteMap(ua: UserAnswers): PartialFunction[Identifier, Call] = {
+    override protected def editRouteMap(ua: UserAnswers, srn: SchemeReferenceNumber): PartialFunction[Identifier, Call] = {
       case `testExistId` => testExistCheckModeCall
     }
 

@@ -38,9 +38,8 @@ import scala.concurrent.Future
 class ViewPractitionersControllerSpec extends ControllerSpecBase with MockitoSugar {
 
   private val schemeName  = "Test Scheme name"
-  private val schemeSrn  = "12345"
   private val mockFeatureToggleService = mock[FeatureToggleService]
-  private def returnCall: Call  = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(schemeSrn))
+  private def returnCall: Call  = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(srn))
   private val practitionersViewModel = Seq(
     AuthorisedPractitionerViewModel("PSP Limited Company 1", "Nigel Robert Smith", "1 April 2021", false),
     AuthorisedPractitionerViewModel("PSP Individual Second", "Acme Ltd", "1 April 2021", false)
@@ -75,7 +74,7 @@ class ViewPractitionersControllerSpec extends ControllerSpecBase with MockitoSug
   )
 
   private val validData = new FakeDataRetrievalAction(Some(Json.obj(
-    SchemeSrnId.toString -> schemeSrn,
+    SchemeSrnId.toString -> srn,
     SchemeNameId.toString -> schemeName,
     SeqAuthorisedPractitionerId.toString -> practitioners
   )))
@@ -94,14 +93,14 @@ class ViewPractitionersControllerSpec extends ControllerSpecBase with MockitoSug
       fakePsaSchemeAuthAction
     )
 
-  private def viewAsString() = viewPractitionersView(schemeName, returnCall, practitionersViewModel,true)(fakeRequest, messages).toString
+  private def viewAsString() = viewPractitionersView(schemeName, returnCall, practitionersViewModel, true, srn.id)(fakeRequest, messages).toString
 
   "ViewPractitionersController" must {
     "return OK and the correct view for a GET" in {
        val toggle: Enabled = Enabled(UpdateClientReference)
       when(mockFeatureToggleService.get(any())(any(), any()))
         .thenReturn(Future.successful(toggle))
-      val result = controller().onPageLoad()(fakeRequest)
+      val result = controller().onPageLoad(srn)(fakeRequest)
       status(result) mustBe OK
       contentAsString(result) mustBe viewAsString()
     }
