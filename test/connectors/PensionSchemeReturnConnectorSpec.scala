@@ -121,7 +121,6 @@ class PensionSchemeReturnConnectorSpec
         )
       )
 
-      println(s"********************* $getOverviewUrl")
       server.stubFor(
         get(urlEqualTo(getOverviewUrl))
           .willReturn(

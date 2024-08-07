@@ -60,10 +60,8 @@ class PspDeauthDateController @Inject()(
     (authenticate() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData).async {
       implicit request =>
 
-        println(s"*************************** ${request.userAnswers}")
         (SchemeNameId and deauthorise.PspDetailsId(index)).retrieve.map {
           case schemeName ~ pspDetails =>
-            println(s">>>>>>>>>>>>>>>>>> $srn >>> $schemeName   $pspDetails")
             if (pspDetails.authorisingPSAID == request.psaIdOrException.id) {
               Future.successful(Ok(view(
                 form = formProvider(
