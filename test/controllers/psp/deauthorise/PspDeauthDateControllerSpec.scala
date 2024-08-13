@@ -22,6 +22,7 @@ import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.psp.deauthorise.PspDeauthDateFormProvider
 import identifiers.psp.deauthorise
 import identifiers.{SchemeNameId, SchemeSrnId, SeqAuthorisedPractitionerId}
+import models.SchemeReferenceNumber
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito._
 import play.api.data.Form
@@ -63,15 +64,15 @@ class PspDeauthDateControllerSpec
     )
 
   private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
-    controller(dataRetrievalAction, fakeAuth).onPageLoad(0)
+    controller(dataRetrievalAction, fakeAuth).onPageLoad(0, srn)
   }
 
   private def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
-    controller(dataRetrievalAction, fakeAuth).onSubmit(0)
+    controller(dataRetrievalAction, fakeAuth).onSubmit(0, srn)
   }
 
   private def onSaveAction(userAnswersConnector: UserAnswersCacheConnector): Action[AnyContent] = {
-    controller(userAnswersCacheConnector = userAnswersConnector).onSubmit(0)
+    controller(userAnswersCacheConnector = userAnswersConnector).onSubmit(0, srn)
   }
 
   private def viewAsString(form: Form[LocalDate]): String =
@@ -108,8 +109,8 @@ object PspDeauthDateControllerSpec extends MockitoSugar {
   private val relationshipStartDate = LocalDate.parse("2020-04-01")
   private val schemeName = "test scheme name"
   private val pspName = "PSP Limited Company 1"
-  private val srn = "test srn"
   private val date = LocalDate.now()
+  val srn: SchemeReferenceNumber = SchemeReferenceNumber("AB123456C")
 
   val day: Int = LocalDate.now().getDayOfMonth
   val month: Int = LocalDate.now().getMonthValue

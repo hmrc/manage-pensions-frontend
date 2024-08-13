@@ -34,8 +34,8 @@ class PsaPspSchemeActionImpl (srn:SchemeReferenceNumber, schemeDetailsConnector:
   private def notFoundTemplate(implicit request: OptionalDataRequest[_]) = NotFound(errorHandler.notFoundTemplate)
   override def invokeBlock[A](request: OptionalDataRequest[A], block: OptionalDataRequest[A] => Future[Result]): Future[Result] = {
     request.psaId -> request.pspId match {
-      case (Some(_), None) => new PsaSchemeAuthAction(schemeDetailsConnector, errorHandler).apply(Some(srn)).invokeBlock(request, block)
-      case (None, Some(_)) => new PspSchemeAuthAction(schemeDetailsConnector, errorHandler).apply(Some(srn)).invokeBlock(request, block)
+      case (Some(_), None) => new PsaSchemeAuthAction(schemeDetailsConnector, errorHandler).apply(srn).invokeBlock(request, block)
+      case (None, Some(_)) => new PspSchemeAuthAction(schemeDetailsConnector, errorHandler).apply(srn).invokeBlock(request, block)
       case _ => Future.successful(notFoundTemplate(request))
     }
   }

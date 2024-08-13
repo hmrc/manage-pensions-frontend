@@ -33,7 +33,7 @@
 
 @layout(pageTitle = titleWithErrors(form, messages("messages__pspSelfDeauthDate__title"))) {
 
-    @formHelper(action = DeauthDateController.onSubmit(), Symbol("autoComplete") -> "off", Symbol("novalidate") -> "novalidate") {
+    @formHelper(action = DeauthDateController.onSubmit(srn), Symbol("autoComplete") -> "off", Symbol("novalidate") -> "novalidate") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form, mapping = Map("pspDeauthDate" -> "pspDeauthDate.day")))

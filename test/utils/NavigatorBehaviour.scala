@@ -60,7 +60,6 @@ trait NavigatorBehaviour extends ScalaCheckPropertyChecks with OptionValues {
         }
         catch {
           case e: TableDrivenPropertyCheckFailedException =>
-            println(s"Invalid routes: ${e.toString}")
             throw e
         }
 
@@ -82,7 +81,6 @@ trait NavigatorBehaviour extends ScalaCheckPropertyChecks with OptionValues {
         }
         catch {
           case e: TableDrivenPropertyCheckFailedException =>
-            println(s"Invalid routes: ${e.toString}")
             throw e
         }
 

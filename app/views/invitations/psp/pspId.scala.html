@@ -30,11 +30,11 @@
     button: components.govuk_button
 )
 
-@(form: Form[_], pspName: String, mode: Mode, schemeName:String, returnCall: Call)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], pspName: String, mode: Mode, schemeName:String, srn: String, returnCall: Call)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleWithErrors(form, messages("messages__pspId__title"))) {
 
-    @formHelper(action = PspIdController.onSubmit(mode), Symbol("autoComplete") -> "off") {
+    @formHelper(action = PspIdController.onSubmit(mode, srn), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))

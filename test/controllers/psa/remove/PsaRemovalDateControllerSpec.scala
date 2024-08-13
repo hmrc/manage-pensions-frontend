@@ -24,7 +24,7 @@ import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.psa.remove.RemovalDateFormProvider
 import identifiers.psa.ListOfPSADetailsId
 import identifiers.psa.remove.PsaRemovalDateId
-import models.SchemeVariance
+import models.{SchemeReferenceNumber, SchemeVariance}
 import models.psa.remove.PsaToBeRemovedFromScheme
 import models.psa.{Name, PsaDetails}
 import org.mockito.ArgumentMatchers
@@ -62,11 +62,11 @@ class PsaRemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours 
     mockedUpdateSchemeCacheConnector, mockedPensionSchemeVarianceLockConnector, controllerComponents, view, fakePsaSchemeAuthAction)
 
   private def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
-    controller(dataRetrievalAction, fakeAuth).onSubmit()
+    controller(dataRetrievalAction, fakeAuth).onSubmit(srn)
   }
 
   private def onSaveAction(userAnswersConnector: UserAnswersCacheConnector) = {
-    controller(userAnswersCacheConnector = userAnswersConnector).onSubmit()
+    controller(userAnswersCacheConnector = userAnswersConnector).onSubmit(srn)
   }
 
   private def viewAsStringPostRequest(form: Form[LocalDate]): String =
@@ -117,7 +117,7 @@ class PsaRemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours 
     }
 
     "return the correct relationship start date" in {
-      val result = controller(userAnswer.dataRetrievalAction, FakeAuthAction).onPageLoad()(fakeRequest)
+      val result = controller(userAnswer.dataRetrievalAction, FakeAuthAction).onPageLoad(srn)(fakeRequest)
       status(result) mustBe OK
       val fm = form(associationDate, frontendAppConfig.earliestDatePsaRemoval)
       contentAsString(result) mustBe view(fm, psaName, schemeName, srn, formatDate(relationshipDateAsLocalDate))(fakeRequest, messages).toString
@@ -131,7 +131,7 @@ object PsaRemovalDateControllerSpec extends MockitoSugar {
   private val relationshipDateAsLocalDate: LocalDate = LocalDate.parse("2018-11-01")
   private val schemeName = "test scheme name"
   private val psaName = "test psa name"
-  private val srn = "test srn"
+  val srn: SchemeReferenceNumber = SchemeReferenceNumber("AB123456C")
   private val pstr = "test pstr"
   private val date = LocalDate.now()
 

@@ -26,7 +26,6 @@ import views.html.invitations.psa.incorrectPsaDetails
 class IncorrectPsaDetailsControllerSpec extends ControllerWithNormalPageBehaviours {
 
   val invitee = "PSA"
-  val srn = "test-srn"
   val schemeName = "test-scheme-name"
   private val view = injector.instanceOf[incorrectPsaDetails]
 
@@ -38,7 +37,7 @@ class IncorrectPsaDetailsControllerSpec extends ControllerWithNormalPageBehaviou
   def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
 
     new IncorrectPsaDetailsController(
-      frontendAppConfig, messagesApi, fakeAuth, dataRetrievalAction, requiredDateAction, controllerComponents, view, fakePsaSchemeAuthAction).onPageLoad()
+      frontendAppConfig, messagesApi, fakeAuth, dataRetrievalAction, requiredDateAction, controllerComponents, view, fakePsaSchemeAuthAction).onPageLoad(srn)
   }
 
   def viewAsString(): String = view(invitee, srn, schemeName)(fakeRequest, messages).toString

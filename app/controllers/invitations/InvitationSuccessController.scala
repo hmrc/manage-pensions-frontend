@@ -51,7 +51,7 @@ class InvitationSuccessController @Inject()(
                                            )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with Retrievals {
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] =
-    (authenticate() andThen getData andThen psaSchemeAuthAction(Some(srn)) andThen requireData).async {
+    (authenticate() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
 
       val continue = controllers.invitations.routes.InvitationSuccessController.onSubmit(srn)
@@ -75,7 +75,7 @@ class InvitationSuccessController @Inject()(
       }
   }
 
-  def onSubmit(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(Some(srn))).async {
+  def onSubmit(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(srn)).async {
     _ => Future.successful(Redirect(navigator.nextPage(InvitationSuccessId(srn), NormalMode, UserAnswers())))
   }
 }

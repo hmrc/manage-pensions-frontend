@@ -39,7 +39,6 @@ class PspNameControllerSpec extends ControllerWithQuestionPageBehaviours {
   private val formProvider = new PspNameFormProvider()
   private val form = formProvider()
   private val schemeName = "Test Scheme"
-  private val srn = "srn"
   private val userAnswer = UserAnswers()
     .set(SchemeNameId)(schemeName).asOpt.value
     .set(SchemeSrnId)(srn).asOpt.value
@@ -52,23 +51,23 @@ class PspNameControllerSpec extends ControllerWithQuestionPageBehaviours {
   private val pspNameView = injector.instanceOf[pspName]
 
 
-  private val returnCall = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber("srn"))
+  private val returnCall = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber("AB123456C"))
 
 
   def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
 
     new PspNameController(messagesApi, FakeUserAnswersCacheConnector, navigator, fakeAuth,
-      dataRetrievalAction, requiredDataAction, formProvider, controllerComponents, pspNameView, fakePsaSchemeAuthAction).onPageLoad(NormalMode)
+      dataRetrievalAction, requiredDataAction, formProvider, controllerComponents, pspNameView, fakePsaSchemeAuthAction).onPageLoad(NormalMode, srn)
   }
 
   def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
 
     new PspNameController(
       messagesApi, FakeUserAnswersCacheConnector, navigator, fakeAuth,
-      dataRetrievalAction, requiredDataAction, formProvider, controllerComponents, pspNameView, fakePsaSchemeAuthAction).onSubmit(NormalMode)
+      dataRetrievalAction, requiredDataAction, formProvider, controllerComponents, pspNameView, fakePsaSchemeAuthAction).onSubmit(NormalMode, srn)
   }
 
-  private def viewAsString(form: Form[_]): String = pspNameView(form, NormalMode, schemeName, returnCall)(fakeRequest, messages).toString
+  private def viewAsString(form: Form[_]): String = pspNameView(form, NormalMode, schemeName, srn, returnCall)(fakeRequest, messages).toString
 
 
   behave like controllerWithOnPageLoadMethod(onPageLoadAction, userAnswer.dataRetrievalAction, userAnswerWithPspName.dataRetrievalAction,

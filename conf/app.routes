@@ -56,7 +56,7 @@ GET         /:srn/dashboard/pension-scheme-details                              
 GET         /pension-scheme-summary/:srn                                                                     controllers.psa.PsaSchemeDashboardController.onPageLoad(srn: SchemeReferenceNumber)
 GET         /:srn/view-administrators                                                                        controllers.psa.ViewAdministratorsController.onPageLoad(srn: SchemeReferenceNumber)
 
-GET         /view-practitioners                                                                              controllers.psp.ViewPractitionersController.onPageLoad()
+GET         /view-practitioners/:srn                                                                         controllers.psp.ViewPractitionersController.onPageLoad(srn: SchemeReferenceNumber)
 
 GET         /you-must-contact-hmrc                                                                           controllers.ContactHMRCController.onPageLoad()
 

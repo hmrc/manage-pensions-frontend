@@ -30,11 +30,10 @@ import views.html.invitations.psa.whatYouWillNeed
 class WhatYouWillNeedControllerSpec extends ControllerSpecBase {
 
   val schemeName  = "Test Scheme name"
-  val schemeSrn  = "12345"
-  val returnCall: Call  = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(schemeSrn))
+  val returnCall: Call  = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(srn))
 
   val validData = new FakeDataRetrievalAction(Some(Json.obj(
-    SchemeSrnId.toString -> schemeSrn,
+    SchemeSrnId.toString -> srn,
     SchemeNameId.toString -> schemeName
   )))
 
@@ -51,20 +50,20 @@ class WhatYouWillNeedControllerSpec extends ControllerSpecBase {
       fakePsaSchemeAuthAction
     )
 
-  private def viewAsString() = whatYouWillNeedView(schemeName, returnCall)(fakeRequest, messages).toString
+  private def viewAsString() = whatYouWillNeedView(schemeName, srn, returnCall)(fakeRequest, messages).toString
 
   "WhatYouWillNeedController" must {
     "return OK and the correct view for a GET" in {
-      val result = controller().onPageLoad()(fakeRequest)
+      val result = controller().onPageLoad(srn)(fakeRequest)
       status(result) mustBe OK
       contentAsString(result) mustBe viewAsString()
     }
 
     "redirect to psa name controller for a POST" in {
-      val result = controller().onSubmit()(fakeRequest)
+      val result = controller().onSubmit(srn)(fakeRequest)
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe
-        Some(PsaNameController.onPageLoad(NormalMode).url)
+        Some(PsaNameController.onPageLoad(NormalMode, srn).url)
     }
   }
 }

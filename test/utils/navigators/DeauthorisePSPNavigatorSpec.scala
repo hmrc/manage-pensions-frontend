@@ -24,6 +24,7 @@ import controllers.routes._
 import identifiers.Identifier
 import identifiers.psp.deauthorise
 import identifiers.psp.deauthorise.ConfirmDeauthorisePspId
+import models.SchemeReferenceNumber
 import org.scalatest.prop.TableFor4
 import play.api.libs.json.Json
 import play.api.mvc.Call
@@ -52,8 +53,8 @@ class DeauthorisePSPNavigatorSpec extends SpecBase with NavigatorBehaviour {
 }
 
 object DeauthorisePSPNavigatorSpec {
-  private val srn = "test srn"
-  private lazy val emptyAnswers: UserAnswers = UserAnswers(Json.obj())
+  val srn: SchemeReferenceNumber = SchemeReferenceNumber("AB123456C")
+  private lazy val emptyAnswers: UserAnswers = UserAnswers(Json.obj()).srn(srn)
   private lazy val deauthPsp: UserAnswers = UserAnswers().srn(srn).set(deauthorise.ConfirmDeauthorisePspId(0))(true).asOpt.get
   private lazy val dontDeauthPsp: UserAnswers = UserAnswers().srn(srn).set(deauthorise.ConfirmDeauthorisePspId(0))(false).asOpt.get
 
@@ -61,9 +62,9 @@ object DeauthorisePSPNavigatorSpec {
 
   private val sessionExpiredPage = SessionExpiredController.onPageLoad
   private val schemeDetailsPage = PsaSchemeDashboardController.onPageLoad(srn)
-  private val pspDeauthDatePage = PspDeauthDateController.onPageLoad(0)
-  private val psaDeauthPspDeclarationPage = PsaDeauthPspDeclarationController.onPageLoad(0)
-  private val psaDeauthPspConfirmationPage = ConfirmPsaDeauthPspController.onPageLoad(0)
+  private val pspDeauthDatePage = PspDeauthDateController.onPageLoad(0, srn)
+  private val psaDeauthPspDeclarationPage = PsaDeauthPspDeclarationController.onPageLoad(0, srn)
+  private val psaDeauthPspConfirmationPage = ConfirmPsaDeauthPspController.onPageLoad(0, srn)
 }
 
 

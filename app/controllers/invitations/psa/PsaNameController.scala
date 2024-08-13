@@ -20,7 +20,7 @@ import connectors.UserAnswersCacheConnector
 import controllers.actions._
 import forms.invitations.psa.PsaNameFormProvider
 import identifiers.invitations.InviteeNameId
-import models.Mode
+import models.{Mode, SchemeReferenceNumber}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -48,23 +48,23 @@ class PsaNameController @Inject()(
 
   private val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] =
-    (authenticate() andThen getData andThen psaSchemeAction(None)).async {
+  def onPageLoad(mode: Mode, srn: SchemeReferenceNumber): Action[AnyContent] =
+    (authenticate() andThen getData andThen psaSchemeAction(srn)).async {
       implicit request =>
 
         val value = request.userAnswers.flatMap(_.get(InviteeNameId))
         val preparedForm = value.fold(form)(form.fill)
 
-        Future.successful(Ok(view(preparedForm, mode)))
+        Future.successful(Ok(view(preparedForm, mode, srn)))
     }
 
-  def onSubmit(mode: Mode): Action[AnyContent] =
-    (authenticate() andThen getData andThen psaSchemeAction(None)).async {
+  def onSubmit(mode: Mode, srn: SchemeReferenceNumber): Action[AnyContent] =
+    (authenticate() andThen getData andThen psaSchemeAction(srn)).async {
       implicit request =>
 
         form.bindFromRequest().fold(
           (formWithErrors: Form[_]) =>
-            Future.successful(BadRequest(view(formWithErrors, mode))),
+            Future.successful(BadRequest(view(formWithErrors, mode, srn))),
 
           value => {
             dataCacheConnector.save(request.externalId, InviteeNameId, value).map(

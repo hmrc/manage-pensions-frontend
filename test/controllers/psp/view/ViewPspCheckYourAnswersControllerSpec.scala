@@ -62,22 +62,22 @@ class ViewPspCheckYourAnswersControllerSpec extends ControllerSpecBase with Mock
     "on a GET" must {
 
       "return OK and the correct view" in {
-        val result = controller(data).onPageLoad(0)(fakeRequest)
+        val result = controller(data).onPageLoad(0, srn)(fakeRequest)
         status(result) mustBe OK
         contentAsString(result) mustBe viewAsString()
       }
 
       "redirect to the session expired page if there is no psp name" in {
-        val result = controller(getEmptyData).onPageLoad(0)(fakeRequest)
+        val result = controller(getEmptyData).onPageLoad(0, srn)(fakeRequest)
         redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
       "redirect to the session expired page if not authorisingPSA" in {
-        val result = controller(data2).onPageLoad(0)(fakeRequest)
+        val result = controller(data2).onPageLoad(0, srn)(fakeRequest)
         redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
 
       "redirect to the session expired page if there is no existing data" in {
-        val result = controller(dontGetAnyData).onPageLoad(0)(fakeRequest)
+        val result = controller(dontGetAnyData).onPageLoad(0, srn)(fakeRequest)
         redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
     }
@@ -87,16 +87,16 @@ class ViewPspCheckYourAnswersControllerSpec extends ControllerSpecBase with Mock
         when(mockUpdateClientReferenceConnector.updateClientReference(any(), any())(any(), any())).thenReturn(Future.successful("Ok"))
         when(mockSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any())).thenReturn(Future.successful(schemeDetailUserAns("Test")))
         when(mockSchemeDetailsConnector.getSchemeDetailsRefresh(any(), any(), any())(any(), any())).thenReturn(Future.successful((): Unit))
-        val result = controller(data).onSubmit(0)(fakeRequest)
-        redirectLocation(result).value mustBe controllers.psp.routes.ViewPractitionersController.onPageLoad().url
+        val result = controller(data).onSubmit(0, srn)(fakeRequest)
+        redirectLocation(result).value mustBe controllers.psp.routes.ViewPractitionersController.onPageLoad(srn).url
       }
       "redirect to view practitioner and not updated client Ref" in {
         when(mockSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any())).thenReturn(Future.successful(schemeDetailUserAns("A0000000")))
-        val result = controller(data).onSubmit(0)(fakeRequest)
-        redirectLocation(result).value mustBe controllers.psp.routes.ViewPractitionersController.onPageLoad().url
+        val result = controller(data).onSubmit(0, srn)(fakeRequest)
+        redirectLocation(result).value mustBe controllers.psp.routes.ViewPractitionersController.onPageLoad(srn).url
       }
       "redirect to the session expired page if not authorisingPSA" in {
-        val result = controller(data2).onSubmit(0)(fakeRequest)
+        val result = controller(data2).onSubmit(0, srn)(fakeRequest)
         redirectLocation(result).value mustBe controllers.routes.SessionExpiredController.onPageLoad.url
       }
     }
@@ -142,7 +142,6 @@ class ViewPspCheckYourAnswersControllerSpec extends ControllerSpecBase with Mock
 object ViewPspCheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours with MockitoSugar with JsonFileReader {
   private val pspName: String = "test-psp-name"
   private val testSchemeName = "Test Scheme"
-  private val srn = "srn"
   private val pstr = "pstr"
 
 
@@ -175,14 +174,14 @@ object ViewPspCheckYourAnswersControllerSpec extends ControllerWithNormalPageBeh
     SummaryListRow(
       key = Key(Text(messages("messages__check__your__answer__psp_client_reference__label")), classes = "govuk-!-width-one-half"),
       value = Value(Text("A0000000")),
-      actions = Some(Actions("", items = Seq(ActionItem(href = ViewPspHasClientReferenceController.onPageLoad(CheckMode, 0).url,
+      actions = Some(Actions("", items = Seq(ActionItem(href = ViewPspHasClientReferenceController.onPageLoad(CheckMode, 0, srn).url,
         content = Text(messages("site.change")), visuallyHiddenText = Some(messages("messages__check__your__answer__psp_client_reference__label"))))))
     )
   )
 
   private val view = injector.instanceOf[checkYourAnswersPsp]
 
-  def call: Call = controllers.psp.view.routes.ViewPspCheckYourAnswersController.onSubmit(0)
+  def call: Call = controllers.psp.view.routes.ViewPspCheckYourAnswersController.onSubmit(0, srn)
 
   def returnCall: Call = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(srn))
 

@@ -23,6 +23,7 @@ import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PspSchemeAuthAction}
 import identifiers.{AuthorisedPractitionerId, SchemeNameId}
 import models.AuthEntity.PSP
+import models.SchemeReferenceNumber
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -44,7 +45,7 @@ class ConfirmationController @Inject()(override val messagesApi: MessagesApi,
     with I18nSupport
     with Retrievals {
 
-  def onPageLoad(): Action[AnyContent] = (auth(PSP) andThen getData andThen pspSchemeAuthAction(None) andThen requireData).async {
+  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = (auth(PSP) andThen getData andThen pspSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
 
       (SchemeNameId and AuthorisedPractitionerId).retrieve.map {

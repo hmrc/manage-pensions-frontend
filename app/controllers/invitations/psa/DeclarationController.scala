@@ -80,7 +80,7 @@ class DeclarationController @Inject()(
                   _ <- userAnswersCacheConnector.save(IsMasterTrustId, isMasterTrust)
                   _ <- userAnswersCacheConnector.save(PSTRId, details.get(PSTRId).getOrElse(""))
                 } yield {
-                  Ok(view(haveWorkingKnowledge, isMasterTrust, form))
+                  Ok(view(haveWorkingKnowledge, isMasterTrust, srn, form))
                 }
               case _ => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad))
 
@@ -95,9 +95,9 @@ class DeclarationController @Inject()(
 
       form.bindFromRequest().fold(
         (formWithErrors: Form[Boolean]) =>
-          (DoYouHaveWorkingKnowledgeId and IsMasterTrustId).retrieve.map {
-            case haveWorkingKnowledge ~ isMasterTrust =>
-              Future.successful(BadRequest(view(haveWorkingKnowledge, isMasterTrust, formWithErrors)))
+          (DoYouHaveWorkingKnowledgeId and IsMasterTrustId and SchemeSrnId).retrieve.map {
+            case haveWorkingKnowledge ~ isMasterTrust ~ srn =>
+              Future.successful(BadRequest(view(haveWorkingKnowledge, isMasterTrust, srn, formWithErrors)))
           },
         declaration => {
           (PSTRId and DoYouHaveWorkingKnowledgeId).retrieve.map {

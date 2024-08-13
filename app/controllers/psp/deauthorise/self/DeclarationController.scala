@@ -31,7 +31,7 @@ import identifiers.psp.deauthorise.self.DeauthDateId
 import identifiers.{AuthorisedPractitionerId, SchemeNameId, SchemeSrnId}
 import models.AuthEntity.PSP
 import models.requests.DataRequest
-import models.{DeAuthorise, MinimalPSAPSP, SendEmailRequest, Sent}
+import models.{DeAuthorise, MinimalPSAPSP, SchemeReferenceNumber, SendEmailRequest, Sent}
 import play.api.Logger
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -67,18 +67,18 @@ class DeclarationController @Inject()(
 
   private val logger = Logger(classOf[DeclarationController])
 
-  def onPageLoad(): Action[AnyContent] = (auth(PSP) andThen getData andThen pspSchemeAuthAction(None) andThen requireData).async {
+  def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = (auth(PSP) andThen getData andThen pspSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
-      (SchemeSrnId and SchemeNameId).retrieve.map {
-        case srn ~ schemeName =>
+      SchemeNameId.retrieve.map {
+        case schemeName =>
           Future.successful(Ok(view(form, schemeName, srn)))
       }
   }
 
-  def onSubmit(): Action[AnyContent] = (auth(PSP) andThen getData andThen pspSchemeAuthAction(None) andThen requireData).async {
+  def onSubmit(srn: SchemeReferenceNumber): Action[AnyContent] = (auth(PSP) andThen getData andThen pspSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
-      (SchemeSrnId and SchemeNameId and PSTRId and DeauthDateId and AuthorisedPractitionerId).retrieve.map {
-        case srn ~ schemeName ~ pstr ~ removalDate ~ authorisedPractitioner =>
+      (SchemeNameId and PSTRId and DeauthDateId and AuthorisedPractitionerId).retrieve.map {
+        case schemeName ~ pstr ~ removalDate ~ authorisedPractitioner =>
           form.bindFromRequest().fold(
             (formWithErrors: Form[Boolean]) =>
               Future.successful(BadRequest(view(formWithErrors, schemeName, srn))),
@@ -92,7 +92,7 @@ class DeclarationController @Inject()(
                 _ <- sendEmail(minimalPSP, authorisedPractitioner.authorisingPSA.name, schemeName, pspId, pstr)
               } yield {
                 auditService.sendEvent(PSPSelfDeauthorisationEmailAuditEvent(pspId, pstr, minimalPSP.email, Sent))
-                Redirect(ConfirmationController.onPageLoad())
+                Redirect(ConfirmationController.onPageLoad(srn))
               }
             }
           )

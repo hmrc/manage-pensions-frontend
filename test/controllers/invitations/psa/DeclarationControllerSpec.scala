@@ -77,7 +77,7 @@ class DeclarationControllerSpec
   val schemeDetailsResponse: UserAnswers = UserAnswers(readJsonFromFile("/data/validSchemeDetailsUserAnswers.json"))
 
   private def viewAsString(form: Form[_] = form, isItMasterTrust: Boolean = isMasterTrust, hasWkAdvisor: Boolean = hasAdviser) =
-    view(hasWkAdvisor, isItMasterTrust, form)(fakeRequest, messages).toString
+    view(hasWkAdvisor, isItMasterTrust, srn, form)(fakeRequest, messages).toString
 
   "Declaration Controller" when {
 

@@ -61,7 +61,7 @@ class ConfirmPsaDeauthPspControllerSpec
       minimalPsaConnector = mockMinimalPsaConnector,
       view = view,
       fakePsaSchemeAuthAction
-    ).onPageLoad(0)
+    ).onPageLoad(0, srn)
 
   def viewAsString(base: SpecBase)(): String =
     view(

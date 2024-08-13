@@ -29,7 +29,7 @@
     button: components.govuk_button
 )
 
-@(haveWorkingKnowledge: Boolean, isMasterTrust: Boolean, form: Form[_])(implicit request: Request[_], messages: Messages)
+@(haveWorkingKnowledge: Boolean, isMasterTrust: Boolean, srn: String, form: Form[_])(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleWithErrors(form, messages("messages__declaration__title"))){
 

@@ -22,6 +22,7 @@ import actions.{FakeDataRetrievalAction, FakePsaSchemeAuthAction, FakePspSchemeA
 import handlers.ErrorHandler
 import identifiers.psa.PSANameId
 import identifiers.psp.PSPNameId
+import models.SchemeReferenceNumber
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.inject.guice.GuiceableModule
 import play.api.libs.json.Json
@@ -31,6 +32,7 @@ trait ControllerSpecBase extends SpecBase {
 
   val cacheMapId = "id"
   val psp: Option[PspId] = Some(PspId("00000000"))
+  val srn: SchemeReferenceNumber = SchemeReferenceNumber("AB123456C")
   val fakePsaSchemeAuthAction = new FakePsaSchemeAuthAction(app.injector.instanceOf[SchemeDetailsConnector], app.injector.instanceOf[ErrorHandler])
   val fakePspSchemeAuthAction: FakePspSchemeAuthAction =
     new FakePspSchemeAuthAction(app.injector.instanceOf[SchemeDetailsConnector], app.injector.instanceOf[ErrorHandler])
