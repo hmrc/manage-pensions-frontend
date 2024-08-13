@@ -15,7 +15,6 @@
  */
 
 package utils.navigators
-
 import controllers.invitations.psa.routes._
 import controllers.invitations.routes._
 import controllers.psa.routes._
