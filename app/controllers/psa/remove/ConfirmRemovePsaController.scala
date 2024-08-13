@@ -70,8 +70,8 @@ class ConfirmRemovePsaController @Inject()(
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[Boolean]) =>
-          (SchemeNameId and SchemeSrnId and PSANameId).retrieve.map {
-            case schemeName ~ srn ~ psaName =>
+          (SchemeNameId and PSANameId).retrieve.map {
+            case schemeName ~ psaName =>
               Future.successful(BadRequest(view(formWithErrors, schemeName, srn, psaName)))
           },
         value => {

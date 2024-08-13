@@ -30,14 +30,13 @@ class PspDoesNotMatchControllerSpec extends ControllerWithNormalPageBehaviours {
 
 
   private val testPspName = "test-psp-name"
-  private val testSrn = "test-srn"
   private val testSchemeName = "test-scheme-name"
 
-  private lazy val continue: Call = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(testSrn))
+  private lazy val continue: Call = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(srn))
 
   private val userAnswer = UserAnswers()
     .set(SchemeNameId)(testSchemeName).asOpt.value
-    .set(SchemeSrnId)(testSrn).asOpt.value
+    .set(SchemeSrnId)(srn).asOpt.value
     .set(PspNameId)(testPspName).asOpt.value
     .dataRetrievalAction
 

@@ -57,8 +57,8 @@ class PspClientReferenceController @Inject()(
 
   def onPageLoad(mode: Mode, srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
-      (SchemeNameId and PspNameId and SchemeSrnId).retrieve.map {
-        case schemeName ~ pspName ~ srn =>
+      (SchemeNameId and PspNameId).retrieve.map {
+        case schemeName ~ pspName =>
           val value = request.userAnswers.get(PspClientReferenceId)
           val preparedForm = value.fold(form)(form.fill)
 
@@ -70,8 +70,8 @@ class PspClientReferenceController @Inject()(
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[_]) => {
-          (SchemeNameId and PspNameId and SchemeSrnId).retrieve.map {
-            case schemeName ~ pspName ~ srn =>
+          (SchemeNameId and PspNameId).retrieve.map {
+            case schemeName ~ pspName =>
               Future.successful(BadRequest(view(formWithErrors, pspName, mode, schemeName, returnCall(srn), PspClientReferenceController.onSubmit(mode, srn))))
           }
         },
