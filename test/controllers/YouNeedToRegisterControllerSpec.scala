@@ -17,21 +17,17 @@
 package controllers
 
 import base.SpecBase
-import controllers.actions._
 import models.FeatureToggle.{Disabled, Enabled}
 import models.FeatureToggleName.EnrolmentRecovery
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatestplus.play.guice.GuiceOneAppPerTest
-import play.api.Application
-import play.api.libs.json.Json
 import play.api.test.Helpers._
 import services.FeatureToggleService
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
-import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
+import uk.gov.hmrc.auth.core.retrieve.Retrieval
 import uk.gov.hmrc.http.HeaderCarrier
 import views.html.{youNeedToRegister, youNeedToRegisterAsPsa, youNeedToRegisterAsPsp, youNeedToRegisterOld}
 
@@ -49,9 +45,7 @@ class YouNeedToRegisterControllerSpec extends ControllerSpecBase with MockitoSug
   val registerView: youNeedToRegister = app.injector.instanceOf[youNeedToRegister]
   val viewOld: youNeedToRegisterOld = app.injector.instanceOf[youNeedToRegisterOld]
 
-  val authConnector: AuthConnector = fakeAuthConnector(Future.successful(Enrolments(Set(enrolmentPSA))))
-
-  def controller(dataRetrievalAction: DataRetrievalAction = getEmptyData): YouNeedToRegisterController =
+  def controller(authConnector: AuthConnector): YouNeedToRegisterController =
     new YouNeedToRegisterController(
       authConnector,
       messagesApi,
@@ -63,25 +57,50 @@ class YouNeedToRegisterControllerSpec extends ControllerSpecBase with MockitoSug
       viewOld
     )
 
-  private def viewAsString() = registerView()(fakeRequest, messages).toString
-  private def viewAsStringOld() = viewOld()(fakeRequest, messages).toString
 
   "YouNeedToRegister Controller" must {
-
-    "return OK and the correct view for a GET when enrolment recovery toggle switched on" in {
+    "return OK and the correct view for a GET when registered as PSA but not PSP" in {
       when(toggleService.get(any())(any(), any())).thenReturn(Future.successful(Enabled(EnrolmentRecovery)))
-      val result = controller().onPageLoad(fakeRequest)
+      val authConnector: AuthConnector = fakeAuthConnector(Future.successful(Enrolments(Set(enrolmentPSA))))
+
+      val result = controller(authConnector).onPageLoad(fakeRequest)
+      val viewAsString = registerAsPspView()(fakeRequest, messages).toString
 
       status(result) mustBe OK
-      contentAsString(result) mustBe viewAsString()
+      contentAsString(result) mustBe viewAsString
     }
 
-    "return OK and the correct view for a GET when enrolment recovery toggle switched off" in {
-      when(toggleService.get(any())(any(), any())).thenReturn(Future.successful(Disabled(EnrolmentRecovery)))
-      val result = controller().onPageLoad(fakeRequest)
+    "return OK and the correct view for a GET when registered as PSP but not PSA" in {
+      when(toggleService.get(any())(any(), any())).thenReturn(Future.successful(Enabled(EnrolmentRecovery)))
+      val authConnector: AuthConnector = fakeAuthConnector(Future.successful(Enrolments(Set(enrolmentPSP))))
+
+      val result = controller(authConnector).onPageLoad(fakeRequest)
+      val viewAsString = registerAsPsaView()(fakeRequest, messages).toString
 
       status(result) mustBe OK
-      contentAsString(result) mustBe viewAsStringOld()
+      contentAsString(result) mustBe viewAsString
+    }
+
+    "return OK and the correct view for a GET when registered as neither PSA or PSP enrolment recovery toggle switched on" in {
+      when(toggleService.get(any())(any(), any())).thenReturn(Future.successful(Enabled(EnrolmentRecovery)))
+      val authConnector: AuthConnector = fakeAuthConnector(Future.successful(Enrolments(Set(noEnrolments))))
+
+      val result = controller(authConnector).onPageLoad(fakeRequest)
+      val viewAsString = registerView()(fakeRequest, messages).toString
+
+      status(result) mustBe OK
+      contentAsString(result) mustBe viewAsString
+    }
+
+    "return OK and the correct view for a GET when registered as neither PSA or PSP enrolment recovery toggle switched off" in {
+      when(toggleService.get(any())(any(), any())).thenReturn(Future.successful(Disabled(EnrolmentRecovery)))
+      val authConnector: AuthConnector = fakeAuthConnector(Future.successful(Enrolments(Set(noEnrolments))))
+
+      val result = controller(authConnector).onPageLoad(fakeRequest)
+      val viewAsStringOld = viewOld()(fakeRequest, messages).toString
+
+      status(result) mustBe OK
+      contentAsString(result) mustBe viewAsStringOld
     }
   }
 }
@@ -97,6 +116,13 @@ object YouNeedToRegisterControllerSpec extends SpecBase with MockitoSugar {
   private val enrolmentPSA = Enrolment(
     key = "HMRC-PODS-ORG",
     identifiers = Seq(EnrolmentIdentifier(key = "PSAID", value = "A0000000")),
+    state = "",
+    delegatedAuthRule = None
+  )
+
+  private val noEnrolments = Enrolment(
+    key = "",
+    identifiers = Seq(EnrolmentIdentifier(key = "", value = "")),
     state = "",
     delegatedAuthRule = None
   )
