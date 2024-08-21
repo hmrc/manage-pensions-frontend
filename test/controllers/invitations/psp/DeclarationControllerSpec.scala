@@ -37,6 +37,7 @@ import play.api.data.Form
 import play.api.mvc.Call
 import play.api.test.Helpers._
 import services.SchemeDetailsService
+import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import utils.UserAnswers
 import views.html.invitations.psp.declaration
 
@@ -81,7 +82,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
   override def beforeEach(): Unit = {
     super.beforeEach()
     reset(mockAuditService)
-    doNothing().when(mockAuditService).sendEvent(any())(any(), any())
+    when(mockAuditService.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
   }
 
   def controller(dataRetrievalAction: DataRetrievalAction = getEmptyData) = new DeclarationController(
