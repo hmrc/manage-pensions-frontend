@@ -37,6 +37,7 @@ import play.api.mvc.{Action, AnyContent, AnyContentAsJson}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{redirectLocation, status, _}
 import uk.gov.hmrc.http.HttpResponse
+import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import views.html.psp.deauthorisation.psaDeauthorisePspDeclaration
 
 import java.time.LocalDate
@@ -95,7 +96,7 @@ class PsaDeauthPspDeclarationControllerSpec
     )
     when(mockEmailConnector.sendEmail(any())(any(), any())).thenReturn(Future.successful(EmailSent))
     when(mockMinimalConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minPsa))
-    doNothing().when(mockAuditService).sendEvent(any())(any(), any())
+    when(mockAuditService.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
   }
 
   private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {

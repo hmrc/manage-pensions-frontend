@@ -24,10 +24,10 @@ import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaSchemeAuthAction}
 import controllers.routes._
 import forms.psp.deauthorise.DeauthorisePspDeclarationFormProvider
+import identifiers.SchemeNameId
 import identifiers.invitations.PSTRId
 import identifiers.psp.deauthorise
 import identifiers.psp.deauthorise.{PsaDeauthorisePspDeclarationId, PspDeauthDateId, PspDetailsId}
-import identifiers.{SchemeNameId, SchemeSrnId}
 import models._
 import models.requests.DataRequest
 import play.api.Logger
