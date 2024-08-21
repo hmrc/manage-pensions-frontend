@@ -26,7 +26,7 @@ import identifiers.invitations.PSTRId
 import identifiers.psp.deauthorise.self.DeauthDateId
 import identifiers.{AuthorisedPractitionerId, SchemeNameId, SchemeSrnId}
 import models.{IndividualDetails, MinimalPSAPSP, SendEmailRequest, Sent}
-import org.mockito.ArgumentCaptor
+import org.mockito.{ArgumentCaptor, ArgumentMatchers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
@@ -128,7 +128,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
         when(mockEmailConnector.sendEmail(any())(any(), any())).thenReturn(Future.successful(EmailSent))
 
         val emailAuditEventCaptor = ArgumentCaptor.forClass(classOf[PSPSelfDeauthorisationEmailAuditEvent])
-        when(mockAuditService.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
+        when(mockAuditService.sendEvent(ArgumentMatchers.eq(expectedPspSelfDeauthorisationEmailAuditEvent))(any(), any())).thenReturn(Future.successful(AuditResult.Success))
 
         val postRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.obj("declaration" -> true))
         val result = controller().onSubmit(srn)(postRequest)
@@ -149,8 +149,6 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
         )
 
         actualSendEmailRequest.eventUrl.isDefined mustBe true
-        verify(mockAuditService).sendEvent(emailAuditEventCaptor.capture())(any(), any())
-        emailAuditEventCaptor.getValue mustBe expectedPspSelfDeauthorisationEmailAuditEvent
       }
 
       "save data, redirect to next page if valid data is submitted, send email to PSP using correct template for an individual and send splunk audit event" in {
@@ -162,8 +160,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
         val postRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.obj("declaration" -> true))
         val result = controller().onSubmit(srn)(postRequest)
 
-        val emailAuditEventCaptor = ArgumentCaptor.forClass(classOf[PSPSelfDeauthorisationEmailAuditEvent])
-        when(mockAuditService.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
+        when(mockAuditService.sendEvent(ArgumentMatchers.eq(expectedPspSelfDeauthorisationEmailAuditEvent))(any(), any())).thenReturn(Future.successful(AuditResult.Success))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(onwardRoute.url)
@@ -181,8 +178,6 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
         )
 
         actualSendEmailRequest.eventUrl.isDefined mustBe true
-        verify(mockAuditService).sendEvent(emailAuditEventCaptor.capture())(any(), any())
-        emailAuditEventCaptor.getValue mustBe expectedPspSelfDeauthorisationEmailAuditEvent
       }
 
       "return a Bad Request and errors if invalid data is submitted" in {
