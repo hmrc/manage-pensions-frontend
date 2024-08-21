@@ -39,6 +39,7 @@ import play.api.test.Helpers._
 import testhelpers.CommonBuilders.pspDetails
 import uk.gov.hmrc.domain.PspId
 import uk.gov.hmrc.http.HttpResponse
+import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import views.html.psp.deauthorisation.self.declaration
 
 import java.time.LocalDate
@@ -127,15 +128,15 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
         when(mockEmailConnector.sendEmail(any())(any(), any())).thenReturn(Future.successful(EmailSent))
 
         val emailAuditEventCaptor = ArgumentCaptor.forClass(classOf[PSPSelfDeauthorisationEmailAuditEvent])
-        doNothing().when(mockAuditService).sendEvent(emailAuditEventCaptor.capture())(any(), any())
-        val emailRequestCaptor = ArgumentCaptor.forClass(classOf[SendEmailRequest])
+        when(mockAuditService.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
 
         val postRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.obj("declaration" -> true))
         val result = controller().onSubmit(srn)(postRequest)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(onwardRoute.url)
-        
+
+        val emailRequestCaptor = ArgumentCaptor.forClass(classOf[SendEmailRequest])
         verify(mockEmailConnector, times(1)).sendEmail(emailRequestCaptor.capture())(any(), any())
         val actualSendEmailRequest = emailRequestCaptor.getValue
 
@@ -148,6 +149,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
         )
 
         actualSendEmailRequest.eventUrl.isDefined mustBe true
+        verify(mockAuditService).sendEvent(emailAuditEventCaptor.capture())(any(), any())
         emailAuditEventCaptor.getValue mustBe expectedPspSelfDeauthorisationEmailAuditEvent
       }
 
@@ -161,7 +163,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
         val result = controller().onSubmit(srn)(postRequest)
 
         val emailAuditEventCaptor = ArgumentCaptor.forClass(classOf[PSPSelfDeauthorisationEmailAuditEvent])
-        doNothing().when(mockAuditService).sendEvent(emailAuditEventCaptor.capture())(any(), any())
+        when(mockAuditService.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(onwardRoute.url)
@@ -179,6 +181,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
         )
 
         actualSendEmailRequest.eventUrl.isDefined mustBe true
+        verify(mockAuditService).sendEvent(emailAuditEventCaptor.capture())(any(), any())
         emailAuditEventCaptor.getValue mustBe expectedPspSelfDeauthorisationEmailAuditEvent
       }
 
