@@ -128,14 +128,14 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
 
         val emailAuditEventCaptor = ArgumentCaptor.forClass(classOf[PSPSelfDeauthorisationEmailAuditEvent])
         doNothing().when(mockAuditService).sendEvent(emailAuditEventCaptor.capture())(any(), any())
+        val emailRequestCaptor = ArgumentCaptor.forClass(classOf[SendEmailRequest])
 
         val postRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.obj("declaration" -> true))
         val result = controller().onSubmit(srn)(postRequest)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(onwardRoute.url)
-
-        val emailRequestCaptor = ArgumentCaptor.forClass(classOf[SendEmailRequest])
+        
         verify(mockEmailConnector, times(1)).sendEmail(emailRequestCaptor.capture())(any(), any())
         val actualSendEmailRequest = emailRequestCaptor.getValue
 
