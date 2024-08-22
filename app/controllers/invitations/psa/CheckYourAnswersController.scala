@@ -18,8 +18,8 @@ package controllers.invitations.psa
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
-import connectors.scheme.SchemeDetailsConnector
 import connectors._
+import connectors.scheme.SchemeDetailsConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaSchemeAuthAction}
 import controllers.invitations.psa.routes._

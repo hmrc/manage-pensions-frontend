@@ -78,7 +78,6 @@ class PspSchemeDashboardService @Inject()(
       heading = Message("messages__pspSchemeDashboard__details_heading"),
       subHeadings = Seq(
         (Message("messages__pspSchemeDashboard__details__subHeading_authBy"), authedBy),
-        (Message("messages__pspSchemeDash__main_scheme_admin"), loggedInPsp.name),
         (Message("messages__pspSchemeDashboard__details__subHeading_authDate"), relationshipStartDate)
       ),
       optionalSubHeading = clientReference map {
