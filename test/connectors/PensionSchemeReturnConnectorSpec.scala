@@ -17,7 +17,6 @@
 package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
-import connectors.admin.ToggleDetails
 import models.EROverview
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
@@ -48,23 +47,10 @@ class PensionSchemeReturnConnectorSpec
       )
       .build()
 
-  private val happyJsonToggle1: String = {
-    s"""
-       |{"toggleName" : "event-reporting", "toggleDescription": "event reporting toggle", "isEnabled" : true }
-     """.stripMargin
-  }
-
-  private val toggleDetails1 = ToggleDetails("event-reporting", Some("event reporting toggle"), isEnabled = true)
-  private val getFeatureTogglePath = "/admin/get-toggle"
-
   private lazy val connector: PensionSchemeReturnConnector = injector.instanceOf[PensionSchemeReturnConnector]
   val startDate = "2022-04-06"
   val endDate = "2023-04-05"
   private val getOverviewUrl = s"/pension-scheme-return/psr/overview/$pstr?fromDate=$startDate&toDate=$endDate"
-
-
-
-
 
   "getOverview" must {
     "return the seq of overviewDetails returned from BE" in {
@@ -149,6 +135,5 @@ class PensionSchemeReturnConnectorSpec
       }
     }
   }
-
 
 }

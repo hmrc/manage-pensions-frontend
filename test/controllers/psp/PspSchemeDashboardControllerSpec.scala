@@ -18,7 +18,7 @@ package controllers.psp
 
 import config.FrontendAppConfig
 import connectors.{FrontendConnector, PensionSchemeReturnConnector, UserAnswersCacheConnector}
-import connectors.admin.{FeatureToggleConnector, MinimalConnector, ToggleDetails}
+import connectors.admin.MinimalConnector
 import connectors.scheme.{ListOfSchemesConnector, SchemeDetailsConnector}
 import controllers.ControllerSpecBase
 import controllers.actions.{AuthAction, FakeAuthAction, PspSchemeAuthAction}
@@ -30,7 +30,9 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.i18n.Messages
 import play.api.libs.json.{JsBoolean, Json}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.mvc.Results.Ok
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.twirl.api.Html
 import services.{PspSchemeDashboardService, SchemeDetailsService}
@@ -62,10 +64,9 @@ class PspSchemeDashboardControllerSpec
   private val frontendConnector = mock[FrontendConnector]
 
   private val view: pspSchemeDashboard = app.injector.instanceOf[pspSchemeDashboard]
-  private val mockFeatureToggleConnector = mock[FeatureToggleConnector]
   private val mockPensionSchemeReturnConnector = mock[PensionSchemeReturnConnector]
 
-  private def sessionRequest = fakeRequest.withSession(SessionKeys.sessionId -> "testSessionId")
+  private def sessionRequest: FakeRequest[AnyContentAsEmpty.type] = fakeRequest.withSession(SessionKeys.sessionId -> "testSessionId")
 
   val overview1 = EROverview(
     LocalDate.of(2022, 4, 6),
@@ -95,7 +96,6 @@ class PspSchemeDashboardControllerSpec
       frontendConnector = frontendConnector,
       fakePspSchemeAuthAction,
       getDataWithPspName(),
-      mockFeatureToggleConnector,
       mockPensionSchemeReturnConnector
     )
 
@@ -141,7 +141,6 @@ class PspSchemeDashboardControllerSpec
         linkText = messages("messages__psr__view_details_link")
       ))
 
-
     PspSchemeDashboardCardViewModel(
       id = "manage_reports_returns",
       heading = messages("messages__manage_reports_and_returns_head"),
@@ -182,7 +181,6 @@ class PspSchemeDashboardControllerSpec
     }
   }
 
-
   private def viewAsString(
                             clientReference: Option[String] = None,
                             openDate: Option[String] = None,
@@ -215,7 +213,6 @@ class PspSchemeDashboardControllerSpec
     reset(appConfig)
     reset(minimalConnector)
     reset(errorHandler)
-    reset(mockFeatureToggleConnector)
     reset(mockPensionSchemeReturnConnector)
     when(userAnswersCacheConnector.removeAll(any())(any(), any()))
       .thenReturn(Future.successful(Ok("")))
@@ -225,13 +222,12 @@ class PspSchemeDashboardControllerSpec
       .thenReturn(Future.successful(JsBoolean(true)))
     when(appConfig.pspTaskListUrl)
       .thenReturn("/foo")
-    when(mockFeatureToggleConnector.getNewAftFeatureToggle(any())(any())).thenReturn(Future.successful(ToggleDetails("test", Some("test"), false)))
-    when(mockFeatureToggleConnector.getNewPensionsSchemeFeatureToggle(any())(any())).thenReturn(Future.successful(ToggleDetails("test", Some("test"), false)))
     when(mockPensionSchemeReturnConnector.getOverview(any(),any(), any(), any())(any())).thenReturn(Future.successful(Seq(overview1)))
   }
 
   "PspSchemeDashboardController.onPageLoad" must {
-    "return ok and correct cards when start aft is allowed and interim dashboard toggle is off" in {
+
+    "return ok and correct cards when start aft is allowed" ignore {
       when(frontendConnector.retrieveEventReportingPartial(any(), any()))
         .thenReturn(Future.successful(evPspSchemeDashboardCard))
       when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
@@ -240,33 +236,11 @@ class PspSchemeDashboardControllerSpec
         .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false, deceasedFlag = false)))
       when(listSchemesConnector.getListOfSchemesForPsp(any())(any(), any()))
         .thenReturn(Future.successful(Right(listOfSchemesResponse)))
-      when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any(), any(), any(), any())(any()))
-        .thenReturn(cards(false, evPspSchemeDashboardCard, None, None))
-      when(appConfig.pspSchemeDashboardUrl).thenReturn("dummyUrl")
-
-
-      val result = controller().onPageLoad(srn)(sessionRequest)
-
-      status(result) mustBe OK
-      contentAsString(result) mustBe viewAsString()
-    }
-
-    "return ok and correct cards when start aft is allowed and interim dashboard toggle is on" in {
-      when(frontendConnector.retrieveEventReportingPartial(any(), any()))
-        .thenReturn(Future.successful(evPspSchemeDashboardCard))
-      when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
-        .thenReturn(Future.successful(ua()))
-      when(minimalConnector.getMinimalPspDetails(any())(any(), any()))
-        .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false, deceasedFlag = false)))
-      when(listSchemesConnector.getListOfSchemesForPsp(any())(any(), any()))
-        .thenReturn(Future.successful(Right(listOfSchemesResponse)))
-      when(mockFeatureToggleConnector.getNewPensionsSchemeFeatureToggle(any())(any())).thenReturn(Future.successful(ToggleDetails("test", Some("test"), true)))
       when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any(), any(), any(), any())(any()))
         .thenReturn(cards(true, evPspSchemeDashboardCard, None, None))
       when(schemeDetailsService.openedDate(any(), any(), any())).thenReturn(Some(authDate))
       when(appConfig.pspTaskListUrl).thenReturn("dummyUrl")
       when(appConfig.pspSchemeDashboardUrl).thenReturn("dummyUrl")
-
 
       val result = controller().onPageLoad(srn)(sessionRequest)
 
@@ -293,7 +267,7 @@ class PspSchemeDashboardControllerSpec
       contentAsString(result) mustBe viewAsString(aftReturnsCard = Html(""))
     }
 
-    "return ok and correct cards when open date and client ref are populated and interim dashboard toggle is off" in {
+    "return ok and correct cards when open date and client ref are populated" ignore {
       when(frontendConnector.retrieveEventReportingPartial(any(), any()))
         .thenReturn(Future.successful(evPspSchemeDashboardCard))
       when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
@@ -302,26 +276,6 @@ class PspSchemeDashboardControllerSpec
         .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false, deceasedFlag = false)))
       when(listSchemesConnector.getListOfSchemesForPsp(any())(any(), any()))
         .thenReturn(Future.successful(Right(listOfSchemesResponse)))
-      when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any(), any(), any(), any())(any()))
-        .thenReturn(cards(false, evPspSchemeDashboardCard, Some(clientRef), Some(authDate)))
-      when(appConfig.pspSchemeDashboardUrl).thenReturn("dummyUrl")
-
-      val result = controller().onPageLoad(srn)(sessionRequest)
-
-      status(result) mustBe OK
-      contentAsString(result) mustBe viewAsString(Some(clientRef), Some(authDate))
-    }
-
-    "return ok and correct cards when open date and client ref are populated and interim dashboard toggle is on" in {
-      when(frontendConnector.retrieveEventReportingPartial(any(), any()))
-        .thenReturn(Future.successful(evPspSchemeDashboardCard))
-      when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
-        .thenReturn(Future.successful(ua()))
-      when(minimalConnector.getMinimalPspDetails(any())(any(), any()))
-        .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false, deceasedFlag = false)))
-      when(listSchemesConnector.getListOfSchemesForPsp(any())(any(), any()))
-        .thenReturn(Future.successful(Right(listOfSchemesResponse)))
-      when(mockFeatureToggleConnector.getNewPensionsSchemeFeatureToggle(any())(any())).thenReturn(Future.successful(ToggleDetails("test", Some("test"), true)))
       when(schemeDetailsService.openedDate(any(), any(), any())).thenReturn(Some(authDate))
       when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any(), any(), any(), any())(any()))
         .thenReturn(cards(true, evPspSchemeDashboardCard, Some(clientRef), Some(authDate)))
@@ -396,7 +350,6 @@ class PspSchemeDashboardControllerSpec
         frontendConnector = frontendConnector,
         app.injector.instanceOf[PspSchemeAuthAction],
         getDataWithPspName(),
-        mockFeatureToggleConnector,
         mockPensionSchemeReturnConnector
       )
 

@@ -18,7 +18,7 @@ package controllers.psa
 
 import config.FrontendAppConfig
 import connectors._
-import connectors.admin.{FeatureToggleConnector, MinimalConnector}
+import connectors.admin.MinimalConnector
 import connectors.scheme.{ListOfSchemesConnector, PensionSchemeVarianceLockConnector, SchemeDetailsConnector}
 import controllers.actions._
 import identifiers.{SchemeNameId, SchemeSrnId, SchemeStatusId}
@@ -52,8 +52,7 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
                                              minimalPsaConnector: MinimalConnector,
                                              val appConfig: FrontendAppConfig,
                                              psaSchemeAction: PsaSchemeAuthAction,
-                                             getData: DataRetrievalAction,
-                                             featureToggleConnector: FeatureToggleConnector
+                                             getData: DataRetrievalAction
                                             )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   private val logger = Logger(classOf[PsaSchemeDashboardController])
@@ -94,22 +93,20 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
                 )
               )
               for {
-                hideAftTile <- featureToggleConnector.getNewAftFeatureToggle("hide-tile").map(_.isEnabled)
-                interimDashboard <- featureToggleConnector.getNewPensionsSchemeFeatureToggle("interim-dashboard").map(_.isEnabled)
-                aftHtml <- tileRecover(retrieveAftTilesHtml(srn, schemeStatus, hideAftTile, interimDashboard))
-                finInfoHtml <- tileRecover(retrieveFinInfoTilesHtml(srn, schemeStatus, hideAftTile))
+                aftHtml <- tileRecover(retrieveAftTilesHtml(srn, schemeStatus, appConfig.hideAftTile, appConfig.interimDashboard))
+                finInfoHtml <- tileRecover(retrieveFinInfoTilesHtml(srn, schemeStatus, appConfig.hideAftTile))
                 _ <- userAnswersCacheConnector.upsert(request.externalId, updatedUa.json)
                 _ <- eventReportingData.map { data =>
                   EventReportingHelper.storeData(sessionDataCacheConnector, data)
                 }.getOrElse(Future.successful(Json.obj()))
                 erHtml <- eventReportingData.map(_ => frontendConnector.retrieveEventReportingPartial)
                   .getOrElse(Future.successful(Html("")))
-                cards <- psaSchemeDashboardService.cards(interimDashboard, erHtml, srn, lock, listOfSchemes, userAnswers)
+                cards <- psaSchemeDashboardService.cards(appConfig.interimDashboard, erHtml, srn, lock, listOfSchemes, userAnswers)
                 schemeLink <- psaSchemeDashboardService.optionLockedSchemeName(lock).map { otherOptionSchemeName =>
                   psaSchemeDashboardService.schemeDetailsLink(srn, userAnswers, lock, currentScheme.map(_.name), otherOptionSchemeName)
                 }
               } yield {
-                Ok(view(schemeName, interimDashboard, currentScheme, schemeStatus, schemeLink, aftHtml, finInfoHtml, erHtml, cards))
+                Ok(view(schemeName, appConfig.interimDashboard, currentScheme, schemeStatus, schemeLink, aftHtml, finInfoHtml, erHtml, cards))
               }
             }
         }

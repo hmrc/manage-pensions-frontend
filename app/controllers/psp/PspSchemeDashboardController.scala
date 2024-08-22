@@ -18,7 +18,7 @@ package controllers.psp
 
 import config.FrontendAppConfig
 import connectors._
-import connectors.admin.{FeatureToggleConnector, MinimalConnector}
+import connectors.admin.MinimalConnector
 import connectors.scheme.{ListOfSchemesConnector, SchemeDetailsConnector}
 import controllers.Retrievals
 import controllers.actions._
@@ -62,7 +62,6 @@ class PspSchemeDashboardController @Inject()(
                                               frontendConnector: FrontendConnector,
                                               pspSchemeAuthAction: PspSchemeAuthAction,
                                               getData: DataRetrievalAction,
-                                              featureToggleConnector: FeatureToggleConnector,
                                               pensionSchemeReturnConnector: PensionSchemeReturnConnector
                                             )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
@@ -89,10 +88,8 @@ class PspSchemeDashboardController @Inject()(
           val schemeName = (userAnswers.json \ "schemeName").as[String]
           val pstr = (userAnswers.json \ "pstr").as[String]
           for {
-            interimDashboard <- featureToggleConnector.getNewPensionsSchemeFeatureToggle("interim-dashboard").map(_.isEnabled)
-            eqOverview <-  getOverview(interimDashboard, pstr)
-            hideAftTile <- featureToggleConnector.getNewAftFeatureToggle("hide-tile").map(_.isEnabled)
-            aftPspSchemeDashboardCards <- aftPspSchemeDashboardCards(schemeStatus, srn, pspDetails.authorisingPSAID, hideAftTile)
+            eqOverview <-  getOverview(config.interimDashboard, pstr)
+            aftPspSchemeDashboardCards <- aftPspSchemeDashboardCards(schemeStatus, srn, pspDetails.authorisingPSAID, config.hideAftTile)
             listOfSchemes <- listSchemesConnector.getListOfSchemesForPsp(request.pspIdOrException.id)
             _ <- userAnswersCacheConnector.upsert(request.externalId, userAnswers.json)
             erHtml <- getEventReportingHtml(srn, listOfSchemes, schemeName)
@@ -101,7 +98,7 @@ class PspSchemeDashboardController @Inject()(
               case Right(list) =>
                 Ok(view(
                   schemeName = schemeName,
-                  interimDashboard = interimDashboard,
+                  interimDashboard = config.interimDashboard,
                   pstr = pstr,
                   isSchemeOpen = isSchemeOpen,
                   openDate = schemeDetailsService.openedDate(srn, list, isSchemeOpen),
@@ -109,7 +106,7 @@ class PspSchemeDashboardController @Inject()(
                   aftPspSchemeDashboardCards = aftPspSchemeDashboardCards,
                   evPspSchemeDashboardCard = erHtml,
                   cards = service.getTiles(
-                    interimDashboard = interimDashboard,
+                    interimDashboard = config.interimDashboard,
                     erHtml = erHtml,
                     srn = srn,
                     pstr = pstr,
@@ -143,7 +140,10 @@ class PspSchemeDashboardController @Inject()(
       Future.successful(Seq.empty)
     }
   }
-  private def getEventReportingHtml(srn: String, list: Either[_, ListOfSchemes], schemeName: String)(implicit authenticatedRequest: AuthenticatedRequest[_]) = {
+  private def getEventReportingHtml(srn: String,
+                                    list: Either[_, ListOfSchemes],
+                                    schemeName: String
+                                   )(implicit authenticatedRequest: AuthenticatedRequest[_]): Future[Html] = {
     list match {
       case Left(_) =>
         Future.successful(Html(""))
