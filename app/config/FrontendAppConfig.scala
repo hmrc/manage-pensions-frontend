@@ -221,4 +221,6 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val psaSchemeDashboardUrl: String = loadConfig("urls.psaSchemeDashboard")
   lazy val pspSchemeDashboardUrl: String = loadConfig("urls.pspSchemeDashboard")
 
+  lazy val hideAftTile: Boolean = runModeConfiguration.get[Boolean]("hideAftTile")
+
 }
