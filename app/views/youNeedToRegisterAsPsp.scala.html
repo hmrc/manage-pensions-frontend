@@ -22,7 +22,15 @@
 
 @layout(pageTitle = messages("messages__youNeedToRegister__title")) {
 
-    @components.heading("You need to register as PSP")
+  @components.heading(messages("messages__youNeedToRegisterAsPsp__heading"))
 
-    <p class="govuk-body">"You need to register as PSP"</p>
+  <p class="govuk-body">@messages("messages__youNeedToRegister__lede")</p>
+
+  <p class="govuk-body">@messages("messages__youNeedToRegister__p1")</p>
+
+  <p class="govuk-body">
+     <a id="redirect-to-psp" class="govuk-link"
+        href="@controllers.routes.PreviouslyRegisteredController.onPageLoadPractitioner()">@messages("messages__youNeedToRegisterPractitioner__link")
+     </a>
+  </p>
 }

@@ -22,8 +22,16 @@
 
 @layout(pageTitle = messages("messages__youNeedToRegister__title")) {
 
-        @components.heading("You need to register as PSA")
+  @components.heading(messages("messages__youNeedToRegisterAsPsa__heading"))
 
-        <p class="govuk-body">"You need to register as PSA"</p>
+  <p class="govuk-body">@messages("messages__youNeedToRegister__lede")</p>
+
+  <p class="govuk-body">@messages("messages__youNeedToRegister__p1")</p>
+
+  <p class="govuk-body">
+    <a id="redirect-to-psa" class="govuk-link"
+       href="@controllers.routes.PreviouslyRegisteredController.onPageLoadAdministrator()">@messages("messages__youNeedToRegisterAdministrator__link")
+    </a>
+  </p>
 
 }

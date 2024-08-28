@@ -90,7 +90,8 @@ messages__youNeedToRegister__p1 = If you have previously registered, you can use
 messages__youNeedToRegisterAdministrator__link = Register as an administrator or recover your administrator details
 messages__youNeedToRegisterPractitioner__link = Register as a practitioner or recover your practitioner details
 
-
+messages__youNeedToRegisterAsPsa__heading = You need to register as a pension scheme administrator
+messages__youNeedToRegisterAsPsp__heading = You need to register as a pension scheme practitioner
 
 messages__youNeedToRegisterOld__lede = You must do this before you can use the Managing Pension Schemes service.
 messages__youNeedToRegisterOld__p1 = You can register as an individual, company or partnership.
