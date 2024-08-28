@@ -55,8 +55,8 @@ class PspNameController @Inject()(
 
   def onPageLoad(mode: Mode, srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
-      (SchemeNameId and SchemeSrnId).retrieve.map {
-        case schemeName ~ srn =>
+      SchemeNameId.retrieve.map {
+        case schemeName =>
           val value = request.userAnswers.get(PspNameId)
           val preparedForm = value.fold(form)(form.fill)
 
@@ -69,7 +69,7 @@ class PspNameController @Inject()(
 
       form.bindFromRequest().fold(
         (formWithErrors: Form[_]) =>
-          (SchemeNameId and SchemeSrnId).retrieve.map { case schemeName ~ srn =>
+          SchemeNameId.retrieve.map { case schemeName =>
             Future.successful(BadRequest(view(formWithErrors, mode, schemeName, srn, returnCall(srn))))
           },
 

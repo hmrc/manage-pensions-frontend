@@ -46,8 +46,8 @@ class CheckYourAnswersController @Inject()(override val messagesApi: MessagesApi
 
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
-      (SchemeNameId and SchemeSrnId).retrieve.map {
-        case schemeName ~ srn =>
+      SchemeNameId.retrieve.map {
+        case schemeName =>
           val checkYourAnswersHelper = checkYourAnswersFactory.checkYourAnswersHelper(request.userAnswers)
           val sections = Seq(checkYourAnswersHelper.pspName(srn), checkYourAnswersHelper.pspId(srn), checkYourAnswersHelper.pspClientReference(srn)).flatten
           Future.successful(Ok(view(sections, controllers.invitations.psp.routes.CheckYourAnswersController.onSubmit(srn),

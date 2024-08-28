@@ -170,12 +170,7 @@ class PsaSchemeDashboardServiceSpec
 
     "return model when relationship date does not exist" in {
       val ua = userAnswers(Pending.value, psaDetailsWithNoDate)
-      service.psaCardForInterimDashboard(srn, ua) mustBe psaCardForInterimDashboard(Nil).copy(subHeadings =Seq(CardSubHeading(
-        subHeading = messages("messages__psaSchemeDash__main_scheme_admin"),
-        subHeadingClasses = "card-sub-heading",
-        subHeadingParams =Seq(CardSubHeadingParam(
-          subHeadingParam = "Tony A Smith",
-          subHeadingParamClasses = "font-small bold")))) )
+      service.psaCardForInterimDashboard(srn, ua) mustBe psaCardForInterimDashboard(Nil).copy(subHeadings = Nil )
     }
   }
 
@@ -438,12 +433,7 @@ object PsaSchemeDashboardServiceSpec {
     CardViewModel(
       id = "psa_psp_list",
       heading = Message("messages__psaSchemeDash__psa_psp_list_head"),
-      subHeadings =  Seq(CardSubHeading(
-        subHeading = messages("messages__psaSchemeDash__main_scheme_admin", LocalDate.parse("2018-07-01").format(formatter)),
-        subHeadingClasses = "card-sub-heading",
-        subHeadingParams =Seq(CardSubHeadingParam(
-          subHeadingParam = "Tony A Smith",
-          subHeadingParamClasses = "font-small bold")))) ++ Seq(CardSubHeading(
+      subHeadings = Seq(CardSubHeading(
           subHeading = messages("messages__psaSchemeDash__addedOn_date", LocalDate.parse("2018-07-01").format(formatter)),
           subHeadingClasses = "card-sub-heading",
           subHeadingParams = Seq.empty[CardSubHeadingParam] )),
