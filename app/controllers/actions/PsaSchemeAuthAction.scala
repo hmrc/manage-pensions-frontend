@@ -18,9 +18,7 @@ package controllers.actions
 
 import connectors.scheme.SchemeDetailsConnector
 import handlers.ErrorHandler
-import identifiers.SchemeSrnId
 import models.SchemeReferenceNumber
-import models.psa.PsaDetails
 import models.requests.OptionalDataRequest
 import play.api.Logging
 import play.api.mvc.Results.NotFound

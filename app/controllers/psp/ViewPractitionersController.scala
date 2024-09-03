@@ -20,7 +20,7 @@ import com.google.inject.Inject
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaSchemeAuthAction}
 import controllers.psa.routes._
-import identifiers.{SchemeNameId, SchemeSrnId, SeqAuthorisedPractitionerId}
+import identifiers.{SchemeNameId, SeqAuthorisedPractitionerId}
 import models.FeatureToggleName.UpdateClientReference
 import models.SchemeReferenceNumber
 import play.api.i18n.{I18nSupport, MessagesApi}
