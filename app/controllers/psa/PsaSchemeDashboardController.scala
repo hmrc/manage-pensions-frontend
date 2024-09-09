@@ -94,10 +94,9 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
                 )
               )
               for {
-                hideAftTile <- featureToggleConnector.getNewAftFeatureToggle("hide-tile").map(_.isEnabled)
                 interimDashboard <- featureToggleConnector.getNewPensionsSchemeFeatureToggle("interim-dashboard").map(_.isEnabled)
-                aftHtml <- tileRecover(retrieveAftTilesHtml(srn, schemeStatus, hideAftTile, interimDashboard))
-                finInfoHtml <- tileRecover(retrieveFinInfoTilesHtml(srn, schemeStatus, hideAftTile))
+                aftHtml <- tileRecover(retrieveAftTilesHtml(srn, schemeStatus, appConfig.hideAftTile, interimDashboard))
+                finInfoHtml <- tileRecover(retrieveFinInfoTilesHtml(srn, schemeStatus, appConfig.hideAftTile))
                 _ <- userAnswersCacheConnector.upsert(request.externalId, updatedUa.json)
                 _ <- eventReportingData.map { data =>
                   EventReportingHelper.storeData(sessionDataCacheConnector, data)

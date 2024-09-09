@@ -66,9 +66,8 @@ class SchemesOverviewController @Inject()(
           service.getPsaName(psaId).flatMap {
             case Some(name) =>
               for {
-                hideAftTile <- featureToggleConnector.getNewAftFeatureToggle("hide-tile").map(_.isEnabled)
                 cards <- service.getTiles(psaId)
-                penaltiesHtml <- service.retrievePenaltiesUrlPartial(hideAftTile)
+                penaltiesHtml <- service.retrievePenaltiesUrlPartial(config.hideAftTile)
                 migrationHtml <- service.retrieveMigrationTile
                 _ <- userAnswersCacheConnector.save(request.externalId, PSANameId, name)
               } yield {
