@@ -90,11 +90,7 @@ class AuthImpl(
                                     block: AuthenticatedRequest[A] => Future[Result]
                                   ): Future[Result] = {
 
-    val (psaId, pspId) = if (authEntity == PSA) {
-      (getPsaId(isMandatory = false, enrolments), getPspId(isMandatory = false, enrolments))
-    } else {
-      (getPsaId(isMandatory = false, enrolments), getPspId(isMandatory = false, enrolments))
-    }
+    val (psaId, pspId) = (getPsaId(isMandatory = false, enrolments), getPspId(isMandatory = false, enrolments))
 
     /**
      * This function handles exceptional case of redirecting to the appropriate dashboard based on user type (PSA/PSP)
