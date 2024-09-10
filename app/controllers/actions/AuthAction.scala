@@ -48,7 +48,7 @@ class AuthImpl(
                 config: FrontendAppConfig,
                 val parser: BodyParsers.Default,
                 authEntity: AuthEntity,
-                administratorOrPractitionerCheck: Boolean,
+                administratorOrPractitionerCheck: Boolean
               )(implicit val executionContext: ExecutionContext)
   extends Auth
     with AuthorisedFunctions with Logging {
@@ -94,7 +94,7 @@ class AuthImpl(
 
     /**
      * This function handles exceptional case of redirecting to the appropriate dashboard based on user type (PSA/PSP)
-     * If PSA is trying to access PSP dashboard, should be redirected to PSA dashboard.
+     * If PSA is trying to access PSP dashboard should be redirected to PSA dashboard.
      * If PSP is trying to access PSA dashboard should be redirected to PSP dashboard.
      * Many services depend on this interaction.
      * Example: The header link of all MPS services by default redirects to PSA dashboard.
