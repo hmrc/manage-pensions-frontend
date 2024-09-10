@@ -90,7 +90,8 @@ class PspSchemeDashboardController @Inject()(
           val pstr = (userAnswers.json \ "pstr").as[String]
           for {
             interimDashboard <- featureToggleConnector.getNewPensionsSchemeFeatureToggle("interim-dashboard").map(_.isEnabled)
-            eqOverview <-  getOverview(interimDashboard, pstr)
+            showPsrLink <- featureToggleConnector.getNewPensionsSchemeFeatureToggle("show-psr-link").map(_.isEnabled)
+            eqOverview <-  getOverview(showPsrLink, pstr)
             aftPspSchemeDashboardCards <- aftPspSchemeDashboardCards(schemeStatus, srn, pspDetails.authorisingPSAID, config.hideAftTile)
             listOfSchemes <- listSchemesConnector.getListOfSchemesForPsp(request.pspIdOrException.id)
             _ <- userAnswersCacheConnector.upsert(request.externalId, userAnswers.json)
@@ -134,9 +135,9 @@ class PspSchemeDashboardController @Inject()(
       }
   }
 
-  private def getOverview(interimDashboard: Boolean,
+  private def getOverview(showPsrLink: Boolean,
                           pstr: String)(implicit hc: HeaderCarrier) = {
-    if (interimDashboard && pstr.nonEmpty) {
+    if (showPsrLink && pstr.nonEmpty) {
       pensionSchemeReturnConnector.getOverview(pstr, "PSR", minStartDateAsString, maxEndDateAsString)
     } else {
       Future.successful(Seq.empty)
