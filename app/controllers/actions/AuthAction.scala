@@ -27,6 +27,7 @@ import models.AdministratorOrPractitioner.{Administrator, Practitioner}
 import models.AuthEntity.{PSA, PSP}
 import models.requests.AuthenticatedRequest
 import models.{AuthEntity, OtherUser, UserType}
+import play.api.Logging
 import play.api.mvc.Results._
 import play.api.mvc._
 import uk.gov.hmrc.auth.core.AffinityGroup.{Individual, Organisation}
@@ -50,7 +51,7 @@ class AuthImpl(
                 administratorOrPractitionerCheck: Boolean
               )(implicit val executionContext: ExecutionContext)
   extends Auth
-    with AuthorisedFunctions {
+    with AuthorisedFunctions with Logging {
 
   override def invokeBlock[A](request: Request[A], block: AuthenticatedRequest[A] => Future[Result]): Future[Result] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
@@ -80,6 +81,7 @@ class AuthImpl(
     }
   }
 
+  // scalastyle:off
   private def createAuthRequest[A](
                                     id: String,
                                     enrolments: Enrolments,
@@ -88,18 +90,60 @@ class AuthImpl(
                                     block: AuthenticatedRequest[A] => Future[Result]
                                   ): Future[Result] = {
 
-    val (psaId, pspId) = if (authEntity == PSA) {
-      (getPsaId(isMandatory = true, enrolments), getPspId(isMandatory = false, enrolments))
-    } else {
-      (getPsaId(isMandatory = false, enrolments), getPspId(isMandatory = true, enrolments))
+    val (psaId, pspId) = (getPsaId(isMandatory = false, enrolments), getPspId(isMandatory = false, enrolments))
+
+    /**
+     * This function handles exceptional case of redirecting to the appropriate dashboard based on user type (PSA/PSP)
+     * If PSA is trying to access PSP dashboard should be redirected to PSA dashboard.
+     * If PSP is trying to access PSA dashboard should be redirected to PSP dashboard.
+     * Many services depend on this interaction.
+     * Example: The header link of all MPS services by default redirects to PSA dashboard.
+     * @param psaId
+     * @param pspId
+     * @param request
+     * @return A redirect to appropriate dashboard
+     */
+    def handleDashboardPageRedirect(psaId: Option[PsaId], pspId: Option[PspId], request: Request[A]):Option[Future[Result]] = {
+      def psaDashboardCall = controllers.routes.SchemesOverviewController.onPageLoad()
+      def pspDashboardCall = controllers.psp.routes.PspDashboardController.onPageLoad()
+      psaId -> pspId match {
+        case (None, Some(_)) if request.path == psaDashboardCall.url =>
+          Some(
+            Future.successful(
+              Redirect(pspDashboardCall)
+            )
+          )
+        case (Some(_), None) if request.path == pspDashboardCall.url =>
+          Some(
+            Future.successful(
+              Redirect(psaDashboardCall)
+            )
+          )
+        case _ => None
+      }
     }
 
-    (psaId, pspId) match {
-      case (Some(_), Some(_)) if administratorOrPractitionerCheck =>
-        handleWhereBothEnrolments(id, enrolments, affinityGroup, request, block)
-      case _ =>
-        block(AuthenticatedRequest(request, id, psaId, pspId, userType(affinityGroup)))
+    def handleAuthEntity(authEntity: AuthEntity, psaId: Option[PsaId], pspId: Option[PspId]): Unit = {
+      def throwException(msg: String) = throw IdNotFound(msg)
+      authEntity match {
+        case AuthEntity.PSA if psaId.isEmpty => throwException("PsaIdNotFound")
+        case AuthEntity.PSP if pspId.isEmpty => throwException("PspIdNotFound")
+        case _ => ()
+      }
     }
+
+    handleDashboardPageRedirect(psaId, pspId, request).getOrElse({
+      handleAuthEntity(authEntity, psaId, pspId)
+      (psaId, pspId) match {
+        case (Some(_), Some(_)) if administratorOrPractitionerCheck =>
+          handleWhereBothEnrolments(id, enrolments, affinityGroup, request, block)
+        case (None, None) =>
+          logger.warn("AuthAction, neither enrolment is available")
+          Future.successful(Redirect(UnauthorisedController.onPageLoad))
+        case _ =>
+          block(AuthenticatedRequest(request, id, psaId, pspId, userType(affinityGroup)))
+      }
+    })
   }
 
   private def handleWhereBothEnrolments[A](
