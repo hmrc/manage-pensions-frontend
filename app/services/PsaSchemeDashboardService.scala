@@ -80,7 +80,7 @@ class PsaSchemeDashboardService @Inject()(
   def cards(
              interimDashboard: Boolean,
              erHtml: Html,
-             srn: String,
+             srn: SchemeReferenceNumber,
              lock: Option[Lock],
              list: ListOfSchemes,
              ua: UserAnswers
@@ -93,7 +93,7 @@ class PsaSchemeDashboardService @Inject()(
       case None => "Pstr Not Found"
     }
 
-    val seqErOverviewFuture: Future[String] = getErOverViewAsString(pstr, interimDashboard)
+    val seqErOverviewFuture: Future[String] = getPSRErOverViewAsString(srn, pstr, interimDashboard)
 
     val optionLockedSchemeNameFuture = optionLockedSchemeName(lock)
 
@@ -109,11 +109,11 @@ class PsaSchemeDashboardService @Inject()(
     }
   }
 
-  private def getErOverViewAsString(pstr: String,
+  private def getPSRErOverViewAsString(srn: SchemeReferenceNumber, pstr: String,
                                     interimDashboard: Boolean)(implicit hc: HeaderCarrier, messages: Messages): Future[String] = {
     if(interimDashboard && pstr.nonEmpty) {
       pensionSchemeReturnConnector.getOverview(
-        pstr, "PSR", minStartDateAsString, maxEndDateAsString
+        srn, pstr, minStartDateAsString, maxEndDateAsString
       ).map {
         case x if x.size == 1 =>
           x.head.psrDueDate.map(date => messages("messages__manage_reports_and_returns_psr_due", date.format(formatter)))

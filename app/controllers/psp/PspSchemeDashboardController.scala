@@ -90,7 +90,7 @@ class PspSchemeDashboardController @Inject()(
           val pstr = (userAnswers.json \ "pstr").as[String]
           for {
             interimDashboard <- featureToggleConnector.getNewPensionsSchemeFeatureToggle("interim-dashboard").map(_.isEnabled)
-            eqOverview <-  getOverview(interimDashboard, pstr)
+            eqOverview <-  getPSROverview(srn, interimDashboard, pstr)
             aftPspSchemeDashboardCards <- aftPspSchemeDashboardCards(schemeStatus, srn, pspDetails.authorisingPSAID, config.hideAftTile)
             listOfSchemes <- listSchemesConnector.getListOfSchemesForPsp(request.pspIdOrException.id)
             _ <- userAnswersCacheConnector.upsert(request.externalId, userAnswers.json)
@@ -134,10 +134,10 @@ class PspSchemeDashboardController @Inject()(
       }
   }
 
-  private def getOverview(interimDashboard: Boolean,
+  private def getPSROverview(srn: SchemeReferenceNumber, interimDashboard: Boolean,
                           pstr: String)(implicit hc: HeaderCarrier) = {
     if (interimDashboard && pstr.nonEmpty) {
-      pensionSchemeReturnConnector.getOverview(pstr, "PSR", minStartDateAsString, maxEndDateAsString)
+      pensionSchemeReturnConnector.getOverview(srn, pstr,minStartDateAsString, maxEndDateAsString)
         .recoverWith {
           case e =>
             logger.error("Issue with PSR request", e)
