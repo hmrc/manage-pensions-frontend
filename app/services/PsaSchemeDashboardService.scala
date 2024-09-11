@@ -30,7 +30,7 @@ import models.SchemeStatus.Open
 import models._
 import models.psa.PsaDetails
 import models.requests.AuthenticatedRequest
-import play.api.Logger
+import play.api.{Logger, Logging}
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContent, RequestHeader}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -49,9 +49,7 @@ class PsaSchemeDashboardService @Inject()(
                                            lockConnector: PensionSchemeVarianceLockConnector,
                                            schemeDetailsConnector: SchemeDetailsConnector,
                                            pensionSchemeReturnConnector: PensionSchemeReturnConnector
-                                         )(implicit val ec: ExecutionContext) {
-
-  private val logger = Logger(classOf[PsaSchemeDashboardService])
+                                         )(implicit val ec: ExecutionContext) extends Logging {
 
   private implicit def hc(implicit request: RequestHeader): HeaderCarrier =
     HeaderCarrierConverter.fromRequestAndSession(request, request.session)
@@ -81,9 +79,8 @@ class PsaSchemeDashboardService @Inject()(
 
   def cards(
              interimDashboard: Boolean,
-             showPsrLink: Boolean,
              erHtml: Html,
-             srn: String,
+             srn: SchemeReferenceNumber,
              lock: Option[Lock],
              list: ListOfSchemes,
              ua: UserAnswers
@@ -96,7 +93,7 @@ class PsaSchemeDashboardService @Inject()(
       case None => "Pstr Not Found"
     }
 
-    val seqErOverviewFuture: Future[String] = getErOverViewAsString(pstr, showPsrLink)
+    val seqErOverviewFuture: Future[String] = getPSRErOverViewAsString(srn, pstr, interimDashboard)
 
     val optionLockedSchemeNameFuture = optionLockedSchemeName(lock)
 
@@ -112,11 +109,11 @@ class PsaSchemeDashboardService @Inject()(
     }
   }
 
-  private def getErOverViewAsString(pstr: String,
-                                    showPsrLink: Boolean)(implicit hc: HeaderCarrier, messages: Messages): Future[String] = {
-    if(showPsrLink && pstr.nonEmpty) {
+  private def getPSRErOverViewAsString(srn: SchemeReferenceNumber, pstr: String,
+                                    interimDashboard: Boolean)(implicit hc: HeaderCarrier, messages: Messages): Future[String] = {
+    if(interimDashboard && pstr.nonEmpty) {
       pensionSchemeReturnConnector.getOverview(
-        pstr, "PSR", minStartDateAsString, maxEndDateAsString
+        srn, pstr, minStartDateAsString, maxEndDateAsString
       ).map {
         case x if x.size == 1 =>
           x.head.psrDueDate.map(date => messages("messages__manage_reports_and_returns_psr_due", date.format(formatter)))
@@ -125,8 +122,12 @@ class PsaSchemeDashboardService @Inject()(
           x.head.psrDueDate.map(_ => messages("messages__manage_reports_and_returns_multiple_due"))
             .getOrElse("")
         case _ => ""
+      } recoverWith {
+        case e =>
+          logger.error("Issue with PSR request", e)
+          Future.successful("")
       }
-    }else {
+    } else {
       Future.successful("")
     }
   }

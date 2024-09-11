@@ -18,7 +18,7 @@ package connectors
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
-import models.EROverview
+import models.{EROverview, SchemeReferenceNumber}
 import play.api.http.Status._
 import play.api.libs.json._
 import uk.gov.hmrc.http._
@@ -31,11 +31,11 @@ class PensionSchemeReturnConnector @Inject()(
                                          http: HttpClient
                                        )(implicit ec: ExecutionContext) extends HttpResponseHelper {
 
-  def getOverview(pstr: String, reportType: String, startDate: String, endDate: String)
+  def getOverview(srn: SchemeReferenceNumber, pstr: String, startDate: String, endDate: String)
                  (implicit headerCarrier: HeaderCarrier): Future[Seq[EROverview]] = {
-
     val headers: Seq[(String, String)] = Seq(
-      "Content-Type" -> "application/json"
+      "Content-Type" -> "application/json",
+      "srn" -> srn.id
     )
 
     def psrOverviewUrl = s"${config.pensionsSchemeReturnUrl}/pension-scheme-return/psr/overview/$pstr?fromDate=$startDate&toDate=$endDate"
