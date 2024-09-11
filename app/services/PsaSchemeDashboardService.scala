@@ -30,7 +30,7 @@ import models.SchemeStatus.Open
 import models._
 import models.psa.PsaDetails
 import models.requests.AuthenticatedRequest
-import play.api.Logger
+import play.api.{Logger, Logging}
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContent, RequestHeader}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -49,9 +49,7 @@ class PsaSchemeDashboardService @Inject()(
                                            lockConnector: PensionSchemeVarianceLockConnector,
                                            schemeDetailsConnector: SchemeDetailsConnector,
                                            pensionSchemeReturnConnector: PensionSchemeReturnConnector
-                                         )(implicit val ec: ExecutionContext) {
-
-  private val logger = Logger(classOf[PsaSchemeDashboardService])
+                                         )(implicit val ec: ExecutionContext) extends Logging {
 
   private implicit def hc(implicit request: RequestHeader): HeaderCarrier =
     HeaderCarrierConverter.fromRequestAndSession(request, request.session)
@@ -124,8 +122,12 @@ class PsaSchemeDashboardService @Inject()(
           x.head.psrDueDate.map(_ => messages("messages__manage_reports_and_returns_multiple_due"))
             .getOrElse("")
         case _ => ""
+      } recoverWith {
+        case e =>
+          logger.error("Issue with PSR request", e)
+          Future.successful("")
       }
-    }else {
+    } else {
       Future.successful("")
     }
   }
