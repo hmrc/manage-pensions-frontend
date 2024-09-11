@@ -138,6 +138,11 @@ class PspSchemeDashboardController @Inject()(
                           pstr: String)(implicit hc: HeaderCarrier) = {
     if (interimDashboard && pstr.nonEmpty) {
       pensionSchemeReturnConnector.getOverview(pstr, "PSR", minStartDateAsString, maxEndDateAsString)
+        .recoverWith {
+          case e =>
+            logger.error("Issue with PSR request", e)
+            Future.successful(Seq.empty)
+        }
     } else {
       Future.successful(Seq.empty)
     }
