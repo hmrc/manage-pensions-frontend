@@ -17,8 +17,7 @@
 package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
-import connectors.admin.ToggleDetails
-import models.EROverview
+import models.{EROverview, SchemeReferenceNumber}
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
 import play.api.Application
@@ -35,6 +34,7 @@ class PensionSchemeReturnConnectorSpec
     with WireMockHelper
     with Enumerable.Implicits {
 
+  private val srn = SchemeReferenceNumber("S2400000041")
   private val pstr = "87219363YN"
 
   private implicit lazy val hc: HeaderCarrier = HeaderCarrier()
@@ -47,8 +47,6 @@ class PensionSchemeReturnConnectorSpec
         "microservice.services.pension-scheme-event-reporting.port" -> server.port
       )
       .build()
-
-  private val getFeatureTogglePath = "/admin/get-toggle"
 
   private lazy val connector: PensionSchemeReturnConnector = injector.instanceOf[PensionSchemeReturnConnector]
   val startDate = "2022-04-06"
@@ -97,7 +95,7 @@ class PensionSchemeReturnConnectorSpec
               .withBody(erOverviewResponseJson.toString())
           )
       )
-      connector.getOverview(pstr, "ER", "2022-04-06", "2023-04-05").map { response =>
+      connector.getOverview(srn, pstr, "2022-04-06", "2023-04-05").map { response =>
         response mustBe erOverview
       }
     }
@@ -119,7 +117,7 @@ class PensionSchemeReturnConnectorSpec
       )
 
       recoverToSucceededIf[JsResultException] {
-        connector.getOverview(pstr, "ER", "2022-04-06", "2023-04-05")
+        connector.getOverview(srn, pstr, "2022-04-06", "2023-04-05")
       }
     }
 
@@ -133,7 +131,7 @@ class PensionSchemeReturnConnectorSpec
       )
 
       recoverToSucceededIf[HttpException] {
-        connector.getOverview(pstr, "ER", "2022-04-06", "2023-04-05")
+        connector.getOverview(srn, pstr, "2022-04-06", "2023-04-05")
       }
     }
   }
