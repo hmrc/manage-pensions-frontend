@@ -95,6 +95,7 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
               )
               for {
                 interimDashboard <- featureToggleConnector.getNewPensionsSchemeFeatureToggle("interim-dashboard").map(_.isEnabled)
+                showPsrLink <- featureToggleConnector.getNewPensionsSchemeFeatureToggle("show-psr-link").map(_.isEnabled)
                 aftHtml <- tileRecover(retrieveAftTilesHtml(srn, schemeStatus, appConfig.hideAftTile, interimDashboard))
                 finInfoHtml <- tileRecover(retrieveFinInfoTilesHtml(srn, schemeStatus, appConfig.hideAftTile))
                 _ <- userAnswersCacheConnector.upsert(request.externalId, updatedUa.json)
@@ -103,7 +104,7 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
                 }.getOrElse(Future.successful(Json.obj()))
                 erHtml <- eventReportingData.map(_ => frontendConnector.retrieveEventReportingPartial)
                   .getOrElse(Future.successful(Html("")))
-                cards <- psaSchemeDashboardService.cards(interimDashboard, erHtml, srn, lock, listOfSchemes, userAnswers)
+                cards <- psaSchemeDashboardService.cards(interimDashboard, showPsrLink, erHtml, srn, lock, listOfSchemes, userAnswers)
                 schemeLink <- psaSchemeDashboardService.optionLockedSchemeName(lock).map { otherOptionSchemeName =>
                   psaSchemeDashboardService.schemeDetailsLink(srn, userAnswers, lock, currentScheme.map(_.name), otherOptionSchemeName)
                 }
