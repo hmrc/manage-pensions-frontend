@@ -17,7 +17,6 @@
 package controllers
 
 import config._
-import connectors.admin.{FeatureToggleConnector, ToggleDetails}
 import connectors.{SessionDataCacheConnector, UserAnswersCacheConnector}
 import controllers.actions._
 import controllers.psa.routes.ListSchemesController
@@ -50,16 +49,13 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
   private val mockSessionDataCacheConnector: SessionDataCacheConnector = mock[SessionDataCacheConnector]
 
   private val view: schemesOverview = app.injector.instanceOf[schemesOverview]
-  private val mockFeatureToggleConnector = mock[FeatureToggleConnector]
 
   def controller(dataRetrievalAction: DataRetrievalAction = dontGetAnyData): SchemesOverviewController =
     new SchemesOverviewController(messagesApi, fakeSchemesOverviewService, FakeAuthAction,
-      dataRetrievalAction, fakeUserAnswersCacheConnector, mockSessionDataCacheConnector, controllerComponents, appConfig, view, mockFeatureToggleConnector)
+      dataRetrievalAction, fakeUserAnswersCacheConnector, mockSessionDataCacheConnector, controllerComponents, appConfig, view)
 
 
   override def beforeEach(): Unit = {
-    reset(mockFeatureToggleConnector)
-    when(mockFeatureToggleConnector.getNewAftFeatureToggle(any())(any())).thenReturn(Future.successful(ToggleDetails("test", Some("test"), false)))
     super.beforeEach()
   }
   def viewAsString(): String = view(
