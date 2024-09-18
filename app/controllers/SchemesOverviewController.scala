@@ -18,7 +18,6 @@ package controllers
 
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
-import connectors.admin.FeatureToggleConnector
 import controllers.actions._
 import controllers.psp.routes._
 import controllers.routes.{ContactHMRCController, SchemesOverviewController, SessionExpiredController}
@@ -49,8 +48,7 @@ class SchemesOverviewController @Inject()(
                                            @SessionDataCache sessionDataCacheConnector: UserAnswersCacheConnector,
                                            val controllerComponents: MessagesControllerComponents,
                                            config: FrontendAppConfig,
-                                           view: schemesOverview,
-                                           featureToggleConnector: FeatureToggleConnector
+                                           view: schemesOverview
                                          )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = (authenticate() andThen getData).async {

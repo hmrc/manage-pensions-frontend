@@ -18,48 +18,15 @@ package connectors.admin
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
-import models.FeatureToggle
-import play.api.Logger
 import play.api.http.Status._
 import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpException, HttpResponse}
 import utils.HttpResponseHelper
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Failure
 
 class FeatureToggleConnector @Inject()(http: HttpClient, config: FrontendAppConfig) (implicit ec: ExecutionContext)
   extends HttpResponseHelper {
-
-  private val logger = Logger(classOf[FeatureToggleConnector])
-
-  def get(name: String)
-         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[FeatureToggle] = {
-    val endPoint = config.featureToggleUrl(name)
-    http.GET[HttpResponse](endPoint) map {
-      response =>
-        response.status match {
-        case OK => response.json.as[FeatureToggle]
-        case _ => handleErrorResponse("GET", endPoint)(response)
-      }
-    } andThen {
-      case Failure(t: Throwable) => logger.warn("Unable to get toggle value", t)
-    }
-  }
-
-  def getAftFeatureToggle(name: String)
-         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[FeatureToggle] = {
-    val endPoint = config.aftFeatureToggleUrl(name)
-    http.GET[HttpResponse](endPoint) map {
-      response =>
-        response.status match {
-          case OK => response.json.as[FeatureToggle]
-          case _ => handleErrorResponse("GET", endPoint)(response)
-        }
-    } andThen {
-      case Failure(t: Throwable) => logger.warn("Unable to get toggle value", t)
-    }
-  }
 
   def getNewAftFeatureToggle(toggleName: String)(implicit hc: HeaderCarrier): Future[ToggleDetails] = {
     getNewFeatureToggle(config.newAftFeatureToggleUrl(toggleName), toggleName)
