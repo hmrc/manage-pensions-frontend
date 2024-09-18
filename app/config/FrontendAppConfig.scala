@@ -56,12 +56,6 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
     s"$practitionerUrl${runModeConfiguration.get[String](path = "urls.pspSelfDeauthEmailCallback")
       .format(encryptedPspId, encryptedPstr, encryptedEmail)}"
 
-  def featureToggleUrl(toggle:String) : String =
-    s"${servicesConfig.baseUrl("pension-administrator")}${runModeConfiguration.underlying.getString("urls.featureToggle").format(toggle)}"
-
-  def aftFeatureToggleUrl(toggle: String): String =
-    s"$aftUrl${runModeConfiguration.underlying.getString("urls.featureToggle").format(toggle)}"
-
   def newAftFeatureToggleUrl(toggle: String): String =
     s"$aftUrl${runModeConfiguration.underlying.getString("urls.newFeatureToggle").format(toggle)}"
 

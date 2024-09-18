@@ -21,12 +21,9 @@ import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaSchemeAuthAction}
 import controllers.psa.routes._
 import identifiers.{SchemeNameId, SeqAuthorisedPractitionerId}
-import models.FeatureToggleName.UpdateClientReference
 import models.SchemeReferenceNumber
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.FeatureToggleService
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateHelper
 import viewmodels.AuthorisedPractitionerViewModel
@@ -39,7 +36,6 @@ class ViewPractitionersController @Inject()(
                                              authenticate: AuthAction,
                                              getData: DataRetrievalAction,
                                              requireData: DataRequiredAction,
-                                             toggleService: FeatureToggleService,
                                              val controllerComponents: MessagesControllerComponents,
                                              view: viewPractitioners,
                                              psaSchemeAction: PsaSchemeAuthAction
@@ -61,16 +57,8 @@ class ViewPractitionersController @Inject()(
             )
           )
           val returnCall = PsaSchemeDashboardController.onPageLoad(srn)
-          isUpdateClientReferenceEnabled.flatMap { isUpdateClientReference =>
-            Future.successful(Ok(view(schemeName, returnCall, authorisedPractitionerViewModelSeq, isUpdateClientReference, srn)))
-          }
+          Future.successful(Ok(view(schemeName, returnCall, authorisedPractitionerViewModelSeq, true, srn)))
       }
-  }
-
-  private def isUpdateClientReferenceEnabled(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
-    toggleService.get(UpdateClientReference).map { toggle =>
-      toggle.isEnabled
-    }
   }
 
 }

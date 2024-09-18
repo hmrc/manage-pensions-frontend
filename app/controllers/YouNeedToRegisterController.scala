@@ -16,14 +16,12 @@
 
 package controllers
 
-import models.FeatureToggleName.EnrolmentRecovery
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.FeatureToggleService
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.{youNeedToRegister, youNeedToRegisterAsPsa, youNeedToRegisterAsPsp, youNeedToRegisterOld}
+import views.html.{youNeedToRegister, youNeedToRegisterAsPsa, youNeedToRegisterAsPsp}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -31,11 +29,9 @@ import scala.concurrent.{ExecutionContext, Future}
 class YouNeedToRegisterController @Inject()(override val authConnector: AuthConnector,
                                             override val messagesApi: MessagesApi,
                                             val controllerComponents: MessagesControllerComponents,
-                                            toggleService: FeatureToggleService,
                                             registerAsPspView: youNeedToRegisterAsPsp,
                                             registerAsPsaView: youNeedToRegisterAsPsa,
-                                            registerView: youNeedToRegister,
-                                            viewOld: youNeedToRegisterOld
+                                            registerView: youNeedToRegister
                                            )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with AuthorisedFunctions {
   def onPageLoad: Action[AnyContent] = Action.async {
     implicit request =>
@@ -58,13 +54,7 @@ class YouNeedToRegisterController @Inject()(override val authConnector: AuthConn
           } else if (isPsp) {
             Future.successful(Ok(registerAsPsaView()))
           } else {
-            toggleService.get(EnrolmentRecovery).map{ toggleValue =>
-              if (toggleValue.isEnabled) {
-                Ok(registerView())
-              } else {
-                Ok(viewOld())
-              }
-            }
+            Future.successful(Ok(registerView()))
           }
       }
   }
