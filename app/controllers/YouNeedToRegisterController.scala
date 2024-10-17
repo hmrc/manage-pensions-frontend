@@ -16,6 +16,7 @@
 
 package controllers
 
+import controllers.actions.NoEnrolmentsOnlyAuthAction
 import models.FeatureToggleName.EnrolmentRecovery
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -35,9 +36,10 @@ class YouNeedToRegisterController @Inject()(override val authConnector: AuthConn
                                             registerAsPspView: youNeedToRegisterAsPsp,
                                             registerAsPsaView: youNeedToRegisterAsPsa,
                                             registerView: youNeedToRegister,
-                                            viewOld: youNeedToRegisterOld
+                                            viewOld: youNeedToRegisterOld,
+                                            noEnrolmentsOnlyAuthAction: NoEnrolmentsOnlyAuthAction
                                            )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with AuthorisedFunctions {
-  def onPageLoad: Action[AnyContent] = Action.async {
+  def onPageLoad: Action[AnyContent] = noEnrolmentsOnlyAuthAction.async {
     implicit request =>
       authorised().retrieve(Retrievals.allEnrolments) {
         enrolments =>

@@ -19,6 +19,7 @@ package controllers.actions
 import com.google.inject.{ImplementedBy, Inject}
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
+import controllers.actions.AuthAction.{getPsaId, getPspId}
 import controllers.psa.routes._
 import controllers.psp.routes._
 import controllers.routes._
@@ -181,21 +182,7 @@ class AuthImpl(
     }
   }
 
-  private def getPsaId(isMandatory: Boolean, enrolments: Enrolments): Option[PsaId] = {
-    def failureResult: Option[PsaId] = if (isMandatory) throw IdNotFound() else None
 
-    enrolments.getEnrolment("HMRC-PODS-ORG")
-      .flatMap(_.getIdentifier("PSAID")).map(_.value)
-      .fold[Option[PsaId]](failureResult)(id => Some(PsaId(id)))
-  }
-
-  private def getPspId(isMandatory: Boolean, enrolments: Enrolments): Option[PspId] = {
-    def failureResult: Option[PspId] = if (isMandatory) throw IdNotFound("PspIdNotFound") else None
-
-    enrolments.getEnrolment("HMRC-PODSPP-ORG")
-      .flatMap(_.getIdentifier("PSPID")).map(_.value)
-      .fold[Option[PspId]](failureResult)(id => Some(PspId(id)))
-  }
 
   private def userType(affinityGroup: AffinityGroup): UserType = {
     affinityGroup match {
@@ -205,6 +192,24 @@ class AuthImpl(
     }
   }
 
+}
+
+object AuthAction {
+  def getPsaId(isMandatory: Boolean, enrolments: Enrolments): Option[PsaId] = {
+    def failureResult: Option[PsaId] = if (isMandatory) throw IdNotFound() else None
+
+    enrolments.getEnrolment("HMRC-PODS-ORG")
+      .flatMap(_.getIdentifier("PSAID")).map(_.value)
+      .fold[Option[PsaId]](failureResult)(id => Some(PsaId(id)))
+  }
+
+  def getPspId(isMandatory: Boolean, enrolments: Enrolments): Option[PspId] = {
+    def failureResult: Option[PspId] = if (isMandatory) throw IdNotFound("PspIdNotFound") else None
+
+    enrolments.getEnrolment("HMRC-PODSPP-ORG")
+      .flatMap(_.getIdentifier("PSPID")).map(_.value)
+      .fold[Option[PspId]](failureResult)(id => Some(PspId(id)))
+  }
 }
 
 @ImplementedBy(classOf[AuthImpl])
