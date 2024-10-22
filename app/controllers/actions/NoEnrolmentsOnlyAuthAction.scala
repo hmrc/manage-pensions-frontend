@@ -33,7 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class NoEnrolmentsOnlyAuthAction @Inject() (
                                    override val authConnector: AuthConnector,
                                    config: FrontendAppConfig,
-                                   val parser: BodyParsers.Default,
+                                   val parser: BodyParsers.Default
                                  )(implicit val executionContext: ExecutionContext)
   extends ActionBuilder[Request, AnyContent]
     with AuthorisedFunctions {
