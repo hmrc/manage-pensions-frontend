@@ -16,58 +16,44 @@
 
 package controllers
 
-import controllers.actions.NoEnrolmentsOnlyAuthAction
+import controllers.actions.NoBothEnrolmentsOnlyAuthAction
 import models.FeatureToggleName.EnrolmentRecovery
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.FeatureToggleService
-import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.{youNeedToRegister, youNeedToRegisterAsPsa, youNeedToRegisterAsPsp, youNeedToRegisterOld}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class YouNeedToRegisterController @Inject()(override val authConnector: AuthConnector,
-                                            override val messagesApi: MessagesApi,
+class YouNeedToRegisterController @Inject()(override val messagesApi: MessagesApi,
                                             val controllerComponents: MessagesControllerComponents,
                                             toggleService: FeatureToggleService,
                                             registerAsPspView: youNeedToRegisterAsPsp,
                                             registerAsPsaView: youNeedToRegisterAsPsa,
                                             registerView: youNeedToRegister,
                                             viewOld: youNeedToRegisterOld,
-                                            noEnrolmentsOnlyAuthAction: NoEnrolmentsOnlyAuthAction
-                                           )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with AuthorisedFunctions {
-  def onPageLoad: Action[AnyContent] = noEnrolmentsOnlyAuthAction.async {
+                                            noBothEnrolmentsOnlyAuthAction: NoBothEnrolmentsOnlyAuthAction
+                                           )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+  def onPageLoad: Action[AnyContent] = noBothEnrolmentsOnlyAuthAction.async {
     implicit request =>
-      authorised().retrieve(Retrievals.allEnrolments) {
-        enrolments =>
-          val isPsa = enrolments.getEnrolment("HMRC-PODS-ORG")
-            .flatMap(_.getIdentifier("PSAID")).map(_.value) match {
-            case Some(_) => true
-            case _ => false
-          }
+      val isPsa = request.psaId.isDefined
 
-          val isPsp = enrolments.getEnrolment("HMRC-PODSPP-ORG")
-            .flatMap(_.getIdentifier("PSPID")).map(_.value) match {
-            case Some(_) => true
-            case _ => false
-          }
+      val isPsp = request.pspId.isDefined
 
-          if (isPsa) {
-           Future.successful(Ok(registerAsPspView()))
-          } else if (isPsp) {
-            Future.successful(Ok(registerAsPsaView()))
+      if (isPsa) {
+        Future.successful(Ok(registerAsPspView()))
+      } else if (isPsp) {
+        Future.successful(Ok(registerAsPsaView()))
+      } else {
+        toggleService.get(EnrolmentRecovery).map { toggleValue =>
+          if (toggleValue.isEnabled) {
+            Ok(registerView())
           } else {
-            toggleService.get(EnrolmentRecovery).map{ toggleValue =>
-              if (toggleValue.isEnabled) {
-                Ok(registerView())
-              } else {
-                Ok(viewOld())
-              }
-            }
+            Ok(viewOld())
           }
+        }
       }
   }
 }

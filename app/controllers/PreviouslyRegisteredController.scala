@@ -17,7 +17,7 @@
 package controllers
 
 import config.FrontendAppConfig
-import controllers.actions.NoEnrolmentsOnlyAuthAction
+import controllers.actions.NoBothEnrolmentsOnlyAuthAction
 import forms.PreviouslyRegisteredFormProvider
 import models.PreviouslyRegistered.PreviouslyRegisteredButNotLoggedIn
 import models.{AdministratorOrPractitioner, PreviouslyRegistered}
@@ -39,22 +39,22 @@ class PreviouslyRegisteredController @Inject()(
                                                 val formProvider: PreviouslyRegisteredFormProvider,
                                                 val controllerComponents: MessagesControllerComponents,
                                                 view: previouslyRegistered,
-                                                noEnrolmentsOnlyAuthAction: NoEnrolmentsOnlyAuthAction
+                                                noBothEnrolmentsOnlyAuthAction: NoBothEnrolmentsOnlyAuthAction
                                               )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with AuthorisedFunctions {
 
   private def form(implicit messages: Messages): Form[PreviouslyRegistered] = formProvider()
 
-  def onPageLoadAdministrator: Action[AnyContent] = noEnrolmentsOnlyAuthAction {
+  def onPageLoadAdministrator: Action[AnyContent] = noBothEnrolmentsOnlyAuthAction {
     implicit request =>
       Ok(view(form, AdministratorOrPractitioner.Administrator))
   }
 
-  def onPageLoadPractitioner: Action[AnyContent] = noEnrolmentsOnlyAuthAction {
+  def onPageLoadPractitioner: Action[AnyContent] = noBothEnrolmentsOnlyAuthAction {
     implicit request =>
       Ok(view(form, AdministratorOrPractitioner.Practitioner))
   }
 
-  def onSubmitAdministrator: Action[AnyContent] = noEnrolmentsOnlyAuthAction.async {
+  def onSubmitAdministrator: Action[AnyContent] = noBothEnrolmentsOnlyAuthAction.async {
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[_]) =>
@@ -67,7 +67,7 @@ class PreviouslyRegisteredController @Inject()(
       )
   }
 
-  def onSubmitPractitioner: Action[AnyContent] = noEnrolmentsOnlyAuthAction.async {
+  def onSubmitPractitioner: Action[AnyContent] = noBothEnrolmentsOnlyAuthAction.async {
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[_]) =>

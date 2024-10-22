@@ -17,6 +17,7 @@
 package controllers
 
 import config.FrontendAppConfig
+import controllers.actions.NoBothEnrolmentsOnlyAuthAction
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.PreviouslyRegisteredFormProvider
 import models.{AdministratorOrPractitioner, PreviouslyRegistered}
@@ -24,14 +25,15 @@ import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.mvc.BodyParsers
 import play.api.test.CSRFTokenHelper.addCSRFToken
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import views.html.previouslyRegistered
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
-import uk.gov.hmrc.auth.core.retrieve.Retrieval
+import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.http.HeaderCarrier
+import views.html.previouslyRegistered
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -71,12 +73,22 @@ class PreviouslyRegisteredControllerSpec extends ControllerWithQuestionPageBehav
     reset(appConfig)
   }
 
-
+  private def noEnrolmentOnlyAuthAction(stubbedRetrievalResult: Future[_]) = new NoBothEnrolmentsOnlyAuthAction(
+    fakeAuthConnector(stubbedRetrievalResult),
+    app.injector.instanceOf[FrontendAppConfig],
+    app.injector.instanceOf[BodyParsers.Default]
+  )
 
   "PreviouslyRegisteredController for administrator" must {
     def controller(): PreviouslyRegisteredController =
       new PreviouslyRegisteredController(
-        appConfig, fakeAuthConnector(Future.successful(Enrolments(Set(enrolmentPSA)))), messagesApi, formProvider, controllerComponents, view)
+        appConfig,
+        fakeAuthConnector(Future.successful(Enrolments(Set(enrolmentPSA)))),
+        messagesApi,
+        formProvider,
+        controllerComponents,
+        view,
+        noEnrolmentOnlyAuthAction(Future.successful(new~(Some("id"), Enrolments(Set(enrolmentPSA))))))
 
     "return OK with the view when calling on page load" in {
       val request = addCSRFToken(FakeRequest(GET, routes.PreviouslyRegisteredController.onPageLoadAdministrator().url))
@@ -128,7 +140,13 @@ class PreviouslyRegisteredControllerSpec extends ControllerWithQuestionPageBehav
     "redirect to the correct next page when yes not logged in chosen (recovery url)" in {
       val controller :PreviouslyRegisteredController =
         new PreviouslyRegisteredController(
-          appConfig, fakeAuthConnector(Future.successful(Enrolments(Set(enrolmentPODS)))), messagesApi, formProvider, controllerComponents, view)
+          appConfig,
+          fakeAuthConnector(Future.successful(Enrolments(Set(enrolmentPODS)))),
+          messagesApi,
+          formProvider,
+          controllerComponents,
+          view,
+          noEnrolmentOnlyAuthAction(Future.successful(new~(Some("id"), Enrolments(Set(enrolmentPODS))))))
       val postRequest = FakeRequest(POST, routes.PreviouslyRegisteredController.onSubmitAdministrator().url).withFormUrlEncodedBody("value" ->
         PreviouslyRegistered.PreviouslyRegisteredButNotLoggedIn.toString)
       when(appConfig.recoverCredentialsPSAUrl).thenReturn(dummyUrl)
@@ -143,7 +161,13 @@ class PreviouslyRegisteredControllerSpec extends ControllerWithQuestionPageBehav
 
     def controller(): PreviouslyRegisteredController =
       new PreviouslyRegisteredController(
-        appConfig, fakeAuthConnector(Future.successful(Enrolments(Set(enrolmentPSP)))), messagesApi, formProvider, controllerComponents, view)
+        appConfig,
+        fakeAuthConnector(Future.successful(Enrolments(Set(enrolmentPSP)))),
+        messagesApi,
+        formProvider,
+        controllerComponents,
+        view,
+        noEnrolmentOnlyAuthAction(Future.successful(new~(Some("id"), Enrolments(Set(enrolmentPSP))))))
 
     "return OK with the view when calling on page load" in {
       val request = addCSRFToken(FakeRequest(GET, routes.PreviouslyRegisteredController.onPageLoadPractitioner().url))
@@ -197,7 +221,13 @@ class PreviouslyRegisteredControllerSpec extends ControllerWithQuestionPageBehav
     "redirect to the correct next page when yes not logged in chosen (recovery URL)" in {
       val controller : PreviouslyRegisteredController =
         new PreviouslyRegisteredController(
-          appConfig, fakeAuthConnector(Future.successful(Enrolments(Set(enrolmentPODS)))), messagesApi, formProvider, controllerComponents, view)
+          appConfig,
+          fakeAuthConnector(Future.successful(Enrolments(Set(enrolmentPODS)))),
+          messagesApi,
+          formProvider,
+          controllerComponents,
+          view,
+          noEnrolmentOnlyAuthAction(Future.successful(new~(Some("id"), Enrolments(Set(enrolmentPODS))))))
 
       val postRequest = FakeRequest(POST, routes.PreviouslyRegisteredController.onSubmitPractitioner().url).withFormUrlEncodedBody("value" ->
         PreviouslyRegistered.PreviouslyRegisteredButNotLoggedIn.toString)

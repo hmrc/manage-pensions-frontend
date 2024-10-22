@@ -18,38 +18,39 @@ package controllers.actions
 
 import config.FrontendAppConfig
 import controllers.routes._
-import play.api.Logging
+import models.requests.IdentifiedRequest
 import play.api.mvc.Results._
 import play.api.mvc._
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
+import uk.gov.hmrc.domain.{PsaId, PspId}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class NoEnrolmentsOnlyAuthAction @Inject() (
+class NoBothEnrolmentsOnlyAuthAction @Inject()(
                                    override val authConnector: AuthConnector,
                                    config: FrontendAppConfig,
                                    val parser: BodyParsers.Default
                                  )(implicit val executionContext: ExecutionContext)
-  extends ActionBuilder[Request, AnyContent]
+  extends ActionBuilder[NoBothEnrolmentsRequest, AnyContent]
     with AuthorisedFunctions {
 
   // scalastyle:off
-  override def invokeBlock[A](request: Request[A], block: Request[A] => Future[Result]): Future[Result] = {
+  override def invokeBlock[A](request: Request[A], block: NoBothEnrolmentsRequest[A] => Future[Result]): Future[Result] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
     authorised().retrieve(
       Retrievals.externalId and Retrievals.allEnrolments
     ) {
-      case Some(_) ~ enrolments =>
-        if(podsEnrolmentsExist(enrolments)) {
+      case Some(id) ~ enrolments =>
+        if(podsBothEnrolmentsExist(enrolments)) {
           Future.successful(Redirect(controllers.routes.SchemesOverviewController.onPageLoad()))
         } else {
-          block(request)
+          block(NoBothEnrolmentsRequest(request, id, AuthAction.getPsaId(isMandatory = false, enrolments), AuthAction.getPspId(isMandatory = false, enrolments)))
         }
 
       case _ =>
@@ -70,11 +71,17 @@ class NoEnrolmentsOnlyAuthAction @Inject() (
     }
   }
 
-  private def podsEnrolmentsExist(enrolments: Enrolments): Boolean = {
-    AuthAction.getPsaId(isMandatory = false, enrolments).isDefined || AuthAction.getPspId(isMandatory = false, enrolments).isDefined
+  private def podsBothEnrolmentsExist(enrolments: Enrolments): Boolean = {
+    AuthAction.getPsaId(isMandatory = false, enrolments).isDefined && AuthAction.getPspId(isMandatory = false, enrolments).isDefined
   }
 
 }
+
+case class NoBothEnrolmentsRequest[A](request: Request[A],
+                                   externalId: String,
+                                   psaId: Option[PsaId],
+                                   pspId: Option[PspId] = None)
+  extends WrappedRequest[A](request) with IdentifiedRequest
 
 
 
