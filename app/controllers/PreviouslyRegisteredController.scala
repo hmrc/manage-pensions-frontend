@@ -17,6 +17,7 @@
 package controllers
 
 import config.FrontendAppConfig
+import controllers.actions.NoBothEnrolmentsOnlyAuthAction
 import forms.PreviouslyRegisteredFormProvider
 import models.PreviouslyRegistered.PreviouslyRegisteredButNotLoggedIn
 import models.{AdministratorOrPractitioner, PreviouslyRegistered}
@@ -37,22 +38,23 @@ class PreviouslyRegisteredController @Inject()(
                                                 override val messagesApi: MessagesApi,
                                                 val formProvider: PreviouslyRegisteredFormProvider,
                                                 val controllerComponents: MessagesControllerComponents,
-                                                view: previouslyRegistered
+                                                view: previouslyRegistered,
+                                                noBothEnrolmentsOnlyAuthAction: NoBothEnrolmentsOnlyAuthAction
                                               )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport with AuthorisedFunctions {
 
   private def form(implicit messages: Messages): Form[PreviouslyRegistered] = formProvider()
 
-  def onPageLoadAdministrator: Action[AnyContent] = Action {
+  def onPageLoadAdministrator: Action[AnyContent] = noBothEnrolmentsOnlyAuthAction {
     implicit request =>
       Ok(view(form, AdministratorOrPractitioner.Administrator))
   }
 
-  def onPageLoadPractitioner: Action[AnyContent] = Action {
+  def onPageLoadPractitioner: Action[AnyContent] = noBothEnrolmentsOnlyAuthAction {
     implicit request =>
       Ok(view(form, AdministratorOrPractitioner.Practitioner))
   }
 
-  def onSubmitAdministrator: Action[AnyContent] = Action.async {
+  def onSubmitAdministrator: Action[AnyContent] = noBothEnrolmentsOnlyAuthAction.async {
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[_]) =>
@@ -65,7 +67,7 @@ class PreviouslyRegisteredController @Inject()(
       )
   }
 
-  def onSubmitPractitioner: Action[AnyContent] = Action.async {
+  def onSubmitPractitioner: Action[AnyContent] = noBothEnrolmentsOnlyAuthAction.async {
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[_]) =>
@@ -79,7 +81,7 @@ class PreviouslyRegisteredController @Inject()(
   }
 
   private def previouslyRegisteredButNotLoggedIn(enrolmentKey: String, idName: String, idStartsWith: String, recoverCredentialsUrl: String)
-                                                (implicit messagesRequest: MessagesRequest[AnyContent]): Future[Result] = {
+                                                (implicit request: Request[AnyContent]): Future[Result] = {
     authorised().retrieve(Retrievals.allEnrolments) {
       enrolments =>
         isTpssAccount(enrolments, enrolmentKey, idName, idStartsWith) match {

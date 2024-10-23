@@ -17,17 +17,20 @@
 package controllers
 
 import base.SpecBase
+import config.FrontendAppConfig
+import controllers.actions.NoBothEnrolmentsOnlyAuthAction
 import models.FeatureToggle.{Disabled, Enabled}
 import models.FeatureToggleName.EnrolmentRecovery
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.mvc.BodyParsers
 import play.api.test.Helpers._
 import services.FeatureToggleService
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
-import uk.gov.hmrc.auth.core.retrieve.Retrieval
+import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.http.HeaderCarrier
 import views.html.{youNeedToRegister, youNeedToRegisterAsPsa, youNeedToRegisterAsPsp, youNeedToRegisterOld}
 
@@ -47,21 +50,23 @@ class YouNeedToRegisterControllerSpec extends ControllerSpecBase with MockitoSug
 
   def controller(authConnector: AuthConnector): YouNeedToRegisterController =
     new YouNeedToRegisterController(
-      authConnector,
       messagesApi,
       controllerComponents,
       toggleService,
       registerAsPspView,
       registerAsPsaView,
       registerView,
-      viewOld
+      viewOld,
+      new NoBothEnrolmentsOnlyAuthAction(authConnector,
+        app.injector.instanceOf[FrontendAppConfig],
+        app.injector.instanceOf[BodyParsers.Default])
     )
 
 
   "YouNeedToRegister Controller" must {
     "return OK and the correct view for a GET when registered as PSA but not PSP" in {
       when(toggleService.get(any())(any(), any())).thenReturn(Future.successful(Enabled(EnrolmentRecovery)))
-      val authConnector: AuthConnector = fakeAuthConnector(Future.successful(Enrolments(Set(enrolmentPSA))))
+      val authConnector: AuthConnector = fakeAuthConnector(Future.successful(new~(Some("id"), Enrolments(Set(enrolmentPSA)))))
 
       val result = controller(authConnector).onPageLoad(fakeRequest)
       val viewAsString = registerAsPspView()(fakeRequest, messages).toString
@@ -72,7 +77,7 @@ class YouNeedToRegisterControllerSpec extends ControllerSpecBase with MockitoSug
 
     "return OK and the correct view for a GET when registered as PSP but not PSA" in {
       when(toggleService.get(any())(any(), any())).thenReturn(Future.successful(Enabled(EnrolmentRecovery)))
-      val authConnector: AuthConnector = fakeAuthConnector(Future.successful(Enrolments(Set(enrolmentPSP))))
+      val authConnector: AuthConnector = fakeAuthConnector(Future.successful(new~(Some("id"), Enrolments(Set(enrolmentPSP)))))
 
       val result = controller(authConnector).onPageLoad(fakeRequest)
       val viewAsString = registerAsPsaView()(fakeRequest, messages).toString
@@ -83,7 +88,7 @@ class YouNeedToRegisterControllerSpec extends ControllerSpecBase with MockitoSug
 
     "return OK and the correct view for a GET when registered as neither PSA or PSP enrolment recovery toggle switched on" in {
       when(toggleService.get(any())(any(), any())).thenReturn(Future.successful(Enabled(EnrolmentRecovery)))
-      val authConnector: AuthConnector = fakeAuthConnector(Future.successful(Enrolments(Set(noEnrolments))))
+      val authConnector: AuthConnector = fakeAuthConnector(Future.successful(new~(Some("id"), Enrolments(Set(noEnrolments)))))
 
       val result = controller(authConnector).onPageLoad(fakeRequest)
       val viewAsString = registerView()(fakeRequest, messages).toString
@@ -94,7 +99,7 @@ class YouNeedToRegisterControllerSpec extends ControllerSpecBase with MockitoSug
 
     "return OK and the correct view for a GET when registered as neither PSA or PSP enrolment recovery toggle switched off" in {
       when(toggleService.get(any())(any(), any())).thenReturn(Future.successful(Disabled(EnrolmentRecovery)))
-      val authConnector: AuthConnector = fakeAuthConnector(Future.successful(Enrolments(Set(noEnrolments))))
+      val authConnector: AuthConnector = fakeAuthConnector(Future.successful(new~(Some("id"),Enrolments(Set(noEnrolments)))))
 
       val result = controller(authConnector).onPageLoad(fakeRequest)
       val viewAsStringOld = viewOld()(fakeRequest, messages).toString

@@ -20,8 +20,6 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import models.{EROverview, SchemeReferenceNumber}
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
-import play.api.Application
-import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsArray, JsResultException, Json}
 import uk.gov.hmrc.http._
 import utils.{Enumerable, WireMockHelper}
@@ -40,13 +38,6 @@ class PensionSchemeReturnConnectorSpec
   private implicit lazy val hc: HeaderCarrier = HeaderCarrier()
 
   override protected def portConfigKey: String = "microservice.services.pensions-scheme-return.port"
-
-  private def application: Application =
-    new GuiceApplicationBuilder()
-      .configure(
-        "microservice.services.pension-scheme-event-reporting.port" -> server.port
-      )
-      .build()
 
   private lazy val connector: PensionSchemeReturnConnector = injector.instanceOf[PensionSchemeReturnConnector]
   val startDate = "2022-04-06"

@@ -55,7 +55,7 @@ class AuthActionSpec
           config = frontendAppConfig,
           parser = app.injector.instanceOf[BodyParsers.Default]
         )
-        val controller = new Harness(authAction)
+        val controller = harness(authAction)
 
         val result = controller.onPageLoad()(fakeRequest)
         status(result) mustBe OK
@@ -70,7 +70,7 @@ class AuthActionSpec
           config = frontendAppConfig,
           parser = app.injector.instanceOf[BodyParsers.Default]
         )
-        val controller = new Harness(authAction, authEntity = PSP)
+        val controller = harness(authAction, authEntity = PSP)
 
         val result = controller.onPageLoad()(fakeRequest)
         status(result) mustBe OK
@@ -88,7 +88,7 @@ class AuthActionSpec
           config = frontendAppConfig,
           parser = app.injector.instanceOf[BodyParsers.Default]
         )
-        val controller = new Harness(authAction, authEntity = PSA)
+        val controller = harness(authAction, authEntity = PSA)
 
         val result = controller.onPageLoad()(fakeRequest)
         status(result) mustBe OK
@@ -104,7 +104,7 @@ class AuthActionSpec
           config = frontendAppConfig,
           parser = app.injector.instanceOf[BodyParsers.Default]
         )
-        val controller = new Harness(authAction, authEntity = PSP)
+        val controller = harness(authAction, authEntity = PSP)
 
         val result = controller.onPageLoad()(fakeRequest)
         status(result) mustBe OK
@@ -118,7 +118,7 @@ class AuthActionSpec
           config = frontendAppConfig,
           parser = app.injector.instanceOf[BodyParsers.Default]
         )
-        val controller = new Harness(authAction, authEntity = PSA)
+        val controller = harness(authAction, authEntity = PSA)
 
         val result = controller.onPageLoad()(fakeRequest)
         status(result) mustBe SEE_OTHER
@@ -133,7 +133,7 @@ class AuthActionSpec
           config = frontendAppConfig,
           parser = app.injector.instanceOf[BodyParsers.Default]
         )
-        val controller = new Harness(authAction, authEntity = PSP)
+        val controller = harness(authAction, authEntity = PSP)
 
         val result = controller.onPageLoad()(fakeRequest)
         status(result) mustBe SEE_OTHER
@@ -150,7 +150,7 @@ class AuthActionSpec
           config = frontendAppConfig,
           parser = app.injector.instanceOf[BodyParsers.Default]
         )
-        val controller = new Harness(authAction, authEntity = PSP)
+        val controller = harness(authAction, authEntity = PSP)
 
         val result = controller.onPageLoad()(fakeRequest)
         status(result) mustBe SEE_OTHER
@@ -168,7 +168,7 @@ class AuthActionSpec
           config = frontendAppConfig,
           parser = app.injector.instanceOf[BodyParsers.Default]
         )
-        val controller = new Harness(authAction, authEntity = PSA)
+        val controller = harness(authAction, authEntity = PSA)
 
         val result = controller.onPageLoad()(fakeRequest)
         status(result) mustBe SEE_OTHER
@@ -187,7 +187,7 @@ class AuthActionSpec
           config = frontendAppConfig,
           parser = app.injector.instanceOf[BodyParsers.Default]
         )
-        val controller = new Harness(authAction)
+        val controller = harness(authAction)
 
         val result = controller.onPageLoad()(fakeRequest)
         status(result) mustBe SEE_OTHER
@@ -202,7 +202,7 @@ class AuthActionSpec
           mockUserAnswersCacheConnector,
           frontendAppConfig, app.injector.instanceOf[BodyParsers.Default]
         )
-        val controller = new Harness(authAction)
+        val controller = harness(authAction)
         val result = controller.onPageLoad()(fakeRequest)
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get must startWith(frontendAppConfig.loginUrl)
@@ -216,7 +216,7 @@ class AuthActionSpec
           mockUserAnswersCacheConnector,
           frontendAppConfig, app.injector.instanceOf[BodyParsers.Default]
         )
-        val controller = new Harness(authAction)
+        val controller = harness(authAction)
         val result = controller.onPageLoad()(fakeRequest)
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get must startWith(frontendAppConfig.loginUrl)
@@ -230,7 +230,7 @@ class AuthActionSpec
           mockUserAnswersCacheConnector,
           frontendAppConfig, app.injector.instanceOf[BodyParsers.Default]
         )
-        val controller = new Harness(authAction)
+        val controller = harness(authAction)
         val result = controller.onPageLoad()(fakeRequest)
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
@@ -244,7 +244,7 @@ class AuthActionSpec
           mockUserAnswersCacheConnector,
           frontendAppConfig, app.injector.instanceOf[BodyParsers.Default]
         )
-        val controller = new Harness(authAction)
+        val controller = harness(authAction)
         val result = controller.onPageLoad()(fakeRequest)
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
@@ -258,7 +258,7 @@ class AuthActionSpec
           mockUserAnswersCacheConnector,
           frontendAppConfig, app.injector.instanceOf[BodyParsers.Default]
         )
-        val controller = new Harness(authAction)
+        val controller = harness(authAction)
         val result = controller.onPageLoad()(fakeRequest)
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
@@ -272,7 +272,7 @@ class AuthActionSpec
           mockUserAnswersCacheConnector,
           frontendAppConfig, app.injector.instanceOf[BodyParsers.Default]
         )
-        val controller = new Harness(authAction)
+        val controller = harness(authAction)
         val result = controller.onPageLoad()(fakeRequest)
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
@@ -286,7 +286,7 @@ class AuthActionSpec
           mockUserAnswersCacheConnector,
           frontendAppConfig, app.injector.instanceOf[BodyParsers.Default]
         )
-        val controller = new Harness(authAction)
+        val controller = harness(authAction)
         val result = controller.onPageLoad()(fakeRequest)
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
@@ -297,29 +297,35 @@ class AuthActionSpec
 
 object AuthActionSpec extends SpecBase with MockitoSugar {
 
-  private val enrolmentPSP = Enrolment(
+  val enrolmentPSP: Enrolment = Enrolment(
     key = "HMRC-PODSPP-ORG",
     identifiers = Seq(EnrolmentIdentifier(key = "PSPID", value = "20000000")),
     state = "",
     delegatedAuthRule = None
   )
 
-  private val enrolmentPSA = Enrolment(
+  val enrolmentPSA: Enrolment = Enrolment(
     key = "HMRC-PODS-ORG",
     identifiers = Seq(EnrolmentIdentifier(key = "PSAID", value = "A0000000")),
     state = "",
     delegatedAuthRule = None
   )
 
-  private val mockUserAnswersCacheConnector = mock[UserAnswersCacheConnector]
+  val mockUserAnswersCacheConnector: UserAnswersCacheConnector = mock[UserAnswersCacheConnector]
 
-  private class Harness(authAction: AuthAction, val controllerComponents: MessagesControllerComponents = controllerComponents,
-                        authEntity: AuthEntity = PSA)
+  private def harness(authAction: AuthAction, controllerComponents: MessagesControllerComponents = controllerComponents,
+                      authEntity: AuthEntity = PSA) = {
+    new Harness(controllerComponents, action = authAction.apply(authEntity))
+  }
+  
+
+  class Harness[+T[_]](val controllerComponents: MessagesControllerComponents = controllerComponents,
+                action: ActionBuilder[T, AnyContent])
     extends BaseController {
-    def onPageLoad(): Action[AnyContent] = authAction.apply(authEntity) { _ => Ok }
+    def onPageLoad(): Action[AnyContent] = action { _ => Ok }
   }
 
-  private def fakeAuthConnector(stubbedRetrievalResult: Future[_]): AuthConnector = new AuthConnector {
+  def fakeAuthConnector(stubbedRetrievalResult: Future[_]): AuthConnector = new AuthConnector {
 
     def authorise[A](predicate: Predicate, retrieval: Retrieval[A])
                     (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[A] =
