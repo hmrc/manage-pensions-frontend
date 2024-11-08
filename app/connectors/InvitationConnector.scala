@@ -23,8 +23,9 @@ import models.AcceptedInvitation
 import models.invitations.Invitation
 import play.api.Logger
 import play.api.http.Status._
+import play.api.libs.json.Json
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.http.HttpClient
+import uk.gov.hmrc.http.client.HttpClientV2
 import utils.HttpResponseHelper
 
 import scala.concurrent.ExecutionContext
@@ -34,11 +35,11 @@ import scala.util.Failure
 @ImplementedBy(classOf[InvitationConnectorImpl])
 trait InvitationConnector {
 
-  def invite(invitation: Invitation)
-            (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[InvitationStatus]
+  def invite(invitation: Invitation
+            )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[InvitationStatus]
 
-  def acceptInvite(acceptedInvitation: AcceptedInvitation)
-                  (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit]
+  def acceptInvite(acceptedInvitation: AcceptedInvitation
+                  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit]
 
 }
 
@@ -62,31 +63,33 @@ class InviterPsaIdInvalidException extends AcceptInvitationException
 
 class ActiveRelationshipExistsException extends AcceptInvitationException
 
-class InvitationConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig)
+class InvitationConnectorImpl @Inject()(httpClientV2: HttpClientV2, config: FrontendAppConfig)
   extends InvitationConnector
     with HttpResponseHelper {
 
   private val logger = Logger(classOf[InvitationConnectorImpl])
 
-  override def invite(invitation: Invitation)
-                     (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[InvitationStatus] = {
+  override def invite(invitation: Invitation
+                     )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[InvitationStatus] = {
     val nameMatchingFailedMessage = "The name and PSA Id do not match"
     val psaAlreadyInvitedMessage = "The invitation is to a PSA already associated with this scheme"
+    val inviteUrl = url"${config.inviteUrl}"
 
-    http.POST[Invitation, HttpResponse](config.inviteUrl, invitation) map {
-      response =>
-        response.status match {
-          case CREATED => InvitationSent
-          case NOT_FOUND if response.body.contains(nameMatchingFailedMessage) => NameMatchingError
-          case FORBIDDEN if response.body.contains("DELIMITED_PSAID") => NameMatchingError
-          case FORBIDDEN if response.body.contains(psaAlreadyInvitedMessage) => PsaAlreadyInvitedError
-          case _ => {
-            handleErrorResponse("POST", config.inviteUrl)(response)
+    httpClientV2.post(inviteUrl)
+      .withBody(Json.toJson(invitation))
+      .execute[HttpResponse] map {
+        response =>
+          response.status match {
+            case CREATED => InvitationSent
+            case NOT_FOUND if response.body.contains(nameMatchingFailedMessage) => NameMatchingError
+            case FORBIDDEN if response.body.contains("DELIMITED_PSAID") => NameMatchingError
+            case FORBIDDEN if response.body.contains(psaAlreadyInvitedMessage) => PsaAlreadyInvitedError
+            case _ =>
+              handleErrorResponse("POST", config.inviteUrl)(response)
           }
-        }
-    } andThen {
-      case Failure(t: Throwable) => logger.warn("Unable to invite PSA to administer scheme", t)
-    }
+      } andThen {
+        case Failure(t: Throwable) => logger.warn("Unable to invite PSA to administer scheme", t)
+      }
   }
 
   def handleBadResponse(response: String): Unit = {
@@ -104,20 +107,24 @@ class InvitationConnectorImpl @Inject()(http: HttpClient, config: FrontendAppCon
     }
   }
 
-  override def acceptInvite(acceptedInvitation: AcceptedInvitation)
-                           (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
+  override def acceptInvite(acceptedInvitation: AcceptedInvitation
+                           )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
 
-    http.POST[AcceptedInvitation, HttpResponse](config.acceptInvitationUrl, acceptedInvitation) map {
-      response =>
-        response.status match {
-          case CREATED => ()
-          case BAD_REQUEST => handleBadResponse(response.body)
-          case CONFLICT if response.body.contains("ACTIVE_RELATIONSHIP_EXISTS") => throw new ActiveRelationshipExistsException
-          case _ => handleErrorResponse("POST", config.acceptInvitationUrl)(response)
-        }
-    } andThen {
-      case Failure(t: Throwable) => logger.warn("Unable to accept invitation to administer a scheme", t)
-    }
+    val acceptInvitationUrl = url"${config.acceptInvitationUrl}"
+
+    httpClientV2.post(acceptInvitationUrl)
+      .withBody(Json.toJson(acceptedInvitation))
+      .execute[HttpResponse] map {
+        response =>
+          response.status match {
+            case CREATED => ()
+            case BAD_REQUEST => handleBadResponse(response.body)
+            case CONFLICT if response.body.contains("ACTIVE_RELATIONSHIP_EXISTS") => throw new ActiveRelationshipExistsException
+            case _ => handleErrorResponse("POST", config.acceptInvitationUrl)(response)
+          }
+      } andThen {
+        case Failure(t: Throwable) => logger.warn("Unable to accept invitation to administer a scheme", t)
+      }
   }
 
 }

@@ -19,21 +19,22 @@ package connectors
 import com.google.inject.Inject
 import config.FrontendAppConfig
 import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.HttpResponse
-import uk.gov.hmrc.http.HttpClient
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
+import uk.gov.hmrc.http.client.HttpClientV2
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
-
-class MongoDiagnosticsConnector @Inject()(http: HttpClient, config: FrontendAppConfig) {
+class MongoDiagnosticsConnector @Inject()(httpClientV2: HttpClientV2, config: FrontendAppConfig) {
 
   def fetchDiagnostics()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[String] = {
 
+    val pensionAdminUrl = url"${config.pensionAdminUrl}/test-only/mongo-diagnostics"
+    val pensionsSchemeUrl = url"${config.pensionsSchemeUrl}/test-only/mongo-diagnostics"
+
     for {
-      admin <- http.GET[HttpResponse](s"${config.pensionAdminUrl}/test-only/mongo-diagnostics")
-      scheme <- http.GET[HttpResponse](s"${config.pensionsSchemeUrl}/test-only/mongo-diagnostics")
+      admin  <- httpClientV2.get(pensionAdminUrl).execute[HttpResponse]
+      scheme <- httpClientV2.get(pensionsSchemeUrl).execute[HttpResponse]
     } yield {
       admin.body + "\n" + scheme.body
     }

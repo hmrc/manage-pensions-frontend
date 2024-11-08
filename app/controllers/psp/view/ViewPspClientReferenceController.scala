@@ -24,7 +24,7 @@ import controllers.psa.routes._
 import controllers.psp.view.routes._
 import forms.invitations.psp.PspClientReferenceFormProvider
 import identifiers.psp.deauthorise.PspDetailsId
-import identifiers.{SchemeNameId, SchemeSrnId}
+import identifiers.SchemeNameId
 import models.{Mode, SchemeReferenceNumber}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}

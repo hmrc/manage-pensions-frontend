@@ -16,13 +16,14 @@
 
 package connectors
 
-import com.google.inject.{Inject, ImplementedBy}
+import com.google.inject.{ImplementedBy, Inject}
 import config.FrontendAppConfig
 import models.DeAuthorise
 import play.api.Logger
 import play.api.http.Status._
-import play.api.libs.json.{Json, JsValue}
+import play.api.libs.json.Json
 import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.client.HttpClientV2
 import utils.HttpResponseHelper
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,11 +33,11 @@ import scala.util.Failure
 trait PspConnector {
 
   @throws(classOf[ActiveRelationshipExistsException])
-  def authorisePsp(pstr: String, psaId: String, pspId: String, clientReference: Option[String])
-                  (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit]
+  def authorisePsp(pstr: String, psaId: String, pspId: String, clientReference: Option[String]
+                  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit]
 
-  def deAuthorise(pstr: String, deAuthorise: DeAuthorise)
-                 (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse]
+  def deAuthorise(pstr: String, deAuthorise: DeAuthorise
+                 )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse]
 
 }
 
@@ -44,15 +45,16 @@ abstract class DeAuthorisationException extends Exception
 
 class DuplicateSubmissionException extends DeAuthorisationException
 
-class PspConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig)
+class PspConnectorImpl @Inject()(httpClientV2: HttpClientV2, config: FrontendAppConfig)
   extends PspConnector
     with HttpResponseHelper {
 
   private val logger = Logger(classOf[PspConnectorImpl])
 
-  override def authorisePsp(pstr: String, psaId: String, pspId: String, clientReference: Option[String])
-                           (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
+  override def authorisePsp(pstr: String, psaId: String, pspId: String, clientReference: Option[String]
+                           )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
 
+    val authorisePspUrl = url"${config.authorisePspUrl}"
     val clientRefJson = clientReference.map(cr => Json.obj("clientReference" -> cr)).getOrElse(Json.obj())
     val headerCarrier = hc.withExtraHeaders("pstr" -> pstr)
     val pspDetails = Json.obj(
@@ -65,37 +67,38 @@ class PspConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig)
       "pspDeclarationDetails" -> Json.obj("box1" -> true, "box2" -> true, "box3" -> true)
     )
 
-    http.POST[JsValue, HttpResponse](config.authorisePspUrl, json)(implicitly, implicitly, headerCarrier, implicitly) map {
-      response =>
-        response.status match {
-          case OK => ()
-          case FORBIDDEN if response.body.contains("ACTIVE_RELATIONSHIP_EXISTS") => throw new ActiveRelationshipExistsException
-          case _ => handleErrorResponse("POST", config.authorisePspUrl)(response)
-        }
-    } andThen {
-      case Failure(_: ActiveRelationshipExistsException) =>
-      case Failure(t: Throwable) => logger.warn("Unable to authorise psp", t)
-    }
+    httpClientV2.post(authorisePspUrl)(headerCarrier)
+      .withBody(json)
+      .execute[HttpResponse].map {
+          response =>
+            response.status match {
+              case OK => ()
+              case FORBIDDEN if response.body.contains("ACTIVE_RELATIONSHIP_EXISTS") => throw new ActiveRelationshipExistsException
+              case _ => handleErrorResponse("POST", config.authorisePspUrl)(response)
+            }
+        } andThen {
+        case Failure(_: ActiveRelationshipExistsException) =>
+        case Failure(t: Throwable) => logger.warn("Unable to authorise psp", t)
+      }
   }
 
-  override def deAuthorise(pstr: String, deAuthorise: DeAuthorise)
-                          (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
+  override def deAuthorise(pstr: String, deAuthorise: DeAuthorise
+                          )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
 
     val headerCarrier = hc.withExtraHeaders("pstr" -> pstr)
+    val deAuthorisePspUrl = url"${config.deAuthorisePspUrl}"
 
-    http.POST[JsValue, HttpResponse](
-      config.deAuthorisePspUrl, Json.toJson(deAuthorise)
-    )(
-      implicitly, implicitly, headerCarrier, implicitly
-    ) map {
-      response =>
-        response.status match {
-          case OK => response
-          case CONFLICT if response.body.contains("DUPLICATE_SUBMISSION") => throw new DuplicateSubmissionException
-          case _ => handleErrorResponse("POST", config.deAuthorisePspUrl)(response)
-        }
-    } andThen {
-      case Failure(t: Throwable) => logger.warn("Unable to de-authorise psp", t)
-    }
+    httpClientV2.post(deAuthorisePspUrl)(headerCarrier)
+      .withBody(Json.toJson(deAuthorise))
+      .execute[HttpResponse] map {
+        response =>
+          response.status match {
+            case OK => response
+            case CONFLICT if response.body.contains("DUPLICATE_SUBMISSION") => throw new DuplicateSubmissionException
+            case _ => handleErrorResponse("POST", deAuthorisePspUrl.toString)(response)
+          }
+      } andThen {
+        case Failure(t: Throwable) => logger.warn("Unable to de-authorise psp", t)
+      }
   }
 }

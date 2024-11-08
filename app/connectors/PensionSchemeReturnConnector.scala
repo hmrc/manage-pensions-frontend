@@ -22,33 +22,34 @@ import models.{EROverview, SchemeReferenceNumber}
 import play.api.http.Status._
 import play.api.libs.json._
 import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.client.HttpClientV2
 import utils.HttpResponseHelper
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class PensionSchemeReturnConnector @Inject()(
-                                         config: FrontendAppConfig,
-                                         http: HttpClient
-                                       )(implicit ec: ExecutionContext) extends HttpResponseHelper {
+                                              config: FrontendAppConfig,
+                                              httpClientV2: HttpClientV2
+                                            )(implicit ec: ExecutionContext) extends HttpResponseHelper {
 
-  def getOverview(srn: SchemeReferenceNumber, pstr: String, startDate: String, endDate: String)
-                 (implicit headerCarrier: HeaderCarrier): Future[Seq[EROverview]] = {
+  def getOverview(srn: SchemeReferenceNumber, pstr: String, startDate: String, endDate: String
+                 )(implicit headerCarrier: HeaderCarrier): Future[Seq[EROverview]] = {
+
     val headers: Seq[(String, String)] = Seq(
       "Content-Type" -> "application/json",
       "srn" -> srn.id
     )
 
-    def psrOverviewUrl = s"${config.pensionsSchemeReturnUrl}/pension-scheme-return/psr/overview/$pstr?fromDate=$startDate&toDate=$endDate"
+    def psrOverviewUrl = url"${config.pensionsSchemeReturnUrl}/pension-scheme-return/psr/overview/$pstr?fromDate=$startDate&toDate=$endDate"
 
     val hc: HeaderCarrier = headerCarrier.withExtraHeaders(headers: _*)
 
-    http.GET[HttpResponse](psrOverviewUrl)(implicitly, hc, implicitly)
-      .map { response =>
+    httpClientV2.get(psrOverviewUrl)(hc)
+    .execute[HttpResponse].map { response =>
         response.status match {
           case OK =>
             Json.parse(response.body).validate[Seq[EROverview]](Reads.seq(EROverview.rds)) match {
-              case JsSuccess(data, _) =>
-                data
+              case JsSuccess(data, _) => data
               case JsError(errors) => throw JsResultException(errors)
             }
           case _ => throw new HttpException(response.body, response.status)

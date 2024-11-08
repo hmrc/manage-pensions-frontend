@@ -22,11 +22,10 @@ import identifiers.TypedIdentifier
 import play.api.Logger
 import play.api.http.Status._
 import play.api.libs.json._
-import play.api.libs.ws.WSClient
 import play.api.mvc.Result
 import play.api.mvc.Results._
-import uk.gov.hmrc.crypto.PlainText
 import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.client.HttpClientV2
 import utils.UserAnswers
 
 import scala.concurrent.ExecutionContext
@@ -34,16 +33,16 @@ import scala.concurrent.Future
 
 class MicroserviceCacheConnector @Inject()(
                                             config: FrontendAppConfig,
-                                            http: WSClient
+                                            httpClientV2: HttpClientV2
                                           ) extends UserAnswersCacheConnector {
 
   private val logger = Logger(classOf[MicroserviceCacheConnector])
 
   protected def url(id: String) =
-    s"${config.pensionsSchemeUrl}/pensions-scheme/journey-cache/scheme/$id"
+    url"${config.pensionsSchemeUrl}/pensions-scheme/journey-cache/scheme/$id"
 
   protected def lastUpdatedUrl(id: String) =
-    s"${config.pensionsSchemeUrl}/pensions-scheme/journey-cache/scheme/$id/lastUpdated"
+    url"${config.pensionsSchemeUrl}/pensions-scheme/journey-cache/scheme/$id/lastUpdated"
 
   override def save[A, I <: TypedIdentifier[A]](
                                                  cacheId: String,
@@ -85,11 +84,10 @@ class MicroserviceCacheConnector @Inject()(
       json =>
         modification(UserAnswers(json.getOrElse(Json.obj()))) match {
           case JsSuccess(UserAnswers(updatedJson), _) =>
-            http
-              .url(url(cacheId))
-              .withHttpHeaders(CacheConnector.headers(hc): _*)
-              .post(PlainText(Json.stringify(updatedJson)).value)
-              .flatMap {
+            httpClientV2.post(url(cacheId))
+              .setHeader(CacheConnector.headers(hc): _*)
+              .withBody(updatedJson)
+              .execute[HttpResponse].flatMap {
                 response =>
                   response.status match {
                     case OK =>
@@ -98,22 +96,16 @@ class MicroserviceCacheConnector @Inject()(
                       Future.failed(new HttpException(response.body, response.status))
                   }
               }
+
           case JsError(errors) =>
             Future.failed(JsResultException(errors))
         }
     }
 
-  override def fetch(
-                      id: String
-                    )(
-                      implicit ec: ExecutionContext,
-                      hc: HeaderCarrier
-                    ): Future[Option[JsValue]] = {
-    http
-      .url(url(id))
-      .withHttpHeaders(CacheConnector.headers(hc): _*)
-      .get()
-      .flatMap {
+  override def fetch(id: String)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[Option[JsValue]] = {
+    httpClientV2.get(url(id))
+      .setHeader(CacheConnector.headers(hc): _*)
+      .execute[HttpResponse].flatMap {
         response =>
           response.status match {
             case NOT_FOUND =>
@@ -126,28 +118,15 @@ class MicroserviceCacheConnector @Inject()(
       }
   }
 
-  override def removeAll(
-                          id: String
-                        )(
-                          implicit ec: ExecutionContext,
-                          hc: HeaderCarrier
-                        ): Future[Result] =
-    http
-      .url(url(id))
-      .withHttpHeaders(CacheConnector.headers(hc): _*)
-      .delete().map(_ => Ok)
+  override def removeAll(id: String)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[Result] =
+    httpClientV2.delete(url(id))
+      .setHeader(CacheConnector.headers(hc): _*)
+      .execute[HttpResponse].map(_ => Ok)
 
-  override def lastUpdated(
-                            id: String
-                          )(
-                            implicit ec: ExecutionContext,
-                            hc: HeaderCarrier
-                          ): Future[Option[JsValue]] =
-    http
-      .url(lastUpdatedUrl(id))
-      .withHttpHeaders(CacheConnector.headers(hc): _*)
-      .get()
-      .flatMap {
+  override def lastUpdated(id: String)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[Option[JsValue]] = {
+    httpClientV2.get(lastUpdatedUrl(id))
+      .setHeader(CacheConnector.headers(hc): _*)
+      .execute[HttpResponse].flatMap {
         response =>
           response.status match {
             case NOT_FOUND =>
@@ -159,4 +138,6 @@ class MicroserviceCacheConnector @Inject()(
               Future.failed(new HttpException(response.body, response.status))
           }
       }
+  }
+
 }

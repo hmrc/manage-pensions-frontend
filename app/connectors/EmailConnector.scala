@@ -21,50 +21,52 @@ import config.FrontendAppConfig
 import models.SendEmailRequest
 import play.api.Logger
 import play.api.http.Status._
+import play.api.libs.json.Json
 import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 sealed trait EmailStatus
 
 case object EmailSent extends EmailStatus
-
 case object EmailNotSent extends EmailStatus
 
 @ImplementedBy(classOf[EmailConnectorImpl])
 trait EmailConnector {
 
-  def sendEmail(email: SendEmailRequest)
-               (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[EmailStatus]
+  def sendEmail(email: SendEmailRequest
+               )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[EmailStatus]
 
 }
 
-class EmailConnectorImpl @Inject()(
-                                    appConfig: FrontendAppConfig,
-                                    http: HttpClient
-                                  ) extends EmailConnector {
+class EmailConnectorImpl @Inject()(appConfig: FrontendAppConfig, httpClientV2: HttpClientV2)
+  extends EmailConnector {
 
   private val logger = Logger(classOf[EmailConnectorImpl])
 
-  override def sendEmail(email: SendEmailRequest)
-                        (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[EmailStatus] = {
+  override def sendEmail(email: SendEmailRequest
+                        )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[EmailStatus] = {
     logger.debug("Sending email:" + email)
-    http.POST[SendEmailRequest, HttpResponse](appConfig.emailUrl, email).map { response =>
-      response.status match {
-        case ACCEPTED =>
-          logger.debug("Email sent successfully")
-          EmailSent
-        case status =>
-          logger.warn(s"Email API returned non-expected response:$status")
-          EmailNotSent
-      }
-    } recoverWith {
-      case t: Throwable =>
-        logger.warn("Email API call failed", t)
-        Future.successful(EmailNotSent)
-    }
+    val emailUrl = url"${appConfig.emailUrl}"
 
+    httpClientV2.post(emailUrl)
+      .withBody(Json.toJson(email))
+      .execute[HttpResponse].map { response =>
+        response.status match {
+          case ACCEPTED =>
+            logger.debug("Email sent successfully")
+            EmailSent
+          case status =>
+            logger.warn(s"Email API returned non-expected response:$status")
+            EmailNotSent
+        }
+      } recoverWith {
+        case t: Throwable =>
+          logger.warn("Email API call failed", t)
+          Future.successful(EmailNotSent)
+      }
   }
 
 }

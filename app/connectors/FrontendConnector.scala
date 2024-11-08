@@ -19,17 +19,17 @@ package connectors
 import com.google.inject.Inject
 import config.FrontendAppConfig
 import play.api.Logger
+import play.api.http.Status.OK
 import play.api.mvc.Request
 import play.twirl.api.Html
 import services.HeaderCarrierFunctions
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.HttpClient
-import uk.gov.hmrc.play.partials.HtmlPartial
-import uk.gov.hmrc.play.partials.HtmlPartial.connectionExceptionsAsHtmlPartialFailure
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
+import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.client.HttpClientV2
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class FrontendConnector @Inject()(http: HttpClient, config: FrontendAppConfig) {
+class FrontendConnector @Inject()(httpClientV2: HttpClientV2, config: FrontendAppConfig) {
 
   private val logger = Logger(classOf[FrontendConnector])
 
@@ -70,19 +70,20 @@ class FrontendConnector @Inject()(http: HttpClient, config: FrontendAppConfig) {
   private def retrievePartial[A](url: String, extraHeaders: Seq[(String, String)] = Seq.empty)
                                 (implicit request: Request[A], ec: ExecutionContext): Future[Html] = {
 
-    implicit val hc: HeaderCarrier =
-      HeaderCarrierFunctions
-        .headerCarrierForPartials(request)
-        .toHeaderCarrier
-        .withExtraHeaders(extraHeaders: _*)
+    implicit val hc: HeaderCarrier = HeaderCarrierFunctions.headerCarrierForPartials(request)
+      .toHeaderCarrier
+      .withExtraHeaders(extraHeaders: _*)
 
-    http.GET[HtmlPartial](url) recover connectionExceptionsAsHtmlPartialFailure map {
-      case HtmlPartial.Success(_, content) =>
-        content
-      case HtmlPartial.Failure(_, _) =>
-        logger.warn("Failed to retrieve partial")
-        Html("")
-    }
+    httpClientV2.get(url"${url}")(hc)
+      .execute[HttpResponse]
+      .map { response =>
+        response.status match {
+          case OK => Html(response.body)
+          case _ =>
+            logger.warn("Failed to retrieve partial")
+            Html("")
+        }
+      }
   }
 
 }

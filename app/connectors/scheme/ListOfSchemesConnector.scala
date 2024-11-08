@@ -16,64 +16,66 @@
 
 package connectors.scheme
 
-import com.google.inject.{Inject, Singleton, ImplementedBy}
+import com.google.inject.{ImplementedBy, Inject, Singleton}
 import config.FrontendAppConfig
 import models.ListOfSchemes
 import play.api.Logger
 import play.api.http.Status._
-import play.api.libs.json.{JsResultException, JsError, JsSuccess, Json}
+import play.api.libs.json.{JsError, JsResultException, JsSuccess, Json}
 import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HttpClient, HttpResponse, HeaderCarrier}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @ImplementedBy(classOf[ListOfSchemesConnectorImpl])
 trait ListOfSchemesConnector {
 
-  def getListOfSchemes(psaId: String)
-                      (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]]
+  def getListOfSchemes(psaId: String
+                      )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]]
 
-  def getListOfSchemesForPsp(pspId: String)
-                            (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]]
+  def getListOfSchemesForPsp(pspId: String
+                            )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]]
 
 }
 
 @Singleton
-class ListOfSchemesConnectorImpl @Inject()(
-                                            http: HttpClient,
-                                            config: FrontendAppConfig
-                                          ) extends ListOfSchemesConnector {
+class ListOfSchemesConnectorImpl @Inject()(httpClientV2: HttpClientV2, config: FrontendAppConfig)
+  extends ListOfSchemesConnector {
 
   private val logger = Logger(classOf[ListOfSchemesConnectorImpl])
 
-  def getListOfSchemes(psaId: String)
-                      (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]] = {
-      val (url, schemeHc) = (config.listOfSchemesUrl, hc.withExtraHeaders("idType" -> "psaid", "idValue" -> psaId))
-      listOfSchemes(url)(schemeHc, ec)
+  private val listOfSchemesUrl = url"${config.listOfSchemesUrl}"
+
+  def getListOfSchemes(psaId: String
+                      )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]] = {
+      val schemeHc = hc.withExtraHeaders("idType" -> "psaid", "idValue" -> psaId)
+      listOfSchemes(listOfSchemesUrl)(schemeHc, ec)
   }
 
-  def getListOfSchemesForPsp(pspId: String)
-                            (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]] = {
+  def getListOfSchemesForPsp(pspId: String
+                            )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]] = {
     val schemeHc = hc.withExtraHeaders("idType" -> "pspid", "idValue" -> pspId)
-    listOfSchemes(config.listOfSchemesUrl)(schemeHc, ec)
+    listOfSchemes(listOfSchemesUrl)(schemeHc, ec)
   }
 
-  private def listOfSchemes(url: String)
-                           (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]] = {
-    http.GET[HttpResponse](url).map { response =>
-      response.status match {
-        case OK => val json = Json.parse(response.body)
-          json.validate[ListOfSchemes] match {
-            case JsSuccess(value, _) => Right(value)
-            case JsError(errors) => throw JsResultException(errors)
-          }
-        case _ =>
-          logger.error(response.body)
-          Left(response)
+  private def listOfSchemes(url: java.net.URL
+                           )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]] = {
+
+    httpClientV2.get(url)(hc)
+      .execute[HttpResponse].map { response =>
+        response.status match {
+          case OK => val json = Json.parse(response.body)
+            json.validate[ListOfSchemes] match {
+              case JsSuccess(value, _) => Right(value)
+              case JsError(errors) => throw JsResultException(errors)
+            }
+          case _ =>
+            logger.error(response.body)
+            Left(response)
+        }
       }
-    }
   }
-
 
 }
 

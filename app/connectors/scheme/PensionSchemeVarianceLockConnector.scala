@@ -23,6 +23,7 @@ import play.api.Logger
 import play.api.http.Status._
 import play.api.libs.json.{JsError, JsResultException, JsSuccess, Json}
 import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.client.HttpClientV2
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -31,54 +32,50 @@ import scala.util.{Failure, Try}
 @ImplementedBy(classOf[PensionSchemeVarianceLockConnectorImpl])
 trait PensionSchemeVarianceLockConnector {
 
-  def isLockByPsaIdOrSchemeId(psaId: String, srn: String)
-                             (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Lock]]
+  def isLockByPsaIdOrSchemeId(psaId: String, srn: String
+                             )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Lock]]
 
-  def getLock(psaId: String, srn: String)
-             (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SchemeVariance]]
+  def getLock(psaId: String, srn: String
+             )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SchemeVariance]]
 
-  def getLockByPsa(psaId: String)
-                  (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SchemeVariance]]
+  def getLockByPsa(psaId: String
+                  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SchemeVariance]]
 
-  def getLockByScheme(srn: String)
-                     (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SchemeVariance]]
+  def getLockByScheme(srn: String
+                     )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SchemeVariance]]
 
-  def releaseLock(psaId: String, srn: String)
-                 (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit]
+  def releaseLock(psaId: String, srn: String
+                 )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit]
 
 }
 
 @Singleton
-class PensionSchemeVarianceLockConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig)
+class PensionSchemeVarianceLockConnectorImpl @Inject()(httpClientV2: HttpClientV2, config: FrontendAppConfig)
   extends PensionSchemeVarianceLockConnector {
 
   private val logger = Logger(classOf[PensionSchemeVarianceLockConnectorImpl])
 
-  override def isLockByPsaIdOrSchemeId(psaId: String, srn: String)
-                                      (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Lock]] = {
+  override def isLockByPsaIdOrSchemeId(psaId: String, srn: String
+                                      )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Lock]] = {
 
-    implicit val rds: HttpReads[HttpResponse] = new HttpReads[HttpResponse] {
-      override def read(method: String, url: String, response: HttpResponse): HttpResponse = response
-    }
-
+    implicit val rds: HttpReads[HttpResponse] = (_: String, _: String, response: HttpResponse) => response
     implicit val headerCarrier: HeaderCarrier = hc.withExtraHeaders("psaId" -> psaId, "srn" -> srn)
+    val url = url"${config.updateSchemeDetailsUrl}/isLockByPsaOrScheme"
 
-    val url = s"${config.updateSchemeDetailsUrl}/isLockByPsaOrScheme"
-
-    http.GET[HttpResponse](url)(implicitly, headerCarrier, implicitly).map { response =>
-
-      response.status match {
-        case NOT_FOUND =>
-          None
-        case OK =>
-          Json.parse(response.body).validate[Lock] match {
-            case JsSuccess(value, _) => Some(value)
-            case JsError(errors) => throw JsResultException(errors)
-          }
-        case _ =>
-          throw new HttpException(response.body, response.status)
-      }
-    } andThen logExceptions("Unable to find the lock")
+    httpClientV2.get(url)(headerCarrier)
+      .execute[HttpResponse].map { response =>
+        response.status match {
+          case NOT_FOUND =>
+            None
+          case OK =>
+            Json.parse(response.body).validate[Lock] match {
+              case JsSuccess(value, _) => Some(value)
+              case JsError(errors) => throw JsResultException(errors)
+            }
+          case _ =>
+            throw new HttpException(response.body, response.status)
+        }
+      } andThen logExceptions("Unable to find the lock")
   }
 
   private def logExceptions[I](msg: String): PartialFunction[Try[I], Unit] = {
@@ -88,103 +85,86 @@ class PensionSchemeVarianceLockConnectorImpl @Inject()(http: HttpClient, config:
   override def getLock(psaId: String, srn: String)
                       (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SchemeVariance]] = {
 
-    implicit val rds: HttpReads[HttpResponse] = new HttpReads[HttpResponse] {
-      override def read(method: String, url: String, response: HttpResponse): HttpResponse = response
-    }
-
+    implicit val rds: HttpReads[HttpResponse] = (_: String, _: String, response: HttpResponse) => response
     implicit val headerCarrier: HeaderCarrier = hc.withExtraHeaders("psaId" -> psaId, "srn" -> srn)
+    val url = url"${config.updateSchemeDetailsUrl}/get-lock"
 
-    val url = s"${config.updateSchemeDetailsUrl}/get-lock"
-
-    http.GET[HttpResponse](url)(implicitly, headerCarrier, implicitly).map { response =>
-
-      response.status match {
-        case NOT_FOUND =>
-          None
-        case OK =>
-          Json.parse(response.body).validate[SchemeVariance] match {
-            case JsSuccess(value, _) => Some(value)
-            case JsError(errors) => throw JsResultException(errors)
-          }
-        case _ =>
-          throw new HttpException(response.body, response.status)
-      }
-    } andThen logExceptions("Unable to find the lock")
+    httpClientV2.get(url)(headerCarrier)
+      .execute[HttpResponse].map { response =>
+        response.status match {
+          case NOT_FOUND =>
+            None
+          case OK =>
+            Json.parse(response.body).validate[SchemeVariance] match {
+              case JsSuccess(value, _) => Some(value)
+              case JsError(errors) => throw JsResultException(errors)
+            }
+          case _ =>
+            throw new HttpException(response.body, response.status)
+        }
+      } andThen logExceptions("Unable to find the lock")
   }
 
-  override def getLockByPsa(psaId: String)
-                           (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SchemeVariance]] = {
+  override def getLockByPsa(psaId: String
+                           )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SchemeVariance]] = {
 
-    implicit val rds: HttpReads[HttpResponse] = new HttpReads[HttpResponse] {
-      override def read(method: String, url: String, response: HttpResponse): HttpResponse = response
-    }
-
+    implicit val rds: HttpReads[HttpResponse] = (_: String, _: String, response: HttpResponse) => response
     implicit val headerCarrier: HeaderCarrier = hc.withExtraHeaders("psaId" -> psaId)
+    val url = url"${config.updateSchemeDetailsUrl}/get-lock-by-psa"
 
-    val url = s"${config.updateSchemeDetailsUrl}/get-lock-by-psa"
-
-    http.GET[HttpResponse](url)(implicitly, headerCarrier, implicitly).map { response =>
-
-      response.status match {
-        case NOT_FOUND =>
-          None
-        case OK =>
-          Json.parse(response.body).validate[SchemeVariance] match {
-            case JsSuccess(value, _) => Some(value)
-            case JsError(errors) => throw JsResultException(errors)
-          }
-        case _ =>
-          throw new HttpException(response.body, response.status)
-      }
-    } andThen logExceptions("Unable to find the lock")
+    httpClientV2.get(url)(headerCarrier)
+      .execute[HttpResponse].map { response =>
+        response.status match {
+          case NOT_FOUND =>
+            None
+          case OK =>
+            Json.parse(response.body).validate[SchemeVariance] match {
+              case JsSuccess(value, _) => Some(value)
+              case JsError(errors) => throw JsResultException(errors)
+            }
+          case _ =>
+            throw new HttpException(response.body, response.status)
+        }
+      } andThen logExceptions("Unable to find the lock")
   }
 
-  override def getLockByScheme(srn: String)
-                              (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SchemeVariance]] = {
+  override def getLockByScheme(srn: String
+                              )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SchemeVariance]] = {
 
-    implicit val rds: HttpReads[HttpResponse] = new HttpReads[HttpResponse] {
-      override def read(method: String, url: String, response: HttpResponse): HttpResponse = response
-    }
-
+    implicit val rds: HttpReads[HttpResponse] = (_: String, _: String, response: HttpResponse) => response
     implicit val headerCarrier: HeaderCarrier = hc.withExtraHeaders("srn" -> srn)
+    val url = url"${config.updateSchemeDetailsUrl}/get-lock-by-scheme"
 
-    val url = s"${config.updateSchemeDetailsUrl}/get-lock-by-scheme"
-
-    http.GET[HttpResponse](url)(implicitly, headerCarrier, implicitly).map { response =>
-
-      response.status match {
-        case NOT_FOUND =>
-          None
-        case OK =>
-          Json.parse(response.body).validate[SchemeVariance] match {
-            case JsSuccess(value, _) => Some(value)
-            case JsError(errors) => throw JsResultException(errors)
-          }
-        case _ =>
-          throw new HttpException(response.body, response.status)
-      }
-    } andThen logExceptions("Unable to find the lock")
+    httpClientV2.get(url)(headerCarrier)
+      .execute[HttpResponse].map { response =>
+        response.status match {
+          case NOT_FOUND =>
+            None
+          case OK =>
+            Json.parse(response.body).validate[SchemeVariance] match {
+              case JsSuccess(value, _) => Some(value)
+              case JsError(errors) => throw JsResultException(errors)
+            }
+          case _ =>
+            throw new HttpException(response.body, response.status)
+        }
+      } andThen logExceptions("Unable to find the lock")
   }
 
-  override def releaseLock(psaId: String, srn: String)
-                          (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
+  override def releaseLock(psaId: String, srn: String
+                          )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
 
-    implicit val rds: HttpReads[HttpResponse] = new HttpReads[HttpResponse] {
-      override def read(method: String, url: String, response: HttpResponse): HttpResponse = response
-    }
-
+    implicit val rds: HttpReads[HttpResponse] = (_: String, _: String, response: HttpResponse) => response
     implicit val headerCarrier: HeaderCarrier = hc.withExtraHeaders("psaId" -> psaId, "srn" -> srn)
+    val url = url"${config.updateSchemeDetailsUrl}/release-lock"
 
-    val url = s"${config.updateSchemeDetailsUrl}/release-lock"
-
-    http.DELETE[HttpResponse](url)(implicitly, headerCarrier, implicitly).map { response =>
-
-      response.status match {
-        case OK => {}
-        case _ =>
-          throw new HttpException(response.body, response.status)
-      }
-    } andThen logExceptions("Unable to release the lock")
+    httpClientV2.delete(url)(headerCarrier)
+      .execute[HttpResponse].map { response =>
+        response.status match {
+          case OK => {}
+          case _  => throw new HttpException(response.body, response.status)
+        }
+      } andThen logExceptions("Unable to release the lock")
   }
 
 }

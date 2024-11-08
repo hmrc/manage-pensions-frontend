@@ -22,7 +22,7 @@ import controllers.actions._
 import forms.psp.deauthorise.PspDeauthDateFormProvider
 import identifiers.psp.deauthorise
 import identifiers.psp.deauthorise.{PspDeauthDateId, PspDetailsId}
-import identifiers.{SchemeNameId, SchemeSrnId}
+import identifiers.SchemeNameId
 import models.{Index, NormalMode, SchemeReferenceNumber}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}

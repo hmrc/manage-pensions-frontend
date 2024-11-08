@@ -22,7 +22,7 @@ import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction,
 import forms.psp.deauthorise.ConfirmDeauthPspFormProvider
 import identifiers.psp.PSPNameId
 import identifiers.psp.deauthorise.self.ConfirmDeauthId
-import identifiers.{SchemeNameId, SchemeSrnId}
+import identifiers.SchemeNameId
 import models.AuthEntity.PSP
 import models.{NormalMode, SchemeReferenceNumber}
 import play.api.data.Form

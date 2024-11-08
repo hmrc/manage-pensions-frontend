@@ -26,7 +26,7 @@ import forms.psa.remove.RemovalDateFormProvider
 import identifiers.invitations.{PSTRId, SchemeNameId}
 import identifiers.psa.remove.PsaRemovalDateId
 import identifiers.psa.{ListOfPSADetailsId, PSANameId}
-import identifiers.{AssociatedDateId, SchemeSrnId}
+import identifiers.AssociatedDateId
 import models.{NormalMode, SchemeReferenceNumber}
 import models.psa.remove.PsaToBeRemovedFromScheme
 import play.api.data.Form
