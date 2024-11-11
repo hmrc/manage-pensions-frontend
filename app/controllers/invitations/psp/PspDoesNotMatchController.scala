@@ -20,7 +20,7 @@ import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaSchemeAuthAction}
 import controllers.psa.routes._
 import identifiers.invitations.psp.PspNameId
-import identifiers.{SchemeNameId, SchemeSrnId}
+import identifiers.SchemeNameId
 import models.SchemeReferenceNumber
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Call, MessagesControllerComponents}

@@ -24,7 +24,7 @@ import controllers.invitations.psp.routes._
 import controllers.psa.routes._
 import forms.invitations.psp.PspHasClientReferenceFormProvider
 import identifiers.invitations.psp.{PspClientReferenceId, PspHasClientReferenceId, PspNameId}
-import identifiers.{SchemeNameId, SchemeSrnId}
+import identifiers.SchemeNameId
 import models.{Mode, SchemeReferenceNumber}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}

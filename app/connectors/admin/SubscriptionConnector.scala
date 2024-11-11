@@ -22,7 +22,8 @@ import models.psa.SubscriptionDetails
 import play.api.Logger
 import play.api.http.Status._
 import play.api.libs.json._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 import utils.HttpResponseHelper
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -39,25 +40,24 @@ class PsaIdNotFoundSubscriptionException extends SubscriptionException
 @ImplementedBy(classOf[SubscriptionConnectorImpl])
 trait SubscriptionConnector {
 
-  def getSubscriptionDetails(psaId: String)
-                            (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[SubscriptionDetails]
+  def getSubscriptionDetails(psaId: String
+                            )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[SubscriptionDetails]
 }
 
-class SubscriptionConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig)
+class SubscriptionConnectorImpl @Inject()(httpClientV2: HttpClientV2, config: FrontendAppConfig)
   extends SubscriptionConnector
     with HttpResponseHelper {
 
   private val logger = Logger(classOf[SubscriptionConnectorImpl])
 
-  override def getSubscriptionDetails(psaId: String)
-                                     (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[SubscriptionDetails] = {
+  override def getSubscriptionDetails(psaId: String
+                                     )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[SubscriptionDetails] = {
 
     val psaIdHC = hc.withExtraHeaders("psaId" -> psaId)
+    val url = url"${config.subscriptionDetailsUrl}"
 
-    val url = config.subscriptionDetailsUrl
-
-    http.GET[HttpResponse](url)(implicitly, psaIdHC, implicitly) map { response =>
-
+    httpClientV2.get(url)(psaIdHC)
+      .execute[HttpResponse] map { response =>
       response.status match {
         case OK => validateJson(response.json)
         case BAD_REQUEST if response.body.contains("INVALID_PSAID") => throw new PsaIdInvalidSubscriptionException

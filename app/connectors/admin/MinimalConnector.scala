@@ -22,7 +22,8 @@ import models.MinimalPSAPSP
 import play.api.Logger
 import play.api.http.Status._
 import play.api.libs.json.{JsError, JsResultException, JsSuccess, Json}
-import uk.gov.hmrc.http.{HttpClient, _}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 import utils.HttpResponseHelper
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -31,24 +32,23 @@ import scala.util.Failure
 @ImplementedBy(classOf[MinimalConnectorImpl])
 trait MinimalConnector {
 
-  def getMinimalPsaDetails(psaId: String)
-                          (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP]
+  def getMinimalPsaDetails(psaId: String
+                          )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP]
 
-  def getMinimalPspDetails(pspId: String)
-                          (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP]
+  def getMinimalPspDetails(pspId: String
+                          )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP]
 
-  def getPsaNameFromPsaID(psaId: String)
-                         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]]
+  def getPsaNameFromPsaID(psaId: String
+                         )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]]
 
-  def getNameFromPspID(pspId: String)
-                      (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]]
+  def getNameFromPspID(pspId: String
+                      )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]]
 }
 
 class NoMatchFoundException extends Exception
 
-class MinimalConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig)
-  extends MinimalConnector
-    with HttpResponseHelper {
+class MinimalConnectorImpl @Inject()(httpClientV2: HttpClientV2, config: FrontendAppConfig)
+  extends MinimalConnector with HttpResponseHelper {
 
   private val logger = Logger(classOf[MinimalConnectorImpl])
 
@@ -72,21 +72,25 @@ class MinimalConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig
     }
   }
 
-  private def retrieveMinimalDetails(hc: HeaderCarrier)
-    (implicit ec: ExecutionContext): Future[Option[MinimalPSAPSP]] =
-    http.GET[HttpResponse](config.minimalPsaDetailsUrl)(implicitly, hc, implicitly) map { response =>
-      response.status match {
-        case OK =>
-          Json.parse(response.body).validate[MinimalPSAPSP] match {
-            case JsSuccess(value, _) => Some(value)
-            case JsError(errors) => throw JsResultException(errors)
-          }
-        case NOT_FOUND => None
-        case FORBIDDEN if response.body.contains(pspDelimitedErrorMsg) => throw new DelimitedPractitionerException
-        case FORBIDDEN if response.body.contains(delimitedErrorMsg) => throw new DelimitedAdminException
-        case _ => handleErrorResponse("GET", config.minimalPsaDetailsUrl)(response)
+  private def retrieveMinimalDetails(hc: HeaderCarrier)(implicit ec: ExecutionContext): Future[Option[MinimalPSAPSP]] = {
+    val minimalPsaDetailsUrl = url"${config.minimalPsaDetailsUrl}"
+
+    httpClientV2.get(minimalPsaDetailsUrl)(hc)
+      .execute[HttpResponse]
+      .map { response =>
+        response.status match {
+          case OK =>
+            Json.parse(response.body).validate[MinimalPSAPSP] match {
+              case JsSuccess(value, _) => Some(value)
+              case JsError(errors) => throw JsResultException(errors)
+            }
+          case NOT_FOUND => None
+          case FORBIDDEN if response.body.contains(pspDelimitedErrorMsg) => throw new DelimitedPractitionerException
+          case FORBIDDEN if response.body.contains(delimitedErrorMsg) => throw new DelimitedAdminException
+          case _ => handleErrorResponse("GET", minimalPsaDetailsUrl.toString)(response)
+        }
       }
-    }
+  }
 
   private val delimitedErrorMsg: String = "DELIMITED_PSAID"
   private val pspDelimitedErrorMsg: String = "DELIMITED_PSPID"

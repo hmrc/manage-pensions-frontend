@@ -23,7 +23,7 @@ import controllers.actions._
 import controllers.psa.routes._
 import forms.invitations.psp.PspIdFormProvider
 import identifiers.invitations.psp.{PspId, PspNameId}
-import identifiers.{SchemeNameId, SchemeSrnId}
+import identifiers.SchemeNameId
 import models.{Mode, SchemeReferenceNumber}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}

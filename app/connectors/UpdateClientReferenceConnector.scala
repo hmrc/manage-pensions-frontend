@@ -22,7 +22,8 @@ import models.psp.UpdateClientReferenceRequest
 import play.api.Logger
 import play.api.http.Status._
 import play.api.libs.json.{JsError, JsResultException, JsSuccess, Json}
-import uk.gov.hmrc.http.{HttpClient, _}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 import utils.HttpResponseHelper
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -31,34 +32,38 @@ import scala.util.Failure
 @ImplementedBy(classOf[UpdateClientReferenceConnectorImpl])
 trait UpdateClientReferenceConnector {
 
-  def updateClientReference(updateClientReferenceRequest: UpdateClientReferenceRequest,userAction: String)
-                           (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[String]
+  def updateClientReference(updateClientReferenceRequest: UpdateClientReferenceRequest,userAction: String
+                           )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[String]
 }
 
-
-class UpdateClientReferenceConnectorImpl @Inject()(http: HttpClient, config: FrontendAppConfig)
+class UpdateClientReferenceConnectorImpl @Inject()(httpClientV2: HttpClientV2, config: FrontendAppConfig)
   extends UpdateClientReferenceConnector
     with HttpResponseHelper {
 
   private val logger = Logger(classOf[UpdateClientReferenceConnectorImpl])
 
-  override def updateClientReference(updateClientReferenceRequest: UpdateClientReferenceRequest,userAction: String)
-                                    (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[String] = {
+  override def updateClientReference(updateClientReferenceRequest: UpdateClientReferenceRequest,userAction: String
+                                    )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[String] = {
 
-    http.POST[UpdateClientReferenceRequest, HttpResponse](config.updateClientReferenceUrl, updateClientReferenceRequest,Seq("userAction"-> userAction)) map {
-      response =>
-        response.status match {
-          case OK => val json = Json.parse(response.body)
-            (json \ "status").validate[String] match {
-              case JsSuccess(value, _) => value
-              case JsError(errors) => throw JsResultException(errors)
-            }
-          case _ => handleErrorResponse("POST", config.updateClientReferenceUrl)(response)
-        }
-    } andThen {
-      case Failure(t: Throwable) => logger.warn("Unable to update Client Reference", t)
-    }
+    val updateClientReferenceUrl = url"${config.updateClientReferenceUrl}"
+    val headers = Seq("userAction"-> userAction)
+
+    httpClientV2.post(updateClientReferenceUrl)
+      .withBody(Json.toJson(updateClientReferenceRequest))
+      . setHeader(headers:_*)
+      .execute[HttpResponse] map {
+        response =>
+          response.status match {
+            case OK => val json = Json.parse(response.body)
+              (json \ "status").validate[String] match {
+                case JsSuccess(value, _) => value
+                case JsError(errors) => throw JsResultException(errors)
+              }
+            case _ => handleErrorResponse("POST", config.updateClientReferenceUrl)(response)
+          }
+      } andThen {
+        case Failure(t: Throwable) => logger.warn("Unable to update Client Reference", t)
+      }
   }
-
 
 }

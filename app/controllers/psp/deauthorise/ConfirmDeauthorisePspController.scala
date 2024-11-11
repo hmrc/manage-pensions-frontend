@@ -23,7 +23,7 @@ import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction,
 import forms.psp.deauthorise.ConfirmDeauthPspFormProvider
 import identifiers.psp.deauthorise
 import identifiers.psp.deauthorise.{ConfirmDeauthorisePspId, PspDetailsId}
-import identifiers.{SchemeNameId, SchemeSrnId}
+import identifiers.SchemeNameId
 import models.{Index, NormalMode, SchemeReferenceNumber}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}

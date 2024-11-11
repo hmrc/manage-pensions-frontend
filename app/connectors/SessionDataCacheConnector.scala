@@ -18,14 +18,15 @@ package connectors
 
 import com.google.inject.Inject
 import config.FrontendAppConfig
-import play.api.libs.ws.WSClient
+import uk.gov.hmrc.http.StringContextOps
+import uk.gov.hmrc.http.client.HttpClientV2
 
 class SessionDataCacheConnector @Inject()(
                                               config: FrontendAppConfig,
-                                              http: WSClient
-                                            ) extends MicroserviceCacheConnector(config, http) {
+                                              httpClientV2: HttpClientV2
+                                            ) extends MicroserviceCacheConnector(config, httpClientV2) {
 
-  override protected def url(id: String) = s"${config.pensionAdminUrl}/pension-administrator/journey-cache/session-data/$id"
+  override protected def url(id: String) = url"${config.pensionAdminUrl}/pension-administrator/journey-cache/session-data/$id"
 
-  override protected def lastUpdatedUrl(id: String) = s"${config.pensionAdminUrl}/pension-administrator/journey-cache/session-data/$id/lastUpdated"
+  override protected def lastUpdatedUrl(id: String) = url"${config.pensionAdminUrl}/pension-administrator/journey-cache/session-data/$id/lastUpdated"
 }

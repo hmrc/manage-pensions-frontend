@@ -19,28 +19,22 @@ package connectors.aft
 import com.google.inject.Inject
 import config.FrontendAppConfig
 import connectors.CacheConnector
-import play.api.libs.ws.WSClient
 import play.api.mvc.Result
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 import play.api.mvc.Results.Ok
+import uk.gov.hmrc.http.client.HttpClientV2
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
-class AftCacheConnector @Inject()(
-                                   config: FrontendAppConfig,
-                                   http: WSClient
-                                 ) {
+class AftCacheConnector @Inject()(config: FrontendAppConfig, httpClientV2: HttpClientV2) {
 
-  private def url = s"${config.aftUrl}/pension-scheme-accounting-for-tax/journey-cache/aft/lock"
+  private def url = url"${config.aftUrl}/pension-scheme-accounting-for-tax/journey-cache/aft/lock"
 
-  def removeLock(
-                  implicit ec: ExecutionContext,
-                  hc: HeaderCarrier
-                ): Future[Result] =
-    http
-      .url(url)
-      .withHttpHeaders(CacheConnector.headers(hc): _*)
-      .delete()
+  def removeLock(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[Result] =
+    httpClientV2.delete(url)
+      .setHeader(CacheConnector.headers(hc): _*)
+      .execute[HttpResponse]
       .map(_ => Ok)
+
 }
