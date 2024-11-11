@@ -26,7 +26,7 @@ import play.api.http.Status
 import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.mvc.Results._
-import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpException}
 import utils.WireMockHelper
 
 import scala.reflect.ClassTag
@@ -55,8 +55,9 @@ trait ConnectorBehaviour extends AsyncWordSpec with Matchers with WireMockHelper
             )
         )
 
-        recoverToSucceededIf[NotFoundException] {
-          connector.fetch("foo")
+        connector.fetch("foo") map {
+          result =>
+            result mustNot be(defined)
         }
       }
 
@@ -84,10 +85,10 @@ trait ConnectorBehaviour extends AsyncWordSpec with Matchers with WireMockHelper
             )
         )
 
-        recoverToExceptionIf[UpstreamErrorResponse] {
+        recoverToExceptionIf[HttpException] {
           connector.fetch("foo")
         } map {
-          _.statusCode mustEqual Status.INTERNAL_SERVER_ERROR
+          _.responseCode mustEqual Status.INTERNAL_SERVER_ERROR
         }
 
       }
@@ -95,7 +96,7 @@ trait ConnectorBehaviour extends AsyncWordSpec with Matchers with WireMockHelper
 
     ".save" must {
 
-      "insert when no data exists" ignore {
+      "insert when no data exists" in {
 
         val json = Json.obj(
           "fake-identifier" -> "foobar"
@@ -219,10 +220,10 @@ trait ConnectorBehaviour extends AsyncWordSpec with Matchers with WireMockHelper
         )
 
 
-        recoverToExceptionIf[UpstreamErrorResponse] {
+        recoverToExceptionIf[HttpException] {
           connector.save("foo", FakeIdentifier, "foobar")
         } map {
-          _.statusCode mustEqual Status.INTERNAL_SERVER_ERROR
+          _.responseCode mustEqual Status.INTERNAL_SERVER_ERROR
         }
 
       }
@@ -239,8 +240,9 @@ trait ConnectorBehaviour extends AsyncWordSpec with Matchers with WireMockHelper
             )
         )
 
-        recoverToSucceededIf[NotFoundException] {
-          connector.lastUpdated("foo")
+        connector.lastUpdated("foo") map {
+          result =>
+            result mustNot be(defined)
         }
       }
 
@@ -272,10 +274,10 @@ trait ConnectorBehaviour extends AsyncWordSpec with Matchers with WireMockHelper
             )
         )
 
-        recoverToExceptionIf[UpstreamErrorResponse] {
+        recoverToExceptionIf[HttpException] {
           connector.lastUpdated("foo")
         } map {
-          _.statusCode mustEqual INTERNAL_SERVER_ERROR
+          _.responseCode mustEqual INTERNAL_SERVER_ERROR
         }
 
       }
