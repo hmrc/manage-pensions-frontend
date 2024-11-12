@@ -18,7 +18,6 @@ package controllers
 
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
-import connectors.aft.AftCacheConnector
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
@@ -32,7 +31,6 @@ import scala.concurrent.{ExecutionContext, Future}
 class LogoutController @Inject()(
                                   override val authConnector: AuthConnector,
                                   appConfig: FrontendAppConfig,
-                                  aftCacheConnector: AftCacheConnector,
                                   val controllerComponents: MessagesControllerComponents,
                                   @SessionDataCache sessionDataCacheConnector: UserAnswersCacheConnector
                                 )(implicit ec: ExecutionContext)
@@ -44,10 +42,8 @@ class LogoutController @Inject()(
     implicit request =>
       authorised().retrieve(Retrievals.externalId) {
         case Some(id) =>
-          sessionDataCacheConnector.removeAll(id).flatMap { _ =>
-            aftCacheConnector.removeLock.map { _ =>
-              Redirect(appConfig.serviceSignOut).withNewSession
-            }
+          sessionDataCacheConnector.removeAll(id).map { _ =>
+            Redirect(appConfig.serviceSignOut).withNewSession
           }
         case _ =>
           Future.successful(Redirect(routes.UnauthorisedController.onPageLoad))

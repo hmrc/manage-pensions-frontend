@@ -17,7 +17,6 @@
 package controllers
 
 import connectors.UserAnswersCacheConnector
-import connectors.aft.AftCacheConnector
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -32,7 +31,6 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class LogoutControllerSpec extends ControllerSpecBase with MockitoSugar {
   private val mockUserAnswersCacheConnector = mock[UserAnswersCacheConnector]
-  private val mockAftCacheConnector = mock[AftCacheConnector]
 
   private def fakeAuthConnector(stubbedRetrievalResult: Future[_]): AuthConnector = new AuthConnector {
 
@@ -44,7 +42,6 @@ class LogoutControllerSpec extends ControllerSpecBase with MockitoSugar {
   private def logoutController = new LogoutController(
     fakeAuthConnector(Future.successful(Some("id"))),
     appConfig = frontendAppConfig,
-    aftCacheConnector = mockAftCacheConnector,
     controllerComponents = controllerComponents,
     mockUserAnswersCacheConnector
   )
@@ -53,7 +50,6 @@ class LogoutControllerSpec extends ControllerSpecBase with MockitoSugar {
 
     "redirect to feedback survey page for an Individual and remove all items from mongo cache" in {
       when(mockUserAnswersCacheConnector.removeAll(any())(any(), any())).thenReturn(Future.successful(Ok))
-      when(mockAftCacheConnector.removeLock(any(), any())).thenReturn(Future.successful(Ok))
       val result = logoutController.onPageLoad(fakeRequest)
 
       status(result) mustBe SEE_OTHER
