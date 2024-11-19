@@ -19,7 +19,6 @@ package controllers.actions
 import base.SpecBase
 import connectors.scheme.SchemeDetailsConnector
 import handlers.ErrorHandler
-import models.psa.PsaDetails
 import models.{AuthEntity, Individual, SchemeReferenceNumber}
 import models.requests.OptionalDataRequest
 import org.mockito.ArgumentMatchers.any
