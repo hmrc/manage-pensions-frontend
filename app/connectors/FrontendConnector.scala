@@ -26,6 +26,7 @@ import services.HeaderCarrierFunctions
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.play.partials.HtmlPartial
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -76,14 +77,26 @@ class FrontendConnector @Inject()(httpClientV2: HttpClientV2, config: FrontendAp
 
     httpClientV2.get(url"${url}")(hc)
       .execute[HttpResponse]
-      .map { response =>
-        response.status match {
-          case OK => Html(response.body)
-          case _ =>
-            logger.warn("Failed to retrieve partial")
-            Html("")
-        }
-      }
+      .flatMap(handleResponse)
+      .recover(recoverHtmlPartial)
+  }
+
+  private def handleResponse(response: HttpResponse)(implicit ec: ExecutionContext): Future[Html] = {
+    response.status match {
+      case OK => Future.successful(Html(response.body))
+      case _ =>
+        logger.warn("Failed to retrieve partial")
+        Future.successful(Html(""))
+    }
+  }
+
+  private def recoverHtmlPartial(implicit ec: ExecutionContext): PartialFunction[Throwable, Html] = {
+    HtmlPartial.connectionExceptionsAsHtmlPartialFailure.andThen {
+      case HtmlPartial.Success(_, content) => content
+      case HtmlPartial.Failure(_, _) =>
+        logger.warn("Failed to retrieve partial")
+        Html("")
+    }
   }
 
 }
