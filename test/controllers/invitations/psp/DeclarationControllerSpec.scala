@@ -132,7 +132,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
         when(mockSchemeDetailsService.pstr(any(), any())).thenReturn(Some(pstr))
         when(mockPspConnector.authorisePsp(any(), any(), any(), any())(any(), any())).thenReturn(Future.successful(()))
         when(mockEmailConnector.sendEmail(any())(any(), any())).thenReturn(Future.successful(EmailSent))
-        when(mockMinimalConnector.getMinimalPsaDetails(any())(any(), any()))
+        when(mockMinimalConnector.getMinimalPsaDetails()(any(), any()))
           .thenReturn(Future.successful(minPsa))
 
         val result = controller(data).onSubmit(srn)(fakeRequest.withFormUrlEncodedBody("declaration" -> "true"))
@@ -190,7 +190,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
         when(mockSchemeDetailsService.pstr(any(), any())).thenReturn(Some(pstr))
         when(mockPspConnector.authorisePsp(any(), any(), any(), any())(any(), any())).thenReturn(Future.failed(new ActiveRelationshipExistsException))
         when(mockEmailConnector.sendEmail(any())(any(), any())).thenReturn(Future.successful(EmailSent))
-        when(mockMinimalConnector.getMinimalPsaDetails(any())(any(), any()))
+        when(mockMinimalConnector.getMinimalPsaDetails()(any(), any()))
           .thenReturn(Future.successful(minPsa))
 
         val result = controller(data).onSubmit(srn)(fakeRequest.withFormUrlEncodedBody("declaration" -> "true"))

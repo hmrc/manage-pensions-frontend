@@ -44,15 +44,17 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
   val srn: SchemeReferenceNumber = SchemeReferenceNumber("AB123456C")
 
   def fakeMinimalPsaConnector(psaMinimalSubscription: MinimalPSAPSP = psaMinimalSubscription): MinimalConnector = new MinimalConnector {
-    override def getMinimalPsaDetails(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP] =
+    override def getMinimalPsaDetails()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP] =
       Future.successful(psaMinimalSubscription)
 
-    override def getPsaNameFromPsaID(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] =
+    override def getPsaNameFromPsaID()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] =
       Future.successful(None)
 
-    override def getMinimalPspDetails(pspId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP] = ???
+    override def getMinimalPspDetails()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP] = ???
 
-    override def getNameFromPspID(pspId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = ???
+    override def getNameFromPspID()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = ???
+
+    override def getEmailInvitation(id: String, idType: String, name: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = ???
   }
 
   private val fakePsaSchemeAuthAction = new FakePsaSchemeAuthAction(app.injector.instanceOf[SchemeDetailsConnector], app.injector.instanceOf[ErrorHandler])

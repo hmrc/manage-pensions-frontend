@@ -60,7 +60,7 @@ class CheckYourAnswersController @Inject()(override val messagesApi: MessagesApi
     implicit request =>
       (PspNameId and PspId).retrieve.map {
         case pspName ~ pspId =>
-          minimalConnector.getNameFromPspID(pspId).map {
+          minimalConnector.getNameFromPspID().map {
             case Some(minPspName) if pspAuthoriseFuzzyMatcher.matches(pspName, minPspName) =>
               Redirect(routes.DeclarationController.onPageLoad(srn))
             case _ => Redirect(routes.PspDoesNotMatchController.onPageLoad(srn))

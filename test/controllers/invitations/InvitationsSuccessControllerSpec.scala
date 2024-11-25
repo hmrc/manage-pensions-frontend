@@ -58,14 +58,16 @@ class InvitationsSuccessControllerSpec extends ControllerWithNormalPageBehaviour
     continue)(fakeRequest, messages).toString
 
   private def fakeMinimalPsaConnector = new MinimalConnector {
-    override def getMinimalPsaDetails(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP] =
-      Future.successful(MinimalPSAPSP(testEmail, isPsaSuspended = false, Some(testInviteeName), None, rlsFlag = false, deceasedFlag = false))
+    override def getMinimalPsaDetails()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP] = ???
 
-    override def getPsaNameFromPsaID(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = ???
+    override def getPsaNameFromPsaID()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = ???
 
-    override def getMinimalPspDetails(pspId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP] = ???
+    override def getMinimalPspDetails()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP] = ???
 
-    override def getNameFromPspID(pspId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = ???
+    override def getNameFromPspID()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = ???
+
+    override def getEmailInvitation(id: String, idType: String, name: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] =
+      Future.successful(Some(testEmail))
   }
 
   private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {

@@ -50,7 +50,7 @@ class ConfirmationController @Inject()(override val messagesApi: MessagesApi,
 
       (SchemeNameId and AuthorisedPractitionerId).retrieve.map {
         case schemeName ~ psp =>
-          minimalConnector.getMinimalPspDetails(request.pspIdOrException.id) flatMap { pspDetails =>
+          minimalConnector.getMinimalPspDetails() flatMap { pspDetails =>
             userAnswersCacheConnector.removeAll(request.externalId) map { _ =>
               Ok(view(schemeName, psp.authorisingPSA.name, pspDetails.email))
             }

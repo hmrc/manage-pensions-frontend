@@ -61,7 +61,7 @@ class ListSchemesController @Inject()(
                           request: OptionalDataRequest[AnyContent]): Future[Result] = {
     val status = if (form.hasErrors) BadRequest else Ok
     minimalConnector
-      .getNameFromPspID(request.pspIdOrException.id)
+      .getNameFromPspID()
       .flatMap(_.map {
         name =>
           userAnswersCacheConnector

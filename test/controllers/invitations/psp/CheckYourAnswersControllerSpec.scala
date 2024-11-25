@@ -74,14 +74,14 @@ class CheckYourAnswersControllerSpec extends ControllerSpecBase with MockitoSuga
 
     "on a POST" must {
       "redirect to Declaration if pspName matches the one returned from minDetails API" in {
-        when(mockMinConnector.getNameFromPspID(any())(any(), any())).thenReturn(Future.successful(Some(pspName)))
+        when(mockMinConnector.getNameFromPspID()(any(), any())).thenReturn(Future.successful(Some(pspName)))
         when(mockPspAuthoriseFuzzyMatcher.matches(any(), any())).thenReturn(true)
         val result = controller(data).onSubmit(srn)(fakeRequest)
         redirectLocation(result).value mustBe DeclarationController.onPageLoad(srn).url
       }
 
       "redirect to interrupt if pspName does not match the one returned from minDetails API" in {
-        when(mockMinConnector.getNameFromPspID(any())(any(), any())).thenReturn(Future.successful(Some(pspName)))
+        when(mockMinConnector.getNameFromPspID()(any(), any())).thenReturn(Future.successful(Some(pspName)))
         when(mockPspAuthoriseFuzzyMatcher.matches(any(), any())).thenReturn(false)
         val result = controller(data).onSubmit(srn)(fakeRequest)
         redirectLocation(result).get mustBe PspDoesNotMatchController.onPageLoad(srn).url

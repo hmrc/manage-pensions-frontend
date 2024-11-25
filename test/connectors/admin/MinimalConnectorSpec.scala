@@ -36,7 +36,7 @@ class MinimalConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelp
 
     server.stubFor(
       get(urlEqualTo(minimalPsaDetailsUrl))
-        .withHeader("psaId", equalTo(psaId))
+        .withHeader("loggedInAsPsa", equalTo("true"))
         .willReturn(
           aResponse()
             .withStatus(Status.OK)
@@ -47,7 +47,7 @@ class MinimalConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelp
 
     val connector = injector.instanceOf[MinimalConnector]
 
-    connector.getMinimalPsaDetails(psaId).map(psa =>
+    connector.getMinimalPsaDetails().map(psa =>
       psa shouldBe expectedResponse
     )
 
@@ -57,7 +57,7 @@ class MinimalConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelp
 
     server.stubFor(
       get(urlEqualTo(minimalPsaDetailsUrl))
-        .withHeader("psaId", equalTo(psaId))
+        .withHeader("loggedInAsPsa", equalTo("true"))
         .willReturn(
           badRequest
             .withHeader("Content-Type", "application/json")
@@ -67,7 +67,7 @@ class MinimalConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelp
 
     val connector = injector.instanceOf[MinimalConnector]
     recoverToSucceededIf[BadRequestException] {
-      connector.getMinimalPsaDetails(psaId)
+      connector.getMinimalPsaDetails()
     }
   }
 
@@ -84,7 +84,7 @@ class MinimalConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelp
     val connector = injector.instanceOf[MinimalConnector]
 
     recoverToSucceededIf[BadRequestException] {
-      connector.getMinimalPsaDetails(psaId)
+      connector.getMinimalPsaDetails()
     }
   }
 
@@ -93,7 +93,7 @@ class MinimalConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelp
 object MinimalConnectorSpec extends JsonFileReader {
 
   private val psaId = "A1234567"
-  private val minimalPsaDetailsUrl = s"/pension-administrator/get-minimal-psa"
+  private val minimalPsaDetailsUrl = s"/pension-administrator/get-minimal-details-self"
 
   private implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 

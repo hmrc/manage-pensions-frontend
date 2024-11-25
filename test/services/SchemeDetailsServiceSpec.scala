@@ -144,7 +144,7 @@ class SchemeDetailsServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
     "return the name of the locking psa" in {
       when(lockConnector.getLockByScheme(any())(any(), any()))
         .thenReturn(Future.successful(Some(SchemeVariance("A0000001", srn))))
-      when(minimalPsaConnector.getPsaNameFromPsaID(ArgumentMatchers.eq("A0000001"))(any(), any()))
+      when(minimalPsaConnector.getPsaNameFromPsaID()(any(), any()))
         .thenReturn(Future.successful(Some("Locky Lockhart")))
       whenReady(service.lockingPsa(Some(SchemeLock), srn)(authReq, hc)) {
         _ mustBe Some("Locky Lockhart")

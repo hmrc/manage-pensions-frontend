@@ -52,7 +52,7 @@ class ConfirmPsaDeauthPspController @Inject()(
 
         (SchemeNameId and PspDetailsId(index)).retrieve.map {
           case schemeName ~ pspDetails =>
-            minimalPsaConnector.getMinimalPsaDetails(request.psaIdOrException.id) flatMap {
+            minimalPsaConnector.getMinimalPsaDetails() flatMap {
               psaDetails =>
                 userAnswersCacheConnector.removeAll(request.externalId) map {
                   _ =>

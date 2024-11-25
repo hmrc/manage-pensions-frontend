@@ -88,9 +88,9 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
     "onPageLoad" must {
       "return OK and the correct tiles" in {
         when(fakeSchemesOverviewService.getTiles(eqTo(psaId))(any(), any(), any())).thenReturn(Future.successful(Seq(schemeCard, adminCard)))
-        when(fakeSchemesOverviewService.getPsaName(eqTo(psaId))(any()))
+        when(fakeSchemesOverviewService.getPsaName()(any()))
           .thenReturn(Future.successful(Some(psaName)))
-        when(fakeSchemesOverviewService.getPsaMinimalDetails(any())(any()))
+        when(fakeSchemesOverviewService.getPsaMinimalDetails()(any()))
           .thenReturn(Future.successful(minimalDetails()))
         when(fakeSchemesOverviewService.retrievePenaltiesUrlPartial(any())(any(), any()))
           .thenReturn(Future.successful(html))
@@ -106,9 +106,9 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
 
       "redirect to update contact address when RLS flag is set" in {
         when(fakeSchemesOverviewService.getTiles(eqTo(psaId))(any(), any(), any())).thenReturn(Future.successful(Seq(schemeCard, adminCard)))
-        when(fakeSchemesOverviewService.getPsaName(eqTo(psaId))(any()))
+        when(fakeSchemesOverviewService.getPsaName()(any()))
           .thenReturn(Future.successful(Some(psaName)))
-        when(fakeSchemesOverviewService.getPsaMinimalDetails(any())(any()))
+        when(fakeSchemesOverviewService.getPsaMinimalDetails()(any()))
           .thenReturn(Future.successful(minimalDetails(rlsFlag = true)))
         when(fakeUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(Json.obj()))
         when(appConfig.psaUpdateContactDetailsUrl).thenReturn(dummyURl)
@@ -121,9 +121,9 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
 
       "redirect to contact HMRC page when both rls and deceased flag are set" in {
         when(fakeSchemesOverviewService.getTiles(eqTo(psaId))(any(), any(), any())).thenReturn(Future.successful(Seq(schemeCard, adminCard)))
-        when(fakeSchemesOverviewService.getPsaName(eqTo(psaId))(any()))
+        when(fakeSchemesOverviewService.getPsaName()(any()))
           .thenReturn(Future.successful(Some(psaName)))
-        when(fakeSchemesOverviewService.getPsaMinimalDetails(any())(any()))
+        when(fakeSchemesOverviewService.getPsaMinimalDetails()(any()))
           .thenReturn(Future.successful(minimalDetails(rlsFlag = true, deceasedFlag = true)))
         when(fakeUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(Json.obj()))
         when(appConfig.psaUpdateContactDetailsUrl).thenReturn(dummyURl)
@@ -139,9 +139,9 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
     "changeRoleToPsaAndLoadPage" must {
       "redirect to overview page and update mongo" in {
         when(fakeSchemesOverviewService.getTiles(eqTo(psaId))(any(), any(), any())).thenReturn(Future.successful(Seq(schemeCard, adminCard)))
-        when(fakeSchemesOverviewService.getPsaName(eqTo(psaId))(any()))
+        when(fakeSchemesOverviewService.getPsaName()(any()))
           .thenReturn(Future.successful(Some(psaName)))
-        when(fakeSchemesOverviewService.getPsaMinimalDetails(any())(any()))
+        when(fakeSchemesOverviewService.getPsaMinimalDetails()(any()))
           .thenReturn(Future.successful(minimalDetails()))
         when(fakeSchemesOverviewService.retrievePenaltiesUrlPartial(any())(any(), any()))
           .thenReturn(Future.successful(html))

@@ -59,7 +59,7 @@ class PspDashboardController @Inject()(
 
       def returnLink: Option[Link] = if (request.psaId.nonEmpty) Some(link) else None
 
-      service.getPspDetails(pspId).flatMap { details =>
+      service.getPspDetails().flatMap { details =>
         if (details.deceasedFlag) {
           Future.successful(Redirect(ContactHMRCController.onPageLoad()))
         } else if (details.rlsFlag) {

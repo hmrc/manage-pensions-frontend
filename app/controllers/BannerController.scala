@@ -50,7 +50,7 @@ class BannerController @Inject()(
 
   def onPageLoadPsa: Action[AnyContent] = authenticate(PSA).async {
     implicit request =>
-      minConnector.getMinimalPsaDetails(request.psaIdOrException.id).map {
+      minConnector.getMinimalPsaDetails().map {
         minDetails =>
           val name = minDetails.name
           val fm = form.fill(
@@ -63,7 +63,7 @@ class BannerController @Inject()(
 
   def onPageLoadPsp: Action[AnyContent] = authenticate(PSP).async {
     implicit request =>
-      minConnector.getMinimalPspDetails(request.pspIdOrException.id).map {
+      minConnector.getMinimalPspDetails().map {
         minDetails =>
           val name = minDetails.name
           val fm = form.fill(
@@ -82,7 +82,7 @@ class BannerController @Inject()(
           Future.successful(BadRequest(viewPsa(formWithErrors))),
         value => {
           for {
-            minDetails <- minConnector.getMinimalPsaDetails(psaId)
+            minDetails <- minConnector.getMinimalPsaDetails()
             _ <- emailConnector.sendEmail(SendEmailRequest.apply(
               to = List(appConfig.urBannerEmail),
               templateId = "pods_user_research_banner",
@@ -109,7 +109,7 @@ class BannerController @Inject()(
           Future.successful(BadRequest(viewPsp(formWithErrors))),
         value => {
           for {
-            minDetails <- minConnector.getMinimalPspDetails(pspId)
+            minDetails <- minConnector.getMinimalPspDetails()
             _ <- emailConnector.sendEmail(SendEmailRequest.apply(
               to = List(appConfig.urBannerEmail),
               templateId = "pods_user_research_banner",

@@ -27,6 +27,7 @@ import identifiers.invitations.{InvitationSuccessId, InviteeNameId}
 import models.{NormalMode, SchemeReferenceNumber}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.annotations.Invitations
 import utils.{Navigator, UserAnswers}
@@ -53,17 +54,16 @@ class InvitationSuccessController @Inject()(
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] =
     (authenticate() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
-
       val continue = controllers.invitations.routes.InvitationSuccessController.onSubmit(srn)
       val ua = request.userAnswers
 
       (ua.get(MinimalSchemeDetailId), ua.get(InviteeNameId), ua.get(InviteePSAId)) match {
         case (Some(schemeDetail), Some(inviteeName), Some(inviteePsaId)) =>
-          minimalPsaConnector.getMinimalPsaDetails(inviteePsaId).flatMap { minimalPsaDetails =>
+          minimalPsaConnector.getEmailInvitation(inviteePsaId, "psaid", inviteeName).flatMap { email =>
             userAnswersCacheConnector.removeAll(request.externalId).map { _ =>
               Ok(view(
                 inviteeName,
-                minimalPsaDetails.email,
+                email.getOrElse(throw new NotFoundException(s"Email id not found for inviteePsaId=$inviteePsaId")),
                 schemeDetail.schemeName,
                 LocalDate.now().plusDays(frontendAppConfig.invitationExpiryDays),
                 continue

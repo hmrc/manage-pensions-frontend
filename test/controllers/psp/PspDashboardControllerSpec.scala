@@ -135,7 +135,7 @@ class PspDashboardControllerSpec
       "return OK and the correct tiles" in {
         when(mockPspDashboardService.getTiles(eqTo(pspId), any())(any()))
           .thenReturn(tiles)
-        when(mockPspDashboardService.getPspDetails(eqTo(pspId))(any()))
+        when(mockPspDashboardService.getPspDetails()(any()))
           .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false, deceasedFlag = false)))
         when(mockUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(Json.obj()))
@@ -149,7 +149,7 @@ class PspDashboardControllerSpec
       "redirect to update contact details page when rls flag is true" in {
         when(mockPspDashboardService.getTiles(eqTo(pspId), any())(any()))
           .thenReturn(tiles)
-        when(mockPspDashboardService.getPspDetails(eqTo(pspId))(any()))
+        when(mockPspDashboardService.getPspDetails()(any()))
           .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = true, deceasedFlag = false)))
         when(mockUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(Json.obj()))
@@ -164,7 +164,7 @@ class PspDashboardControllerSpec
       "redirect to contact hmrc page when both deceased flag and rls flag are true" in {
         when(mockPspDashboardService.getTiles(eqTo(pspId), any())(any()))
           .thenReturn(tiles)
-        when(mockPspDashboardService.getPspDetails(eqTo(pspId))(any()))
+        when(mockPspDashboardService.getPspDetails()(any()))
           .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = true, deceasedFlag = true)))
         when(mockUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(Json.obj()))
@@ -179,7 +179,7 @@ class PspDashboardControllerSpec
     "changeRoleToPspAndLoadPage" must {
       "redirect to onPageLoad after updating Mongo with PSP role" in {
         when(mockPspDashboardService.getTiles(eqTo(pspId), any())(any())).thenReturn(tiles)
-        when(mockPspDashboardService.getPspDetails(eqTo(pspId))(any()))
+        when(mockPspDashboardService.getPspDetails()(any()))
           .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false, deceasedFlag = false)))
         when(mockUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any()))
           .thenReturn(Future.successful(Json.obj()))

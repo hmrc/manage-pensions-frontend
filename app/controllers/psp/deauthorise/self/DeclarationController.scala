@@ -88,7 +88,7 @@ class DeclarationController @Inject()(
 
               for {
                 _ <- pspConnector.deAuthorise(pstr, deAuthModel)
-                minimalPSP <- minimalConnector.getMinimalPspDetails(pspId)
+                minimalPSP <- minimalConnector.getMinimalPspDetails()
                 _ <- sendEmail(minimalPSP, authorisedPractitioner.authorisingPSA.name, schemeName, pspId, pstr)
               } yield {
                 auditService.sendEvent(PSPSelfDeauthorisationEmailAuditEvent(pspId, pstr, minimalPSP.email, Sent))

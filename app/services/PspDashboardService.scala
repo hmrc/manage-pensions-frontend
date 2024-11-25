@@ -30,8 +30,8 @@ class PspDashboardService @Inject()(appConfig: FrontendAppConfig,
                                     minimalConnector: MinimalConnector
                                    )(implicit ec: ExecutionContext) {
 
-  def getPspDetails(pspId: String)(implicit hc: HeaderCarrier): Future[MinimalPSAPSP] =
-    minimalConnector.getMinimalPspDetails(pspId)
+  def getPspDetails()(implicit hc: HeaderCarrier): Future[MinimalPSAPSP] =
+    minimalConnector.getMinimalPspDetails()
 
   def getTiles(pspId: String, details: MinimalPSAPSP)(implicit messages: Messages): Seq[CardViewModel] =
     Seq(schemeCard, practitionerCard(pspId, details))

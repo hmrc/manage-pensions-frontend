@@ -55,11 +55,11 @@ class SchemesOverviewService @Inject()(
   def retrieveMigrationTile[A](implicit request: Request[A], ec: ExecutionContext): Future[Option[Html]] =
     frontendConnector.retrieveMigrationUrlsPartial.map(Some(_))
 
-  def getPsaName(psaId: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
-    minimalPsaConnector.getPsaNameFromPsaID(psaId).map(identity)
+  def getPsaName()(implicit hc: HeaderCarrier): Future[Option[String]] =
+    minimalPsaConnector.getPsaNameFromPsaID().map(identity)
 
-  def getPsaMinimalDetails(psaId: String)(implicit hc: HeaderCarrier): Future[MinimalPSAPSP] =
-    minimalPsaConnector.getMinimalPsaDetails(psaId)
+  def getPsaMinimalDetails()(implicit hc: HeaderCarrier): Future[MinimalPSAPSP] =
+    minimalPsaConnector.getMinimalPsaDetails()
 
   //TILES HELPER METHODS
   private def adminCard(invitationLink: Seq[Link], psaId: String)
