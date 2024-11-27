@@ -175,7 +175,8 @@ object PsaRemovalDateControllerSpec extends MockitoSugar {
   )
 
   val fakePsaRemovalConnector: PsaRemovalConnector = new PsaRemovalConnector {
-    override def remove(psaToBeRemoved: PsaToBeRemovedFromScheme)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = Future(())
+    override def remove(srn: String, psaToBeRemoved: PsaToBeRemovedFromScheme
+                       )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = Future(())
   }
 
   val mockedPensionSchemeVarianceLockConnector: PensionSchemeVarianceLockConnector =

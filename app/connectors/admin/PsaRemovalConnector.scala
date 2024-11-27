@@ -19,6 +19,7 @@ package connectors.admin
 import com.google.inject.ImplementedBy
 import com.google.inject.Inject
 import config.FrontendAppConfig
+import models.SchemeReferenceNumber
 import models.psa.remove.PsaToBeRemovedFromScheme
 import play.api.Logger
 import play.api.http.Status.NO_CONTENT
@@ -33,8 +34,7 @@ import scala.util.Failure
 
 @ImplementedBy(classOf[PsaRemovalConnectorImpl])
 trait PsaRemovalConnector {
-  def remove(psaToBeRemoved: PsaToBeRemovedFromScheme
-            )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit]
+  def remove(srn: String, psaToBeRemoved: PsaToBeRemovedFromScheme)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit]
 }
 
 class PsaRemovalConnectorImpl @Inject()(httpClientV2: HttpClientV2, config: FrontendAppConfig)
@@ -43,9 +43,8 @@ class PsaRemovalConnectorImpl @Inject()(httpClientV2: HttpClientV2, config: Fron
 
   private val logger = Logger(classOf[PsaRemovalConnectorImpl])
 
-  override def remove(psaToBeRemoved: PsaToBeRemovedFromScheme
-                     )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
-    val removePsaUrl = url"${config.removePsaUrl}"
+  override def remove(srn: String, psaToBeRemoved: PsaToBeRemovedFromScheme)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
+    val removePsaUrl = url"${config.removePsaUrl.format(srn)}"
     httpClientV2.post(removePsaUrl)(hc)
       .withBody(Json.toJson(psaToBeRemoved))
       .execute[HttpResponse].map { response =>
