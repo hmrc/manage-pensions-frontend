@@ -119,7 +119,7 @@ class PsaRemovalDateController @Inject()(
               Future.successful(BadRequest(view(formWithErrors, psaName, schemeName, srn, formatDate(associationDate)))),
             value =>
               dataCacheConnector.save(request.externalId, PsaRemovalDateId, value).flatMap { cacheMap =>
-                psaRemovalConnector.remove(PsaToBeRemovedFromScheme(request.psaIdOrException.id, pstr, value)).flatMap { _ =>
+                psaRemovalConnector.remove(srn, PsaToBeRemovedFromScheme(request.psaIdOrException.id, pstr, value)).flatMap { _ =>
                   val updateDataAndlockRemovalResult = lockConnector.getLockByPsa(request.psaIdOrException.id).map {
                     case Some(lockedSchemeVariance) if lockedSchemeVariance.srn == srn.id =>
                       updateConnector.removeAll(srn).map(_ => lockConnector.releaseLock(request.psaIdOrException.id, srn))
