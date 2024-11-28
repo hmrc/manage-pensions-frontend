@@ -52,8 +52,6 @@ class UpdateClientReferenceConnectorImpl @Inject()(httpClientV2: HttpClientV2, c
       "clientReference" -> updateClientReferenceRequest.clientReference.getOrElse(""),
       "userAction"-> userAction)
 
-    println("============================++++++++++++++++++++>>>>>>>>>>>>>>")
-
     httpClientV2.post(updateClientReferenceUrl)
       . setHeader(headers:_*)
       .execute[HttpResponse] map {
