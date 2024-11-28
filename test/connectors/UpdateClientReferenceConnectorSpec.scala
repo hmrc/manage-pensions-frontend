@@ -17,6 +17,7 @@
 package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
+import models.SchemeReferenceNumber
 import models.psp.UpdateClientReferenceRequest
 import org.scalatest.flatspec.AsyncFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -37,8 +38,7 @@ class UpdateClientReferenceConnectorSpec extends AsyncFlatSpec with Matchers wit
   "updateClientReference" should "return successfully following a successful status" in {
 
     server.stubFor(
-      post(urlEqualTo(updateClientReferenceUrl))
-        .withRequestBody(equalToJson(requestJson))
+      post(urlEqualTo(s"$updateClientReferenceUrl/${srn.id}"))
         .willReturn(
           aResponse()
             .withStatus(OK)
@@ -48,17 +48,16 @@ class UpdateClientReferenceConnectorSpec extends AsyncFlatSpec with Matchers wit
 
     val connector = injector.instanceOf[UpdateClientReferenceConnector]
 
-    connector.updateClientReference(clientReferenceRequest, "Added").map(
+    connector.updateClientReference(clientReferenceRequest, "Added", srn).map(
       _ =>
-        server.findAll(postRequestedFor(urlEqualTo(updateClientReferenceUrl))).size() shouldBe 1
+        server.findAll(postRequestedFor(urlEqualTo(s"$updateClientReferenceUrl/${srn.id}"))).size() shouldBe 1
     )
 
   }
 
   it should "throw BadRequestException for a Bad Request (INVALID_PAYLOAD) response" in {
     server.stubFor(
-      post(urlEqualTo(updateClientReferenceUrl))
-        .withRequestBody(equalToJson(Json.stringify(Json.toJson(clientReferenceRequest))))
+      post(urlEqualTo(s"$updateClientReferenceUrl/${srn.id}"))
         .willReturn(
           aResponse()
             .withStatus(BAD_REQUEST)
@@ -68,10 +67,10 @@ class UpdateClientReferenceConnectorSpec extends AsyncFlatSpec with Matchers wit
     val connector = injector.instanceOf[UpdateClientReferenceConnector]
 
     recoverToSucceededIf[BadRequestException] {
-      connector.updateClientReference(clientReferenceRequest, "Added")
+      connector.updateClientReference(clientReferenceRequest, "Added", srn)
     } map {
       _ =>
-        server.findAll(postRequestedFor(urlEqualTo(updateClientReferenceUrl))).size() shouldBe 1
+        server.findAll(postRequestedFor(urlEqualTo(s"$updateClientReferenceUrl/${srn.id}"))).size() shouldBe 1
     }
   }
 
@@ -86,6 +85,7 @@ object UpdateClientReferenceConnectorSpec {
   private val psaId = "A7654321"
   private val pspId = "00000000"
   private val clientRef = "clientRef"
+  private val srn = SchemeReferenceNumber("S2400000041")
 
   private val clientReferenceRequest = UpdateClientReferenceRequest(
     pstr,

@@ -18,6 +18,7 @@ package connectors
 
 import com.google.inject.{ImplementedBy, Inject}
 import config.FrontendAppConfig
+import models.SchemeReferenceNumber
 import models.psp.UpdateClientReferenceRequest
 import play.api.Logger
 import play.api.http.Status._
@@ -33,7 +34,7 @@ import scala.util.Failure
 trait UpdateClientReferenceConnector {
 
   def updateClientReference(updateClientReferenceRequest: UpdateClientReferenceRequest,userAction: String
-                           )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[String]
+      ,srn: SchemeReferenceNumber)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[String]
 }
 
 class UpdateClientReferenceConnectorImpl @Inject()(httpClientV2: HttpClientV2, config: FrontendAppConfig)
@@ -42,14 +43,16 @@ class UpdateClientReferenceConnectorImpl @Inject()(httpClientV2: HttpClientV2, c
 
   private val logger = Logger(classOf[UpdateClientReferenceConnectorImpl])
 
-  override def updateClientReference(updateClientReferenceRequest: UpdateClientReferenceRequest,userAction: String
-                                    )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[String] = {
+  override def updateClientReference(updateClientReferenceRequest: UpdateClientReferenceRequest,userAction: String,
+    srn: SchemeReferenceNumber)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[String] = {
 
-    val updateClientReferenceUrl = url"${config.updateClientReferenceUrl}"
-    val headers = Seq("userAction"-> userAction)
+    val updateClientReferenceUrl = url"${config.updateClientReferenceUrl}/${srn.id}"
+    val headers = Seq("pspId" -> updateClientReferenceRequest.pspId,
+      "pstr" -> updateClientReferenceRequest.pstr,
+      "clientReference" -> updateClientReferenceRequest.clientReference.getOrElse(""),
+      "userAction"-> userAction)
 
     httpClientV2.post(updateClientReferenceUrl)
-      .withBody(Json.toJson(updateClientReferenceRequest))
       . setHeader(headers:_*)
       .execute[HttpResponse] map {
         response =>
