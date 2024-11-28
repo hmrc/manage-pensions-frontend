@@ -17,6 +17,7 @@
 package connectors.admin
 
 import com.github.tomakehurst.wiremock.client.WireMock._
+import models.SchemeReferenceNumber
 import models.psa.remove.PsaToBeRemovedFromScheme
 import org.scalatest.flatspec.AsyncFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -46,7 +47,7 @@ class PsaRemovalConnectorSpec extends AsyncFlatSpec with Matchers with WireMockH
 
     val connector = injector.instanceOf[PsaRemovalConnector]
 
-    connector.remove(psaToBeRemoved).map {
+    connector.remove(srn, psaToBeRemoved).map {
       _ => server.findAll(postRequestedFor(urlEqualTo(deleteUrl))).size() shouldBe 1
     }
   }
@@ -65,7 +66,7 @@ class PsaRemovalConnectorSpec extends AsyncFlatSpec with Matchers with WireMockH
 
     val connector = injector.instanceOf[PsaRemovalConnector]
     recoverToSucceededIf[BadRequestException] {
-      connector.remove(psaToBeRemoved)
+      connector.remove(srn, psaToBeRemoved)
     }
   }
 }
@@ -73,8 +74,9 @@ class PsaRemovalConnectorSpec extends AsyncFlatSpec with Matchers with WireMockH
 object PsaRemovalConnectorSpec {
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
+  val srn: SchemeReferenceNumber = SchemeReferenceNumber("AB123456C")
   private val psaToBeRemoved = PsaToBeRemovedFromScheme("238DAJFASS", "XXAJ329AJJ", LocalDate.of(2009, 1, 1))
-  private val deleteUrl = "/pension-administrator/remove-psa"
+  private val deleteUrl = "/pension-administrator/remove-psa/%s".format(srn.id)
   private val requestJson = Json.stringify(Json.toJson(psaToBeRemoved))
 
   def errorResponse(code: String): String = {
