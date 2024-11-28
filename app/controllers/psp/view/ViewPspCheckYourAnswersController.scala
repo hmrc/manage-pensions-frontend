@@ -87,7 +87,7 @@ class ViewPspCheckYourAnswersController @Inject()(override val messagesApi: Mess
               userAction => {
                 userAction match {
                   case Added | Amended | Deleted =>
-                    updateClientReferenceConnector.updateClientReference(updateClientReferenceRequest, userAction.toString)
+                    updateClientReferenceConnector.updateClientReference(updateClientReferenceRequest, userAction.toString, srn)
                       .flatMap {
                         _ =>
                           schemeDetailsConnector.getSchemeDetailsRefresh(request.psaIdOrException.id, srn, "srn").flatMap {
