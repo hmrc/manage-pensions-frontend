@@ -84,7 +84,7 @@ class ViewPspCheckYourAnswersControllerSpec extends ControllerSpecBase with Mock
 
     "on a POST" must {
       "redirect to view practitioner and post to update client ref API" in {
-        when(mockUpdateClientReferenceConnector.updateClientReference(any(), any())(any(), any())).thenReturn(Future.successful("Ok"))
+        when(mockUpdateClientReferenceConnector.updateClientReference(any(), any(), any())(any(), any())).thenReturn(Future.successful("Ok"))
         when(mockSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any())).thenReturn(Future.successful(schemeDetailUserAns("Test")))
         when(mockSchemeDetailsConnector.getSchemeDetailsRefresh(any(), any(), any())(any(), any())).thenReturn(Future.successful((): Unit))
         val result = controller(data).onSubmit(0, srn)(fakeRequest)
