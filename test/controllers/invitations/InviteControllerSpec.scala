@@ -130,7 +130,7 @@ object InviteControllerSpec extends ControllerSpecBase with JsonFileReader with 
 
     override def getNameFromPspID()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = ???
 
-    override def getEmailInvitation(id: String, idType: String, name: String)
+    override def getEmailInvitation(id: String, idType: String, name: String, srn: SchemeReferenceNumber)
                                    (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = ???
   }
 

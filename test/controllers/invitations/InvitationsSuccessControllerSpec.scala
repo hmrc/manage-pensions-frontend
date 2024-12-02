@@ -21,7 +21,7 @@ import connectors.FakeUserAnswersCacheConnector
 import connectors.admin.MinimalConnector
 import controllers.actions._
 import controllers.behaviours.ControllerWithNormalPageBehaviours
-import models.{MinimalPSAPSP, MinimalSchemeDetail}
+import models.{MinimalPSAPSP, MinimalSchemeDetail, SchemeReferenceNumber}
 import play.api.mvc.Call
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.HeaderCarrier
@@ -66,7 +66,8 @@ class InvitationsSuccessControllerSpec extends ControllerWithNormalPageBehaviour
 
     override def getNameFromPspID()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = ???
 
-    override def getEmailInvitation(id: String, idType: String, name: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] =
+    override def getEmailInvitation(id: String, idType: String, name: String, srn: SchemeReferenceNumber)
+                                   (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] =
       Future.successful(Some(testEmail))
   }
 

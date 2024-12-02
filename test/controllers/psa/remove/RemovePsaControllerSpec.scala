@@ -54,7 +54,8 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
 
     override def getNameFromPspID()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = ???
 
-    override def getEmailInvitation(id: String, idType: String, name: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = ???
+    override def getEmailInvitation(id: String, idType: String, name: String, srn: SchemeReferenceNumber)
+                                   (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = ???
   }
 
   private val fakePsaSchemeAuthAction = new FakePsaSchemeAuthAction(app.injector.instanceOf[SchemeDetailsConnector], app.injector.instanceOf[ErrorHandler])

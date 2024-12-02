@@ -59,7 +59,7 @@ class InvitationSuccessController @Inject()(
 
       (ua.get(MinimalSchemeDetailId), ua.get(InviteeNameId), ua.get(InviteePSAId)) match {
         case (Some(schemeDetail), Some(inviteeName), Some(inviteePsaId)) =>
-          minimalPsaConnector.getEmailInvitation(inviteePsaId, "psaid", inviteeName).flatMap { email =>
+          minimalPsaConnector.getEmailInvitation(inviteePsaId, "psaid", inviteeName, srn).flatMap { email =>
             userAnswersCacheConnector.removeAll(request.externalId).map { _ =>
               Ok(view(
                 inviteeName,

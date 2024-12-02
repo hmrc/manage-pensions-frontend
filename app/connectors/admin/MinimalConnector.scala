@@ -18,7 +18,7 @@ package connectors.admin
 
 import com.google.inject.{ImplementedBy, Inject}
 import config.FrontendAppConfig
-import models.MinimalPSAPSP
+import models.{MinimalPSAPSP, SchemeReferenceNumber}
 import play.api.Logger
 import play.api.http.Status._
 import play.api.libs.json.{JsError, JsResultException, JsSuccess, Json}
@@ -34,7 +34,8 @@ trait MinimalConnector {
 
   def getMinimalPsaDetails()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP]
 
-  def getEmailInvitation(id: String, idType: String, name: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]]
+  def getEmailInvitation(id: String, idType: String, name: String, srn: SchemeReferenceNumber)
+                        (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]]
 
   def getMinimalPspDetails()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP]
 
@@ -56,8 +57,9 @@ class MinimalConnectorImpl @Inject()(httpClientV2: HttpClientV2, config: Fronten
   override def getMinimalPspDetails()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP] =
     getMinimalDetails(hc.withExtraHeaders("loggedInAsPsa" -> "false"))
 
-  override def getEmailInvitation(id: String,idType: String, name: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] ={
-    retrieveEmailDetails(hc.withExtraHeaders("id" -> id, "idType" -> idType, "name" -> name))(ec).map {
+  override def getEmailInvitation(id: String,idType: String, name: String, srn: SchemeReferenceNumber)
+                                 (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] ={
+    retrieveEmailDetails(srn, hc.withExtraHeaders("id" -> id, "idType" -> idType, "name" -> name))(ec).map {
       case None => throw new NoMatchFoundException
       case Some(m) => Some(m)
     } andThen {
@@ -76,14 +78,15 @@ class MinimalConnectorImpl @Inject()(httpClientV2: HttpClientV2, config: Fronten
       case Failure(t: Throwable) => logger.warn("Unable to get minimal details", t)
     }
   }
-  private def retrieveEmailDetails(hc: HeaderCarrier)(implicit ec: ExecutionContext): Future[Option[String]] = {
-    val emailDetailsUrl = url"${config.emailDetailsUrl}"
+  private def retrieveEmailDetails(srn: SchemeReferenceNumber, hc: HeaderCarrier)(implicit ec: ExecutionContext): Future[Option[String]] = {
+    val emailDetailsUrl = url"${config.emailDetailsUrl}/${srn.id}"
 
     httpClientV2.get(emailDetailsUrl)(hc)
       .execute[HttpResponse]
       .map { response =>
         response.status match {
           case OK => Option(response.body)
+          case FORBIDDEN if response.body.contains(pspUserNotMatchedErrorMsg) => throw new PspUserNameNotMatchedException
           case NOT_FOUND => None
           case _ => handleErrorResponse("GET", emailDetailsUrl.toString)(response)
         }
@@ -112,6 +115,7 @@ class MinimalConnectorImpl @Inject()(httpClientV2: HttpClientV2, config: Fronten
 
   private val delimitedErrorMsg: String = "DELIMITED_PSAID"
   private val pspDelimitedErrorMsg: String = "DELIMITED_PSPID"
+  private val pspUserNotMatchedErrorMsg: String = "Provided user's name doesn't match with stored user's name"
   override def getPsaNameFromPsaID()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] =
     getMinimalPsaDetails().map(MinimalPSAPSP.getNameFromId)
 
@@ -128,3 +132,5 @@ class DelimitedPractitionerException
   extends Exception("The practitioner has already de-registered. The minimal details API has returned a DELIMITED PSP response")
 class DelimitedAdminException extends
   Exception("The administrator has already de-registered. The minimal details API has returned a DELIMITED PSA response")
+class PspUserNameNotMatchedException  extends
+  Exception("Provided user's name doesn't match with stored user's name")
