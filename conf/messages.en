@@ -209,6 +209,7 @@ messages__schemeOverview__switch_psp = Switch to practitioner view
 
 messages__doYouHaveWorkingKnowledge__title = Do you have working knowledge of pensions and pensions tax legislation?
 messages__doYouHaveWorkingKnowledge__heading = Do you have working knowledge of pensions and pensions tax legislation?
+messages__doYouHaveWorkingKnowledge__h1 = Working knowledge of pensions
 messages__doYouHaveWorkingKnowledge_p1 = There needs to be someone with working knowledge of pensions and pensions tax legislation involved with this pension scheme. This could be either you as scheme administrator or a pension practitioner or provider who is helping you.
 messages__doYouHaveWorkingKnowledge_p2 = For example, if you are an employer, or a director of an employer, who has registered a pension scheme, you might not have working knowledge of pensions and pensions tax legislation.
 messages__doYouHaveWorkingKnowledge_p3 = If you do not have that knowledge, you must be helped by a pension practitioner or provider who has the knowledge. You will need to tell HMRC who that is.
