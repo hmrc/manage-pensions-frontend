@@ -17,7 +17,7 @@
 package controllers.invitations.psp
 
 import com.google.inject.Inject
-import connectors.admin.{MinimalConnector, NoMatchFoundException, PspUserNameNotMatchedException}
+import connectors.admin.{DelimitedPractitionerException, MinimalConnector, NoMatchFoundException, PspUserNameNotMatchedException}
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaSchemeAuthAction}
 import controllers.psa.routes.PsaSchemeDashboardController
@@ -59,9 +59,10 @@ class CheckYourAnswersController @Inject()(override val messagesApi: MessagesApi
     implicit request =>
       (PspNameId and PspId).retrieve.map {
         case pspName ~ pspId =>
-          minimalConnector.getEmailInvitation(pspId, "pspid", pspName, srn).map { email =>
+          minimalConnector.getEmailInvitation(pspId, "pspid", pspName, srn).map { _ =>
                 Redirect(routes.DeclarationController.onPageLoad(srn))
           }.recoverWith {
+            case _: DelimitedPractitionerException => Future.successful(Redirect(routes.PspDoesNotMatchController.onPageLoad(srn)))
             case _: PspUserNameNotMatchedException => Future.successful(Redirect(routes.PspDoesNotMatchController.onPageLoad(srn)))
             case _: NoMatchFoundException => Future.successful(Redirect(routes.PspDoesNotMatchController.onPageLoad(srn)))
           }

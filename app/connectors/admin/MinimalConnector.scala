@@ -87,6 +87,7 @@ class MinimalConnectorImpl @Inject()(httpClientV2: HttpClientV2, config: Fronten
         response.status match {
           case OK => Option(response.body)
           case FORBIDDEN if response.body.contains(pspUserNotMatchedErrorMsg) => throw new PspUserNameNotMatchedException
+          case FORBIDDEN if response.body.contains(pspDelimitedErrorMsg) => throw new DelimitedPractitionerException
           case NOT_FOUND => None
           case _ => handleErrorResponse("GET", emailDetailsUrl.toString)(response)
         }
