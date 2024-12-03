@@ -107,7 +107,7 @@ class PsaDeauthPspDeclarationController @Inject()(
                         ceaseDate = removalDate.toString
                       )
                     )
-                    minimalPSAPSP <- minimalConnector.getMinimalPsaDetails(psaId)
+                    minimalPSAPSP <- minimalConnector.getMinimalPsaDetails()
                     _ <- sendEmail(minimalPSAPSP, psaId, pspDetails.id, pstr, pspDetails.name, schemeName)
                   } yield {
                     auditService.sendEvent(

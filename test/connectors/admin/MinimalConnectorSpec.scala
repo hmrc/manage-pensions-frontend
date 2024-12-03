@@ -36,7 +36,7 @@ class MinimalConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelp
 
     server.stubFor(
       get(urlEqualTo(minimalPsaDetailsUrl))
-        .withHeader("psaId", equalTo(psaId))
+        .withHeader("loggedInAsPsa", equalTo("true"))
         .willReturn(
           aResponse()
             .withStatus(Status.OK)
@@ -47,7 +47,7 @@ class MinimalConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelp
 
     val connector = injector.instanceOf[MinimalConnector]
 
-    connector.getMinimalPsaDetails(psaId).map(psa =>
+    connector.getMinimalPsaDetails().map(psa =>
       psa shouldBe expectedResponse
     )
 
@@ -57,7 +57,7 @@ class MinimalConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelp
 
     server.stubFor(
       get(urlEqualTo(minimalPsaDetailsUrl))
-        .withHeader("psaId", equalTo(psaId))
+        .withHeader("loggedInAsPsa", equalTo("true"))
         .willReturn(
           badRequest
             .withHeader("Content-Type", "application/json")
@@ -67,7 +67,7 @@ class MinimalConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelp
 
     val connector = injector.instanceOf[MinimalConnector]
     recoverToSucceededIf[BadRequestException] {
-      connector.getMinimalPsaDetails(psaId)
+      connector.getMinimalPsaDetails()
     }
   }
 
@@ -84,16 +84,78 @@ class MinimalConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelp
     val connector = injector.instanceOf[MinimalConnector]
 
     recoverToSucceededIf[BadRequestException] {
-      connector.getMinimalPsaDetails(psaId)
+      connector.getMinimalPsaDetails()
     }
   }
 
+  "retrieveEmailDetails" should "return the email for a valid request/response" in {
+
+    server.stubFor(
+      get(urlEqualTo(s"$emailDetailsUrl/${srn.id}"))
+        .withHeader("id", equalTo("id"))
+        .withHeader("idType" , equalTo("idType"))
+        .withHeader("name" , equalTo("name"))
+        .willReturn(
+          aResponse()
+            .withStatus(Status.OK)
+            .withHeader("Content-Type", "application/json")
+            .withBody(email)
+        )
+    )
+
+    val connector = injector.instanceOf[MinimalConnector]
+
+    connector.getEmailInvitation("id", "idType", "name", srn).map(psa =>
+      psa shouldBe Some(email)
+    )
+
+  }
+  it should "throw PspUserNameNotMatchedException exception when User is not matched" in {
+
+    server.stubFor(
+      get(urlEqualTo(s"$emailDetailsUrl/${srn.id}"))
+        .withHeader("id", equalTo("id"))
+        .withHeader("idType" , equalTo("idType"))
+        .withHeader("name" , equalTo("name"))
+        .willReturn(
+          forbidden()
+            .withHeader("Content-Type", "application/json")
+            .withBody(errorResponse(pspUserNotMatchedErrorMsg))
+        )
+    )
+
+    val connector = injector.instanceOf[MinimalConnector]
+
+    recoverToSucceededIf[PspUserNameNotMatchedException] {
+      connector.getEmailInvitation("id", "idType", "name", srn)
+    }
+  }
+  it should "throw DelimitedPractitionerException exception when downstream response is forbidden" in {
+
+    server.stubFor(
+      get(urlEqualTo(s"$emailDetailsUrl/${srn.id}"))
+        .withHeader("id", equalTo("id"))
+        .withHeader("idType" , equalTo("idType"))
+        .withHeader("name" , equalTo("name"))
+        .willReturn(
+          forbidden()
+            .withHeader("Content-Type", "application/json")
+            .withBody(errorResponse(pspDelimitedErrorMsg))
+        )
+    )
+
+    val connector = injector.instanceOf[MinimalConnector]
+
+    recoverToSucceededIf[DelimitedPractitionerException] {
+      connector.getEmailInvitation("id", "idType", "name", srn)
+    }
+  }
 }
 
 object MinimalConnectorSpec extends JsonFileReader {
 
-  private val psaId = "A1234567"
-  private val minimalPsaDetailsUrl = s"/pension-administrator/get-minimal-psa"
+  private val minimalPsaDetailsUrl = "/pension-administrator/get-minimal-details-self"
+  private val emailDetailsUrl = "/pension-administrator/get-email-invitation"
 
   private implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 
@@ -109,7 +171,9 @@ object MinimalConnectorSpec extends JsonFileReader {
   }
 
   private val email = "test@test.com"
-
+  private val srn = SchemeReferenceNumber("S2400000041")
+  private val pspUserNotMatchedErrorMsg: String = "Provided user's name doesn't match with stored user's name"
+  private val pspDelimitedErrorMsg: String = "DELIMITED_PSPID"
   private val expectedResponse = MinimalPSAPSP(email, isPsaSuspended = false, None, Some(IndividualDetails("First", Some("Middle"), "Last")),
     rlsFlag = false, deceasedFlag = false)
 }

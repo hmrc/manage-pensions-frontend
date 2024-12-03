@@ -117,7 +117,7 @@ class SchemeDetailsService @Inject()(frontendConnector: FrontendConnector,
     lock match {
       case Some(SchemeLock) => schemeVarianceLockConnector.getLockByScheme(srn) flatMap {
         case Some(schemeVariance) if !(schemeVariance.psaId == request.psaIdOrException.id) =>
-          minimalPsaConnector.getPsaNameFromPsaID(schemeVariance.psaId).map(identity)
+          minimalPsaConnector.getPsaNameFromPsaID().map(identity)
         case _ => Future.successful(None)
       }
       case _ => Future.successful(None)

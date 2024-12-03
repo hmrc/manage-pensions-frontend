@@ -46,7 +46,7 @@ class InviteController @Inject()(
   def onPageLoad(srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(srn)).async {
     implicit request =>
 
-      minimalPsaConnector.getMinimalPsaDetails(request.psaIdOrException.id).flatMap { minimalPsaDetails =>
+      minimalPsaConnector.getMinimalPsaDetails().flatMap { minimalPsaDetails =>
         if (minimalPsaDetails.isPsaSuspended) {
           Future.successful(Redirect(controllers.invitations.routes.YouCannotSendAnInviteController.onPageLoad(srn)))
         } else if (minimalPsaDetails.deceasedFlag) {

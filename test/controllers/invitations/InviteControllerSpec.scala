@@ -120,15 +120,18 @@ object InviteControllerSpec extends ControllerSpecBase with JsonFileReader with 
   val config: Configuration = injector.instanceOf[Configuration]
 
   def fakeMinimalPsaConnector(isSuspended: Boolean, rlsFlag: Boolean = false, deceasedFlag: Boolean = false): MinimalConnector = new MinimalConnector {
-    override def getMinimalPsaDetails(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP] =
+    override def getMinimalPsaDetails()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP] =
       Future.successful(psaMinimalSubscription.copy(isPsaSuspended = isSuspended, rlsFlag = rlsFlag, deceasedFlag = deceasedFlag))
 
-    override def getPsaNameFromPsaID(psaId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] =
+    override def getPsaNameFromPsaID()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] =
       Future.successful(None)
 
-    override def getMinimalPspDetails(pspId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP] = ???
+    override def getMinimalPspDetails()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP] = ???
 
-    override def getNameFromPspID(pspId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = ???
+    override def getNameFromPspID()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = ???
+
+    override def getEmailInvitation(id: String, idType: String, name: String, srn: SchemeReferenceNumber)
+                                   (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] = ???
   }
 
   def fakeSchemeDetailsConnector: SchemeDetailsConnector = new SchemeDetailsConnector {

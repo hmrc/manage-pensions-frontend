@@ -43,7 +43,7 @@ class ConfirmPsaDeauthPspControllerSpec
 
   override def beforeEach(): Unit = {
     reset(mockMinimalPsaConnector)
-    when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any()))
+    when(mockMinimalPsaConnector.getMinimalPsaDetails()(any(), any()))
       .thenReturn(Future.successful(minPsa))
   }
 

@@ -60,7 +60,7 @@ class BannerControllerSpec extends ControllerWithQuestionPageBehaviours with Sca
   "BannerController" must {
 
     "return OK with the view when calling on page load" in {
-      when(mockMinimalConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minDetails))
+      when(mockMinimalConnector.getMinimalPsaDetails()(any(), any())).thenReturn(Future.successful(minDetails))
       val form = formProvider.apply().fill(URBanner("Nigel Smith", "email@email.com"))
       val request = FakeRequest(GET, routes.BannerController.onPageLoadPsa.url)
       val result = controller.onPageLoadPsa(request)
@@ -69,7 +69,7 @@ class BannerControllerSpec extends ControllerWithQuestionPageBehaviours with Sca
     }
 
     "return a Bad Request and errors when invalid data is submitted" in {
-      when(mockMinimalConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minDetails))
+      when(mockMinimalConnector.getMinimalPsaDetails()(any(), any())).thenReturn(Future.successful(minDetails))
       when(mockEmailConnector.sendEmail(any())(any(), any())).thenReturn(Future.successful(EmailNotSent))
       val postRequest =
         FakeRequest(POST, routes.BannerController.onSubmitPsa.url).withFormUrlEncodedBody("indOrgName" -> "invalid value")
@@ -82,7 +82,7 @@ class BannerControllerSpec extends ControllerWithQuestionPageBehaviours with Sca
       contentAsString(result) mustBe viewPsa(boundForm)(postRequest,messages).toString
     }
     "return a redirect when correct information is submitted" in {
-      when(mockMinimalConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minDetails))
+      when(mockMinimalConnector.getMinimalPsaDetails()(any(), any())).thenReturn(Future.successful(minDetails))
       when(mockEmailConnector.sendEmail(any())(any(), any())).thenReturn(Future.successful(EmailSent))
 
       val onwardRoute = controllers.routes.BannerConfirmationController.onPageLoadPsa

@@ -35,7 +35,7 @@ class PspDashboardServiceSpec extends SpecBase with MockitoSugar with BeforeAndA
   private val minimalPsaConnector: MinimalConnector = mock[MinimalConnector]
 
   override def beforeEach(): Unit = {
-    when(minimalPsaConnector.getMinimalPspDetails(eqTo(pspId))(any(), any()))
+    when(minimalPsaConnector.getMinimalPspDetails()(any(), any()))
       .thenReturn(Future.successful(minimalPsaDetails))
     super.beforeEach()
   }

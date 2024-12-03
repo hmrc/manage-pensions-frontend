@@ -46,7 +46,7 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar wit
 
   "onPageLoad" when {
 
-    when(mockMinimalConnector.getNameFromPspID(any())(any(), any())).thenReturn(Future.successful(Some(pspName)))
+    when(mockMinimalConnector.getNameFromPspID()(any(), any())).thenReturn(Future.successful(Some(pspName)))
 
     "return OK and the correct view when there are no schemes" in {
       when(mockSchemeSearchService.searchPsp(any(), any())(any(), any())).thenReturn(Future.successful(Nil))
@@ -67,7 +67,7 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar wit
 
   "onSearch" when {
 
-    when(mockMinimalConnector.getNameFromPspID(any())(any(), any()))
+    when(mockMinimalConnector.getNameFromPspID()(any(), any()))
       .thenReturn(Future.successful(Some(pspName)))
 
     "return OK and the correct view when there are schemes" in {

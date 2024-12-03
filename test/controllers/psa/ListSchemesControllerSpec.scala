@@ -44,7 +44,7 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar wit
 
   "onPageLoad" when {
     "return OK and the correct view when there are no schemes" in {
-      when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
+      when(mockMinimalPsaConnector.getMinimalPsaDetails()(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
       when(mockSchemeSearchService.search(any(), any())(any(), any())).thenReturn(Future.successful(Nil))
       val pagination: Int = 10
 
@@ -71,7 +71,7 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar wit
     }
 
     "rlsFlag is true and deceasedFlag is false return redirect to update contact page" in {
-      when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any()))
+      when(mockMinimalPsaConnector.getMinimalPsaDetails()(any(), any()))
         .thenReturn(Future.successful(minimalPSAPSP(rlsFlag = true)))
       when(mockSchemeSearchService.search(any(), any())(any(), any())).thenReturn(Future.successful(Nil))
 
@@ -86,7 +86,7 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar wit
     }
 
     "rlsFlag is true and deceasedFlag is true return redirect to contact hmrc page" in {
-      when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any()))
+      when(mockMinimalPsaConnector.getMinimalPsaDetails()(any(), any()))
         .thenReturn(Future.successful(minimalPSAPSP(rlsFlag = true, deceasedFlag = true)))
       when(mockSchemeSearchService.search(any(), any())(any(), any())).thenReturn(Future.successful(Nil))
 
@@ -99,7 +99,7 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar wit
     }
 
     "return OK and the correct view when there are schemes without pagination" in {
-      when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
+      when(mockMinimalPsaConnector.getMinimalPsaDetails()(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
       when(mockSchemeSearchService.search(any(), any())(any(), any())).thenReturn(Future.successful(fullSchemes))
       val pagination: Int = 10
 
@@ -126,7 +126,7 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar wit
     }
 
     "return OK and the correct view when there are schemes with pagination" in {
-      when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
+      when(mockMinimalPsaConnector.getMinimalPsaDetails()(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
       when(mockSchemeSearchService.search(any(), any())(any(), any())).thenReturn(Future.successful(fullSchemes))
       val pageNumber: Int = 1
 
@@ -157,7 +157,7 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar wit
     }
 
     "return OK and the correct view when using page number" in {
-      when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
+      when(mockMinimalPsaConnector.getMinimalPsaDetails()(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
       when(mockSchemeSearchService.search(any(), any())(any(), any())).thenReturn(Future.successful(fullSchemes))
       val pageNumber: Int = 2
 
@@ -190,7 +190,7 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar wit
 
   "onSearch" when {
     "return OK and the correct view when there are schemes without pagination and search on non empty string" in {
-      when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
+      when(mockMinimalPsaConnector.getMinimalPsaDetails()(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
       val searchText = "24000001IN"
       when(mockSchemeSearchService.search(any(), ArgumentMatchers.eq(Some(searchText)))(any(), any())).thenReturn(Future.successful(fullSchemes))
       val pagination: Int = 10
@@ -221,7 +221,7 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar wit
     }
 
     "return BADREQUEST and error when no value is entered into search" in {
-      when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
+      when(mockMinimalPsaConnector.getMinimalPsaDetails()(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
       when(mockSchemeSearchService.search(any(), ArgumentMatchers.eq(None))(any(), any())).thenReturn(Future.successful(fullSchemes))
 
       val pagination: Int = 10
@@ -251,7 +251,7 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar wit
     }
 
     "return OK and the correct view with correct no matches message when unrecognised format is entered into search" in {
-      when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
+      when(mockMinimalPsaConnector.getMinimalPsaDetails()(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
       val incorrectSearchText = "24000001IN"
       when(mockSchemeSearchService.search(any(), ArgumentMatchers.eq(Some(incorrectSearchText)))(any(), any())).thenReturn(Future.successful(Nil))
 

@@ -190,7 +190,7 @@ class PspSchemeDashboardController @Inject()(
     val requiredDetails = for {
       _ <- userAnswersCacheConnector.removeAll(request.externalId)
       userAnswers <- schemeDetailsConnector.getPspSchemeDetails(request.pspIdOrException.id, srn)
-      minPspDetails <- minimalConnector.getMinimalPspDetails(request.pspIdOrException.id)
+      minPspDetails <- minimalConnector.getMinimalPspDetails()
     } yield {
       (userAnswers, minPspDetails)
     }

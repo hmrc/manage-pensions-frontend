@@ -90,7 +90,7 @@ class DeclarationController @Inject()(
             val psaId = request.psaIdOrException.id
             val pspCR = request.userAnswers.get(PspClientReferenceId)
             pspConnector.authorisePsp(pstr, psaId, pspId, pspCR).flatMap { _ =>
-              minimalConnector.getMinimalPsaDetails(psaId).flatMap { minimalPSAPSP =>
+              minimalConnector.getMinimalPsaDetails().flatMap { minimalPSAPSP =>
                 sendEmail(minimalPSAPSP, psaId, pspId, pstr, pspName, schemeName).map { _ =>
                   auditService.sendEvent(
                     PSPAuthorisationEmailAuditEvent(

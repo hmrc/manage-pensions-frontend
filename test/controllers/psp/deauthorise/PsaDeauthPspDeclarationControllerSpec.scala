@@ -95,7 +95,7 @@ class PsaDeauthPspDeclarationControllerSpec
       Future.successful(HttpResponse.apply(OK, Json.stringify(Json.obj("processingDate" -> LocalDate.now))))
     )
     when(mockEmailConnector.sendEmail(any())(any(), any())).thenReturn(Future.successful(EmailSent))
-    when(mockMinimalConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minPsa))
+    when(mockMinimalConnector.getMinimalPsaDetails()(any(), any())).thenReturn(Future.successful(minPsa))
     when(mockAuditService.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
   }
 
@@ -136,7 +136,7 @@ class PsaDeauthPspDeclarationControllerSpec
   "send a deauthorise practitioner audit event when psp successfully deauthorised by the PSA" in {
     val result = onSubmitAction(validData, FakeAuthAction)(postRequest)
 
-    when(mockMinimalConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minPsa))
+    when(mockMinimalConnector.getMinimalPsaDetails()(any(), any())).thenReturn(Future.successful(minPsa))
 
     status(result) mustBe SEE_OTHER
 
@@ -151,7 +151,7 @@ class PsaDeauthPspDeclarationControllerSpec
   "send an email to the PSA email address and send an email audit event when psp successfully deauthorised by the PSA" in {
     val result = onSubmitAction(validData, FakeAuthAction)(postRequest)
 
-    when(mockMinimalConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minPsa))
+    when(mockMinimalConnector.getMinimalPsaDetails()(any(), any())).thenReturn(Future.successful(minPsa))
 
     status(result) mustBe SEE_OTHER
 

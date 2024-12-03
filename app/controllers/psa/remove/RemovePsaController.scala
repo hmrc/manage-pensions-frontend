@@ -63,7 +63,7 @@ class RemovePsaController @Inject()(
                 (authenticate() andThen getData andThen psaSchemeAction(srn) andThen requireData).async {
     implicit request =>
       SchemeSrnId.retrieve.map { srnFetched =>
-        minimalPsaConnector.getMinimalPsaDetails(request.psaIdOrException.id).flatMap { minimalPsaDetails =>
+        minimalPsaConnector.getMinimalPsaDetails().flatMap { minimalPsaDetails =>
           if (minimalPsaDetails.isPsaSuspended) {
             Future.successful(Redirect(CanNotBeRemovedController.onPageLoadWhereSuspended()))
           } else if (minimalPsaDetails.deceasedFlag) {

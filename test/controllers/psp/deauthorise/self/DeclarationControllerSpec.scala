@@ -123,7 +123,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
       "save data, redirect to next page if valid data is submitted, send email to PSP using correct template for a company and send splunk audit event" in {
         when(mockPspConnector.deAuthorise(any(), any())(any(), any()))
           .thenReturn(Future.successful(HttpResponse.apply(OK, Json.stringify(Json.obj("processingDate" -> LocalDate.now)))))
-        when(mockMinimalConnector.getMinimalPspDetails(any())(any(), any()))
+        when(mockMinimalConnector.getMinimalPspDetails()(any(), any()))
           .thenReturn(Future.successful(minPspOrganisation))
         when(mockEmailConnector.sendEmail(any())(any(), any())).thenReturn(Future.successful(EmailSent))
 
@@ -154,7 +154,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
       "save data, redirect to next page if valid data is submitted, send email to PSP using correct template for an individual and send splunk audit event" in {
         when(mockPspConnector.deAuthorise(any(), any())(any(), any()))
           .thenReturn(Future.successful(HttpResponse.apply(OK, Json.stringify(Json.obj("processingDate" -> LocalDate.now)))))
-        when(mockMinimalConnector.getMinimalPspDetails(any())(any(), any()))
+        when(mockMinimalConnector.getMinimalPspDetails()(any(), any()))
           .thenReturn(Future.successful(minPspIndividual))
         when(mockEmailConnector.sendEmail(any())(any(), any())).thenReturn(Future.successful(EmailSent))
         val postRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.obj("declaration" -> true))

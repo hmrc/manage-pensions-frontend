@@ -17,7 +17,7 @@
 package controllers.invitations.psp
 
 import base.JsonFileReader
-import connectors.admin.MinimalConnector
+import connectors.admin.{MinimalConnector, PspUserNameNotMatchedException}
 import controllers.ControllerSpecBase
 import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction}
 import controllers.behaviours.ControllerWithNormalPageBehaviours
@@ -34,7 +34,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist._
 import utils.countryOptions.CountryOptions
-import utils.{CheckYourAnswersFactory, PspAuthoriseFuzzyMatcher, UserAnswers}
+import utils.{CheckYourAnswersFactory, UserAnswers}
 import views.html.invitations.psp.checkYourAnswersPsp
 
 import scala.concurrent.Future
@@ -45,11 +45,9 @@ class CheckYourAnswersControllerSpec extends ControllerSpecBase with MockitoSuga
 
   private val mockMinConnector = mock[MinimalConnector]
 
-  private val mockPspAuthoriseFuzzyMatcher = mock[PspAuthoriseFuzzyMatcher]
-
   def controller(dataRetrievalAction: DataRetrievalAction = data) = new CheckYourAnswersController(
     messagesApi, FakeAuthAction, dataRetrievalAction, new DataRequiredActionImpl,
-    checkYourAnswersFactory, mockMinConnector, mockPspAuthoriseFuzzyMatcher, controllerComponents, view, fakePsaSchemeAuthAction
+    checkYourAnswersFactory, mockMinConnector, controllerComponents, view, fakePsaSchemeAuthAction
   )
 
   "Check Your Answers Controller Spec" must {
@@ -73,16 +71,16 @@ class CheckYourAnswersControllerSpec extends ControllerSpecBase with MockitoSuga
     }
 
     "on a POST" must {
-      "redirect to Declaration if pspName matches the one returned from minDetails API" in {
-        when(mockMinConnector.getNameFromPspID(any())(any(), any())).thenReturn(Future.successful(Some(pspName)))
-        when(mockPspAuthoriseFuzzyMatcher.matches(any(), any())).thenReturn(true)
+      "redirect to Declaration if pspName matches the one email invitation API" in {
+        when(mockMinConnector.getEmailInvitation(any(), any(), any(), any())(any(), any()))
+          .thenReturn(Future.successful(Some(pspEmailAddress)))
         val result = controller(data).onSubmit(srn)(fakeRequest)
         redirectLocation(result).value mustBe DeclarationController.onPageLoad(srn).url
       }
 
       "redirect to interrupt if pspName does not match the one returned from minDetails API" in {
-        when(mockMinConnector.getNameFromPspID(any())(any(), any())).thenReturn(Future.successful(Some(pspName)))
-        when(mockPspAuthoriseFuzzyMatcher.matches(any(), any())).thenReturn(false)
+        when(mockMinConnector.getEmailInvitation(any(), any(), any(), any())(any(), any()))
+          .thenReturn(Future.failed(new PspUserNameNotMatchedException))
         val result = controller(data).onSubmit(srn)(fakeRequest)
         redirectLocation(result).get mustBe PspDoesNotMatchController.onPageLoad(srn).url
       }
@@ -92,6 +90,7 @@ class CheckYourAnswersControllerSpec extends ControllerSpecBase with MockitoSuga
 
 object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours with MockitoSugar with JsonFileReader {
   private val pspName: String = "test-psp"
+  private val pspEmailAddress: String = "psp@test.com"
   private val testSchemeName = "test-scheme-name"
 
   private val data = UserAnswers()

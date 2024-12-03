@@ -47,7 +47,7 @@ class SchemesOverviewServiceSpec extends SpecBase with MockitoSugar with BeforeA
   private val invitationsCacheConnector = mock[InvitationsCacheConnector]
 
   override def beforeEach(): Unit = {
-    when(minimalPsaConnector.getPsaNameFromPsaID(eqTo(psaId))(any(), any()))
+    when(minimalPsaConnector.getPsaNameFromPsaID()(any(), any()))
       .thenReturn(Future.successful(minimalPsaName))
     when(invitationsCacheConnector.getForInvitee(any())(any(), any()))
       .thenReturn(Future.successful(invitationList))

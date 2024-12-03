@@ -57,13 +57,13 @@ class SchemesOverviewController @Inject()(
     implicit request =>
       val subHeading: String = Message("messages__psaDashboard__sub_heading")
       val psaId = request.psaIdOrException.id
-      service.getPsaMinimalDetails(psaId).flatMap { minDetails =>
+      service.getPsaMinimalDetails().flatMap { minDetails =>
         if (minDetails.deceasedFlag) {
           Future.successful(Redirect(ContactHMRCController.onPageLoad()))
         } else if (minDetails.rlsFlag) {
           Future.successful(Redirect(config.psaUpdateContactDetailsUrl))
         } else {
-          service.getPsaName(psaId).flatMap {
+          service.getPsaName().flatMap {
             case Some(name) =>
               for {
                 cards <- service.getTiles(psaId)

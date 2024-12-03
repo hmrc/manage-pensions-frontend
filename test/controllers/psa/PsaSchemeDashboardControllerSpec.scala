@@ -235,7 +235,7 @@ class PsaSchemeDashboardControllerSpec
 
   "PsaSchemeDashboardController" must {
     "return OK and the correct view for a GET and NO financial info html if status is NOT open" in {
-      when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
+      when(mockMinimalPsaConnector.getMinimalPsaDetails()(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
       val ua = userAnswers(Open.value).set(SchemeStatusId)(Rejected.value).asOpt.get
       val currentScheme = listOfSchemes.schemeDetails.flatMap(_.find(_.referenceNumber.contains(srn)))
       val schemeLink = Link(id = "view-details", url = dummyUrl, linkText = Message("messages__psaSchemeDash__view_details_link"))
@@ -257,7 +257,7 @@ class PsaSchemeDashboardControllerSpec
     }
 
     "return OK and the correct view for a GET and NO financial info html if status is NOT open and interimDashboard toggle On" in {
-      when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
+      when(mockMinimalPsaConnector.getMinimalPsaDetails()(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
       val ua = userAnswers(Open.value).set(SchemeStatusId)(Rejected.value).asOpt.get
       val currentScheme = listOfSchemes.schemeDetails.flatMap(_.find(_.referenceNumber.contains(srn)))
       val schemeLink = Link(id = "view-details", url = dummyUrl, linkText = "messages__psaSchemeDash__view_details_link")
@@ -282,7 +282,7 @@ class PsaSchemeDashboardControllerSpec
     }
 
     "return redirect to update contact page when rls flag is true but deceased flag is false" in {
-      when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any()))
+      when(mockMinimalPsaConnector.getMinimalPsaDetails()(any(), any()))
         .thenReturn(Future.successful(minimalPSAPSP(rlsFlag = true)))
       when(mockAppConfig.psaUpdateContactDetailsUrl).thenReturn(dummyUrl)
       val result = controller().onPageLoad(srn)(fakeRequest)
@@ -291,7 +291,7 @@ class PsaSchemeDashboardControllerSpec
     }
 
     "return redirect to contact hmrc page when rls flag is true and deceased flag is true" in {
-      when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any()))
+      when(mockMinimalPsaConnector.getMinimalPsaDetails()(any(), any()))
         .thenReturn(Future.successful(minimalPSAPSP(rlsFlag = true, deceasedFlag = true)))
       val result = controller().onPageLoad(srn)(fakeRequest)
       status(result) mustBe SEE_OTHER
@@ -301,7 +301,7 @@ class PsaSchemeDashboardControllerSpec
     "return OK and the correct view for a GET and scheme is open" in {
       val currentScheme = listOfSchemes.schemeDetails.flatMap(_.find(_.referenceNumber.contains(srn)))
       val schemeLink = Link("view-details", dummyUrl, messages("messages__psaSchemeDash__view_details_link"))
-      when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
+      when(mockMinimalPsaConnector.getMinimalPsaDetails()(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
       when(fakeSchemeDetailsConnector.getSchemeDetails(eqTo("A0000000"), any(), any())(any(), any()))
         .thenReturn(Future.successful(userAnswers(Open.value)))
       when(fakeListOfSchemesConnector.getListOfSchemes(any())(any(), any()))
@@ -323,7 +323,7 @@ class PsaSchemeDashboardControllerSpec
     "return OK and the correct view for a GET and scheme is open and interimDashboard toggle On" in {
       val currentScheme = listOfSchemes.schemeDetails.flatMap(_.find(_.referenceNumber.contains(srn)))
       val schemeLink = Link("view-details", dummyUrl, messages("messages__psaSchemeDash__view_details_link"))
-      when(mockMinimalPsaConnector.getMinimalPsaDetails(any())(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
+      when(mockMinimalPsaConnector.getMinimalPsaDetails()(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
       when(fakeSchemeDetailsConnector.getSchemeDetails(eqTo("A0000000"), any(), any())(any(), any()))
         .thenReturn(Future.successful(userAnswers(Open.value)))
       when(fakeListOfSchemesConnector.getListOfSchemes(any())(any(), any()))

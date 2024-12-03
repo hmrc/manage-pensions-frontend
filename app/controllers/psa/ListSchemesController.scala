@@ -66,7 +66,7 @@ class ListSchemesController @Inject()(
                           request: OptionalDataRequest[AnyContent]): Future[Result] = {
     val status = if (form.hasErrors) BadRequest else Ok
 
-    minimalPsaConnector.getMinimalPsaDetails(request.psaIdOrException.id).flatMap { minimalDetails =>
+    minimalPsaConnector.getMinimalPsaDetails().flatMap { minimalDetails =>
       (minimalDetails, MinimalPSAPSP.getNameFromId(minimalDetails)) match {
         case (md, _) if md.deceasedFlag => Future.successful(Redirect(controllers.routes.ContactHMRCController.onPageLoad()))
         case (md, _) if md.rlsFlag => Future.successful(Redirect(appConfig.psaUpdateContactDetailsUrl))
