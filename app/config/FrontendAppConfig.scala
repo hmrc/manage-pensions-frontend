@@ -19,11 +19,13 @@ package config
 import java.time.LocalDate
 import com.google.inject.{Inject, Singleton}
 import controllers.routes
-import play.api.{Configuration, Mode, Environment}
+import play.api.{Configuration, Environment, Mode}
 import play.api.i18n.Lang
 import play.api.mvc.Call
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import models.ReportTechnicalIssue
+
+import scala.concurrent.duration.Duration
 
 @Singleton
 class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environment: Environment, servicesConfig: ServicesConfig) {
@@ -153,6 +155,8 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
     .getString("urls.eventReportingOverviewPartialLink")
 
   lazy val psrOverviewUrl: String = runModeConfiguration.underlying.getString("urls.psrOverviewUrl")
+
+  val ifsTimeout: Duration = runModeConfiguration.get[Duration]("ifs.timeout")
 
   lazy val finInfoPartialHtmlUrl: String = s"${servicesConfig.baseUrl("aft-frontend")}${runModeConfiguration.underlying
     .getString("urls.finInfoPartialHtml")}"

@@ -40,7 +40,7 @@ class FrontendConnector @Inject()(httpClientV2: HttpClientV2, config: FrontendAp
     retrievePartial(config.aftPartialHtmlUrl.format(srn))
   def retrieveFinInfoPartial[A](srn: String)
                            (implicit request: Request[A], ec: ExecutionContext): Future[Html] =
-    retrievePartial(config.finInfoPartialHtmlUrl.format(srn),timeout = Duration(40,SECONDS))
+    retrievePartial(config.finInfoPartialHtmlUrl.format(srn),timeout = config.ifsTimeout)
 
   def retrieveEventReportingPartial[A](implicit request: Request[A], ec: ExecutionContext): Future[Html] =
     retrievePartial(config.eventReportingPartialHtmlUrl)
@@ -71,7 +71,7 @@ class FrontendConnector @Inject()(httpClientV2: HttpClientV2, config: FrontendAp
 
   private def retrievePartial[A](url: String,
                                  extraHeaders: Seq[(String, String)] = Seq.empty,
-                                 timeout:Duration = Duration(20, SECONDS))
+                                 timeout:Duration = Duration(30, SECONDS))
                                 (implicit request: Request[A], ec: ExecutionContext): Future[Html] = {
 
     implicit val hc: HeaderCarrier = HeaderCarrierFunctions.headerCarrierForPartials(request)
