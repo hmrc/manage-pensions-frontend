@@ -23,7 +23,6 @@ import org.scalatest.OptionValues
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
 import play.api.http.Status
-import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.mvc.Results._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpException}
@@ -224,60 +223,6 @@ trait ConnectorBehaviour extends AsyncWordSpec with Matchers with WireMockHelper
           connector.save("foo", FakeIdentifier, "foobar")
         } map {
           _.responseCode mustEqual Status.INTERNAL_SERVER_ERROR
-        }
-
-      }
-    }
-
-    ".lastUpdated" must {
-
-      "return `None` when the server returns a 404" in {
-
-        server.stubFor(
-          get(urlEqualTo(lastUpdatedUrl("foo")))
-            .willReturn(
-              notFound
-            )
-        )
-
-        connector.lastUpdated("foo") map {
-          result =>
-            result mustNot be(defined)
-        }
-      }
-
-      "return long value when the server returns 200" in {
-
-        val json = Json.obj(
-          "lastUpdated" -> "1528107399697"
-        )
-
-        server.stubFor(
-          get(urlEqualTo(lastUpdatedUrl("foo")))
-            .willReturn(
-              ok(Json.stringify(json))
-            )
-        )
-
-        connector.lastUpdated("foo") map {
-          result =>
-            result.value mustEqual json
-        }
-      }
-
-      "return a failed future on upstream error" in {
-
-        server.stubFor(
-          get(urlEqualTo(lastUpdatedUrl("foo")))
-            .willReturn(
-              serverError
-            )
-        )
-
-        recoverToExceptionIf[HttpException] {
-          connector.lastUpdated("foo")
-        } map {
-          _.responseCode mustEqual INTERNAL_SERVER_ERROR
         }
 
       }

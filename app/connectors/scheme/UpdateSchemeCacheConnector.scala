@@ -32,5 +32,4 @@ class UpdateSchemeCacheConnector @Inject()(
 
   override protected def url(id: String) = url"${config.pensionsSchemeUrl}/pensions-scheme/journey-cache/update-scheme/$id"
 
-  override protected def lastUpdatedUrl(id: String) = url"${config.pensionsSchemeUrl}/pensions-scheme/journey-cache/update-scheme/$id/lastUpdated"
 }
