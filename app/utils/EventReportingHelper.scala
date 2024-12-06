@@ -17,7 +17,9 @@
 package utils
 
 import connectors.UserAnswersCacheConnector
-import identifiers.EventReportingId
+import controllers.routes.{SchemesOverviewController, SessionExpiredController}
+import identifiers.{AdministratorOrPractitionerId, EventReportingId}
+import models.AdministratorOrPractitioner.Administrator
 import models.{EventReporting, ListOfSchemes}
 import models.requests.AuthenticatedRequest
 import play.api.libs.json.{JsValue, Json}
@@ -27,15 +29,15 @@ import scala.concurrent.{ExecutionContext, Future}
 
 object EventReportingHelper {
 
-  final case class EventReportingData(data:EventReporting, sessionStorageKey:String)
+  final case class EventReportingData(data:EventReporting, externalIdKey:String)
   def eventReportingData(srn:String, listOfSchemes: ListOfSchemes, pstrToEventReporting: String => EventReporting)
                         (implicit request:AuthenticatedRequest[_]): Option[EventReportingData] = {
     val pstr = listOfSchemes.schemeDetails.flatMap (_.find (_.referenceNumber.contains (srn) ) ).flatMap (_.pstr)
-    (request.session.get(SessionKeys.sessionId), pstr) match {
-      case (Some(sessionId), Some(pstr)) => Some(
+    (request.externalId, pstr) match {
+      case (externalId, Some(pstr)) => Some(
         EventReportingData(
           pstrToEventReporting(pstr),
-          sessionId
+          externalId
         )
       )
       case _ => None
@@ -43,6 +45,9 @@ object EventReportingHelper {
   }
   def storeData(sessionCacheConnector: UserAnswersCacheConnector, data:EventReportingData)
                (implicit hc:HeaderCarrier, ec:ExecutionContext): Future[JsValue] = {
-    sessionCacheConnector.upsert(data.sessionStorageKey, Json.toJson(Map(EventReportingId.toString -> data.data)))
+    sessionCacheConnector.fetch(data.externalIdKey).flatMap { optionJsValue =>
+      val userAnswers: Option[UserAnswers] = optionJsValue.map(UserAnswers).getOrElse(UserAnswers()).set(EventReportingId)(data.data).asOpt
+      sessionCacheConnector.upsert(data.externalIdKey, userAnswers.getOrElse(UserAnswers()).json)
+    }
   }
 }

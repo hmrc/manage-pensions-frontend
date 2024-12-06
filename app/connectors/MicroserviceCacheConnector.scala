@@ -37,13 +37,8 @@ class MicroserviceCacheConnector @Inject()(
                                             httpClientV2: HttpClientV2
                                           ) extends UserAnswersCacheConnector {
 
-  private val logger = Logger(classOf[MicroserviceCacheConnector])
-
   protected def url(id: String) =
     url"${config.pensionsSchemeUrl}/pensions-scheme/journey-cache/scheme/$id"
-
-  protected def lastUpdatedUrl(id: String) =
-    url"${config.pensionsSchemeUrl}/pensions-scheme/journey-cache/scheme/$id/lastUpdated"
 
   override def save[A, I <: TypedIdentifier[A]](
                                                  cacheId: String,
@@ -123,22 +118,5 @@ class MicroserviceCacheConnector @Inject()(
     httpClientV2.delete(url(id))
       .setHeader(CacheConnector.headers(hc): _*)
       .execute[HttpResponse].map(_ => Ok)
-
-  override def lastUpdated(id: String)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[Option[JsValue]] = {
-    httpClientV2.get(lastUpdatedUrl(id))
-      .setHeader(CacheConnector.headers(hc): _*)
-      .execute[HttpResponse].flatMap {
-        response =>
-          response.status match {
-            case NOT_FOUND =>
-              Future.successful(None)
-            case OK =>
-              logger.debug(s"connectors.MicroserviceCacheConnector.fetch: Successful response: ${response.body}")
-              Future.successful(Some(Json.parse(response.body)))
-            case _ =>
-              Future.failed(new HttpException(response.body, response.status))
-          }
-      }
-  }
 
 }

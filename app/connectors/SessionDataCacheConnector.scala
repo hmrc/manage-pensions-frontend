@@ -25,8 +25,5 @@ class SessionDataCacheConnector @Inject()(
                                               config: FrontendAppConfig,
                                               httpClientV2: HttpClientV2
                                             ) extends MicroserviceCacheConnector(config, httpClientV2) {
-
-  override protected def url(id: String) = url"${config.pensionAdminUrl}/pension-administrator/journey-cache/session-data/$id"
-
-  override protected def lastUpdatedUrl(id: String) = url"${config.pensionAdminUrl}/pension-administrator/journey-cache/session-data/$id/lastUpdated"
+  override protected def url(id: String) = url"${config.pensionAdminUrl}/pension-administrator/journey-cache/session-data-self"
 }

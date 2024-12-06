@@ -64,14 +64,6 @@ trait FakeUserAnswersCacheConnector extends UserAnswersCacheConnector with Match
     Future.successful(Some(Json.obj()))
   }
 
-  override def lastUpdated(cacheId: String)(implicit
-                                            ec: ExecutionContext,
-                                            hc: HeaderCarrier
-  ): Future[Option[JsValue]] = {
-
-    Future.successful(Some(Json.obj()))
-  }
-
   def verify[A, I <: TypedIdentifier[A]](id: I, value: A)(implicit fmt: Format[A]): Unit = {
     data should contain(id.toString -> Json.toJson(value))
   }

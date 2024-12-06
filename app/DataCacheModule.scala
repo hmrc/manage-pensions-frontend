@@ -19,7 +19,7 @@ import play.api.inject.Binding
 import play.api.inject.Module
 import play.api.Configuration
 import play.api.Environment
-import utils.annotations.{PensionAdminCache, SessionDataCache}
+import utils.annotations.SessionDataCache
 
 class DataCacheModule extends Module {
 
@@ -27,7 +27,6 @@ class DataCacheModule extends Module {
     Seq(
       bind[UserAnswersCacheConnector].to[ManagePensionsCacheConnector],
       bind[InvitationsCacheConnector].to[InvitationsCacheConnectorImpl],
-      bind[UserAnswersCacheConnector].qualifiedWith(classOf[PensionAdminCache]).to[admin.PensionAdminCacheConnector],
       bind[UserAnswersCacheConnector].qualifiedWith(classOf[SessionDataCache]).to[SessionDataCacheConnector]
     )
   }
