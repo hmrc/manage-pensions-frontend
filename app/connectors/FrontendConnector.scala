@@ -28,6 +28,7 @@ import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.play.partials.HtmlPartial
 
+import scala.concurrent.duration.{Duration, SECONDS}
 import scala.concurrent.{ExecutionContext, Future}
 
 class FrontendConnector @Inject()(httpClientV2: HttpClientV2, config: FrontendAppConfig) {
@@ -39,7 +40,7 @@ class FrontendConnector @Inject()(httpClientV2: HttpClientV2, config: FrontendAp
     retrievePartial(config.aftPartialHtmlUrl.format(srn))
   def retrieveFinInfoPartial[A](srn: String)
                            (implicit request: Request[A], ec: ExecutionContext): Future[Html] =
-    retrievePartial(config.finInfoPartialHtmlUrl.format(srn))
+    retrievePartial(config.finInfoPartialHtmlUrl.format(srn),timeout = config.ifsTimeout)
 
   def retrieveEventReportingPartial[A](implicit request: Request[A], ec: ExecutionContext): Future[Html] =
     retrievePartial(config.eventReportingPartialHtmlUrl)
@@ -68,7 +69,9 @@ class FrontendConnector @Inject()(httpClientV2: HttpClientV2, config: FrontendAp
     retrievePartial(config.pspSchemeDashboardCardsUrl, extraHeaders)
   }
 
-  private def retrievePartial[A](url: String, extraHeaders: Seq[(String, String)] = Seq.empty)
+  private def retrievePartial[A](url: String,
+                                 extraHeaders: Seq[(String, String)] = Seq.empty,
+                                 timeout:Duration = Duration(30, SECONDS))
                                 (implicit request: Request[A], ec: ExecutionContext): Future[Html] = {
 
     implicit val hc: HeaderCarrier = HeaderCarrierFunctions.headerCarrierForPartials(request)
@@ -76,6 +79,7 @@ class FrontendConnector @Inject()(httpClientV2: HttpClientV2, config: FrontendAp
       .withExtraHeaders(extraHeaders: _*)
 
     httpClientV2.get(url"${url}")(hc)
+      .transform(_.withRequestTimeout(timeout))
       .execute[HttpResponse]
       .flatMap(handleResponse)
       .recover(recoverHtmlPartial)
