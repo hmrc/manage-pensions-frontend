@@ -19,15 +19,10 @@ package controllers
 import base.SpecBase
 import config.FrontendAppConfig
 import controllers.actions.NoBothEnrolmentsOnlyAuthAction
-import models.FeatureToggle.{Disabled, Enabled}
-import models.FeatureToggleName.EnrolmentRecovery
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.mvc.BodyParsers
 import play.api.test.Helpers._
-import services.FeatureToggleService
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
@@ -41,8 +36,6 @@ class YouNeedToRegisterControllerSpec extends ControllerSpecBase with MockitoSug
 
   import YouNeedToRegisterControllerSpec._
 
-  val toggleService: FeatureToggleService = mock[FeatureToggleService]
-
   val registerAsPspView: youNeedToRegisterAsPsp = app.injector.instanceOf[youNeedToRegisterAsPsp]
   val registerAsPsaView: youNeedToRegisterAsPsa = app.injector.instanceOf[youNeedToRegisterAsPsa]
   val registerView: youNeedToRegister = app.injector.instanceOf[youNeedToRegister]
@@ -52,11 +45,9 @@ class YouNeedToRegisterControllerSpec extends ControllerSpecBase with MockitoSug
     new YouNeedToRegisterController(
       messagesApi,
       controllerComponents,
-      toggleService,
       registerAsPspView,
       registerAsPsaView,
       registerView,
-      viewOld,
       new NoBothEnrolmentsOnlyAuthAction(authConnector,
         app.injector.instanceOf[FrontendAppConfig],
         app.injector.instanceOf[BodyParsers.Default])
@@ -65,7 +56,6 @@ class YouNeedToRegisterControllerSpec extends ControllerSpecBase with MockitoSug
 
   "YouNeedToRegister Controller" must {
     "return OK and the correct view for a GET when registered as PSA but not PSP" in {
-      when(toggleService.get(any())(any(), any())).thenReturn(Future.successful(Enabled(EnrolmentRecovery)))
       val authConnector: AuthConnector = fakeAuthConnector(Future.successful(new~(Some("id"), Enrolments(Set(enrolmentPSA)))))
 
       val result = controller(authConnector).onPageLoad(fakeRequest)
@@ -76,7 +66,6 @@ class YouNeedToRegisterControllerSpec extends ControllerSpecBase with MockitoSug
     }
 
     "return OK and the correct view for a GET when registered as PSP but not PSA" in {
-      when(toggleService.get(any())(any(), any())).thenReturn(Future.successful(Enabled(EnrolmentRecovery)))
       val authConnector: AuthConnector = fakeAuthConnector(Future.successful(new~(Some("id"), Enrolments(Set(enrolmentPSP)))))
 
       val result = controller(authConnector).onPageLoad(fakeRequest)
@@ -86,8 +75,7 @@ class YouNeedToRegisterControllerSpec extends ControllerSpecBase with MockitoSug
       contentAsString(result) mustBe viewAsString
     }
 
-    "return OK and the correct view for a GET when registered as neither PSA or PSP enrolment recovery toggle switched on" in {
-      when(toggleService.get(any())(any(), any())).thenReturn(Future.successful(Enabled(EnrolmentRecovery)))
+    "return OK and the correct view for a GET when registered as neither PSA or PSP" in {
       val authConnector: AuthConnector = fakeAuthConnector(Future.successful(new~(Some("id"), Enrolments(Set(noEnrolments)))))
 
       val result = controller(authConnector).onPageLoad(fakeRequest)
@@ -95,17 +83,6 @@ class YouNeedToRegisterControllerSpec extends ControllerSpecBase with MockitoSug
 
       status(result) mustBe OK
       contentAsString(result) mustBe viewAsString
-    }
-
-    "return OK and the correct view for a GET when registered as neither PSA or PSP enrolment recovery toggle switched off" in {
-      when(toggleService.get(any())(any(), any())).thenReturn(Future.successful(Disabled(EnrolmentRecovery)))
-      val authConnector: AuthConnector = fakeAuthConnector(Future.successful(new~(Some("id"),Enrolments(Set(noEnrolments)))))
-
-      val result = controller(authConnector).onPageLoad(fakeRequest)
-      val viewAsStringOld = viewOld()(fakeRequest, messages).toString
-
-      status(result) mustBe OK
-      contentAsString(result) mustBe viewAsStringOld
     }
   }
 }

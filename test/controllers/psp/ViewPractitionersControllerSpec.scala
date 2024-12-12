@@ -20,8 +20,6 @@ import controllers.ControllerSpecBase
 import controllers.actions._
 import controllers.psa.routes._
 import identifiers.{SchemeNameId, SchemeSrnId, SeqAuthorisedPractitionerId}
-import models.FeatureToggle.Enabled
-import models.FeatureToggleName.UpdateClientReference
 import models.SchemeReferenceNumber
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -29,7 +27,6 @@ import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.{JsArray, Json}
 import play.api.mvc.Call
 import play.api.test.Helpers._
-import services.FeatureToggleService
 import viewmodels.AuthorisedPractitionerViewModel
 import views.html.psp.viewPractitioners
 
@@ -38,7 +35,6 @@ import scala.concurrent.Future
 class ViewPractitionersControllerSpec extends ControllerSpecBase with MockitoSugar {
 
   private val schemeName  = "Test Scheme name"
-  private val mockFeatureToggleService = mock[FeatureToggleService]
   private def returnCall: Call  = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(srn))
   private val practitionersViewModel = Seq(
     AuthorisedPractitionerViewModel("PSP Limited Company 1", "Nigel Robert Smith", "1 April 2021", false),
@@ -87,7 +83,6 @@ class ViewPractitionersControllerSpec extends ControllerSpecBase with MockitoSug
       FakeAuthAction,
       dataRetrievalAction,
       new DataRequiredActionImpl,
-      mockFeatureToggleService,
       controllerComponents,
       viewPractitionersView,
       fakePsaSchemeAuthAction
@@ -97,9 +92,6 @@ class ViewPractitionersControllerSpec extends ControllerSpecBase with MockitoSug
 
   "ViewPractitionersController" must {
     "return OK and the correct view for a GET" in {
-       val toggle: Enabled = Enabled(UpdateClientReference)
-      when(mockFeatureToggleService.get(any())(any(), any()))
-        .thenReturn(Future.successful(toggle))
       val result = controller().onPageLoad(srn)(fakeRequest)
       status(result) mustBe OK
       contentAsString(result) mustBe viewAsString()

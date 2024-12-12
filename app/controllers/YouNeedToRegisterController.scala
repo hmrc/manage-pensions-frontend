@@ -17,23 +17,19 @@
 package controllers
 
 import controllers.actions.NoBothEnrolmentsOnlyAuthAction
-import models.FeatureToggleName.EnrolmentRecovery
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.FeatureToggleService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.{youNeedToRegister, youNeedToRegisterAsPsa, youNeedToRegisterAsPsp, youNeedToRegisterOld}
+import views.html.{youNeedToRegister, youNeedToRegisterAsPsa, youNeedToRegisterAsPsp}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class YouNeedToRegisterController @Inject()(override val messagesApi: MessagesApi,
                                             val controllerComponents: MessagesControllerComponents,
-                                            toggleService: FeatureToggleService,
                                             registerAsPspView: youNeedToRegisterAsPsp,
                                             registerAsPsaView: youNeedToRegisterAsPsa,
                                             registerView: youNeedToRegister,
-                                            viewOld: youNeedToRegisterOld,
                                             noBothEnrolmentsOnlyAuthAction: NoBothEnrolmentsOnlyAuthAction
                                            )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
   def onPageLoad: Action[AnyContent] = noBothEnrolmentsOnlyAuthAction.async {
@@ -47,13 +43,7 @@ class YouNeedToRegisterController @Inject()(override val messagesApi: MessagesAp
       } else if (isPsp) {
         Future.successful(Ok(registerAsPsaView()))
       } else {
-        toggleService.get(EnrolmentRecovery).map { toggleValue =>
-          if (toggleValue.isEnabled) {
-            Ok(registerView())
-          } else {
-            Ok(viewOld())
-          }
-        }
+        Future.successful(Ok(registerView()))
       }
   }
 }

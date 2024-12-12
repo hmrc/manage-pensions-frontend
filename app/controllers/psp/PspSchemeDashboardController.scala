@@ -18,7 +18,7 @@ package controllers.psp
 
 import config.FrontendAppConfig
 import connectors._
-import connectors.admin.{FeatureToggleConnector, MinimalConnector}
+import connectors.admin.MinimalConnector
 import connectors.scheme.{ListOfSchemesConnector, SchemeDetailsConnector}
 import controllers.Retrievals
 import controllers.actions._
@@ -58,11 +58,10 @@ class PspSchemeDashboardController @Inject()(
                                               val controllerComponents: MessagesControllerComponents,
                                               service: PspSchemeDashboardService,
                                               view: pspSchemeDashboard,
-                                              config: FrontendAppConfig,
+                                              appConfig: FrontendAppConfig,
                                               frontendConnector: FrontendConnector,
                                               pspSchemeAuthAction: PspSchemeAuthAction,
                                               getData: DataRetrievalAction,
-                                              featureToggleConnector: FeatureToggleConnector,
                                               pensionSchemeReturnConnector: PensionSchemeReturnConnector
                                             )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
@@ -89,10 +88,8 @@ class PspSchemeDashboardController @Inject()(
           val schemeName = (userAnswers.json \ "schemeName").as[String]
           val pstr = (userAnswers.json \ "pstr").as[String]
           for {
-            interimDashboard <- featureToggleConnector.getNewPensionsSchemeFeatureToggle("interim-dashboard").map(_.isEnabled)
-            showPsrLink <- featureToggleConnector.getNewPensionsSchemeFeatureToggle("show-psr-link").map(_.isEnabled)
-            eqOverview <-  getPSROverview(srn, showPsrLink, pstr)
-            aftPspSchemeDashboardCards <- aftPspSchemeDashboardCards(schemeStatus, srn, pspDetails.authorisingPSAID, config.hideAftTile)
+            eqOverview <-  getPSROverview(srn, appConfig.showPsrLink, pstr)
+            aftPspSchemeDashboardCards <- aftPspSchemeDashboardCards(schemeStatus, srn, pspDetails.authorisingPSAID, appConfig.hideAftTile)
             listOfSchemes <- listSchemesConnector.getListOfSchemesForPsp(request.pspIdOrException.id)
             _ <- userAnswersCacheConnector.upsert(request.externalId, userAnswers.json)
             erHtml <- getEventReportingHtml(srn, listOfSchemes, schemeName)
@@ -101,15 +98,15 @@ class PspSchemeDashboardController @Inject()(
               case Right(list) =>
                 Ok(view(
                   schemeName = schemeName,
-                  interimDashboard = interimDashboard,
+                  interimDashboard = appConfig.interimDashboard,
                   pstr = pstr,
                   isSchemeOpen = isSchemeOpen,
                   openDate = schemeDetailsService.openedDate(srn, list, isSchemeOpen),
-                  schemeViewURL = config.pspTaskListUrl.format(srn),
+                  schemeViewURL = appConfig.pspTaskListUrl.format(srn),
                   aftPspSchemeDashboardCards = aftPspSchemeDashboardCards,
                   evPspSchemeDashboardCard = erHtml,
                   cards = service.getTiles(
-                    interimDashboard = interimDashboard,
+                    interimDashboard = appConfig.interimDashboard,
                     erHtml = erHtml,
                     srn = srn,
                     pstr = pstr,
@@ -159,7 +156,7 @@ class PspSchemeDashboardController @Inject()(
           pstr => EventReporting(
             pstr = pstr,
             schemeName = schemeName,
-            returnUrl = config.pspSchemeDashboardUrl.format(srn),
+            returnUrl = appConfig.pspSchemeDashboardUrl.format(srn),
             psaId = None,
             pspId = Some(authenticatedRequest.pspIdOrException.id),
             srn = srn
@@ -199,7 +196,7 @@ class PspSchemeDashboardController @Inject()(
       if (minPspDetails.deceasedFlag) {
         Future.successful(Redirect(controllers.routes.ContactHMRCController.onPageLoad()))
       } else if (minPspDetails.rlsFlag) {
-        Future.successful(Redirect(config.pspUpdateContactDetailsUrl))
+        Future.successful(Redirect(appConfig.pspUpdateContactDetailsUrl))
       } else {
         val ua =
           userAnswers
