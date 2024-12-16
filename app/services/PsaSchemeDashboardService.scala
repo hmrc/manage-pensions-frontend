@@ -78,7 +78,6 @@ class PsaSchemeDashboardService @Inject()(
   }
 
   def cards(
-             interimDashboard: Boolean,
              showPsrLink: Boolean,
              erHtml: Html,
              srn: SchemeReferenceNumber,
@@ -96,17 +95,10 @@ class PsaSchemeDashboardService @Inject()(
 
     val seqErOverviewFuture: Future[String] = getPSRErOverViewAsString(srn, pstr, showPsrLink)
 
-    val optionLockedSchemeNameFuture = optionLockedSchemeName(lock)
-
     for {
       seqErOverview <- seqErOverviewFuture
-      optionLockedSchemeName <- optionLockedSchemeNameFuture
     } yield {
-      if (interimDashboard) {
-        Seq(manageReportsEventsCard(srn, erHtml, seqErOverview)) ++ Seq(psaCardForInterimDashboard(srn, ua))
-      } else {
-        Seq(schemeCard(srn, currentScheme, lock, ua, optionLockedSchemeName)) ++ Seq(psaCard(srn, ua)) ++ pspCard(ua, currentScheme.map(_.schemeStatus), srn)
-      }
+      Seq(manageReportsEventsCard(srn, erHtml, seqErOverview)) ++ Seq(psaCardForInterimDashboard(srn, ua))
     }
   }
 

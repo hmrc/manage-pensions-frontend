@@ -58,18 +58,6 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
     s"$practitionerUrl${runModeConfiguration.get[String](path = "urls.pspSelfDeauthEmailCallback")
       .format(encryptedPspId, encryptedPstr, encryptedEmail)}"
 
-  def featureToggleUrl(toggle:String) : String =
-    s"${servicesConfig.baseUrl("pension-administrator")}${runModeConfiguration.underlying.getString("urls.featureToggle").format(toggle)}"
-
-  def aftFeatureToggleUrl(toggle: String): String =
-    s"$aftUrl${runModeConfiguration.underlying.getString("urls.featureToggle").format(toggle)}"
-
-  def newAftFeatureToggleUrl(toggle: String): String =
-    s"$aftUrl${runModeConfiguration.underlying.getString("urls.newFeatureToggle").format(toggle)}"
-
-  def newPensionsSchemeFeatureToggleUrl(toggle: String): String =
-    s"$pensionsSchemeUrl${runModeConfiguration.underlying.getString("urls.newFeatureToggle").format(toggle)}"
-
   lazy val authUrl: String = servicesConfig.baseUrl("auth")
   lazy val pensionsSchemeUrl: String = servicesConfig.baseUrl("pensions-scheme")
   lazy val pensionsSchemeReturnUrl: String = servicesConfig.baseUrl("pensions-scheme-return")
@@ -227,5 +215,5 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val pspSchemeDashboardUrl: String = loadConfig("urls.pspSchemeDashboard")
 
   lazy val hideAftTile: Boolean = runModeConfiguration.get[Boolean]("hideAftTile")
-
+  lazy val showPsrLink: Boolean = runModeConfiguration.get[Boolean]("show-psr-link")
 }

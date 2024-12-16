@@ -52,17 +52,7 @@ class FrontEndAppConfigSpec extends PlaySpec with Matchers with GuiceOneAppPerSu
       appConfig.pspSelfDeauthEmailCallback("psa", "pstr", "email.com") must
         be("http://localhost:8209/pension-practitioner/email-response-psp-self-deauth/psa/pstr/email.com")
     }
-
-    "have featureToggleUrl" in {
-      appConfig.featureToggleUrl("psa") must
-        be("http://localhost:8205/admin/feature-toggles/psa")
-    }
-
-    "have aftFeatureToggleUrl" in {
-      appConfig.aftFeatureToggleUrl("aft") must
-        be("http://localhost:8207/admin/feature-toggles/aft")
-    }
-
+    
     "have routeToSwitchLanguage" in {
       appConfig.routeToSwitchLanguage("aft").url must
         be("/manage-pension-schemes/language/aft")

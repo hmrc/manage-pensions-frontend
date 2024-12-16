@@ -39,7 +39,6 @@ class PspSchemeDashboardService @Inject()(
     minimalConnector.getMinimalPspDetails()
 
   def getTiles(
-                interimDashboard: Boolean,
                 erHtml: Html,
                 srn: String,
                 pstr: String,
@@ -48,7 +47,6 @@ class PspSchemeDashboardService @Inject()(
                 clientReference: Option[String],
                 seqErOverview: Seq[EROverview]
               )(implicit messages: Messages): Seq[PspSchemeDashboardCardViewModel] = {
-    if (interimDashboard) {
     val subHeadingMessage = if (seqErOverview.size == 1) {
           seqErOverview.head.psrDueDate.map(date => messages("messages__manage_reports_and_returns_psr_due", date.format(formatter))).getOrElse("")
       } else if (seqErOverview.size > 1) {
@@ -57,10 +55,7 @@ class PspSchemeDashboardService @Inject()(
       else{
         ""
       }
-      Seq(manageReportsEventsCard(srn, erHtml, subHeadingMessage), practitionerCard(loggedInPsp, clientReference, srn))
-    } else {
-      Seq(schemeCard(srn, pstr, openDate), practitionerCard(loggedInPsp, clientReference, srn))
-    }
+    Seq(manageReportsEventsCard(srn, erHtml, subHeadingMessage), practitionerCard(loggedInPsp, clientReference, srn))
   }
 
   private def practitionerCard(
@@ -93,28 +88,6 @@ class PspSchemeDashboardService @Inject()(
       )
     )
   }
-
-  private def schemeCard(
-                          srn: String,
-                          pstr: String,
-                          openDate: Option[String]
-                        )(implicit messages: Messages): PspSchemeDashboardCardViewModel =
-    PspSchemeDashboardCardViewModel(
-      id = "scheme-card",
-      heading = Message("messages__pspSchemeDashboard__scheme_heading"),
-      subHeadings = Seq(
-        (Message("messages__pspSchemeDashboard__scheme__subHeading_pstr"), pstr)
-      ),
-      optionalSubHeading = openDate map {
-        date =>
-          (Message("messages__pspSchemeDashboard__scheme__subHeading_regForTax"), date)
-      },
-      links = Seq(Link(
-        id = "view-details",
-        url = appConfig.pspTaskListUrl.format(srn),
-        linkText = Message("messages__pspSchemeDashboard__view_details_link")
-      ))
-    )
 
   private def manageReportsEventsCard(srn: String, erHtml:Html, subHeadingPstr: String)
                                (implicit messages: Messages): PspSchemeDashboardCardViewModel =
