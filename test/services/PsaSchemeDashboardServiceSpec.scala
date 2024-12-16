@@ -193,7 +193,7 @@ class PsaSchemeDashboardServiceSpec
 
       val service = new PsaSchemeDashboardService(mockAppConfig, mockPensionSchemeVarianceLockConnector, mockSchemeDetailsConnector, mockEventReportingConnector)
 
-      val actualReturn = service.cards(interimDashboard = true, showPsrLink = true, erHtml = Html(""), srn = "test", lock = None, list =
+      val actualReturn = service.cards(showPsrLink = true, erHtml = Html(""), srn = "test", lock = None, list =
         ListOfSchemes("", "", Some(fullSchemes)), ua = UserAnswers()) .map(_.head).futureValue
 
       val expectedReturn = CardViewModel("manage_reports_returns","Manage reports and returns",List.empty,
@@ -209,7 +209,7 @@ class PsaSchemeDashboardServiceSpec
 
       val service = new PsaSchemeDashboardService(mockAppConfig, mockPensionSchemeVarianceLockConnector, mockSchemeDetailsConnector, mockEventReportingConnector)
 
-      val actualReturn = service.cards(interimDashboard = true, showPsrLink = true, erHtml = Html(""), srn = "test", lock = None, list =
+      val actualReturn = service.cards(showPsrLink = true, erHtml = Html(""), srn = "test", lock = None, list =
         ListOfSchemes("", "", Some(fullSchemes)), ua = UserAnswers()) .map(_.head).futureValue
 
       val expectedReturn = CardViewModel("manage_reports_returns","Manage reports and returns",List(CardSubHeading("Notice to file:","card-sub-heading",
@@ -228,7 +228,7 @@ class PsaSchemeDashboardServiceSpec
 
       val service = new PsaSchemeDashboardService(mockAppConfig, mockPensionSchemeVarianceLockConnector, mockSchemeDetailsConnector, mockEventReportingConnector)
 
-      val actualReturn = service.cards(interimDashboard = true, showPsrLink = true, erHtml = Html(""), srn = "test", lock = None, list =
+      val actualReturn = service.cards(showPsrLink = true, erHtml = Html(""), srn = "test", lock = None, list =
         ListOfSchemes("", "", Some(fullSchemes)), ua = UserAnswers()) .map(_.head).futureValue
 
       val expectedReturn = CardViewModel("manage_reports_returns","Manage reports and returns",List(CardSubHeading("Notice to file:","card-sub-heading",

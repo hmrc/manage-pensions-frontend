@@ -238,15 +238,16 @@ class PsaSchemeDashboardControllerSpec
         .thenReturn(Future.successful(ua))
       when(fakeListOfSchemesConnector.getListOfSchemes(any())(any(), any()))
         .thenReturn(Future.successful(Right(listOfSchemes)))
-      when(mockService.cards(any(), any(), any(), any(), any(), any(), any())(any(), any()))
+      when(mockService.cards(any(), any(), any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Seq(schemeCard(), psaCard(), pspCard())))
       when(mockFrontendConnector.retrieveEventReportingPartial(any(), any())).thenReturn(Future(erHtml))
       when(mockAppConfig.psaSchemeDashboardUrl).thenReturn(dummyUrl)
       when(mockService.optionLockedSchemeName(any())(any())).thenReturn(Future.successful(None))
+      when(mockService.schemeDetailsLink(any(),any(),any(),any(),any())(any())).thenReturn(schemeLink)
       val result = controller().onPageLoad(srn)(sessionRequest)
       status(result) mustBe OK
 
-      val expected = psaSchemeDashboardView(schemeName, false, currentScheme, "Rejected", schemeLink, aftHtml = Html(""), finInfoHtml = Html(""), erHtml,
+      val expected = psaSchemeDashboardView(schemeName, currentScheme, "Rejected", schemeLink, finInfoHtml = Html(""), erHtml,
         Seq(schemeCard(), psaCard(), pspCard()))(sessionRequest, messages).toString()
       contentAsString(result) mustBe expected
     }
@@ -276,16 +277,18 @@ class PsaSchemeDashboardControllerSpec
         .thenReturn(Future.successful(userAnswers(Open.value)))
       when(fakeListOfSchemesConnector.getListOfSchemes(any())(any(), any()))
         .thenReturn(Future.successful(Right(listOfSchemes)))
-      when(mockService.cards(any(), any(), any(), any(), any(), any(), any())(any(), any()))
+      when(mockService.cards(any(), any(), any(), any(), any(), any())(any(), any()))
         .thenReturn(Future.successful(Seq(schemeCard(), psaCard(), pspCard())))
       when(mockFrontendConnector.retrieveAftPartial(any())(any(), any())).thenReturn(Future(aftHtml))
       when(mockFrontendConnector.retrieveFinInfoPartial(any())(any(), any())).thenReturn(Future(finInfoHtml))
       when(mockFrontendConnector.retrieveEventReportingPartial(any(), any())).thenReturn(Future(erHtml))
       when(mockService.optionLockedSchemeName(any())(any())).thenReturn(Future.successful(None))
+      when(mockService.schemeDetailsLink(any(),any(),any(),any(),any())(any())).thenReturn(schemeLink)
+
       val result = controller().onPageLoad(srn)(sessionRequest)
       status(result) mustBe OK
 
-      val expected = psaSchemeDashboardView(schemeName, false, currentScheme, "Open", schemeLink, aftHtml = aftHtml, finInfoHtml = finInfoHtml, erHtml,
+      val expected = psaSchemeDashboardView(schemeName, currentScheme, "Open", schemeLink, finInfoHtml = finInfoHtml, erHtml,
         Seq(schemeCard(), psaCard(), pspCard()))(sessionRequest, messages).toString()
       contentAsString(result) mustBe expected
     }

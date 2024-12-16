@@ -93,7 +93,6 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
                 )
               )
               for {
-                aftHtml <- tileRecover(retrieveAftTilesHtml(srn, schemeStatus, appConfig.hideAftTile, appConfig.interimDashboard))
                 finInfoHtml <- tileRecover(retrieveFinInfoTilesHtml(srn, schemeStatus, appConfig.hideAftTile))
                 _ <- userAnswersCacheConnector.upsert(request.externalId, updatedUa.json)
                 _ <- eventReportingData.map { data =>
@@ -101,34 +100,18 @@ class PsaSchemeDashboardController @Inject()(override val messagesApi: MessagesA
                 }.getOrElse(Future.successful(Json.obj()))
                 erHtml <- eventReportingData.map(_ => frontendConnector.retrieveEventReportingPartial)
                   .getOrElse(Future.successful(Html("")))
-                cards <- psaSchemeDashboardService.cards(appConfig.interimDashboard, appConfig.showPsrLink, erHtml, srn, lock, listOfSchemes, userAnswers)
+                cards <- psaSchemeDashboardService.cards(appConfig.showPsrLink, erHtml, srn, lock, listOfSchemes, userAnswers)
                 schemeLink <- psaSchemeDashboardService.optionLockedSchemeName(lock).map { otherOptionSchemeName =>
                   psaSchemeDashboardService.schemeDetailsLink(srn, userAnswers, lock, currentScheme.map(_.name), otherOptionSchemeName)
                 }
               } yield {
-                Ok(view(schemeName, appConfig.interimDashboard, currentScheme, schemeStatus, schemeLink, aftHtml, finInfoHtml, erHtml, cards))
+                Ok(view(schemeName, currentScheme, schemeStatus, schemeLink, finInfoHtml, erHtml, cards))
               }
             }
         }
       }
   }
 
-  private def retrieveAftTilesHtml(
-                                    srn: String,
-                                    schemeStatus: String,
-                                    hideTile: Boolean,
-                                    interimDashboard: Boolean
-                                  )(implicit request: AuthenticatedRequest[AnyContent]): Future[Html] = {
-    if (
-      (schemeStatus.equalsIgnoreCase("open") ||
-        schemeStatus.equalsIgnoreCase("wound-up") ||
-        schemeStatus.equalsIgnoreCase("deregistered")) && !hideTile && !interimDashboard
-    ) {
-      frontendConnector.retrieveAftPartial(srn)
-    } else {
-      Future.successful(Html(""))
-    }
-  }
   private def retrieveFinInfoTilesHtml(
                                     srn: String,
                                     schemeStatus: String,

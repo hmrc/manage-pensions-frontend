@@ -26,7 +26,7 @@
     appConfig: FrontendAppConfig
 )
 
-@(schemeName: String, interimDashboard: Boolean, pstr: String, isSchemeOpen: Boolean, openDate:Option[String], schemeViewURL: String, aftPspSchemeDashboardCards: Html, evPspSchemeDashboardCard:Html, cards: Seq[PspSchemeDashboardCardViewModel], returnLink: Option[Link] = None)(implicit request: Request[_], messages: Messages)
+@(schemeName: String, pstr: String, isSchemeOpen: Boolean, openDate:Option[String], schemeViewURL: String, aftPspSchemeDashboardCards: Html, evPspSchemeDashboardCard:Html, cards: Seq[PspSchemeDashboardCardViewModel], returnLink: Option[Link] = None)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = schemeName, fullWidthLayout = true) {
 
@@ -37,7 +37,7 @@
             @hmrcPageHeading(PageHeading(
                 text = schemeName
             ))
-            @if(interimDashboard == true){
+
             <div class="govuk-grid-row govuk-!-margin-bottom-4">
                 <div class="govuk-grid-column-one-third">
                     <span class="govuk-caption-m govuk-!-margin-bottom-1">@messages("messages__pspSchemeDashboard__scheme__subHeading_pstr")</span>
@@ -52,24 +52,21 @@
                     }
                 </div>
             </div>
-            }
+
 
             <div class="flex-container govuk-grid-row">
                 @aftPspSchemeDashboardCards
-                @if(interimDashboard == false){
-                    @evPspSchemeDashboardCard
-                }
                 @for(card <- cards) {
                     @components.pspSchemeDashboardCard(card)
                 }
             </div>
-            @if(interimDashboard == true){
-                <p class="govuk-body">
-                    <a id="view-details" class="govuk-link" href="@schemeViewURL">
-                        @messages("messages__pspSchemeDashboard__view_details_link")
-                    </a>
-                </p>
-            }
+
+            <p class="govuk-body">
+                <a id="view-details" class="govuk-link" href="@schemeViewURL">
+                    @messages("messages__pspSchemeDashboard__view_details_link")
+                </a>
+            </p>
+
             @returnLink.map { ret =>
                 <p class="govuk-body">
                     <a id="@ret.id" class="govuk-link" href="@ret.url">@messages(ret.linkText)</a>

@@ -27,7 +27,7 @@
     appConfig: FrontendAppConfig
 )
 
-@(schemeName: String, interimDashboard: Boolean, currentScheme: Option[SchemeDetails], schemeStatus: String, schemeLink: Link, aftHtml: Html, finInfoHtml: Html, erHtml: Html, cards: Seq[CardViewModel], subHeading: Option[String] = None, returnLink: Option[Link] = None)(implicit request: Request[_], messages: Messages)
+@(schemeName: String, currentScheme: Option[SchemeDetails], schemeStatus: String, schemeLink: Link, finInfoHtml: Html, erHtml: Html, cards: Seq[CardViewModel], subHeading: Option[String] = None, returnLink: Option[Link] = None)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = messages(schemeName), fullWidthLayout = true) {
 
@@ -35,7 +35,7 @@
 
         <div class="govuk-grid-column-full">
             @components.heading(messages(schemeName))
-            @if(interimDashboard == true){
+
             <div class="govuk-grid-row govuk-!-margin-bottom-4">
                 <div class="govuk-grid-column-one-third">
                     @if(currentScheme.exists(_.pstr.nonEmpty) &&
@@ -56,24 +56,18 @@
                     }
                 </div>
             </div>
-            }
+
             <div class="flex-container govuk-grid-row">
-                @aftHtml
-                @if(interimDashboard == false){
-                    @erHtml
-                }
                 @finInfoHtml
                 @for(card <- cards) {
                     @components.card(card)
                 }
             </div>
-            @if(interimDashboard == true){
             <p class="govuk-body">
                 <a id="@schemeLink.id" class="govuk-link" href="@schemeLink.url">
                     @messages(schemeLink.linkText)
                 </a>
             </p>
-            }
             <p class="govuk-body">
                 <a id="list-schemes" class="govuk-link" href="@controllers.psa.routes.ListSchemesController.onPageLoad.url">
                     @messages("messages__psaSchemeDash__return_link")

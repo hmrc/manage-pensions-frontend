@@ -98,7 +98,6 @@ class PspSchemeDashboardController @Inject()(
               case Right(list) =>
                 Ok(view(
                   schemeName = schemeName,
-                  interimDashboard = appConfig.interimDashboard,
                   pstr = pstr,
                   isSchemeOpen = isSchemeOpen,
                   openDate = schemeDetailsService.openedDate(srn, list, isSchemeOpen),
@@ -106,7 +105,6 @@ class PspSchemeDashboardController @Inject()(
                   aftPspSchemeDashboardCards = aftPspSchemeDashboardCards,
                   evPspSchemeDashboardCard = erHtml,
                   cards = service.getTiles(
-                    interimDashboard = appConfig.interimDashboard,
                     erHtml = erHtml,
                     srn = srn,
                     pstr = pstr,

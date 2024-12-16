@@ -162,22 +162,14 @@ class PspSchemeDashboardControllerSpec
     )
 
   private def cards(
-                     interimDashboard: Boolean,
                      evPspCard: Html,
                      clientReference: Option[String],
                      openDate: Option[String]
                    ): Seq[PspSchemeDashboardCardViewModel] = {
-    if (interimDashboard) {
-      Seq(
-        manageReportsEventsCard(evPspCard),
-        practitionerCard(clientReference)
-      )
-    } else {
-      Seq(
-        practitionerCard(clientReference),
-        schemeCard(openDate)
-      )
-    }
+    Seq(
+      manageReportsEventsCard(evPspCard),
+      practitionerCard(clientReference)
+    )
   }
 
 
@@ -186,18 +178,16 @@ class PspSchemeDashboardControllerSpec
                             openDate: Option[String] = None,
                             aftReturnsCard: Html = aftPspSchemeDashboardCards,
                             evPspCard: Html = evPspSchemeDashboardCard,
-                            interimDashboard: Boolean = interimDashboard,
                             isSchemeOpen: Boolean = isSchemeOpen
                           ): String = view(
     schemeName = schemeName,
-    interimDashboard = interimDashboard,
     pstr = pstr,
     isSchemeOpen = isSchemeOpen,
     openDate = openDate,
-    schemeViewURL = "dummyUrl",
-    aftPspSchemeDashboardCards = aftReturnsCard,
+    schemeViewURL = "/foo",
+    aftPspSchemeDashboardCards = Html(""),
     evPspSchemeDashboardCard = Html(""),
-    cards = cards(interimDashboard, evPspCard, clientReference, openDate),
+    cards = cards(evPspCard, clientReference, openDate),
     returnLink = Some(returnLink)
   )(
     fakeRequest,
@@ -235,8 +225,8 @@ class PspSchemeDashboardControllerSpec
         .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false, deceasedFlag = false)))
       when(listSchemesConnector.getListOfSchemesForPsp(any())(any(), any()))
         .thenReturn(Future.successful(Right(listOfSchemesResponse)))
-      when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any(), any(), any(), any())(any()))
-        .thenReturn(cards(false, evPspSchemeDashboardCard, None, None))
+      when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any(), any(), any())(any()))
+        .thenReturn(cards(evPspSchemeDashboardCard, None, None))
       when(appConfig.pspSchemeDashboardUrl).thenReturn("dummyUrl")
 
 
