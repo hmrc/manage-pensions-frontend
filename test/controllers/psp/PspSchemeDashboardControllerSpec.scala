@@ -184,8 +184,7 @@ class PspSchemeDashboardControllerSpec
     pstr = pstr,
     isSchemeOpen = isSchemeOpen,
     openDate = openDate,
-    schemeViewURL = "/foo",
-    aftPspSchemeDashboardCards = Html(""),
+    schemeViewURL = "dummyUrl",
     evPspSchemeDashboardCard = Html(""),
     cards = cards(evPspCard, clientReference, openDate),
     returnLink = Some(returnLink)
@@ -216,6 +215,27 @@ class PspSchemeDashboardControllerSpec
   }
 
   "PspSchemeDashboardController.onPageLoad" must {
+    "return ok and correct cards when start aft is allowed" in {
+      when(frontendConnector.retrieveEventReportingPartial(any(), any()))
+        .thenReturn(Future.successful(evPspSchemeDashboardCard))
+      when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
+        .thenReturn(Future.successful(ua()))
+      when(minimalConnector.getMinimalPspDetails()(any(), any()))
+        .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false, deceasedFlag = false)))
+      when(listSchemesConnector.getListOfSchemesForPsp(any())(any(), any()))
+        .thenReturn(Future.successful(Right(listOfSchemesResponse)))
+      when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any(), any(), any())(any()))
+        .thenReturn(cards(evPspSchemeDashboardCard, None, None))
+      when(schemeDetailsService.openedDate(any(), any(), any())).thenReturn(Some(authDate))
+      when(appConfig.pspTaskListUrl).thenReturn("dummyUrl")
+      when(appConfig.pspSchemeDashboardUrl).thenReturn("dummyUrl")
+
+      val result = controller().onPageLoad(srn)(sessionRequest)
+
+      status(result) mustBe OK
+      contentAsString(result) mustBe viewAsString(isSchemeOpen = true, openDate = Some(authDate))
+    }
+
    "return ok and correct cards when start aft is not allowed" in {
       when(frontendConnector.retrieveEventReportingPartial(any(), any()))
         .thenReturn(Future.successful(evPspSchemeDashboardCard))
@@ -227,8 +247,8 @@ class PspSchemeDashboardControllerSpec
         .thenReturn(Future.successful(Right(listOfSchemesResponse)))
       when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any(), any(), any())(any()))
         .thenReturn(cards(evPspSchemeDashboardCard, None, None))
+      when(appConfig.pspTaskListUrl).thenReturn("dummyUrl")
       when(appConfig.pspSchemeDashboardUrl).thenReturn("dummyUrl")
-
 
       val result = controller().onPageLoad(srn)(sessionRequest)
       status(result) mustBe OK
@@ -251,6 +271,28 @@ class PspSchemeDashboardControllerSpec
 
       status(result) mustBe NOT_FOUND
     }
+
+    "return ok and correct cards when open date and client ref are populated" in {
+      when(frontendConnector.retrieveEventReportingPartial(any(), any()))
+        .thenReturn(Future.successful(evPspSchemeDashboardCard))
+      when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
+        .thenReturn(Future.successful(ua()))
+      when(minimalConnector.getMinimalPspDetails()(any(), any()))
+        .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false, deceasedFlag = false)))
+      when(listSchemesConnector.getListOfSchemesForPsp(any())(any(), any()))
+        .thenReturn(Future.successful(Right(listOfSchemesResponse)))
+      when(schemeDetailsService.openedDate(any(), any(), any())).thenReturn(Some(authDate))
+      when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any(), any(), any())(any()))
+        .thenReturn(cards(evPspSchemeDashboardCard, Some(clientRef), Some(authDate)))
+      when(appConfig.pspTaskListUrl).thenReturn("dummyUrl")
+      when(appConfig.pspSchemeDashboardUrl).thenReturn("dummyUrl")
+
+      val result = controller().onPageLoad(srn)(sessionRequest)
+
+      status(result) mustBe OK
+      contentAsString(result) mustBe viewAsString(clientReference = Some(clientRef), isSchemeOpen = true, openDate = Some(authDate))
+    }
+
 
     "return redirect to update contact details page when RLS flag true" in {
       when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
