@@ -185,6 +185,7 @@ class PspSchemeDashboardControllerSpec
     isSchemeOpen = isSchemeOpen,
     openDate = openDate,
     schemeViewURL = "dummyUrl",
+    aftPspSchemeDashboardCards = aftReturnsCard,
     evPspSchemeDashboardCard = Html(""),
     cards = cards(evPspCard, clientReference, openDate),
     returnLink = Some(returnLink)
