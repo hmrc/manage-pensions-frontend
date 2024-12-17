@@ -89,6 +89,7 @@ class PspSchemeDashboardController @Inject()(
           val pstr = (userAnswers.json \ "pstr").as[String]
           for {
             eqOverview <-  getPSROverview(srn, appConfig.showPsrLink, pstr)
+            aftPspSchemeDashboardCards <- aftPspSchemeDashboardCards(schemeStatus, srn, pspDetails.authorisingPSAID, appConfig.hideAftTile)
             listOfSchemes <- listSchemesConnector.getListOfSchemesForPsp(request.pspIdOrException.id)
             _ <- userAnswersCacheConnector.upsert(request.externalId, userAnswers.json)
             erHtml <- getEventReportingHtml(srn, listOfSchemes, schemeName)
@@ -101,6 +102,7 @@ class PspSchemeDashboardController @Inject()(
                   isSchemeOpen = isSchemeOpen,
                   openDate = schemeDetailsService.openedDate(srn, list, isSchemeOpen),
                   schemeViewURL = appConfig.pspTaskListUrl.format(srn),
+                  aftPspSchemeDashboardCards = aftPspSchemeDashboardCards,
                   evPspSchemeDashboardCard = erHtml,
                   cards = service.getTiles(
                     erHtml = erHtml,

@@ -26,8 +26,7 @@
     appConfig: FrontendAppConfig
 )
 
-@(schemeName: String, pstr: String, isSchemeOpen: Boolean, openDate:Option[String], schemeViewURL: String, evPspSchemeDashboardCard:Html, cards: Seq[PspSchemeDashboardCardViewModel], returnLink: Option[Link] = None)(implicit request: Request[_], messages: Messages)
-
+@(schemeName: String, pstr: String, isSchemeOpen: Boolean, openDate:Option[String], schemeViewURL: String, aftPspSchemeDashboardCards: Html, evPspSchemeDashboardCard:Html, cards: Seq[PspSchemeDashboardCardViewModel], returnLink: Option[Link] = None)(implicit request: Request[_], messages: Messages)
 @layout(pageTitle = schemeName, fullWidthLayout = true) {
 
     <div class="govuk-grid-row">
@@ -55,6 +54,7 @@
 
 
             <div class="flex-container govuk-grid-row">
+                @aftPspSchemeDashboardCards
                 @for(card <- cards) {
                     @components.pspSchemeDashboardCard(card)
                 }
