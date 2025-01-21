@@ -14,7 +14,7 @@
 
 This is the frontend repository for the Manage Pensions service. This frontend microservice is also known as *Manage pension schemes*. The service allows an individual to invite a person to become a pension administrator, accept an invitation to become a pension scheme administrator, remove themselves from a pension scheme and deregister as a pension scheme administrator.
  
-This service also redirects a user to other services to do the following things -
+This service also redirects a user to other services to do the following things:
 1. Register as a pension scheme administrator
 2. Edit their pension administrator details
 3. Start registering a new pension scheme
@@ -54,13 +54,12 @@ This service does not have its own backend, instead it uses the following backen
 | Pension Scheme Accounting For Tax | GET         | /pension-scheme-accounting-for-tax/get-aft-overview | Return the data overview of all aft returns of a scheme for a given time range                                           |
 | Address Lookup                    | GET         | /v2/uk/addresses?postcode={postCode}                | Returns all addresses at given postcode                                                                                  |
 
-
 ## Requirements
 This service is written in Scala and Play, so needs at least a [JRE] to run.
 
 **Node version:** 16.20.2
 
-**Java version:** 11
+**Java version:** 21
 
 **Scala version:** 2.13.14
 
@@ -73,7 +72,7 @@ This service is written in Scala and Play, so needs at least a [JRE] to run.
 In order to run the service, ensure Service Manager is installed (see [MDTP guidance](https://docs.tax.service.gov.uk/mdtp-handbook/documentation/developer-set-up/set-up-service-manager.html) if needed) and launch the relevant configuration by typing into the terminal:
 `sm2 --start PODS_ALL`
 
-To run the service locally, enter `sm2 --stop PENSION_ADMINISTRATOR`.
+To run the service locally, enter `sm2 --stop MANAGE_PENSIONS_FRONTEND`.
 
 In your terminal, navigate to the relevant directory and enter `sbt run`.
 
