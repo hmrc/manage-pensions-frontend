@@ -212,7 +212,7 @@ class PspSchemeDashboardControllerSpec
       .thenReturn(Future.successful(JsBoolean(true)))
     when(appConfig.pspTaskListUrl)
       .thenReturn("/foo")
-    when(mockPensionSchemeReturnConnector.getOverview(any(),any(), any(), any())(any())).thenReturn(Future.successful(Seq(overview1)))
+    when(mockPensionSchemeReturnConnector.getOverview(any(),any(), any(), any(), any())(any())).thenReturn(Future.successful(Seq(overview1)))
   }
 
   "PspSchemeDashboardController.onPageLoad" must {

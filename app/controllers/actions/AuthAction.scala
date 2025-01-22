@@ -142,7 +142,7 @@ class AuthImpl(
           logger.warn("AuthAction, neither enrolment is available")
           Future.successful(Redirect(UnauthorisedController.onPageLoad))
         case _ =>
-          block(AuthenticatedRequest(request, id, psaId, pspId, userType(affinityGroup)))
+          block(AuthenticatedRequest(request, id, psaId, pspId, userType(affinityGroup), authEntity))
       }
     })
   }
@@ -165,10 +165,10 @@ class AuthImpl(
           (aop, authEntity) match {
             case (Administrator, PSA) =>
               block(AuthenticatedRequest(request, id,
-                getPsaId(isMandatory = true, enrolments), getPspId(isMandatory = false, enrolments), userType(affinityGroup)))
+                getPsaId(isMandatory = true, enrolments), getPspId(isMandatory = false, enrolments), userType(affinityGroup), authEntity))
             case (Practitioner, PSP) =>
               block(AuthenticatedRequest(request, id,
-                getPsaId(isMandatory = false, enrolments), getPspId(isMandatory = true, enrolments), userType(affinityGroup)))
+                getPsaId(isMandatory = false, enrolments), getPspId(isMandatory = true, enrolments), userType(affinityGroup), authEntity))
             case (Administrator, PSP) =>
               Future.successful(
                 Redirect(Call("GET", s"${CannotAccessPageAsAdministratorController.onPageLoad().url}?continue=$friendlyUrl"))

@@ -26,7 +26,8 @@ import controllers.psa.routes._
 import controllers.psp.routes._
 import identifiers.invitations.PSTRId
 import identifiers.{SchemeNameId, SchemeStatusId}
-import models.SchemeStatus.{Open, Rejected, Pending}
+import models.AuthEntity.PSA
+import models.SchemeStatus.{Open, Pending, Rejected}
 import models._
 import models.requests.AuthenticatedRequest
 import org.mockito.ArgumentMatchers.any
@@ -55,7 +56,7 @@ class PsaSchemeDashboardServiceSpec
     with ScalaFutures {
 
   import PsaSchemeDashboardServiceSpec._
-  implicit val authReq: AuthenticatedRequest[AnyContent] = AuthenticatedRequest(fakeRequest, "id", Some(PsaId(psaId)), None, Individual)
+  implicit val authReq: AuthenticatedRequest[AnyContent] = AuthenticatedRequest(fakeRequest, "id", Some(PsaId(psaId)), None, Individual, PSA)
 
   private val mockAppConfig = mock[FrontendAppConfig]
   private val mockPensionSchemeVarianceLockConnector = mock[PensionSchemeVarianceLockConnector]
@@ -107,7 +108,7 @@ class PsaSchemeDashboardServiceSpec
     when(mockAppConfig.eventReportingOverviewHtmlUrl).thenReturn(dummyUrl)
     when(mockPensionSchemeVarianceLockConnector.getLockByPsa(any())(any(), any())).thenReturn(Future.successful(None))
     when(mockSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any())).thenReturn(Future.successful(UserAnswers()))
-    when(mockEventReportingConnector.getOverview(any(), any(), any(), any())(any())).thenReturn(Future.successful(Seq(overview1)))
+    when(mockEventReportingConnector.getOverview(any(), any(), any(), any(), any())(any())).thenReturn(Future.successful(Seq(overview1)))
     super.beforeEach()
   }
 
@@ -189,7 +190,7 @@ class PsaSchemeDashboardServiceSpec
 
     "handle different no seqEROverview correctly" in {
       val mockEventReportingConnector = mock[PensionSchemeReturnConnector]
-      when(mockEventReportingConnector.getOverview(any(), any(), any(), any())(any())).thenReturn(Future.successful(Seq.empty))
+      when(mockEventReportingConnector.getOverview(any(), any(), any(), any(), any())(any())).thenReturn(Future.successful(Seq.empty))
 
       val service = new PsaSchemeDashboardService(mockAppConfig, mockPensionSchemeVarianceLockConnector, mockSchemeDetailsConnector, mockEventReportingConnector)
 
@@ -205,7 +206,7 @@ class PsaSchemeDashboardServiceSpec
     }
     "handle different one seqEROverview correctly" in {
       val mockEventReportingConnector = mock[PensionSchemeReturnConnector]
-      when(mockEventReportingConnector.getOverview(any(), any(), any(), any())(any())).thenReturn(Future.successful(Seq(overview1)))
+      when(mockEventReportingConnector.getOverview(any(), any(), any(), any(), any())(any())).thenReturn(Future.successful(Seq(overview1)))
 
       val service = new PsaSchemeDashboardService(mockAppConfig, mockPensionSchemeVarianceLockConnector, mockSchemeDetailsConnector, mockEventReportingConnector)
 
@@ -224,7 +225,7 @@ class PsaSchemeDashboardServiceSpec
 
     "handle different multiple seqEROverview correctly" in {
       val mockEventReportingConnector = mock[PensionSchemeReturnConnector]
-      when(mockEventReportingConnector.getOverview(any(), any(), any(), any())(any())).thenReturn(Future.successful(Seq(overview1, overview1)))
+      when(mockEventReportingConnector.getOverview(any(), any(), any(), any(), any())(any())).thenReturn(Future.successful(Seq(overview1, overview1)))
 
       val service = new PsaSchemeDashboardService(mockAppConfig, mockPensionSchemeVarianceLockConnector, mockSchemeDetailsConnector, mockEventReportingConnector)
 

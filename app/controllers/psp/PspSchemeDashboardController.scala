@@ -88,7 +88,7 @@ class PspSchemeDashboardController @Inject()(
           val schemeName = (userAnswers.json \ "schemeName").as[String]
           val pstr = (userAnswers.json \ "pstr").as[String]
           for {
-            eqOverview <-  getPSROverview(srn, appConfig.showPsrLink, pstr)
+            eqOverview <-  getPSROverview(srn, appConfig.showPsrLink, pstr, request.authEntity)
             aftPspSchemeDashboardCards <- aftPspSchemeDashboardCards(schemeStatus, srn, pspDetails.authorisingPSAID, appConfig.hideAftTile)
             listOfSchemes <- listSchemesConnector.getListOfSchemesForPsp(request.pspIdOrException.id)
             _ <- userAnswersCacheConnector.upsert(request.externalId, userAnswers.json)
@@ -131,9 +131,9 @@ class PspSchemeDashboardController @Inject()(
   }
 
   private def getPSROverview(srn: SchemeReferenceNumber, showPsrLink: Boolean,
-                          pstr: String)(implicit hc: HeaderCarrier) = {
+                          pstr: String, authEntity: AuthEntity)(implicit hc: HeaderCarrier) = {
     if (showPsrLink && pstr.nonEmpty) {
-      pensionSchemeReturnConnector.getOverview(srn, pstr,minStartDateAsString, maxEndDateAsString)
+      pensionSchemeReturnConnector.getOverview(srn, pstr,minStartDateAsString, maxEndDateAsString, authEntity)
         .recoverWith {
           case e =>
             logger.error("Issue with PSR request", e)

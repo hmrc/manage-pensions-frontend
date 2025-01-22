@@ -17,6 +17,7 @@
 package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
+import models.AuthEntity.PSA
 import models.{EROverview, SchemeReferenceNumber}
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
@@ -86,7 +87,7 @@ class PensionSchemeReturnConnectorSpec
               .withBody(erOverviewResponseJson.toString())
           )
       )
-      connector.getOverview(srn, pstr, "2022-04-06", "2023-04-05").map { response =>
+      connector.getOverview(srn, pstr, "2022-04-06", "2023-04-05", PSA).map { response =>
         response mustBe erOverview
       }
     }
@@ -108,7 +109,7 @@ class PensionSchemeReturnConnectorSpec
       )
 
       recoverToSucceededIf[JsResultException] {
-        connector.getOverview(srn, pstr, "2022-04-06", "2023-04-05")
+        connector.getOverview(srn, pstr, "2022-04-06", "2023-04-05", PSA)
       }
     }
 
@@ -122,7 +123,7 @@ class PensionSchemeReturnConnectorSpec
       )
 
       recoverToSucceededIf[HttpException] {
-        connector.getOverview(srn, pstr, "2022-04-06", "2023-04-05")
+        connector.getOverview(srn, pstr, "2022-04-06", "2023-04-05", PSA)
       }
     }
   }
