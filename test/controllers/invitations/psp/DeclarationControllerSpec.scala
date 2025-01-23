@@ -130,7 +130,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
       "invite psp, redirect to confirmation page when valid data is submitted and send an email and email audit event" in {
         when(mockListOfSchemesConnector.getListOfSchemes(any())(any(), any())).thenReturn(listOfSchemesResponse)
         when(mockSchemeDetailsService.pstr(any(), any())).thenReturn(Some(pstr))
-        when(mockPspConnector.authorisePsp(any(), any(), any(), any())(any(), any())).thenReturn(Future.successful(()))
+        when(mockPspConnector.authorisePsp(any(), any(), any(), any(), any())(any(), any())).thenReturn(Future.successful(()))
         when(mockEmailConnector.sendEmail(any())(any(), any())).thenReturn(Future.successful(EmailSent))
         when(mockMinimalConnector.getMinimalPsaDetails()(any(), any()))
           .thenReturn(Future.successful(minPsa))
@@ -188,7 +188,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
       "redirect to already associated page if already associated" in {
         when(mockListOfSchemesConnector.getListOfSchemes(any())(any(), any())).thenReturn(listOfSchemesResponse)
         when(mockSchemeDetailsService.pstr(any(), any())).thenReturn(Some(pstr))
-        when(mockPspConnector.authorisePsp(any(), any(), any(), any())(any(), any())).thenReturn(Future.failed(new ActiveRelationshipExistsException))
+        when(mockPspConnector.authorisePsp(any(), any(), any(), any(), any())(any(), any())).thenReturn(Future.failed(new ActiveRelationshipExistsException))
         when(mockEmailConnector.sendEmail(any())(any(), any())).thenReturn(Future.successful(EmailSent))
         when(mockMinimalConnector.getMinimalPsaDetails()(any(), any()))
           .thenReturn(Future.successful(minPsa))

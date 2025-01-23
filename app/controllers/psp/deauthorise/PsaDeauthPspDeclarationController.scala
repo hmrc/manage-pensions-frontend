@@ -105,7 +105,8 @@ class PsaDeauthPspDeclarationController @Inject()(
                         initiatedIDType = "PSAID",
                         initiatedIDNumber = request.psaIdOrException.id,
                         ceaseDate = removalDate.toString
-                      )
+                      ),
+                      srn = srn
                     )
                     minimalPSAPSP <- minimalConnector.getMinimalPsaDetails()
                     _ <- sendEmail(minimalPSAPSP, psaId, pspDetails.id, pstr, pspDetails.name, schemeName)
