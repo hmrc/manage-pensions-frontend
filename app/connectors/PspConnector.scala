@@ -54,7 +54,7 @@ class PspConnectorImpl @Inject()(httpClientV2: HttpClientV2, config: FrontendApp
   override def authorisePsp(pstr: String, psaId: String, pspId: String, clientReference: Option[String]
                            )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
 
-    val authorisePspUrl = url"${config.authorisePspUrl}"
+    val authorisePspUrl = url"${config.authorisePspUrl(srn)}"
     val clientRefJson = clientReference.map(cr => Json.obj("clientReference" -> cr)).getOrElse(Json.obj())
     val headerCarrier = hc.withExtraHeaders("pstr" -> pstr)
     val pspDetails = Json.obj(
@@ -86,7 +86,7 @@ class PspConnectorImpl @Inject()(httpClientV2: HttpClientV2, config: FrontendApp
                           )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
 
     val headerCarrier = hc.withExtraHeaders("pstr" -> pstr)
-    val deAuthorisePspUrl = url"${config.deAuthorisePspUrl}"
+    val deAuthorisePspUrl = url"${config.deAuthorisePspUrl(srn)}"
 
     httpClientV2.post(deAuthorisePspUrl)(headerCarrier)
       .withBody(Json.toJson(deAuthorise))
