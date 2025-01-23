@@ -18,6 +18,7 @@ package controllers.actions
 
 import base.SpecBase
 import connectors.UserAnswersCacheConnector
+import models.AuthEntity.PSA
 import models.Individual
 import models.requests.AuthenticatedRequest
 import models.requests.OptionalDataRequest
@@ -44,7 +45,7 @@ class DataRetrievalActionSpec extends SpecBase with MockitoSugar with ScalaFutur
         when(dataCacheConnector.fetch(eqTo("id"))(any(), any())) thenReturn Future(None)
         val action = new Harness(dataCacheConnector)
 
-        val futureResult = action.callTransform(AuthenticatedRequest(fakeRequest, "id", Some(PsaId("A0000000")), None, Individual))
+        val futureResult = action.callTransform(AuthenticatedRequest(fakeRequest, "id", Some(PsaId("A0000000")), None, Individual, PSA))
 
         whenReady(futureResult) { result =>
           result.userAnswers.isEmpty mustBe true
@@ -58,7 +59,7 @@ class DataRetrievalActionSpec extends SpecBase with MockitoSugar with ScalaFutur
         when(dataCacheConnector.fetch(eqTo("id"))(any(), any())) thenReturn Future.successful(Some(Json.obj()))
         val action = new Harness(dataCacheConnector)
 
-        val futureResult = action.callTransform(AuthenticatedRequest(fakeRequest, "id", Some(PsaId("A0000000")), None, Individual))
+        val futureResult = action.callTransform(AuthenticatedRequest(fakeRequest, "id", Some(PsaId("A0000000")), None, Individual, PSA))
 
         whenReady(futureResult) { result =>
           result.userAnswers.isDefined mustBe true

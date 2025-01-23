@@ -93,7 +93,7 @@ class PsaSchemeDashboardService @Inject()(
       case None => "Pstr Not Found"
     }
 
-    val seqErOverviewFuture: Future[String] = getPSRErOverViewAsString(srn, pstr, showPsrLink)
+    val seqErOverviewFuture: Future[String] = getPSRErOverViewAsString(srn, pstr, showPsrLink, request.authEntity)
 
     for {
       seqErOverview <- seqErOverviewFuture
@@ -103,10 +103,10 @@ class PsaSchemeDashboardService @Inject()(
   }
 
   private def getPSRErOverViewAsString(srn: SchemeReferenceNumber, pstr: String,
-                                       showPsrLink: Boolean)(implicit hc: HeaderCarrier, messages: Messages): Future[String] = {
+                                       showPsrLink: Boolean, authEntity: AuthEntity)(implicit hc: HeaderCarrier, messages: Messages): Future[String] = {
     if(showPsrLink && pstr.nonEmpty) {
       pensionSchemeReturnConnector.getOverview(
-        srn, pstr, minStartDateAsString, maxEndDateAsString
+        srn, pstr, minStartDateAsString, maxEndDateAsString, authEntity
       ).map {
         case x if x.size == 1 =>
           x.head.psrDueDate.map(date => messages("messages__manage_reports_and_returns_psr_due", date.format(formatter)))

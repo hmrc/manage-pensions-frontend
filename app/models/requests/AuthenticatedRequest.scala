@@ -34,7 +34,7 @@ case class AuthenticatedRequest[A](request: Request[A],
                                    psaId: Option[PsaId],
                                    pspId: Option[PspId] = None,
                                    userType: UserType,
-                                   authEntity: AuthEntity = PSA)
+                                   authEntity: AuthEntity)
   extends WrappedRequest[A](request) with IdentifiedRequest {
   def psaIdOrException: PsaId = psaId.getOrElse(throw new IdNotFound)
 

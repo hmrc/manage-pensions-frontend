@@ -22,10 +22,10 @@ import connectors.admin.MinimalConnector
 import connectors.scheme.PensionSchemeVarianceLockConnector
 import identifiers.invitations.PSTRId
 import identifiers.{SchemeNameId, SchemeStatusId}
+import models.AuthEntity.PSA
 import models.SchemeStatus.{Open, Rejected}
 import models._
 import models.requests.AuthenticatedRequest
-import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
@@ -46,7 +46,7 @@ class SchemeDetailsServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
   import SchemeDetailsServiceSpec._
 
   private implicit val hc: HeaderCarrier = HeaderCarrier()
-  implicit val authReq: AuthenticatedRequest[AnyContent] = AuthenticatedRequest(fakeRequest, "id", Some(PsaId(psaId)), None, Individual)
+  implicit val authReq: AuthenticatedRequest[AnyContent] = AuthenticatedRequest(fakeRequest, "id", Some(PsaId(psaId)), None, Individual, PSA)
   private val minimalPsaConnector: MinimalConnector = mock[MinimalConnector]
   private val lockConnector = mock[PensionSchemeVarianceLockConnector]
   private val frontendConnector = mock[FrontendConnector]
