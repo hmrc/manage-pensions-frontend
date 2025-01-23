@@ -87,7 +87,7 @@ class DeclarationController @Inject()(
               val deAuthModel: DeAuthorise = DeAuthorise("PSPID", pspId, "PSPID", pspId, removalDate.toString)
 
               for {
-                _ <- pspConnector.deAuthorise(pstr, deAuthModel)
+                _ <- pspConnector.deAuthorise(pstr, deAuthModel, srn, true)
                 minimalPSP <- minimalConnector.getMinimalPspDetails()
                 _ <- sendEmail(minimalPSP, authorisedPractitioner.authorisingPSA.name, schemeName, pspId, pstr)
               } yield {

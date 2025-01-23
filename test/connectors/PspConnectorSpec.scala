@@ -17,7 +17,7 @@
 package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock._
-import models.DeAuthorise
+import models.{DeAuthorise, SchemeReferenceNumber}
 import org.scalatest.flatspec.AsyncFlatSpec
 import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.scalacheck.Checkers
@@ -46,7 +46,7 @@ class PspConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper w
 
     val connector = injector.instanceOf[PspConnector]
 
-    connector.authorisePsp(pstr, psaId, pspId, Some(cr)) map {
+    connector.authorisePsp(pstr, psaId, pspId, Some(cr), srn) map {
       _ =>
         server.findAll(postRequestedFor(urlEqualTo(pspAuthUrl))).size() shouldBe 1
     }
@@ -66,7 +66,7 @@ class PspConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper w
     val connector = injector.instanceOf[PspConnector]
 
     recoverToSucceededIf[ActiveRelationshipExistsException] {
-      connector.authorisePsp(pstr, psaId, pspId, Some(cr))
+      connector.authorisePsp(pstr, psaId, pspId, Some(cr), srn)
     } map {
       _ =>
         server.findAll(postRequestedFor(urlEqualTo(pspAuthUrl))).size() shouldBe 1
@@ -86,7 +86,7 @@ class PspConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper w
     val connector = injector.instanceOf[PspConnector]
 
     recoverToSucceededIf[BadRequestException] {
-      connector.authorisePsp(pstr, psaId, pspId, Some(cr))
+      connector.authorisePsp(pstr, psaId, pspId, Some(cr), srn)
     } map {
       _ =>
         server.findAll(postRequestedFor(urlEqualTo(pspAuthUrl))).size() shouldBe 1
@@ -106,7 +106,7 @@ class PspConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper w
     val connector = injector.instanceOf[PspConnector]
 
     recoverToSucceededIf[UpstreamErrorResponse] {
-      connector.authorisePsp(pstr, psaId, pspId, Some(cr))
+      connector.authorisePsp(pstr, psaId, pspId, Some(cr), srn)
     } map {
       _ =>
         server.findAll(postRequestedFor(urlEqualTo(pspAuthUrl))).size() shouldBe 1
@@ -126,7 +126,7 @@ class PspConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper w
 
     val connector = injector.instanceOf[PspConnector]
 
-    connector.deAuthorise(pstr, psaDeAuthPsa) map {
+    connector.deAuthorise(pstr, psaDeAuthPsa, srn) map {
       response =>
         server.findAll(postRequestedFor(urlEqualTo(deAuthUrl))).size() shouldBe 1
         response.status shouldBe 200
@@ -147,7 +147,7 @@ class PspConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper w
 
     val connector = injector.instanceOf[PspConnector]
 
-    connector.deAuthorise(pstr, psaDeAuthPsp) map {
+    connector.deAuthorise(pstr, psaDeAuthPsp, srn) map {
       response =>
         server.findAll(postRequestedFor(urlEqualTo(deAuthUrl))).size() shouldBe 1
         response.status shouldBe 200
@@ -157,7 +157,7 @@ class PspConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper w
 
   "deAuthorise" should "return successfully for PSP deAuth PSP" in {
     server.stubFor(
-      post(urlEqualTo(deAuthUrl))
+      post(urlEqualTo(deAuthSelfUrl))
         .withRequestBody(equalToJson(Json.stringify(pspDeAuthPspJson)))
         .willReturn(
           aResponse()
@@ -168,9 +168,9 @@ class PspConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper w
 
     val connector = injector.instanceOf[PspConnector]
 
-    connector.deAuthorise(pstr, pspDeAuthPsp) map {
+    connector.deAuthorise(pstr, pspDeAuthPsp, srn, true) map {
       response =>
-        server.findAll(postRequestedFor(urlEqualTo(deAuthUrl))).size() shouldBe 1
+        server.findAll(postRequestedFor(urlEqualTo(deAuthSelfUrl))).size() shouldBe 1
         response.status shouldBe 200
         (Json.parse(response.body) \ "processingDate").asOpt[String].isDefined shouldBe true
     }
@@ -190,7 +190,7 @@ class PspConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper w
     val connector = injector.instanceOf[PspConnector]
 
     recoverToSucceededIf[DuplicateSubmissionException] {
-      connector.deAuthorise(pstr, psaDeAuthPsa)
+      connector.deAuthorise(pstr, psaDeAuthPsa, srn)
     } map {
       _ =>
         server.findAll(postRequestedFor(urlEqualTo(deAuthUrl))).size() shouldBe 1
@@ -210,7 +210,7 @@ class PspConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper w
     val connector = injector.instanceOf[PspConnector]
 
     recoverToSucceededIf[BadRequestException] {
-      connector.deAuthorise(pstr, psaDeAuthPsa)
+      connector.deAuthorise(pstr, psaDeAuthPsa, srn)
     } map {
       _ =>
         server.findAll(postRequestedFor(urlEqualTo(deAuthUrl))).size() shouldBe 1
@@ -230,7 +230,7 @@ class PspConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper w
     val connector = injector.instanceOf[PspConnector]
 
     recoverToSucceededIf[UpstreamErrorResponse] {
-      connector.deAuthorise(pstr, psaDeAuthPsa)
+      connector.deAuthorise(pstr, psaDeAuthPsa, srn)
     } map {
       _ =>
         server.findAll(postRequestedFor(urlEqualTo(deAuthUrl))).size() shouldBe 1
@@ -239,11 +239,12 @@ class PspConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper w
 }
 
 object PspConnectorSpec {
-  private val deAuthUrl = "/pension-practitioner/de-authorise-psp"
-  private val pspAuthUrl = "/pension-practitioner/authorise-psp"
+  private val srn = SchemeReferenceNumber("S2400000041")
+  private val deAuthUrl = s"/pension-practitioner/de-authorise-psp/${srn.id}"
+  private val deAuthSelfUrl = s"/pension-practitioner/de-authorise-psp-self/${srn.id}"
+  private val pspAuthUrl = s"/pension-practitioner/authorise-psp/${srn.id}"
 
   private val pstr = "0"
-
   private implicit val hc: HeaderCarrier = HeaderCarrier()
 
   val psaDeAuthPsa: DeAuthorise = DeAuthorise(

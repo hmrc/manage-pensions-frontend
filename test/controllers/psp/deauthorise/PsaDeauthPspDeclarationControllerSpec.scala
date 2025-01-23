@@ -91,7 +91,7 @@ class PsaDeauthPspDeclarationControllerSpec
     reset(mockEmailConnector)
     reset(mockMinimalConnector)
     reset(mockAuditService)
-    when(mockPspConnector.deAuthorise(any(), any())(any(), any())).thenReturn(
+    when(mockPspConnector.deAuthorise(any(), any(), any(), any())(any(), any())).thenReturn(
       Future.successful(HttpResponse.apply(OK, Json.stringify(Json.obj("processingDate" -> LocalDate.now))))
     )
     when(mockEmailConnector.sendEmail(any())(any(), any())).thenReturn(Future.successful(EmailSent))
