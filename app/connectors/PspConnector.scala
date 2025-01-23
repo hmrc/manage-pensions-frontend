@@ -36,7 +36,7 @@ trait PspConnector {
   def authorisePsp(pstr: String, psaId: String, pspId: String, clientReference: Option[String], srn: SchemeReferenceNumber
                   )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit]
 
-  def deAuthorise(pstr: String, deAuthorise: DeAuthorise, srn: SchemeReferenceNumber
+  def deAuthorise(pstr: String, deAuthorise: DeAuthorise, srn: SchemeReferenceNumber, isPsp: Boolean = false
                  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse]
 
 }
@@ -82,11 +82,11 @@ class PspConnectorImpl @Inject()(httpClientV2: HttpClientV2, config: FrontendApp
       }
   }
 
-  override def deAuthorise(pstr: String, deAuthorise: DeAuthorise, srn: SchemeReferenceNumber
+  override def deAuthorise(pstr: String, deAuthorise: DeAuthorise, srn: SchemeReferenceNumber, isPsp: Boolean
                           )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
 
     val headerCarrier = hc.withExtraHeaders("pstr" -> pstr)
-    val deAuthorisePspUrl = url"${config.deAuthorisePspUrl(srn)}"
+    val deAuthorisePspUrl = if(isPsp) url"${config.deAuthorisePspSelfUrl(srn)}" else url"${config.deAuthorisePspUrl(srn)}"
 
     httpClientV2.post(deAuthorisePspUrl)(headerCarrier)
       .withBody(Json.toJson(deAuthorise))

@@ -121,7 +121,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
 
     "on a POST" must {
       "save data, redirect to next page if valid data is submitted, send email to PSP using correct template for a company and send splunk audit event" in {
-        when(mockPspConnector.deAuthorise(any(), any(), any())(any(), any()))
+        when(mockPspConnector.deAuthorise(any(), any(), any(), any())(any(), any()))
           .thenReturn(Future.successful(HttpResponse.apply(OK, Json.stringify(Json.obj("processingDate" -> LocalDate.now)))))
         when(mockMinimalConnector.getMinimalPspDetails()(any(), any()))
           .thenReturn(Future.successful(minPspOrganisation))
@@ -152,7 +152,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
       }
 
       "save data, redirect to next page if valid data is submitted, send email to PSP using correct template for an individual and send splunk audit event" in {
-        when(mockPspConnector.deAuthorise(any(), any(), any())(any(), any()))
+        when(mockPspConnector.deAuthorise(any(), any(), any(), any())(any(), any()))
           .thenReturn(Future.successful(HttpResponse.apply(OK, Json.stringify(Json.obj("processingDate" -> LocalDate.now)))))
         when(mockMinimalConnector.getMinimalPspDetails()(any(), any()))
           .thenReturn(Future.successful(minPspIndividual))

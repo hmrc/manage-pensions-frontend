@@ -157,7 +157,7 @@ class PspConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper w
 
   "deAuthorise" should "return successfully for PSP deAuth PSP" in {
     server.stubFor(
-      post(urlEqualTo(deAuthUrl))
+      post(urlEqualTo(deAuthSelfUrl))
         .withRequestBody(equalToJson(Json.stringify(pspDeAuthPspJson)))
         .willReturn(
           aResponse()
@@ -168,9 +168,9 @@ class PspConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper w
 
     val connector = injector.instanceOf[PspConnector]
 
-    connector.deAuthorise(pstr, pspDeAuthPsp, srn) map {
+    connector.deAuthorise(pstr, pspDeAuthPsp, srn, true) map {
       response =>
-        server.findAll(postRequestedFor(urlEqualTo(deAuthUrl))).size() shouldBe 1
+        server.findAll(postRequestedFor(urlEqualTo(deAuthSelfUrl))).size() shouldBe 1
         response.status shouldBe 200
         (Json.parse(response.body) \ "processingDate").asOpt[String].isDefined shouldBe true
     }
@@ -241,6 +241,7 @@ class PspConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper w
 object PspConnectorSpec {
   private val srn = SchemeReferenceNumber("S2400000041")
   private val deAuthUrl = s"/pension-practitioner/de-authorise-psp/${srn.id}"
+  private val deAuthSelfUrl = s"/pension-practitioner/de-authorise-psp-self/${srn.id}"
   private val pspAuthUrl = s"/pension-practitioner/authorise-psp/${srn.id}"
 
   private val pstr = "0"

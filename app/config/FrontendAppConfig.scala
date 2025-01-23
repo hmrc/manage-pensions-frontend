@@ -173,6 +173,10 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
     .getString("urls.deAuthorisePsp")}"
     .format(srn)
 
+  def deAuthorisePspSelfUrl(srn: String): String = s"${servicesConfig.baseUrl("pension-practitioner")}${runModeConfiguration.underlying
+    .getString("urls.deAuthorisePspSelf")}"
+    .format(srn)
+
   lazy val pspDetailsUrl: String = loadConfig("urls.pspDetails")
   lazy val psaUpdateContactDetailsUrl: String = loadConfig("urls.psaUpdateContactDetails")
   lazy val pspUpdateContactDetailsUrl: String = loadConfig("urls.pspUpdateContactDetails")
