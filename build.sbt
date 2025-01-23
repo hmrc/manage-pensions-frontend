@@ -61,7 +61,9 @@ lazy val root = (project in file("."))
     scalacOptions += "-Wconf:cat=unused-imports&src=html/.*:s",
     pipelineStages := Seq(digest),
     // below line required to force asset pipeline to operate in dev rather than only prod
-    Assets / pipelineStages := Seq(concat, uglify)
+    // Removed uglify due to node 20 compile issues.
+    // Suspected cause minification of already minified location-autocomplete.min.js -Pavel Vjalicin
+    Assets / pipelineStages := Seq(concat)
   )
 
 lazy val testSettings: Seq[Def.Setting[_]] = Seq(
