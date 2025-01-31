@@ -81,7 +81,7 @@ messages__error__common__email__dot_after_at_sign = Enter an email address in th
 messages__error__common__email__ends_with_dot = Enter an email address with at least a character after the last dot
 messages__error__common__email__address__required = Enter an email address
 messages__error__common__email__address__length = Enter an email address using less than 133 characters
-messages__error__common__email__address__invalid = Enter an email address in the correct format - you might have to check that you have the correct email
+messages__error__common__email__address__invalid = Enter an email address in the correct format - for example, john_doe@example.com
 
 messages__youNeedToRegister__title = Manage and register your pension schemes
 messages__youNeedToRegister__heading = You need to register as a pension scheme administrator or practitioner
@@ -277,7 +277,7 @@ messages__adviser__postcode__enter_postcode_rhs = if it is overseas.
 
 error.postcode.length = The postcode cannot be more than 8 characters
 error.postcode.required = Enter the postcode
-error.postcode.invalid = Enter a valid postcode
+error.postcode.invalid = Enter a full UK postcode
 
 messages__declaration__title = Declaration
 messages__declaration__label = I agree
@@ -321,11 +321,11 @@ messages__error__address_line_4_length = The fourth line of address cannot be mo
 messages__error__postcode = Enter the postcode
 
 
-messages__error__address_line_1_invalid = The first line of the address contains invalid characters
-messages__error__address_line_2_invalid = The second line of the address contains invalid characters
-messages__error__address_line_3_invalid = The third line of the address contains invalid characters
-messages__error__address_line_4_invalid = The fourth line of the address contains invalid characters
-messages__error__postcode_invalid = Enter a valid postcode
+messages__error__address_line_1_invalid = The first line of the address must only include letters, spaces, ampersands (&), grave accents (à), apostrophes, hyphens, full stops and carets (^).
+messages__error__address_line_2_invalid = The second line of the address must only include letters, spaces, ampersands (&), grave accents (à), apostrophes, hyphens, full stops and carets (^).
+messages__error__address_line_3_invalid = The third line of the address must only include letters, spaces, ampersands (&), grave accents (à), apostrophes, hyphens, full stops and carets (^).
+messages__error__address_line_4_invalid = The fourth line of the address must only include letters, spaces, ampersands (&), grave accents (à), apostrophes, hyphens, full stops and carets (^).
+messages__error__postcode_invalid = Enter a full UK postcode
 
 messages__adviser__email__address__title = What is your pension adviser’s email address?
 messages__adviser__email__address__heading = What is {0}’s email address?
