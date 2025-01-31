@@ -321,10 +321,10 @@ messages__error__address_line_4_length = The fourth line of address cannot be mo
 messages__error__postcode = Enter the postcode
 
 
-messages__error__address_line_1_invalid = The first line of the address contains invalid characters
-messages__error__address_line_2_invalid = The second line of the address contains invalid characters
-messages__error__address_line_3_invalid = The third line of the address contains invalid characters
-messages__error__address_line_4_invalid = The fourth line of the address contains invalid characters
+messages__error__address_line_1_invalid = The first line of the address must only include letters, spaces, ampersands (&), grave accents (à), apostrophes, hyphens, full stops and carets (^).
+messages__error__address_line_2_invalid = The second line of the address must only include letters, spaces, ampersands (&), grave accents (à), apostrophes, hyphens, full stops and carets (^).
+messages__error__address_line_3_invalid = The third line of the address must only include letters, spaces, ampersands (&), grave accents (à), apostrophes, hyphens, full stops and carets (^).
+messages__error__address_line_4_invalid = The fourth line of the address must only include letters, spaces, ampersands (&), grave accents (à), apostrophes, hyphens, full stops and carets (^).
 messages__error__postcode_invalid = Enter a valid postcode
 
 messages__adviser__email__address__title = What is your pension adviser’s email address?
