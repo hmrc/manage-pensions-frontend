@@ -55,7 +55,7 @@ class SchemeDetailsConnectorImpl @Inject()(httpClientV2: HttpClientV2, config: F
   override def getSchemeDetails(psaId: String, idNumber: String, schemeIdType: String
                                )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[UserAnswers] = {
 
-    val schemeDetailsUrl = url"${config.schemeDetailsUrl}"
+    val schemeDetailsUrl = url"${config.schemeDetailsUrl.format(idNumber)}"
     val schemeHc = hc.withExtraHeaders("idNumber" -> idNumber, "psaId" -> psaId, "schemeIdType" -> schemeIdType)
 
     httpClientV2.get(schemeDetailsUrl)(schemeHc)
@@ -98,7 +98,7 @@ class SchemeDetailsConnectorImpl @Inject()(httpClientV2: HttpClientV2, config: F
   override def getSchemeDetailsRefresh(psaId: String, idNumber: String, schemeIdType: String
                                )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
 
-    val schemeDetailsUrl = url"${config.schemeDetailsUrl}"
+    val schemeDetailsUrl = url"${config.schemeDetailsUrl.format(idNumber)}"
     val schemeHc = hc.withExtraHeaders(
         "idNumber" -> idNumber,
         "psaId" -> psaId,
@@ -120,7 +120,7 @@ class SchemeDetailsConnectorImpl @Inject()(httpClientV2: HttpClientV2, config: F
   override def getPspSchemeDetails(pspId: String, srn: String
                                   )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[UserAnswers] = {
 
-    val pspSchemeDetailsUrl = url"${config.pspSchemeDetailsUrl}"
+    val pspSchemeDetailsUrl = url"${config.pspSchemeDetailsUrl.format(srn)}"
     val schemeHc = hc.withExtraHeaders("srn" -> srn, "pspId" -> pspId)
 
     httpClientV2.get(pspSchemeDetailsUrl)(schemeHc)
