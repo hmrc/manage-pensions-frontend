@@ -130,6 +130,10 @@ trait Constraints {
 
   protected def email(errorKey: String): Constraint[String] = regexp(emailRegex, errorKey)
 
+  protected def tightText(errorKey: String): Constraint[String] = regexp(regexTightText, errorKey)
+
+  protected def tightTextWithNumber(errorKey: String): Constraint[String] = regexp(regexTightTextWithNumber, errorKey)
+
   protected def country(countryOptions: CountryOptions, errorKey: String): Constraint[String] =
     Constraint {
       input =>
@@ -162,6 +166,8 @@ object Constraints {
   val psaNameRegex = """^[a-zA-Z0-9-À-ÿ '&\\/‘’—–‐-]{1,105}$"""
   val inviteeNameRegex = """^[a-zA-Z0-9À-ÿ !#$%&'‘’\"“”«»()*+,./:;=?@\[\]£€¥\\u005C—–‐-]{1,160}$"""
   val addressLineRegex = """^[A-Za-z0-9 &!'‘’\"“”(),./—–‐-]{1,35}$"""
+  val regexTightText = """^[a-zA-ZàÀ-ÿ '&.^-]{1,160}$"""
+  val regexTightTextWithNumber = """^[a-zA-Z0-9àÀ-ÿ '&.^-]{1,160}$"""
   val postCodeRegex = """^[A-Za-z]{1,2}[0-9][0-9A-Za-z]?[ ]?[0-9][A-Za-z]{2}$"""
   val emailRegex: String = "^(?:[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"" +
     "(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")" +
