@@ -62,45 +62,45 @@
 }
 
 <div role="region" aria-labelledby="schemeList_table">
-    <table id="schemeList" class="govuk-table" role="table">
+    <table id="schemeList" class="govuk-table">
         <caption id="schemeList_table" class="visually-hidden">@messages("messages__listSchemes__title")</caption>
         <thead>
-            <tr role="row">
-                <th role="columnheader" class="govuk-table__header" scope="col">
+            <tr>
+                <th class="govuk-table__header" scope="col">
                     <span id="schemeNameHeader" class="heading-small">@messages("messages__listSchemes__column_schemeName")</span>
                 </th>
-                <th role="columnheader" class="govuk-table__header" scope="col">
+                <th class="govuk-table__header" scope="col">
                     <span id="srnHeader" class="heading-small">@messages("messages__listSchemes__column_srn")</span>
                 </th>
 
-                <th role="columnheader" class="govuk-table__header" scope="col">
+                <th class="govuk-table__header" scope="col">
                     <span id="pstrHeader" class="heading-small">@messages("messages__listSchemes__column_pstr")</span>
                 </th>
 
-                <th role="columnheader" class="govuk-table__header" scope="col">
+                <th class="govuk-table__header" scope="col">
                     <span id="statusHeader" class="heading-small">@messages("messages__listSchemes__column_status")</span>
                 </th>
             </tr>
         </thead>
         <tbody>
             @for((scheme, index) <- schemes.zipWithIndex) {
-                <tr class="member-details" role="row">
-                    <td class="govuk-table__cell" role="cell">
+                <tr class="member-details">
+                    <td class="govuk-table__cell">
                         <a id="@{schemeNameId(index)}" href="@{PsaSchemeDashboardController.onPageLoad(scheme.referenceNumber).url}" target="_self" data-sso="false">
                             @{scheme.name}
                         </a>
                     </td>
-                    <td class="govuk-table__cell" role="cell" id="@{srnId(index)}">
+                    <td class="govuk-table__cell" id="@{srnId(index)}">
                         @srnValue(scheme.schemeStatus, scheme.referenceNumber)
                     </td>
-                    <td class="govuk-table__cell" role="cell" id="@{pstrId(index)}">
+                    <td class="govuk-table__cell" id="@{pstrId(index)}">
                         @if(scheme.pstr.nonEmpty) {
                             @pstrValue(scheme.pstr)
                         } else {
                             @messages("messages__listSchemes__pstr_not_assigned")
                         }
                     </td>
-                    <td class="govuk-table__cell" role="cell" id="@{statusId(index)}">
+                    <td class="govuk-table__cell" id="@{statusId(index)}">
                         @statusValue(scheme.schemeStatus)
                     </td>
                 </tr>
