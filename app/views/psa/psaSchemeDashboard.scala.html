@@ -40,19 +40,19 @@
                 <div class="govuk-grid-column-one-third">
                     @if(currentScheme.exists(_.pstr.nonEmpty) &&
                     (schemeStatus.equalsIgnoreCase("open") || schemeStatus.equalsIgnoreCase("wound-up") || schemeStatus.equalsIgnoreCase("Deregistered"))) {
-                    <span class="govuk-caption-m govuk-!-margin-bottom-1">@messages("messages__psaSchemeDash__pstr")</span>
-                    <h2 class="govuk-heading-m govuk-!-margin-top-0">@messages(currentScheme.head.pstr.head)</h2>
+                    <h2 class="govuk-caption-m govuk-!-margin-bottom-1">@messages("messages__psaSchemeDash__pstr")</h2>
+                    <span class="govuk-heading-m govuk-!-margin-top-0">@messages(currentScheme.head.pstr.head)</span>
                     } else {
-                    <span class="govuk-caption-m govuk-!-margin-bottom-1">@messages("messages__psaSchemeDash__status")</span>
-                    <h2 class="govuk-heading-m govuk-!-margin-top-0">@messages(schemeStatus)</h2>
+                    <h2 class="govuk-caption-m govuk-!-margin-bottom-1">@messages("messages__psaSchemeDash__status")</h2>
+                    <span class="govuk-heading-m govuk-!-margin-top-0">@messages(schemeStatus)</span>
                     }
                 </div>
                 <div class="govuk-grid-column-one-third">
                     @if(schemeStatus.equalsIgnoreCase("open")) {
-                    <span class="govuk-caption-m govuk-!-margin-bottom-1">@messages("messages__psaSchemeDash__interim_dashboard_regDate")</span>
-                    <h2 class="govuk-heading-m govuk-!-margin-top-0">
+                    <h2 class="govuk-caption-m govuk-!-margin-bottom-1">@messages("messages__psaSchemeDash__interim_dashboard_regDate")</h2>
+                    <span class="govuk-heading-m govuk-!-margin-top-0">
                         @messages(currentScheme.flatMap(_.openDate.map(LocalDate.parse(_).format(formatter))).getOrElse(""))
-                    </h2>
+                    </span>
                     }
                 </div>
             </div>
