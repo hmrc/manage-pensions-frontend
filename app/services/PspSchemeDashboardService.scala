@@ -37,7 +37,7 @@ class PspSchemeDashboardService @Inject()(
 
   def getMinimalPspDetails()(implicit hc: HeaderCarrier): Future[MinimalPSAPSP] =
     minimalConnector.getMinimalPspDetails()
-//accidental branch
+
   def getTiles(
                 erHtml: Html,
                 srn: String,
