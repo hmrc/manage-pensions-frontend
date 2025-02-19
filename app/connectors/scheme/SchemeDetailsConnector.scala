@@ -18,6 +18,7 @@ package connectors.scheme
 
 import com.google.inject.{ImplementedBy, Inject, Singleton}
 import config.FrontendAppConfig
+import models.PsaInvitationInfoResponse
 import play.api.Logger
 import play.api.http.Status.OK
 import play.api.libs.json.{JsError, JsSuccess, Json}
@@ -42,6 +43,8 @@ trait SchemeDetailsConnector {
 
   def getPspSchemeDetails(pspId: String, srn: String
                          )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[UserAnswers]
+
+  def getPsaInvitationInfo(idNumber: String, schemeIdType: String)(implicit hc: HeaderCarrier, ec: ExecutionContext):Future[PsaInvitationInfoResponse]
 
 }
 
@@ -132,6 +135,21 @@ class SchemeDetailsConnectorImpl @Inject()(httpClientV2: HttpClientV2, config: F
       } andThen {
         case Failure(t: Throwable) => logger.warn("Unable to psp get scheme details", t)
       }
+  }
+
+  override def getPsaInvitationInfo(idNumber: String, schemeIdType: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[PsaInvitationInfoResponse] = {
+    val url = url"${config.psaInvitationInfoUrl}"
+    val schemeHc = hc.withExtraHeaders("idNumber" -> idNumber, "schemeIdType" -> schemeIdType)
+    httpClientV2.get(url)(schemeHc)
+      .execute[HttpResponse].map { response =>
+        response.status match {
+          case OK => Json.parse(response.body).as[PsaInvitationInfoResponse]
+          case _ => handleErrorResponse("GET", url.toString)(response)
+        }
+      } andThen {
+      case Failure(t: Throwable) => logger.warn("Unable to get scheme details", t)
+    }
+
   }
 
 }
