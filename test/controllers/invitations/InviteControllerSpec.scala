@@ -154,6 +154,9 @@ object InviteControllerSpec extends ControllerSpecBase with JsonFileReader with 
                                          idNumber: String,
                                          schemeIdType: String)
                                         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = ???
+
+    override def getPsaInvitationInfo(idNumber: String, schemeIdType: String)
+                                     (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[PsaInvitationInfoResponse] = ???
   }
 
   def controller(isSuspended: Boolean, rlsFlag: Boolean = false, deceasedFlag: Boolean = false) =
