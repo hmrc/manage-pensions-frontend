@@ -61,12 +61,11 @@ class DeclarationController @Inject()(
     implicit request =>
       (DoYouHaveWorkingKnowledgeId and SchemeSrnId).retrieve.map {
         case haveWorkingKnowledge ~ srn =>
-          schemeDetailsConnector.getSchemeDetails(
-            psaId = request.psaIdOrException.id,
+          schemeDetailsConnector.getPsaInvitationInfo(
             idNumber = srn,
             schemeIdType = "srn"
-          ) flatMap { details =>
-            (details.get(GetSchemeNameId), details.get(SchemeTypeId), details.get(IsRacDacId)) match {
+          ) flatMap { response =>
+            (response.schemeName, response.schemeType, response.racdacScheme) match {
               case (Some(name), someSchemeType, isRacDac) =>
 
                 val isMasterTrust = (someSchemeType, isRacDac) match {
@@ -78,7 +77,7 @@ class DeclarationController @Inject()(
                 for {
                   _ <- userAnswersCacheConnector.save(SchemeNameId, name)
                   _ <- userAnswersCacheConnector.save(IsMasterTrustId, isMasterTrust)
-                  _ <- userAnswersCacheConnector.save(PSTRId, details.get(PSTRId).getOrElse(""))
+                  _ <- userAnswersCacheConnector.save(PSTRId, response.pstr.getOrElse(""))
                 } yield {
                   Ok(view(haveWorkingKnowledge, isMasterTrust, srn, form))
                 }

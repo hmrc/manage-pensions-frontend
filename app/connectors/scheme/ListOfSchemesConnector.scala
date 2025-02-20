@@ -49,13 +49,13 @@ class ListOfSchemesConnectorImpl @Inject()(httpClientV2: HttpClientV2, config: F
 
   def getListOfSchemes(psaId: String
                       )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]] = {
-      val schemeHc = hc.withExtraHeaders("idType" -> "psaid", "idValue" -> psaId)
+      val schemeHc = hc.withExtraHeaders("idType" -> "PSA", "idValue" -> psaId)
       listOfSchemes(listOfSchemesUrl)(schemeHc, ec)
   }
 
   def getListOfSchemesForPsp(pspId: String
                             )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]] = {
-    val schemeHc = hc.withExtraHeaders("idType" -> "pspid", "idValue" -> pspId)
+    val schemeHc = hc.withExtraHeaders("idType" -> "PSP", "idValue" -> pspId)
     listOfSchemes(listOfSchemesUrl)(schemeHc, ec)
   }
 
