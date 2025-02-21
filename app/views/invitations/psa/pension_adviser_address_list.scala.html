@@ -29,9 +29,8 @@
     layout: templates.Layout,
     formHelper: PlayFrontendFormWithCSRF,
     govukErrorSummary: GovukErrorSummary,
-    input_radio: components.input_radio,
     button: components.govuk_button,
-
+    govukRadios : GovukRadios
 )
 
 @(form: Form[_], addresses: Seq[TolerantAddress], mode: Mode)(implicit request: Request[_], messages: Messages)
@@ -44,27 +43,29 @@
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
         }
 
-        @components.heading(messages("messages__adviser__address__list__heading"))
-
-        <p class="govuk-body">
-            @messages("messages__adviser__address__list__select")
-            <a id="manual-address-link" class="govuk-link" href="@AdviserManualAddressController.onPageLoad(mode, false)">
-                @messages("messages__adviser__address__list__link")
-            </a>
-        </p>
-
-        @input_radio(
-            field = form("value"),
-            legend = messages("messages__adviser__address__list__heading"),
-            legendClass = Some("govuk-visually-hidden"),
-            inputs = for((address, i) <- addresses.zipWithIndex)
+        @govukRadios(Radios(
+            name = form("value").name,
+            fieldset = Some(Fieldset(
+            legend = Some(Legend(
+            content = HtmlContent(s"""<h1 class="govuk-heading-xl">
+                        ${messages("messages__adviser__address__list__heading")}
+                    </h1>
+            <p class="govuk-body">
+                ${messages("messages__adviser__address__list__select")}
+                <a id="manual-address-link" class="govuk-link" href="${AdviserManualAddressController.onPageLoad(mode, false)}">
+                    ${messages("messages__adviser__address__list__link")}
+                </a>
+            </p>""")
+            )),
+            )),
+            items = for((address, i) <- addresses.zipWithIndex)
                 yield {
-                RadioItem(
-                    content = Text(address.print),
-                    value = Some(i.toString)
-                )
-            }
-        )
+                    RadioItem(
+                        content = Text(address.print),
+                        value = Some(i.toString)
+                    )
+                }
+        ).withFormField(form("value")))
 
         @button(messages("site.save_and_continue"))
 
