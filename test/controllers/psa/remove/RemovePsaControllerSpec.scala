@@ -166,6 +166,9 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
                                   (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Boolean]] =
         Future.successful(Some(true))
 
+      override def getPsaInvitationInfo(idNumber: String, schemeIdType: String)
+                                       (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[PsaInvitationInfoResponse] = ???
+
     }
 
   def controller(dataRetrievalAction: DataRetrievalAction = data,

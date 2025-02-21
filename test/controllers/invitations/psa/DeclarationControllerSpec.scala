@@ -22,8 +22,8 @@ import connectors.{FakeUserAnswersCacheConnector, InvitationConnector, Invitatio
 import controllers.ControllerSpecBase
 import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
 import forms.invitations.psa.DeclarationFormProvider
-import identifiers.invitations.{IsMasterTrustId, IsRacDacId, PSTRId, SchemeNameId}
-import identifiers.{SchemeNameId => GetSchemeNameId}
+import identifiers.invitations.{IsMasterTrustId, PSTRId, SchemeNameId}
+import models.{PsaInvitationInfoResponse, SchemeType}
 import org.mockito.ArgumentMatchers.{eq => eqTo, _}
 import org.mockito.Mockito.{reset, times, verify, when}
 import org.scalatest.BeforeAndAfterEach
@@ -74,7 +74,12 @@ class DeclarationControllerSpec
     reset(fakeInvitationConnector)
   }
 
-  val schemeDetailsResponse: UserAnswers = UserAnswers(readJsonFromFile("/data/validSchemeDetailsUserAnswers.json"))
+  private val schemeDetailsResponse = PsaInvitationInfoResponse(
+    Some("24000001IN"),
+    Some("Open Single Trust Scheme with Indiv Establisher and Trustees"),
+    Some(SchemeType.MasterTrust),
+    None
+  )
 
   private def viewAsString(form: Form[_] = form, isItMasterTrust: Boolean = isMasterTrust, hasWkAdvisor: Boolean = hasAdviser) =
     view(hasWkAdvisor, isItMasterTrust, srn, form)(fakeRequest, messages).toString
@@ -84,7 +89,7 @@ class DeclarationControllerSpec
     "on a GET" must {
 
       "return OK and the correct view with non rac dac master trust scheme" in {
-        when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any()))
+        when(fakeSchemeDetailsConnector.getPsaInvitationInfo(any(), any())(any(), any()))
           .thenReturn(Future.successful(schemeDetailsResponse))
         val result = controller(data).onPageLoad()(fakeRequest)
 
@@ -93,15 +98,15 @@ class DeclarationControllerSpec
         FakeUserAnswersCacheConnector.verify(SchemeNameId, "Open Single Trust Scheme with Indiv Establisher and Trustees")
         FakeUserAnswersCacheConnector.verify(IsMasterTrustId, true)
         FakeUserAnswersCacheConnector.verify(PSTRId, "24000001IN")
-        verify(fakeSchemeDetailsConnector, times(1)).getSchemeDetails(any(), any(), any())(any(), any())
+        verify(fakeSchemeDetailsConnector, times(1)).getPsaInvitationInfo(any(), any())(any(), any())
       }
 
       "return OK and the correct view with racdac scheme" in {
-        val uaSchemeDetails = UserAnswers().set(IsRacDacId)(true).flatMap(_.set(GetSchemeNameId)("rac dac scheme")).flatMap(_.set(PSTRId)(pstr)).asOpt.get
+        val uaSchemeDetails = PsaInvitationInfoResponse(Some(pstr), Some("rac dac scheme"), None, Some(true))
         val data = new FakeDataRetrievalAction(Some(UserAnswers().
           haveWorkingKnowledge(true).srn(srn).pstr(pstr).json))
 
-        when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any()))
+        when(fakeSchemeDetailsConnector.getPsaInvitationInfo(any(), any())(any(), any()))
           .thenReturn(Future.successful(uaSchemeDetails))
         val result = controller(data).onPageLoad()(fakeRequest)
 
@@ -110,14 +115,14 @@ class DeclarationControllerSpec
         FakeUserAnswersCacheConnector.verify(SchemeNameId, "rac dac scheme")
         FakeUserAnswersCacheConnector.verify(IsMasterTrustId, false)
         FakeUserAnswersCacheConnector.verify(PSTRId, pstr)
-        verify(fakeSchemeDetailsConnector, times(1)).getSchemeDetails(any(), any(), any())(any(), any())
+        verify(fakeSchemeDetailsConnector, times(1)).getPsaInvitationInfo(any(), any())(any(), any())
       }
 
       "throw IllegalArgumentException if scheme type is missing for non rac dac scheme" in {
-        val uaSchemeDetails = UserAnswers().set(GetSchemeNameId)("rac dac scheme").flatMap(_.set(PSTRId)(pstr)).asOpt.get
+        val uaSchemeDetails = PsaInvitationInfoResponse(Some(pstr), Some("rac dac scheme"), None, None)
         val data = new FakeDataRetrievalAction(Some(UserAnswers().
           haveWorkingKnowledge(true).srn(srn).pstr(pstr).json))
-        when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any()))
+        when(fakeSchemeDetailsConnector.getPsaInvitationInfo(any(), any())(any(), any()))
           .thenReturn(Future.successful(uaSchemeDetails))
         val result = controller(data).onPageLoad()(fakeRequest)
 
