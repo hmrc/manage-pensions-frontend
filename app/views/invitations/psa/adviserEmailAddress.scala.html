@@ -33,7 +33,7 @@
 
 @layout(pageTitle = titleWithErrors(form, messages("messages__adviser__email__address__title"))) {
 
-    @formHelper(action = AdviserEmailAddressController.onSubmit(mode), Symbol("autoComplete") -> "off", Symbol("novalidate") -> "novalidate") {
+    @formHelper(action = AdviserEmailAddressController.onSubmit(mode), Symbol("autoComplete") -> "on", Symbol("novalidate") -> "novalidate") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form))
