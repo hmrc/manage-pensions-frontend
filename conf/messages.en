@@ -147,6 +147,7 @@ messages__listSchemes__search_result_title = Search results for your pension sch
 
 messages__listSchemesPsp__search_invalid = PSTR must only include letters and numbers
 messages__listSchemesPsp__search_required = Enter a Pension Scheme Tax Reference
+messages__listSchemesPsp__search_length = The Pension Scheme Tax Reference must be 35 characters or fewer
 messages__listSchemesPsp__searchText_label = Enter the full Pension Scheme Tax Reference
 messages__listSchemesPsp__searchText_hint = For example, 20123456QQ
 messages__listSchemesPsp__title = Search for a pension scheme

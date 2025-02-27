@@ -28,7 +28,7 @@ import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.play.partials.HtmlPartial
 
-import scala.concurrent.duration.{Duration, SECONDS}
+import scala.concurrent.duration.Duration
 import scala.concurrent.{ExecutionContext, Future}
 
 class FrontendConnector @Inject()(httpClientV2: HttpClientV2, config: FrontendAppConfig) {

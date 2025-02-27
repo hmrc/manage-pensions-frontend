@@ -25,7 +25,9 @@ class ListSchemesFormProviderSpec extends FieldBehaviours {
   val fieldName = "searchText"
   val requiredKey = "messages__listSchemesPsp__search_required"
   val invalidErrorKey = "messages__listSchemesPsp__search_invalid"
+  val lengthErrorKey = "messages__listSchemesPsp__search_length"
   val validPstr = "24000001IN"
+  val maxLength = 35
 
   val form = new ListSchemesFormProvider()()
 
@@ -50,5 +52,11 @@ class ListSchemesFormProviderSpec extends FieldBehaviours {
         FormError(fieldName, invalidErrorKey, Seq(Constraints.searchRegx))
     )
 
+    behave like fieldWithMaxLength(
+      form,
+      fieldName,
+      maxLength,
+      FormError(fieldName, lengthErrorKey, Seq(maxLength))
+    )
   }
 }

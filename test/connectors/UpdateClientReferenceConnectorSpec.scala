@@ -94,11 +94,6 @@ object UpdateClientReferenceConnectorSpec {
     Some(clientRef)
   )
 
-  private val requestJson =
-    Json.stringify(
-      Json.toJson(clientReferenceRequest)
-    )
-
 }
 
 
