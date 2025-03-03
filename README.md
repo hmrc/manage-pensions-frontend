@@ -1,13 +1,14 @@
 # Manage Pensions Frontend 
 
 - [Overview](#overview)
+- [Dependencies](#dependencies)
+- [Endpoints Used](#endpoints-used)
 - [Requirements](#requirements)
 - [Running the Service](#running-the-service)
 - [Enrolments](#enrolments)
 - [Compile & Test](#compile--test)
-- [Navigation and Dependent Services](#navigation-and-dependent-services)
-- [Service Documentation](#service-documentation)
-- [Endpoints](#endpoints)
+- [Navigation](#navigation)
+- [Terminology](#note-on-terminology)
 - [License](#license)
 
 ## Overview
