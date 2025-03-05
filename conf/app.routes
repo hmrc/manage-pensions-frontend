@@ -3,7 +3,7 @@
 ->          /hmrc-frontend                                                                                   hmrcfrontend.Routes
 ->          /invitations                                                                                     invitations.Routes
 ->          /authorise-psp                                                                                   pspInvitations.Routes
-->          /guidance-triage                                                                                 triage.Routes
+->          /guidance-triage                                                                                 triagev2.Routes
 ->          /pensions-guidance-triage                                                                        triagev2.Routes
 ->          /                                                                                                remove.Routes
 
