@@ -54,7 +54,6 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
     new SchemesOverviewController(messagesApi, fakeSchemesOverviewService, FakeAuthAction,
       dataRetrievalAction, fakeUserAnswersCacheConnector, mockSessionDataCacheConnector, controllerComponents, appConfig, view)
 
-
   override def beforeEach(): Unit = {
     super.beforeEach()
   }
