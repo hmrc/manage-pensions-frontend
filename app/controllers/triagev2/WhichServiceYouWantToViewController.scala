@@ -16,8 +16,10 @@
 
 package controllers.triagev2
 
+import config.FrontendAppConfig
+import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
-import controllers.actions.TriageAction
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, TriageAction}
 import forms.triagev2.WhichServiceYouWantToViewFormProvider
 import identifiers.triagev2.{WhatRoleId, WhichServiceYouWantToViewId}
 import models.NormalMode
@@ -29,14 +31,19 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.annotations.TriageV2
 import utils.{Enumerable, Navigator, UserAnswers}
 import views.html.triagev2.whichServiceYouWantToView
+import play.api.libs.json._
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class WhichServiceYouWantToViewController @Inject()(override val messagesApi: MessagesApi,
+                                                    val appConfig: FrontendAppConfig,
+                                                    val auth: AuthAction,
                                                     @TriageV2 navigator: Navigator,
-                                                    triageAction: TriageAction,
                                                     formProvider: WhichServiceYouWantToViewFormProvider,
+                                                    val userAnswersCacheConnector: UserAnswersCacheConnector,
+                                                    val getData: DataRetrievalAction,
+                                                    val requireData: DataRequiredAction,
                                                     val controllerComponents: MessagesControllerComponents,
                                                     val view: whichServiceYouWantToView
                                            )(implicit val executionContext: ExecutionContext
@@ -44,21 +51,25 @@ class WhichServiceYouWantToViewController @Inject()(override val messagesApi: Me
 
   private def form(role: String): Form[WhichServiceYouWantToView] = formProvider(role)
 
-  def onPageLoad(role: String): Action[AnyContent] = triageAction.async {
+  def onPageLoad(role: String): Action[AnyContent] = (auth() andThen getData andThen requireData).async {
     implicit request =>
-      Future.successful(Ok(view(form(role), role)))
+      val formInstance = form(role)
+      val preparedForm = request.userAnswers.get(WhichServiceYouWantToViewId) match {
+        case None => formInstance
+        case Some(value) => formInstance.fill(value)
+      }
+      Future.successful(Ok(view(preparedForm, role)))
   }
 
-  def onSubmit(role: String): Action[AnyContent] = triageAction.async {
+  def onSubmit(role: String): Action[AnyContent] = (auth() andThen getData andThen requireData).async {
     implicit request =>
       form(role).bindFromRequest().fold(
         (formWithErrors: Form[_]) =>
           Future.successful(BadRequest(view(formWithErrors, role))),
-        value => {
-          val uaUpdated = UserAnswers().set(WhatRoleId)(WhatRole.fromString(role))
-            .flatMap(_.set(WhichServiceYouWantToViewId)(value)(writes(WhichServiceYouWantToView.enumerable(role)))).asOpt.getOrElse(UserAnswers())
-          Future.successful(Redirect(navigator.nextPage(WhichServiceYouWantToViewId, NormalMode, uaUpdated)))
-        }
+        value =>
+          userAnswersCacheConnector.save(request.externalId, WhichServiceYouWantToViewId, value).map { cacheMap =>
+            Redirect(navigator.nextPage(WhichServiceYouWantToViewId, NormalMode, UserAnswers(cacheMap)))
+          }
       )
   }
 }

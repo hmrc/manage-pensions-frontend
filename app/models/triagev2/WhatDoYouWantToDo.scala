@@ -18,6 +18,7 @@ package models.triagev2
 
 import models.WithName
 import play.api.i18n.Messages
+import play.api.libs.json.{Format, JsError, JsResult, JsString, JsSuccess, JsValue}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import utils.Enumerable
@@ -49,6 +50,20 @@ object WhatDoYouWantToDo {
 
   implicit def enumerable(role: String): Enumerable[WhatDoYouWantToDo] =
     Enumerable(values.map(v => v.toString -> v): _*)
+
+  implicit val format: Format[WhatDoYouWantToDo] = new Format[WhatDoYouWantToDo] {
+
+    override def writes(o: WhatDoYouWantToDo): JsValue = JsString(o.toString)
+
+    override def reads(json: JsValue): JsResult[WhatDoYouWantToDo] = json match {
+      case JsString(str) =>
+        values.find(_.toString == str) match {
+          case Some(value) => JsSuccess(value)
+          case None => JsError(s"Invalid value: $str")
+        }
+      case _ => JsError("Expected a JSON string")
+    }
+  }
 }
 
 

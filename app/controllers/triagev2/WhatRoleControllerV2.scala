@@ -16,8 +16,10 @@
 
 package controllers.triagev2
 
+import config.FrontendAppConfig
+import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
-import controllers.actions.TriageAction
+import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.triagev2.WhatRoleFormProviderV2
 import identifiers.triagev2.WhatRoleId
 import models.NormalMode
@@ -34,9 +36,13 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class WhatRoleControllerV2 @Inject()(override val messagesApi: MessagesApi,
+                                     val appConfig: FrontendAppConfig,
+                                     val auth: AuthAction,
                                      @TriageV2 navigator: Navigator,
-                                     triageAction: TriageAction,
-                                     formProvider: WhatRoleFormProviderV2,
+                                     val formProvider: WhatRoleFormProviderV2,
+                                     val userAnswersCacheConnector: UserAnswersCacheConnector,
+                                     val getData: DataRetrievalAction,
+                                     val requireData: DataRequiredAction,
                                      val controllerComponents: MessagesControllerComponents,
                                      val view: whatRole)
                                     (implicit val executionContext: ExecutionContext)
@@ -44,20 +50,21 @@ class WhatRoleControllerV2 @Inject()(override val messagesApi: MessagesApi,
 
   private def form: Form[WhatRole] = formProvider()
 
-  def onPageLoad: Action[AnyContent] = triageAction.async {
+  def onPageLoad: Action[AnyContent] = (auth() andThen getData andThen requireData).async {
     implicit request =>
-      Future.successful(Ok(view(form)))
+      val preparedForm = request.userAnswers.get(WhatRoleId).fold(form)(form.fill)
+      Future.successful(Ok(view(preparedForm)))
   }
 
-  def onSubmit: Action[AnyContent] = triageAction.async {
+  def onSubmit: Action[AnyContent] = (auth() andThen getData andThen requireData).async {
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[_]) =>
           Future.successful(BadRequest(view(formWithErrors))),
-        value => {
-          val uaUpdated = UserAnswers().set(WhatRoleId)(value).asOpt.getOrElse(UserAnswers())
-          Future.successful(Redirect(navigator.nextPage(WhatRoleId, NormalMode, uaUpdated)))
-        }
+        value =>
+          userAnswersCacheConnector.save(request.externalId, WhatRoleId, value).map { cacheMap =>
+            Redirect(navigator.nextPage(WhatRoleId, NormalMode, UserAnswers(cacheMap)))
+          }
       )
   }
 }
