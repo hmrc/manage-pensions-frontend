@@ -22,12 +22,15 @@ import forms.mappings.Transforms
 import play.api.data.Form
 
 class ListSchemesFormProvider @Inject()() extends Mappings with Transforms {
+  val maxLength = 35
 
   def apply(): Form[String] = Form(
     "searchText" -> text("messages__listSchemesPsp__search_required").
     transform(standardTextTransform, noTransform).
       verifying(firstError(
-        search("messages__listSchemesPsp__search_invalid")))
+        search("messages__listSchemesPsp__search_invalid"),
+        maxLength(maxLength, "messages__listSchemesPsp__search_length")
+      ))
   )
 }
 

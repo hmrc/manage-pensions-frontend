@@ -210,7 +210,7 @@ object SchemeDetailsConnectorSpec extends JsonFileReader {
   private val psaId = "0000"
   private val schemeIdType = "pstr"
   private val idNumber = "00000000AA"
-  private val schemeDetailsUrl = s"/pensions-scheme/scheme"
+  private val schemeDetailsUrl = s"/pensions-scheme/scheme/$idNumber"
 
   private implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 

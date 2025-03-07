@@ -41,18 +41,18 @@
                     @if(currentScheme.exists(_.pstr.nonEmpty) &&
                     (schemeStatus.equalsIgnoreCase("open") || schemeStatus.equalsIgnoreCase("wound-up") || schemeStatus.equalsIgnoreCase("Deregistered"))) {
                     <span class="govuk-caption-m govuk-!-margin-bottom-1">@messages("messages__psaSchemeDash__pstr")</span>
-                    <h1 class="govuk-heading-m govuk-!-margin-top-0">@messages(currentScheme.head.pstr.head)</h1>
+                    <h2 class="govuk-heading-m govuk-!-margin-top-0">@messages(currentScheme.head.pstr.head)</h2>
                     } else {
                     <span class="govuk-caption-m govuk-!-margin-bottom-1">@messages("messages__psaSchemeDash__status")</span>
-                    <h1 class="govuk-heading-m govuk-!-margin-top-0">@messages(schemeStatus)</h1>
+                    <h2 class="govuk-heading-m govuk-!-margin-top-0">@messages(schemeStatus)</h2>
                     }
                 </div>
                 <div class="govuk-grid-column-one-third">
                     @if(schemeStatus.equalsIgnoreCase("open")) {
                     <span class="govuk-caption-m govuk-!-margin-bottom-1">@messages("messages__psaSchemeDash__interim_dashboard_regDate")</span>
-                    <h1 class="govuk-heading-m govuk-!-margin-top-0">
+                    <h2 class="govuk-heading-m govuk-!-margin-top-0">
                         @messages(currentScheme.flatMap(_.openDate.map(LocalDate.parse(_).format(formatter))).getOrElse(""))
-                    </h1>
+                    </h2>
                     }
                 </div>
             </div>

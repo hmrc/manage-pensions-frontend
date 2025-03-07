@@ -39,14 +39,14 @@
 
             <div class="govuk-grid-row govuk-!-margin-bottom-4">
                 <div class="govuk-grid-column-one-third">
-                    <span class="govuk-caption-m govuk-!-margin-bottom-1">@messages("messages__pspSchemeDashboard__scheme__subHeading_pstr")</span>
-                    <h1 class="govuk-heading-m govuk-!-margin-top-0">@messages(pstr)</h1>
+                    <h2 class="govuk-caption-m govuk-!-margin-bottom-1">@messages("messages__pspSchemeDashboard__scheme__subHeading_pstr")</h2>
+                    <span class="govuk-heading-m govuk-!-margin-top-0">@messages(pstr)</span>
                 </div>
                 <div class="govuk-grid-column-one-third">
                 @if(isSchemeOpen) {
                         @openDate.map { date =>
-                            <span class="govuk-caption-m govuk-!-margin-bottom-1">@messages("messages__pspSchemeDashboard__scheme__subHeading_interim_dashboard_regForTax")</span>
-                            <h1 class="govuk-heading-m govuk-!-margin-top-0">@messages(date)</h1>
+                            <h2 class="govuk-caption-m govuk-!-margin-bottom-1">@messages("messages__pspSchemeDashboard__scheme__subHeading_interim_dashboard_regForTax")</h2>
+                            <span class="govuk-heading-m govuk-!-margin-top-0">@messages(date)</span>
                         }
                     }
                 </div>
