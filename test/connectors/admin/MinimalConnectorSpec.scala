@@ -110,7 +110,7 @@ class MinimalConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelp
     )
 
   }
-  it should "throw PspUserNameNotMatchedException exception when User is not matched" in {
+  it should "throw NoMatchFoundException exception when User is not matched" in {
 
     server.stubFor(
       get(urlEqualTo(s"$emailDetailsUrl/${srn.id}"))
@@ -126,7 +126,7 @@ class MinimalConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelp
 
     val connector = injector.instanceOf[MinimalConnector]
 
-    recoverToSucceededIf[PspUserNameNotMatchedException] {
+    recoverToSucceededIf[NoMatchFoundException] {
       connector.getEmailInvitation("id", "idType", "name", srn)
     }
   }
