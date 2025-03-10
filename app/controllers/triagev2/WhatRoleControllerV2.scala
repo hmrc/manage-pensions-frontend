@@ -19,7 +19,7 @@ package controllers.triagev2
 import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
+import controllers.actions.{DataRequiredAction, DataRetrievalAction, TriageAction, TriageToAuthAction}
 import forms.triagev2.WhatRoleFormProviderV2
 import identifiers.triagev2.WhatRoleId
 import models.NormalMode
@@ -37,12 +37,13 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class WhatRoleControllerV2 @Inject()(override val messagesApi: MessagesApi,
                                      val appConfig: FrontendAppConfig,
-                                     val auth: AuthAction,
+                                     triageAction: TriageAction,
+                                     triageToAuthAction: TriageToAuthAction,
                                      @TriageV2 navigator: Navigator,
-                                     val formProvider: WhatRoleFormProviderV2,
-                                     val userAnswersCacheConnector: UserAnswersCacheConnector,
-                                     val getData: DataRetrievalAction,
-                                     val requireData: DataRequiredAction,
+                                     formProvider: WhatRoleFormProviderV2,
+                                     userAnswersCacheConnector: UserAnswersCacheConnector,
+                                     getData: DataRetrievalAction,
+                                     requireData: DataRequiredAction,
                                      val controllerComponents: MessagesControllerComponents,
                                      val view: whatRole)
                                     (implicit val executionContext: ExecutionContext)
@@ -50,13 +51,13 @@ class WhatRoleControllerV2 @Inject()(override val messagesApi: MessagesApi,
 
   private def form: Form[WhatRole] = formProvider()
 
-  def onPageLoad: Action[AnyContent] = (auth() andThen getData andThen requireData).async {
+  def onPageLoad: Action[AnyContent] = (triageAction andThen triageToAuthAction andThen getData andThen requireData).async {
     implicit request =>
       val preparedForm = request.userAnswers.get(WhatRoleId).fold(form)(form.fill)
       Future.successful(Ok(view(preparedForm)))
   }
 
-  def onSubmit: Action[AnyContent] = (auth() andThen getData andThen requireData).async {
+  def onSubmit: Action[AnyContent] = (triageAction andThen triageToAuthAction andThen getData andThen requireData).async {
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[_]) =>

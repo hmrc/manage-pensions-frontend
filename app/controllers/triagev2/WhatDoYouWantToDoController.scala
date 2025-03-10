@@ -16,10 +16,9 @@
 
 package controllers.triagev2
 
-import config.FrontendAppConfig
 import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, TriageAction}
+import controllers.actions.{DataRequiredAction, DataRetrievalAction, TriageAction, TriageToAuthAction}
 import forms.triagev2.WhatDoYouWantToDoFormProvider
 import identifiers.triagev2.{WhatDoYouWantToDoId, WhatRoleId}
 import models.NormalMode
@@ -36,9 +35,9 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class WhatDoYouWantToDoController @Inject()(override val messagesApi: MessagesApi,
-                                            appConfig: FrontendAppConfig,
                                             @TriageV2 navigator: Navigator,
-                                            auth: AuthAction,
+                                            triageAction: TriageAction,
+                                            triageToAuthAction: TriageToAuthAction,
                                             getData: DataRetrievalAction,
                                             requireData: DataRequiredAction,
                                             formProvider: WhatDoYouWantToDoFormProvider,
@@ -50,7 +49,7 @@ class WhatDoYouWantToDoController @Inject()(override val messagesApi: MessagesAp
 
   private def form(role: String): Form[WhatDoYouWantToDo] = formProvider(role)
 
-  def onPageLoad(role: String): Action[AnyContent] = (auth() andThen getData andThen requireData).async {
+  def onPageLoad(role: String): Action[AnyContent] = (triageAction andThen triageToAuthAction andThen getData andThen requireData).async {
     implicit request =>
       val formInstance = form(role)
       val preparedForm = request.userAnswers.get(WhatDoYouWantToDoId) match {
@@ -60,7 +59,7 @@ class WhatDoYouWantToDoController @Inject()(override val messagesApi: MessagesAp
       Future.successful(Ok(view(preparedForm, role)))
   }
 
-  def onSubmit(role: String): Action[AnyContent] = (auth() andThen getData andThen requireData).async {
+  def onSubmit(role: String): Action[AnyContent] = (triageAction andThen triageToAuthAction andThen getData andThen requireData).async {
     implicit request =>
       form(role).bindFromRequest().fold(
         (formWithErrors: Form[_]) =>

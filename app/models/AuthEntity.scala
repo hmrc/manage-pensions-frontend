@@ -26,6 +26,8 @@ object AuthEntity {
 
   case object PSP extends WithName("psp") with AuthEntity
 
+  case object Unauthenticated extends WithName("unauthenticated") with AuthEntity
+
   val values: Seq[AuthEntity] = Seq(PSA, PSP)
 
   implicit val enumerable: Enumerable[AuthEntity] =
