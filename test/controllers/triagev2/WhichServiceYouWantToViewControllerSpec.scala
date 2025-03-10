@@ -47,7 +47,6 @@ class WhichServiceYouWantToViewControllerSpec extends ControllerSpecBase with Sc
   private val application = applicationBuilder(Seq[GuiceableModule](
     bind[Navigator].qualifiedWith(classOf[TriageV2]).toInstance(new FakeNavigator(onwardRoute)),
     bind[UserAnswersCacheConnector].toInstance(fakeUserAnswersCacheConnector),
-    bind[AuthAction].toInstance(FakeAuthAction),
     bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(Some(UserAnswers().json))),
     bind[DataRequiredAction].to[DataRequiredActionImpl]
   )).build()
