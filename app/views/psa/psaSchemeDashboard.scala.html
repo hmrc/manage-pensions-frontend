@@ -38,22 +38,28 @@
 
             <div class="govuk-grid-row govuk-!-margin-bottom-4">
                 <div class="govuk-grid-column-one-third">
-                    @if(currentScheme.exists(_.pstr.nonEmpty) &&
-                    (schemeStatus.equalsIgnoreCase("open") || schemeStatus.equalsIgnoreCase("wound-up") || schemeStatus.equalsIgnoreCase("Deregistered"))) {
-                    <span class="govuk-caption-m govuk-!-margin-bottom-1">@messages("messages__psaSchemeDash__pstr")</span>
-                    <h2 class="govuk-heading-m govuk-!-margin-top-0">@messages(currentScheme.head.pstr.head)</h2>
-                    } else {
-                    <span class="govuk-caption-m govuk-!-margin-bottom-1">@messages("messages__psaSchemeDash__status")</span>
-                    <h2 class="govuk-heading-m govuk-!-margin-top-0">@messages(schemeStatus)</h2>
-                    }
+                @if(currentScheme.exists(_.pstr.nonEmpty) &&
+                        (schemeStatus.equalsIgnoreCase("open") || schemeStatus.equalsIgnoreCase("wound-up") || schemeStatus.equalsIgnoreCase("Deregistered"))) {
+                    <dl>
+                        <dt class="govuk-caption-m govuk-margin-0 govuk-!-margin-bottom-1">@messages("messages__psaSchemeDash__pstr")</dt>
+                        <dd class="govuk-heading-m govuk-!-margin-0">@messages(currentScheme.head.pstr.head)</dd>
+                    </dl>
+                } else {
+                    <dl>
+                        <dt class="govuk-caption-m govuk-margin-0 govuk-!-margin-bottom-1">@messages("messages__psaSchemeDash__status")</dt>
+                        <dd class="govuk-heading-m govuk-!-margin-0">@messages(schemeStatus)</dd>
+                    </dl>
+                }
                 </div>
                 <div class="govuk-grid-column-one-third">
-                    @if(schemeStatus.equalsIgnoreCase("open")) {
-                    <span class="govuk-caption-m govuk-!-margin-bottom-1">@messages("messages__psaSchemeDash__interim_dashboard_regDate")</span>
-                    <h2 class="govuk-heading-m govuk-!-margin-top-0">
-                        @messages(currentScheme.flatMap(_.openDate.map(LocalDate.parse(_).format(formatter))).getOrElse(""))
-                    </h2>
-                    }
+                @if(schemeStatus.equalsIgnoreCase("open")) {
+                    <dl>
+                        <dt class="govuk-caption-m govuk-margin-0 govuk-!-margin-bottom-1">@messages("messages__psaSchemeDash__interim_dashboard_regDate")</dt>
+                        <dd class="govuk-heading-m govuk-!-margin-0">
+                            @messages(currentScheme.flatMap(_.openDate.map(LocalDate.parse(_).format(formatter))).getOrElse(""))
+                        </dd>
+                    </dl>
+                }
                 </div>
             </div>
 
