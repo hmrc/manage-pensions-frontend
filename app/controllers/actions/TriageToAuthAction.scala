@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ class TriageToAuthAction @Inject()(val parser: BodyParsers.Default)(implicit val
   extends ActionTransformer[TriageRequest, AuthenticatedRequest] {
 
   override protected def transform[A](request: TriageRequest[A]): Future[AuthenticatedRequest[A]] = {
-    val externalId = java.util.UUID.randomUUID().toString
+    val externalId = request.externalId
     Future.successful(
       AuthenticatedRequest(
         request = request.request,

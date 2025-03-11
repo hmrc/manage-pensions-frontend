@@ -69,3 +69,16 @@ class WhatRoleControllerV2 @Inject()(override val messagesApi: MessagesApi,
       )
   }
 }
+
+//def onSubmit: Action[AnyContent] = triageAction.async {
+//  implicit request =>
+//    form.bindFromRequest().fold(
+//      (formWithErrors: Form[_]) =>
+//        Future.successful(BadRequest(view(formWithErrors))),
+//      value => {
+//        UserAnswers().set(WhatRoleId)(value).asOpt.getOrElse(UserAnswers())
+//        Future.successful(Redirect(navigator.nextPage(WhatRoleId, NormalMode, UserAnswers())))
+//      }
+//    )
+//}
+//}
