@@ -63,7 +63,7 @@ class MinimalConnectorImpl @Inject()(httpClientV2: HttpClientV2, config: Fronten
       case None => throw new NoMatchFoundException
       case Some(m) => Some(m)
     } andThen {
-      case Failure(t: Throwable) => logger.warn("Unable to get email details", t)
+      case Failure(t: Throwable) => t
     }
   }
 
