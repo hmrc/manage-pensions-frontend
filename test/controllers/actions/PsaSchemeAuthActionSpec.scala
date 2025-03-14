@@ -27,12 +27,10 @@ import org.scalatest.BeforeAndAfterAll
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.http.Status.NOT_FOUND
-import play.api.libs.json.Json
 import play.api.mvc.Results.Ok
 import play.api.test.Helpers._
 import play.twirl.api.Html
 import uk.gov.hmrc.domain.PsaId
-import utils.UserAnswers
 
 import scala.concurrent.Future
 
