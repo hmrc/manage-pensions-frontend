@@ -63,7 +63,8 @@ class MinimalConnectorImpl @Inject()(httpClientV2: HttpClientV2, config: Fronten
       case None => throw new NoMatchFoundException
       case Some(m) => Some(m)
     } andThen {
-      case Failure(t: Throwable) => logger.warn("Unable to get email details", t)
+      case Failure(t: Throwable) => logger.warn("Unable to get email details")
+        t
     }
   }
 
@@ -75,6 +76,7 @@ class MinimalConnectorImpl @Inject()(httpClientV2: HttpClientV2, config: Fronten
     } andThen {
       case Failure(_: DelimitedAdminException) => ()
       case Failure(_: DelimitedPractitionerException) => ()
+      case Failure(_: PspUserNameNotMatchedException) => ()
       case Failure(t: Throwable) => logger.warn("Unable to get minimal details", t)
     }
   }
