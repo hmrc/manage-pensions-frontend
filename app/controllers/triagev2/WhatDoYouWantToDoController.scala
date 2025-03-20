@@ -16,8 +16,9 @@
 
 package controllers.triagev2
 
+import connectors.UserAnswersCacheConnector
 import controllers.Retrievals
-import controllers.actions.TriageAction
+import controllers.actions.{DataRequiredAction, DataRetrievalAction, TriageAction, TriageToAuthAction}
 import forms.triagev2.WhatDoYouWantToDoFormProvider
 import identifiers.triagev2.{WhatDoYouWantToDoId, WhatRoleId}
 import models.NormalMode
@@ -36,7 +37,11 @@ import scala.concurrent.{ExecutionContext, Future}
 class WhatDoYouWantToDoController @Inject()(override val messagesApi: MessagesApi,
                                             @TriageV2 navigator: Navigator,
                                             triageAction: TriageAction,
+                                            triageToAuthAction: TriageToAuthAction,
+                                            getData: DataRetrievalAction,
+                                            requireData: DataRequiredAction,
                                             formProvider: WhatDoYouWantToDoFormProvider,
+                                            userAnswersCacheConnector: UserAnswersCacheConnector,
                                             val controllerComponents: MessagesControllerComponents,
                                             val view: whatDoYouWantToDo
                                            )(implicit val executionContext: ExecutionContext
@@ -44,20 +49,26 @@ class WhatDoYouWantToDoController @Inject()(override val messagesApi: MessagesAp
 
   private def form(role: String): Form[WhatDoYouWantToDo] = formProvider(role)
 
-  def onPageLoad(role: String): Action[AnyContent] = triageAction.async {
+  def onPageLoad(role: String): Action[AnyContent] = (triageAction andThen triageToAuthAction andThen getData andThen requireData).async {
     implicit request =>
-      Future.successful(Ok(view(form(role), role)))
+      val formInstance = form(role)
+      val preparedForm = request.userAnswers.get(WhatDoYouWantToDoId) match {
+        case None => formInstance
+        case Some(value) => formInstance.fill(value)
+      }
+      Future.successful(Ok(view(preparedForm, role)))
   }
 
-  def onSubmit(role: String): Action[AnyContent] = triageAction.async {
+  def onSubmit(role: String): Action[AnyContent] = (triageAction andThen triageToAuthAction andThen getData andThen requireData).async {
     implicit request =>
       form(role).bindFromRequest().fold(
         (formWithErrors: Form[_]) =>
           Future.successful(BadRequest(view(formWithErrors, role))),
         value => {
-          val uaUpdated = UserAnswers().set(WhatRoleId)(WhatRole.fromString(role))
-            .flatMap(_.set(WhatDoYouWantToDoId)(value)(writes(WhatDoYouWantToDo.enumerable(role)))).asOpt.getOrElse(UserAnswers())
-          Future.successful(Redirect(navigator.nextPage(WhatDoYouWantToDoId, NormalMode, uaUpdated)))
+          for {
+            _ <- userAnswersCacheConnector.save(request.externalId, WhatRoleId, WhatRole.fromString(role))
+            cacheMap <- userAnswersCacheConnector.save(request.externalId, WhatDoYouWantToDoId, value)
+          } yield Redirect(navigator.nextPage(WhatDoYouWantToDoId, NormalMode, UserAnswers(cacheMap)))
         }
       )
   }
