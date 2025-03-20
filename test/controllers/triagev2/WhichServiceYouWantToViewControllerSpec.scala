@@ -16,13 +16,18 @@
 
 package controllers.triagev2
 
+import connectors.ManagePensionsCacheConnector
 import controllers.ControllerSpecBase
+import controllers.actions.{AuthAction, FakeAuthAction}
 import forms.triagev2.WhichServiceYouWantToViewFormProvider
 import models.triagev2.WhichServiceYouWantToView.ManagingPensionSchemes
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.{reset, when}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.bind
 import play.api.inject.guice.GuiceableModule
+import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.api.test.CSRFTokenHelper.addCSRFToken
 import play.api.test.FakeRequest
@@ -31,40 +36,81 @@ import utils.annotations.TriageV2
 import utils.{FakeNavigator, Navigator}
 import views.html.triagev2.whichServiceYouWantToView
 
+import scala.concurrent.Future
+
 class WhichServiceYouWantToViewControllerSpec extends ControllerSpecBase with ScalaFutures with MockitoSugar {
 
   private val onwardRoute = Call("GET", "/dummy")
   private val application = applicationBuilder(Seq[GuiceableModule](bind[Navigator].
     qualifiedWith(classOf[TriageV2]).toInstance(new FakeNavigator(onwardRoute)))).build()
 
+  private val navigator = new FakeNavigator(onwardRoute)
+  private val mockAuthAction = mock[AuthAction]
+  private val mockManagePensionsCacheConnector = mock[ManagePensionsCacheConnector]
+
   private val view = injector.instanceOf[whichServiceYouWantToView]
   private val formProvider = new WhichServiceYouWantToViewFormProvider()
+
+//  private val form = formProvider()
+
+  private def authAction: AuthAction = FakeAuthAction
+
+  val controller: WhichServiceYouWantToViewController = new WhichServiceYouWantToViewController(
+    messagesApi,
+    navigator,
+    authAction,
+    formProvider,
+    controllerComponents,
+    view,
+    mockManagePensionsCacheConnector
+  )
+  def beforeEach(): Unit = {
+    reset(mockAuthAction)
+    reset(mockManagePensionsCacheConnector)
+  }
+
+  private val role = "administrator"
+
+  private val form = formProvider(role)
+
+  private val getRoute: String = routes.WhichServiceYouWantToViewController.onPageLoad(role).url
+  private val postRoute: String = routes.WhichServiceYouWantToViewController.onSubmit(role).url
 
   "WhichServiceYouWantToViewController" must {
 
     "return OK with the view when calling on page load" in {
-      val request = addCSRFToken(FakeRequest(GET, routes.WhichServiceYouWantToViewController.onPageLoad("administrator").url))
-      val result = route(application, request).value
+      when(mockManagePensionsCacheConnector.fetch(any())(any, any())).thenReturn(
+        Future.successful(None))
+
+      val request = addCSRFToken(FakeRequest(GET, getRoute))
+      val result = controller.onPageLoad(role)(request)
 
       status(result) mustBe OK
-      contentAsString(result) mustBe view(formProvider("administrator"), "administrator")(request, messages).toString
+      contentAsString(result) mustBe view(form, role)(request, messages).toString
     }
 
     "return a Bad Request and errors when invalid data is submitted" in {
-      val postRequest = FakeRequest(POST, routes.WhichServiceYouWantToViewController.onSubmit("administrator").url)
-        .withFormUrlEncodedBody("value" -> "invalid value")
+      when(mockManagePensionsCacheConnector.fetch(any())(any, any())).thenReturn(
+        Future.successful(None))
+      when(mockManagePensionsCacheConnector.save(any(), any(), any())(any, any(), any())).thenReturn(
+        Future.successful(Json.obj("whichServiceYouWantToView" -> "opt1")))
+
+      val request = addCSRFToken(FakeRequest(POST, postRoute).withFormUrlEncodedBody("value" -> "invalid value"))
+      val result = controller.onSubmit(role)(request)
       val boundForm = formProvider("administrator").bind(Map("value" -> "invalid value"))
-      val result = route(application, postRequest).value
 
       status(result) mustBe BAD_REQUEST
-      contentAsString(result) mustBe view(boundForm, "administrator")(postRequest, messages).toString
-
+      contentAsString(result) mustBe view(boundForm, "administrator")(request, messages).toString
     }
 
     "redirect to the next page for a valid request" in {
-      val postRequest = FakeRequest(POST, routes.WhichServiceYouWantToViewController.onSubmit("administrator").url)
-        .withFormUrlEncodedBody("value" -> ManagingPensionSchemes.toString)
-      val result = route(application, postRequest).value
+      when(mockManagePensionsCacheConnector.fetch(any())(any, any())).thenReturn(
+        Future.successful(None))
+      when(mockManagePensionsCacheConnector.save(any(), any(), any())(any, any(), any())).thenReturn(
+        Future.successful(Json.obj("whichServiceYouWantToView" -> "opt1")))
+
+      val request = addCSRFToken(FakeRequest(POST, postRoute).withFormUrlEncodedBody("value" -> "opt1"))
+      val result = controller.onSubmit(role)(request)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result).value mustBe onwardRoute.url

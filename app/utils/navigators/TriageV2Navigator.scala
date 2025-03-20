@@ -50,7 +50,7 @@ class TriageV2Navigator @Inject()(appConfig: FrontendAppConfig) extends Navigato
 
     ua.get(WhatRoleId) match {
       case role@(Some(PSA) | Some(PSP)) => ua.get(WhichServiceYouWantToViewId)(reads(WhichServiceYouWantToView.enumerable(role.get.toString))) match {
-        case Some(ManagingPensionSchemes) => Call("GET", s"${appConfig.loginUrl}?continue=${
+        case Some(ManagingPensionSchemes) => Call("GET", s"${
           role.get.toString match {
             case "administrator" => appConfig.psaOverviewUrl
             case _ => appConfig.pspDashboardUrl

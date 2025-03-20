@@ -46,15 +46,14 @@ class WhatRoleControllerV2Spec extends ControllerSpecBase with ScalaFutures with
   private val view = injector.instanceOf[whatRole]
   private val formProvider = new WhatRoleFormProviderV2
   private val form = formProvider()
-  val psaId = "A0000000"
 
-  private def authAction(psaId: String): AuthAction =
-    FakeAuthAction.createWithPsaId(psaId)
+  private def authAction: AuthAction =
+    FakeAuthAction
 
   val controller: WhatRoleControllerV2 = new WhatRoleControllerV2(
     messagesApi,
     navigator,
-    authAction(psaId),
+    authAction,
     formProvider,
     controllerComponents,
     mockManagePensionsCacheConnector,

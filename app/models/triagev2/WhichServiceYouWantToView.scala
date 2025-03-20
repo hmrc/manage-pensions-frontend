@@ -59,7 +59,7 @@ object WhichServiceYouWantToView {
   implicit val reads: Reads[WhichServiceYouWantToView] =
     JsPath.read[String].flatMap {
       case chosenService if mappings.keySet.contains(chosenService) => Reads(_ => JsSuccess(mappings.apply(chosenService)))
-      case invalidValue => Reads(_ => JsError(s"Invalid administrator or practitioner type: $invalidValue"))
+      case invalidValue => Reads(_ => JsError(s"Invalid service type to view: $invalidValue"))
     }
 
   implicit lazy val writes: Writes[WhichServiceYouWantToView] = (chosenService: WhichServiceYouWantToView) => JsString(chosenService.toString)

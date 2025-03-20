@@ -82,9 +82,9 @@ object TriageV2NavigatorSpec extends OptionValues with Enumerable.Implicits {
     whatRolePspAnswers.set(WhatDoYouWantToDoId)(answer)(writes(WhatDoYouWantToDo.enumerable("practitioner"))).asOpt.value
 
 
-  private def psaOverviewPage: Call = Call("GET", frontendAppConfig.loginUrl + "?continue=" + frontendAppConfig.psaOverviewUrl)
+  private def psaOverviewPage: Call = Call("GET", frontendAppConfig.psaOverviewUrl)
 
-  private def pspOverviewPage: Call = Call("GET", frontendAppConfig.loginUrl + "?continue=" + frontendAppConfig.pspDashboardUrl)
+  private def pspOverviewPage: Call = Call("GET", frontendAppConfig.pspDashboardUrl)
 
   private def tpssLoginPage: Call = Call("GET", frontendAppConfig.tpssWelcomeUrl)
 
