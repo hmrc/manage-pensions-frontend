@@ -74,7 +74,8 @@ class WhatRoleControllerV2 @Inject()(override val messagesApi: MessagesApi,
           managePensionsCacheConnector.save(request.externalId, WhatRoleId, value).map { cacheMap =>
             originalUserAnswers.map {
               case None =>
-                Redirect(navigator.nextPage(WhatRoleId, NormalMode, UserAnswers()))
+                val updatedUserAnswers = UserAnswers().set(WhatRoleId)(value).asOpt.getOrElse(UserAnswers())
+                Redirect(navigator.nextPage(WhatRoleId, NormalMode, updatedUserAnswers))
               case Some(jsValue) =>
                 val role = (cacheMap \ "whatRole").as[WhatRole]
                 val updatedUserAnswers = jsValue.as[JsObject] + ("whatRole" -> JsString(role.toString))
