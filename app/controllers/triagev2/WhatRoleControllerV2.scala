@@ -25,7 +25,7 @@ import models.NormalMode
 import models.triagev2.WhatRole
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.libs.json.{JsObject, JsString}
+import play.api.libs.json.{JsError, JsObject, JsString, JsSuccess}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.annotations.TriageV2
@@ -54,8 +54,10 @@ class WhatRoleControllerV2 @Inject()(override val messagesApi: MessagesApi,
         val preparedForm = previousAnswer match {
           case None => form
           case Some(jsValue) =>
-            val role = (jsValue \ "whatRole").as[WhatRole]
-            form.fill(role)
+            (jsValue \ "whatRole").validate[WhatRole] match {
+              case JsSuccess(role, _) => form.fill(role)
+              case JsError(_) => form
+            }
         }
         Ok(view(preparedForm))
       }
