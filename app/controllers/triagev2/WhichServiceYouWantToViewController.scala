@@ -16,8 +16,9 @@
 
 package controllers.triagev2
 
+import connectors.ManagePensionsCacheConnector
 import controllers.Retrievals
-import controllers.actions.TriageAction
+import controllers.actions.{AuthAction, DataRetrievalAction, TriageAction}
 import forms.triagev2.WhichServiceYouWantToViewFormProvider
 import identifiers.triagev2.{WhatRoleId, WhichServiceYouWantToViewId}
 import models.NormalMode
@@ -32,32 +33,53 @@ import views.html.triagev2.whichServiceYouWantToView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import play.api.libs.json._
 
 class WhichServiceYouWantToViewController @Inject()(override val messagesApi: MessagesApi,
                                                     @TriageV2 navigator: Navigator,
-                                                    triageAction: TriageAction,
+                                                    auth: AuthAction,
                                                     formProvider: WhichServiceYouWantToViewFormProvider,
                                                     val controllerComponents: MessagesControllerComponents,
-                                                    val view: whichServiceYouWantToView
+                                                    val view: whichServiceYouWantToView,
+                                                    val managePensionsCacheConnector: ManagePensionsCacheConnector
                                            )(implicit val executionContext: ExecutionContext
                                            ) extends FrontendBaseController with I18nSupport with Enumerable.Implicits with Retrievals {
 
   private def form(role: String): Form[WhichServiceYouWantToView] = formProvider(role)
 
-  def onPageLoad(role: String): Action[AnyContent] = triageAction.async {
+  def onPageLoad(role: String): Action[AnyContent] = auth().async {
     implicit request =>
-      Future.successful(Ok(view(form(role), role)))
+      managePensionsCacheConnector.fetch(request.externalId).map { previousAnswer =>
+        val preparedForm = previousAnswer match {
+          case None => form(role)
+          case Some(jsValue) =>
+            (jsValue \ "whichServiceYouWantToView").validate[WhichServiceYouWantToView] match {
+              case JsSuccess(chosenService, _) => form(role).fill(chosenService)
+              case JsError(_) => form(role)
+            }
+        }
+        Ok(view(preparedForm, role))
+      }
   }
 
-  def onSubmit(role: String): Action[AnyContent] = triageAction.async {
+  def onSubmit(role: String): Action[AnyContent] = auth().async {
     implicit request =>
       form(role).bindFromRequest().fold(
         (formWithErrors: Form[_]) =>
           Future.successful(BadRequest(view(formWithErrors, role))),
         value => {
-          val uaUpdated = UserAnswers().set(WhatRoleId)(WhatRole.fromString(role))
-            .flatMap(_.set(WhichServiceYouWantToViewId)(value)(writes(WhichServiceYouWantToView.enumerable(role)))).asOpt.getOrElse(UserAnswers())
-          Future.successful(Redirect(navigator.nextPage(WhichServiceYouWantToViewId, NormalMode, uaUpdated)))
+          val originalUserAnswers = managePensionsCacheConnector.fetch(request.externalId)
+
+          managePensionsCacheConnector.save(request.externalId, WhichServiceYouWantToViewId, value).map { cacheMap =>
+            originalUserAnswers.map {
+              case None =>
+                Redirect(navigator.nextPage(WhichServiceYouWantToViewId, NormalMode, UserAnswers()))
+              case Some(jsValue) =>
+                val chosenService = (cacheMap \ "whichServiceYouWantToView").as[WhichServiceYouWantToView]
+                val updatedUserAnswers = jsValue.as[JsObject] + ("whichServiceYouWantToView" -> JsString(chosenService.toString))
+                Redirect(navigator.nextPage(WhichServiceYouWantToViewId, NormalMode, UserAnswers(updatedUserAnswers)))
+            }
+          }.flatten
         }
       )
   }
