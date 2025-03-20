@@ -20,20 +20,16 @@ import connectors.ManagePensionsCacheConnector
 import controllers.ControllerSpecBase
 import controllers.actions.{AuthAction, FakeAuthAction}
 import forms.triagev2.WhichServiceYouWantToViewFormProvider
-import models.triagev2.WhichServiceYouWantToView.ManagingPensionSchemes
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.inject.bind
-import play.api.inject.guice.GuiceableModule
 import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.api.test.CSRFTokenHelper.addCSRFToken
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import utils.annotations.TriageV2
-import utils.{FakeNavigator, Navigator}
+import utils.FakeNavigator
 import views.html.triagev2.whichServiceYouWantToView
 
 import scala.concurrent.Future
@@ -41,8 +37,6 @@ import scala.concurrent.Future
 class WhichServiceYouWantToViewControllerSpec extends ControllerSpecBase with ScalaFutures with MockitoSugar {
 
   private val onwardRoute = Call("GET", "/dummy")
-  private val application = applicationBuilder(Seq[GuiceableModule](bind[Navigator].
-    qualifiedWith(classOf[TriageV2]).toInstance(new FakeNavigator(onwardRoute)))).build()
 
   private val navigator = new FakeNavigator(onwardRoute)
   private val mockAuthAction = mock[AuthAction]
@@ -50,8 +44,6 @@ class WhichServiceYouWantToViewControllerSpec extends ControllerSpecBase with Sc
 
   private val view = injector.instanceOf[whichServiceYouWantToView]
   private val formProvider = new WhichServiceYouWantToViewFormProvider()
-
-//  private val form = formProvider()
 
   private def authAction: AuthAction = FakeAuthAction
 
