@@ -89,8 +89,8 @@ class PsaSchemeDashboardService @Inject()(
     val currentScheme: Option[SchemeDetails] = getSchemeDetailsFromListOfSchemes(srn, list)
 
     val pstr = currentScheme match {
-      case Some(cs) if cs.referenceNumber.contains(srn) => cs.pstr.getOrElse("")
-      case None => "Pstr Not Found"
+      case Some(cs) => cs.pstr.getOrElse("")
+      case None => throw SchemeNotFoundException("Scheme not found - could not find scheme with reference number to match srn")
     }
 
     val seqErOverviewFuture: Future[String] = getPSRErOverViewAsString(srn, pstr, showPsrLink, request.authEntity)
@@ -395,6 +395,9 @@ class PsaSchemeDashboardService @Inject()(
 }
 
 case object PsaNameCannotBeRetrievedException extends Exception
+
+case class SchemeNotFoundException(message: String) extends Exception
+
 
 object PsaSchemeDashboardService {
   val minStartDateAsString = "2000-04-06"

@@ -194,7 +194,7 @@ class PsaSchemeDashboardServiceSpec
 
       val service = new PsaSchemeDashboardService(mockAppConfig, mockPensionSchemeVarianceLockConnector, mockSchemeDetailsConnector, mockEventReportingConnector)
 
-      val actualReturn = service.cards(showPsrLink = true, erHtml = Html(""), srn = "test", lock = None, list =
+      val actualReturn = service.cards(showPsrLink = true, erHtml = Html(""), srn = "S2400000005", lock = None, list =
         ListOfSchemes("", "", Some(fullSchemes)), ua = UserAnswers()) .map(_.head).futureValue
 
       val expectedReturn = CardViewModel("manage_reports_returns","Manage reports and returns",List.empty,
@@ -210,7 +210,7 @@ class PsaSchemeDashboardServiceSpec
 
       val service = new PsaSchemeDashboardService(mockAppConfig, mockPensionSchemeVarianceLockConnector, mockSchemeDetailsConnector, mockEventReportingConnector)
 
-      val actualReturn = service.cards(showPsrLink = true, erHtml = Html(""), srn = "test", lock = None, list =
+      val actualReturn = service.cards(showPsrLink = true, erHtml = Html(""), srn = "S2400000005", lock = None, list =
         ListOfSchemes("", "", Some(fullSchemes)), ua = UserAnswers()) .map(_.head).futureValue
 
       val expectedReturn = CardViewModel("manage_reports_returns","Manage reports and returns",List(CardSubHeading("Notice to file:","card-sub-heading",
@@ -229,7 +229,7 @@ class PsaSchemeDashboardServiceSpec
 
       val service = new PsaSchemeDashboardService(mockAppConfig, mockPensionSchemeVarianceLockConnector, mockSchemeDetailsConnector, mockEventReportingConnector)
 
-      val actualReturn = service.cards(showPsrLink = true, erHtml = Html(""), srn = "test", lock = None, list =
+      val actualReturn = service.cards(showPsrLink = true, erHtml = Html(""), srn = "S2400000005", lock = None, list =
         ListOfSchemes("", "", Some(fullSchemes)), ua = UserAnswers()) .map(_.head).futureValue
 
       val expectedReturn = CardViewModel("manage_reports_returns","Manage reports and returns",List(CardSubHeading("Notice to file:","card-sub-heading",
@@ -240,6 +240,19 @@ class PsaSchemeDashboardServiceSpec
       compareCardViewModels(actualReturn, expectedReturn)
 
 
+    }
+    "throw an exception if the scheme details cannot be returned" in {
+      val mockEventReportingConnector = mock[PensionSchemeReturnConnector]
+      when(mockEventReportingConnector.getOverview(any(), any(), any(), any(), any())(any())).thenReturn(Future.successful(Seq(overview1, overview1)))
+
+      val service = new PsaSchemeDashboardService(mockAppConfig, mockPensionSchemeVarianceLockConnector, mockSchemeDetailsConnector, mockEventReportingConnector)
+
+      val exception = intercept[SchemeNotFoundException] {
+        service.cards(showPsrLink = true, erHtml = Html(""), srn = "srn-2", lock = None, list =
+          ListOfSchemes("", "", Some(fullSchemes)), ua = UserAnswers()) .map(_.head).futureValue
+      }
+
+      exception.message mustBe "Scheme not found - could not find scheme with reference number to match srn"
     }
   }
 
