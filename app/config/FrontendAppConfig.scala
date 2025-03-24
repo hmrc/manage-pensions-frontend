@@ -16,15 +16,14 @@
 
 package config
 
-import java.time.LocalDate
 import com.google.inject.{Inject, Singleton}
 import controllers.routes
-import play.api.{Configuration, Environment, Mode}
 import play.api.i18n.Lang
 import play.api.mvc.Call
+import play.api.{Configuration, Environment, Mode}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import models.ReportTechnicalIssue
 
+import java.time.LocalDate
 import scala.concurrent.duration.Duration
 
 @Singleton
@@ -44,7 +43,6 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val appName: String = runModeConfiguration.underlying.getString("appName")
 
   val reportAProblemNonJSUrl = getConfigString("contact-frontend.report-problem-url.non-js")
-  val reportTechnicalIssues = ReportTechnicalIssue(serviceId = "PODS", baseUrl = Some(reportAProblemNonJSUrl))
   val betaFeedbackUnauthenticatedUrl = getConfigString("contact-frontend.beta-feedback-url.unauthenticated")
   def pspAuthEmailCallback(encryptedPsaId: String, encryptedPspId: String, encryptedPstr: String, encryptedEmail: String) =
     s"$practitionerUrl${runModeConfiguration.get[String](path = "urls.pspAuthEmailCallback")
@@ -58,13 +56,10 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
     s"$practitionerUrl${runModeConfiguration.get[String](path = "urls.pspSelfDeauthEmailCallback")
       .format(encryptedPspId, encryptedPstr, encryptedEmail)}"
 
-  lazy val authUrl: String = servicesConfig.baseUrl("auth")
   lazy val pensionsSchemeUrl: String = servicesConfig.baseUrl("pensions-scheme")
   lazy val pensionsSchemeReturnUrl: String = servicesConfig.baseUrl("pensions-scheme-return")
   lazy val pensionAdminUrl: String = servicesConfig.baseUrl("pension-administrator")
-  lazy val aftUrl: String = servicesConfig.baseUrl("pension-scheme-accounting-for-tax")
   lazy val practitionerUrl: String = servicesConfig.baseUrl("pension-practitioner")
-  lazy val managePensionsUrl: String = servicesConfig.baseUrl("manage-pensions-frontend")
 
   lazy val loginUrl: String = loadConfig("urls.login")
   lazy val loginContinueUrl: String = loadConfig("urls.loginContinue")
@@ -80,34 +75,11 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
     .getString("urls.pensionAdministratorGovUkLink")
   lazy val pensionPractitionerGovUkLink: String = runModeConfiguration.underlying
     .getString("urls.pensionPractitionerGovUkLink")
-  lazy val pensionSchemesGuideMandatoryOnlineFilingGovUkLink: String = runModeConfiguration.underlying
-    .getString("urls.pensionSchemesGuideMandatoryOnlineFilingGovUkLink")
-  lazy val guidanceStartPageGovUkLink: String = runModeConfiguration.underlying
-    .getString("urls.guidanceStartPageGovUkLink")
-  lazy val pensionSchemesInvitationGuideGovUkPractitionerDeauthLink: String = runModeConfiguration.underlying
-    .getString("urls.pensionSchemesInvitationGuideGovUkPractitionerDeauthLink")
-  lazy val pensionSchemesInvitationGuideGovUkLink: String = runModeConfiguration.underlying
-    .getString("urls.pensionSchemesInvitationGuideGovUkLink")
-  lazy val pensionSchemesAddToSchemeGuideGovUkLink: String = runModeConfiguration.underlying
-    .getString("urls.pensionSchemesAddToSchemeGuideGovUkLink")
-   lazy val authorisePractitionerGuideGovUkLink: String = runModeConfiguration.underlying
-    .getString("urls.authorisePractitionerGuidance")
-  lazy val registerSchemeGuideGovUkLink: String = runModeConfiguration.underlying
-    .getString("urls.registerSchemeGuidance")
-  lazy val pspUpdateDetailsTPSSLink: String = runModeConfiguration.underlying
-    .getString("urls.pspUpdateDetailsTPSS")
 
-
-  lazy val govUkLink: String = runModeConfiguration.underlying.getString("urls.govUkLink")
-  lazy val continueSchemeUrl = s"${loadConfig("urls.continueSchemeRegistration")}"
-  lazy val userResearchUrl: String = runModeConfiguration.underlying.getString("urls.userResearch")
   lazy val pensionSchemeOnlineServiceUrl: String = loadConfig("urls.pensionSchemeOnlineService")
   lazy val tpssWelcomeUrl: String = loadConfig("urls.tpssWelcome")
-  lazy val tpssInitialQuestionsUrl: String = loadConfig("urls.tpssInitialQuestions")
   lazy val registeredPsaDetailsUrl: String = loadConfig("urls.psaDetails")
   lazy val psaDeregisterUrl: String = loadConfig("urls.psaDeregister")
-  lazy val languageTranslationEnabled: Boolean = runModeConfiguration.get[Boolean]("features.welsh-translation")
-  lazy val registerSchemeUrl: String = runModeConfiguration.underlying.getString("urls.registerScheme")
   lazy val listOfSchemesUrl: String = s"${servicesConfig.baseUrl("pensions-scheme")}${runModeConfiguration.underlying
     .getString("urls.listOfSchemes")}"
   lazy val inviteUrl: String = s"${servicesConfig.baseUrl("pension-administrator")}${runModeConfiguration.underlying
@@ -196,7 +168,6 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
 
   lazy val emailPsaDeauthorisePspTemplateId: String = runModeConfiguration.get[String]("email.psaDeauthorisePspTemplateId")
 
-  lazy val daysDataSaved: Int = loadConfig("daysDataSaved").toInt
   lazy val invitationExpiryDays: Int = loadConfig("invitationExpiryDays").toInt
   lazy val earliestDatePsaRemoval: LocalDate = LocalDate.parse(loadConfig("earliestDatePsaRemoval"))
 

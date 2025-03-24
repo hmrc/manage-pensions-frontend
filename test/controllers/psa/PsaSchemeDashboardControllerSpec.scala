@@ -62,7 +62,6 @@ class PsaSchemeDashboardControllerSpec
 
   private val schemeName = "Benefits Scheme"
   private val aftHtml = Html("test-aft-html")
-  private val aftEmptyHtml = Html("")
   private val finInfoHtml = Html("test-fininfo-html")
   private val erHtml = Html("test-er-html")
 

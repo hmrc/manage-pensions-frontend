@@ -19,18 +19,16 @@ package connectors
 import com.google.inject.Inject
 import config.FrontendAppConfig
 import identifiers.TypedIdentifier
-import play.api.Logger
 import play.api.http.Status._
 import play.api.libs.json._
 import play.api.mvc.Result
 import play.api.mvc.Results._
-import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.client.HttpClientV2
 import utils.UserAnswers
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class MicroserviceCacheConnector @Inject()(
                                             config: FrontendAppConfig,

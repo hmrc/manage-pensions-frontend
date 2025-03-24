@@ -25,19 +25,20 @@ import play.twirl.api.Html
 import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
 import views.html._
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class ErrorHandler @Inject()(
                               val messagesApi: MessagesApi,
                               view: error_template,
                               notFoundView: error_template_page_not_found
-                            ) extends FrontendErrorHandler with I18nSupport {
+                            )(implicit val ec: ExecutionContext) extends FrontendErrorHandler with I18nSupport {
 
-  override def notFoundTemplate(implicit request: Request[_]): Html =
+  override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit request: RequestHeader): Future[Html] =
+    Future.successful(view(pageTitle, heading, message)(Request(request, ""), messagesApi.preferred(request)))
+
+  def notFoundTemplate(implicit request: Request[_]): Html =
     notFoundView()
 
-  override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit rh: Request[_]): Html =
-    view(pageTitle, heading, message)
 
   override def onServerError(request: RequestHeader, exception: Throwable): Future[Result] = {
     exception match {

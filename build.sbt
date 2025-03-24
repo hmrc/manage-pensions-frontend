@@ -13,7 +13,7 @@ lazy val root = (project in file("."))
   .settings(DefaultBuildSettings.defaultSettings(): _*)
   .settings(inConfig(Test)(testSettings): _*)
   .settings(majorVersion := 0)
-  .settings(scalaVersion := "2.13.12")
+  .settings(scalaVersion := "2.13.16")
   .settings(
     name := appName,
     RoutesKeys.routesImport ++= Seq(
@@ -32,14 +32,12 @@ lazy val root = (project in file("."))
     PlayKeys.playDefaultPort := 8204,
     ScoverageKeys.coverageExcludedFiles := "<empty>;Reverse.*;.*filters.*;.*handlers.*;.*components.*;.*models.*;.*repositories.*;" +
       ".*BuildInfo.*;.*javascript.*;.*FrontendAuditConnector.*;.*Routes.*;.*GuiceInjector;" +
-      ".*ControllerConfiguration;.*LanguageSwitchController;.*MongoDiagnosticsConnector;.*PensionsSchemeFeatureSwitchConnector;" +
-      ".*PensionAdministratorFeatureSwitchConnectorImpl;.*controllers.testonly.*;.*target.*",
+      ".*ControllerConfiguration;.*LanguageSwitchController;.*MongoDiagnosticsConnector;.*controllers.testonly.*;.*target.*",
     ScoverageKeys.coverageMinimumStmtTotal := 80,
     ScoverageKeys.coverageFailOnMinimum := true,
     ScoverageKeys.coverageHighlighting := true,
     scalacOptions ++= Seq("-feature"),
     scalacOptions ++= Seq("-Xmaxerrs", "500"),   // Set maximum errors to 500
-    scalacOptions ++= Seq("-Xmaxwarns", "1"),   // Set maximum errors to 500
     libraryDependencies ++= AppDependencies(),
     retrieveManaged := true,
     update / evictionWarningOptions :=
@@ -58,7 +56,7 @@ lazy val root = (project in file("."))
     uglifyCompressOptions := Seq("unused=false", "dead_code=false"),
     // Added below code to replace plugin silencer version = "1.7.8"
     scalacOptions += "-Wconf:src=routes/.*:s",
-    scalacOptions += "-Wconf:cat=unused-imports&src=html/.*:s",
+    scalacOptions += "-Wconf:src=html/.*:s",
     pipelineStages := Seq(digest),
     // below line required to force asset pipeline to operate in dev rather than only prod
     // Removed uglify due to node 20 compile issues.

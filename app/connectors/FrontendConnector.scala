@@ -85,7 +85,7 @@ class FrontendConnector @Inject()(httpClientV2: HttpClientV2, config: FrontendAp
       .recover(recoverHtmlPartial)
   }
 
-  private def handleResponse(response: HttpResponse)(implicit ec: ExecutionContext): Future[Html] = {
+  private def handleResponse(response: HttpResponse): Future[Html] = {
     response.status match {
       case OK => Future.successful(Html(response.body))
       case _ =>
@@ -94,7 +94,7 @@ class FrontendConnector @Inject()(httpClientV2: HttpClientV2, config: FrontendAp
     }
   }
 
-  private def recoverHtmlPartial(implicit ec: ExecutionContext): PartialFunction[Throwable, Html] = {
+  private def recoverHtmlPartial: PartialFunction[Throwable, Html] = {
     HtmlPartial.connectionExceptionsAsHtmlPartialFailure.andThen {
       case HtmlPartial.Success(_, content) => content
       case HtmlPartial.Failure(_, _) =>

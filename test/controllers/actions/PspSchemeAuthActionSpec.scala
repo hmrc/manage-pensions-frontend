@@ -20,21 +20,18 @@ import base.SpecBase
 import connectors.scheme.SchemeDetailsConnector
 import handlers.ErrorHandler
 import models.requests.OptionalDataRequest
-import models.{AuthEntity, AuthorisedPractitioner, AuthorisingPSA, Individual, SchemeReferenceNumber}
+import models.{AuthEntity, Individual, SchemeReferenceNumber}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.http.Status.NOT_FOUND
-import play.api.libs.json.Json
 import play.api.mvc.Results.Ok
 import play.api.test.Helpers._
 import play.twirl.api.Html
 import uk.gov.hmrc.domain.PspId
-import utils.UserAnswers
 
-import java.time.LocalDate
 import scala.concurrent.Future
 
 class PspSchemeAuthActionSpec

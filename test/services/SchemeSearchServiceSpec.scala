@@ -55,7 +55,7 @@ class SchemeSearchServiceSpec extends SpecBase with MockitoSugar with ScalaFutur
         .thenReturn(Future.successful(Right(listOfSchemes)))
 
       whenReady(schemeSearchService.search(psaId, Some(srn))) { result =>
-        result mustBe fullSchemes.filter(_.referenceNumber == srn)
+        result mustBe fullSchemes.filter(_.referenceNumber == srn.id)
       }
     }
 

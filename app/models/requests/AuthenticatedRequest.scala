@@ -17,13 +17,9 @@
 package models.requests
 
 import controllers.actions.IdNotFound
-import models.AuthEntity
-import models.AuthEntity.PSA
-import models.UserType
-import play.api.mvc.Request
-import play.api.mvc.WrappedRequest
-import uk.gov.hmrc.domain.PsaId
-import uk.gov.hmrc.domain.PspId
+import models.{AuthEntity, UserType}
+import play.api.mvc.{Request, WrappedRequest}
+import uk.gov.hmrc.domain.{PsaId, PspId}
 
 trait IdentifiedRequest {
   def externalId: String
