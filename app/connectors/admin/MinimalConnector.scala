@@ -70,16 +70,18 @@ class MinimalConnectorImpl @Inject()(httpClientV2: HttpClientV2, config: Fronten
 
   private def getMinimalDetails(hc: HeaderCarrier)
                                (implicit ec: ExecutionContext): Future[MinimalPSAPSP] = {
-    retrieveMinimalDetails(hc)(ec).map {
-      case None => throw new NoMatchFoundException
-      case Some(m) => m
+    retrieveMinimalDetails(hc)(ec).flatMap {
+      case None => Future.failed(new NoMatchFoundException)
+      case Some(m) => Future.successful(m)
     } andThen {
+      case Failure(_: NoMatchFoundException) => ()
       case Failure(_: DelimitedAdminException) => ()
       case Failure(_: DelimitedPractitionerException) => ()
       case Failure(_: PspUserNameNotMatchedException) => ()
       case Failure(t: Throwable) => logger.warn("Unable to get minimal details", t)
     }
   }
+
   private def retrieveEmailDetails(srn: SchemeReferenceNumber, hc: HeaderCarrier)(implicit ec: ExecutionContext): Future[Option[String]] = {
     val emailDetailsUrl = url"${config.emailDetailsUrl}/${srn.id}"
 
