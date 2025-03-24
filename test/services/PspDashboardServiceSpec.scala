@@ -19,7 +19,7 @@ package services
 import base.SpecBase
 import connectors.admin.MinimalConnector
 import models._
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures

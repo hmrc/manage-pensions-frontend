@@ -22,8 +22,8 @@ import connectors.{InvitationConnector, InvitationsCacheConnector, UserAnswersCa
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.invitations.psa.DeclarationFormProvider
+import identifiers.SchemeSrnId
 import identifiers.invitations._
-import identifiers.{SchemeSrnId, SchemeTypeId, SchemeNameId => GetSchemeNameId}
 import models.SchemeType.MasterTrust
 import models._
 import models.requests.DataRequest

@@ -17,13 +17,11 @@
 package utils
 
 import connectors.UserAnswersCacheConnector
-import controllers.routes.{SchemesOverviewController, SessionExpiredController}
-import identifiers.{AdministratorOrPractitionerId, EventReportingId}
-import models.AdministratorOrPractitioner.Administrator
-import models.{EventReporting, ListOfSchemes}
+import identifiers.EventReportingId
 import models.requests.AuthenticatedRequest
-import play.api.libs.json.{JsValue, Json}
-import uk.gov.hmrc.http.{HeaderCarrier, SessionKeys}
+import models.{EventReporting, ListOfSchemes}
+import play.api.libs.json.JsValue
+import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 

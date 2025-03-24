@@ -85,7 +85,7 @@ class InvitationsCacheConnectorImpl @Inject()(config: FrontendAppConfig, httpCli
       }
   }
 
-  private def getCommon(response: HttpResponse)(implicit ec: ExecutionContext): Future[List[Invitation]] =
+  private def getCommon(response: HttpResponse): Future[List[Invitation]] =
     response.status match {
       case NOT_FOUND =>
         Future.successful(List.empty)

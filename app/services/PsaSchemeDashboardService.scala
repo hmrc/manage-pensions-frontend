@@ -25,21 +25,21 @@ import controllers.invitations.routes._
 import controllers.psa.routes._
 import controllers.psp.routes._
 import identifiers.psa.ListOfPSADetailsId
-import identifiers.{SchemeNameId, SchemeSrnId, SchemeStatusId, SeqAuthorisedPractitionerId}
+import identifiers.{SchemeNameId, SchemeStatusId, SeqAuthorisedPractitionerId}
 import models.SchemeStatus.Open
 import models._
 import models.psa.PsaDetails
 import models.requests.AuthenticatedRequest
-import play.api.{Logger, Logging}
+import play.api.Logging
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContent, RequestHeader}
+import play.twirl.api.Html
+import services.PsaSchemeDashboardService.{maxEndDateAsString, minStartDateAsString}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import utils.DateHelper._
 import utils.UserAnswers
 import viewmodels.{CardSubHeading, CardSubHeadingParam, CardViewModel, Message}
-import play.twirl.api.Html
-import services.PsaSchemeDashboardService.{maxEndDateAsString, minStartDateAsString}
 
 import java.time.LocalDate
 import scala.concurrent.{ExecutionContext, Future}
@@ -216,7 +216,7 @@ class PsaSchemeDashboardService @Inject()(
       viewLinkText
     } else {
 
-      logger.info(s"Pension-scheme : $srn -- Lock-Status : ${optionLock.getOrElse("No-Lock-Found").toString}")
+      logger.info(s"Pension-scheme : $srn -- Lock-Status : ${optionLock.map(_.toString).getOrElse("No-Lock-Found").toString}")
 
       optionLock match {
         case Some(VarianceLock) | None => viewOrChangeLinkText

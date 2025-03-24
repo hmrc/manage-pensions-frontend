@@ -17,13 +17,13 @@
 package controllers.psp
 
 import config.FrontendAppConfig
-import connectors.{FrontendConnector, PensionSchemeReturnConnector, UserAnswersCacheConnector}
 import connectors.admin.MinimalConnector
 import connectors.scheme.{ListOfSchemesConnector, SchemeDetailsConnector}
+import connectors.{FrontendConnector, PensionSchemeReturnConnector, UserAnswersCacheConnector}
 import controllers.ControllerSpecBase
 import controllers.actions.{AuthAction, FakeAuthAction, PspSchemeAuthAction}
 import handlers.ErrorHandler
-import models.{EROverview, IndividualDetails, Link, MinimalPSAPSP, SchemeReferenceNumber}
+import models._
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
@@ -147,19 +147,6 @@ class PspSchemeDashboardControllerSpec
     )
 
   }
-
-  private def schemeCard(openDate: Option[String]): PspSchemeDashboardCardViewModel =
-    PspSchemeDashboardCardViewModel(
-      id = "scheme-card",
-      heading = "Pension scheme details",
-      subHeadings = Seq(("Pension Scheme Tax Reference:", pstr)),
-      optionalSubHeading = openDate map {
-        date =>
-          ("Registration for Tax:", date)
-      },
-      links = Seq(searchSchemeLink),
-      html = None
-    )
 
   private def cards(
                      evPspCard: Html,
@@ -364,7 +351,6 @@ object PspSchemeDashboardControllerSpec {
   val srn: SchemeReferenceNumber = SchemeReferenceNumber("AB123456C")
   private val authDate = "2020-01-01"
   private val clientRef = "123"
-  private val interimDashboard = false
   private val isSchemeOpen = false
 
   private def minimalPsaDetails(rlsFlag: Boolean, deceasedFlag: Boolean): MinimalPSAPSP =
@@ -399,12 +385,6 @@ object PspSchemeDashboardControllerSpec {
       id = "deauthorise-yourself",
       url = controllers.psp.deauthorise.self.routes.ConfirmDeauthController.onPageLoad(srn).url,
       linkText = "De Authorise yourself"
-    )
-  private val searchSchemeLink: Link =
-    Link(
-      id = "return-search-schemes",
-      url = "/foo",
-      linkText = "View the registered scheme details"
     )
   private val aftPspSchemeDashboardCards = Html("psp-scheme-dashboard-cards-html")
   private val evPspSchemeDashboardCard = Html("ev-scheme-dashboard-cards-html")

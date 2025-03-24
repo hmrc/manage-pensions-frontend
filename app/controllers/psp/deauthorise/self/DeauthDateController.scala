@@ -21,7 +21,7 @@ import controllers.Retrievals
 import controllers.actions._
 import forms.psp.deauthorise.PspDeauthDateFormProvider
 import identifiers.psp.deauthorise.self.DeauthDateId
-import identifiers.{AuthorisedPractitionerId, SchemeNameId, SchemeSrnId}
+import identifiers.{AuthorisedPractitionerId, SchemeNameId}
 import models.AuthEntity.PSP
 import models.{NormalMode, SchemeReferenceNumber}
 import play.api.data.Form

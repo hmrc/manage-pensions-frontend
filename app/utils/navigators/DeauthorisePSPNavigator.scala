@@ -43,8 +43,8 @@ class DeauthorisePSPNavigator @Inject()(val dataCacheConnector: UserAnswersCache
 
   private def confirmDeauthPspRoutes(userAnswers: UserAnswers, index: Index, srn: SchemeReferenceNumber): Call = {
     (userAnswers.get(ConfirmDeauthorisePspId(index)), userAnswers.get(SchemeSrnId)) match {
-      case (Some(false), Some(srn)) =>
-        PsaSchemeDashboardController.onPageLoad(srn)
+      case (Some(false), Some(uaSrn)) =>
+        PsaSchemeDashboardController.onPageLoad(uaSrn)
       case (Some(true), _) =>
         PspDeauthDateController.onPageLoad(index, srn)
       case _ =>

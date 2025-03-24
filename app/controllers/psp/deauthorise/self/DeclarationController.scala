@@ -28,10 +28,10 @@ import controllers.routes._
 import forms.psp.deauthorise.DeauthorisePspDeclarationFormProvider
 import identifiers.invitations.PSTRId
 import identifiers.psp.deauthorise.self.DeauthDateId
-import identifiers.{AuthorisedPractitionerId, SchemeNameId, SchemeSrnId}
+import identifiers.{AuthorisedPractitionerId, SchemeNameId}
 import models.AuthEntity.PSP
 import models.requests.DataRequest
-import models.{DeAuthorise, MinimalPSAPSP, SchemeReferenceNumber, SendEmailRequest, Sent}
+import models._
 import play.api.Logger
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}

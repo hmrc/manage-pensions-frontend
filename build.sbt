@@ -38,7 +38,6 @@ lazy val root = (project in file("."))
     ScoverageKeys.coverageHighlighting := true,
     scalacOptions ++= Seq("-feature"),
     scalacOptions ++= Seq("-Xmaxerrs", "500"),   // Set maximum errors to 500
-    scalacOptions ++= Seq("-Xmaxwarns", "1"),   // Set maximum errors to 500
     libraryDependencies ++= AppDependencies(),
     retrieveManaged := true,
     update / evictionWarningOptions :=

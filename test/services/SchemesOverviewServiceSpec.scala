@@ -21,7 +21,7 @@ import connectors._
 import connectors.admin.MinimalConnector
 import models._
 import models.requests.OptionalDataRequest
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures

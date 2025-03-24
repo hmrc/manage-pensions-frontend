@@ -22,16 +22,14 @@ import connectors.{FakeUserAnswersCacheConnector, UserAnswersCacheConnector}
 import controllers.ControllerSpecBase
 import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction}
 import forms.psp.ListSchemesFormProvider
-import models.{NormalMode, SchemeDetails, SchemeStatus}
+import models.{SchemeDetails, SchemeStatus}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.mvc.Call
 import play.api.test.Helpers._
 import services.SchemeSearchService
-import utils.FakeNavigator
 import views.html.psp.list_schemes
 
 import scala.concurrent.Future
@@ -139,7 +137,6 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
   private val mockMinimalConnector: MinimalConnector =
     mock[MinimalConnector]
   val mockUserAnswersCacheConnector: UserAnswersCacheConnector = mock[UserAnswersCacheConnector]
-  private val nextCall = Call("POST", "www.example.com")
   private val mockAppConfig: FrontendAppConfig = mock[FrontendAppConfig]
   private val listSchemesFormProvider = new ListSchemesFormProvider
   private val mockSchemeSearchService = mock[SchemeSearchService]

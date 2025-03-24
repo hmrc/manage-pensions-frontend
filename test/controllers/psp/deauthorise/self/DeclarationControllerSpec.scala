@@ -26,9 +26,9 @@ import identifiers.invitations.PSTRId
 import identifiers.psp.deauthorise.self.DeauthDateId
 import identifiers.{AuthorisedPractitionerId, SchemeNameId, SchemeSrnId}
 import models.{IndividualDetails, MinimalPSAPSP, SendEmailRequest, Sent}
-import org.mockito.{ArgumentCaptor, ArgumentMatchers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
+import org.mockito.{ArgumentCaptor, ArgumentMatchers}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.data.Form
@@ -127,7 +127,6 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
           .thenReturn(Future.successful(minPspOrganisation))
         when(mockEmailConnector.sendEmail(any())(any(), any())).thenReturn(Future.successful(EmailSent))
 
-        val emailAuditEventCaptor = ArgumentCaptor.forClass(classOf[PSPSelfDeauthorisationEmailAuditEvent])
         when(mockAuditService.sendEvent(ArgumentMatchers.eq(expectedPspSelfDeauthorisationEmailAuditEvent))(any(), any())).thenReturn(Future.successful(AuditResult.Success))
 
         val postRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.obj("declaration" -> true))

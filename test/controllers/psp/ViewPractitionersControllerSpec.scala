@@ -21,16 +21,12 @@ import controllers.actions._
 import controllers.psa.routes._
 import identifiers.{SchemeNameId, SchemeSrnId, SeqAuthorisedPractitionerId}
 import models.SchemeReferenceNumber
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.{JsArray, Json}
 import play.api.mvc.Call
 import play.api.test.Helpers._
 import viewmodels.AuthorisedPractitionerViewModel
 import views.html.psp.viewPractitioners
-
-import scala.concurrent.Future
 
 class ViewPractitionersControllerSpec extends ControllerSpecBase with MockitoSugar {
 
