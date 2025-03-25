@@ -18,6 +18,7 @@ package models.triagev2
 
 import models.WithName
 import play.api.i18n.Messages
+import play.api.libs.json.{JsError, JsPath, JsString, JsSuccess, Reads, Writes}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import utils.Enumerable
@@ -49,6 +50,16 @@ object WhatDoYouWantToDo {
 
   implicit def enumerable(role: String): Enumerable[WhatDoYouWantToDo] =
     Enumerable(values.map(v => v.toString -> v): _*)
+
+  private val mappings: Map[String, WhatDoYouWantToDo] = values.map(v => (v.toString, v)).toMap
+
+  implicit val reads: Reads[WhatDoYouWantToDo] =
+    JsPath.read[String].flatMap {
+      case chosenAction if mappings.keySet.contains(chosenAction) => Reads(_ => JsSuccess(mappings.apply(chosenAction)))
+      case invalidValue => Reads(_ => JsError(s"Invalid action type: $invalidValue"))
+    }
+
+  implicit lazy val writes: Writes[WhatDoYouWantToDo] = (chosenService: WhatDoYouWantToDo) => JsString(chosenService.toString)
 }
 
 

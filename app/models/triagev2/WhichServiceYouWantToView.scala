@@ -18,6 +18,7 @@ package models.triagev2
 
 import models.WithName
 import play.api.i18n.Messages
+import play.api.libs.json.{JsError, JsPath, JsString, JsSuccess, Reads, Writes}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.hint.Hint
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
@@ -52,6 +53,16 @@ object WhichServiceYouWantToView {
 
   implicit def enumerable(role: String): Enumerable[WhichServiceYouWantToView] =
     Enumerable(values.map(v => v.toString -> v): _*)
+
+  private val mappings: Map[String, WhichServiceYouWantToView] = values.map(v => (v.toString, v)).toMap
+
+  implicit val reads: Reads[WhichServiceYouWantToView] =
+    JsPath.read[String].flatMap {
+      case chosenService if mappings.keySet.contains(chosenService) => Reads(_ => JsSuccess(mappings.apply(chosenService)))
+      case invalidValue => Reads(_ => JsError(s"Invalid service type to view: $invalidValue"))
+    }
+
+  implicit lazy val writes: Writes[WhichServiceYouWantToView] = (chosenService: WhichServiceYouWantToView) => JsString(chosenService.toString)
 }
 
 

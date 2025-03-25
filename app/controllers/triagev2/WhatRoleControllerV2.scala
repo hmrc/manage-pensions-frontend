@@ -16,14 +16,16 @@
 
 package controllers.triagev2
 
+import connectors.ManagePensionsCacheConnector
 import controllers.Retrievals
-import controllers.actions.TriageAction
+import controllers.actions.AuthAction
 import forms.triagev2.WhatRoleFormProviderV2
 import identifiers.triagev2.WhatRoleId
 import models.NormalMode
 import models.triagev2.WhatRole
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.libs.json.{JsError, JsObject, JsString, JsSuccess}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.annotations.TriageV2
@@ -35,28 +37,51 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class WhatRoleControllerV2 @Inject()(override val messagesApi: MessagesApi,
                                      @TriageV2 navigator: Navigator,
-                                     triageAction: TriageAction,
+                                     val auth: AuthAction,
                                      formProvider: WhatRoleFormProviderV2,
                                      val controllerComponents: MessagesControllerComponents,
+                                     val managePensionsCacheConnector: ManagePensionsCacheConnector,
                                      val view: whatRole)
                                     (implicit val executionContext: ExecutionContext)
                                     extends FrontendBaseController with I18nSupport with Enumerable.Implicits with Retrievals {
 
   private def form: Form[WhatRole] = formProvider()
 
-  def onPageLoad: Action[AnyContent] = triageAction.async {
+  def onPageLoad: Action[AnyContent] = auth().async {
     implicit request =>
-      Future.successful(Ok(view(form)))
+
+      managePensionsCacheConnector.fetch(request.externalId).map { previousAnswer =>
+        val preparedForm = previousAnswer match {
+          case None => form
+          case Some(jsValue) =>
+            (jsValue \ "whatRole").validate[WhatRole] match {
+              case JsSuccess(role, _) => form.fill(role)
+              case JsError(_) => form
+            }
+        }
+        Ok(view(preparedForm))
+      }
   }
 
-  def onSubmit: Action[AnyContent] = triageAction.async {
+  def onSubmit: Action[AnyContent] = auth().async {
     implicit request =>
       form.bindFromRequest().fold(
         (formWithErrors: Form[_]) =>
           Future.successful(BadRequest(view(formWithErrors))),
         value => {
-          val uaUpdated = UserAnswers().set(WhatRoleId)(value).asOpt.getOrElse(UserAnswers())
-          Future.successful(Redirect(navigator.nextPage(WhatRoleId, NormalMode, uaUpdated)))
+          val originalUserAnswers = managePensionsCacheConnector.fetch(request.externalId)
+
+          managePensionsCacheConnector.save(request.externalId, WhatRoleId, value).map { cacheMap =>
+            originalUserAnswers.map {
+              case None =>
+                val updatedUserAnswers = UserAnswers().set(WhatRoleId)(value).asOpt.getOrElse(UserAnswers())
+                Redirect(navigator.nextPage(WhatRoleId, NormalMode, updatedUserAnswers))
+              case Some(jsValue) =>
+                val role = (cacheMap \ "whatRole").as[WhatRole]
+                val updatedUserAnswers = jsValue.as[JsObject] + ("whatRole" -> JsString(role.toString))
+                Redirect(navigator.nextPage(WhatRoleId, NormalMode, UserAnswers(updatedUserAnswers)))
+            }
+          }.flatten
         }
       )
   }
