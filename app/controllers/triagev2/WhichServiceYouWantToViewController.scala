@@ -18,11 +18,11 @@ package controllers.triagev2
 
 import connectors.ManagePensionsCacheConnector
 import controllers.Retrievals
-import controllers.actions.{AuthAction, DataRetrievalAction, TriageAction}
+import controllers.actions.AuthAction
 import forms.triagev2.WhichServiceYouWantToViewFormProvider
-import identifiers.triagev2.{WhatRoleId, WhichServiceYouWantToViewId}
+import identifiers.triagev2.WhichServiceYouWantToViewId
 import models.NormalMode
-import models.triagev2.{WhatRole, WhichServiceYouWantToView}
+import models.triagev2.WhichServiceYouWantToView
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}

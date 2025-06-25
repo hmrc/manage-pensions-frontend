@@ -19,6 +19,7 @@ package connectors
 import com.google.inject.Inject
 import config.FrontendAppConfig
 import models.{AuthEntity, EROverview, SchemeReferenceNumber}
+import play.api.Logging
 import play.api.http.Status._
 import play.api.libs.json._
 import uk.gov.hmrc.http._
@@ -30,7 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class PensionSchemeReturnConnector @Inject()(
                                               config: FrontendAppConfig,
                                               httpClientV2: HttpClientV2
-                                            )(implicit ec: ExecutionContext) extends HttpResponseHelper {
+                                            )(implicit ec: ExecutionContext) extends HttpResponseHelper with Logging {
 
   def getOverview(srn: SchemeReferenceNumber, pstr: String, startDate: String, endDate: String, authEntity: AuthEntity
                  )(implicit headerCarrier: HeaderCarrier): Future[Seq[EROverview]] = {
@@ -50,7 +51,9 @@ class PensionSchemeReturnConnector @Inject()(
         response.status match {
           case OK =>
             Json.parse(response.body).validate[Seq[EROverview]](Reads.seq(EROverview.rds)) match {
-              case JsSuccess(data, _) => data
+              case JsSuccess(data, _) =>
+                logger.warn(s"EROverview Returned from PensionSchemeReturnConnector: $data")
+                data
               case JsError(errors) => throw JsResultException(errors)
             }
           case _ => throw new HttpException(response.body, response.status)
