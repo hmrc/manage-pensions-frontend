@@ -43,13 +43,13 @@ class LogoutController @Inject()(
       authorised().retrieve(Retrievals.externalId) {
         case Some(id) =>
           sessionDataCacheConnector.removeAll(id).map { _ =>
-            Redirect(appConfig.serviceSignOut).withNewSession
+            Redirect(appConfig.serviceSignOut)
           }
         case _ =>
           Future.successful(Redirect(routes.UnauthorisedController.onPageLoad))
       } recover {
         case _: MissingBearerToken =>
-          Redirect(appConfig.serviceSignOut).withNewSession
+          Redirect(appConfig.serviceSignOut)
       }
   }
 
