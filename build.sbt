@@ -1,7 +1,6 @@
 import play.sbt.routes.RoutesKeys
 import sbt.Def
 import scoverage.ScoverageKeys
-import uk.gov.hmrc.DefaultBuildSettings
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 
 lazy val appName: String = "manage-pensions-frontend"
@@ -9,9 +8,7 @@ lazy val appName: String = "manage-pensions-frontend"
 lazy val root = (project in file("."))
   .disablePlugins(JUnitXmlReportPlugin) //Required to prevent https://github.com/scalatest/scalatest/issues/1427
   .enablePlugins(PlayScala, SbtDistributablesPlugin)
-  .settings(DefaultBuildSettings.scalaSettings: _*)
-  .settings(DefaultBuildSettings.defaultSettings(): _*)
-  .settings(inConfig(Test)(testSettings): _*)
+  .settings(inConfig(Test)(testSettings)*)
   .settings(majorVersion := 0)
   .settings(scalaVersion := "2.13.16")
   .settings(
@@ -42,9 +39,6 @@ lazy val root = (project in file("."))
     retrieveManaged := true,
     update / evictionWarningOptions :=
       EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
-    resolvers ++= Seq(
-      Resolver.jcenterRepo
-    ),
     // concatenate js
     Concat.groups := Seq(
       "javascripts/application.js" -> group(Seq(
@@ -64,7 +58,7 @@ lazy val root = (project in file("."))
     Assets / pipelineStages := Seq(concat)
   )
 
-lazy val testSettings: Seq[Def.Setting[_]] = Seq(
+lazy val testSettings: Seq[Def.Setting[?]] = Seq(
   fork := true,
   parallelExecution := true,
   javaOptions ++= Seq(
