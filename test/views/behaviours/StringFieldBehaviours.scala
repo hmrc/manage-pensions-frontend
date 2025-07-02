@@ -23,7 +23,7 @@ import wolfendale.scalacheck.regexp.RegexpGen
 
 trait StringFieldBehaviours extends FieldBehaviours with RegexBehaviourSpec {
 
-  def fieldWithMaxLength(form: Form[_],
+  def fieldWithMaxLength(form: Form[?],
                          fieldName: String,
                          maxLength: Int,
                          lengthError: FormError): Unit = {
@@ -38,7 +38,7 @@ trait StringFieldBehaviours extends FieldBehaviours with RegexBehaviourSpec {
     }
   }
 
-  def fieldWithRegex(form: Form[_],
+  def fieldWithRegex(form: Form[?],
                      fieldName: String,
                      invalidString: String,
                      error: FormError): Unit = {
@@ -56,8 +56,8 @@ trait StringFieldBehaviours extends FieldBehaviours with RegexBehaviourSpec {
                                actual: A => B): Unit = {
     s"apply field transform $transformName" in {
       val result = form.bind(data)
-      result.errors.size shouldBe 0
-      actual(result.get) shouldBe expected
+      result.errors.size `shouldBe` 0
+      actual(result.get) `shouldBe` expected
     }
   }
 
@@ -66,12 +66,12 @@ trait StringFieldBehaviours extends FieldBehaviours with RegexBehaviourSpec {
                            expectedData: A): Unit = {
     s"bind the form with the transformation" in {
       val result = form.bind(data)
-      result.errors.size shouldBe 0
-      result.get shouldBe expectedData
+      result.errors.size `shouldBe` 0
+      result.get `shouldBe` expectedData
     }
   }
 
-  override def mandatoryField(form: Form[_],
+  override def mandatoryField(form: Form[?],
                               fieldName: String,
                               requiredError: FormError): Unit = {
 
@@ -96,7 +96,7 @@ trait StringFieldBehaviours extends FieldBehaviours with RegexBehaviourSpec {
       val value = validData(fieldName)
       forAll(RegexpGen.from("""^\s+""" + value + """\s+$""")) { s =>
         val result = form.bind(validData.updated(fieldName, s))
-        accessor(result.get) shouldBe Some(value)
+        accessor(result.get) `shouldBe` Some(value)
       }
     }
 

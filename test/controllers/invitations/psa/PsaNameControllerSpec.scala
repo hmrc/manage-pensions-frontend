@@ -49,7 +49,7 @@ class PsaNameControllerSpec extends ControllerWithQuestionPageBehaviours {
       dataRetrievalAction, formProvider, controllerComponents, psaNameView, fakePsaSchemeAuthAction).onSubmit(NormalMode, srn)
   }
 
-  private def viewAsString(form: Form[_]): String = psaNameView(form, NormalMode, srn)(fakeRequest, messages).toString
+  private def viewAsString(form: Form[?]): String = psaNameView(form, NormalMode, srn)(using fakeRequest, messages).toString
 
 
   behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, userAnswer.dataRetrievalAction, form, form.fill("xyz"), viewAsString)

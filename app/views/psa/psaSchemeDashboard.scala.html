@@ -27,7 +27,7 @@
     appConfig: FrontendAppConfig
 )
 
-@(schemeName: String, currentScheme: Option[SchemeDetails], schemeStatus: String, schemeLink: Link, finInfoHtml: Html, erHtml: Html, cards: Seq[CardViewModel], subHeading: Option[String] = None, returnLink: Option[Link] = None)(implicit request: Request[_], messages: Messages)
+@(schemeName: String, currentScheme: Option[SchemeDetails], schemeStatus: String, schemeLink: Link, finInfoHtml: Html, erHtml: Html, cards: Seq[CardViewModel], subHeading: Option[String] = None, returnLink: Option[Link] = None)(implicit request: Request[?], messages: Messages)
 
 @layout(pageTitle = messages(schemeName), fullWidthLayout = true) {
 

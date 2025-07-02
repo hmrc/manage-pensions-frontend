@@ -59,7 +59,7 @@ class MinimalConnectorImpl @Inject()(httpClientV2: HttpClientV2, config: Fronten
 
   override def getEmailInvitation(id: String,idType: String, name: String, srn: SchemeReferenceNumber)
                                  (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[String]] ={
-    retrieveEmailDetails(srn, hc.withExtraHeaders("id" -> id, "idType" -> idType, "name" -> name))(ec).map {
+    retrieveEmailDetails(srn, hc.withExtraHeaders("id" -> id, "idType" -> idType, "name" -> name))(using ec).map {
       case None => throw new NoMatchFoundException
       case Some(m) => Some(m)
     } andThen {
@@ -70,7 +70,7 @@ class MinimalConnectorImpl @Inject()(httpClientV2: HttpClientV2, config: Fronten
 
   private def getMinimalDetails(hc: HeaderCarrier)
                                (implicit ec: ExecutionContext): Future[MinimalPSAPSP] = {
-    retrieveMinimalDetails(hc)(ec).flatMap {
+    retrieveMinimalDetails(hc)(using ec).flatMap {
       case None => Future.failed(new NoMatchFoundException)
       case Some(m) => Future.successful(m)
     } andThen {
@@ -85,7 +85,7 @@ class MinimalConnectorImpl @Inject()(httpClientV2: HttpClientV2, config: Fronten
   private def retrieveEmailDetails(srn: SchemeReferenceNumber, hc: HeaderCarrier)(implicit ec: ExecutionContext): Future[Option[String]] = {
     val emailDetailsUrl = url"${config.emailDetailsUrl}/${srn.id}"
 
-    httpClientV2.get(emailDetailsUrl)(hc)
+    httpClientV2.get(emailDetailsUrl)(using hc)
       .execute[HttpResponse]
       .map { response =>
         response.status match {
@@ -101,7 +101,7 @@ class MinimalConnectorImpl @Inject()(httpClientV2: HttpClientV2, config: Fronten
   private def retrieveMinimalDetails(hc: HeaderCarrier)(implicit ec: ExecutionContext): Future[Option[MinimalPSAPSP]] = {
     val minimalPsaDetailsUrl = url"${config.minimalPsaDetailsUrl}"
 
-    httpClientV2.get(minimalPsaDetailsUrl)(hc)
+    httpClientV2.get(minimalPsaDetailsUrl)(using hc)
       .execute[HttpResponse]
       .map { response =>
         response.status match {

@@ -21,7 +21,7 @@
     appConfig: FrontendAppConfig
 )
 
-@(pspName: String, schemeName:String)(implicit request: Request[_], messages: Messages)
+@(pspName: String, schemeName:String)(implicit request: Request[?], messages: Messages)
 
 @layout(pageTitle = messages("messages__alreadyAssociatedWithScheme__title", pspName)) {
 

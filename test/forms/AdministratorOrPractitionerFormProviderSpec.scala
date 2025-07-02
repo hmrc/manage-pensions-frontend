@@ -43,6 +43,6 @@ class AdministratorOrPractitionerFormProviderSpec extends FormBehaviours with Gu
         Required -> messages("messages__administratorOrPractitioner__error__required"),
         Invalid -> "error.invalid"
       ),
-      AdministratorOrPractitioner.optionsAdministratorOrPractitioner.map(_.value.get): _*)
+      AdministratorOrPractitioner.optionsAdministratorOrPractitioner.map(_.value.get) *)
   }
 }

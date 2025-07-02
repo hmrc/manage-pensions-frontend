@@ -27,7 +27,7 @@
     button: components.govuk_button
 )
 
-@(inviteeName: String, inviteeEmail: String, schemeName: String, expiryDate: LocalDate, continue: Call)(implicit request: Request[_], messages: Messages)
+@(inviteeName: String, inviteeEmail: String, schemeName: String, expiryDate: LocalDate, continue: Call)(implicit request: Request[?], messages: Messages)
 
 @layout(pageTitle = messages("messages__invitationSuccess__title")) {
 

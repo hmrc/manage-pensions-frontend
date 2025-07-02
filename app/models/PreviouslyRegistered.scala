@@ -43,5 +43,5 @@ object PreviouslyRegistered {
 
   implicit lazy val writes: Writes[PreviouslyRegistered] = (aop: PreviouslyRegistered) => JsString(aop.toString)
 
-  implicit val enumerable: Enumerable[PreviouslyRegistered] = Enumerable(values.map(v => v.toString -> v): _*)
+  implicit val enumerable: Enumerable[PreviouslyRegistered] = Enumerable(values.map(v => v.toString -> v) *)
 }

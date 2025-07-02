@@ -73,5 +73,5 @@ object AdministratorOrPractitioner {
 
   implicit lazy val writes: Writes[AdministratorOrPractitioner] = (aop: AdministratorOrPractitioner) => JsString(aop.toString)
 
-  implicit val enumerable: Enumerable[AdministratorOrPractitioner] = Enumerable(values.map(v => v.toString -> v): _*)
+  implicit val enumerable: Enumerable[AdministratorOrPractitioner] = Enumerable(values.map(v => v.toString -> v) *)
 }

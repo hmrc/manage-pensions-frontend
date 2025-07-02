@@ -44,13 +44,13 @@ class PensionSchemeReturnConnector @Inject()(
 
     def psrOverviewUrl = url"${config.pensionsSchemeReturnUrl}/pension-scheme-return/psr/overview/$pstr?fromDate=$startDate&toDate=$endDate"
 
-    val hc: HeaderCarrier = headerCarrier.withExtraHeaders(headers: _*)
+    val hc: HeaderCarrier = headerCarrier.withExtraHeaders(headers *)
 
-    httpClientV2.get(psrOverviewUrl)(hc)
+    httpClientV2.get(psrOverviewUrl)(using hc)
     .execute[HttpResponse].map { response =>
         response.status match {
           case OK =>
-            Json.parse(response.body).validate[Seq[EROverview]](Reads.seq(EROverview.rds)) match {
+            Json.parse(response.body).validate[Seq[EROverview]](using Reads.seq(using EROverview.rds)) match {
               case JsSuccess(data, _) =>
                 logger.warn(s"EROverview Returned from PensionSchemeReturnConnector: $data")
                 data

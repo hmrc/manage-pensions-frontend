@@ -61,7 +61,7 @@ class ListSchemesController @Inject()(
                           pageNumber: Int,
                           numberOfPages: Int,
                           noResultsMessageKey: Option[String],
-                          form: Form[_]
+                          form: Form[?]
                         )(implicit hc: HeaderCarrier,
                           request: OptionalDataRequest[AnyContent]): Future[Result] = {
     val status = if (form.hasErrors) BadRequest else Ok
@@ -97,7 +97,7 @@ class ListSchemesController @Inject()(
   }
 
   private def searchAndRenderView(
-                                   form: Form[_],
+                                   form: Form[?],
                                    pageNumber: Int,
                                    searchText: Option[String]
                                  )(implicit request: OptionalDataRequest[AnyContent]): Future[Result] = {
@@ -172,7 +172,7 @@ class ListSchemesController @Inject()(
       form
         .bindFromRequest()
         .fold(
-          (formWithErrors: Form[_]) =>
+          (formWithErrors: Form[?]) =>
             searchAndRenderView(
               searchText = None,
               pageNumber = 1,

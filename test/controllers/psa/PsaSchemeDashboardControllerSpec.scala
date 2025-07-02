@@ -223,36 +223,36 @@ class PsaSchemeDashboardControllerSpec
     reset(fakeListOfSchemesConnector)
     reset(fakeSchemeLockConnector)
     reset(mockService)
-    when(fakeSchemeLockConnector.isLockByPsaIdOrSchemeId(eqTo("A0000000"), any())(any(), any()))
+    when(fakeSchemeLockConnector.isLockByPsaIdOrSchemeId(eqTo("A0000000"), any())(using any(), any()))
       .thenReturn(Future.successful(Some(VarianceLock)))
   }
 
   "PsaSchemeDashboardController" must {
     "return OK and the correct view for a GET and NO financial info html if status is NOT open" in {
-      when(mockMinimalPsaConnector.getMinimalPsaDetails()(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
+      when(mockMinimalPsaConnector.getMinimalPsaDetails()(using any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
       val ua = userAnswers(Open.value).set(SchemeStatusId)(Rejected.value).asOpt.get
       val currentScheme = listOfSchemes.schemeDetails.flatMap(_.find(_.referenceNumber.contains(srn)))
       val schemeLink = Link(id = "view-details", url = dummyUrl, linkText = Message("messages__psaSchemeDash__view_details_link"))
-      when(fakeSchemeDetailsConnector.getSchemeDetails(eqTo("A0000000"), any(), any())(any(), any()))
+      when(fakeSchemeDetailsConnector.getSchemeDetails(eqTo("A0000000"), any(), any())(using any(), any()))
         .thenReturn(Future.successful(ua))
-      when(fakeListOfSchemesConnector.getListOfSchemes(any())(any(), any()))
+      when(fakeListOfSchemesConnector.getListOfSchemes(any())(using any(), any()))
         .thenReturn(Future.successful(Right(listOfSchemes)))
-      when(mockService.cards(any(), any(), any(), any(), any(), any())(any(), any()))
+      when(mockService.cards(any(), any(), any(), any(), any(), any())(using any(), any()))
         .thenReturn(Future.successful(Seq(schemeCard(), psaCard(), pspCard())))
-      when(mockFrontendConnector.retrieveEventReportingPartial(any(), any())).thenReturn(Future(erHtml))
+      when(mockFrontendConnector.retrieveEventReportingPartial(using any(), any())).thenReturn(Future(erHtml))
       when(mockAppConfig.psaSchemeDashboardUrl).thenReturn(dummyUrl)
-      when(mockService.optionLockedSchemeName(any())(any())).thenReturn(Future.successful(None))
-      when(mockService.schemeDetailsLink(any(),any(),any(),any(),any())(any())).thenReturn(schemeLink)
+      when(mockService.optionLockedSchemeName(any())(using any())).thenReturn(Future.successful(None))
+      when(mockService.schemeDetailsLink(any(),any(),any(),any(),any())(using any())).thenReturn(schemeLink)
       val result = controller().onPageLoad(srn)(sessionRequest)
       status(result) mustBe OK
 
       val expected = psaSchemeDashboardView(schemeName, currentScheme, "Rejected", schemeLink, finInfoHtml = Html(""), erHtml,
-        Seq(schemeCard(), psaCard(), pspCard()))(sessionRequest, messages).toString()
+        Seq(schemeCard(), psaCard(), pspCard()))(using sessionRequest, messages).toString()
       contentAsString(result) mustBe expected
     }
 
     "return redirect to update contact page when rls flag is true but deceased flag is false" in {
-      when(mockMinimalPsaConnector.getMinimalPsaDetails()(any(), any()))
+      when(mockMinimalPsaConnector.getMinimalPsaDetails()(using any(), any()))
         .thenReturn(Future.successful(minimalPSAPSP(rlsFlag = true)))
       when(mockAppConfig.psaUpdateContactDetailsUrl).thenReturn(dummyUrl)
       val result = controller().onPageLoad(srn)(fakeRequest)
@@ -261,7 +261,7 @@ class PsaSchemeDashboardControllerSpec
     }
 
     "return redirect to contact hmrc page when rls flag is true and deceased flag is true" in {
-      when(mockMinimalPsaConnector.getMinimalPsaDetails()(any(), any()))
+      when(mockMinimalPsaConnector.getMinimalPsaDetails()(using any(), any()))
         .thenReturn(Future.successful(minimalPSAPSP(rlsFlag = true, deceasedFlag = true)))
       val result = controller().onPageLoad(srn)(fakeRequest)
       status(result) mustBe SEE_OTHER
@@ -271,24 +271,24 @@ class PsaSchemeDashboardControllerSpec
     "return OK and the correct view for a GET and scheme is open" in {
       val currentScheme = listOfSchemes.schemeDetails.flatMap(_.find(_.referenceNumber.contains(srn)))
       val schemeLink = Link("view-details", dummyUrl, messages("messages__psaSchemeDash__view_details_link"))
-      when(mockMinimalPsaConnector.getMinimalPsaDetails()(any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
-      when(fakeSchemeDetailsConnector.getSchemeDetails(eqTo("A0000000"), any(), any())(any(), any()))
+      when(mockMinimalPsaConnector.getMinimalPsaDetails()(using any(), any())).thenReturn(Future.successful(minimalPSAPSP()))
+      when(fakeSchemeDetailsConnector.getSchemeDetails(eqTo("A0000000"), any(), any())(using any(), any()))
         .thenReturn(Future.successful(userAnswers(Open.value)))
-      when(fakeListOfSchemesConnector.getListOfSchemes(any())(any(), any()))
+      when(fakeListOfSchemesConnector.getListOfSchemes(any())(using any(), any()))
         .thenReturn(Future.successful(Right(listOfSchemes)))
-      when(mockService.cards(any(), any(), any(), any(), any(), any())(any(), any()))
+      when(mockService.cards(any(), any(), any(), any(), any(), any())(using any(), any()))
         .thenReturn(Future.successful(Seq(schemeCard(), psaCard(), pspCard())))
-      when(mockFrontendConnector.retrieveAftPartial(any())(any(), any())).thenReturn(Future(aftHtml))
-      when(mockFrontendConnector.retrieveFinInfoPartial(any())(any(), any())).thenReturn(Future(finInfoHtml))
-      when(mockFrontendConnector.retrieveEventReportingPartial(any(), any())).thenReturn(Future(erHtml))
-      when(mockService.optionLockedSchemeName(any())(any())).thenReturn(Future.successful(None))
-      when(mockService.schemeDetailsLink(any(),any(),any(),any(),any())(any())).thenReturn(schemeLink)
+      when(mockFrontendConnector.retrieveAftPartial(any())(using any(), any())).thenReturn(Future(aftHtml))
+      when(mockFrontendConnector.retrieveFinInfoPartial(any())(using any(), any())).thenReturn(Future(finInfoHtml))
+      when(mockFrontendConnector.retrieveEventReportingPartial(using any(), any())).thenReturn(Future(erHtml))
+      when(mockService.optionLockedSchemeName(any())(using any())).thenReturn(Future.successful(None))
+      when(mockService.schemeDetailsLink(any(),any(),any(),any(),any())(using any())).thenReturn(schemeLink)
 
       val result = controller().onPageLoad(srn)(sessionRequest)
       status(result) mustBe OK
 
       val expected = psaSchemeDashboardView(schemeName, currentScheme, "Open", schemeLink, finInfoHtml = finInfoHtml, erHtml,
-        Seq(schemeCard(), psaCard(), pspCard()))(sessionRequest, messages).toString()
+        Seq(schemeCard(), psaCard(), pspCard()))(using sessionRequest, messages).toString()
       contentAsString(result) mustBe expected
     }
   }

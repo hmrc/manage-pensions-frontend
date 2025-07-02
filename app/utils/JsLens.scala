@@ -36,7 +36,7 @@ trait JsLens {
 
   def remove(s: JsValue): JsResult[JsValue]
 
-  def andThen(other: JsLens): JsLens =
+  infix def andThen(other: JsLens): JsLens =
     new JsLens {
 
       override def getAll(s: JsValue): JsResult[Seq[JsValue]] = {

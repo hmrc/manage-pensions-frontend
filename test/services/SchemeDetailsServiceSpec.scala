@@ -57,7 +57,7 @@ class SchemeDetailsServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
   "retrieveOptionAFTViewModel" must {
     "return model fron aft-frontend is Scheme status is open" in {
 
-      when(frontendConnector.retrieveAftPartial(any())(any(), any()))
+      when(frontendConnector.retrieveAftPartial(any())(using any(), any()))
         .thenReturn(Future.successful(Html("test-aft-html")))
       val ua = UserAnswers().set(PSTRId)(pstr).flatMap(_.set(SchemeStatusId)(Open.value)).asOpt.get
 
@@ -77,7 +77,7 @@ class SchemeDetailsServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
 
   "retrievePaymentsAndChargesHtml" must {
     "return the Html for payments and charges" in {
-      when(frontendConnector.retrievePaymentsAndChargesPartial(any())(any(), any()))
+      when(frontendConnector.retrievePaymentsAndChargesPartial(any())(using any(), any()))
         .thenReturn(Future.successful(Html("test-payments-and-charges-html")))
 
       whenReady(service.retrievePaymentsAndChargesHtml(srn)) {
@@ -142,19 +142,19 @@ class SchemeDetailsServiceSpec extends SpecBase with MockitoSugar with BeforeAnd
 
   "lockingPsa" must {
     "return the name of the locking psa" in {
-      when(lockConnector.getLockByScheme(any())(any(), any()))
+      when(lockConnector.getLockByScheme(any())(using any(), any()))
         .thenReturn(Future.successful(Some(SchemeVariance("A0000001", srn))))
-      when(minimalPsaConnector.getPsaNameFromPsaID()(any(), any()))
+      when(minimalPsaConnector.getPsaNameFromPsaID()(using any(), any()))
         .thenReturn(Future.successful(Some("Locky Lockhart")))
-      whenReady(service.lockingPsa(Some(SchemeLock), srn)(authReq, hc)) {
+      whenReady(service.lockingPsa(Some(SchemeLock), srn)(using authReq, hc)) {
         _ mustBe Some("Locky Lockhart")
       }
     }
 
     "return None when " in {
-      when(lockConnector.getLockByScheme(any())(any(), any()))
+      when(lockConnector.getLockByScheme(any())(using any(), any()))
         .thenReturn(Future.successful(Some(SchemeVariance(psaId, "S1000000456"))))
-      whenReady(service.lockingPsa(Some(SchemeLock), srn)(authReq, hc)){
+      whenReady(service.lockingPsa(Some(SchemeLock), srn)(using authReq, hc)){
         _ mustBe None
       }
     }

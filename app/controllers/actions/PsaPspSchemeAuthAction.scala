@@ -31,12 +31,12 @@ class PsaPspSchemeActionImpl (srn:SchemeReferenceNumber, schemeDetailsConnector:
                           (implicit val executionContext: ExecutionContext)
   extends ActionFunction[OptionalDataRequest, OptionalDataRequest] with FrontendHeaderCarrierProvider {
 
-  private def notFoundTemplate(implicit request: OptionalDataRequest[_]) = NotFound(errorHandler.notFoundTemplate)
+  private def notFoundTemplate(implicit request: OptionalDataRequest[?]) = NotFound(errorHandler.notFoundTemplate)
   override def invokeBlock[A](request: OptionalDataRequest[A], block: OptionalDataRequest[A] => Future[Result]): Future[Result] = {
     request.psaId -> request.pspId match {
       case (Some(_), None) => new PsaSchemeAuthAction(schemeDetailsConnector, errorHandler).apply(srn).invokeBlock(request, block)
       case (None, Some(_)) => new PspSchemeAuthAction(schemeDetailsConnector, errorHandler).apply(srn).invokeBlock(request, block)
-      case _ => Future.successful(notFoundTemplate(request))
+      case _ => Future.successful(notFoundTemplate(using request))
     }
   }
 }

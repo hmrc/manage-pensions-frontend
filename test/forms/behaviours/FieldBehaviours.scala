@@ -27,7 +27,7 @@ trait FieldBehaviours extends AnyWordSpec with Matchers with ScalaCheckDrivenPro
 
   lazy val emptyForm: Map[String, String] = Map[String, String]()
 
-  def fieldWithRegex(form: Form[_],
+  def fieldWithRegex(form: Form[?],
                      fieldName: String,
                      invalidString: String,
                      error: FormError): Unit = {
@@ -38,7 +38,7 @@ trait FieldBehaviours extends AnyWordSpec with Matchers with ScalaCheckDrivenPro
     }
   }
 
-  def fieldWithMaxLength(form: Form[_],
+  def fieldWithMaxLength(form: Form[?],
                          fieldName: String,
                          maxLength: Int,
                          lengthError: FormError): Unit = {
@@ -53,21 +53,21 @@ trait FieldBehaviours extends AnyWordSpec with Matchers with ScalaCheckDrivenPro
     }
   }
 
-  def fieldThatBindsValidData(form: Form[_],
+  def fieldThatBindsValidData(form: Form[?],
                               fieldName: String,
                               validDataGenerator: Gen[String]): Unit = {
 
     "bind valid data" in {
 
       forAll(validDataGenerator.retryUntil(!_.matches("""^\s+$""")) -> "validDataItem") {
-        dataItem: String =>
+        dataItem =>
           val result = form.bind(Map(fieldName -> dataItem)).apply(fieldName)
-          result.errors shouldBe empty
+          result.errors `shouldBe` empty
       }
     }
   }
 
-  def mandatoryField(form: Form[_],
+  def mandatoryField(form: Form[?],
                      fieldName: String,
                      requiredError: FormError): Unit = {
 

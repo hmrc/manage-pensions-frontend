@@ -22,6 +22,7 @@ import models.TolerantAddress
 import play.api.Logger
 import play.api.http.Status._
 import play.api.libs.json.{Json, Reads}
+import play.api.libs.ws.writeableOf_JsValue
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HttpException, HttpResponse, StringContextOps}
@@ -41,7 +42,7 @@ class AddressLookupConnectorImpl @Inject()(httpClientV2: HttpClientV2, config: F
     implicit val reads: Reads[Seq[TolerantAddress]] = TolerantAddress.postCodeLookupReads
     val lookupAddressByPostcode =Json.obj("postcode"->postCode)
 
-    httpClientV2.post(addressLookupUrl)(schemeHc)
+    httpClientV2.post(addressLookupUrl)(using schemeHc)
       .withBody(lookupAddressByPostcode)
       .execute[HttpResponse].flatMap{ response =>
       response.status match {

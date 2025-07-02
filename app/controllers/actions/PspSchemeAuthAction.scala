@@ -32,7 +32,7 @@ private class PspSchemeActionImpl (srn:SchemeReferenceNumber, schemeDetailsConne
                           (implicit val executionContext: ExecutionContext)
   extends ActionFunction[OptionalDataRequest, OptionalDataRequest] with FrontendHeaderCarrierProvider with Logging {
 
-  private def notFoundTemplate(implicit request: OptionalDataRequest[_]) = NotFound(errorHandler.notFoundTemplate)
+  private def notFoundTemplate(implicit request: OptionalDataRequest[?]) = NotFound(errorHandler.notFoundTemplate)
 
   override def invokeBlock[A](request: OptionalDataRequest[A], block: OptionalDataRequest[A] => Future[Result]): Future[Result] = {
 
@@ -41,7 +41,7 @@ private class PspSchemeActionImpl (srn:SchemeReferenceNumber, schemeDetailsConne
     pspIdOpt match {
       case Some(pspId) =>
         schemaDetailConnectorCall(srn, pspId.id, request, block)
-      case _ => Future.successful(notFoundTemplate(request))
+      case _ => Future.successful(notFoundTemplate(using request))
     }
   }
 
@@ -53,17 +53,17 @@ private class PspSchemeActionImpl (srn:SchemeReferenceNumber, schemeDetailsConne
       psaOrPspId = psaOrPspId,
       idType = "psp",
       srn = srn
-    )(hc(request), executionContext)
+    )(using hc(using request), executionContext)
 
     isAssociated.flatMap {
       case Some(true) => block(request)
       case _ =>
         logger.warn("Potentially prevented unauthorised access")
-        Future.successful(notFoundTemplate(request))
+        Future.successful(notFoundTemplate(using request))
     } recover {
       case err =>
         logger.error("isPsaOrPspid associated with scheme, request failed", err)
-        notFoundTemplate(request)
+        notFoundTemplate(using request)
     }
   }
 }

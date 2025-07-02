@@ -62,7 +62,7 @@ class PensionSchemeVarianceLockConnectorImpl @Inject()(httpClientV2: HttpClientV
     implicit val headerCarrier: HeaderCarrier = hc.withExtraHeaders("psaId" -> psaId, "srn" -> srn)
     val url = url"${config.updateSchemeDetailsUrl}/isLockByPsaOrScheme"
 
-    httpClientV2.get(url)(headerCarrier)
+    httpClientV2.get(url)(using headerCarrier)
       .execute[HttpResponse].map { response =>
         response.status match {
           case NOT_FOUND =>
@@ -89,7 +89,7 @@ class PensionSchemeVarianceLockConnectorImpl @Inject()(httpClientV2: HttpClientV
     implicit val headerCarrier: HeaderCarrier = hc.withExtraHeaders("psaId" -> psaId, "srn" -> srn)
     val url = url"${config.updateSchemeDetailsUrl}/get-lock"
 
-    httpClientV2.get(url)(headerCarrier)
+    httpClientV2.get(url)(using headerCarrier)
       .execute[HttpResponse].map { response =>
         response.status match {
           case NOT_FOUND =>
@@ -112,7 +112,7 @@ class PensionSchemeVarianceLockConnectorImpl @Inject()(httpClientV2: HttpClientV
     implicit val headerCarrier: HeaderCarrier = hc.withExtraHeaders("psaId" -> psaId)
     val url = url"${config.updateSchemeDetailsUrl}/get-lock-by-psa"
 
-    httpClientV2.get(url)(headerCarrier)
+    httpClientV2.get(url)(using headerCarrier)
       .execute[HttpResponse].map { response =>
         response.status match {
           case NOT_FOUND =>
@@ -135,7 +135,7 @@ class PensionSchemeVarianceLockConnectorImpl @Inject()(httpClientV2: HttpClientV
     implicit val headerCarrier: HeaderCarrier = hc.withExtraHeaders("srn" -> srn)
     val url = url"${config.updateSchemeDetailsUrl}/get-lock-by-scheme"
 
-    httpClientV2.get(url)(headerCarrier)
+    httpClientV2.get(url)(using headerCarrier)
       .execute[HttpResponse].map { response =>
         response.status match {
           case NOT_FOUND =>
@@ -158,7 +158,7 @@ class PensionSchemeVarianceLockConnectorImpl @Inject()(httpClientV2: HttpClientV
     implicit val headerCarrier: HeaderCarrier = hc.withExtraHeaders("psaId" -> psaId, "srn" -> srn)
     val url = url"${config.updateSchemeDetailsUrl}/release-lock"
 
-    httpClientV2.delete(url)(headerCarrier)
+    httpClientV2.delete(url)(using headerCarrier)
       .execute[HttpResponse].map { response =>
         response.status match {
           case OK => {}

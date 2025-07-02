@@ -48,7 +48,7 @@ class MinimalConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelp
     val connector = injector.instanceOf[MinimalConnector]
 
     connector.getMinimalPsaDetails().map(psa =>
-      psa shouldBe expectedResponse
+      psa `shouldBe` expectedResponse
     )
 
   }
@@ -106,7 +106,7 @@ class MinimalConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelp
     val connector = injector.instanceOf[MinimalConnector]
 
     connector.getEmailInvitation("id", "idType", "name", srn).map(psa =>
-      psa shouldBe Some(email)
+      psa `shouldBe` Some(email)
     )
 
   }

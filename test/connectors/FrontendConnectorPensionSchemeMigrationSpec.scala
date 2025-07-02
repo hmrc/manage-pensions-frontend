@@ -34,7 +34,7 @@ class FrontendConnectorPensionSchemeMigrationSpec extends AsyncWordSpec with Mat
   implicit val headerCarrier: HeaderCarrierForPartials =
     HeaderCarrierForPartials(hc = HeaderCarrier())
   private val migrationUrlsHtmlUrl = "/add-pension-scheme/migration-tile"
-  implicit val request: FakeRequest[_] = FakeRequest("", "")
+  implicit val request: FakeRequest[?] = FakeRequest("", "")
   private val migrationUrlsHtml: Html = Html("test-migration-partial-html")
 
   "FrontendConnector for Pension Scheme Migration" when {

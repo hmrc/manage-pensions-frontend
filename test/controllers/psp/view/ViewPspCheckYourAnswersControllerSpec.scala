@@ -39,7 +39,7 @@ import play.api.test.Helpers._
 import testhelpers.CommonBuilders.{pspDetails, pspDetails2}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist._
-import utils.UserAnswers
+import utils.{UserAnswers, UserAnswerOps}
 import views.html.invitations.psp.checkYourAnswersPsp
 
 import scala.concurrent.Future
@@ -84,14 +84,14 @@ class ViewPspCheckYourAnswersControllerSpec extends ControllerSpecBase with Mock
 
     "on a POST" must {
       "redirect to view practitioner and post to update client ref API" in {
-        when(mockUpdateClientReferenceConnector.updateClientReference(any(), any(), any())(any(), any())).thenReturn(Future.successful("Ok"))
-        when(mockSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any())).thenReturn(Future.successful(schemeDetailUserAns("Test")))
-        when(mockSchemeDetailsConnector.getSchemeDetailsRefresh(any(), any(), any())(any(), any())).thenReturn(Future.successful((): Unit))
+        when(mockUpdateClientReferenceConnector.updateClientReference(any(), any(), any())(using any(), any())).thenReturn(Future.successful("Ok"))
+        when(mockSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(using any(), any())).thenReturn(Future.successful(schemeDetailUserAns("Test")))
+        when(mockSchemeDetailsConnector.getSchemeDetailsRefresh(any(), any(), any())(using any(), any())).thenReturn(Future.successful((): Unit))
         val result = controller(data).onSubmit(0, srn)(fakeRequest)
         redirectLocation(result).value mustBe controllers.psp.routes.ViewPractitionersController.onPageLoad(srn).url
       }
       "redirect to view practitioner and not updated client Ref" in {
-        when(mockSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any())).thenReturn(Future.successful(schemeDetailUserAns("A0000000")))
+        when(mockSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(using any(), any())).thenReturn(Future.successful(schemeDetailUserAns("A0000000")))
         val result = controller(data).onSubmit(0, srn)(fakeRequest)
         redirectLocation(result).value mustBe controllers.psp.routes.ViewPractitionersController.onPageLoad(srn).url
       }
@@ -186,7 +186,7 @@ object ViewPspCheckYourAnswersControllerSpec extends ControllerWithNormalPageBeh
   def returnCall: Call = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(srn))
 
   def viewAsString(): String = view(expectedValues, call, None,
-    Some(testSchemeName), testSchemeName, returnCall)(fakeRequest, messages).toString
+    Some(testSchemeName), testSchemeName, returnCall)(using fakeRequest, messages).toString
 
 }
 

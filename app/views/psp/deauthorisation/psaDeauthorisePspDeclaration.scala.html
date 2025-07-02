@@ -30,7 +30,7 @@
     button: components.govuk_button
 )
 
-@(form: Form[Boolean], schemeName: String, srn: String, index: Int)(implicit request: Request[_], messages: Messages)
+@(form: Form[Boolean], schemeName: String, srn: String, index: Int)(implicit request: Request[?], messages: Messages)
 
 @layout(pageTitle = titleWithErrors(form, messages("messages__deauthPspDeclaration__title"))) {
 

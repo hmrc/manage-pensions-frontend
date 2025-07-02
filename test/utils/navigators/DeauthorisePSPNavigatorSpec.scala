@@ -28,7 +28,7 @@ import models.SchemeReferenceNumber
 import org.scalatest.prop.TableFor4
 import play.api.libs.json.Json
 import play.api.mvc.Call
-import utils.{NavigatorBehaviour, UserAnswers}
+import utils.{NavigatorBehaviour, UserAnswers, UserAnswerOps}
 
 class DeauthorisePSPNavigatorSpec extends SpecBase with NavigatorBehaviour {
 

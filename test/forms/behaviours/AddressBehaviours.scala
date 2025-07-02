@@ -24,7 +24,7 @@ import wolfendale.scalacheck.regexp.RegexpGen
 
 trait AddressBehaviours extends AnyWordSpec with Matchers with FieldBehaviours {
 
-  def formWithPostCode(form: Form[_], fieldName: String, keyRequired: String, keyLength: String, keyInvalid: String): Unit = {
+  def formWithPostCode(form: Form[?], fieldName: String, keyRequired: String, keyLength: String, keyInvalid: String): Unit = {
 
     "behave like a form with a Post Code" should {
 
@@ -57,8 +57,8 @@ trait AddressBehaviours extends AnyWordSpec with Matchers with FieldBehaviours {
       "transform the Post Code value correctly" in {
         val postCode = "  zz11zz  "
         val result = form.bind(Map(fieldName -> postCode))
-        result.errors.size shouldBe 0
-        result.get shouldBe "ZZ1 1ZZ"
+        result.errors.size `shouldBe` 0
+        result.get `shouldBe` "ZZ1 1ZZ"
       }
     }
 

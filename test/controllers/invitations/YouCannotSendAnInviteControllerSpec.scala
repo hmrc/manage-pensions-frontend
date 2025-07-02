@@ -28,11 +28,16 @@ class YouCannotSendAnInviteControllerSpec extends ControllerWithNormalPageBehavi
   private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
 
     new YouCannotSendAnInviteController(
-      frontendAppConfig, messagesApi, fakeAuth, dataRetrievalAction, requiredDateAction,
-      controllerComponents, youCannotSendAnInviteView, fakePsaSchemeAuthAction).onPageLoad(srn)
+      fakeAuth,
+      messagesApi,
+      dataRetrievalAction,
+      controllerComponents,
+      youCannotSendAnInviteView,
+      fakePsaSchemeAuthAction
+    ).onPageLoad(srn)
   }
 
-  private def viewAsString(): String = youCannotSendAnInviteView()(fakeRequest, messages).toString
+  private def viewAsString(): String = youCannotSendAnInviteView()(using fakeRequest, messages).toString
 
   behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, None, () => viewAsString())
 }

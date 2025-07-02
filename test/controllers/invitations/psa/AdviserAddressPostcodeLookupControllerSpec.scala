@@ -22,8 +22,8 @@ import controllers.actions.{AuthAction, DataRetrievalAction, FakeAuthAction, Fak
 import forms.invitations.psa.AdviserAddressPostcodeLookupFormProvider
 import identifiers.invitations.psa.AdviserNameId
 import models.TolerantAddress
-import org.mockito.ArgumentMatchers.{eq => eqTo, _}
-import org.mockito.Mockito._
+import org.mockito.ArgumentMatchers.{eq as eqTo, *}
+import org.mockito.Mockito.*
 import org.scalatest.OptionValues
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.must.Matchers
@@ -35,12 +35,13 @@ import play.api.i18n.MessagesApi
 import play.api.inject.bind
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import uk.gov.hmrc.http.HttpException
 import utils.annotations.AcceptInvitation
 import utils.{FakeNavigator, Navigator}
 import views.html.invitations.psa.adviserPostcode
 
+import scala.annotation.unused
 import scala.concurrent.Future
 
 class AdviserAddressPostcodeLookupControllerSpec
@@ -83,7 +84,7 @@ class AdviserAddressPostcodeLookupControllerSpec
       val addressConnector: AddressLookupConnector = mock[AddressLookupConnector]
       val cacheConnector: UserAnswersCacheConnector = FakeUserAnswersCacheConnector
 
-      when(addressConnector.addressLookupByPostCode(eqTo(postcode))(any(), any()))
+      when(addressConnector.addressLookupByPostCode(eqTo(postcode))(using any(), any()))
         .thenReturn(Future.successful(Seq(address)))
 
       running(_.overrides(
@@ -108,7 +109,7 @@ class AdviserAddressPostcodeLookupControllerSpec
 
         val addressConnector: AddressLookupConnector = mock[AddressLookupConnector]
 
-        when(addressConnector.addressLookupByPostCode(eqTo(postcode))(any(), any())) thenReturn
+        when(addressConnector.addressLookupByPostCode(eqTo(postcode))(using any(), any())) `thenReturn`
           Future.failed(new HttpException("Failed", INTERNAL_SERVER_ERROR))
 
         running(_.overrides(
@@ -159,7 +160,7 @@ class AdviserAddressPostcodeLookupControllerSpec
 
       val addressConnector: AddressLookupConnector = mock[AddressLookupConnector]
 
-      when(addressConnector.addressLookupByPostCode(eqTo(postcode))(any(), any()))
+      when(addressConnector.addressLookupByPostCode(eqTo(postcode))(using any(), any()))
         .thenReturn(Future.successful(Seq.empty))
 
       running(_.overrides(
@@ -189,13 +190,13 @@ object AdviserAddressPostcodeLookupControllerSpec extends ControllerSpecBase {
   val view: adviserPostcode = app.injector.instanceOf[adviserPostcode]
 
 
-  def viewAsString(value: Option[String] = Some(postcode), form: Form[String] = form)
+  def viewAsString(@unused value: Option[String] = Some(postcode), form: Form[String] = form)
                   (implicit app: Application): String = {
 
     val request = FakeRequest()
     val messages = app.injector.instanceOf[MessagesApi].preferred(request)
 
-    view(form, name)(request, messages).toString()
+    view(form, name)(using request, messages).toString()
 
   }
 

@@ -66,7 +66,7 @@ class WhatRoleControllerV2 @Inject()(override val messagesApi: MessagesApi,
   def onSubmit: Action[AnyContent] = auth().async {
     implicit request =>
       form.bindFromRequest().fold(
-        (formWithErrors: Form[_]) =>
+        (formWithErrors: Form[?]) =>
           Future.successful(BadRequest(view(formWithErrors))),
         value => {
           val originalUserAnswers = managePensionsCacheConnector.fetch(request.externalId)

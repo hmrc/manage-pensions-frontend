@@ -25,6 +25,6 @@ class WhatDoYouWantToDoFormProvider @Inject() extends Mappings {
 
   def apply(role: String): Form[WhatDoYouWantToDo] =
     Form(
-      "value" -> enumerable[WhatDoYouWantToDo]("messages__whatDoYouWantToDo__error__required")(WhatDoYouWantToDo.enumerable(role))
+      "value" -> enumerable[WhatDoYouWantToDo]("messages__whatDoYouWantToDo__error__required")(using WhatDoYouWantToDo.enumerable(role))
     )
 }

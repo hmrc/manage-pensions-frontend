@@ -48,7 +48,7 @@ class PsaRemovalConnectorSpec extends AsyncFlatSpec with Matchers with WireMockH
     val connector = injector.instanceOf[PsaRemovalConnector]
 
     connector.remove(srn, psaToBeRemoved).map {
-      _ => server.findAll(postRequestedFor(urlEqualTo(deleteUrl))).size() shouldBe 1
+      _ => server.findAll(postRequestedFor(urlEqualTo(deleteUrl))).size() `shouldBe` 1
     }
   }
 

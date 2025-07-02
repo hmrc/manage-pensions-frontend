@@ -22,43 +22,43 @@ import play.api.data.FormError
 
 trait CheckboxBehaviour extends FormSpec {
 
-  def formWithCheckbox(form: Form[_], fieldName: String, trueValue: String, acceptTrueOnly: Boolean, invalidKey: String): Unit = {
+  def formWithCheckbox(form: Form[?], fieldName: String, trueValue: String, acceptTrueOnly: Boolean, invalidKey: String): Unit = {
 
     "behave like a form with a checkbox" should {
       "transform a valid value to true" in {
         val result = form.bind(Map(fieldName -> trueValue))
-        result.errors.size shouldBe 0
-        result.get shouldBe true
+        result.errors.size `shouldBe` 0
+        result.get `shouldBe` true
       }
 
       if (acceptTrueOnly) {
         "reject a blank value" in {
           val result = form.bind(Map(fieldName -> ""))
-          result.errors shouldBe List(FormError(fieldName, invalidKey))
+          result.errors `shouldBe` List(FormError(fieldName, invalidKey))
         }
 
         "reject a missing value" in {
           val result = form.bind(Map.empty[String, String])
-          result.errors shouldBe List(FormError(fieldName, invalidKey))
+          result.errors `shouldBe` List(FormError(fieldName, invalidKey))
         }
       }
       else {
         "transform a blank value to false" in {
           val result = form.bind(Map(fieldName -> ""))
-          result.errors.size shouldBe 0
-          result.get shouldBe false
+          result.errors.size `shouldBe` 0
+          result.get `shouldBe` false
         }
 
         "transform missing value to false" in {
           val result = form.bind(Map.empty[String, String])
-          result.errors.size shouldBe 0
-          result.get shouldBe false
+          result.errors.size `shouldBe` 0
+          result.get `shouldBe` false
         }
       }
 
       "reject an invalid value" in {
         val result = form.bind(Map(fieldName -> s"$trueValue-invalid"))
-        result.errors shouldBe List(FormError(fieldName, invalidKey))
+        result.errors `shouldBe` List(FormError(fieldName, invalidKey))
       }
     }
 

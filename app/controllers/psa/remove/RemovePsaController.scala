@@ -23,17 +23,15 @@ import connectors.admin.MinimalConnector
 import connectors.scheme.SchemeDetailsConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction, PsaSchemeAuthAction}
-import controllers.psa.remove.routes._
-import controllers.routes._
+import controllers.psa.remove.routes.*
+import controllers.routes.*
 import identifiers.invitations.PSTRId
 import identifiers.psa.PSANameId
 import identifiers.{AssociatedDateId, SchemeNameId, SchemeSrnId}
 import models.{MinimalPSAPSP, SchemeReferenceNumber}
 import models.psa.PsaAssociatedDate
 import models.requests.DataRequest
-import play.api.libs.functional.syntax._
-import play.api.libs.json.Reads._
-import play.api.libs.json.{JsArray, JsPath, __}
+import play.api.libs.json.{JsArray, JsPath}
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -109,12 +107,9 @@ class RemovePsaController @Inject()(
       schemeIdType = "srn"
     ) map { userAnswers =>
 
-      val admins = userAnswers.json.transform((JsPath \ Symbol("psaDetails")).json.pick)
+      val admins = userAnswers.json.transform((JsPath \ "psaDetails").json.pick)
         .asOpt.map(_.as[JsArray].value).toSeq.flatten
-        .flatMap(_.transform((
-          (__ \ Symbol("psaId")).json.copyFrom((JsPath \ "id").json.pick) and
-            (__ \ Symbol("relationshipDate")).json.copyFrom((JsPath \ Symbol("relationshipDate")).json.pick)
-          ).reduce).asOpt.flatMap(_.validate[PsaAssociatedDate].asOpt))
+        .flatMap(_.validate[PsaAssociatedDate].asOpt)
 
       val psa = admins.filter(_.psaId.contains(request.psaIdOrException.id))
 

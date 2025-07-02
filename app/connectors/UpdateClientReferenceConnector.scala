@@ -21,8 +21,8 @@ import config.FrontendAppConfig
 import models.SchemeReferenceNumber
 import models.psp.UpdateClientReferenceRequest
 import play.api.Logger
-import play.api.http.Status._
-import play.api.libs.json.{JsError, JsResultException, JsSuccess, Json}
+import play.api.http.Status.*
+import play.api.libs.json.{JsError, JsResultException, JsSuccess, JsValue, Json}
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 import utils.HttpResponseHelper
@@ -53,13 +53,14 @@ class UpdateClientReferenceConnectorImpl @Inject()(httpClientV2: HttpClientV2, c
       "userAction"-> userAction)
 
     httpClientV2.post(updateClientReferenceUrl)
-      . setHeader(headers:_*)
+      .setHeader(headers *)
       .execute[HttpResponse] map {
         response =>
           response.status match {
-            case OK => val json = Json.parse(response.body)
+            case OK =>
+              val json: JsValue = Json.parse(response.body)
               (json \ "status").validate[String] match {
-                case JsSuccess(value, _) => value
+                case JsSuccess(value, path) => value
                 case JsError(errors) => throw JsResultException(errors)
               }
             case _ => handleErrorResponse("POST", config.updateClientReferenceUrl)(response)

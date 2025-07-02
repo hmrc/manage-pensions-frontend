@@ -23,7 +23,7 @@ import javax.inject.Inject
 
 class PensionAdviserAddressListFormProvider @Inject()() extends Mappings with Constraints {
 
-  def apply(addresses: Seq[_]): Form[Int] =
+  def apply(addresses: Seq[?]): Form[Int] =
     Form(
       "value" -> int("messages__adviser__address__list__required")
         .verifying(minimumValue(0, "error.invalid"))

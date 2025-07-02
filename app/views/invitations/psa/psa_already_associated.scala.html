@@ -20,7 +20,7 @@
     layout: templates.Layout
 )
 
-@(inviteeName: String, schemeName: String)(implicit request: Request[_], messages: Messages)
+@(inviteeName: String, schemeName: String)(implicit request: Request[?], messages: Messages)
 
 @layout(pageTitle = messages("messages__psaAlreadyAssociated__title")) {
 

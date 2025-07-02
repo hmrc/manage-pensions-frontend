@@ -7,12 +7,14 @@ import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 lazy val appName: String = "manage-pensions-frontend"
 
 ThisBuild / majorVersion := 0
-ThisBuild / scalaVersion := "2.13.16"
+ThisBuild / scalaVersion := "3.7.1"
 ThisBuild / scalacOptions ++= Seq(
   "-feature",
-  "-Xmaxerrs", "500", // Set maximum errors to 500
+  "-Xfatal-warnings",
   "-Wconf:src=routes/.*:s",
   "-Wconf:src=html/.*:s",
+  "-Wconf:msg=Flag.*repeatedly:s", // Suppress repeated flag warnings
+  "-Wconf:msg=-Wunused.set.to.all.redundantly:s", // Suppress repeated flag warnings
 )
 
 lazy val root = (project in file("."))

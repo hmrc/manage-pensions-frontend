@@ -21,7 +21,7 @@ import models.{Address, TolerantAddress}
 import org.scalatest.OptionValues
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import utils.UserAnswers
+import utils.{UserAnswers, UserAnswerOps}
 
 class DoYouHaveWorkingKnowledgeIdSpec extends AnyWordSpec with Matchers with OptionValues {
 
@@ -42,27 +42,27 @@ class DoYouHaveWorkingKnowledgeIdSpec extends AnyWordSpec with Matchers with Opt
 
       "remove Adviser name" in {
 
-        result.get(AdviserNameId) mustNot be(defined)
+        result.get(AdviserNameId) `mustNot` be(defined)
       }
 
       "remove Adviser email" in {
 
-        result.get(AdviserEmailId) mustNot be(defined)
+        result.get(AdviserEmailId) `mustNot` be(defined)
       }
 
       "remove Adviser post code lookup" in {
 
-        result.get(AdviserAddressPostCodeLookupId) mustNot be(defined)
+        result.get(AdviserAddressPostCodeLookupId) `mustNot` be(defined)
       }
 
       "remove Adviser address list" in {
 
-        result.get(AdviserAddressListId) mustNot be(defined)
+        result.get(AdviserAddressListId) `mustNot` be(defined)
       }
 
       "remove Adviser address" in {
 
-        result.get(AdviserAddressId) mustNot be(defined)
+        result.get(AdviserAddressId) `mustNot` be(defined)
       }
     }
 

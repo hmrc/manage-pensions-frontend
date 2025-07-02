@@ -67,7 +67,7 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
     migrationHtml = Some(html),
     subHeading = Some(subHeading),
     returnLink = None
-  )(fakeRequest, messages).toString
+  )(using fakeRequest, messages).toString
 
   private def minimalDetails(rlsFlag: Boolean = false, deceasedFlag: Boolean = false) = MinimalPSAPSP(
     email = "a@a.c",
@@ -83,16 +83,16 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
   "SchemesOverview Controller" when {
     "onPageLoad" must {
       "return OK and the correct tiles" in {
-        when(fakeSchemesOverviewService.getTiles(eqTo(psaId))(any(), any(), any())).thenReturn(Future.successful(Seq(schemeCard, adminCard)))
-        when(fakeSchemesOverviewService.getPsaName()(any()))
+        when(fakeSchemesOverviewService.getTiles(eqTo(psaId))(using any(), any(), any())).thenReturn(Future.successful(Seq(schemeCard, adminCard)))
+        when(fakeSchemesOverviewService.getPsaName()(using any()))
           .thenReturn(Future.successful(Some(psaName)))
-        when(fakeSchemesOverviewService.getPsaMinimalDetails()(any()))
+        when(fakeSchemesOverviewService.getPsaMinimalDetails()(using any()))
           .thenReturn(Future.successful(minimalDetails()))
-        when(fakeSchemesOverviewService.retrievePenaltiesUrlPartial(any())(any(), any()))
+        when(fakeSchemesOverviewService.retrievePenaltiesUrlPartial(any())(using any(), any()))
           .thenReturn(Future.successful(html))
-        when(fakeSchemesOverviewService.retrieveMigrationTile(any(), any()))
+        when(fakeSchemesOverviewService.retrieveMigrationTile(using any(), any()))
           .thenReturn(Future.successful(Some(html)))
-        when(fakeUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(Json.obj()))
+        when(fakeUserAnswersCacheConnector.save(any(), any(), any())(using any(), any(), any())).thenReturn(Future.successful(Json.obj()))
 
         val result = controller().onPageLoad(fakeRequest)
 
@@ -101,12 +101,12 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
       }
 
       "redirect to update contact address when RLS flag is set" in {
-        when(fakeSchemesOverviewService.getTiles(eqTo(psaId))(any(), any(), any())).thenReturn(Future.successful(Seq(schemeCard, adminCard)))
-        when(fakeSchemesOverviewService.getPsaName()(any()))
+        when(fakeSchemesOverviewService.getTiles(eqTo(psaId))(using any(), any(), any())).thenReturn(Future.successful(Seq(schemeCard, adminCard)))
+        when(fakeSchemesOverviewService.getPsaName()(using any()))
           .thenReturn(Future.successful(Some(psaName)))
-        when(fakeSchemesOverviewService.getPsaMinimalDetails()(any()))
+        when(fakeSchemesOverviewService.getPsaMinimalDetails()(using any()))
           .thenReturn(Future.successful(minimalDetails(rlsFlag = true)))
-        when(fakeUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(Json.obj()))
+        when(fakeUserAnswersCacheConnector.save(any(), any(), any())(using any(), any(), any())).thenReturn(Future.successful(Json.obj()))
         when(appConfig.psaUpdateContactDetailsUrl).thenReturn(dummyURl)
 
         val result = controller().onPageLoad(fakeRequest)
@@ -116,12 +116,12 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
       }
 
       "redirect to contact HMRC page when both rls and deceased flag are set" in {
-        when(fakeSchemesOverviewService.getTiles(eqTo(psaId))(any(), any(), any())).thenReturn(Future.successful(Seq(schemeCard, adminCard)))
-        when(fakeSchemesOverviewService.getPsaName()(any()))
+        when(fakeSchemesOverviewService.getTiles(eqTo(psaId))(using any(), any(), any())).thenReturn(Future.successful(Seq(schemeCard, adminCard)))
+        when(fakeSchemesOverviewService.getPsaName()(using any()))
           .thenReturn(Future.successful(Some(psaName)))
-        when(fakeSchemesOverviewService.getPsaMinimalDetails()(any()))
+        when(fakeSchemesOverviewService.getPsaMinimalDetails()(using any()))
           .thenReturn(Future.successful(minimalDetails(rlsFlag = true, deceasedFlag = true)))
-        when(fakeUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(Json.obj()))
+        when(fakeUserAnswersCacheConnector.save(any(), any(), any())(using any(), any(), any())).thenReturn(Future.successful(Json.obj()))
         when(appConfig.psaUpdateContactDetailsUrl).thenReturn(dummyURl)
 
         val result = controller().onPageLoad(fakeRequest)
@@ -134,27 +134,27 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
     }
     "changeRoleToPsaAndLoadPage" must {
       "redirect to overview page and update mongo" in {
-        when(fakeSchemesOverviewService.getTiles(eqTo(psaId))(any(), any(), any())).thenReturn(Future.successful(Seq(schemeCard, adminCard)))
-        when(fakeSchemesOverviewService.getPsaName()(any()))
+        when(fakeSchemesOverviewService.getTiles(eqTo(psaId))(using any(), any(), any())).thenReturn(Future.successful(Seq(schemeCard, adminCard)))
+        when(fakeSchemesOverviewService.getPsaName()(using any()))
           .thenReturn(Future.successful(Some(psaName)))
-        when(fakeSchemesOverviewService.getPsaMinimalDetails()(any()))
+        when(fakeSchemesOverviewService.getPsaMinimalDetails()(using any()))
           .thenReturn(Future.successful(minimalDetails()))
-        when(fakeSchemesOverviewService.retrievePenaltiesUrlPartial(any())(any(), any()))
+        when(fakeSchemesOverviewService.retrievePenaltiesUrlPartial(any())(using any(), any()))
           .thenReturn(Future.successful(html))
-        when(fakeUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(Json.obj()))
-        when(fakeUserAnswersCacheConnector.upsert(any(), any())(any(), any()))
+        when(fakeUserAnswersCacheConnector.save(any(), any(), any())(using any(), any(), any())).thenReturn(Future.successful(Json.obj()))
+        when(fakeUserAnswersCacheConnector.upsert(any(), any())(using any(), any()))
           .thenReturn(Future.successful(Json.obj()))
-        when(mockSessionDataCacheConnector.fetch(any())(any(), any()))
+        when(mockSessionDataCacheConnector.fetch(any())(using any(), any()))
           .thenReturn(Future.successful(None))
         val jsonCaptor = ArgumentCaptor.forClass(classOf[JsValue])
-        when(mockSessionDataCacheConnector.upsert(any(), jsonCaptor.capture())(any(), any()))
+        when(mockSessionDataCacheConnector.upsert(any(), jsonCaptor.capture())(using any(), any()))
           .thenReturn(Future.successful(JsNull))
 
         val result = controller().changeRoleToPsaAndLoadPage(fakeRequest)
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(controllers.routes.SchemesOverviewController.onPageLoad().url)
-        verify(mockSessionDataCacheConnector, times(1)).upsert(any(), any())(any(), any())
+        verify(mockSessionDataCacheConnector, times(1)).upsert(any(), any())(using any(), any())
         UserAnswers(jsonCaptor.getValue).get(AdministratorOrPractitionerId) mustBe Some(Administrator)
       }
     }

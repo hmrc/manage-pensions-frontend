@@ -42,7 +42,7 @@ class PSPAuthorisationEmailAuditEventSpec
       "event" -> "Sent"
     )
 
-    event.auditType shouldBe "PensionSchemePractitionerAuthorisationEmailEvent"
-    event.details shouldBe expected
+    event.auditType `shouldBe` "PensionSchemePractitionerAuthorisationEmailEvent"
+    event.details `shouldBe` expected
   }
 }

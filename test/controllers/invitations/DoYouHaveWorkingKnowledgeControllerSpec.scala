@@ -17,12 +17,13 @@
 package controllers.invitations
 
 import connectors.FakeUserAnswersCacheConnector
-import controllers.actions._
+import controllers.actions.*
 import controllers.behaviours.ControllerWithQuestionPageBehaviours
 import forms.invitations.psa.DoYouHaveWorkingKnowledgeFormProvider
 import models.NormalMode
 import play.api.data.Form
 import play.api.libs.json.Json
+import play.api.mvc.AnyContentAsJson
 import play.api.test.FakeRequest
 import utils.{UserAnswerOps, UserAnswers}
 import views.html.invitations.doYouHaveWorkingKnowledge
@@ -30,10 +31,10 @@ import views.html.invitations.doYouHaveWorkingKnowledge
 class DoYouHaveWorkingKnowledgeControllerSpec extends ControllerWithQuestionPageBehaviours {
 
   val formProvider = new DoYouHaveWorkingKnowledgeFormProvider()
-  val form = formProvider()
-  val userAnswer = UserAnswers().employedPensionAdviserId(true)
-  val postRequest = FakeRequest().withJsonBody(Json.obj("value" -> true))
-  val data = UserAnswers().employedPensionAdviserId(true).dataRetrievalAction
+  val form: Form[Boolean] = formProvider()
+  val userAnswer: UserAnswers = UserAnswers().employedPensionAdviserId(true)
+  val postRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.obj("value" -> true))
+  val data: DataRetrievalAction = UserAnswers().employedPensionAdviserId(true).dataRetrievalAction
   private val view = injector.instanceOf[doYouHaveWorkingKnowledge]
 
   private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction) = {
@@ -52,7 +53,7 @@ class DoYouHaveWorkingKnowledgeControllerSpec extends ControllerWithQuestionPage
       view).onSubmit(NormalMode)
   }
 
-  def viewAsString(form: Form[Boolean] = form) = view(form, NormalMode)(fakeRequest, messages).toString
+  def viewAsString(form: Form[Boolean] = form): String = view(form, NormalMode)(using fakeRequest, messages).toString
 
   behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, userAnswer.dataRetrievalAction, form, form.fill(true), viewAsString)
 

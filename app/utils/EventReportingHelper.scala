@@ -29,7 +29,7 @@ object EventReportingHelper {
 
   final case class EventReportingData(data:EventReporting, externalIdKey:String)
   def eventReportingData(srn:String, listOfSchemes: ListOfSchemes, pstrToEventReporting: String => EventReporting)
-                        (implicit request:AuthenticatedRequest[_]): Option[EventReportingData] = {
+                        (implicit request:AuthenticatedRequest[?]): Option[EventReportingData] = {
     val pstr = listOfSchemes.schemeDetails.flatMap (_.find (_.referenceNumber.contains (srn) ) ).flatMap (_.pstr)
     (request.externalId, pstr) match {
       case (externalId, Some(pstr)) => Some(
@@ -44,7 +44,7 @@ object EventReportingHelper {
   def storeData(sessionCacheConnector: UserAnswersCacheConnector, data:EventReportingData)
                (implicit hc:HeaderCarrier, ec:ExecutionContext): Future[JsValue] = {
     sessionCacheConnector.fetch(data.externalIdKey).flatMap { optionJsValue =>
-      val userAnswers: Option[UserAnswers] = optionJsValue.map(UserAnswers).getOrElse(UserAnswers()).set(EventReportingId)(data.data).asOpt
+      val userAnswers: Option[UserAnswers] = optionJsValue.map(UserAnswers.apply).getOrElse(UserAnswers()).set(EventReportingId)(data.data).asOpt
       sessionCacheConnector.upsert(data.externalIdKey, userAnswers.getOrElse(UserAnswers()).json)
     }
   }

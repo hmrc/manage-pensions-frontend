@@ -33,11 +33,11 @@ class CanNotBeRemovedControllerSpec extends ControllerWithNormalPageBehaviours {
   def fakeControllerAction(authAction: AuthAction = FakeUnAuthorisedAction) = new CanNotBeRemovedController(
     messagesApi, authAction, FakeUserAnswersCacheConnector, controllerComponents, view)
 
-  def individualViewAsString(): String = view(viewModelIndividual)(fakeRequest, messages).toString
+  def individualViewAsString(): String = view(viewModelIndividual)(using fakeRequest, messages).toString
 
-  def organisationViewAsString(): String = view(viewModelOrganisation)(fakeRequest, messages).toString
+  def organisationViewAsString(): String = view(viewModelOrganisation)(using fakeRequest, messages).toString
 
-  def removalDelayViewAsString(): String = view(viewModelRemovalDelay)(fakeRequest, messages).toString
+  def removalDelayViewAsString(): String = view(viewModelRemovalDelay)(using fakeRequest, messages).toString
 
   "if reason is suspended and affinity group Individual" must {
 

@@ -17,7 +17,6 @@
 package controllers.invitations.psa
 
 import com.google.inject.Inject
-import config.FrontendAppConfig
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import identifiers.invitations.psa.{AdviserNameId, CheckPensionAdviserAnswersId}
@@ -32,8 +31,7 @@ import views.html.check_your_answers
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class CheckPensionAdviserAnswersController @Inject()(appConfig: FrontendAppConfig,
-                                                     override val messagesApi: MessagesApi,
+class CheckPensionAdviserAnswersController @Inject()(override val messagesApi: MessagesApi,
                                                      authenticate: AuthAction,
                                                      @AcceptInvitation navigator: Navigator,
                                                      getData: DataRetrievalAction,

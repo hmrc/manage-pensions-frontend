@@ -62,18 +62,18 @@ class PreviouslyRegisteredControllerSpec extends ControllerWithQuestionPageBehav
   private val view = injector.instanceOf[previouslyRegistered]
   private val formProvider = new PreviouslyRegisteredFormProvider()
 
-  private def fakeAuthConnector(stubbedRetrievalResult: Future[_]): AuthConnector = new AuthConnector {
+  private def fakeAuthConnector(stubbedRetrievalResult: Future[?]): AuthConnector = new AuthConnector {
 
     def authorise[A](predicate: Predicate, retrieval: Retrieval[A])
                     (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[A] =
-      stubbedRetrievalResult.map(_.asInstanceOf[A])(ec)
+      stubbedRetrievalResult.map(_.asInstanceOf[A])(using ec)
   }
 
   override def beforeEach(): Unit = {
     reset(appConfig)
   }
 
-  private def noEnrolmentOnlyAuthAction(stubbedRetrievalResult: Future[_]) = new NoBothEnrolmentsOnlyAuthAction(
+  private def noEnrolmentOnlyAuthAction(stubbedRetrievalResult: Future[?]) = new NoBothEnrolmentsOnlyAuthAction(
     fakeAuthConnector(stubbedRetrievalResult),
     app.injector.instanceOf[FrontendAppConfig],
     app.injector.instanceOf[BodyParsers.Default]
@@ -95,7 +95,7 @@ class PreviouslyRegisteredControllerSpec extends ControllerWithQuestionPageBehav
       val result = controller().onPageLoadAdministrator(request)
 
       status(result) mustBe OK
-      contentAsString(result) mustBe view(formProvider(), AdministratorOrPractitioner.Administrator)(request, messages).toString
+      contentAsString(result) mustBe view(formProvider(), AdministratorOrPractitioner.Administrator)(using request, messages).toString
     }
 
     "return a Bad Request and errors when invalid data is submitted" in {
@@ -104,7 +104,7 @@ class PreviouslyRegisteredControllerSpec extends ControllerWithQuestionPageBehav
       val result = controller().onSubmitAdministrator(postRequest)
 
       status(result) mustBe BAD_REQUEST
-      contentAsString(result) mustBe view(boundForm, AdministratorOrPractitioner.Administrator)(postRequest,messages).toString
+      contentAsString(result) mustBe view(boundForm, AdministratorOrPractitioner.Administrator)(using postRequest,messages).toString
     }
 
     "redirect to the correct next page when yes stopped in chosen" in {
@@ -174,7 +174,7 @@ class PreviouslyRegisteredControllerSpec extends ControllerWithQuestionPageBehav
       val result = controller().onPageLoadPractitioner(request)
 
       status(result) mustBe OK
-      contentAsString(result) mustBe view(formProvider(), AdministratorOrPractitioner.Practitioner)(request, messages).toString
+      contentAsString(result) mustBe view(formProvider(), AdministratorOrPractitioner.Practitioner)(using request, messages).toString
     }
 
     "return a Bad Request and errors when invalid data is submitted" in {
@@ -183,7 +183,7 @@ class PreviouslyRegisteredControllerSpec extends ControllerWithQuestionPageBehav
       val result = controller().onSubmitPractitioner(postRequest)
 
       status(result) mustBe BAD_REQUEST
-      contentAsString(result) mustBe view(boundForm, AdministratorOrPractitioner.Practitioner)(postRequest,messages).toString
+      contentAsString(result) mustBe view(boundForm, AdministratorOrPractitioner.Practitioner)(using postRequest,messages).toString
     }
 
     "redirect to the correct next page when yes stopped in chosen" in {

@@ -22,6 +22,7 @@ import models.psa.remove.PsaToBeRemovedFromScheme
 import play.api.Logger
 import play.api.http.Status.NO_CONTENT
 import play.api.libs.json.Json
+import play.api.libs.ws.writeableOf_JsValue
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 import utils.HttpResponseHelper
@@ -42,7 +43,7 @@ class PsaRemovalConnectorImpl @Inject()(httpClientV2: HttpClientV2, config: Fron
 
   override def remove(srn: String, psaToBeRemoved: PsaToBeRemovedFromScheme)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
     val removePsaUrl = url"${config.removePsaUrl.format(srn)}"
-    httpClientV2.post(removePsaUrl)(hc)
+    httpClientV2.post(removePsaUrl)(using hc)
       .withBody(Json.toJson(psaToBeRemoved))
       .execute[HttpResponse].map { response =>
         response.status match {

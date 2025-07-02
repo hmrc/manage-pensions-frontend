@@ -25,68 +25,68 @@ class SchemeStatusSpec extends AnyFlatSpec with Matchers with ScalaCheckDrivenPr
 
   "SchemeStatus" should "correctly configure Pending" in {
 
-    SchemeStatus.Pending.value shouldBe "Pending"
-    SchemeStatus.Pending.pending shouldBe true
+    SchemeStatus.Pending.value `shouldBe` "Pending"
+    SchemeStatus.Pending.pending `shouldBe` true
 
-    SchemeStatus.PendingInfoRequired.value shouldBe "Pending Info Required"
-    SchemeStatus.PendingInfoRequired.pending shouldBe true
+    SchemeStatus.PendingInfoRequired.value `shouldBe` "Pending Info Required"
+    SchemeStatus.PendingInfoRequired.pending `shouldBe` true
 
-    SchemeStatus.PendingInfoReceived.value shouldBe "Pending Info Received"
-    SchemeStatus.PendingInfoReceived.pending shouldBe true
+    SchemeStatus.PendingInfoReceived.value `shouldBe` "Pending Info Received"
+    SchemeStatus.PendingInfoReceived.pending `shouldBe` true
 
     val pending = SchemeStatus.statuses.filter(_.pending)
-    pending.size shouldBe 3
+    pending.size `shouldBe` 3
 
     val statuses = Gen.oneOf(pending)
 
     forAll(statuses) {
       status =>
-        status.rejected shouldBe false
-        status.canRemovePsa shouldBe false
+        status.rejected `shouldBe` false
+        status.canRemovePsa `shouldBe` false
     }
 
   }
 
   it should "correctly configure Rejected" in {
 
-    SchemeStatus.Rejected.value shouldBe "Rejected"
-    SchemeStatus.Rejected.rejected shouldBe true
-    SchemeStatus.Rejected.canRemovePsa shouldBe true
+    SchemeStatus.Rejected.value `shouldBe` "Rejected"
+    SchemeStatus.Rejected.rejected `shouldBe` true
+    SchemeStatus.Rejected.canRemovePsa `shouldBe` true
 
-    SchemeStatus.RejectedUnderAppeal.value shouldBe "Rejected Under Appeal"
-    SchemeStatus.RejectedUnderAppeal.rejected shouldBe true
-    SchemeStatus.RejectedUnderAppeal.canRemovePsa shouldBe false
+    SchemeStatus.RejectedUnderAppeal.value `shouldBe` "Rejected Under Appeal"
+    SchemeStatus.RejectedUnderAppeal.rejected `shouldBe` true
+    SchemeStatus.RejectedUnderAppeal.canRemovePsa `shouldBe` false
 
-    SchemeStatus.statuses.count(_.rejected) shouldBe 2
+    SchemeStatus.statuses.count(_.rejected) `shouldBe` 2
   }
 
   it should "correctly configure Open" in {
 
-    SchemeStatus.Open.value shouldBe "Open"
+    SchemeStatus.Open.value `shouldBe` "Open"
 
-    SchemeStatus.Open.canRemovePsa shouldBe true
-    SchemeStatus.Open.pending shouldBe false
-    SchemeStatus.Open.rejected shouldBe false
+    SchemeStatus.Open.canRemovePsa `shouldBe` true
+    SchemeStatus.Open.pending `shouldBe` false
+    SchemeStatus.Open.rejected `shouldBe` false
 
   }
 
   it should "correctly configure Deregistered" in {
 
-    SchemeStatus.Deregistered.value shouldBe "Deregistered"
+    SchemeStatus.Deregistered.value `shouldBe` "Deregistered"
 
-    SchemeStatus.Deregistered.canRemovePsa shouldBe true
-    SchemeStatus.Deregistered.pending shouldBe false
-    SchemeStatus.Deregistered.rejected shouldBe false
+    SchemeStatus.Deregistered.canRemovePsa `shouldBe` true
+    SchemeStatus.Deregistered.pending `shouldBe` false
+    SchemeStatus.Deregistered.rejected `shouldBe` false
 
   }
 
   it should "correctly configure Wound-up" in {
 
-    SchemeStatus.WoundUp.value shouldBe "Wound-up"
+    SchemeStatus.WoundUp.value `shouldBe` "Wound-up"
 
-    SchemeStatus.WoundUp.canRemovePsa shouldBe true
-    SchemeStatus.WoundUp.pending shouldBe false
-    SchemeStatus.WoundUp.rejected shouldBe false
+    SchemeStatus.WoundUp.canRemovePsa `shouldBe` true
+    SchemeStatus.WoundUp.pending `shouldBe` false
+    SchemeStatus.WoundUp.rejected `shouldBe` false
 
   }
 

@@ -56,7 +56,7 @@ class AdministratorOrPractitionerControllerSpec extends ControllerWithQuestionPa
       val result = controller().onPageLoad(request)
 
       status(result) mustBe OK
-      contentAsString(result) mustBe view(formProvider())(request, messages).toString
+      contentAsString(result) mustBe view(formProvider())(using request, messages).toString
     }
 
     "return a Bad Request and errors when invalid data is submitted" in {
@@ -65,11 +65,11 @@ class AdministratorOrPractitionerControllerSpec extends ControllerWithQuestionPa
       val result = controller().onSubmit(postRequest)
 
       status(result) mustBe BAD_REQUEST
-      contentAsString(result) mustBe view(boundForm)(postRequest,messages).toString
+      contentAsString(result) mustBe view(boundForm)(using postRequest,messages).toString
     }
 
     "redirect to the next page for a valid request" in {
-      when(mockUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any()))
+      when(mockUserAnswersCacheConnector.save(any(), any(), any())(using any(), any(), any()))
         .thenReturn(Future.successful(Json.obj()))
       when(mockNavigator.nextPage(any(), any(), any())).thenReturn(onwardRoute)
       val postRequest = FakeRequest(POST, routes.AdministratorOrPractitionerController.onSubmit().url).withFormUrlEncodedBody("value" ->

@@ -27,9 +27,10 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.config.AuditingConfig
-import uk.gov.hmrc.play.audit.http.connector._
+import uk.gov.hmrc.play.audit.http.connector.*
 import uk.gov.hmrc.play.audit.model.{DataEvent, ExtendedDataEvent}
 
+import scala.compiletime.uninitialized
 import scala.concurrent.{ExecutionContext, Future}
 
 class AuditServiceSpec extends AsyncFlatSpec with Matchers with Inside {
@@ -49,8 +50,8 @@ class AuditServiceSpec extends AsyncFlatSpec with Matchers with Inside {
 
     inside(sentEvent) {
       case DataEvent(auditSource, auditType, _, _, detail, _, _, _, _) =>
-        auditSource shouldBe appName
-        auditType shouldBe "TestAuditEvent"
+        auditSource `shouldBe` appName
+        auditType `shouldBe` "TestAuditEvent"
         detail should contain("payload" -> "test-audit-payload")
     }
 
@@ -66,9 +67,9 @@ class AuditServiceSpec extends AsyncFlatSpec with Matchers with Inside {
 
     inside(sentEvent) {
       case ExtendedDataEvent(auditSource, auditType, _, _, detail, _, _, _, _) =>
-        auditSource shouldBe appName
-        auditType shouldBe "TestAuditEvent"
-        detail.toString() shouldBe Json.obj("payload" -> "test-audit-payload").toString()
+        auditSource `shouldBe` appName
+        auditType `shouldBe` "TestAuditEvent"
+        detail.toString() `shouldBe` Json.obj("payload" -> "test-audit-payload").toString()
     }
 
   }
@@ -94,8 +95,8 @@ object AuditServiceSpec {
 //noinspection ScalaDeprecation
 object FakeAuditConnector extends AuditConnector {
 
-  private var sentEvent: DataEvent = _
-  private var sentExtendedEvent: ExtendedDataEvent = _
+  private var sentEvent: DataEvent = uninitialized
+  private var sentExtendedEvent: ExtendedDataEvent = uninitialized
 
   override def auditingConfig: AuditingConfig = AuditingConfig(
     None,

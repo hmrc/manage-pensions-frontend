@@ -52,7 +52,7 @@ class ConfirmDeauthControllerSpec extends ControllerSpecBase {
     FakeAuthAction, dataRetrievalAction, new DataRequiredActionImpl, messagesApi, new FakeNavigator(onwardRoute),
     formProvider, FakeUserAnswersCacheConnector, controllerComponents, view, fakePspSchemeAuthAction)
 
-  private def viewAsString(form: Form[_] = form) = view(form, schemeName, srn, pspName)(fakeRequest, messages).toString
+  private def viewAsString(form: Form[?] = form) = view(form, schemeName, srn, pspName)(using fakeRequest, messages).toString
 
   "Confirm Deauthorisation Controller" when {
     "on a GET" must {

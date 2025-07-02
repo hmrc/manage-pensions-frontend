@@ -20,7 +20,7 @@
     layout: templates.Layout
 )
 
-@(pensionSchemesOnlineLink: String)(implicit request: Request[_], messages: Messages)
+@(pensionSchemesOnlineLink: String)(implicit request: Request[?], messages: Messages)
 
 @layout(pageTitle = messages("messages__filePensionSchemeReturn__title")){
 

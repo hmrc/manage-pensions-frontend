@@ -50,19 +50,19 @@ class ListOfSchemesConnectorImpl @Inject()(httpClientV2: HttpClientV2, config: F
   def getListOfSchemes(psaId: String
                       )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]] = {
       val schemeHc = hc.withExtraHeaders("idType" -> "PSA", "idValue" -> psaId)
-      listOfSchemes(listOfSchemesUrl)(schemeHc, ec)
+      listOfSchemes(listOfSchemesUrl)(using schemeHc, ec)
   }
 
   def getListOfSchemesForPsp(pspId: String
                             )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]] = {
     val schemeHc = hc.withExtraHeaders("idType" -> "PSP", "idValue" -> pspId)
-    listOfSchemes(listOfSchemesUrl)(schemeHc, ec)
+    listOfSchemes(listOfSchemesUrl)(using schemeHc, ec)
   }
 
   private def listOfSchemes(url: java.net.URL
                            )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpResponse, ListOfSchemes]] = {
 
-    httpClientV2.get(url)(hc)
+    httpClientV2.get(url)(using hc)
       .execute[HttpResponse].map { response =>
         response.status match {
           case OK => val json = Json.parse(response.body)

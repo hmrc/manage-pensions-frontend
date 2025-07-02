@@ -26,7 +26,7 @@ class PensionAdviserDetailsReadsSpec extends AnyWordSpec with Matchers {
   import PensionAdviserDetailsReadsSpec._
 
   "PensionAdviserDetails" must {
-    val result = inputJson.as[PensionAdviserDetails](PensionAdviserDetails.userAnswerReads)
+    val result = inputJson.as[PensionAdviserDetails](using PensionAdviserDetails.userAnswerReads)
     "read the adviser name" in {
       result.name mustBe InvitationBuilder.pensionAdviser.name
     }

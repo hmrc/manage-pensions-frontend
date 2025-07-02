@@ -70,7 +70,7 @@ class PsaIdController @Inject()(
     (authenticate() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData).async {
       implicit request =>
         form.bindFromRequest().fold(
-          (formWithErrors: Form[_]) =>
+          (formWithErrors: Form[?]) =>
             InviteeNameId.retrieve.map {
               psaName =>
                 Future.successful(BadRequest(view(formWithErrors, psaName, mode, srn)))

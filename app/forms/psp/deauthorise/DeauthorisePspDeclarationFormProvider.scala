@@ -25,7 +25,6 @@ class DeauthorisePspDeclarationFormProvider @Inject()() extends CheckboxMapping 
   def apply(): Form[Boolean] =
     Form(
       "declaration" -> checkboxMapping(
-        fieldName = "value",
         trueValue = "true",
         acceptTrueOnly = true,
         invalidKey = "messages__deauthPspDeclaration__required"

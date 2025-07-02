@@ -25,7 +25,7 @@ import models.{MinimalPSAPSP, MinimalSchemeDetail, SchemeReferenceNumber}
 import play.api.mvc.Call
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.{DateHelper, UserAnswers}
+import utils.{DateHelper, UserAnswers, UserAnswerOps}
 import views.html.invitations.invitation_success
 
 import java.time.LocalDate
@@ -55,7 +55,7 @@ class InvitationsSuccessControllerSpec extends ControllerWithNormalPageBehaviour
     testEmail,
     testSchemeName,
     testExpiryDate(frontendAppConfig),
-    continue)(fakeRequest, messages).toString
+    continue)(using fakeRequest, messages).toString
 
   private def fakeMinimalPsaConnector = new MinimalConnector {
     override def getMinimalPsaDetails()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MinimalPSAPSP] = ???

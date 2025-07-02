@@ -27,7 +27,7 @@ import org.scalatest.prop.TableFor4
 import play.api.libs.json.Json
 import play.api.mvc.Call
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.{NavigatorBehaviour, UserAnswers}
+import utils.{NavigatorBehaviour, UserAnswers, UserAnswerOps}
 
 class AuthorisePspNavigatorSpec extends SpecBase with NavigatorBehaviour {
 

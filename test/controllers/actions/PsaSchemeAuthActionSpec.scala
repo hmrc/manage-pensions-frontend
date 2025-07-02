@@ -43,7 +43,7 @@ class PsaSchemeAuthActionSpec
   private val notFoundTemplateResult = Html("")
 
   override def beforeAll(): Unit = {
-    when(errorHandler.notFoundTemplate(any())).thenReturn(notFoundTemplateResult)
+    when(errorHandler.notFoundTemplate(using any())).thenReturn(notFoundTemplateResult)
   }
 
   override def afterAll(): Unit = {
@@ -56,30 +56,30 @@ class PsaSchemeAuthActionSpec
 
     "return not found if PSAId not found" in {
       val request = OptionalDataRequest(fakeRequest, "", None, None, None , Individual, AuthEntity.PSA)
-      val result = action.apply((SchemeReferenceNumber("AB123456C"))).invokeBlock(request, { x: OptionalDataRequest[_] => Future.successful(Ok("")) })
+      val result = action.apply((SchemeReferenceNumber("AB123456C"))).invokeBlock(request, { (_: OptionalDataRequest[?]) => Future.successful(Ok("")) })
       status(result) mustBe NOT_FOUND
     }
 
     "return not found if getSchemeDetails fails" in {
-      when(schemeDetailsConnector.isPsaAssociated(any(), any(), any())(any(), any())).thenReturn(Future.failed(new RuntimeException("")))
+      when(schemeDetailsConnector.isPsaAssociated(any(), any(), any())(using any(), any())).thenReturn(Future.failed(new RuntimeException("")))
       val request = OptionalDataRequest(fakeRequest, "", None, Some(PsaId("A0000000")), None , Individual, AuthEntity.PSA)
-      val result = action.apply((SchemeReferenceNumber("AB123456C"))).invokeBlock(request, { x:OptionalDataRequest[_] => Future.successful(Ok("")) })
+      val result = action.apply((SchemeReferenceNumber("AB123456C"))).invokeBlock(request, { (_:OptionalDataRequest[?]) => Future.successful(Ok("")) })
       status(result) mustBe NOT_FOUND
     }
 
     "return not found if current psaId is missing from list of scheme admins" in {
-      when(schemeDetailsConnector.isPsaAssociated(any(), any(), any())(any(), any())).thenReturn(Future.successful(Some(false)))
+      when(schemeDetailsConnector.isPsaAssociated(any(), any(), any())(using any(), any())).thenReturn(Future.successful(Some(false)))
 
       val request = OptionalDataRequest(fakeRequest, "", None, Some(PsaId("A0000001")), None , Individual, AuthEntity.PSA)
-      val result = action.apply((SchemeReferenceNumber("AB123456C"))).invokeBlock(request, { x:OptionalDataRequest[_] => Future.successful(Ok("")) })
+      val result = action.apply((SchemeReferenceNumber("AB123456C"))).invokeBlock(request, { (_:OptionalDataRequest[?]) => Future.successful(Ok("")) })
       status(result) mustBe NOT_FOUND
     }
 
     "return ok after making an API call and ensuring that PSAId is authorised" in {
-      when(schemeDetailsConnector.isPsaAssociated(any(), any(), any())(any(), any())).thenReturn(Future.successful(Some(true)))
+      when(schemeDetailsConnector.isPsaAssociated(any(), any(), any())(using any(), any())).thenReturn(Future.successful(Some(true)))
 
       val request = OptionalDataRequest(fakeRequest, "", None, Some(PsaId("A0000000")), None , Individual, AuthEntity.PSA)
-      val result = action.apply((SchemeReferenceNumber("AB123456C"))).invokeBlock(request, { x:OptionalDataRequest[_] => Future.successful(Ok("")) })
+      val result = action.apply((SchemeReferenceNumber("AB123456C"))).invokeBlock(request, { (_:OptionalDataRequest[?]) => Future.successful(Ok("")) })
       status(result) mustBe OK
     }
   }

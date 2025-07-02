@@ -72,20 +72,20 @@ class WhatDoYouWantToDoControllerSpec extends ControllerSpecBase with ScalaFutur
   "WhatDoYouWantToDoController" must {
 
     "return OK with the view when calling on page load" in {
-      when(mockManagePensionsCacheConnector.fetch(any())(any, any())).thenReturn(
+      when(mockManagePensionsCacheConnector.fetch(any())(using any, any())).thenReturn(
         Future.successful(None))
 
       val request = addCSRFToken(FakeRequest(GET, getRoute))
       val result = controller.onPageLoad(role)(request)
 
       status(result) mustBe OK
-      contentAsString(result) mustBe view(formProvider("administrator"), "administrator")(request, messages).toString
+      contentAsString(result) mustBe view(formProvider("administrator"), "administrator")(using request, messages).toString
     }
 
     "return a Bad Request and errors when invalid data is submitted" in {
-      when(mockManagePensionsCacheConnector.fetch(any())(any, any())).thenReturn(
+      when(mockManagePensionsCacheConnector.fetch(any())(using any, any())).thenReturn(
         Future.successful(None))
-      when(mockManagePensionsCacheConnector.save(any(), any(), any())(any, any(), any())).thenReturn(
+      when(mockManagePensionsCacheConnector.save(any(), any(), any())(using any, any(), any())).thenReturn(
         Future.successful(Json.obj("whatDoYouWantToDo" -> "opt1")))
 
       val request = addCSRFToken(FakeRequest(POST, postRoute).withFormUrlEncodedBody("value" -> "invalid value"))
@@ -93,13 +93,13 @@ class WhatDoYouWantToDoControllerSpec extends ControllerSpecBase with ScalaFutur
       val boundForm = formProvider(role).bind(Map("value" -> "invalid value"))
 
       status(result) mustBe BAD_REQUEST
-      contentAsString(result) mustBe view(boundForm, "administrator")(request, messages).toString
+      contentAsString(result) mustBe view(boundForm, "administrator")(using request, messages).toString
     }
 
     "redirect to the next page for a valid request" in {
-      when(mockManagePensionsCacheConnector.fetch(any())(any, any())).thenReturn(
+      when(mockManagePensionsCacheConnector.fetch(any())(using any, any())).thenReturn(
         Future.successful(None))
-      when(mockManagePensionsCacheConnector.save(any(), any(), any())(any, any(), any())).thenReturn(
+      when(mockManagePensionsCacheConnector.save(any(), any(), any())(using any, any(), any())).thenReturn(
         Future.successful(Json.obj("whatDoYouWantToDo" -> "opt1")))
 
       val request = addCSRFToken(FakeRequest(POST, postRoute).withFormUrlEncodedBody("value" -> "opt1"))

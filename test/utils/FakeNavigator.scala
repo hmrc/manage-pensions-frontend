@@ -20,9 +20,11 @@ import identifiers.Identifier
 import models.{Mode, NormalMode, SchemeReferenceNumber}
 import play.api.mvc.Call
 
-class FakeNavigator(val desiredRoute: Call, mode: Mode = NormalMode) extends Navigator {
+import scala.annotation.unused
 
-  private[this] var userAnswers: Option[UserAnswers] = None
+class FakeNavigator(val desiredRoute: Call, @unused mode: Mode = NormalMode) extends Navigator {
+
+  private var userAnswers: Option[UserAnswers] = None
 
   def lastUserAnswers: Option[UserAnswers] = userAnswers
 

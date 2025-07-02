@@ -43,6 +43,6 @@ class PreviouslyRegisteredFormProviderSpec extends FormBehaviours with GuiceOneA
         Required -> messages("messages__previouslyRegistered__error__required"),
         Invalid -> "error.invalid"
       ),
-      PreviouslyRegistered.values.map(_.toString): _*)
+      PreviouslyRegistered.values.map(_.toString) *)
   }
 }

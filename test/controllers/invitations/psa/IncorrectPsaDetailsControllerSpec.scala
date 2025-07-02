@@ -20,7 +20,7 @@ import controllers.actions._
 import controllers.behaviours.ControllerWithNormalPageBehaviours
 import models.MinimalSchemeDetail
 import play.api.mvc.{Action, AnyContent}
-import utils.UserAnswers
+import utils.{UserAnswers, UserAnswerOps}
 import views.html.invitations.psa.incorrectPsaDetails
 
 class IncorrectPsaDetailsControllerSpec extends ControllerWithNormalPageBehaviours {
@@ -40,7 +40,7 @@ class IncorrectPsaDetailsControllerSpec extends ControllerWithNormalPageBehaviou
       frontendAppConfig, messagesApi, fakeAuth, dataRetrievalAction, requiredDateAction, controllerComponents, view, fakePsaSchemeAuthAction).onPageLoad(srn)
   }
 
-  def viewAsString(): String = view(invitee, srn, schemeName)(fakeRequest, messages).toString
+  def viewAsString(): String = view(invitee, srn, schemeName)(using fakeRequest, messages).toString
 
   behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, Some(userAnswer.dataRetrievalAction), () => viewAsString())
 
