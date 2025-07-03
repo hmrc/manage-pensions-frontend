@@ -1,7 +1,6 @@
 import play.sbt.routes.RoutesKeys
 import sbt.Def
 import scoverage.ScoverageKeys
-import uk.gov.hmrc.DefaultBuildSettings
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 
 lazy val appName: String = "manage-pensions-frontend"
@@ -42,6 +41,7 @@ lazy val root = (project in file("."))
     CodeCoverageSettings(),
     libraryDependencies ++= AppDependencies(),
     retrieveManaged := true,
+    // concatenate js
     Concat.groups := Seq(
       "javascripts/application.js" -> group(Seq(
         "javascripts/autocomplete/location-autocomplete.min.js",
