@@ -43,6 +43,6 @@ class WhichServiceYouWantToViewFormProviderSpec extends FormBehaviours {
         Required -> "messages__whichServiceYouWantToView__error__required",
         Invalid -> "error.invalid"
       ),
-      WhichServiceYouWantToView.options("PSA").map(_.value.get): _*)
+      WhichServiceYouWantToView.options("PSA").map(_.value.get) *)
   }
 }

@@ -20,7 +20,7 @@
     layout: templates.Layout
 )
 
-@(managePensionSchemeLink: String,pensionSchemesOnlineLink: String)(implicit request: Request[_], messages: Messages)
+@(managePensionSchemeLink: String,pensionSchemesOnlineLink: String)(implicit request: Request[?], messages: Messages)
 
 @layout(pageTitle = messages("messages__fileAccountingForTaxReturn__title")){
 

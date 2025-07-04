@@ -124,7 +124,7 @@ class DeclarationController @Inject()(
               pensionAdviserDetails =
                 userAnswers
                   .json
-                  .validate[PensionAdviserDetails](PensionAdviserDetails.userAnswerReads)
+                  .validate[PensionAdviserDetails](using PensionAdviserDetails.userAnswerReads)
                   .asOpt
             )
 

@@ -27,7 +27,7 @@
     button: components.govuk_button
 )
 
-@(form: Form[_])(implicit request: Request[_], messages: Messages)
+@(form: Form[?])(implicit request: Request[?], messages: Messages)
 
 @layout(pageTitle = titleWithErrors(form, "Set Date - Test Only")) {
 

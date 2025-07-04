@@ -22,7 +22,7 @@ import controllers.actions.{DataRequiredActionImpl, FakeAuthAction, FakeUnAuthor
 import models.MinimalSchemeDetail
 import play.api.mvc.Call
 import play.api.test.Helpers._
-import utils.{FakeNavigator, UserAnswers}
+import utils.{FakeNavigator, UserAnswers, UserAnswerOps}
 import views.html.invitations.psa.psa_already_associated
 
 class PsaAlreadyAssociatedControllerSpec extends ControllerSpecBase {
@@ -129,7 +129,7 @@ object PsaAlreadyAssociatedControllerSpec extends ControllerSpecBase {
       testInviteeName,
       testSchemeName
     )(
-      base.fakeRequest,
+      using base.fakeRequest,
       base.messages
     ).toString()
 

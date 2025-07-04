@@ -68,11 +68,11 @@ class CannotAccessPageAsAdministratorController @Inject()(
   def onSubmit: Action[AnyContent] = auth().async {
     implicit request =>
       form.bindFromRequest().fold(
-        (formWithErrors: Form[_]) =>
+        (formWithErrors: Form[?]) =>
           Future.successful(BadRequest(view(formWithErrors))),
         value => {
           cacheConnector.fetch(request.externalId).flatMap { optionJsValue =>
-            val optionUA = optionJsValue.map(UserAnswers)
+            val optionUA = optionJsValue.map(UserAnswers.apply)
             val optionContinueUrl = optionUA.flatMap(_.get(ContinueURLID))
             val optionUAContinueURLRemoved = optionUA.flatMap(_.remove(ContinueURLID).asOpt)
 

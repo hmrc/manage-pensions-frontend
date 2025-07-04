@@ -36,7 +36,7 @@ class PspIdFormProviderSpec extends StringFieldBehaviours with Constraints{
 
     "bind valid data" in {
         val result = form.bind(Map(fieldName -> "01234567")).apply(fieldName)
-        result.errors shouldBe empty
+        result.errors `shouldBe` empty
     }
 
     s"not bind string longer than 8 characters" in {
@@ -64,8 +64,8 @@ class PspIdFormProviderSpec extends StringFieldBehaviours with Constraints{
 
     "remove spaces" in {
       val result = form.bind(Map(fieldName -> " 021 000 51 "))
-      result.errors shouldBe empty
-      result.value shouldBe Some("02100051")
+      result.errors `shouldBe` empty
+      result.value `shouldBe` Some("02100051")
     }
   }
 }

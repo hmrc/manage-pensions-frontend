@@ -22,7 +22,7 @@
     appConfig: FrontendAppConfig
 )
 
-@(viewModel: RemovalViewModel)(implicit request: Request[_], messages: Messages)
+@(viewModel: RemovalViewModel)(implicit request: Request[?], messages: Messages)
 
 @layout(pageTitle = messages(viewModel.titleMessageKey)) {
 

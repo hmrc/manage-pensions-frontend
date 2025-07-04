@@ -34,7 +34,7 @@ class FrontendConnectorPensionSchemeSpec extends AsyncWordSpec with Matchers wit
   implicit val headerCarrier: HeaderCarrierForPartials =
     HeaderCarrierForPartials(hc = HeaderCarrier())
   private val schemeUrlsPartialHtmlUrl = "/register-pension-scheme/urls-partial"
-  implicit val request: FakeRequest[_] = FakeRequest("", "")
+  implicit val request: FakeRequest[?] = FakeRequest("", "")
   private val schemeUrlsPartialHtml: Html = Html("test-scheme-partial-html")
 
   "FrontendConnector for Pension Scheme" when {

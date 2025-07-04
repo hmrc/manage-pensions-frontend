@@ -39,7 +39,7 @@ class RetrievalsSpec extends AnyWordSpec with FrontendBaseController with Retrie
   def dataRequest(data: JsValue): DataRequest[AnyContent] =
     DataRequest(FakeRequest("", ""), "cacheId", UserAnswers(data), Some(PsaId("A0000000")), None, Individual, AuthEntity.PSA)
 
-  val success: String => Future[Result] = { _: String =>
+  val success: String => Future[Result] = { (_: String) =>
     Future.successful(Ok("Success"))
   }
 

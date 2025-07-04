@@ -53,7 +53,7 @@ class CannotAccessPageAsAdministratorControllerSpec
 
   override def beforeEach(): Unit = {
     reset(mockSessionDataCacheConnector)
-    when(mockSessionDataCacheConnector.save(any(), any(), any())(any(), any(), any()))
+    when(mockSessionDataCacheConnector.save(any(), any(), any())(using any(), any(), any()))
       .thenReturn(Future.successful(JsNull))
     super.beforeEach()
   }
@@ -69,7 +69,7 @@ class CannotAccessPageAsAdministratorControllerSpec
       val result = controller.onPageLoad(request)
 
       status(result) mustBe OK
-      contentAsString(result) mustBe view(formProvider())(request, messages).toString
+      contentAsString(result) mustBe view(formProvider())(using request, messages).toString
     }
 
     "redirect when calling on page load with no continue parameter" in {
@@ -81,9 +81,9 @@ class CannotAccessPageAsAdministratorControllerSpec
     }
 
     "redirect to the administrator dashboard page for a valid request where administrator chosen" in {
-      when(mockSessionDataCacheConnector.fetch(any())(any(), any()))
+      when(mockSessionDataCacheConnector.fetch(any())(using any(), any()))
         .thenReturn(Future.successful(Some(uaWithContinueUrl.json)))
-      when(mockSessionDataCacheConnector.upsert(any(), any())(any(), any()))
+      when(mockSessionDataCacheConnector.upsert(any(), any())(using any(), any()))
         .thenReturn(Future.successful(JsNull))
 
       val postRequest = FakeRequest(POST, CannotAccessPageAsAdministratorController.onSubmit().url).withFormUrlEncodedBody(
@@ -96,9 +96,9 @@ class CannotAccessPageAsAdministratorControllerSpec
     }
 
     "redirect to the page in parameter for a valid request where practitioner chosen and update the role in mongo" in {
-      when(mockSessionDataCacheConnector.fetch(any())(any(), any()))
+      when(mockSessionDataCacheConnector.fetch(any())(using any(), any()))
         .thenReturn(Future.successful(Some(uaWithContinueUrl.json)))
-      when(mockSessionDataCacheConnector.upsert(any(), any())(any(), any()))
+      when(mockSessionDataCacheConnector.upsert(any(), any())(using any(), any()))
         .thenReturn(Future.successful(JsNull))
       val postRequest = FakeRequest(POST, CannotAccessPageAsAdministratorController.onSubmit().url).withFormUrlEncodedBody(
         "value" -> AdministratorOrPractitioner.Practitioner.toString
@@ -109,7 +109,7 @@ class CannotAccessPageAsAdministratorControllerSpec
       redirectLocation(result) mustBe Some(continueUrl)
       val jsonCaptor = ArgumentCaptor.forClass(classOf[JsValue])
       val expectedSessionCacheJson = Json.obj{"administratorOrPractitioner" -> "practitioner"}
-      verify(mockSessionDataCacheConnector, times(1)).upsert(any(), jsonCaptor.capture())(any(), any())
+      verify(mockSessionDataCacheConnector, times(1)).upsert(any(), jsonCaptor.capture())(using any(), any())
       jsonCaptor.getValue mustBe expectedSessionCacheJson
     }
   }

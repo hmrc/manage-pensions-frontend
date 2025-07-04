@@ -32,7 +32,7 @@ class NoBothEnrolmentsOnlyAuthActionSpec
 
   private def action(enrolments: Set[Enrolment]): NoBothEnrolmentsOnlyAuthAction = action(NoBothEnrolmentsOnlyAuthActionSpec.authRetrievals(enrolments))
 
-  private def action(stubbedRetrievalResult: Future[_]): NoBothEnrolmentsOnlyAuthAction = new NoBothEnrolmentsOnlyAuthAction(
+  private def action(stubbedRetrievalResult: Future[?]): NoBothEnrolmentsOnlyAuthAction = new NoBothEnrolmentsOnlyAuthAction(
     authConnector = fakeAuthConnector(stubbedRetrievalResult),
     config = frontendAppConfig,
     parser = app.injector.instanceOf[BodyParsers.Default]

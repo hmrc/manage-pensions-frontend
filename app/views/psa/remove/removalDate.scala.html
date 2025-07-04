@@ -29,7 +29,7 @@
     button: components.govuk_button
 )
 
-@(form: Form[_], psaName: String, schemeName: String, srn: String, associationDate: String)(implicit request: Request[_], messages: Messages)
+@(form: Form[?], psaName: String, schemeName: String, srn: String, associationDate: String)(implicit request: Request[?], messages: Messages)
 
 @layout(pageTitle = titleWithErrors(form, messages("messages__removalDate__title"))) {
 

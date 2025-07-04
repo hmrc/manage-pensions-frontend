@@ -64,7 +64,7 @@ class AdviserEmailAddressController @Inject()(
     implicit request =>
       AdviserNameId.retrieve.map { adviserName =>
         form.bindFromRequest().fold(
-          (formWithErrors: Form[_]) => {
+          (formWithErrors: Form[?]) => {
             Future.successful(BadRequest(view(formWithErrors, mode, adviserName)))
           },
           value =>

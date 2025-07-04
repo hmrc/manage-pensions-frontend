@@ -71,31 +71,31 @@ class WhatRoleControllerV2Spec extends ControllerSpecBase with ScalaFutures with
 
     "return OK with the view when calling on page load" in {
 
-      when(mockManagePensionsCacheConnector.fetch(any())(any, any())).thenReturn(
+      when(mockManagePensionsCacheConnector.fetch(any())(using any, any())).thenReturn(
         Future.successful(None))
 
       val request = addCSRFToken(FakeRequest(GET, getRoute))
       val result = controller.onPageLoad(request)
 
       status(result) mustBe OK
-      contentAsString(result) mustBe view(form)(request, messages).toString
+      contentAsString(result) mustBe view(form)(using request, messages).toString
     }
     "return OK with the view when calling on page load and question previously answered" in {
 
-      when(mockManagePensionsCacheConnector.fetch(any())(any, any())).thenReturn(
+      when(mockManagePensionsCacheConnector.fetch(any())(using any, any())).thenReturn(
         Future.successful(Some(Json.obj("whatRole" -> "administrator"))))
 
       val request = addCSRFToken(FakeRequest(GET, getRoute))
       val result = controller.onPageLoad(request)
 
       status(result) mustBe OK
-      contentAsString(result) mustBe view(form.fill(WhatRole.PSA))(request, messages).toString
+      contentAsString(result) mustBe view(form.fill(WhatRole.PSA))(using request, messages).toString
     }
 
     "redirect to the next page for a valid request" in {
-      when(mockManagePensionsCacheConnector.fetch(any())(any, any())).thenReturn(
+      when(mockManagePensionsCacheConnector.fetch(any())(using any, any())).thenReturn(
         Future.successful(None))
-      when(mockManagePensionsCacheConnector.save(any(), any(), any())(any, any(), any())).thenReturn(
+      when(mockManagePensionsCacheConnector.save(any(), any(), any())(using any, any(), any())).thenReturn(
         Future.successful(Json.obj("whatRole" -> "administrator")))
 
       val request = addCSRFToken(FakeRequest(POST, postRoute).withFormUrlEncodedBody("value" -> "administrator"))
@@ -107,9 +107,9 @@ class WhatRoleControllerV2Spec extends ControllerSpecBase with ScalaFutures with
   }
 
   "return a Bad Request and errors when invalid data is submitted" in {
-    when(mockManagePensionsCacheConnector.fetch(any())(any, any())).thenReturn(
+    when(mockManagePensionsCacheConnector.fetch(any())(using any, any())).thenReturn(
       Future.successful(None))
-    when(mockManagePensionsCacheConnector.save(any(), any(), any())(any, any(), any())).thenReturn(
+    when(mockManagePensionsCacheConnector.save(any(), any(), any())(using any, any(), any())).thenReturn(
       Future.successful(Json.obj("whatRole" -> "administrator")))
 
     val request = addCSRFToken(FakeRequest(POST, postRoute).withFormUrlEncodedBody("value" -> "invalid value"))
@@ -117,6 +117,6 @@ class WhatRoleControllerV2Spec extends ControllerSpecBase with ScalaFutures with
 
     val boundForm = formProvider().bind(Map("value" -> "invalid value"))
     status(result) mustBe BAD_REQUEST
-    contentAsString(result) mustBe view(boundForm)(request, messages).toString
+    contentAsString(result) mustBe view(boundForm)(using request, messages).toString
   }
 }

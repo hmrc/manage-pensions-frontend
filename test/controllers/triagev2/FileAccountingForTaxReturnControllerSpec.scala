@@ -41,7 +41,7 @@ class FileAccountingForTaxReturnControllerSpec extends ControllerSpecBase with S
 
       status(result) mustBe OK
       contentAsString(result) mustBe
-        view(psaOverviewLink, frontendAppConfig.tpssWelcomeUrl)(request, messages).toString
+        view(psaOverviewLink, frontendAppConfig.tpssWelcomeUrl)(using request, messages).toString
     }
 
     "return OK with the view when calling on page load for PSP" in {
@@ -51,7 +51,7 @@ class FileAccountingForTaxReturnControllerSpec extends ControllerSpecBase with S
 
       status(result) mustBe OK
       contentAsString(result) mustBe
-        view(pspOverviewLink, frontendAppConfig.tpssWelcomeUrl)(request, messages).toString
+        view(pspOverviewLink, frontendAppConfig.tpssWelcomeUrl)(using request, messages).toString
     }
   }
 }

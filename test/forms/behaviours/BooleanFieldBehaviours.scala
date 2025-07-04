@@ -23,18 +23,18 @@ import play.api.data.FormError
 
 trait BooleanFieldBehaviours extends FieldBehaviours with OptionValues with ScalaCheckDrivenPropertyChecks {
 
-  def booleanField(form: Form[_],
+  def booleanField(form: Form[?],
                    fieldName: String,
                    invalidError: FormError): Unit = {
 
     "bind true" in {
       val result = form.bind(Map(fieldName -> "true"))
-      result.value.value shouldBe true
+      result.value.value `shouldBe` true
     }
 
     "bind false" in {
       val result = form.bind(Map(fieldName -> "false"))
-      result.value.value shouldBe false
+      result.value.value `shouldBe` false
     }
 
     "not bind non-booleans" in {

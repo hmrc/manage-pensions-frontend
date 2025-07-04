@@ -26,6 +26,7 @@ import utils.Enumerable
 import views.html.triagev2.filePensionSchemeReturn
 
 import javax.inject.Inject
+import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 
 class FilePensionSchemeReturnController @Inject()(override val messagesApi: MessagesApi,
@@ -37,7 +38,7 @@ class FilePensionSchemeReturnController @Inject()(override val messagesApi: Mess
                                            ) extends FrontendBaseController with I18nSupport with Enumerable.Implicits with Retrievals {
 
 
-  def onPageLoad(role: String): Action[AnyContent] = triageAction.async {
+  def onPageLoad(@unused role: String): Action[AnyContent] = triageAction.async {
     implicit request =>
       Future.successful(Ok(view(appConfig.tpssWelcomeUrl)))
   }

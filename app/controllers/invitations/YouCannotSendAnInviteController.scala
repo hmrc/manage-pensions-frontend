@@ -16,7 +16,6 @@
 
 package controllers.invitations
 
-import config.FrontendAppConfig
 import controllers.actions._
 import models.SchemeReferenceNumber
 
@@ -31,11 +30,9 @@ import views.html.invitations.youCannotSendAnInvite
 
 import scala.concurrent.ExecutionContext
 
-class YouCannotSendAnInviteController @Inject()(appConfig: FrontendAppConfig,
+class YouCannotSendAnInviteController @Inject()(authenticate: AuthAction,
                                                 override val messagesApi: MessagesApi,
-                                                authenticate: AuthAction,
                                                 getData: DataRetrievalAction,
-                                                requireData: DataRequiredAction,
                                                 val controllerComponents: MessagesControllerComponents,
                                                 view: youCannotSendAnInvite,
                                                 psaSchemeAuthAction: PsaSchemeAuthAction)(implicit val ec: ExecutionContext) extends

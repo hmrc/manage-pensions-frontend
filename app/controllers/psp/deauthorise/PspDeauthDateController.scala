@@ -89,7 +89,7 @@ class PspDeauthDateController @Inject()(
               relationshipStartDate = pspDetails.relationshipStartDate,
               earliestDateError = earliestDateError(formatDate(pspDetails.relationshipStartDate)).resolve
             ).bindFromRequest().fold(
-              (formWithErrors: Form[_]) =>
+              (formWithErrors: Form[?]) =>
                 Future.successful(BadRequest(view(
                   form = formWithErrors,
                   pspName = pspDetails.name,

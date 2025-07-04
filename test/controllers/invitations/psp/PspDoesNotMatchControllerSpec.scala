@@ -23,7 +23,7 @@ import identifiers.invitations.psp.PspNameId
 import identifiers.{SchemeNameId, SchemeSrnId}
 import models.SchemeReferenceNumber
 import play.api.mvc.{Action, AnyContent, Call}
-import utils.UserAnswers
+import utils.{UserAnswers, UserAnswerOps}
 import views.html.invitations.psp.pspDoesNotMatch
 
 class PspDoesNotMatchControllerSpec extends ControllerWithNormalPageBehaviours {
@@ -42,7 +42,7 @@ class PspDoesNotMatchControllerSpec extends ControllerWithNormalPageBehaviours {
 
   private val pspDoesNotMatchView = injector.instanceOf[pspDoesNotMatch]
 
-  def viewAsString(): String = pspDoesNotMatchView(testSchemeName, testPspName, continue)(fakeRequest, messages).toString
+  def viewAsString(): String = pspDoesNotMatchView(testSchemeName, testPspName, continue)(using fakeRequest, messages).toString
 
   private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
 

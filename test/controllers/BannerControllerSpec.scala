@@ -60,17 +60,17 @@ class BannerControllerSpec extends ControllerWithQuestionPageBehaviours with Sca
   "BannerController" must {
 
     "return OK with the view when calling on page load" in {
-      when(mockMinimalConnector.getMinimalPsaDetails()(any(), any())).thenReturn(Future.successful(minDetails))
+      when(mockMinimalConnector.getMinimalPsaDetails()(using any(), any())).thenReturn(Future.successful(minDetails))
       val form = formProvider.apply().fill(URBanner("Nigel Smith", "email@email.com"))
       val request = FakeRequest(GET, routes.BannerController.onPageLoadPsa.url)
       val result = controller.onPageLoadPsa(request)
       status(result) mustBe OK
-      contentAsString(result) mustBe viewPsa(form)(request, messages).toString
+      contentAsString(result) mustBe viewPsa(form)(using request, messages).toString
     }
 
     "return a Bad Request and errors when invalid data is submitted" in {
-      when(mockMinimalConnector.getMinimalPsaDetails()(any(), any())).thenReturn(Future.successful(minDetails))
-      when(mockEmailConnector.sendEmail(any())(any(), any())).thenReturn(Future.successful(EmailNotSent))
+      when(mockMinimalConnector.getMinimalPsaDetails()(using any(), any())).thenReturn(Future.successful(minDetails))
+      when(mockEmailConnector.sendEmail(any())(using any(), any())).thenReturn(Future.successful(EmailNotSent))
       val postRequest =
         FakeRequest(POST, routes.BannerController.onSubmitPsa.url).withFormUrlEncodedBody("indOrgName" -> "invalid value")
       val boundForm =
@@ -79,11 +79,11 @@ class BannerControllerSpec extends ControllerWithQuestionPageBehaviours with Sca
         controller.onSubmitPsa(postRequest)
 
       status(result) mustBe BAD_REQUEST
-      contentAsString(result) mustBe viewPsa(boundForm)(postRequest,messages).toString
+      contentAsString(result) mustBe viewPsa(boundForm)(using postRequest,messages).toString
     }
     "return a redirect when correct information is submitted" in {
-      when(mockMinimalConnector.getMinimalPsaDetails()(any(), any())).thenReturn(Future.successful(minDetails))
-      when(mockEmailConnector.sendEmail(any())(any(), any())).thenReturn(Future.successful(EmailSent))
+      when(mockMinimalConnector.getMinimalPsaDetails()(using any(), any())).thenReturn(Future.successful(minDetails))
+      when(mockEmailConnector.sendEmail(any())(using any(), any())).thenReturn(Future.successful(EmailSent))
 
       val onwardRoute = controllers.routes.BannerConfirmationController.onPageLoadPsa
 

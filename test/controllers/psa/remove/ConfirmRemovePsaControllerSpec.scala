@@ -52,7 +52,7 @@ class ConfirmRemovePsaControllerSpec extends ControllerWithQuestionPageBehaviour
   }
 
   private def viewAsString(form: Form[Boolean]) = view(form, schemeName,
-    srn, psaName)(fakeRequest, messages).toString
+    srn, psaName)(using fakeRequest, messages).toString
 
   behave like controllerWithOnPageLoadMethod(onPageLoadAction,
     userAnswer.dataRetrievalAction, validData, form, form.fill(true), viewAsString)

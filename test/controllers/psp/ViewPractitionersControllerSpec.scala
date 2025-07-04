@@ -84,7 +84,7 @@ class ViewPractitionersControllerSpec extends ControllerSpecBase with MockitoSug
       fakePsaSchemeAuthAction
     )
 
-  private def viewAsString() = viewPractitionersView(schemeName, returnCall, practitionersViewModel, true, srn.id)(fakeRequest, messages).toString
+  private def viewAsString() = viewPractitionersView(schemeName, returnCall, practitionersViewModel, true, srn.id)(using fakeRequest, messages).toString
 
   "ViewPractitionersController" must {
     "return OK and the correct view for a GET" in {

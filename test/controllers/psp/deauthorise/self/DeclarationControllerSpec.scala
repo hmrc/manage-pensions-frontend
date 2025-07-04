@@ -90,7 +90,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
       fakePspSchemeAuthAction
     )
 
-  private def viewAsString(form: Form[Boolean] = form) = view(form, schemeName, srn)(fakeRequest, messages).toString
+  private def viewAsString(form: Form[Boolean] = form) = view(form, schemeName, srn)(using fakeRequest, messages).toString
 
   override def beforeEach(): Unit = {
     reset(mockPspConnector)
@@ -121,13 +121,13 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
 
     "on a POST" must {
       "save data, redirect to next page if valid data is submitted, send email to PSP using correct template for a company and send splunk audit event" in {
-        when(mockPspConnector.deAuthorise(any(), any(), any(), any())(any(), any()))
+        when(mockPspConnector.deAuthorise(any(), any(), any(), any())(using any(), any()))
           .thenReturn(Future.successful(HttpResponse.apply(OK, Json.stringify(Json.obj("processingDate" -> LocalDate.now)))))
-        when(mockMinimalConnector.getMinimalPspDetails()(any(), any()))
+        when(mockMinimalConnector.getMinimalPspDetails()(using any(), any()))
           .thenReturn(Future.successful(minPspOrganisation))
-        when(mockEmailConnector.sendEmail(any())(any(), any())).thenReturn(Future.successful(EmailSent))
+        when(mockEmailConnector.sendEmail(any())(using any(), any())).thenReturn(Future.successful(EmailSent))
 
-        when(mockAuditService.sendEvent(ArgumentMatchers.eq(expectedPspSelfDeauthorisationEmailAuditEvent))(any(), any())).thenReturn(Future.successful(AuditResult.Success))
+        when(mockAuditService.sendEvent(ArgumentMatchers.eq(expectedPspSelfDeauthorisationEmailAuditEvent))(using any(), any())).thenReturn(Future.successful(AuditResult.Success))
 
         val postRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.obj("declaration" -> true))
         val result = controller().onSubmit(srn)(postRequest)
@@ -136,7 +136,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
         redirectLocation(result) mustBe Some(onwardRoute.url)
 
         val emailRequestCaptor = ArgumentCaptor.forClass(classOf[SendEmailRequest])
-        verify(mockEmailConnector, times(1)).sendEmail(emailRequestCaptor.capture())(any(), any())
+        verify(mockEmailConnector, times(1)).sendEmail(emailRequestCaptor.capture())(using any(), any())
         val actualSendEmailRequest = emailRequestCaptor.getValue
 
         actualSendEmailRequest.to mustBe List(minPspOrganisation.email)
@@ -151,21 +151,21 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
       }
 
       "save data, redirect to next page if valid data is submitted, send email to PSP using correct template for an individual and send splunk audit event" in {
-        when(mockPspConnector.deAuthorise(any(), any(), any(), any())(any(), any()))
+        when(mockPspConnector.deAuthorise(any(), any(), any(), any())(using any(), any()))
           .thenReturn(Future.successful(HttpResponse.apply(OK, Json.stringify(Json.obj("processingDate" -> LocalDate.now)))))
-        when(mockMinimalConnector.getMinimalPspDetails()(any(), any()))
+        when(mockMinimalConnector.getMinimalPspDetails()(using any(), any()))
           .thenReturn(Future.successful(minPspIndividual))
-        when(mockEmailConnector.sendEmail(any())(any(), any())).thenReturn(Future.successful(EmailSent))
+        when(mockEmailConnector.sendEmail(any())(using any(), any())).thenReturn(Future.successful(EmailSent))
         val postRequest: FakeRequest[AnyContentAsJson] = FakeRequest().withJsonBody(Json.obj("declaration" -> true))
         val result = controller().onSubmit(srn)(postRequest)
 
-        when(mockAuditService.sendEvent(ArgumentMatchers.eq(expectedPspSelfDeauthorisationEmailAuditEvent))(any(), any())).thenReturn(Future.successful(AuditResult.Success))
+        when(mockAuditService.sendEvent(ArgumentMatchers.eq(expectedPspSelfDeauthorisationEmailAuditEvent))(using any(), any())).thenReturn(Future.successful(AuditResult.Success))
 
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(onwardRoute.url)
 
         val emailRequestCaptor = ArgumentCaptor.forClass(classOf[SendEmailRequest])
-        verify(mockEmailConnector, times(1)).sendEmail(emailRequestCaptor.capture())(any(), any())
+        verify(mockEmailConnector, times(1)).sendEmail(emailRequestCaptor.capture())(using any(), any())
         val actualSendEmailRequest = emailRequestCaptor.getValue
 
         actualSendEmailRequest.to mustBe List(minPspOrganisation.email)

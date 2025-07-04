@@ -25,7 +25,7 @@ import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, AnyContentAsJson}
 import play.api.test.FakeRequest
-import utils.{FakeNavigator, UserAnswers}
+import utils.{FakeNavigator, UserAnswers, UserAnswerOps}
 import views.html.invitations.psa.adviserDetails
 
 class AdviserDetailsControllerSpec extends ControllerWithQuestionPageBehaviours {
@@ -55,7 +55,7 @@ class AdviserDetailsControllerSpec extends ControllerWithQuestionPageBehaviours 
       view).onSubmit(NormalMode)
   }
 
-  private def viewAsString(form: Form[_]) = view(form, NormalMode)(fakeRequest, messages).toString
+  private def viewAsString(form: Form[?]) = view(form, NormalMode)(using fakeRequest, messages).toString
 
 
   behave like controllerWithOnPageLoadMethod(onPageLoadAction, getEmptyData, userAnswer.dataRetrievalAction, form, form.fill("test"), viewAsString)

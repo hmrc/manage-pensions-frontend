@@ -37,7 +37,7 @@ case class TolerantAddress(addressLine1: Option[String],
       this.addressLine4,
       this.countryOpt,
       this.postcode
-    ).flatten(s => s)
+    ).flatten(using s => s)
   }
 
   def print: String = {
@@ -161,7 +161,7 @@ object TolerantAddress {
           (addresses, currentAddress) => {
             for {
               sequenceOfAddressess <- addresses
-              address <- currentAddress.validate[TolerantAddress](postCodeLookupAddressReads)
+              address <- currentAddress.validate[TolerantAddress](using postCodeLookupAddressReads)
             } yield sequenceOfAddressess :+ address
           }
         }
@@ -175,7 +175,7 @@ object TolerantAddress {
       (JsPath \ "addressLine4").formatNullable[String] and
       (JsPath \ "postalCode").formatNullable[String] and
       (JsPath \ "countryCode").formatNullable[String]
-    ) (TolerantAddress.apply, unlift(TolerantAddress.unapply))
+    ) (TolerantAddress.apply, unlift(o => Some(Tuple.fromProductTyped(o))))
 
   implicit def convert(tolerant: TolerantAddress): Option[Address] = {
     for {

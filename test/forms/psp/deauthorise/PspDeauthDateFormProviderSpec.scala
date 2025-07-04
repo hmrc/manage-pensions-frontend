@@ -55,7 +55,7 @@ class PspDeauthDateFormProviderSpec extends StringFieldBehaviours with Constrain
           "pspDeauthDate.month" -> futureDate.getMonthValue.toString,
           "pspDeauthDate.year" -> futureDate.getYear.toString
         )
-      ).errors shouldBe Seq(FormError(fieldName, "messages__pspDeauth_date_error__future_date"))
+      ).errors `shouldBe` Seq(FormError(fieldName, "messages__pspDeauth_date_error__future_date"))
     }
 
     "not accept a date before relationship start date for psa" in {
@@ -65,7 +65,7 @@ class PspDeauthDateFormProviderSpec extends StringFieldBehaviours with Constrain
           "pspDeauthDate.month" -> relationshipStartDate.minusDays(1).getMonthValue.toString,
           "pspDeauthDate.year" -> relationshipStartDate.minusDays(1).getYear.toString
         )
-      ).errors shouldBe Seq(FormError(fieldName, "messages__pspDeauth_date_error__before_relationshipStartDate"))
+      ).errors `shouldBe` Seq(FormError(fieldName, "messages__pspDeauth_date_error__before_relationshipStartDate"))
     }
   }
 

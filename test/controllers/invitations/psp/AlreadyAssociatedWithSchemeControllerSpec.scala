@@ -45,7 +45,7 @@ class AlreadyAssociatedWithSchemeControllerSpec extends ControllerSpecBase {
     fakePsaSchemeAuthAction
   )
 
-  private def viewAsString(): String = view("xyz", schemeName)(fakeRequest, messages).toString
+  private def viewAsString(): String = view("xyz", schemeName)(using fakeRequest, messages).toString
 
   "PspClientReferenceController" when {
     "on a GET" must {

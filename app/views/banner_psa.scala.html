@@ -33,7 +33,7 @@
     govukInput : GovukInput
 )
 
-@(form: Form[URBanner])(implicit request: Request[_], messages: Messages)
+@(form: Form[URBanner])(implicit request: Request[?], messages: Messages)
 
 @layout(pageTitle = titleWithErrors(form, messages("messages__banner__title")), showBackLink = false){
 

@@ -26,6 +26,6 @@ class WhichServiceYouWantToViewFormProvider @Inject() extends Mappings {
 
   def apply(role: String): Form[WhichServiceYouWantToView] =
     Form(
-      "value" -> enumerable[WhichServiceYouWantToView]("messages__whichServiceYouWantToView__error__required")(WhichServiceYouWantToView.enumerable(role))
+      "value" -> enumerable[WhichServiceYouWantToView]("messages__whichServiceYouWantToView__error__required")(using WhichServiceYouWantToView.enumerable(role))
     )
 }

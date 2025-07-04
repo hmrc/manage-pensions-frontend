@@ -23,7 +23,7 @@
     panel: components.panel
 )
 
-@()(implicit request: Request[_], messages: Messages)
+@()(implicit request: Request[?], messages: Messages)
 
 @layout(pageTitle = messages("messages__banner__confirmation__title"), showBackLink = false) {
 

@@ -21,7 +21,7 @@
     panel: components.panel
 )
 
-@(schemeName: String, authorisingPsa: String, emailAddress: String)(implicit request: Request[_],messages: Messages)
+@(schemeName: String, authorisingPsa: String, emailAddress: String)(implicit request: Request[?],messages: Messages)
 
 @email = {
     <span class="bold">@emailAddress</span>

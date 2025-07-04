@@ -42,7 +42,7 @@ class DateMappingSpec extends AnyWordSpec with DateMapping with Matchers with Op
     val testForm = Form(
       mapping(
         "date" -> dateMapping(dateErrors)
-      )(TestClass.apply)(TestClass.unapply)
+      )(TestClass.apply)(o => Some(o.date))
     )
 
     // scalastyle:off magic.number

@@ -71,20 +71,20 @@ class WhichServiceYouWantToViewControllerSpec extends ControllerSpecBase with Sc
   "WhichServiceYouWantToViewController" must {
 
     "return OK with the view when calling on page load" in {
-      when(mockManagePensionsCacheConnector.fetch(any())(any, any())).thenReturn(
+      when(mockManagePensionsCacheConnector.fetch(any())(using any, any())).thenReturn(
         Future.successful(None))
 
       val request = addCSRFToken(FakeRequest(GET, getRoute))
       val result = controller.onPageLoad(role)(request)
 
       status(result) mustBe OK
-      contentAsString(result) mustBe view(form, role)(request, messages).toString
+      contentAsString(result) mustBe view(form, role)(using request, messages).toString
     }
 
     "return a Bad Request and errors when invalid data is submitted" in {
-      when(mockManagePensionsCacheConnector.fetch(any())(any, any())).thenReturn(
+      when(mockManagePensionsCacheConnector.fetch(any())(using any, any())).thenReturn(
         Future.successful(None))
-      when(mockManagePensionsCacheConnector.save(any(), any(), any())(any, any(), any())).thenReturn(
+      when(mockManagePensionsCacheConnector.save(any(), any(), any())(using any, any(), any())).thenReturn(
         Future.successful(Json.obj("whichServiceYouWantToView" -> "opt1")))
 
       val request = addCSRFToken(FakeRequest(POST, postRoute).withFormUrlEncodedBody("value" -> "invalid value"))
@@ -92,13 +92,13 @@ class WhichServiceYouWantToViewControllerSpec extends ControllerSpecBase with Sc
       val boundForm = formProvider("administrator").bind(Map("value" -> "invalid value"))
 
       status(result) mustBe BAD_REQUEST
-      contentAsString(result) mustBe view(boundForm, "administrator")(request, messages).toString
+      contentAsString(result) mustBe view(boundForm, "administrator")(using request, messages).toString
     }
 
     "redirect to the next page for a valid request" in {
-      when(mockManagePensionsCacheConnector.fetch(any())(any, any())).thenReturn(
+      when(mockManagePensionsCacheConnector.fetch(any())(using any, any())).thenReturn(
         Future.successful(None))
-      when(mockManagePensionsCacheConnector.save(any(), any(), any())(any, any(), any())).thenReturn(
+      when(mockManagePensionsCacheConnector.save(any(), any(), any())(using any, any(), any())).thenReturn(
         Future.successful(Json.obj("whichServiceYouWantToView" -> "opt1")))
 
       val request = addCSRFToken(FakeRequest(POST, postRoute).withFormUrlEncodedBody("value" -> "opt1"))

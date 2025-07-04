@@ -48,7 +48,7 @@ class PspConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper w
 
     connector.authorisePsp(pstr, psaId, pspId, Some(cr), srn) map {
       _ =>
-        server.findAll(postRequestedFor(urlEqualTo(pspAuthUrl))).size() shouldBe 1
+        server.findAll(postRequestedFor(urlEqualTo(pspAuthUrl))).size() `shouldBe` 1
     }
   }
 
@@ -69,7 +69,7 @@ class PspConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper w
       connector.authorisePsp(pstr, psaId, pspId, Some(cr), srn)
     } map {
       _ =>
-        server.findAll(postRequestedFor(urlEqualTo(pspAuthUrl))).size() shouldBe 1
+        server.findAll(postRequestedFor(urlEqualTo(pspAuthUrl))).size() `shouldBe` 1
     }
   }
 
@@ -89,7 +89,7 @@ class PspConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper w
       connector.authorisePsp(pstr, psaId, pspId, Some(cr), srn)
     } map {
       _ =>
-        server.findAll(postRequestedFor(urlEqualTo(pspAuthUrl))).size() shouldBe 1
+        server.findAll(postRequestedFor(urlEqualTo(pspAuthUrl))).size() `shouldBe` 1
     }
   }
 
@@ -109,7 +109,7 @@ class PspConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper w
       connector.authorisePsp(pstr, psaId, pspId, Some(cr), srn)
     } map {
       _ =>
-        server.findAll(postRequestedFor(urlEqualTo(pspAuthUrl))).size() shouldBe 1
+        server.findAll(postRequestedFor(urlEqualTo(pspAuthUrl))).size() `shouldBe` 1
     }
   }
 
@@ -128,9 +128,9 @@ class PspConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper w
 
     connector.deAuthorise(pstr, psaDeAuthPsa, srn) map {
       response =>
-        server.findAll(postRequestedFor(urlEqualTo(deAuthUrl))).size() shouldBe 1
-        response.status shouldBe 200
-        (Json.parse(response.body) \ "processingDate").asOpt[String].isDefined shouldBe true
+        server.findAll(postRequestedFor(urlEqualTo(deAuthUrl))).size() `shouldBe` 1
+        response.status `shouldBe` 200
+        (Json.parse(response.body) \ "processingDate").asOpt[String].isDefined `shouldBe` true
     }
   }
 
@@ -149,9 +149,9 @@ class PspConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper w
 
     connector.deAuthorise(pstr, psaDeAuthPsp, srn) map {
       response =>
-        server.findAll(postRequestedFor(urlEqualTo(deAuthUrl))).size() shouldBe 1
-        response.status shouldBe 200
-        (Json.parse(response.body) \ "processingDate").asOpt[String].isDefined shouldBe true
+        server.findAll(postRequestedFor(urlEqualTo(deAuthUrl))).size() `shouldBe` 1
+        response.status `shouldBe` 200
+        (Json.parse(response.body) \ "processingDate").asOpt[String].isDefined `shouldBe` true
     }
   }
 
@@ -170,9 +170,9 @@ class PspConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper w
 
     connector.deAuthorise(pstr, pspDeAuthPsp, srn, true) map {
       response =>
-        server.findAll(postRequestedFor(urlEqualTo(deAuthSelfUrl))).size() shouldBe 1
-        response.status shouldBe 200
-        (Json.parse(response.body) \ "processingDate").asOpt[String].isDefined shouldBe true
+        server.findAll(postRequestedFor(urlEqualTo(deAuthSelfUrl))).size() `shouldBe` 1
+        response.status `shouldBe` 200
+        (Json.parse(response.body) \ "processingDate").asOpt[String].isDefined `shouldBe` true
     }
   }
 
@@ -193,7 +193,7 @@ class PspConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper w
       connector.deAuthorise(pstr, psaDeAuthPsa, srn)
     } map {
       _ =>
-        server.findAll(postRequestedFor(urlEqualTo(deAuthUrl))).size() shouldBe 1
+        server.findAll(postRequestedFor(urlEqualTo(deAuthUrl))).size() `shouldBe` 1
     }
   }
 
@@ -213,7 +213,7 @@ class PspConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper w
       connector.deAuthorise(pstr, psaDeAuthPsa, srn)
     } map {
       _ =>
-        server.findAll(postRequestedFor(urlEqualTo(deAuthUrl))).size() shouldBe 1
+        server.findAll(postRequestedFor(urlEqualTo(deAuthUrl))).size() `shouldBe` 1
     }
   }
 
@@ -233,7 +233,7 @@ class PspConnectorSpec extends AsyncFlatSpec with Matchers with WireMockHelper w
       connector.deAuthorise(pstr, psaDeAuthPsa, srn)
     } map {
       _ =>
-        server.findAll(postRequestedFor(urlEqualTo(deAuthUrl))).size() shouldBe 1
+        server.findAll(postRequestedFor(urlEqualTo(deAuthUrl))).size() `shouldBe` 1
     }
   }
 }

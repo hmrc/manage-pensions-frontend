@@ -29,7 +29,7 @@ class DelimitedAdministratorControllerSpec extends ControllerSpecBase {
   def controller: DelimitedAdministratorController =
     new DelimitedAdministratorController(frontendAppConfig, messagesApi, controllerComponents, view, viewPsp)
 
-  private def viewAsString() = view()(fakeRequest, messages).toString
+  private def viewAsString() = view()(using fakeRequest, messages).toString
 
   "DelimitedAdministratorController" must {
 

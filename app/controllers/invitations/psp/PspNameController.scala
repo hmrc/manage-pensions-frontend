@@ -68,7 +68,7 @@ class PspNameController @Inject()(
     implicit request =>
 
       form.bindFromRequest().fold(
-        (formWithErrors: Form[_]) =>
+        (formWithErrors: Form[?]) =>
           SchemeNameId.retrieve.map { case schemeName =>
             Future.successful(BadRequest(view(formWithErrors, mode, schemeName, srn, returnCall(srn))))
           },

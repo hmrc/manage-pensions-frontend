@@ -59,7 +59,7 @@ trait DateMapping extends Formatters with Constraints {
   protected def int(requiredKey: String = "error.required",
                     wholeNumberKey: String = "error.wholeNumber",
                     nonNumericKey: String = "error.nonNumeric"): FieldMapping[Int] =
-    of(intFormatter(requiredKey, wholeNumberKey, nonNumericKey))
+    of(using intFormatter(requiredKey, wholeNumberKey, nonNumericKey))
 }
 
 object DateMapping {

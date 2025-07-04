@@ -33,7 +33,7 @@ trait EmailBehaviours extends FormSpec with StringFieldBehaviours with Constrain
 
   //scalastyle:off method.length
   def formWithEmailField(
-                          form: Form[_],
+                          form: Form[?],
                           fieldName: String,
                           keyEmailRequired: String,
                           keyEmailLength: String,
@@ -90,7 +90,7 @@ trait EmailBehaviours extends FormSpec with StringFieldBehaviours with Constrain
   }
 
   private def emailWithCorrectFormat(
-                                      form: Form[_],
+                                      form: Form[?],
                                       fieldName: String
                                     ): Unit = {
 

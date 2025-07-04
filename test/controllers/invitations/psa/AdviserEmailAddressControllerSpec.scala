@@ -47,7 +47,7 @@ class AdviserEmailAddressControllerSpec extends ControllerSpecBase {
     FakeUserAnswersCacheConnector, controllerComponents, view
   )
 
-  private def viewAsString(form: Form[_] = form) = view(form, NormalMode, "test name")(fakeRequest, messages).toString
+  private def viewAsString(form: Form[?] = form) = view(form, NormalMode, "test name")(using fakeRequest, messages).toString
 
   "AdviserDetailsController" when {
     "on a GET" must {

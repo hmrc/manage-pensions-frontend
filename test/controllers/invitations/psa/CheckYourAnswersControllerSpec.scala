@@ -29,11 +29,10 @@ import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.Configuration
 import play.api.mvc.{Action, AnyContent, Call}
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import utils.countryOptions.CountryOptions
-import utils.{CheckYourAnswersFactory, UserAnswers}
+import utils.{CheckYourAnswersFactory, UserAnswers, UserAnswerOps}
 import views.html.check_your_answers_view
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -49,38 +48,38 @@ class CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours 
   "calling submit" must {
 
     "redirect to duplicate invitation page if invitation failed with Psa already invited error" in {
-      val result = onSubmitAction(userAnswerUpdated, FakeAuthAction, Future.successful(PsaAlreadyInvitedError))(FakeRequest())
+      val result = onSubmitAction(userAnswerUpdated, FakeAuthAction, Future.successful(PsaAlreadyInvitedError))(fakeRequest)
 
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(InvitationDuplicateController.onPageLoad(srn).url)
+      status(result) `mustBe` SEE_OTHER
+      redirectLocation(result) `mustBe` Some(InvitationDuplicateController.onPageLoad(srn).url)
     }
 
     "redirect to incorrect psa details page if invitation failed with name matching error" in {
-      val result = onSubmitAction(userAnswerUpdated, FakeAuthAction, Future.successful(NameMatchingError))(FakeRequest())
+      val result = onSubmitAction(userAnswerUpdated, FakeAuthAction, Future.successful(NameMatchingError))(fakeRequest)
 
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(IncorrectPsaDetailsController.onPageLoad(srn).url)
+      status(result) `mustBe` SEE_OTHER
+      redirectLocation(result) `mustBe` Some(IncorrectPsaDetailsController.onPageLoad(srn).url)
     }
 
     "redirect to incorrect psa details page if psa id not found" in {
-      val result = onSubmitAction(userAnswerUpdated, FakeAuthAction, Future.failed(new NotFoundException("not found")))(FakeRequest())
+      val result = onSubmitAction(userAnswerUpdated, FakeAuthAction, Future.failed(new NotFoundException("not found")))(fakeRequest)
 
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(IncorrectPsaDetailsController.onPageLoad(srn).url)
+      status(result) `mustBe` SEE_OTHER
+      redirectLocation(result) `mustBe` Some(IncorrectPsaDetailsController.onPageLoad(srn).url)
     }
 
     "redirect to psa already invited page if scheme already has invitee psa id associated with it and names match" in {
 
-      val result = onSubmitAction(userAnswerUpdatedPsaAlreadyInvited, FakeAuthAction, Future.successful(InvitationSent))(FakeRequest())
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(PsaAlreadyAssociatedController.onPageLoad(srn).url)
+      val result = onSubmitAction(userAnswerUpdatedPsaAlreadyInvited, FakeAuthAction, Future.successful(InvitationSent))(fakeRequest)
+      status(result) `mustBe` SEE_OTHER
+      redirectLocation(result) `mustBe` Some(PsaAlreadyAssociatedController.onPageLoad(srn).url)
     }
 
     "redirect to psa already associated page if scheme already has invitee psa id associated with it and names don't match" in {
 
-      val result = onSubmitAction(userAnswerUpdatedPsaAlreadyInvited, FakeAuthAction, Future.successful(NameMatchingError))(FakeRequest())
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result) mustBe Some(PsaAlreadyAssociatedController.onPageLoad(srn).url)
+      val result = onSubmitAction(userAnswerUpdatedPsaAlreadyInvited, FakeAuthAction, Future.successful(NameMatchingError))(fakeRequest)
+      status(result) `mustBe` SEE_OTHER
+      redirectLocation(result) `mustBe` Some(PsaAlreadyAssociatedController.onPageLoad(srn).url)
     }
   }
 }
@@ -125,7 +124,7 @@ object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours
   def call: Call = CheckYourAnswersController.onSubmit(srn)
 
   def viewAsString(): String = view(Seq(), call,
-    Some("messages__check__your__answer__main__containt__label"), Some(testSchemeName))(fakeRequest, messages).toString
+    Some("messages__check__your__answer__main__containt__label"), Some(testSchemeName))(using fakeRequest, messages).toString
 
   def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
 
@@ -136,7 +135,7 @@ object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours
 
   def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
 
-    when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any()))
+    when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(using any(), any()))
       .thenReturn(Future.successful(UserAnswers(readJsonFromFile("/data/validSchemeDetailsResponse.json"))))
 
     new CheckYourAnswersController(
@@ -146,7 +145,7 @@ object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours
 
   def onSubmitAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction, invitationResponse: Future[InvitationStatus]): Action[AnyContent] = {
 
-    when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(any(), any()))
+    when(fakeSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(using any(), any()))
       .thenReturn(Future.successful(UserAnswers(readJsonFromFile("/data/validSchemeDetailsResponse.json"))))
 
     new CheckYourAnswersController(

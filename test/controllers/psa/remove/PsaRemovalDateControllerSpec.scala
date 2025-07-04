@@ -40,7 +40,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.{redirectLocation, status, _}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.DateHelper._
-import utils.UserAnswers
+import utils.{UserAnswers, UserAnswerOps}
 import views.html.psa.remove.removalDate
 
 import java.time.LocalDate
@@ -70,12 +70,12 @@ class PsaRemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours 
   }
 
   private def viewAsStringPostRequest(form: Form[LocalDate]): String =
-    view(form, psaName, schemeName, srn, formatDate(associationDate))(postRequest, messages).toString
+    view(form, psaName, schemeName, srn, formatDate(associationDate))(using postRequest, messages).toString
 
   override def beforeEach(): Unit = {
     reset(mockedPensionSchemeVarianceLockConnector)
     reset(mockedUpdateSchemeCacheConnector)
-    when(mockedPensionSchemeVarianceLockConnector.getLockByPsa(any())(any(), any())).thenReturn(Future.successful(None))
+    when(mockedPensionSchemeVarianceLockConnector.getLockByPsa(any())(using any(), any())).thenReturn(Future.successful(None))
   }
 
   behave like controllerWithOnSubmitMethod(onSubmitAction, data, form(associationDate, frontendAppConfig.earliestDatePsaRemoval).bind(dateKeys),
@@ -87,40 +87,40 @@ class PsaRemovalDateControllerSpec extends ControllerWithQuestionPageBehaviours 
     "remove lock and cached update data if present and lock and updated scheme owned by PSA" in {
       val sv = SchemeVariance(psaId = "A0000000", srn = srn)
 
-      when(mockedPensionSchemeVarianceLockConnector.getLockByPsa(ArgumentMatchers.eq("A0000000"))(any(), any())).thenReturn(Future.successful(Some(sv)))
-      when(mockedUpdateSchemeCacheConnector.removeAll(ArgumentMatchers.eq(srn))(any(), any())).thenReturn(Future.successful(Ok("")))
+      when(mockedPensionSchemeVarianceLockConnector.getLockByPsa(ArgumentMatchers.eq("A0000000"))(using any(), any())).thenReturn(Future.successful(Some(sv)))
+      when(mockedUpdateSchemeCacheConnector.removeAll(ArgumentMatchers.eq(srn))(using any(), any())).thenReturn(Future.successful(Ok("")))
 
       val result = onSubmitAction(data, FakeAuthAction)(postRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(onwardRoute.url)
 
-      verify(mockedUpdateSchemeCacheConnector, times(1)).removeAll(any())(any(), any())
+      verify(mockedUpdateSchemeCacheConnector, times(1)).removeAll(any())(using any(), any())
       verify(mockedPensionSchemeVarianceLockConnector, times(1)).
-        releaseLock(ArgumentMatchers.eq("A0000000"), ArgumentMatchers.eq(srn))(any(), any())
-      verify(mockedUpdateSchemeCacheConnector, times(1)).removeAll(ArgumentMatchers.eq(srn))(any(), any())
+        releaseLock(ArgumentMatchers.eq("A0000000"), ArgumentMatchers.eq(srn))(using any(), any())
+      verify(mockedUpdateSchemeCacheConnector, times(1)).removeAll(ArgumentMatchers.eq(srn))(using any(), any())
     }
 
     "NOT remove lock and cached update data if present and lock but DIFFERENT updated scheme owned by PSA" in {
       val anotherSrn = "test srn 2"
       val sv = SchemeVariance(psaId = "A0000000", srn = anotherSrn)
 
-      when(mockedPensionSchemeVarianceLockConnector.getLockByPsa(ArgumentMatchers.eq("A0000000"))(any(), any())).thenReturn(Future.successful(Some(sv)))
+      when(mockedPensionSchemeVarianceLockConnector.getLockByPsa(ArgumentMatchers.eq("A0000000"))(using any(), any())).thenReturn(Future.successful(Some(sv)))
 
       val result = onSubmitAction(data, FakeAuthAction)(postRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(onwardRoute.url)
 
-      verify(mockedPensionSchemeVarianceLockConnector, times(0)).releaseLock(any(), any())(any(), any())
-      verify(mockedUpdateSchemeCacheConnector, times(0)).removeAll(any())(any(), any())
+      verify(mockedPensionSchemeVarianceLockConnector, times(0)).releaseLock(any(), any())(using any(), any())
+      verify(mockedUpdateSchemeCacheConnector, times(0)).removeAll(any())(using any(), any())
     }
 
     "return the correct relationship start date" in {
       val result = controller(userAnswer.dataRetrievalAction, FakeAuthAction).onPageLoad(srn)(fakeRequest)
       status(result) mustBe OK
       val fm = form(associationDate, frontendAppConfig.earliestDatePsaRemoval)
-      contentAsString(result) mustBe view(fm, psaName, schemeName, srn, formatDate(relationshipDateAsLocalDate))(fakeRequest, messages).toString
+      contentAsString(result) mustBe view(fm, psaName, schemeName, srn, formatDate(relationshipDateAsLocalDate))(using fakeRequest, messages).toString
     }
   }
 }

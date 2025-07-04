@@ -43,6 +43,6 @@ class CannotAccessPageAsPractitionerFormProviderSpec extends FormBehaviours with
         Required -> messages("messages__cannotAccessPageAsPractitioner__error__required"),
         Invalid -> "error.invalid"
       ),
-      AdministratorOrPractitioner.optionsCannotAccessPageAsPractitioner.map(_.value.get): _*)
+      AdministratorOrPractitioner.optionsCannotAccessPageAsPractitioner.map(_.value.get) *)
   }
 }

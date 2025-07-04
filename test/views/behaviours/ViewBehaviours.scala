@@ -102,7 +102,7 @@ trait ViewBehaviours extends ViewSpecBase {
       messageKeyPrefix,
       messagesApi(s"messages__${messageKeyPrefix}__title"),
       pageHeader,
-      expectedGuidanceKeys: _*
+      expectedGuidanceKeys *
     )
   }
 
@@ -144,8 +144,8 @@ trait ViewBehaviours extends ViewSpecBase {
   }
 
   //scalastyle:off method.length
-  def pageWithDateFields(view: Form[_] => HtmlFormat.Appendable,
-                         form: Form[_], idkey: String = "date",
+  def pageWithDateFields(view: Form[?] => HtmlFormat.Appendable,
+                         form: Form[?], idkey: String = "date",
                          msgKey: String = "date"): Unit = {
 
     val day = LocalDate.now().getDayOfMonth

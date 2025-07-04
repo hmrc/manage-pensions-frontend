@@ -32,7 +32,7 @@ class IndexControllerSpec extends ControllerSpecBase {
 
     "return the correct view for a GET" in {
       val result = new IndexController(frontendAppConfig, messagesApi, FakeAuthAction, controllerComponents, view).onPageLoad()(fakeRequest)
-      contentAsString(result) mustBe view()(fakeRequest, messages).toString
+      contentAsString(result) mustBe view()(using fakeRequest, messages).toString
     }
   }
 }

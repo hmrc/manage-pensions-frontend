@@ -66,7 +66,7 @@ class InviteController @Inject()(
       }
   }
 
-  private def getSchemeDetails(srn: SchemeReferenceNumber)(implicit request: AuthenticatedRequest[_]): Future[Option[SchemeDetails]] =
+  private def getSchemeDetails(srn: SchemeReferenceNumber)(implicit request: AuthenticatedRequest[?]): Future[Option[SchemeDetails]] =
     schemeDetailsConnector.getSchemeDetails(
       psaId = request.psaIdOrException.id,
       idNumber = srn,

@@ -43,6 +43,6 @@ class WhatRoleFormProviderSpec extends FormBehaviours {
         Required -> "messages__whatRole__error",
         Invalid -> "error.invalid"
       ),
-      WhatRole.options.map(_.value.get): _*)
+      WhatRole.options.map(_.value.get) *)
   }
 }

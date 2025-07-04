@@ -76,9 +76,9 @@ class FrontendConnector @Inject()(httpClientV2: HttpClientV2, config: FrontendAp
 
     implicit val hc: HeaderCarrier = HeaderCarrierFunctions.headerCarrierForPartials(request)
       .toHeaderCarrier
-      .withExtraHeaders(extraHeaders: _*)
+      .withExtraHeaders(extraHeaders *)
 
-    httpClientV2.get(url"${url}")(hc)
+    httpClientV2.get(url"${url}")(using hc)
       .transform(_.withRequestTimeout(timeout))
       .execute[HttpResponse]
       .flatMap(handleResponse)

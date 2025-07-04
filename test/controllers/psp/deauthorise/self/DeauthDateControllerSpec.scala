@@ -60,7 +60,7 @@ class DeauthDateControllerSpec extends ControllerSpecBase {
     new DeauthDateController(messagesApi, FakeUserAnswersCacheConnector, new FakeNavigator(onwardRoute), FakeAuthAction,
       dataRetrievalAction, new DataRequiredActionImpl, formProvider, controllerComponents, view, fakePspSchemeAuthAction)
 
-  private def viewAsString(form: Form[_] = form) = view(form, schemeName, srn, formatDate(date))(fakeRequest, messages).toString
+  private def viewAsString(form: Form[?] = form) = view(form, schemeName, srn, formatDate(date))(using fakeRequest, messages).toString
 
   "Deauth Date Controller" when {
     "on a GET" must {

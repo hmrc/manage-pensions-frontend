@@ -39,15 +39,15 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar wit
   import ListSchemesControllerSpec._
 
   override def beforeEach(): Unit = {
-    when(mockAppConfig.minimumSchemeSearchResults) thenReturn 1
+    when(mockAppConfig.minimumSchemeSearchResults).thenReturn(1)
   }
 
   "onPageLoad" when {
 
-    when(mockMinimalConnector.getNameFromPspID()(any(), any())).thenReturn(Future.successful(Some(pspName)))
+    when(mockMinimalConnector.getNameFromPspID()(using any(), any())).thenReturn(Future.successful(Some(pspName)))
 
     "return OK and the correct view when there are no schemes" in {
-      when(mockSchemeSearchService.searchPsp(any(), any())(any(), any())).thenReturn(Future.successful(Nil))
+      when(mockSchemeSearchService.searchPsp(any(), any())(using any(), any())).thenReturn(Future.successful(Nil))
 
       val fixture = testFixture(pspIdNoSchemes)
 
@@ -65,12 +65,12 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar wit
 
   "onSearch" when {
 
-    when(mockMinimalConnector.getNameFromPspID()(any(), any()))
+    when(mockMinimalConnector.getNameFromPspID()(using any(), any()))
       .thenReturn(Future.successful(Some(pspName)))
 
     "return OK and the correct view when there are schemes" in {
       val searchText = "24000001IN"
-      when(mockSchemeSearchService.searchPsp(any(), ArgumentMatchers.eq(Some(searchText)))(any(), any())).thenReturn(Future.successful(fullSchemes))
+      when(mockSchemeSearchService.searchPsp(any(), ArgumentMatchers.eq(Some(searchText)))(using any(), any())).thenReturn(Future.successful(fullSchemes))
 
       val fixture = testFixture(pspIdWithSchemes)
       val postRequest = fakeRequest.withFormUrlEncodedBody(("searchText", searchText))
@@ -87,7 +87,7 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar wit
     }
 
     "return BADREQUEST and error when no value is entered into search" in {
-      when(mockSchemeSearchService.searchPsp(any(), ArgumentMatchers.eq(None))(any(), any())).thenReturn(Future.successful(fullSchemes))
+      when(mockSchemeSearchService.searchPsp(any(), ArgumentMatchers.eq(None))(using any(), any())).thenReturn(Future.successful(fullSchemes))
 
       val fixture = testFixture(pspIdWithSchemes)
       val postRequest = fakeRequest.withFormUrlEncodedBody(("searchText", ""))
@@ -107,7 +107,7 @@ class ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar wit
     "return OK and the correct view with correct no matches message when no match is made" in {
 
       val incorrectSearchText = "incorrect"
-      when(mockSchemeSearchService.searchPsp(any(), ArgumentMatchers.eq(Some(incorrectSearchText)))(any(), any())).thenReturn(Future.successful(Nil))
+      when(mockSchemeSearchService.searchPsp(any(), ArgumentMatchers.eq(Some(incorrectSearchText)))(using any(), any())).thenReturn(Future.successful(Nil))
 
       val fixture = testFixture(pspIdWithSchemes)
       val postRequest =
@@ -263,7 +263,7 @@ object ListSchemesControllerSpec extends ControllerSpecBase with MockitoSugar {
       schemes = schemes,
       pspName = pspName,
       numberOfSchemes = numberOfSchemes
-    )(fakeRequest, messages).toString()
+    )(using fakeRequest, messages).toString()
   }
 }
 

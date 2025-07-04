@@ -72,7 +72,7 @@ class CheckYourAnswersController @Inject()(appConfig: FrontendAppConfig,
 
   private def isSchemeAssociatedWithInvitee(psaId: String, srn: String,
                                             inviteePsaId: String)
-                                           (implicit request: Request[_]): Future[Boolean] =
+                                           (implicit request: Request[?]): Future[Boolean] =
     schemeDetailsConnector.getSchemeDetails(
       psaId = psaId,
       idNumber = srn,

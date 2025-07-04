@@ -37,7 +37,7 @@ trait Retrievals {
 
     def retrieve(implicit request: DataRequest[AnyContent]): Either[Future[Result], A]
 
-    def and[B](query: Retrieval[B]): Retrieval[A ~ B] =
+    infix def and[B](query: Retrieval[B]): Retrieval[A ~ B] =
       new Retrieval[A ~ B] {
         override def retrieve(implicit request: DataRequest[AnyContent]): Either[Future[Result], A ~ B] = {
           for {
@@ -51,7 +51,7 @@ trait Retrievals {
   object Retrieval {
 
     def apply[A](f: DataRequest[AnyContent] => Either[Future[Result], A]): Retrieval[A] =
-      (request: DataRequest[AnyContent]) => f(request)
+      implicit request => f(request)
 
     def static[A](a: A): Retrieval[A] =
       Retrieval { _ =>
@@ -61,12 +61,14 @@ trait Retrievals {
 
   implicit def fromId[A](id: TypedIdentifier[A])(implicit rds: Reads[A]): Retrieval[A] =
     Retrieval {
-      implicit request =>
+      implicit request: DataRequest[AnyContent] =>
         request.userAnswers.get(id) match {
           case Some(value) => Right(value)
           case None => Left(Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad)))
         }
     }
+
+  
 
   implicit def merge(f: Either[Future[Result], Future[Result]]): Future[Result] =
     f.merge

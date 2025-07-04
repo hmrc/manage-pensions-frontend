@@ -34,7 +34,7 @@ class FrontendConnectorEventReportingSpec extends AsyncWordSpec with Matchers wi
   implicit val headerCarrier: HeaderCarrierForPartials =
     HeaderCarrierForPartials(hc = HeaderCarrier())
   private val erPartialUrl = "/manage-pension-scheme-event-report/event-reporting-partials"
-  implicit val request: FakeRequest[_] = FakeRequest("", "")
+  implicit val request: FakeRequest[?] = FakeRequest("", "")
   private val erHtml: Html = Html("test-er-html")
 
   "FrontendConnector for EventReporting" when {

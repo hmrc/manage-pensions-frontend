@@ -17,9 +17,10 @@
 package identifiers
 
 import play.api.libs.json.JsPath
-import play.api.libs.json._
+import play.api.libs.json.*
 import utils.UserAnswers
 
+import scala.annotation.unused
 import scala.language.implicitConversions
 
 trait Identifier {
@@ -43,7 +44,7 @@ object TypedIdentifier {
   trait PathDependent extends Identifier {
     type Data
 
-    def cleanup(value: Option[Data], userAnswers: UserAnswers): JsResult[UserAnswers] = JsSuccess(userAnswers)
+    def cleanup(@unused value: Option[Data], userAnswers: UserAnswers): JsResult[UserAnswers] = JsSuccess(userAnswers)
   }
 
 }

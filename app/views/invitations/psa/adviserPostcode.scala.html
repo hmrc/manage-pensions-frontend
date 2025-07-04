@@ -30,7 +30,7 @@
     button: components.govuk_button
 )
 
-@(form: Form[_], name: String)(implicit request: Request[_], messages: Messages)
+@(form: Form[?], name: String)(implicit request: Request[?], messages: Messages)
 
 @layout(pageTitle = titleWithErrors(form, messages("messages__adviser__postcode__title"))) {
 

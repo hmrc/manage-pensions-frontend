@@ -71,7 +71,7 @@ class ViewPspClientReferenceController @Inject()(
   def onSubmit(mode: Mode, index: Int, srn: SchemeReferenceNumber): Action[AnyContent] = (authenticate() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
       form.bindFromRequest().fold(
-        (formWithErrors: Form[_]) => {
+        (formWithErrors: Form[?]) => {
           (SchemeNameId and PspDetailsId(index)).retrieve.map {
             case schemeName ~ pspDetail =>
               Future.successful(BadRequest(view(formWithErrors, pspDetail.name, mode, schemeName, returnCall(srn),

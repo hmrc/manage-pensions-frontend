@@ -29,7 +29,7 @@
     button: components.govuk_button
 )
 
-@(form: Form[_], mode: Mode, schemeName:String, srn: String, returnCall: Call)(implicit request: Request[_], messages: Messages)
+@(form: Form[?], mode: Mode, schemeName:String, srn: String, returnCall: Call)(implicit request: Request[?], messages: Messages)
 
 @layout(pageTitle = titleWithErrors(form, messages("messages__pspName__title"))) {
 

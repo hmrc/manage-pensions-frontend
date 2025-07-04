@@ -30,7 +30,7 @@ import models.SchemeReferenceNumber
 import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import utils.UserAnswers
+import utils.{UserAnswers, UserAnswerOps}
 import views.html.invitations.psp.pspId
 
 class PspIdControllerSpec extends ControllerWithQuestionPageBehaviours {
@@ -64,7 +64,7 @@ class PspIdControllerSpec extends ControllerWithQuestionPageBehaviours {
       dataRetrievalAction, requiredDataAction, formProvider, controllerComponents, view, fakePsaSchemeAuthAction).onSubmit(NormalMode, srn)
   }
 
-  def viewAsString(form: Form[_] = form) = view(form, "xyz", NormalMode, schemeName, srn, returnCall)(fakeRequest, messages).toString
+  def viewAsString(form: Form[?] = form) = view(form, "xyz", NormalMode, schemeName, srn, returnCall)(using fakeRequest, messages).toString
 
 
   behave like controllerWithOnPageLoadMethod(onPageLoadAction, userAnswer.dataRetrievalAction,

@@ -63,7 +63,7 @@ class PsaNameController @Inject()(
       implicit request =>
 
         form.bindFromRequest().fold(
-          (formWithErrors: Form[_]) =>
+          (formWithErrors: Form[?]) =>
             Future.successful(BadRequest(view(formWithErrors, mode, srn))),
 
           value => {

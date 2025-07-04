@@ -51,7 +51,7 @@ class InvitationsConnectorSpec extends AsyncFlatSpec with Matchers with WireMock
 
     connector.invite(invitation).map(
       _ =>
-        server.findAll(postRequestedFor(urlEqualTo(inviteUrl))).size() shouldBe 1
+        server.findAll(postRequestedFor(urlEqualTo(inviteUrl))).size() `shouldBe` 1
     )
 
   }
@@ -70,7 +70,7 @@ class InvitationsConnectorSpec extends AsyncFlatSpec with Matchers with WireMock
     val connector = injector.instanceOf[InvitationConnector]
 
     connector.invite(invitation).map { res =>
-      res shouldBe NameMatchingError
+      res `shouldBe` NameMatchingError
     }
   }
 
@@ -88,7 +88,7 @@ class InvitationsConnectorSpec extends AsyncFlatSpec with Matchers with WireMock
     val connector = injector.instanceOf[InvitationConnector]
 
     connector.invite(invitation).map { res =>
-      res shouldBe PsaAlreadyInvitedError
+      res `shouldBe` PsaAlreadyInvitedError
     }
   }
 
@@ -107,7 +107,7 @@ class InvitationsConnectorSpec extends AsyncFlatSpec with Matchers with WireMock
 
     connector.acceptInvite(acceptedInvitation) map {
       _ =>
-        server.findAll(postRequestedFor(urlEqualTo(acceptInviteUrl))).size() shouldBe 1
+        server.findAll(postRequestedFor(urlEqualTo(acceptInviteUrl))).size() `shouldBe` 1
     }
   }
 
@@ -128,7 +128,7 @@ class InvitationsConnectorSpec extends AsyncFlatSpec with Matchers with WireMock
       connector.acceptInvite(acceptedInvitation)
     } map {
       _ =>
-        server.findAll(postRequestedFor(urlEqualTo(acceptInviteUrl))).size() shouldBe 1
+        server.findAll(postRequestedFor(urlEqualTo(acceptInviteUrl))).size() `shouldBe` 1
     }
   }
 
@@ -149,7 +149,7 @@ class InvitationsConnectorSpec extends AsyncFlatSpec with Matchers with WireMock
       connector.acceptInvite(acceptedInvitation)
     } map {
       _ =>
-        server.findAll(postRequestedFor(urlEqualTo(acceptInviteUrl))).size() shouldBe 1
+        server.findAll(postRequestedFor(urlEqualTo(acceptInviteUrl))).size() `shouldBe` 1
     }
   }
 
@@ -170,7 +170,7 @@ class InvitationsConnectorSpec extends AsyncFlatSpec with Matchers with WireMock
       connector.acceptInvite(acceptedInvitation)
     } map {
       _ =>
-        server.findAll(postRequestedFor(urlEqualTo(acceptInviteUrl))).size() shouldBe 1
+        server.findAll(postRequestedFor(urlEqualTo(acceptInviteUrl))).size() `shouldBe` 1
     }
   }
 
@@ -191,7 +191,7 @@ class InvitationsConnectorSpec extends AsyncFlatSpec with Matchers with WireMock
       connector.acceptInvite(acceptedInvitation)
     } map {
       _ =>
-        server.findAll(postRequestedFor(urlEqualTo(acceptInviteUrl))).size() shouldBe 1
+        server.findAll(postRequestedFor(urlEqualTo(acceptInviteUrl))).size() `shouldBe` 1
     }
   }
 
@@ -212,7 +212,7 @@ class InvitationsConnectorSpec extends AsyncFlatSpec with Matchers with WireMock
       connector.acceptInvite(acceptedInvitation)
     } map {
       _ =>
-        server.findAll(postRequestedFor(urlEqualTo(acceptInviteUrl))).size() shouldBe 1
+        server.findAll(postRequestedFor(urlEqualTo(acceptInviteUrl))).size() `shouldBe` 1
     }
   }
 
@@ -233,7 +233,7 @@ class InvitationsConnectorSpec extends AsyncFlatSpec with Matchers with WireMock
       connector.acceptInvite(acceptedInvitation)
     } map {
       _ =>
-        server.findAll(postRequestedFor(urlEqualTo(acceptInviteUrl))).size() shouldBe 1
+        server.findAll(postRequestedFor(urlEqualTo(acceptInviteUrl))).size() `shouldBe` 1
     }
   }
 

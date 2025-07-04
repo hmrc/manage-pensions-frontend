@@ -16,7 +16,6 @@
 
 package models
 
-import config.FrontendAppConfig
 import play.api.libs.json._
 import utils.InputOption
 
@@ -42,7 +41,7 @@ object SchemeType {
     MasterTrust
   ).map(v => (v.toString, v)).toMap
 
-  def options(appConfig: FrontendAppConfig): Seq[InputOption] = {
+  def options(): Seq[InputOption] = {
     val key = "scheme_type"
     Seq(
       InputOption(

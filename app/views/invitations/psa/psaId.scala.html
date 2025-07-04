@@ -28,7 +28,7 @@
     button: components.govuk_button
 )
 
-@(form: Form[_], psaName: String, mode: Mode, srn: String)(implicit request: Request[_], messages: Messages)
+@(form: Form[?], psaName: String, mode: Mode, srn: String)(implicit request: Request[?], messages: Messages)
 
 @layout(pageTitle = titleWithErrors(form, messages("messages__psa__id__title"))) {
 

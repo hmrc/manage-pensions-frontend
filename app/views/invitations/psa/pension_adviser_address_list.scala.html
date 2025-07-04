@@ -33,7 +33,7 @@
     govukRadios : GovukRadios
 )
 
-@(form: Form[_], addresses: Seq[TolerantAddress], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[?], addresses: Seq[TolerantAddress], mode: Mode)(implicit request: Request[?], messages: Messages)
 
 @layout(pageTitle = titleWithErrors(form, messages("messages__adviser__address__list__title"))) {
 

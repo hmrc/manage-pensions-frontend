@@ -32,7 +32,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.UserAnswers
+import utils.{UserAnswers, UserAnswerOps}
 
 import java.time.LocalDate
 import scala.concurrent.{ExecutionContext, Future}
@@ -151,7 +151,7 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
                                    )(implicit hc: HeaderCarrier,
                                      ec: ExecutionContext): Future[UserAnswers] = {
 
-        Future.apply(UserAnswers(Json.parse(json)))(ec)
+        Future.apply(UserAnswers(Json.parse(json)))(using ec)
       }
 
       override def getPspSchemeDetails(pspId: String, srn: String)
@@ -198,7 +198,7 @@ class RemovePsaControllerSpec extends SpecBase with MockitoSugar {
       val ua = UserAnswers(uaJson)
       val sdc = mock[SchemeDetailsConnector]
       when(sdc.getSchemeDetails(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
-      (ArgumentMatchers.any(), ArgumentMatchers.any()))
+      (using ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(ua))
 
       val result = controller(schemeDetailsConnector = sdc).onPageLoad(srn)(fakeRequest)

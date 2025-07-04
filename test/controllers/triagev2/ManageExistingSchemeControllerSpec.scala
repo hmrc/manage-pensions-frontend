@@ -41,7 +41,7 @@ class ManageExistingSchemeControllerSpec extends ControllerSpecBase with ScalaFu
 
       status(result) mustBe OK
       contentAsString(result) mustBe
-        view(role, managePensionSchemeLinkPsa, managePensionMigrationSchemeLink, frontendAppConfig.tpssWelcomeUrl)(request, messages).toString
+        view(role, managePensionSchemeLinkPsa, managePensionMigrationSchemeLink, frontendAppConfig.tpssWelcomeUrl)(using request, messages).toString
     }
 
     "return OK with the view when calling on page load for PSP" in {
@@ -51,7 +51,7 @@ class ManageExistingSchemeControllerSpec extends ControllerSpecBase with ScalaFu
 
       status(result) mustBe OK
       contentAsString(result) mustBe
-        view(role, managePensionSchemeLinkPsp, "#", frontendAppConfig.tpssWelcomeUrl)(request, messages).toString
+        view(role, managePensionSchemeLinkPsp, "#", frontendAppConfig.tpssWelcomeUrl)(using request, messages).toString
     }
   }
 }

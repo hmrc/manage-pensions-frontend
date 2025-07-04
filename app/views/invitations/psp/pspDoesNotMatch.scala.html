@@ -22,7 +22,7 @@
     layout: templates.Layout
 )
 
-@(schemeName: String, pspName: String, returnCall: Call)(implicit request: Request[_], messages: Messages)
+@(schemeName: String, pspName: String, returnCall: Call)(implicit request: Request[?], messages: Messages)
 
 @layout(pageTitle = messages("messages__pspDoesNotMatch__title")) {
     

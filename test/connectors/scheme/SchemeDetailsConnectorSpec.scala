@@ -54,7 +54,7 @@ class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
       idNumber = idNumber,
       schemeIdType = schemeIdType
     ) map (schemeDetails =>
-      schemeDetails shouldBe UserAnswers(Json.parse(jsonResponse))
+      schemeDetails `shouldBe` UserAnswers(Json.parse(jsonResponse))
       )
 
   }
@@ -174,7 +174,7 @@ class SchemeDetailsConnectorSpec extends AsyncFlatSpec with Matchers with WireMo
       idNumber = idNumber,
       schemeIdType = schemeIdType
     ) map (schemeDetails =>
-      schemeDetails shouldBe()
+      schemeDetails `shouldBe`()
       )
 
   }

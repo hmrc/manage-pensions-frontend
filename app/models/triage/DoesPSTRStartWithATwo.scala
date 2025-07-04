@@ -48,7 +48,7 @@ object DoesPSTRStartWithATwo {
   }
 
   implicit val enumerable: Enumerable[DoesPSTRStartWithATwo] =
-    Enumerable(values.map(v => v.toString -> v): _*)
+    Enumerable(values.map(v => v.toString -> v) *)
 }
 
 

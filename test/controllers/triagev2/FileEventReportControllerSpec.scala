@@ -38,7 +38,7 @@ class FileEventReportControllerSpec extends ControllerSpecBase with ScalaFutures
       val result = route(application, request).value
 
       status(result) mustBe OK
-      contentAsString(result) mustBe view(role, frontendAppConfig.tpssWelcomeUrl, frontendAppConfig.submitEventReportGovUkLink)(request, messages).toString
+      contentAsString(result) mustBe view(role, frontendAppConfig.tpssWelcomeUrl, frontendAppConfig.submitEventReportGovUkLink)(using request, messages).toString
     }
   }
 }

@@ -29,7 +29,7 @@
     button: components.govuk_button
 )
 
-@(form: Form[_], administratorOrPractitioner:AdministratorOrPractitioner)(implicit request: Request[_], messages: Messages)
+@(form: Form[?], administratorOrPractitioner:AdministratorOrPractitioner)(implicit request: Request[?], messages: Messages)
 
 @yesHintMessageKey = @{
     administratorOrPractitioner match {

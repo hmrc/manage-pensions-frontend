@@ -75,7 +75,7 @@ class DeauthDateController @Inject()(
           val authDate: LocalDate = psp.relationshipStartDate
 
           form(authDate).bindFromRequest().fold(
-            (formWithErrors: Form[_]) =>
+            (formWithErrors: Form[?]) =>
               Future.successful(BadRequest(view(formWithErrors, schemeName, srn, formatDate(authDate)))),
 
             value =>

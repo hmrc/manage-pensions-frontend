@@ -45,8 +45,8 @@ class HttpResponseHelperSpec extends AnyFlatSpec with Matchers with ScalaCheckDr
     forAll(userErrors) {
       userError =>
         val ex = the[UpstreamErrorResponse] thrownBy fixture()(responseFor(userError))
-        ex.reportAs shouldBe userError
-        ex.statusCode shouldBe userError
+        ex.reportAs `shouldBe` userError
+        ex.statusCode `shouldBe` userError
     }
   }
 
@@ -56,8 +56,8 @@ class HttpResponseHelperSpec extends AnyFlatSpec with Matchers with ScalaCheckDr
     forAll(serverErrors) {
       serverError =>
         val ex = the[UpstreamErrorResponse] thrownBy fixture()(responseFor(serverError))
-        ex.reportAs shouldBe BAD_GATEWAY
-        ex.statusCode shouldBe serverError
+        ex.reportAs `shouldBe` BAD_GATEWAY
+        ex.statusCode `shouldBe` serverError
     }
   }
 

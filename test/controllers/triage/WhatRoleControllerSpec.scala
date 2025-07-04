@@ -65,6 +65,6 @@ class WhatRoleControllerSpec extends ControllerSpecBase with ScalaFutures with M
     val result = route(application, postRequest).value
     val boundForm = formProvider().bind(Map("value" -> "invalid value"))
     status(result) mustBe BAD_REQUEST
-    contentAsString(result) mustBe view(boundForm)(postRequest, messages).toString
+    contentAsString(result) mustBe view(boundForm)(using postRequest, messages).toString
   }
 }

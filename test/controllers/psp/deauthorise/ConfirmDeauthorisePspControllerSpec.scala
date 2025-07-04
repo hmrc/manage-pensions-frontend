@@ -64,14 +64,14 @@ class ConfirmDeauthorisePspControllerSpec extends ControllerWithQuestionPageBeha
     controller(userAnswersCacheConnector = userAnswersCacheConnector).onSubmit(Index(0), srn)
   }
 
-  private def viewAsString(form: Form[_]) = view(
+  private def viewAsString(form: Form[?]) = view(
     form = form,
     schemeName = schemeName,
     srn = srn,
     pspName = "PSP Limited Company 1",
     index = Index(0)
   )(
-    request = fakeRequest,
+    using request = fakeRequest,
     messages = messages
   ).toString
 

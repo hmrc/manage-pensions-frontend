@@ -143,7 +143,7 @@ class PspSchemeDashboardController @Inject()(
       Future.successful(Seq.empty)
     }
   }
-  private def getEventReportingHtml(srn: String, list: Either[_, ListOfSchemes], schemeName: String)(implicit authenticatedRequest: AuthenticatedRequest[_]) = {
+  private def getEventReportingHtml(srn: String, list: Either[?, ListOfSchemes], schemeName: String)(implicit authenticatedRequest: AuthenticatedRequest[?]) = {
     list match {
       case Left(_) =>
         Future.successful(Html(""))

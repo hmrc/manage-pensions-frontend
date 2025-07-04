@@ -23,7 +23,7 @@ import identifiers.invitations.psa.{AdviserAddressId, AdviserAddressListId, Advi
 import models.{NormalMode, TolerantAddress}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.matchers.must.Matchers
-import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
+import org.scalatest.matchers.should.Matchers.shouldBe
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.Application
 import play.api.i18n.MessagesApi
@@ -231,7 +231,7 @@ object PensionAdviserAddressListControllerSpec {
 
     val view = app.injector.instanceOf[pension_adviser_address_list]
 
-    view(form, addresses, NormalMode)(request, messages).toString()
+    view(form, addresses, NormalMode)(using request, messages).toString()
 
   }
 

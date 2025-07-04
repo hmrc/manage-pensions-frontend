@@ -45,6 +45,6 @@ class WhatDoYouWantToDoFormProviderSpec extends FormBehaviours {
         Required -> "messages__whatDoYouWantToDo__error__required",
         Invalid -> "error.invalid"
       ),
-      WhatDoYouWantToDo.options("PSA").map(_.value.get): _*)
+      WhatDoYouWantToDo.options("PSA").map(_.value.get) *)
   }
 }

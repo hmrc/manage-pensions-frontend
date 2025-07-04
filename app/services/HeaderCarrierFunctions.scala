@@ -23,7 +23,7 @@ import uk.gov.hmrc.play.partials.{HeaderCarrierForPartials, HeaderCarrierForPart
 object HeaderCarrierFunctions extends FrontendHeaderCarrierProvider {
 
   def headerCarrierForPartials[A](request: Request[A]): HeaderCarrierForPartials =
-    HCForPartialsConverter.headerCarrierEncryptingSessionCookieFromRequest(request)
+    HCForPartialsConverter.headerCarrierEncryptingSessionCookieFromRequest(using request)
 }
 
 object HCForPartialsConverter extends HeaderCarrierForPartialsConverter with SessionCookieCryptoFilterWrapper {

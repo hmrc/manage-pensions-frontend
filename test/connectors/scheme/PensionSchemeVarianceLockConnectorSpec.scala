@@ -48,7 +48,7 @@ class PensionSchemeVarianceLockConnectorSpec extends AsyncFlatSpec with Matchers
     val connector = injector.instanceOf[PensionSchemeVarianceLockConnectorImpl]
 
     connector.isLockByPsaIdOrSchemeId(psaId, srn).map(schemeVariance =>
-      schemeVariance shouldBe Some(VarianceLock)
+      schemeVariance `shouldBe` Some(VarianceLock)
     )
 
   }
@@ -70,7 +70,7 @@ class PensionSchemeVarianceLockConnectorSpec extends AsyncFlatSpec with Matchers
     val connector = injector.instanceOf[PensionSchemeVarianceLockConnectorImpl]
 
     connector.isLockByPsaIdOrSchemeId(psaId, srn).map(schemeVariance =>
-      schemeVariance shouldBe Some(PsaLock)
+      schemeVariance `shouldBe` Some(PsaLock)
     )
 
   }
@@ -89,7 +89,7 @@ class PensionSchemeVarianceLockConnectorSpec extends AsyncFlatSpec with Matchers
     recoverToExceptionIf[HttpException] {
       connector.isLockByPsaIdOrSchemeId(psaId, srn)
     } map {
-      _.responseCode shouldBe Status.INTERNAL_SERVER_ERROR
+      _.responseCode `shouldBe` Status.INTERNAL_SERVER_ERROR
     }
   }
 
@@ -110,7 +110,7 @@ class PensionSchemeVarianceLockConnectorSpec extends AsyncFlatSpec with Matchers
     val connector = injector.instanceOf[PensionSchemeVarianceLockConnectorImpl]
 
     connector.getLock(psaId, srn).map(schemeVariance =>
-      schemeVariance shouldBe Some(schemeVarianceLockResponse)
+      schemeVariance `shouldBe` Some(schemeVarianceLockResponse)
     )
 
   }
@@ -130,7 +130,7 @@ class PensionSchemeVarianceLockConnectorSpec extends AsyncFlatSpec with Matchers
     val connector = injector.instanceOf[PensionSchemeVarianceLockConnectorImpl]
 
     connector.getLock(psaId, srn).map(schemeVariance =>
-      schemeVariance shouldBe None
+      schemeVariance `shouldBe` None
     )
   }
 
@@ -150,7 +150,7 @@ class PensionSchemeVarianceLockConnectorSpec extends AsyncFlatSpec with Matchers
     recoverToExceptionIf[HttpException] {
       connector.getLock(psaId, srn)
     } map {
-      _.responseCode shouldBe Status.INTERNAL_SERVER_ERROR
+      _.responseCode `shouldBe` Status.INTERNAL_SERVER_ERROR
     }
   }
 
@@ -170,7 +170,7 @@ class PensionSchemeVarianceLockConnectorSpec extends AsyncFlatSpec with Matchers
     val connector = injector.instanceOf[PensionSchemeVarianceLockConnectorImpl]
 
     connector.getLockByPsa(psaId).map(schemeVariance =>
-      schemeVariance shouldBe Some(schemeVarianceLockResponse)
+      schemeVariance `shouldBe` Some(schemeVarianceLockResponse)
     )
 
   }
@@ -189,7 +189,7 @@ class PensionSchemeVarianceLockConnectorSpec extends AsyncFlatSpec with Matchers
     val connector = injector.instanceOf[PensionSchemeVarianceLockConnectorImpl]
 
     connector.getLockByPsa(psaId).map(schemeVariance =>
-      schemeVariance shouldBe None
+      schemeVariance `shouldBe` None
     )
   }
 
@@ -208,7 +208,7 @@ class PensionSchemeVarianceLockConnectorSpec extends AsyncFlatSpec with Matchers
     recoverToExceptionIf[HttpException] {
       connector.getLockByPsa(psaId)
     } map {
-      _.responseCode shouldBe Status.INTERNAL_SERVER_ERROR
+      _.responseCode `shouldBe` Status.INTERNAL_SERVER_ERROR
     }
   }
 
@@ -228,7 +228,7 @@ class PensionSchemeVarianceLockConnectorSpec extends AsyncFlatSpec with Matchers
     val connector = injector.instanceOf[PensionSchemeVarianceLockConnectorImpl]
 
     connector.getLockByScheme(srn).map(schemeVariance =>
-      schemeVariance shouldBe Some(schemeVarianceLockResponse)
+      schemeVariance `shouldBe` Some(schemeVarianceLockResponse)
     )
 
   }
@@ -247,7 +247,7 @@ class PensionSchemeVarianceLockConnectorSpec extends AsyncFlatSpec with Matchers
     val connector = injector.instanceOf[PensionSchemeVarianceLockConnectorImpl]
 
     connector.getLockByScheme(srn).map(schemeVariance =>
-      schemeVariance shouldBe None
+      schemeVariance `shouldBe` None
     )
   }
 
@@ -266,7 +266,7 @@ class PensionSchemeVarianceLockConnectorSpec extends AsyncFlatSpec with Matchers
     recoverToExceptionIf[HttpException] {
       connector.getLockByScheme(srn)
     } map {
-      _.responseCode shouldBe Status.INTERNAL_SERVER_ERROR
+      _.responseCode `shouldBe` Status.INTERNAL_SERVER_ERROR
     }
   }
 
@@ -285,7 +285,7 @@ class PensionSchemeVarianceLockConnectorSpec extends AsyncFlatSpec with Matchers
     val connector = injector.instanceOf[PensionSchemeVarianceLockConnectorImpl]
 
     connector.releaseLock(psaId, srn).map(schemeVariance =>
-      schemeVariance shouldBe {}
+      schemeVariance `shouldBe` {}
     )
 
   }
@@ -307,7 +307,7 @@ class PensionSchemeVarianceLockConnectorSpec extends AsyncFlatSpec with Matchers
     recoverToExceptionIf[HttpException] {
       connector.releaseLock(psaId, srn)
     } map {
-      _.responseCode shouldBe Status.INTERNAL_SERVER_ERROR
+      _.responseCode `shouldBe` Status.INTERNAL_SERVER_ERROR
     }
   }
 

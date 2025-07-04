@@ -39,7 +39,7 @@ class UrBannerFormProvider @Inject() extends Mappings with Transforms with Email
                 regexp(regexPersonOrOrganisationName, "messages__banner__error" )
               )),
         "email" -> emailMapping()
-      )(URBanner.apply)(URBanner.unapply)
+      )(URBanner.apply)(o => Some(Tuple.fromProductTyped(o)))
     )
 }
 

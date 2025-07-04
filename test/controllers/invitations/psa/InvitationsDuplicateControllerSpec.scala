@@ -23,7 +23,7 @@ import controllers.routes._
 import models.MinimalSchemeDetail
 import play.api.mvc.Call
 import play.api.test.Helpers._
-import utils.{FakeNavigator, UserAnswers}
+import utils.{FakeNavigator, UserAnswers, UserAnswerOps}
 import views.html.invitations.psa.invitation_duplicate
 
 class InvitationsDuplicateControllerSpec extends ControllerSpecBase {
@@ -130,7 +130,7 @@ object InvitationsDuplicateControllerSpec extends ControllerSpecBase {
       testInviteeName,
       testSchemeName
     )(
-      base.fakeRequest,
+      using base.fakeRequest,
       base.messages
     ).toString()
 

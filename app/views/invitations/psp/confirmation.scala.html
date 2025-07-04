@@ -25,7 +25,7 @@
     button: components.govuk_button
 )
 
-@(schemeName: String, pspName: String)(implicit request: Request[_], messages: Messages)
+@(schemeName: String, pspName: String)(implicit request: Request[?], messages: Messages)
 
 @layout(pageTitle = messages("messages__pspConfirmation__title"), showBackLink = false) {
 

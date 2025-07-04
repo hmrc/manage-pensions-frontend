@@ -82,7 +82,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
   override def beforeEach(): Unit = {
     super.beforeEach()
     reset(mockAuditService)
-    when(mockAuditService.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
+    when(mockAuditService.sendEvent(any())(using any(), any())).thenReturn(Future.successful(AuditResult.Success))
   }
 
   def controller(dataRetrievalAction: DataRetrievalAction = getEmptyData) = new DeclarationController(
@@ -104,7 +104,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
     fakePsaSchemeAuthAction
   )
 
-  private def viewAsString(form: Form[_] = form) = view(form, srn)(fakeRequest, messages).toString
+  private def viewAsString(form: Form[?] = form) = view(form, srn)(using fakeRequest, messages).toString
 
   "Declaration Controller" when {
 
@@ -128,11 +128,11 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
     "on a POST" must {
 
       "invite psp, redirect to confirmation page when valid data is submitted and send an email and email audit event" in {
-        when(mockListOfSchemesConnector.getListOfSchemes(any())(any(), any())).thenReturn(listOfSchemesResponse)
+        when(mockListOfSchemesConnector.getListOfSchemes(any())(using any(), any())).thenReturn(listOfSchemesResponse)
         when(mockSchemeDetailsService.pstr(any(), any())).thenReturn(Some(pstr))
-        when(mockPspConnector.authorisePsp(any(), any(), any(), any(), any())(any(), any())).thenReturn(Future.successful(()))
-        when(mockEmailConnector.sendEmail(any())(any(), any())).thenReturn(Future.successful(EmailSent))
-        when(mockMinimalConnector.getMinimalPsaDetails()(any(), any()))
+        when(mockPspConnector.authorisePsp(any(), any(), any(), any(), any())(using any(), any())).thenReturn(Future.successful(()))
+        when(mockEmailConnector.sendEmail(any())(using any(), any())).thenReturn(Future.successful(EmailSent))
+        when(mockMinimalConnector.getMinimalPsaDetails()(using any(), any()))
           .thenReturn(Future.successful(minPsa))
 
         val result = controller(data).onSubmit(srn)(fakeRequest.withFormUrlEncodedBody("declaration" -> "true"))
@@ -141,7 +141,7 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
 
         val emailRequestCaptor = ArgumentCaptor.forClass(classOf[SendEmailRequest])
 
-        verify(mockEmailConnector, times(1)).sendEmail(emailRequestCaptor.capture())(any(), any())
+        verify(mockEmailConnector, times(1)).sendEmail(emailRequestCaptor.capture())(using any(), any())
         val actualSendEmailRequest = emailRequestCaptor.getValue
 
         actualSendEmailRequest.to mustBe List(minPsa.email)
@@ -160,14 +160,14 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
           emailAddress = minPsa.email,
           Sent
         )
-        verify(mockAuditService, times(1)).sendEvent(ArgumentMatchers.eq(expectedEmailAuditEvent))(any(), any())
+        verify(mockAuditService, times(1)).sendEvent(ArgumentMatchers.eq(expectedEmailAuditEvent))(using any(), any())
 
         val expectedAuditEvent = PSPAuthorisationAuditEvent(
           psaId = "A0000000",
           pspId = pspId,
           pstr = pstr
         )
-        verify(mockAuditService, times(1)).sendEvent(ArgumentMatchers.eq(expectedAuditEvent))(any(), any())
+        verify(mockAuditService, times(1)).sendEvent(ArgumentMatchers.eq(expectedAuditEvent))(using any(), any())
 
       }
 
@@ -186,11 +186,11 @@ class DeclarationControllerSpec extends ControllerSpecBase with MockitoSugar wit
       }
 
       "redirect to already associated page if already associated" in {
-        when(mockListOfSchemesConnector.getListOfSchemes(any())(any(), any())).thenReturn(listOfSchemesResponse)
+        when(mockListOfSchemesConnector.getListOfSchemes(any())(using any(), any())).thenReturn(listOfSchemesResponse)
         when(mockSchemeDetailsService.pstr(any(), any())).thenReturn(Some(pstr))
-        when(mockPspConnector.authorisePsp(any(), any(), any(), any(), any())(any(), any())).thenReturn(Future.failed(new ActiveRelationshipExistsException))
-        when(mockEmailConnector.sendEmail(any())(any(), any())).thenReturn(Future.successful(EmailSent))
-        when(mockMinimalConnector.getMinimalPsaDetails()(any(), any()))
+        when(mockPspConnector.authorisePsp(any(), any(), any(), any(), any())(using any(), any())).thenReturn(Future.failed(new ActiveRelationshipExistsException))
+        when(mockEmailConnector.sendEmail(any())(using any(), any())).thenReturn(Future.successful(EmailSent))
+        when(mockMinimalConnector.getMinimalPsaDetails()(using any(), any()))
           .thenReturn(Future.successful(minPsa))
 
         val result = controller(data).onSubmit(srn)(fakeRequest.withFormUrlEncodedBody("declaration" -> "true"))

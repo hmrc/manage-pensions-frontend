@@ -51,7 +51,7 @@ class WhatYouWillNeedControllerSpec extends ControllerSpecBase {
       fakePsaSchemeAuthAction
     )
 
-  private def viewAsString() = whatYouWillNeedView(schemeName,srn,  returnCall)(fakeRequest, messages).toString
+  private def viewAsString() = whatYouWillNeedView(schemeName,srn,  returnCall)(using fakeRequest, messages).toString
 
   "WhatYouWillNeedController" must {
     "return OK and the correct view for a GET" in {

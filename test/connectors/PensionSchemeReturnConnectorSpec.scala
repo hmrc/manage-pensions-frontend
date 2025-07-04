@@ -16,13 +16,13 @@
 
 package connectors
 
-import com.github.tomakehurst.wiremock.client.WireMock._
+import com.github.tomakehurst.wiremock.client.WireMock.*
 import models.AuthEntity.PSA
 import models.{EROverview, SchemeReferenceNumber}
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
-import play.api.libs.json.{JsArray, JsResultException, Json}
-import uk.gov.hmrc.http._
+import play.api.libs.json.{JsArray, JsResultException, JsValue, Json}
+import uk.gov.hmrc.http.*
 import utils.{Enumerable, WireMockHelper}
 
 import java.time.LocalDate
@@ -47,21 +47,21 @@ class PensionSchemeReturnConnectorSpec
 
   "getOverview" must {
     "return the seq of overviewDetails returned from BE" in {
-      val erOverviewResponseJson: JsArray = Json.arr(
-        Json.obj(
-          "periodStartDate" -> "2022-04-06",
-          "periodEndDate" -> "2023-04-05",
-          "ntfDateOfIssue" ->  "2024-12-06",
-          "psrDueDate" ->  "2025-03-31",
-          "psrReportType" ->  "Standard"
-        ),
-        Json.obj(
-          "periodStartDate" -> "2022-04-06",
-          "periodEndDate" -> "2023-04-05",
-          "psrDueDate" ->  "2025-03-31",
-          "psrReportType" ->  "PSA"
-        )
-      )
+
+      val erOverviewResponseJson: JsValue = Json.parse("""
+          |[{
+          |  "periodStartDate": "2022-04-06",
+          |  "periodEndDate": "2023-04-05",
+          |  "ntfDateOfIssue": "2024-12-06",
+          |  "psrDueDate": "2025-03-31",
+          |  "psrReportType": "Standard"
+          |},
+          |{
+          |  "periodStartDate": "2022-04-06",
+          |  "periodEndDate": "2023-04-05",
+          |  "psrDueDate": "2025-03-31",
+          |  "psrReportType": "PSA"
+          |}]""".stripMargin)
 
       val overview1 = EROverview(
         LocalDate.of(2022, 4, 6),
@@ -84,9 +84,10 @@ class PensionSchemeReturnConnectorSpec
           .willReturn(
             ok
               .withHeader("Content-Type", "application/json")
-              .withBody(erOverviewResponseJson.toString())
+              .withBody(erOverviewResponseJson.toString)
           )
       )
+
       connector.getOverview(srn, pstr, "2022-04-06", "2023-04-05", PSA).map { response =>
         response mustBe erOverview
       }

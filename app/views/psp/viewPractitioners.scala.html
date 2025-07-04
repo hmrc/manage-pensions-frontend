@@ -32,7 +32,7 @@
 )
 
 @(schemeName: String, returnCall: Call, practitioners: Seq[AuthorisedPractitionerViewModel],
-   isUpdateClientReference: Boolean, srn: String)(implicit request: Request[_], messages: Messages)
+   isUpdateClientReference: Boolean, srn: String)(implicit request: Request[?], messages: Messages)
 
 @deauthorisedLink(pspName: String, index: Index, authorisedByLoggedInPsa:Boolean) = {
     @if(authorisedByLoggedInPsa){
@@ -96,35 +96,35 @@
         Table(
             rows =
                 for((practitioner, index) <- practitioners.zipWithIndex) yield {
-                val rows =
-                    Seq(
-                        Some(TableRow(
-                            attributes = Map("id" -> ("pspName-"+index), "role"-> "cell"),
-                            content = Text(practitioner.pspName),
-                            classes="govuk-table__cell"
-                        )),
-                        Some(TableRow(
-                            attributes = Map("id" -> ("authorisedBy-"+index), "role"-> "cell"),
-                            content = Text(practitioner.authorisedBy),
-                            classes="govuk-table__cell"
-                        )),
-                        Some(TableRow(
-                            attributes = Map("id" -> ("dateAuthorised-"+index), "role"-> "cell"),
-                            content = Text(practitioner.dateAuthorised),
-                            classes="govuk-table__cell"
-                        )),
-                        if(isUpdateClientReference)
+                    val rows =
+                        Seq(
                             Some(TableRow(
-                            attributes = Map("id" -> ("viewLink-"+index), "role"-> "cell"),
-                            content = HtmlContent(viewLink(practitioner.pspName,index,practitioner.authorisedByLoggedInPsa)),
-                            classes="govuk-table__cell"
-                            )) else None,
-                        Some(TableRow(
-                            attributes = Map("id" -> ("deAuthoriseLink-"+index), "role"-> "cell"),
-                            content = HtmlContent(deauthorisedLink(practitioner.pspName,index,practitioner.authorisedByLoggedInPsa)),
-                            classes="govuk-table__cell"
-                        ))
-                    )
+                                attributes = Map("id" -> ("pspName-"+index), "role"-> "cell"),
+                                content = Text(practitioner.pspName),
+                                classes="govuk-table__cell"
+                            )),
+                            Some(TableRow(
+                                attributes = Map("id" -> ("authorisedBy-"+index), "role"-> "cell"),
+                                content = Text(practitioner.authorisedBy),
+                                classes="govuk-table__cell"
+                            )),
+                            Some(TableRow(
+                                attributes = Map("id" -> ("dateAuthorised-"+index), "role"-> "cell"),
+                                content = Text(practitioner.dateAuthorised),
+                                classes="govuk-table__cell"
+                            )),
+                            if(isUpdateClientReference)
+                                Some(TableRow(
+                                attributes = Map("id" -> ("viewLink-"+index), "role"-> "cell"),
+                                content = HtmlContent(viewLink(practitioner.pspName,index,practitioner.authorisedByLoggedInPsa)),
+                                classes="govuk-table__cell"
+                                )) else None,
+                            Some(TableRow(
+                                attributes = Map("id" -> ("deAuthoriseLink-"+index), "role"-> "cell"),
+                                content = HtmlContent(deauthorisedLink(practitioner.pspName,index,practitioner.authorisedByLoggedInPsa)),
+                                classes="govuk-table__cell"
+                            ))
+                        )
                     rows.flatten
                 },
                 head ={

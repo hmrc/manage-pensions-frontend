@@ -50,7 +50,7 @@ class UpdateClientReferenceConnectorSpec extends AsyncFlatSpec with Matchers wit
 
     connector.updateClientReference(clientReferenceRequest, "Added", srn).map(
       _ =>
-        server.findAll(postRequestedFor(urlEqualTo(s"$updateClientReferenceUrl/${srn.id}"))).size() shouldBe 1
+        server.findAll(postRequestedFor(urlEqualTo(s"$updateClientReferenceUrl/${srn.id}"))).size() `shouldBe` 1
     )
 
   }
@@ -70,7 +70,7 @@ class UpdateClientReferenceConnectorSpec extends AsyncFlatSpec with Matchers wit
       connector.updateClientReference(clientReferenceRequest, "Added", srn)
     } map {
       _ =>
-        server.findAll(postRequestedFor(urlEqualTo(s"$updateClientReferenceUrl/${srn.id}"))).size() shouldBe 1
+        server.findAll(postRequestedFor(urlEqualTo(s"$updateClientReferenceUrl/${srn.id}"))).size() `shouldBe` 1
     }
   }
 

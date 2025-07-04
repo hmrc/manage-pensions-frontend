@@ -19,7 +19,7 @@
     inset_text: components.inset_text
 )
 
-@()(implicit request: Request[_], messages: Messages)
+@()(implicit request: Request[?], messages: Messages)
 
 @insetContent = {
     <p class="govuk-body govuk-!-margin-bottom-1">@messages("messages__contactHMRC__address1")</p>

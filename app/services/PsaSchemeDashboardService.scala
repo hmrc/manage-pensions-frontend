@@ -20,14 +20,14 @@ import com.google.inject.Inject
 import config.FrontendAppConfig
 import connectors.PensionSchemeReturnConnector
 import connectors.scheme.{PensionSchemeVarianceLockConnector, SchemeDetailsConnector}
-import controllers.invitations.psp.routes._
-import controllers.invitations.routes._
-import controllers.psa.routes._
-import controllers.psp.routes._
+import controllers.invitations.psp.routes.*
+import controllers.invitations.routes.*
+import controllers.psa.routes.*
+import controllers.psp.routes.*
 import identifiers.psa.ListOfPSADetailsId
 import identifiers.{SchemeNameId, SchemeStatusId, SeqAuthorisedPractitionerId}
 import models.SchemeStatus.Open
-import models._
+import models.*
 import models.psa.PsaDetails
 import models.requests.AuthenticatedRequest
 import play.api.Logging
@@ -37,11 +37,12 @@ import play.twirl.api.Html
 import services.PsaSchemeDashboardService.{maxEndDateAsString, minStartDateAsString}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
-import utils.DateHelper._
+import utils.DateHelper.*
 import utils.UserAnswers
 import viewmodels.{CardSubHeading, CardSubHeadingParam, CardViewModel, Message}
 
 import java.time.LocalDate
+import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 
 class PsaSchemeDashboardService @Inject()(
@@ -57,7 +58,7 @@ class PsaSchemeDashboardService @Inject()(
   def optionLockedSchemeName(lock: Option[Lock])(implicit request: AuthenticatedRequest[AnyContent]): Future[Option[String]] = lock match {
     case Some(PsaLock) =>
       val psaId = request.psaIdOrException.id
-      lockConnector.getLockByPsa(psaId)(hc(request), implicitly).flatMap { lockedSchemeVariance =>
+      lockConnector.getLockByPsa(psaId)(using hc(using request), implicitly).flatMap { lockedSchemeVariance =>
         lockedSchemeVariance.map(_.srn) match {
           case Some(lockedSrn) =>
             schemeDetailsConnector.getSchemeDetails(psaId, lockedSrn, "srn").map { ua =>
@@ -81,7 +82,7 @@ class PsaSchemeDashboardService @Inject()(
              showPsrLink: Boolean,
              erHtml: Html,
              srn: SchemeReferenceNumber,
-             lock: Option[Lock],
+             @unused lock: Option[Lock],
              list: ListOfSchemes,
              ua: UserAnswers
            )(implicit messages: Messages, request: AuthenticatedRequest[AnyContent]): Future[Seq[CardViewModel]] = {
@@ -373,7 +374,7 @@ class PsaSchemeDashboardService @Inject()(
 
   private def latestPsp(ua: UserAnswers): Option[AuthorisedPractitioner] =
     ua.get(SeqAuthorisedPractitionerId) flatMap { seqPsp =>
-      implicit val localDateOrdering: Ordering[LocalDate] = _ compareTo _
+      implicit val localDateOrdering: Ordering[LocalDate] = _ `compareTo` _
       seqPsp.sortBy(_.relationshipStartDate).reverse.headOption
     }
 

@@ -22,7 +22,7 @@ import controllers.ControllerSpecBase
 import controllers.actions.{AuthAction, DataRetrievalAction}
 import controllers.behaviours.ControllerWithNormalPageBehaviours
 import play.api.mvc.{Action, AnyContent}
-import utils.UserAnswers
+import utils.{UserAnswers, UserAnswerOps}
 import views.html.psa.remove.confirmRemoved
 
 class ConfirmRemovedControllerSpec extends ControllerWithNormalPageBehaviours {
@@ -67,6 +67,6 @@ object ConfirmRemovedControllerSpec extends ControllerSpecBase {
     confirmRemovedView(
       testPsaName,
       testSchemeName
-    )(base.fakeRequest, base.messages).toString()
+    )(using base.fakeRequest, base.messages).toString()
 
 }

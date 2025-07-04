@@ -70,17 +70,16 @@ object TriageV2NavigatorSpec extends OptionValues with Enumerable.Implicits {
   lazy val whatRolePspAnswers: UserAnswers = UserAnswers().set(WhatRoleId)(PSP).asOpt.value
 
   private def whichServiceYouWantToViewAnswersPsa(answer: WhichServiceYouWantToView): UserAnswers =
-    whatRolePsaAnswers.set(WhichServiceYouWantToViewId)(answer)(writes(WhichServiceYouWantToView.enumerable("administrator"))).asOpt.value
+    whatRolePsaAnswers.set(WhichServiceYouWantToViewId)(answer)(using writes[WhichServiceYouWantToView]).asOpt.value
 
   private def whichServiceYouWantToViewAnswersPsp(answer: WhichServiceYouWantToView): UserAnswers =
-    whatRolePspAnswers.set(WhichServiceYouWantToViewId)(answer)(writes(WhichServiceYouWantToView.enumerable("practitioner"))).asOpt.value
+    whatRolePspAnswers.set(WhichServiceYouWantToViewId)(answer)(using writes[WhichServiceYouWantToView]).asOpt.value
 
   private def whatDoYouWantToDoAnswersPsa(answer: WhatDoYouWantToDo): UserAnswers =
-    whatRolePsaAnswers.set(WhatDoYouWantToDoId)(answer)(writes(WhatDoYouWantToDo.enumerable("administrator"))).asOpt.value
+    whatRolePsaAnswers.set(WhatDoYouWantToDoId)(answer)(using writes[WhatDoYouWantToDo]).asOpt.value
 
   private def whatDoYouWantToDoAnswersPsp(answer: WhatDoYouWantToDo): UserAnswers =
-    whatRolePspAnswers.set(WhatDoYouWantToDoId)(answer)(writes(WhatDoYouWantToDo.enumerable("practitioner"))).asOpt.value
-
+    whatRolePspAnswers.set(WhatDoYouWantToDoId)(answer)(using writes[WhatDoYouWantToDo]).asOpt.value
 
   private def psaOverviewPage: Call = Call("GET", frontendAppConfig.psaOverviewUrl)
 
@@ -99,8 +98,7 @@ object TriageV2NavigatorSpec extends OptionValues with Enumerable.Implicits {
   private def fileEventReportPage(role: String): Call = controllers.triagev2.routes.FileEventReportController.onPageLoad(role)
 
   private def sessionExpiredPage: Call = controllers.routes.SessionExpiredController.onPageLoad
-
-
+  
   private def dataDescriber(answers: UserAnswers): String = answers.toString
 }
 

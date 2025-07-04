@@ -30,8 +30,7 @@ import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.mvc.Action
 import play.api.mvc.AnyContent
-import utils.UserAnswers
-import utils._
+import utils.{UserAnswers, UserAnswerOps}
 import views.html.invitations.psp.pspName
 
 class PspNameControllerSpec extends ControllerWithQuestionPageBehaviours {
@@ -67,7 +66,7 @@ class PspNameControllerSpec extends ControllerWithQuestionPageBehaviours {
       dataRetrievalAction, requiredDataAction, formProvider, controllerComponents, pspNameView, fakePsaSchemeAuthAction).onSubmit(NormalMode, srn)
   }
 
-  private def viewAsString(form: Form[_]): String = pspNameView(form, NormalMode, schemeName, srn, returnCall)(fakeRequest, messages).toString
+  private def viewAsString(form: Form[?]): String = pspNameView(form, NormalMode, schemeName, srn, returnCall)(using fakeRequest, messages).toString
 
 
   behave like controllerWithOnPageLoadMethod(onPageLoadAction, userAnswer.dataRetrievalAction, userAnswerWithPspName.dataRetrievalAction,

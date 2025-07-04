@@ -24,6 +24,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.hint.Hint
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import utils.Enumerable
 
+import scala.annotation.unused
 import scala.language.implicitConversions
 
 sealed trait WhichServiceYouWantToView
@@ -51,8 +52,8 @@ object WhichServiceYouWantToView {
       )
   }
 
-  implicit def enumerable(role: String): Enumerable[WhichServiceYouWantToView] =
-    Enumerable(values.map(v => v.toString -> v): _*)
+  implicit def enumerable(@unused role: String): Enumerable[WhichServiceYouWantToView] =
+    Enumerable(values.map(v => v.toString -> v) *)
 
   private val mappings: Map[String, WhichServiceYouWantToView] = values.map(v => (v.toString, v)).toMap
 

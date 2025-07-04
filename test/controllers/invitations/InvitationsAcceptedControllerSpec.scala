@@ -20,7 +20,7 @@ import connectors.FakeUserAnswersCacheConnector
 import controllers.ControllerSpecBase
 import controllers.actions._
 import play.api.test.Helpers._
-import utils.UserAnswers
+import utils.{UserAnswers, UserAnswerOps}
 import views.html.invitations.invitationAccepted
 
 class InvitationsAcceptedControllerSpec extends ControllerSpecBase {
@@ -41,7 +41,7 @@ class InvitationsAcceptedControllerSpec extends ControllerSpecBase {
       view
     )
 
-  def viewAsString(): String = view(testSchemeName)(fakeRequest, messages).toString
+  def viewAsString(): String = view(testSchemeName)(using fakeRequest, messages).toString
 
   "InvitationAccepted Controller" must {
 

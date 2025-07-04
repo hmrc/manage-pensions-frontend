@@ -48,8 +48,8 @@ class PspClientReferenceFormProviderSpec extends StringFieldBehaviours with Cons
 
     "bind string with spaces, removing the spaces" in {
       val result = form.bind(Map("reference" -> "A B C"))
-      result.errors shouldBe empty
-      result.value shouldBe Some("ABC")
+      result.errors `shouldBe` empty
+      result.value `shouldBe` Some("ABC")
     }
   }
 }

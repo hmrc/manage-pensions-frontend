@@ -60,8 +60,8 @@ class ViewPspClientReferenceControllerSpec extends ControllerSpecBase {
     dataRetrievalAction, new DataRequiredActionImpl, formProvider, controllerComponents, view, fakePsaSchemeAuthAction
   )
 
-  private def viewAsString(form: Form[_]): String =
-    view(form, "test-psp-name", CheckMode, schemeName, returnCall, onSubmitCall)(fakeRequest, messages).toString
+  private def viewAsString(form: Form[?]): String =
+    view(form, "test-psp-name", CheckMode, schemeName, returnCall, onSubmitCall)(using fakeRequest, messages).toString
 
   "ViewPspClientReferenceController" when {
     "on a GET" must {

@@ -32,17 +32,17 @@ class DateHelperSpec extends AnyWordSpec with Matchers {
     "respond correctly for a date at 1 second after midnight" in {
       DateHelper.setDate(Some(currentDate))
       val result = DateHelper.dateTimeFromNowToMidnightAfterDays(daysAhead).toString
-      result shouldBe "2018-02-04T00:00"
+      result `shouldBe` "2018-02-04T00:00"
     }
     "respond correctly for a date around the middle of the day" in {
       DateHelper.setDate(Some(currentDate))
       val result = DateHelper.dateTimeFromNowToMidnightAfterDays(daysAhead).toString
-      result shouldBe "2018-02-04T00:00"
+      result `shouldBe` "2018-02-04T00:00"
     }
     "respond correctly for a date at 1 second to midnight" in {
       DateHelper.setDate(Some(currentDate))
       val result = DateHelper.dateTimeFromNowToMidnightAfterDays(daysAhead).toString
-      result shouldBe "2018-02-04T00:00"
+      result `shouldBe` "2018-02-04T00:00"
     }
   }
 
@@ -51,7 +51,7 @@ class DateHelperSpec extends AnyWordSpec with Matchers {
     "return one day less with the correct format" in {
       DateHelper.setDate(Some(currentDate))
       val result = DateHelper.displayExpiryDate(DateHelper.currentDate)
-      result shouldBe "3 January 2018"
+      result `shouldBe` "3 January 2018"
     }
   }
 }

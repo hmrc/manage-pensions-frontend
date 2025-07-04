@@ -55,7 +55,7 @@ trait ViewSpecBase extends SpecBase {
 
   def haveDynamicText(messageKey: String, args: Any*): Matcher[Document] = Matcher[Document] {
     document =>
-      val text = messages(messageKey, args: _*)
+      val text = messages(messageKey, args *)
       MatchResult(
         document.toString.contains(text),
         s"text $text is not rendered on the page",

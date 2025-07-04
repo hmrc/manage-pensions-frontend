@@ -59,7 +59,7 @@ class YouNeedToRegisterControllerSpec extends ControllerSpecBase with MockitoSug
       val authConnector: AuthConnector = fakeAuthConnector(Future.successful(new~(Some("id"), Enrolments(Set(enrolmentPSA)))))
 
       val result = controller(authConnector).onPageLoad(fakeRequest)
-      val viewAsString = registerAsPspView()(fakeRequest, messages).toString
+      val viewAsString = registerAsPspView()(using fakeRequest, messages).toString
 
       status(result) mustBe OK
       contentAsString(result) mustBe viewAsString
@@ -69,7 +69,7 @@ class YouNeedToRegisterControllerSpec extends ControllerSpecBase with MockitoSug
       val authConnector: AuthConnector = fakeAuthConnector(Future.successful(new~(Some("id"), Enrolments(Set(enrolmentPSP)))))
 
       val result = controller(authConnector).onPageLoad(fakeRequest)
-      val viewAsString = registerAsPsaView()(fakeRequest, messages).toString
+      val viewAsString = registerAsPsaView()(using fakeRequest, messages).toString
 
       status(result) mustBe OK
       contentAsString(result) mustBe viewAsString
@@ -79,7 +79,7 @@ class YouNeedToRegisterControllerSpec extends ControllerSpecBase with MockitoSug
       val authConnector: AuthConnector = fakeAuthConnector(Future.successful(new~(Some("id"), Enrolments(Set(noEnrolments)))))
 
       val result = controller(authConnector).onPageLoad(fakeRequest)
-      val viewAsString = registerView()(fakeRequest, messages).toString
+      val viewAsString = registerView()(using fakeRequest, messages).toString
 
       status(result) mustBe OK
       contentAsString(result) mustBe viewAsString
@@ -109,11 +109,11 @@ object YouNeedToRegisterControllerSpec extends SpecBase with MockitoSugar {
     delegatedAuthRule = None
   )
 
-  private def fakeAuthConnector(stubbedRetrievalResult: Future[_]): AuthConnector = new AuthConnector {
+  private def fakeAuthConnector(stubbedRetrievalResult: Future[?]): AuthConnector = new AuthConnector {
 
     def authorise[A](predicate: Predicate, retrieval: Retrieval[A])
                     (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[A] =
-      stubbedRetrievalResult.map(_.asInstanceOf[A])(ec)
+      stubbedRetrievalResult.map(_.asInstanceOf[A])(using ec)
   }
 
 }

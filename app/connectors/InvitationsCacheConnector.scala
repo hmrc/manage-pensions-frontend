@@ -21,6 +21,7 @@ import config.FrontendAppConfig
 import models.invitations.Invitation
 import play.api.http.Status._
 import play.api.libs.json._
+import play.api.libs.ws.writeableOf_JsValue
 import uk.gov.hmrc.domain.PsaId
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.client.HttpClientV2
@@ -55,7 +56,7 @@ class InvitationsCacheConnectorImpl @Inject()(config: FrontendAppConfig, httpCli
   def add(invitation: Invitation
          )(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[Unit] = {
     httpClientV2.post(addUrl)
-      .setHeader(CacheConnector.headers(hc): _*)
+      .setHeader(CacheConnector.headers(hc) *)
       .withBody(Json.toJson(invitation))
       .execute[HttpResponse].flatMap {
         response =>
@@ -73,7 +74,7 @@ class InvitationsCacheConnectorImpl @Inject()(config: FrontendAppConfig, httpCli
     val hcExtraHeaders = hc.withExtraHeaders("pstr" -> pstr, "inviteePsaId" -> inviteePsaId.id)
 
     httpClientV2.delete(removeUrl)
-      .setHeader(CacheConnector.headers(hcExtraHeaders): _*)
+      .setHeader(CacheConnector.headers(hcExtraHeaders) *)
       .execute[HttpResponse].flatMap {
         response =>
           response.status match {
@@ -99,7 +100,7 @@ class InvitationsCacheConnectorImpl @Inject()(config: FrontendAppConfig, httpCli
     val hcExtraHeaders = hc.withExtraHeaders("pstr" -> pstr, "inviteePsaId" -> inviteePsaId.id)
 
     httpClientV2.get(getUrl)
-      .setHeader(CacheConnector.headers(hcExtraHeaders):_ *)
+      .setHeader(CacheConnector.headers(hcExtraHeaders) *)
       .execute[HttpResponse]
       .flatMap(getCommon)
   }
@@ -108,7 +109,7 @@ class InvitationsCacheConnectorImpl @Inject()(config: FrontendAppConfig, httpCli
     val hcExtraHeaders = hc.withExtraHeaders("pstr" -> pstr)
 
     httpClientV2.get(getForSchemeUrl)
-      .setHeader(CacheConnector.headers(hcExtraHeaders):_ *)
+      .setHeader(CacheConnector.headers(hcExtraHeaders) *)
       .execute[HttpResponse]
       .flatMap(getCommon)
   }
@@ -117,7 +118,7 @@ class InvitationsCacheConnectorImpl @Inject()(config: FrontendAppConfig, httpCli
     val hcExtraHeaders = hc.withExtraHeaders("inviteePsaId" -> inviteePsaId.id)
 
     httpClientV2.get(getForInviteeUrl)
-      .setHeader(CacheConnector.headers(hcExtraHeaders):_ *)
+      .setHeader(CacheConnector.headers(hcExtraHeaders) *)
       .execute[HttpResponse]
       .flatMap(getCommon)
   }

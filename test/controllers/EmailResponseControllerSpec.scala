@@ -61,7 +61,7 @@ class EmailResponseControllerSpec extends AsyncWordSpec with Matchers with Mocki
   override def beforeEach(): Unit = {
     reset(mockAuditService)
     reset(mockAuthConnector)
-    when(mockAuthConnector.authorise[Enrolments](any(), any())(any(), any()))
+    when(mockAuthConnector.authorise[Enrolments](any(), any())(using any(), any()))
       .thenReturn(Future.successful(enrolments))
   }
 
@@ -71,7 +71,7 @@ class EmailResponseControllerSpec extends AsyncWordSpec with Matchers with Mocki
         .retrieveStatusForPSPDeauthorisation(encryptedPsaId, encryptedPspId, encryptedPstr, encryptedEmail)(fakeRequest.withBody(Json.toJson(emailEvents)))
 
       status(result) mustBe OK
-      verify(mockAuditService, times(4)).sendEvent(eventCaptor.capture())(any(), any())
+      verify(mockAuditService, times(4)).sendEvent(eventCaptor.capture())(using any(), any())
       eventCaptor.getValue mustEqual PSPDeauthorisationEmailAuditEvent(psa, psp, pstr, email, Complained)
     }
 
@@ -79,7 +79,7 @@ class EmailResponseControllerSpec extends AsyncWordSpec with Matchers with Mocki
       val result = controller
         .retrieveStatusForPSPDeauthorisation(encryptedPsaId, encryptedPspId, encryptedPstr, encryptedEmail)(fakeRequest.withBody(Json.obj("name" -> "invalid")))
 
-      verify(mockAuditService, never()).sendEvent(any())(any(), any())
+      verify(mockAuditService, never()).sendEvent(any())(using any(), any())
       status(result) mustBe BAD_REQUEST
     }
   }
@@ -90,7 +90,7 @@ class EmailResponseControllerSpec extends AsyncWordSpec with Matchers with Mocki
         .retrieveStatusForPSPSelfDeauthorisation(encryptedPspId, encryptedPstr, encryptedEmail)(fakeRequest.withBody(Json.toJson(emailEvents)))
 
       status(result) mustBe OK
-      verify(mockAuditService, times(4)).sendEvent(eventCaptor.capture())(any(), any())
+      verify(mockAuditService, times(4)).sendEvent(eventCaptor.capture())(using any(), any())
       eventCaptor.getValue mustEqual PSPSelfDeauthorisationEmailAuditEvent(psp, pstr, email, Complained)
     }
 
@@ -98,7 +98,7 @@ class EmailResponseControllerSpec extends AsyncWordSpec with Matchers with Mocki
       val result = controller
         .retrieveStatusForPSPSelfDeauthorisation(encryptedPspId, encryptedPstr, encryptedEmail)(fakeRequest.withBody(Json.obj("name" -> "invalid")))
 
-      verify(mockAuditService, never()).sendEvent(any())(any(), any())
+      verify(mockAuditService, never()).sendEvent(any())(using any(), any())
       status(result) mustBe BAD_REQUEST
     }
   }

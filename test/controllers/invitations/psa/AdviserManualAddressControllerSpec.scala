@@ -33,11 +33,13 @@ import play.api.i18n.MessagesApi
 import play.api.inject.bind
 import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import utils.annotations.AcceptInvitation
 import utils.countryOptions.CountryOptions
 import utils.{FakeCountryOptions, FakeNavigator, Navigator}
 import views.html.invitations.psa.adviserAddress
+
+import scala.annotation.unused
 
 class AdviserManualAddressControllerSpec
   extends AnyWordSpec
@@ -199,12 +201,12 @@ object AdviserManualAddressControllerSpec extends ControllerSpecBase {
   private val countryOptions = FakeCountryOptions.fakeCountries
   private val view = injector.instanceOf[adviserAddress]
 
-  def viewAsString(value: Address, form: Form[Address], prepopulated: Boolean = false, prefix: String = messageKeyPrefix)
+  def viewAsString(@unused value: Address, form: Form[Address], prepopulated: Boolean = false, prefix: String = messageKeyPrefix)
                   (implicit app: Application): String = {
 
     val messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
-    view(form, NormalMode, countryOptions, prepopulated, prefix, name)(FakeRequest(), messages).toString()
+    view(form, NormalMode, countryOptions, prepopulated, prefix, name)(using FakeRequest(), messages).toString()
 
   }
 

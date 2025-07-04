@@ -61,7 +61,7 @@ class SchemeDetailsConnectorImpl @Inject()(httpClientV2: HttpClientV2, config: F
     val schemeDetailsUrl = url"${config.schemeDetailsUrl.format(idNumber)}"
     val schemeHc = hc.withExtraHeaders("idNumber" -> idNumber, "psaId" -> psaId, "schemeIdType" -> schemeIdType)
 
-    httpClientV2.get(schemeDetailsUrl)(schemeHc)
+    httpClientV2.get(schemeDetailsUrl)(using schemeHc)
       .execute[HttpResponse].map { response =>
         response.status match {
           case OK =>
@@ -81,7 +81,7 @@ class SchemeDetailsConnectorImpl @Inject()(httpClientV2: HttpClientV2, config: F
     val idHeader = if(idType == "psa") "psaId" -> psaOrPspId else "pspId" -> psaOrPspId
     val schemeHc = hc.withExtraHeaders(idHeader, "schemeReferenceNumber" -> srn)
 
-    httpClientV2.get(isSchemeAssociatedUrl)(schemeHc)
+    httpClientV2.get(isSchemeAssociatedUrl)(using schemeHc)
       .execute[HttpResponse].map { response =>
         response.status match {
           case OK =>
@@ -109,7 +109,7 @@ class SchemeDetailsConnectorImpl @Inject()(httpClientV2: HttpClientV2, config: F
         "refreshData" -> "true"
       )
 
-    httpClientV2.get(schemeDetailsUrl)(schemeHc)
+    httpClientV2.get(schemeDetailsUrl)(using schemeHc)
       .execute[HttpResponse].map { response =>
         response.status match {
           case OK => ()
@@ -126,7 +126,7 @@ class SchemeDetailsConnectorImpl @Inject()(httpClientV2: HttpClientV2, config: F
     val pspSchemeDetailsUrl = url"${config.pspSchemeDetailsUrl.format(srn)}"
     val schemeHc = hc.withExtraHeaders("srn" -> srn, "pspId" -> pspId)
 
-    httpClientV2.get(pspSchemeDetailsUrl)(schemeHc)
+    httpClientV2.get(pspSchemeDetailsUrl)(using schemeHc)
       .execute[HttpResponse].map { response =>
         response.status match {
           case OK => UserAnswers(Json.parse(response.body))
@@ -137,10 +137,11 @@ class SchemeDetailsConnectorImpl @Inject()(httpClientV2: HttpClientV2, config: F
       }
   }
 
-  override def getPsaInvitationInfo(idNumber: String, schemeIdType: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[PsaInvitationInfoResponse] = {
+  override def getPsaInvitationInfo(idNumber: String, schemeIdType: String)
+                                   (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[PsaInvitationInfoResponse] = {
     val url = url"${config.psaInvitationInfoUrl}"
     val schemeHc = hc.withExtraHeaders("idNumber" -> idNumber, "schemeIdType" -> schemeIdType)
-    httpClientV2.get(url)(schemeHc)
+    httpClientV2.get(url)(using schemeHc)
       .execute[HttpResponse].map { response =>
         response.status match {
           case OK => Json.parse(response.body).as[PsaInvitationInfoResponse]

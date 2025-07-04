@@ -84,7 +84,7 @@ class PspDashboardControllerSpec
     subHeading = Some(subHeading),
     returnLink = Some(returnLink)
   )(
-    fakeRequest,
+    using fakeRequest,
     messages
   ).toString
 
@@ -133,11 +133,11 @@ class PspDashboardControllerSpec
   "PspDashboard Controller" when {
     "onPageLoad" must {
       "return OK and the correct tiles" in {
-        when(mockPspDashboardService.getTiles(eqTo(pspId), any())(any()))
+        when(mockPspDashboardService.getTiles(eqTo(pspId), any())(using any()))
           .thenReturn(tiles)
-        when(mockPspDashboardService.getPspDetails()(any()))
+        when(mockPspDashboardService.getPspDetails()(using any()))
           .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false, deceasedFlag = false)))
-        when(mockUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any()))
+        when(mockUserAnswersCacheConnector.save(any(), any(), any())(using any(), any(), any()))
           .thenReturn(Future.successful(Json.obj()))
 
         val result = controller().onPageLoad(fakeRequest)
@@ -147,13 +147,13 @@ class PspDashboardControllerSpec
       }
 
       "redirect to update contact details page when rls flag is true" in {
-        when(mockPspDashboardService.getTiles(eqTo(pspId), any())(any()))
+        when(mockPspDashboardService.getTiles(eqTo(pspId), any())(using any()))
           .thenReturn(tiles)
-        when(mockPspDashboardService.getPspDetails()(any()))
+        when(mockPspDashboardService.getPspDetails()(using any()))
           .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = true, deceasedFlag = false)))
-        when(mockUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any()))
+        when(mockUserAnswersCacheConnector.save(any(), any(), any())(using any(), any(), any()))
           .thenReturn(Future.successful(Json.obj()))
-        when(mockAppConfig.pspUpdateContactDetailsUrl) thenReturn dummyUrl
+        when(mockAppConfig.pspUpdateContactDetailsUrl) `thenReturn` dummyUrl
 
         val result = controller().onPageLoad(fakeRequest)
 
@@ -162,11 +162,11 @@ class PspDashboardControllerSpec
       }
 
       "redirect to contact hmrc page when both deceased flag and rls flag are true" in {
-        when(mockPspDashboardService.getTiles(eqTo(pspId), any())(any()))
+        when(mockPspDashboardService.getTiles(eqTo(pspId), any())(using any()))
           .thenReturn(tiles)
-        when(mockPspDashboardService.getPspDetails()(any()))
+        when(mockPspDashboardService.getPspDetails()(using any()))
           .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = true, deceasedFlag = true)))
-        when(mockUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any()))
+        when(mockUserAnswersCacheConnector.save(any(), any(), any())(using any(), any(), any()))
           .thenReturn(Future.successful(Json.obj()))
 
         val result = controller().onPageLoad(fakeRequest)
@@ -178,17 +178,17 @@ class PspDashboardControllerSpec
 
     "changeRoleToPspAndLoadPage" must {
       "redirect to onPageLoad after updating Mongo with PSP role" in {
-        when(mockPspDashboardService.getTiles(eqTo(pspId), any())(any())).thenReturn(tiles)
-        when(mockPspDashboardService.getPspDetails()(any()))
+        when(mockPspDashboardService.getTiles(eqTo(pspId), any())(using any())).thenReturn(tiles)
+        when(mockPspDashboardService.getPspDetails()(using any()))
           .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false, deceasedFlag = false)))
-        when(mockUserAnswersCacheConnector.save(any(), any(), any())(any(), any(), any()))
+        when(mockUserAnswersCacheConnector.save(any(), any(), any())(using any(), any(), any()))
           .thenReturn(Future.successful(Json.obj()))
-        when(mockUserAnswersCacheConnector.upsert(any(), any())(any(), any()))
+        when(mockUserAnswersCacheConnector.upsert(any(), any())(using any(), any()))
           .thenReturn(Future.successful(Json.obj()))
-        when(mockSessionDataCacheConnector.fetch(any())(any(), any()))
+        when(mockSessionDataCacheConnector.fetch(any())(using any(), any()))
           .thenReturn(Future.successful(None))
         val jsonCaptor = ArgumentCaptor.forClass(classOf[JsValue])
-        when(mockSessionDataCacheConnector.upsert(any(), jsonCaptor.capture())(any(), any()))
+        when(mockSessionDataCacheConnector.upsert(any(), jsonCaptor.capture())(using any(), any()))
           .thenReturn(Future.successful(JsNull))
 
         val result = controller().changeRoleToPspAndLoadPage(fakeRequest)
@@ -196,7 +196,7 @@ class PspDashboardControllerSpec
         status(result) mustBe SEE_OTHER
         redirectLocation(result) mustBe Some(PspDashboardController.onPageLoad().url)
 
-        verify(mockSessionDataCacheConnector, times(1)).upsert(any(), any())(any(), any())
+        verify(mockSessionDataCacheConnector, times(1)).upsert(any(), any())(using any(), any())
         UserAnswers(jsonCaptor.getValue).get(AdministratorOrPractitionerId) mustBe Some(Practitioner)
 
       }

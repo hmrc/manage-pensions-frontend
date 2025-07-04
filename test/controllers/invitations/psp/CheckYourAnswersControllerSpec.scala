@@ -34,7 +34,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist._
 import utils.countryOptions.CountryOptions
-import utils.{CheckYourAnswersFactory, UserAnswers}
+import utils.{CheckYourAnswersFactory, UserAnswers, UserAnswerOps}
 import views.html.invitations.psp.checkYourAnswersPsp
 
 import scala.concurrent.Future
@@ -72,14 +72,14 @@ class CheckYourAnswersControllerSpec extends ControllerSpecBase with MockitoSuga
 
     "on a POST" must {
       "redirect to Declaration if pspName matches the one email invitation API" in {
-        when(mockMinConnector.getEmailInvitation(any(), any(), any(), any())(any(), any()))
+        when(mockMinConnector.getEmailInvitation(any(), any(), any(), any())(using any(), any()))
           .thenReturn(Future.successful(Some(pspEmailAddress)))
         val result = controller(data).onSubmit(srn)(fakeRequest)
         redirectLocation(result).value mustBe DeclarationController.onPageLoad(srn).url
       }
 
       "redirect to interrupt if pspName does not match the one returned from minDetails API" in {
-        when(mockMinConnector.getEmailInvitation(any(), any(), any(), any())(any(), any()))
+        when(mockMinConnector.getEmailInvitation(any(), any(), any(), any())(using any(), any()))
           .thenReturn(Future.failed(new PspUserNameNotMatchedException))
         val result = controller(data).onSubmit(srn)(fakeRequest)
         redirectLocation(result).get mustBe PspDoesNotMatchController.onPageLoad(srn).url
@@ -133,7 +133,7 @@ object CheckYourAnswersControllerSpec extends ControllerWithNormalPageBehaviours
   def returnCall: Call = PsaSchemeDashboardController.onPageLoad(SchemeReferenceNumber(srn))
 
   def viewAsString(): String = view(expectedValues, call, Some("messages__check__your__answer__psp__label"),
-    Some(testSchemeName), testSchemeName, returnCall)(fakeRequest, messages).toString
+    Some(testSchemeName), testSchemeName, returnCall)(using fakeRequest, messages).toString
 
 
 }

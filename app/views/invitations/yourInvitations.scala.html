@@ -22,7 +22,7 @@
     layout: templates.Layout
 )
 
-@(invitationsList: List[Invitation], psaName: String)(implicit request: Request[_], messages: Messages)
+@(invitationsList: List[Invitation], psaName: String)(implicit request: Request[?], messages: Messages)
 
 @layout(pageTitle = s"${messages("messages__yourInvitations__title")}"){
 

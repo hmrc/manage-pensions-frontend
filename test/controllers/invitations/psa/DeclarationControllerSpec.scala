@@ -81,15 +81,15 @@ class DeclarationControllerSpec
     None
   )
 
-  private def viewAsString(form: Form[_] = form, isItMasterTrust: Boolean = isMasterTrust, hasWkAdvisor: Boolean = hasAdviser) =
-    view(hasWkAdvisor, isItMasterTrust, srn, form)(fakeRequest, messages).toString
+  private def viewAsString(form: Form[?] = form, isItMasterTrust: Boolean = isMasterTrust, hasWkAdvisor: Boolean = hasAdviser) =
+    view(hasWkAdvisor, isItMasterTrust, srn, form)(using fakeRequest, messages).toString
 
   "Declaration Controller" when {
 
     "on a GET" must {
 
       "return OK and the correct view with non rac dac master trust scheme" in {
-        when(fakeSchemeDetailsConnector.getPsaInvitationInfo(any(), any())(any(), any()))
+        when(fakeSchemeDetailsConnector.getPsaInvitationInfo(any(), any())(using any(), any()))
           .thenReturn(Future.successful(schemeDetailsResponse))
         val result = controller(data).onPageLoad()(fakeRequest)
 
@@ -98,7 +98,7 @@ class DeclarationControllerSpec
         FakeUserAnswersCacheConnector.verify(SchemeNameId, "Open Single Trust Scheme with Indiv Establisher and Trustees")
         FakeUserAnswersCacheConnector.verify(IsMasterTrustId, true)
         FakeUserAnswersCacheConnector.verify(PSTRId, "24000001IN")
-        verify(fakeSchemeDetailsConnector, times(1)).getPsaInvitationInfo(any(), any())(any(), any())
+        verify(fakeSchemeDetailsConnector, times(1)).getPsaInvitationInfo(any(), any())(using any(), any())
       }
 
       "return OK and the correct view with racdac scheme" in {
@@ -106,7 +106,7 @@ class DeclarationControllerSpec
         val data = new FakeDataRetrievalAction(Some(UserAnswers().
           haveWorkingKnowledge(true).srn(srn).pstr(pstr).json))
 
-        when(fakeSchemeDetailsConnector.getPsaInvitationInfo(any(), any())(any(), any()))
+        when(fakeSchemeDetailsConnector.getPsaInvitationInfo(any(), any())(using any(), any()))
           .thenReturn(Future.successful(uaSchemeDetails))
         val result = controller(data).onPageLoad()(fakeRequest)
 
@@ -115,14 +115,14 @@ class DeclarationControllerSpec
         FakeUserAnswersCacheConnector.verify(SchemeNameId, "rac dac scheme")
         FakeUserAnswersCacheConnector.verify(IsMasterTrustId, false)
         FakeUserAnswersCacheConnector.verify(PSTRId, pstr)
-        verify(fakeSchemeDetailsConnector, times(1)).getPsaInvitationInfo(any(), any())(any(), any())
+        verify(fakeSchemeDetailsConnector, times(1)).getPsaInvitationInfo(any(), any())(using any(), any())
       }
 
       "throw IllegalArgumentException if scheme type is missing for non rac dac scheme" in {
         val uaSchemeDetails = PsaInvitationInfoResponse(Some(pstr), Some("rac dac scheme"), None, None)
         val data = new FakeDataRetrievalAction(Some(UserAnswers().
           haveWorkingKnowledge(true).srn(srn).pstr(pstr).json))
-        when(fakeSchemeDetailsConnector.getPsaInvitationInfo(any(), any())(any(), any()))
+        when(fakeSchemeDetailsConnector.getPsaInvitationInfo(any(), any())(using any(), any()))
           .thenReturn(Future.successful(uaSchemeDetails))
         val result = controller(data).onPageLoad()(fakeRequest)
 
@@ -143,20 +143,20 @@ class DeclarationControllerSpec
     "on a POST" must {
 
       "accept invitation and redirect to next page when valid data with adviser details is submitted" in {
-        when(fakeInvitationCacheConnector.get(eqTo(pstr), any())(any(), any())).thenReturn(Future.successful(InvitationBuilder.invitationList))
-        when(fakeInvitationCacheConnector.remove(eqTo(pstr), any())(any(), any())).thenReturn(Future.successful(()))
-        when(fakeInvitationConnector.acceptInvite(eqTo(InvitationBuilder.acceptedInvitation))(any(), any())).thenReturn(Future.successful(()))
+        when(fakeInvitationCacheConnector.get(eqTo(pstr), any())(using any(), any())).thenReturn(Future.successful(InvitationBuilder.invitationList))
+        when(fakeInvitationCacheConnector.remove(eqTo(pstr), any())(using any(), any())).thenReturn(Future.successful(()))
+        when(fakeInvitationConnector.acceptInvite(eqTo(InvitationBuilder.acceptedInvitation))(using any(), any())).thenReturn(Future.successful(()))
 
         val result = controller(data).onSubmit()(fakeRequest.withFormUrlEncodedBody("consent" -> "true"))
         status(result) mustBe SEE_OTHER
         redirectLocation(result).value mustBe onwardRoute.url
-        verify(fakeInvitationCacheConnector, times(1)).get(eqTo(pstr), any())(any(), any())
-        verify(fakeInvitationCacheConnector, times(1)).remove(eqTo(pstr), any())(any(), any())
-        verify(fakeInvitationConnector, times(1)).acceptInvite(eqTo(InvitationBuilder.acceptedInvitation))(any(), any())
+        verify(fakeInvitationCacheConnector, times(1)).get(eqTo(pstr), any())(using any(), any())
+        verify(fakeInvitationCacheConnector, times(1)).remove(eqTo(pstr), any())(using any(), any())
+        verify(fakeInvitationConnector, times(1)).acceptInvite(eqTo(InvitationBuilder.acceptedInvitation))(using any(), any())
       }
 
       "redirect to session expired page when there is no matching invitation" in {
-        when(fakeInvitationCacheConnector.get(eqTo(pstr), any())(any(), any())).thenReturn(Future.successful(Nil))
+        when(fakeInvitationCacheConnector.get(eqTo(pstr), any())(using any(), any())).thenReturn(Future.successful(Nil))
 
         val result = controller(data).onSubmit()(fakeRequest.withFormUrlEncodedBody("consent" -> "true"))
         status(result) mustBe SEE_OTHER

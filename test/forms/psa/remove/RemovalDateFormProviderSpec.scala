@@ -57,7 +57,7 @@ class RemovalDateFormProviderSpec extends StringFieldBehaviours with Constraints
           "removalDate.month" -> futureDate.getMonthValue.toString,
           "removalDate.year" -> futureDate.getYear.toString
         )
-      ).errors shouldBe Seq(FormError(fieldName, "messages__removal_date_error__future_date"))
+      ).errors `shouldBe` Seq(FormError(fieldName, "messages__removal_date_error__future_date"))
     }
 
     "not accept a date before earliest date for psa removal" in {
@@ -67,7 +67,7 @@ class RemovalDateFormProviderSpec extends StringFieldBehaviours with Constraints
           "removalDate.month" -> beforeEarliestDate.getMonthValue.toString,
           "removalDate.year" -> beforeEarliestDate.getYear.toString
         )
-      ).errors shouldBe Seq(FormError(fieldName, "messages__removal_date_error__before_earliest_date"))
+      ).errors `shouldBe` Seq(FormError(fieldName, "messages__removal_date_error__before_earliest_date"))
     }
 
     "not accept a date before association date for psa" in {
@@ -77,7 +77,7 @@ class RemovalDateFormProviderSpec extends StringFieldBehaviours with Constraints
           "removalDate.month" -> beforeAssociationDate.getMonthValue.toString,
           "removalDate.year" -> beforeAssociationDate.getYear.toString
         )
-      ).errors shouldBe Seq(FormError(fieldName, "messages__removal_date_error__before_association"))
+      ).errors `shouldBe` Seq(FormError(fieldName, "messages__removal_date_error__before_association"))
     }
   }
 
