@@ -18,7 +18,7 @@ package services
 
 import config.FrontendAppConfig
 import connectors.admin.MinimalConnector
-import controllers.psp.deauthorise.self.routes._
+import controllers.psp.deauthorise.self.routes.*
 import models.{AuthorisedPractitioner, EROverview, Link, MinimalPSAPSP, SchemeReferenceNumber}
 import play.api.i18n.Messages
 import play.twirl.api.Html
@@ -28,6 +28,7 @@ import utils.DateHelper.formatter
 import viewmodels.{CardSubHeading, CardSubHeadingParam, Message, PspSchemeDashboardCardViewModel}
 
 import javax.inject.Inject
+import scala.annotation.unused
 import scala.concurrent.{ExecutionContext, Future}
 
 class PspSchemeDashboardService @Inject()(
@@ -41,8 +42,8 @@ class PspSchemeDashboardService @Inject()(
   def getTiles(
                 erHtml: Html,
                 srn: String,
-                pstr: String,
-                openDate: Option[String],
+                @unused pstr: String,
+                @unused openDate: Option[String],
                 loggedInPsp: AuthorisedPractitioner,
                 clientReference: Option[String],
                 seqErOverview: Seq[EROverview]

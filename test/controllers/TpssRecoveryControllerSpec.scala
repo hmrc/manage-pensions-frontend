@@ -32,7 +32,7 @@ class TpssRecoveryControllerSpec extends ControllerSpecBase {
 
     "return the correct view for a GET" in {
       val result = new TpssRecoveryController(frontendAppConfig, messagesApi, controllerComponents, view).onPageLoad()(fakeRequest)
-      contentAsString(result) mustBe view()(fakeRequest, messages).toString
+      contentAsString(result) mustBe view()(using fakeRequest, messages).toString
     }
   }
 }

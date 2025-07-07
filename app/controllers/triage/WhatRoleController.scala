@@ -48,7 +48,7 @@ class WhatRoleController @Inject()(override val messagesApi: MessagesApi,
   def onSubmit: Action[AnyContent] = triageAction.async {
     implicit request =>
       form.bindFromRequest().fold(
-        (formWithErrors: Form[_]) =>
+        (formWithErrors: Form[?]) =>
           Future.successful(BadRequest(view(formWithErrors))),
         value => {
           UserAnswers().set(WhatRoleId)(value).asOpt.getOrElse(UserAnswers())

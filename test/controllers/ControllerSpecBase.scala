@@ -55,6 +55,6 @@ trait ControllerSpecBase extends SpecBase {
 
   protected def applicationBuilder(modules: Seq[GuiceableModule] = Seq.empty): GuiceApplicationBuilder =
     new GuiceApplicationBuilder()
-      .overrides(modules: _*)
+      .overrides(modules *)
 
 }

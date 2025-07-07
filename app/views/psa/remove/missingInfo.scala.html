@@ -21,7 +21,7 @@
     appConfig: FrontendAppConfig
 )
 
-@(list: List[String])(implicit request: Request[_], messages: Messages)
+@(list: List[String])(implicit request: Request[?], messages: Messages)
 
 @layout(pageTitle = messages("messages__psa__cannot__be__removed__title")) {
 

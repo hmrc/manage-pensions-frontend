@@ -16,7 +16,7 @@
 
 package connectors.behaviour
 
-import com.github.tomakehurst.wiremock.client.WireMock._
+import com.github.tomakehurst.wiremock.client.WireMock.*
 import connectors.UserAnswersCacheConnector
 import identifiers.TypedIdentifier
 import org.scalatest.OptionValues
@@ -24,10 +24,11 @@ import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AsyncWordSpec
 import play.api.http.Status
 import play.api.libs.json.Json
-import play.api.mvc.Results._
+import play.api.mvc.Results.*
 import uk.gov.hmrc.http.{HeaderCarrier, HttpException}
 import utils.WireMockHelper
 
+import scala.annotation.unused
 import scala.reflect.ClassTag
 
 trait ConnectorBehaviour extends AsyncWordSpec with Matchers with WireMockHelper with OptionValues {
@@ -39,7 +40,7 @@ trait ConnectorBehaviour extends AsyncWordSpec with Matchers with WireMockHelper
   }
 
   // scalastyle:off method.length
-  def cacheConnector[T <: UserAnswersCacheConnector : ClassTag](url: String => String, lastUpdatedUrl: String => String): Unit = {
+  def cacheConnector[T <: UserAnswersCacheConnector : ClassTag](url: String => String, @unused lastUpdatedUrl: String => String): Unit = {
 
     lazy val connector: T = injector.instanceOf[T]
 
@@ -56,7 +57,7 @@ trait ConnectorBehaviour extends AsyncWordSpec with Matchers with WireMockHelper
 
         connector.fetch("foo") map {
           result =>
-            result mustNot be(defined)
+            result `mustNot` be(defined)
         }
       }
 

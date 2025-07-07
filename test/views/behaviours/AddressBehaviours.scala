@@ -30,7 +30,7 @@ trait AddressBehaviours extends FormSpec with StringFieldBehaviours with Constra
   private val testAddressLineRegex = """^[A-Za-z0-9 &!'‘’\"“”(),./—–‐-]{1,35}$"""
 
   def formWithAddressField(
-                            form: Form[_],
+                            form: Form[?],
                             fieldName: String,
                             keyAddressRequired: String,
                             keyAddressLength: String,
@@ -109,7 +109,7 @@ trait AddressBehaviours extends FormSpec with StringFieldBehaviours with Constra
 
   }
 
-  def formWithPostCode(form: Form[_], fieldName: String, keyRequired: String, keyLength: String, keyInvalid: String): Unit = {
+  def formWithPostCode(form: Form[?], fieldName: String, keyRequired: String, keyLength: String, keyInvalid: String): Unit = {
 
     "behave like a form with a Post Code" should {
 
@@ -142,8 +142,8 @@ trait AddressBehaviours extends FormSpec with StringFieldBehaviours with Constra
       "transform the Post Code value correctly" in {
         val postCode = "  zz11zz  "
         val result = form.bind(Map(fieldName -> postCode))
-        result.errors.size shouldBe 0
-        result.get shouldBe "ZZ1 1ZZ"
+        result.errors.size `shouldBe` 0
+        result.get `shouldBe` "ZZ1 1ZZ"
       }
     }
 
@@ -161,24 +161,24 @@ trait AddressBehaviours extends FormSpec with StringFieldBehaviours with Constra
 
       "bind successfully when country is non UK and postcode is non-UK postal format" in {
         val result = form.bind(validOtherData ++ Map("country" -> "IN", "postCode" -> "123"))
-        getPostCode(result.get) shouldBe "123"
+        getPostCode(result.get) `shouldBe` "123"
       }
 
       "bind successfully when country is UK and postcode is of correct format" in {
         val result = form.bind(validOtherData ++ Map("country" -> "GB", "postCode" -> "AB1 1AB"))
-        getPostCode(result.get) shouldBe "AB1 1AB"
+        getPostCode(result.get) `shouldBe` "AB1 1AB"
       }
 
       "fail to bind when country is UK and postCode is not provided" in {
         val result = form.bind(validOtherData ++ Map("country" -> "GB", "postCode" -> ""))
 
-        result.errors shouldBe Seq(FormError("postCode", keyRequired))
+        result.errors `shouldBe` Seq(FormError("postCode", keyRequired))
       }
 
       "fail to bind when country is NON UK and postCode is more than 10 characters" in {
         val result = form.bind(validOtherData ++ Map("country" -> "IN", "postCode" -> "12345678911"))
 
-        result.errors shouldBe Seq(FormError("postCode", keyNonUKLength))
+        result.errors `shouldBe` Seq(FormError("postCode", keyNonUKLength))
       }
 
       Seq("A 1223", "1234 A23", "AA1 BBB", "AA 8989").foreach { testPostCode =>
@@ -186,7 +186,7 @@ trait AddressBehaviours extends FormSpec with StringFieldBehaviours with Constra
 
           val result = form.bind(validOtherData ++ Map("country" -> "GB", "postCode" -> testPostCode))
 
-          result.errors shouldBe Seq(FormError("postCode", keyInvalid))
+          result.errors `shouldBe` Seq(FormError("postCode", keyInvalid))
 
         }
       }
@@ -194,15 +194,15 @@ trait AddressBehaviours extends FormSpec with StringFieldBehaviours with Constra
       "transform the Post Code value correctly" in {
         val postCode = "  zz11zz  "
         val result = form.bind(validOtherData ++ Map("postCode" -> postCode, "country" -> "GB"))
-        result.errors.size shouldBe 0
-        getPostCode(result.get) shouldBe "ZZ1 1ZZ"
+        result.errors.size `shouldBe` 0
+        getPostCode(result.get) `shouldBe` "ZZ1 1ZZ"
       }
     }
 
   }
 
   def formWithCountry(
-                       form: Form[_],
+                       form: Form[?],
                        fieldName: String,
                        keyRequired: String,
                        keyInvalid: String,
@@ -225,7 +225,7 @@ trait AddressBehaviours extends FormSpec with StringFieldBehaviours with Constra
 
       "fail to bind when the country code is not valid" in {
         val result = form.bind(validOtherData ++ Map(fieldName -> "XXX"))
-        result.errors shouldBe Seq(FormError(fieldName, keyInvalid))
+        result.errors `shouldBe` Seq(FormError(fieldName, keyInvalid))
       }
     }
 

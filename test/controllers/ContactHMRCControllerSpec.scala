@@ -25,7 +25,7 @@ class ContactHMRCControllerSpec extends ControllerSpecBase {
     "return 200 for a GET" in {
       val result = new ContactHMRCController(frontendAppConfig, messagesApi, controllerComponents, view).onPageLoad()(fakeRequest)
       status(result) mustBe OK
-      contentAsString(result) mustBe view()(fakeRequest, messages).toString
+      contentAsString(result) mustBe view()(using fakeRequest, messages).toString
     }
   }
 }

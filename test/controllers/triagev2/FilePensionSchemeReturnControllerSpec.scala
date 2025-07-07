@@ -40,7 +40,7 @@ class FilePensionSchemeReturnControllerSpec extends ControllerSpecBase with Scal
 
       status(result) mustBe OK
       contentAsString(result) mustBe
-        view(frontendAppConfig.tpssWelcomeUrl)(request, messages).toString
+        view(frontendAppConfig.tpssWelcomeUrl)(using request, messages).toString
     }
 
     "return OK with the view when calling on page load for PSP" in {
@@ -50,7 +50,7 @@ class FilePensionSchemeReturnControllerSpec extends ControllerSpecBase with Scal
 
       status(result) mustBe OK
       contentAsString(result) mustBe
-        view(frontendAppConfig.tpssWelcomeUrl)(request, messages).toString
+        view(frontendAppConfig.tpssWelcomeUrl)(using request, messages).toString
     }
   }
 }

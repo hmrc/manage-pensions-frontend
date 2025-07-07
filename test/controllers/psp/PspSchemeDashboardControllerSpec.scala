@@ -23,7 +23,7 @@ import connectors.{FrontendConnector, PensionSchemeReturnConnector, UserAnswersC
 import controllers.ControllerSpecBase
 import controllers.actions.{AuthAction, FakeAuthAction, PspSchemeAuthAction}
 import handlers.ErrorHandler
-import models._
+import models.*
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{reset, when}
 import org.scalatest.BeforeAndAfterEach
@@ -31,7 +31,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import play.api.i18n.Messages
 import play.api.libs.json.{JsBoolean, Json}
 import play.api.mvc.Results.Ok
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import play.twirl.api.Html
 import services.{PspSchemeDashboardService, SchemeDetailsService}
 import testhelpers.CommonBuilders.{listOfSchemesResponse, pspDetails}
@@ -42,6 +42,7 @@ import viewmodels.PspSchemeDashboardCardViewModel
 import views.html.psp.pspSchemeDashboard
 
 import java.time.LocalDate
+import scala.annotation.unused
 import scala.concurrent.Future
 
 class PspSchemeDashboardControllerSpec
@@ -151,7 +152,7 @@ class PspSchemeDashboardControllerSpec
   private def cards(
                      evPspCard: Html,
                      clientReference: Option[String],
-                     openDate: Option[String]
+                     @unused openDate: Option[String]
                    ): Seq[PspSchemeDashboardCardViewModel] = {
     Seq(
       manageReportsEventsCard(evPspCard),
@@ -177,7 +178,7 @@ class PspSchemeDashboardControllerSpec
     cards = cards(evPspCard, clientReference, openDate),
     returnLink = Some(returnLink)
   )(
-    fakeRequest,
+    using fakeRequest,
     messages
   ).toString
 
@@ -191,28 +192,28 @@ class PspSchemeDashboardControllerSpec
     reset(minimalConnector)
     reset(errorHandler)
     reset(mockPensionSchemeReturnConnector)
-    when(userAnswersCacheConnector.removeAll(any())(any(), any()))
+    when(userAnswersCacheConnector.removeAll(any())(using any(), any()))
       .thenReturn(Future.successful(Ok("")))
-    when(schemeDetailsService.retrievePspSchemeDashboardCards(any(), any(), any())(any()))
+    when(schemeDetailsService.retrievePspSchemeDashboardCards(any(), any(), any())(using any()))
       .thenReturn(Future.successful(aftPspSchemeDashboardCards))
-    when(userAnswersCacheConnector.upsert(any(), any())(any(), any()))
+    when(userAnswersCacheConnector.upsert(any(), any())(using any(), any()))
       .thenReturn(Future.successful(JsBoolean(true)))
     when(appConfig.pspTaskListUrl)
       .thenReturn("/foo")
-    when(mockPensionSchemeReturnConnector.getOverview(any(),any(), any(), any(), any())(any())).thenReturn(Future.successful(Seq(overview1)))
+    when(mockPensionSchemeReturnConnector.getOverview(any(),any(), any(), any(), any())(using any())).thenReturn(Future.successful(Seq(overview1)))
   }
 
   "PspSchemeDashboardController.onPageLoad" must {
     "return ok and correct cards when start aft is allowed" in {
-      when(frontendConnector.retrieveEventReportingPartial(any(), any()))
+      when(frontendConnector.retrieveEventReportingPartial(using any(), any()))
         .thenReturn(Future.successful(evPspSchemeDashboardCard))
-      when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
+      when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(using any(), any()))
         .thenReturn(Future.successful(ua()))
-      when(minimalConnector.getMinimalPspDetails()(any(), any()))
+      when(minimalConnector.getMinimalPspDetails()(using any(), any()))
         .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false, deceasedFlag = false)))
-      when(listSchemesConnector.getListOfSchemesForPsp(any())(any(), any()))
+      when(listSchemesConnector.getListOfSchemesForPsp(any())(using any(), any()))
         .thenReturn(Future.successful(Right(listOfSchemesResponse)))
-      when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any(), any(), any())(any()))
+      when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any(), any(), any())(using any()))
         .thenReturn(cards(evPspSchemeDashboardCard, None, None))
       when(schemeDetailsService.openedDate(any(), any(), any())).thenReturn(Some(authDate))
       when(appConfig.pspTaskListUrl).thenReturn("dummyUrl")
@@ -224,16 +225,16 @@ class PspSchemeDashboardControllerSpec
       contentAsString(result) mustBe viewAsString(isSchemeOpen = true, openDate = Some(authDate))
     }
 
-   "return ok and correct cards when start aft is not allowed" in {
-      when(frontendConnector.retrieveEventReportingPartial(any(), any()))
+    "return ok and correct cards when start aft is not allowed" in {
+      when(frontendConnector.retrieveEventReportingPartial(using any(), any()))
         .thenReturn(Future.successful(evPspSchemeDashboardCard))
-      when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
+      when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(using any(), any()))
         .thenReturn(Future.successful(ua("pending")))
-      when(minimalConnector.getMinimalPspDetails()(any(), any()))
+      when(minimalConnector.getMinimalPspDetails()(using any(), any()))
         .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false, deceasedFlag = false)))
-      when(listSchemesConnector.getListOfSchemesForPsp(any())(any(), any()))
+      when(listSchemesConnector.getListOfSchemesForPsp(any())(using any(), any()))
         .thenReturn(Future.successful(Right(listOfSchemesResponse)))
-      when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any(), any(), any())(any()))
+      when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any(), any(), any())(using any()))
         .thenReturn(cards(evPspSchemeDashboardCard, None, None))
       when(appConfig.pspTaskListUrl).thenReturn("dummyUrl")
       when(appConfig.pspSchemeDashboardUrl).thenReturn("dummyUrl")
@@ -244,15 +245,15 @@ class PspSchemeDashboardControllerSpec
     }
 
     "return not found when list schemes does not come back" in {
-      when(frontendConnector.retrieveEventReportingPartial(any(), any()))
+      when(frontendConnector.retrieveEventReportingPartial(using any(), any()))
         .thenReturn(Future.successful(evPspSchemeDashboardCard))
-      when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
+      when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(using any(), any()))
         .thenReturn(Future.successful(ua()))
-      when(minimalConnector.getMinimalPspDetails()(any(), any()))
+      when(minimalConnector.getMinimalPspDetails()(using any(), any()))
         .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false, deceasedFlag = false)))
-      when(listSchemesConnector.getListOfSchemesForPsp(any())(any(), any()))
+      when(listSchemesConnector.getListOfSchemesForPsp(any())(using any(), any()))
         .thenReturn(Future.successful(Left(HttpResponse(404, "Not found"))))
-      when(errorHandler.notFoundTemplate(any()))
+      when(errorHandler.notFoundTemplate(using any()))
         .thenReturn(Html(""))
 
       val result = controller().onPageLoad(srn)(fakeRequest)
@@ -261,16 +262,16 @@ class PspSchemeDashboardControllerSpec
     }
 
     "return ok and correct cards when open date and client ref are populated" in {
-      when(frontendConnector.retrieveEventReportingPartial(any(), any()))
+      when(frontendConnector.retrieveEventReportingPartial(using any(), any()))
         .thenReturn(Future.successful(evPspSchemeDashboardCard))
-      when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
+      when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(using any(), any()))
         .thenReturn(Future.successful(ua()))
-      when(minimalConnector.getMinimalPspDetails()(any(), any()))
+      when(minimalConnector.getMinimalPspDetails()(using any(), any()))
         .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false, deceasedFlag = false)))
-      when(listSchemesConnector.getListOfSchemesForPsp(any())(any(), any()))
+      when(listSchemesConnector.getListOfSchemesForPsp(any())(using any(), any()))
         .thenReturn(Future.successful(Right(listOfSchemesResponse)))
       when(schemeDetailsService.openedDate(any(), any(), any())).thenReturn(Some(authDate))
-      when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any(), any(), any())(any()))
+      when(pspSchemeDashboardService.getTiles(any(), any(), any(), any(), any(), any(), any())(using any()))
         .thenReturn(cards(evPspSchemeDashboardCard, Some(clientRef), Some(authDate)))
       when(appConfig.pspTaskListUrl).thenReturn("dummyUrl")
       when(appConfig.pspSchemeDashboardUrl).thenReturn("dummyUrl")
@@ -283,9 +284,9 @@ class PspSchemeDashboardControllerSpec
 
 
     "return redirect to update contact details page when RLS flag true" in {
-      when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
+      when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(using any(), any()))
         .thenReturn(Future.successful(ua()))
-      when(minimalConnector.getMinimalPspDetails()(any(), any()))
+      when(minimalConnector.getMinimalPspDetails()(using any(), any()))
         .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = true, deceasedFlag = false)))
       when(appConfig.pspUpdateContactDetailsUrl)
         .thenReturn("/update-contact-details")
@@ -297,9 +298,9 @@ class PspSchemeDashboardControllerSpec
     }
 
     "return redirect to contact hmrc page when both RLS flag and deceased flag are true" in {
-      when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
+      when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(using any(), any()))
         .thenReturn(Future.successful(ua()))
-      when(minimalConnector.getMinimalPspDetails()(any(), any()))
+      when(minimalConnector.getMinimalPspDetails()(using any(), any()))
         .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = true, deceasedFlag = true)))
 
       val result = controller().onPageLoad(srn)(fakeRequest)
@@ -330,9 +331,9 @@ class PspSchemeDashboardControllerSpec
         mockPensionSchemeReturnConnector
       )
 
-      when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(any(), any()))
+      when(schemeDetailsConnector.getPspSchemeDetails(any(), any())(using any(), any()))
         .thenReturn(Future.successful(ua()))
-      when(minimalConnector.getMinimalPspDetails()(any(), any()))
+      when(minimalConnector.getMinimalPspDetails()(using any(), any()))
         .thenReturn(Future.successful(minimalPsaDetails(rlsFlag = false, deceasedFlag = false)))
 
 

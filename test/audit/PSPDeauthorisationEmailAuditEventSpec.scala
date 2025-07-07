@@ -42,7 +42,7 @@ class PSPDeauthorisationEmailAuditEventSpec
       "event" -> "Sent"
     )
 
-    event.auditType shouldBe "PensionSchemePractitionerDeauthorisedEmailEvent"
-    event.details shouldBe expected
+    event.auditType `shouldBe` "PensionSchemePractitionerDeauthorisedEmailEvent"
+    event.details `shouldBe` expected
   }
 }

@@ -159,7 +159,7 @@ class AuthImpl(
 
       def friendlyUrl: String = config.localFriendlyUrl(request.uri)
 
-      optionJsValue.map(UserAnswers).flatMap(_.get(AdministratorOrPractitionerId)) match {
+      optionJsValue.map(UserAnswers.apply).flatMap(_.get(AdministratorOrPractitionerId)) match {
         case None => Future.successful(Redirect(AdministratorOrPractitionerController.onPageLoad()))
         case Some(aop) =>
           (aop, authEntity) match {

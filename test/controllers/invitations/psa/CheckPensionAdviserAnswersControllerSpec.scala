@@ -25,7 +25,7 @@ import play.api.mvc.{Action, AnyContent, Call}
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist._
 import utils.countryOptions.CountryOptions
-import utils.{CheckYourAnswersFactory, UserAnswers}
+import utils.{CheckYourAnswersFactory, UserAnswers, UserAnswerOps}
 import views.html.check_your_answers
 
 class CheckPensionAdviserAnswersControllerSpec
@@ -47,7 +47,7 @@ class CheckPensionAdviserAnswersControllerSpec
   private val adviserLabel = "messages__check__your__answer__adviser__name__label"
   private val siteChange = "site.change"
 
-  val sections = Seq(
+  val sections: Seq[SummaryListRow] = Seq(
     SummaryListRow(
       key = Key(Text(messages(adviserLabel)), classes = "govuk-!-width-one-half"),
       value = Value(Text(adviserName)),
@@ -62,14 +62,14 @@ class CheckPensionAdviserAnswersControllerSpec
   )
 
   def viewAsString(): String =
-    view(sections, None, call)(fakeRequest, messages).toString
+    view(sections, None, call)(using fakeRequest, messages).toString
 
   def onPageLoadAction(
                         dataRetrievalAction: DataRetrievalAction,
                         fakeAuth: AuthAction
                       ): Action[AnyContent] = {
     new CheckPensionAdviserAnswersController(
-      frontendAppConfig, messagesApi, fakeAuth, navigator,
+      messagesApi, fakeAuth, navigator,
       dataRetrievalAction, requiredDateAction, checkYourAnswersFactory,
       controllerComponents, view
     ).onPageLoad()
@@ -80,7 +80,7 @@ class CheckPensionAdviserAnswersControllerSpec
                       fakeAuth: AuthAction
                     ): Action[AnyContent] = {
     new CheckPensionAdviserAnswersController(
-      frontendAppConfig, messagesApi, fakeAuth, navigator,
+      messagesApi, fakeAuth, navigator,
       dataRetrievalAction, requiredDateAction, checkYourAnswersFactory,
       controllerComponents, view
     ).onSubmit()

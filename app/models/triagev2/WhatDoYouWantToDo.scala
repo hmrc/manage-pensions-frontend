@@ -23,6 +23,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 import utils.Enumerable
 
+import scala.annotation.unused
 import scala.language.implicitConversions
 
 sealed trait WhatDoYouWantToDo
@@ -40,7 +41,7 @@ object WhatDoYouWantToDo {
       Seq(ManageExistingScheme, FileAccountingForTaxReturn, FilePensionSchemeReturn,FileEventReport)
 
 
-  def options(role: String)(implicit messages: Messages): Seq[RadioItem] = values.map {
+  def options(@unused role: String)(implicit messages: Messages): Seq[RadioItem] = values.map {
     value =>
       RadioItem(
         content = Text(messages(s"messages__whatDoYouWantToDo__v2__${value.toString}")),
@@ -48,8 +49,8 @@ object WhatDoYouWantToDo {
       )
   }
 
-  implicit def enumerable(role: String): Enumerable[WhatDoYouWantToDo] =
-    Enumerable(values.map(v => v.toString -> v): _*)
+  implicit def enumerable(@unused role: String): Enumerable[WhatDoYouWantToDo] =
+    Enumerable(values.map(v => v.toString -> v) *)
 
   private val mappings: Map[String, WhatDoYouWantToDo] = values.map(v => (v.toString, v)).toMap
 

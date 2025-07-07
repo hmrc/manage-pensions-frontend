@@ -27,7 +27,7 @@ import play.api.data.validation.{Constraint, Invalid, Valid}
 
 trait RegexBehaviourSpec extends TableDrivenPropertyChecks with ScalaCheckDrivenPropertyChecks with Generators {
 
-  this: AnyWordSpec with Matchers =>
+  this: AnyWordSpec & Matchers =>
 
   def regexWithValidAndInvalidExamples(constraint: String => Constraint[String],
                                        valid: Gen[String],
@@ -35,33 +35,33 @@ trait RegexBehaviourSpec extends TableDrivenPropertyChecks with ScalaCheckDriven
                                        invalidMsg: String,
                                        regexString: String): Unit = {
     "Accept all valid examples" in {
-      forAll(valid) { value: String =>
-        constraint(invalidMsg)(value) shouldBe Valid
+      forAll(valid) { value =>
+        constraint(invalidMsg)(value) `shouldBe` Valid
       }
     }
 
     "Reject all invalid examples" in {
-      forAll(invalid) { value: String =>
-        constraint(invalidMsg)(value) shouldBe Invalid(invalidMsg, regexString)
+      forAll(invalid) { value =>
+        constraint(invalidMsg)(value) `shouldBe` Invalid(invalidMsg, regexString)
       }
     }
   }
 
   def formWithRegex(
-                     form: Form[_],
+                     form: Form[?],
                      valid: TableFor1[Map[String, String]],
                      invalid: TableFor1[Map[String, String]]
                    ): Unit = {
 
     "Accept all valid examples" in {
       forAll(valid) { data =>
-        form.bind(data).errors.isEmpty shouldBe true
+        form.bind(data).errors.isEmpty `shouldBe` true
       }
     }
 
     "Reject all invalid examples" in {
       forAll(invalid) { data =>
-        form.bind(data).errors.nonEmpty shouldBe true
+        form.bind(data).errors.nonEmpty `shouldBe` true
       }
     }
   }

@@ -60,6 +60,6 @@ object Lock extends Enumerable.Implicits {
   }
 
   implicit val enumerable: Enumerable[Lock] = Enumerable(
-    Seq(VarianceLock, PsaLock, SchemeLock).map(v => v.toString -> v): _*
+    Seq(VarianceLock, PsaLock, SchemeLock).map(v => v.toString -> v) *
   )
 }

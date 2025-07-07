@@ -33,7 +33,7 @@
     appConfig: FrontendAppConfig
 )
 
-@(form: Form[_], schemes: List[SchemeDetails], psaName: String, numberOfSchemes: Int, pagination: Int, pageNumber: Int, pageNumberLinks: Seq[Int], numberOfPages: Int, noResultsMessageKey: Option[String])(implicit request: Request[_], messages: Messages)
+@(form: Form[?], schemes: List[SchemeDetails], psaName: String, numberOfSchemes: Int, pagination: Int, pageNumber: Int, pageNumberLinks: Seq[Int], numberOfPages: Int, noResultsMessageKey: Option[String])(implicit request: Request[?], messages: Messages)
 
 @msgPrefix = @{
     "messages__schemesOverview__pagination__"
@@ -287,7 +287,7 @@
                 }
 
                 <p class="govuk-body govuk-margin-top-5">
-                    <a id="return-link" class="govuk-link" href=@SchemesOverviewController.onPageLoad()>
+                    <a id="return-link" class="govuk-link" href=@controllers.routes.SchemesOverviewController.onPageLoad()>
                         @messages("site.return_to", psaName)
                     </a>
                 </p>

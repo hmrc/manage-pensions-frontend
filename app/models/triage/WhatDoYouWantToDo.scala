@@ -56,7 +56,7 @@ object WhatDoYouWantToDo {
   }
 
   implicit def enumerable(role: String): Enumerable[WhatDoYouWantToDo] =
-    Enumerable(values(role).map(v => v.toString -> v): _*)
+    Enumerable(values(role).map(v => v.toString -> v) *)
 }
 
 

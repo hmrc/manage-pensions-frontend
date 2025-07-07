@@ -16,11 +16,20 @@
 
 package models.psa
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.functional.syntax.toFunctionalBuilderOps
+import play.api.libs.json.{JsPath, Reads, Writes, Json}
 
 
 case class PsaAssociatedDate(psaId : String, relationshipDate:Option[String])
 
 object PsaAssociatedDate{
-  implicit val formats: OFormat[PsaAssociatedDate] = Json.format[PsaAssociatedDate]
+
+  implicit val reads: Reads[PsaAssociatedDate] =
+    (
+      (JsPath \ "psaId").read[String].orElse((JsPath \ "id").read[String]) and
+      (JsPath \ "relationshipDate").readNullable[String]
+      )((psaId, relationshipDate) => PsaAssociatedDate(psaId, relationshipDate))
+
+  implicit val writes: Writes[PsaAssociatedDate] = Json.writes[PsaAssociatedDate]
+
 }

@@ -20,6 +20,7 @@ import forms.FormSpec
 import forms.behaviours.FormBehaviours
 import forms.invitations.psa.AdviserManualAddressFormProvider
 import models.Address
+import play.api.data.Form
 import utils.FakeCountryOptions
 import views.behaviours.AddressBehaviours
 
@@ -49,7 +50,7 @@ class ManualAddressFormProviderSpec extends FormBehaviours with FormSpec with Ad
     "country" -> "GB"
   )
 
-  val form = new AdviserManualAddressFormProvider(countryOptions)()
+  val form: Form[Address] = new AdviserManualAddressFormProvider(countryOptions)()
 
   "Address form" must {
     behave like questionForm(Address(

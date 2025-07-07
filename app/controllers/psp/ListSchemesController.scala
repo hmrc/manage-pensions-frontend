@@ -85,7 +85,6 @@ class ListSchemesController @Inject()(
 
   private def searchAndRenderView(
                                    form: Form[String],
-                                   pageNumber: Int,
                                    searchText: Option[String]
                                  )(implicit request: OptionalDataRequest[AnyContent]): Future[Result] = {
     schemeSearchService.searchPsp(request.pspIdOrException.id, searchText).flatMap { searchResult =>
@@ -118,7 +117,7 @@ class ListSchemesController @Inject()(
               form = formWithErrors
             ),
           value => {
-            searchAndRenderView(_form, 1, Some(value))
+            searchAndRenderView(_form, Some(value))
           }
         )
   }

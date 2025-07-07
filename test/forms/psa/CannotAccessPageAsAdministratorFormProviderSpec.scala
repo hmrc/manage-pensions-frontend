@@ -43,6 +43,6 @@ class CannotAccessPageAsAdministratorFormProviderSpec extends FormBehaviours wit
         Required -> messages("messages__cannotAccessPageAsAdministrator__error__required"),
         Invalid -> "error.invalid"
       ),
-      AdministratorOrPractitioner.optionsCannotAccessPageAsAdministrator.map(_.value.get): _*)
+      AdministratorOrPractitioner.optionsCannotAccessPageAsAdministrator.map(_.value.get) *)
   }
 }

@@ -81,7 +81,7 @@ class AdviserManualAddressController @Inject()(
       }
 
       form.bindFromRequest().fold(
-        (formWithError: Form[_]) => AdviserNameId.retrieve.map { name =>
+        (formWithError: Form[?]) => AdviserNameId.retrieve.map { name =>
           Future.successful(BadRequest(view(formWithError, mode, countryOptions.options, prepopulated, prefix, name)))
         },
         address =>

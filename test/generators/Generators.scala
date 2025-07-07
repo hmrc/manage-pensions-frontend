@@ -39,7 +39,7 @@ trait Generators {
 
     numberGen.map(n => {
       random.nextInt(10) match {
-        case 1 => formatter format n
+        case 1 => formatter.format(n)
         case _ => n.toString
       }
     })

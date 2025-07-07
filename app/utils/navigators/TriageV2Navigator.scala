@@ -49,7 +49,7 @@ class TriageV2Navigator @Inject()(appConfig: FrontendAppConfig) extends Navigato
   private def whichServiceYouWantToViewRoutes(ua: UserAnswers): Call = {
 
     ua.get(WhatRoleId) match {
-      case role@(Some(PSA) | Some(PSP)) => ua.get(WhichServiceYouWantToViewId)(reads(WhichServiceYouWantToView.enumerable(role.get.toString))) match {
+      case role@(Some(PSA) | Some(PSP)) => ua.get(WhichServiceYouWantToViewId)(using reads(using WhichServiceYouWantToView.enumerable(role.get.toString))) match {
         case Some(ManagingPensionSchemes) => Call("GET", s"${
           role.get.toString match {
             case "administrator" => appConfig.psaOverviewUrl
@@ -68,7 +68,7 @@ class TriageV2Navigator @Inject()(appConfig: FrontendAppConfig) extends Navigato
     ua.get(WhatRoleId) match {
       case role@(Some(PSA) | Some(PSP)) =>
         val memberRole = role.get.toString
-        ua.get(WhatDoYouWantToDoId)(reads(WhatDoYouWantToDo.enumerable(memberRole))) match {
+        ua.get(WhatDoYouWantToDoId)(using reads(using WhatDoYouWantToDo.enumerable(memberRole))) match {
           case Some(ManageExistingScheme) => ManageExistingSchemeController.onPageLoad(memberRole)
           case Some(FileAccountingForTaxReturn) => FileAccountingForTaxReturnController.onPageLoad(memberRole)
           case Some(FilePensionSchemeReturn) => FilePensionSchemeReturnController.onPageLoad(memberRole)

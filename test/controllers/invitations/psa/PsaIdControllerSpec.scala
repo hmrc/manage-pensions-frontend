@@ -24,7 +24,7 @@ import models.NormalMode
 import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import utils.UserAnswers
+import utils.{UserAnswers, UserAnswerOps}
 import views.html.invitations.psa.psaId
 
 class PsaIdControllerSpec extends ControllerWithQuestionPageBehaviours {
@@ -50,7 +50,7 @@ class PsaIdControllerSpec extends ControllerWithQuestionPageBehaviours {
       dataRetrievalAction, requiredDataAction, formProvider, controllerComponents, view, fakePsaSchemeAuthAction).onSubmit(NormalMode, srn)
   }
 
-  def viewAsString(form: Form[_] = form) = view(form, "xyz", NormalMode, srn)(fakeRequest, messages).toString
+  def viewAsString(form: Form[?] = form) = view(form, "xyz", NormalMode, srn)(using fakeRequest, messages).toString
 
 
   behave like controllerWithOnPageLoadMethod(onPageLoadAction, userAnswer.dataRetrievalAction,

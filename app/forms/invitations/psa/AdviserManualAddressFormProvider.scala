@@ -40,6 +40,6 @@ class AdviserManualAddressFormProvider @Inject()(countryOptions: CountryOptions)
         postCodeWithCountryMapping("messages__error__postcode", "messages__error__postcode_invalid", "messages__error__postcode_nonUK_length"),
       "country" ->
         countryMapping(countryOptions, "messages__error_country_required", "messages__error_country_invalid")
-    )(Address.apply)(Address.unapply)
+    )(Address.apply)(o => Some(Tuple.fromProductTyped(o)))
   )
 }

@@ -20,7 +20,7 @@
     layout: templates.Layout
 )
 
-@(role: String,pensionSchemesOnlineLink: String,submitEventReportGovUkLink: String)(implicit request: Request[_], messages: Messages)
+@(role: String,pensionSchemesOnlineLink: String,submitEventReportGovUkLink: String)(implicit request: Request[?], messages: Messages)
 
 @layout(pageTitle = messages("messages__fileEventReport__title")){
 

@@ -41,7 +41,6 @@ class YourInvitationsController @Inject()(
                                            @AcceptInvitation navigator: Navigator,
                                            val controllerComponents: MessagesControllerComponents,
                                            view: yourInvitations,
-                                           psaSchemeAuthAction: PsaSchemeAuthAction
                                          )(implicit val ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
 

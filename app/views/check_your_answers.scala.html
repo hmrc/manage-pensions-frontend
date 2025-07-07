@@ -25,7 +25,7 @@
     govukSummaryList : GovukSummaryList
 )
 
-@(answerSections: Seq[SummaryListRow], secondaryHeader: Option[String], postUrl: Call, guidance:Option[String] = None, guidanceData:Option[String] = None, buttonText: Option[String] = None)(implicit request: Request[_], messages: Messages)
+@(answerSections: Seq[SummaryListRow], secondaryHeader: Option[String], postUrl: Call, guidance:Option[String] = None, guidanceData:Option[String] = None, buttonText: Option[String] = None)(implicit request: Request[?], messages: Messages)
 
 @layout(pageTitle = messages("checkYourAnswers.title")) {
 

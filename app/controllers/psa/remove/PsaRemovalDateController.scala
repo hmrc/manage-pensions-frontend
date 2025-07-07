@@ -104,8 +104,6 @@ class PsaRemovalDateController @Inject()(
               )
             )
           )
-        case _ =>
-          Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad))
       }
   }
 
@@ -115,7 +113,7 @@ class PsaRemovalDateController @Inject()(
       (SchemeNameId and PSANameId and PSTRId and AssociatedDateId).retrieve.map {
         case schemeName ~ psaName ~ pstr ~ associationDate =>
           form(associationDate).bindFromRequest().fold(
-            (formWithErrors: Form[_]) =>
+            (formWithErrors: Form[?]) =>
               Future.successful(BadRequest(view(formWithErrors, psaName, schemeName, srn, formatDate(associationDate)))),
             value =>
               dataCacheConnector.save(request.externalId, PsaRemovalDateId, value).flatMap { cacheMap =>

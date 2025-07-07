@@ -60,18 +60,17 @@ class YourInvitationsControllerSpec extends ControllerSpecBase with MockitoSugar
       FakeUserAnswersCacheConnector,
       navigator,
       controllerComponents,
-      yourInvitationsView,
-      fakePsaSchemeAuthAction
+      yourInvitationsView
     )
   }
 
-  private def viewAsString: () => HtmlFormat.Appendable = () => yourInvitationsView(invitationList, psaName)(fakeRequest, messages)
+  private def viewAsString: () => HtmlFormat.Appendable = () => yourInvitationsView(invitationList, psaName)(using fakeRequest, messages)
 
   "YourInvitationsController" must {
 
     "return 200 Ok and correct content on successful GET" in {
 
-      when(mockInvitationsCacheConnector.getForInvitee(any())(any(), any()))
+      when(mockInvitationsCacheConnector.getForInvitee(any())(using any(), any()))
         .thenReturn(Future.successful(invitationList))
 
       val result = controller().onPageLoad()(fakeRequest)

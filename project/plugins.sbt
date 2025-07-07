@@ -23,4 +23,4 @@ addSbtPlugin("com.github.sbt" % "sbt-concat" % "1.0.0")
 
 addSbtPlugin("com.github.sbt" % "sbt-uglify" % "3.0.1")
 
-addSbtPlugin("com.github.sbt" % "sbt-digest" % "2.0.0")
+addSbtPlugin("com.github.sbt" % "sbt-digest" % "2.1.0")

@@ -47,12 +47,12 @@ class SchemesOverviewServiceSpec extends SpecBase with MockitoSugar with BeforeA
   private val invitationsCacheConnector = mock[InvitationsCacheConnector]
 
   override def beforeEach(): Unit = {
-    when(minimalPsaConnector.getPsaNameFromPsaID()(any(), any()))
+    when(minimalPsaConnector.getPsaNameFromPsaID()(using any(), any()))
       .thenReturn(Future.successful(minimalPsaName))
-    when(invitationsCacheConnector.getForInvitee(any())(any(), any()))
+    when(invitationsCacheConnector.getForInvitee(any())(using any(), any()))
       .thenReturn(Future.successful(invitationList))
-    when(frontendConnector.retrieveSchemeUrlsPartial(any(), any())).thenReturn(Future.successful(html))
-    when(frontendConnector.retrievePenaltiesUrlPartial(any(), any())).thenReturn(Future.successful(html))
+    when(frontendConnector.retrieveSchemeUrlsPartial(using any(), any())).thenReturn(Future.successful(html))
+    when(frontendConnector.retrievePenaltiesUrlPartial(using any(), any())).thenReturn(Future.successful(html))
     super.beforeEach()
   }
 
@@ -72,7 +72,7 @@ class SchemesOverviewServiceSpec extends SpecBase with MockitoSugar with BeforeA
       }
 
       "psa is not invited to any schemes" in {
-        when(invitationsCacheConnector.getForInvitee(any())(any(), any()))
+        when(invitationsCacheConnector.getForInvitee(any())(using any(), any()))
           .thenReturn(Future.successful(Nil))
 
         whenReady(service.getTiles(psaId)) {
@@ -81,7 +81,7 @@ class SchemesOverviewServiceSpec extends SpecBase with MockitoSugar with BeforeA
       }
 
       "psa is invited to administer only one scheme" in {
-        when(invitationsCacheConnector.getForInvitee(any())(any(), any()))
+        when(invitationsCacheConnector.getForInvitee(any())(using any(), any()))
           .thenReturn(Future.successful(List(invitation1)))
 
         whenReady(service.getTiles(psaId)) {

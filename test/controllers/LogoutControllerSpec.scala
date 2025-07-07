@@ -32,11 +32,11 @@ import scala.concurrent.{ExecutionContext, Future}
 class LogoutControllerSpec extends ControllerSpecBase with MockitoSugar {
   private val mockUserAnswersCacheConnector = mock[UserAnswersCacheConnector]
 
-  private def fakeAuthConnector(stubbedRetrievalResult: Future[_]): AuthConnector = new AuthConnector {
+  private def fakeAuthConnector(stubbedRetrievalResult: Future[?]): AuthConnector = new AuthConnector {
 
     def authorise[A](predicate: Predicate, retrieval: Retrieval[A])
       (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[A] =
-      stubbedRetrievalResult.map(_.asInstanceOf[A])(ec)
+      stubbedRetrievalResult.map(_.asInstanceOf[A])(using ec)
   }
 
   private def logoutController = new LogoutController(
@@ -49,7 +49,7 @@ class LogoutControllerSpec extends ControllerSpecBase with MockitoSugar {
   "Logout Controller" must {
 
     "redirect to feedback survey page for an Individual and remove all items from mongo cache" in {
-      when(mockUserAnswersCacheConnector.removeAll(any())(any(), any())).thenReturn(Future.successful(Ok))
+      when(mockUserAnswersCacheConnector.removeAll(any())(using any(), any())).thenReturn(Future.successful(Ok))
       val result = logoutController.onPageLoad(fakeRequest)
 
       status(result) mustBe SEE_OTHER

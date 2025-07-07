@@ -34,7 +34,7 @@ object Message {
   case class Resolvable(key: String, args: Seq[Any]) extends Message {
 
     override def resolve(implicit messages: Messages): String =
-      messages(key, args: _*)
+      messages(key, args *)
 
     override def withArgs(args: Any*): Message =
       copy(args = args)

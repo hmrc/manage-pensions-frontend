@@ -41,7 +41,7 @@ class FrontendConnectorAFTSpec extends AsyncWordSpec with Matchers with WireMock
   private val retrievePenaltiesUrlPartialHtmlUrl = "/manage-pension-scheme-accounting-for-tax/penalties-partial"
 
   val srn: SchemeReferenceNumber = SchemeReferenceNumber("AB123456C")
-  implicit val request: FakeRequest[_] = FakeRequest("", "")
+  implicit val request: FakeRequest[?] = FakeRequest("", "")
   private val aftHtml: Html = Html("test-aft-html")
   private val finInfoHtml: Html = Html("test-fininfo-html")
   private val pspSchemeDashboardCardsHtml: Html = Html("test-psp-scheme-dashboard-cards-html")

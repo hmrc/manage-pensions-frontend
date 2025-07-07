@@ -57,7 +57,7 @@ class PreviouslyRegisteredController @Inject()(
   def onSubmitAdministrator: Action[AnyContent] = noBothEnrolmentsOnlyAuthAction.async {
     implicit request =>
       form.bindFromRequest().fold(
-        (formWithErrors: Form[_]) =>
+        (formWithErrors: Form[?]) =>
           Future.successful(BadRequest(view(formWithErrors, AdministratorOrPractitioner.Administrator))),
         {
           case PreviouslyRegisteredButNotLoggedIn =>
@@ -70,7 +70,7 @@ class PreviouslyRegisteredController @Inject()(
   def onSubmitPractitioner: Action[AnyContent] = noBothEnrolmentsOnlyAuthAction.async {
     implicit request =>
       form.bindFromRequest().fold(
-        (formWithErrors: Form[_]) =>
+        (formWithErrors: Form[?]) =>
           Future.successful(BadRequest(view(formWithErrors, AdministratorOrPractitioner.Practitioner))),
         {
           case PreviouslyRegisteredButNotLoggedIn =>

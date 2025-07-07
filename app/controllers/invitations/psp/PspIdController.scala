@@ -71,7 +71,7 @@ class PspIdController @Inject()(
               (authenticate() andThen getData andThen psaSchemeAuthAction(srn) andThen requireData).async {
     implicit request =>
       form.bindFromRequest().fold(
-        (formWithErrors: Form[_]) =>
+        (formWithErrors: Form[?]) =>
           (SchemeNameId and PspNameId).retrieve.map {
             case schemeName ~ pspName =>
               Future.successful(BadRequest(view(formWithErrors, pspName, mode, schemeName, srn, returnCall(srn))))

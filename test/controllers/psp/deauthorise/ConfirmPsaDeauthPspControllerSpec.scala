@@ -43,7 +43,7 @@ class ConfirmPsaDeauthPspControllerSpec
 
   override def beforeEach(): Unit = {
     reset(mockMinimalPsaConnector)
-    when(mockMinimalPsaConnector.getMinimalPsaDetails()(any(), any()))
+    when(mockMinimalPsaConnector.getMinimalPsaDetails()(using any(), any()))
       .thenReturn(Future.successful(minPsa))
   }
 
@@ -68,7 +68,7 @@ class ConfirmPsaDeauthPspControllerSpec
       pspName = pspName,
       schemeName = schemeName,
       psaEmailAddress = psaEmail
-    )(base.fakeRequest, base.messages).toString()
+    )(using base.fakeRequest, base.messages).toString()
 
   "ConfirmPsaDeauthPspController" should {
     behave like controllerWithOnPageLoadMethod(

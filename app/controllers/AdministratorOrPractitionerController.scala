@@ -57,7 +57,7 @@ class AdministratorOrPractitionerController @Inject()(
   def onSubmit: Action[AnyContent] = auth().async {
     implicit request =>
       form.bindFromRequest().fold(
-        (formWithErrors: Form[_]) =>
+        (formWithErrors: Form[?]) =>
           Future.successful(BadRequest(view(formWithErrors))),
         value => {
           dataCacheConnector.save(request.externalId, AdministratorOrPractitionerId, value).map(

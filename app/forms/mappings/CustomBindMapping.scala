@@ -27,7 +27,7 @@ class CustomBindMapping[T](
 
   override val key: String = fieldName
 
-  override val mappings: Seq[Mapping[_]] = Seq(this)
+  override val mappings: Seq[Mapping[?]] = Seq(this)
 
   override val constraints: Seq[Constraint[T]] = Nil
 

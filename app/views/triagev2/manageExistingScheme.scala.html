@@ -21,7 +21,7 @@
     inset_text: components.inset_text
 )
 
-@(role: String,managePensionSchemeLink: String,managePensionMigrationSchemeLink: String,pensionSchemesOnlineLink: String)(implicit request: Request[_], messages: Messages)
+@(role: String,managePensionSchemeLink: String,managePensionMigrationSchemeLink: String,pensionSchemesOnlineLink: String)(implicit request: Request[?], messages: Messages)
 
 @layout(pageTitle = messages("messages__manageExistingScheme__title")){
 

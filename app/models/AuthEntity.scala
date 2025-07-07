@@ -29,5 +29,5 @@ object AuthEntity {
   val values: Seq[AuthEntity] = Seq(PSA, PSP)
 
   implicit val enumerable: Enumerable[AuthEntity] =
-    Enumerable(values.map(v => v.toString -> v): _*)
+    Enumerable(values.map(v => v.toString -> v) *)
 }

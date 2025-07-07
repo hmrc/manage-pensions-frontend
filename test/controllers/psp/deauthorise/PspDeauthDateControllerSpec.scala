@@ -76,10 +76,10 @@ class PspDeauthDateControllerSpec
   }
 
   private def viewAsString(form: Form[LocalDate]): String =
-    view(form, pspName, schemeName, srn, formatDate(relationshipStartDate), 0)(fakeRequest, messages).toString
+    view(form, pspName, schemeName, srn, formatDate(relationshipStartDate), 0)(using fakeRequest, messages).toString
 
   private def viewAsStringPostRequest(form: Form[LocalDate]): String =
-    view(form, pspName, schemeName, srn, formatDate(relationshipStartDate), 0)(postRequest, messages).toString
+    view(form, pspName, schemeName, srn, formatDate(relationshipStartDate), 0)(using postRequest, messages).toString
 
   behave like controllerWithOnPageLoadMethodWithoutPrePopulation(
     onPageLoadAction = onPageLoadAction,

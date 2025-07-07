@@ -81,7 +81,7 @@ class AuthActionSpec
       "have access to PSA page when he has chosen to act as a PSA" in {
         val optionUAJson = UserAnswers()
           .set(AdministratorOrPractitionerId)(AdministratorOrPractitioner.Administrator).asOpt.map(_.json)
-        when(mockUserAnswersCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(optionUAJson))
+        when(mockUserAnswersCacheConnector.fetch(any())(using any(), any())).thenReturn(Future.successful(optionUAJson))
         val authAction = new AuthActionImpl(
           authConnector = fakeAuthConnector(authRetrievals(Set(enrolmentPSA, enrolmentPSP))),
           mockUserAnswersCacheConnector,
@@ -97,7 +97,7 @@ class AuthActionSpec
       "have access to PSP page when he has chosen to act as a PSP" in {
         val optionUAJson = UserAnswers()
           .set(AdministratorOrPractitionerId)(AdministratorOrPractitioner.Practitioner).asOpt.map(_.json)
-        when(mockUserAnswersCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(optionUAJson))
+        when(mockUserAnswersCacheConnector.fetch(any())(using any(), any())).thenReturn(Future.successful(optionUAJson))
         val authAction = new AuthActionImpl(
           authConnector = fakeAuthConnector(authRetrievals(Set(enrolmentPSA, enrolmentPSP))),
           mockUserAnswersCacheConnector,
@@ -111,7 +111,7 @@ class AuthActionSpec
       }
 
       "not have access to PSA page and be redirected to the administrator or practitioner page when he has NOT chosen to act as either a PSA or a PSP" in {
-        when(mockUserAnswersCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(Some(UserAnswers().json)))
+        when(mockUserAnswersCacheConnector.fetch(any())(using any(), any())).thenReturn(Future.successful(Some(UserAnswers().json)))
         val authAction = new AuthActionImpl(
           authConnector = fakeAuthConnector(authRetrievals(Set(enrolmentPSA, enrolmentPSP))),
           mockUserAnswersCacheConnector,
@@ -126,7 +126,7 @@ class AuthActionSpec
       }
 
       "not have access to PSP page and be redirected to the administrator or practitioner page when he has NOT chosen to act as either a PSA or a PSP" in {
-        when(mockUserAnswersCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(Some(UserAnswers().json)))
+        when(mockUserAnswersCacheConnector.fetch(any())(using any(), any())).thenReturn(Future.successful(Some(UserAnswers().json)))
         val authAction = new AuthActionImpl(
           authConnector = fakeAuthConnector(authRetrievals(Set(enrolmentPSA, enrolmentPSP))),
           mockUserAnswersCacheConnector,
@@ -143,7 +143,7 @@ class AuthActionSpec
       "for a PSP page be redirected to the InterruptToAdministrator page when he has chosen to act as a PSA" in {
         val optionUAJson = UserAnswers()
           .set(AdministratorOrPractitionerId)(AdministratorOrPractitioner.Administrator).asOpt.map(_.json)
-        when(mockUserAnswersCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(optionUAJson))
+        when(mockUserAnswersCacheConnector.fetch(any())(using any(), any())).thenReturn(Future.successful(optionUAJson))
         val authAction = new AuthActionImpl(
           authConnector = fakeAuthConnector(authRetrievals(Set(enrolmentPSA, enrolmentPSP))),
           mockUserAnswersCacheConnector,
@@ -161,7 +161,7 @@ class AuthActionSpec
       "for a PSA page be redirected to the CannotAccessPageAsPractitioner page when he has chosen to act as a PSP" in {
         val optionUAJson = UserAnswers()
           .set(AdministratorOrPractitionerId)(AdministratorOrPractitioner.Practitioner).asOpt.map(_.json)
-        when(mockUserAnswersCacheConnector.fetch(any())(any(), any())).thenReturn(Future.successful(optionUAJson))
+        when(mockUserAnswersCacheConnector.fetch(any())(using any(), any())).thenReturn(Future.successful(optionUAJson))
         val authAction = new AuthActionImpl(
           authConnector = fakeAuthConnector(authRetrievals(Set(enrolmentPSA, enrolmentPSP))),
           mockUserAnswersCacheConnector,
@@ -325,11 +325,11 @@ object AuthActionSpec extends SpecBase with MockitoSugar {
     def onPageLoad(): Action[AnyContent] = action { _ => Ok }
   }
 
-  def fakeAuthConnector(stubbedRetrievalResult: Future[_]): AuthConnector = new AuthConnector {
+  def fakeAuthConnector(stubbedRetrievalResult: Future[?]): AuthConnector = new AuthConnector {
 
     def authorise[A](predicate: Predicate, retrieval: Retrieval[A])
                     (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[A] =
-      stubbedRetrievalResult.map(_.asInstanceOf[A])(ec)
+      stubbedRetrievalResult.map(_.asInstanceOf[A])(using ec)
   }
 
   private def authRetrievals(enrolments: Set[Enrolment] = Set()): Future[Some[String] ~ Enrolments ~ Some[AffinityGroup.Individual.type]] =

@@ -49,7 +49,7 @@ object WhatRole {
   }
 
   implicit val enumerable: Enumerable[WhatRole] =
-    Enumerable(values.map(v => v.toString -> v): _*)
+    Enumerable(values.map(v => v.toString -> v) *)
 }
 
 

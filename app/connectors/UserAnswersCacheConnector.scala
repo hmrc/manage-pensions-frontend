@@ -36,7 +36,7 @@ trait UserAnswersCacheConnector {
                                        ec: ExecutionContext,
                                        hc: HeaderCarrier
                                       ): Future[UserAnswers] = {
-    save(request.externalId, id, value).map(UserAnswers)
+    save(request.externalId, id, value).map(UserAnswers.apply)
   }
 
   def save[A, I <: TypedIdentifier[A]](cacheId: String, id: I, value: A)
@@ -46,7 +46,7 @@ trait UserAnswersCacheConnector {
                                        hc: HeaderCarrier
                                       ): Future[JsValue]
 
-  def remove[I <: TypedIdentifier[_]](cacheId: String, id: I)
+  def remove[I <: TypedIdentifier[?]](cacheId: String, id: I)
                                      (implicit
                                       ec: ExecutionContext,
                                       hc: HeaderCarrier

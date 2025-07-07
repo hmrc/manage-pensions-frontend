@@ -21,6 +21,7 @@ import config.FrontendAppConfig
 import identifiers.TypedIdentifier
 import play.api.http.Status._
 import play.api.libs.json._
+import play.api.libs.ws.writeableOf_JsValue
 import play.api.mvc.Result
 import play.api.mvc.Results._
 import uk.gov.hmrc.http.HttpReads.Implicits._
@@ -58,7 +59,7 @@ class MicroserviceCacheConnector @Inject()(
                      ): Future[JsValue] =
     modify(cacheId, _ => JsSuccess(UserAnswers(value)))
 
-  def remove[I <: TypedIdentifier[_]](
+  def remove[I <: TypedIdentifier[?]](
                                        cacheId: String,
                                        id: I
                                      )(
@@ -79,7 +80,7 @@ class MicroserviceCacheConnector @Inject()(
         modification(UserAnswers(json.getOrElse(Json.obj()))) match {
           case JsSuccess(UserAnswers(updatedJson), _) =>
             httpClientV2.post(url(cacheId))
-              .setHeader(CacheConnector.headers(hc): _*)
+              .setHeader(CacheConnector.headers(hc) *)
               .withBody(updatedJson)
               .execute[HttpResponse].flatMap {
                 response =>
@@ -98,7 +99,7 @@ class MicroserviceCacheConnector @Inject()(
 
   override def fetch(id: String)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[Option[JsValue]] = {
     httpClientV2.get(url(id))
-      .setHeader(CacheConnector.headers(hc): _*)
+      .setHeader(CacheConnector.headers(hc) *)
       .execute[HttpResponse].flatMap {
         response =>
           response.status match {
@@ -114,7 +115,7 @@ class MicroserviceCacheConnector @Inject()(
 
   override def removeAll(id: String)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[Result] =
     httpClientV2.delete(url(id))
-      .setHeader(CacheConnector.headers(hc): _*)
+      .setHeader(CacheConnector.headers(hc) *)
       .execute[HttpResponse].map(_ => Ok)
 
 }

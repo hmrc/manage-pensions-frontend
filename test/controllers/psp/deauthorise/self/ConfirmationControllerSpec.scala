@@ -48,13 +48,13 @@ class ConfirmationControllerSpec extends ControllerSpecBase with MockitoSugar {
     new ConfirmationController(messagesApi, FakeAuthAction, dataRetrievalAction, new DataRequiredActionImpl,
       mockMinimalConnector, FakeUserAnswersCacheConnector, controllerComponents, view, fakePspSchemeAuthAction)
 
-  private def viewAsString = view(schemeName, psaName, email)(fakeRequest, messages).toString
+  private def viewAsString = view(schemeName, psaName, email)(using fakeRequest, messages).toString
 
   "Confirmation Controller" when {
     "on a GET" must {
 
       "return OK and the correct view" in {
-        when(mockMinimalConnector.getMinimalPspDetails()(any(), any()))
+        when(mockMinimalConnector.getMinimalPspDetails()(using any(), any()))
           .thenReturn(Future.successful(MinimalPSAPSP(email, isPsaSuspended = false, None, None, rlsFlag = false, deceasedFlag = false)))
         val result = controller().onPageLoad(srn)(fakeRequest)
         status(result) mustBe OK

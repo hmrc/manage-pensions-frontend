@@ -28,6 +28,6 @@ class DeclarationFormProvider @Inject()() extends CheckboxMapping {
 
   def apply(): Form[Boolean] =
     Form(
-      fieldName -> checkboxMapping("value", trueValue, acceptTrueOnly = true, invalidKey)
+      fieldName -> checkboxMapping(trueValue, acceptTrueOnly = true, invalidKey)
     )
 }

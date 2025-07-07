@@ -22,6 +22,7 @@ import models.{DeAuthorise, SchemeReferenceNumber}
 import play.api.Logger
 import play.api.http.Status._
 import play.api.libs.json.Json
+import play.api.libs.ws.writeableOf_JsValue
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.client.HttpClientV2
 import utils.HttpResponseHelper
@@ -67,7 +68,7 @@ class PspConnectorImpl @Inject()(httpClientV2: HttpClientV2, config: FrontendApp
       "pspDeclarationDetails" -> Json.obj("box1" -> true, "box2" -> true, "box3" -> true)
     )
 
-    httpClientV2.post(authorisePspUrl)(headerCarrier)
+    httpClientV2.post(authorisePspUrl)(using headerCarrier)
       .withBody(json)
       .execute[HttpResponse].map {
           response =>
@@ -88,7 +89,7 @@ class PspConnectorImpl @Inject()(httpClientV2: HttpClientV2, config: FrontendApp
     val headerCarrier = hc.withExtraHeaders("pstr" -> pstr)
     val deAuthorisePspUrl = if(isPsp) url"${config.deAuthorisePspSelfUrl(srn)}" else url"${config.deAuthorisePspUrl(srn)}"
 
-    httpClientV2.post(deAuthorisePspUrl)(headerCarrier)
+    httpClientV2.post(deAuthorisePspUrl)(using headerCarrier)
       .withBody(Json.toJson(deAuthorise))
       .execute[HttpResponse] map {
         response =>

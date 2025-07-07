@@ -91,12 +91,12 @@ class PsaDeauthPspDeclarationControllerSpec
     reset(mockEmailConnector)
     reset(mockMinimalConnector)
     reset(mockAuditService)
-    when(mockPspConnector.deAuthorise(any(), any(), any(), any())(any(), any())).thenReturn(
+    when(mockPspConnector.deAuthorise(any(), any(), any(), any())(using any(), any())).thenReturn(
       Future.successful(HttpResponse.apply(OK, Json.stringify(Json.obj("processingDate" -> LocalDate.now))))
     )
-    when(mockEmailConnector.sendEmail(any())(any(), any())).thenReturn(Future.successful(EmailSent))
-    when(mockMinimalConnector.getMinimalPsaDetails()(any(), any())).thenReturn(Future.successful(minPsa))
-    when(mockAuditService.sendEvent(any())(any(), any())).thenReturn(Future.successful(AuditResult.Success))
+    when(mockEmailConnector.sendEmail(any())(using any(), any())).thenReturn(Future.successful(EmailSent))
+    when(mockMinimalConnector.getMinimalPsaDetails()(using any(), any())).thenReturn(Future.successful(minPsa))
+    when(mockAuditService.sendEvent(any())(using any(), any())).thenReturn(Future.successful(AuditResult.Success))
   }
 
   private def onPageLoadAction(dataRetrievalAction: DataRetrievalAction, fakeAuth: AuthAction): Action[AnyContent] = {
@@ -112,10 +112,10 @@ class PsaDeauthPspDeclarationControllerSpec
   }
 
   private def viewAsString(form: Form[Boolean]): String =
-    view(form, schemeName, srn, 0)(fakeRequest, messages).toString
+    view(form, schemeName, srn, 0)(using fakeRequest, messages).toString
 
   private def viewAsStringPostRequest(form: Form[Boolean]): String =
-    view(form, schemeName, srn, 0)(postRequest, messages).toString
+    view(form, schemeName, srn, 0)(using postRequest, messages).toString
 
   behave like controllerWithOnPageLoadMethodWithoutPrePopulation(
     onPageLoadAction = onPageLoadAction,
@@ -136,7 +136,7 @@ class PsaDeauthPspDeclarationControllerSpec
   "send a deauthorise practitioner audit event when psp successfully deauthorised by the PSA" in {
     val result = onSubmitAction(validData, FakeAuthAction)(postRequest)
 
-    when(mockMinimalConnector.getMinimalPsaDetails()(any(), any())).thenReturn(Future.successful(minPsa))
+    when(mockMinimalConnector.getMinimalPsaDetails()(using any(), any())).thenReturn(Future.successful(minPsa))
 
     status(result) mustBe SEE_OTHER
 
@@ -145,20 +145,20 @@ class PsaDeauthPspDeclarationControllerSpec
     // scalastyle:off magic.number
     val expectedAuditEvent = PSPDeauthorisationByPSAAuditEvent(LocalDate.of(2020, 5, 1), "A0000000", "A2200005", pstr)
 
-    verify(mockAuditService, times(1)).sendExtendedEvent(ArgumentMatchers.eq(expectedAuditEvent))(any(), any())
+    verify(mockAuditService, times(1)).sendExtendedEvent(ArgumentMatchers.eq(expectedAuditEvent))(using any(), any())
   }
 
   "send an email to the PSA email address and send an email audit event when psp successfully deauthorised by the PSA" in {
     val result = onSubmitAction(validData, FakeAuthAction)(postRequest)
 
-    when(mockMinimalConnector.getMinimalPsaDetails()(any(), any())).thenReturn(Future.successful(minPsa))
+    when(mockMinimalConnector.getMinimalPsaDetails()(using any(), any())).thenReturn(Future.successful(minPsa))
 
     status(result) mustBe SEE_OTHER
 
     redirectLocation(result) mustBe Some(onwardRoute.url)
 
     val emailRequestCaptor = ArgumentCaptor.forClass(classOf[SendEmailRequest])
-    verify(mockEmailConnector, times(1)).sendEmail(emailRequestCaptor.capture())(any(), any())
+    verify(mockEmailConnector, times(1)).sendEmail(emailRequestCaptor.capture())(using any(), any())
     val actualSendEmailRequest = emailRequestCaptor.getValue
 
     actualSendEmailRequest.to mustBe List(minPsa.email)
@@ -176,7 +176,7 @@ class PsaDeauthPspDeclarationControllerSpec
       pstr = pstr,
       emailAddress = minPsa.email
     )
-    verify(mockAuditService, times(1)).sendEvent(ArgumentMatchers.eq(expectedAuditEvent))(any(), any())
+    verify(mockAuditService, times(1)).sendEvent(ArgumentMatchers.eq(expectedAuditEvent))(using any(), any())
   }
 
   behave like controllerThatSavesUserAnswers(
