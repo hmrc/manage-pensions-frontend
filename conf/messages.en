@@ -207,6 +207,8 @@ messages__schemeOverview__psa_deregister = Stop being a pension scheme administr
 messages__schemeOverview__scheme_heading = Pension schemes
 messages__schemeOverview__scheme_view = View your pension schemes
 messages__schemeOverview__switch_psp = Switch to practitioner view
+messages__schemeOverview__check_member_protections = Check a pension scheme member's protections and enhancements
+
 
 messages__doYouHaveWorkingKnowledge__title = Do you have working knowledge of pensions and pensions tax legislation?
 messages__doYouHaveWorkingKnowledge__heading = Do you have working knowledge of pensions and pensions tax legislation?
@@ -653,6 +655,7 @@ messages__pspDashboard__psp_deregister = Stop being a pension scheme practitione
 messages__pspDashboard__scheme_heading = Pension schemes
 messages__pspDashboard__search_scheme = Search for a pension scheme
 messages__pspDashboard__switch_psa = Switch to administrator view
+messages__pspDashboard__check_member_protections = Check a pension scheme member's protections and enhancements
 
 messages__pspSelfDeauthDate__title = When did they stop being a scheme practitioner
 messages__pspSelfDeauthDate__heading = When did you stop being a scheme practitioner for {0}?

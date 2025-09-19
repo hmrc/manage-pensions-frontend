@@ -195,4 +195,6 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
 
   lazy val hideAftTile: Boolean = runModeConfiguration.get[Boolean]("hideAftTile")
   lazy val showPsrLink: Boolean = runModeConfiguration.get[Boolean]("show-psr-link")
+
+  lazy val checkMembersProtectionsEnhancementsUrl: String = runModeConfiguration.underlying.getString("urls.checkMembersProtectionsEnhancements")
 }

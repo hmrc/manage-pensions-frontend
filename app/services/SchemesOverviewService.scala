@@ -85,7 +85,10 @@ class SchemesOverviewService @Inject()(
       id = "scheme-card",
       heading = Message("messages__schemeOverview__scheme_heading"),
       links = Seq(
-        Link("view-schemes", ListSchemesController.onPageLoad.url, Message("messages__schemeOverview__scheme_view"))
+        Link("view-schemes", ListSchemesController.onPageLoad.url,
+          Message("messages__schemeOverview__scheme_view")),
+        Link("check-member-protections",appConfig.checkMembersProtectionsEnhancementsUrl,
+          Message("messages__pspDashboard__check_member_protections"))
       ),
       html = Some(html)
     )

@@ -63,9 +63,11 @@ class PspDashboardService @Inject()(appConfig: FrontendAppConfig,
     CardViewModel(
       id = "scheme-card",
       heading = Message("messages__pspDashboard__scheme_heading"),
-      links = Seq(Link(
-        "search-schemes",
-        controllers.psp.routes.ListSchemesController.onPageLoad.url,
-        Message("messages__pspDashboard__search_scheme")))
+      links = Seq(
+        Link("search-schemes", controllers.psp.routes.ListSchemesController.onPageLoad.url,
+          Message("messages__pspDashboard__search_scheme")),
+        Link("check-member-protections",appConfig.checkMembersProtectionsEnhancementsUrl,
+          Message("messages__pspDashboard__check_member_protections"))
+      )
     )
 }
