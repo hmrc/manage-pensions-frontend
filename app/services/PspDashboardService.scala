@@ -59,15 +59,28 @@ class PspDashboardService @Inject()(appConfig: FrontendAppConfig,
   private def deregisterLink(details: MinimalPSAPSP): String =
     if (details.individualDetails.nonEmpty) appConfig.pspDeregisterIndividualUrl else appConfig.pspDeregisterCompanyUrl
 
-  private def schemeCard(implicit messages: Messages): CardViewModel =
+  private def schemeCard(implicit messages: Messages): CardViewModel = {
+    val links = Seq(
+      Link(
+        "search-schemes",
+        controllers.psp.routes.ListSchemesController.onPageLoad.url,
+        Message("messages__pspDashboard__search_scheme")
+      )
+    ) ++ (
+      if (appConfig.enableMembersProtectionsEnhancements)
+        Seq(Link(
+          "check-member-protections",
+          appConfig.checkMembersProtectionsEnhancementsUrl,
+          Message("messages__pspDashboard__check_member_protections")
+        ))
+      else
+        Seq.empty
+      )
+
     CardViewModel(
       id = "scheme-card",
       heading = Message("messages__pspDashboard__scheme_heading"),
-      links = Seq(
-        Link("search-schemes", controllers.psp.routes.ListSchemesController.onPageLoad.url,
-          Message("messages__pspDashboard__search_scheme")),
-        Link("check-member-protections",appConfig.checkMembersProtectionsEnhancementsUrl,
-          Message("messages__pspDashboard__check_member_protections"))
-      )
+      links = links
     )
+  }
 }
