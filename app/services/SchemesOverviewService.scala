@@ -81,17 +81,24 @@ class SchemesOverviewService @Inject()(
     )
 
   private def schemeCard(html: Html)(implicit messages: Messages): CardViewModel =
-    CardViewModel(
-      id = "scheme-card",
-      heading = Message("messages__schemeOverview__scheme_heading"),
-      links = Seq(
+    {
+      val links = Seq(
         Link("view-schemes", ListSchemesController.onPageLoad.url,
-          Message("messages__schemeOverview__scheme_view")),
-        Link("check-member-protections",appConfig.checkMembersProtectionsEnhancementsUrl,
-          Message("messages__pspDashboard__check_member_protections"))
-      ),
-      html = Some(html)
-    )
+          Message("messages__schemeOverview__scheme_view"))
+      ) ++ (
+        if (appConfig.enableMembersProtectionsEnhancements)
+          Seq(Link("check-member-protections", appConfig.checkMembersProtectionsEnhancementsUrl,
+            Message("messages__schemeOverview__check_member_protections")))
+        else
+          Seq.empty
+      )
+      CardViewModel(
+        id = "scheme-card",
+        heading = Message("messages__schemeOverview__scheme_heading"),
+        links = links,
+        html = Some(html)
+      )
+    }
 
   private def invitationsLink(implicit request: OptionalDataRequest[AnyContent], hc: HeaderCarrier): Future[Seq[Link]] =
     invitationsCacheConnector.getForInvitee(request.psaIdOrException).map { invitationsList =>
