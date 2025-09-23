@@ -136,14 +136,26 @@ object SchemesOverviewServiceSpec extends SpecBase with MockitoSugar {
     ) ++ invitation ++ deregistration,
     html = None)
 
-  private def schemeCard = CardViewModel(
-    id = "scheme-card",
-    heading = Message("messages__schemeOverview__scheme_heading"),
-    links = Seq(
-      Link("view-schemes", controllers.psa.routes.ListSchemesController.onPageLoad.url, Message("messages__schemeOverview__scheme_view"))
-    ),
-    html = Some(html)
-  )
+  private def schemeCard = {
+    val baseLinks =
+      Seq(Link("view-schemes",
+        controllers.psa.routes.ListSchemesController.onPageLoad.url,
+        Message("messages__schemeOverview__scheme_view")))
+    val mpeLink =
+      if (frontendAppConfig.enableMembersProtectionsEnhancements)
+        Seq(Link("check-member-protections",
+          frontendAppConfig.checkMembersProtectionsEnhancementsUrl,
+          Message("messages__schemeOverview__check_member_protections")))
+      else
+        Seq.empty
+
+    CardViewModel(
+      id = "scheme-card",
+      heading = Message("messages__schemeOverview__scheme_heading"),
+      links = baseLinks ++ mpeLink,
+      html = Some(html)
+    )
+  }
 
   private val deregisterLink = Seq(Link("deregister-link", frontendAppConfig.psaDeregisterUrl,
     Message("messages__schemeOverview__psa_deregister")))
