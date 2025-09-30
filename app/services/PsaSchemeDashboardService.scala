@@ -169,7 +169,7 @@ class PsaSchemeDashboardService @Inject()(
     val qropsLink = Seq(
       Link(
         id = "qrops-view-details",
-        url = appConfig.psrOverviewUrl.format(srn),
+        url = appConfig.qropsOverviewUrl,
         linkText = messages("messages__qrops__view_details_link")
       ))
 
@@ -191,7 +191,10 @@ class PsaSchemeDashboardService @Inject()(
       links = if (seqEROverview.isBlank) {
         aftLink ++ erLink
       } else {
-        aftLink ++ erLink ++ psrLink  ++ qropsLink
+        if(appConfig.enableQROPSUrl)
+          aftLink ++ erLink ++ psrLink  ++ qropsLink
+        else
+          aftLink ++ erLink ++ psrLink
       }
     )
   }
