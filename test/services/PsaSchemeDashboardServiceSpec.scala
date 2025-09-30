@@ -213,14 +213,20 @@ class PsaSchemeDashboardServiceSpec
       val actualReturn = service.cards(showPsrLink = true, erHtml = Html(""), srn = "S2400000005", lock = None, list =
         ListOfSchemes("", "", Some(fullSchemes)), ua = UserAnswers()) .map(_.head).futureValue
 
-      val expectedReturn = CardViewModel("manage_reports_returns","Manage reports and returns",List(CardSubHeading("Notice to file:","card-sub-heading",
-        List(CardSubHeadingParam("PSR due 6 April 2024","font-small bold")))),
-        List(Link("aft-view-link","dummy",Literal("Accounting for Tax (AFT) return"),None,None),
-          Link("psr-view-details","dummy",Literal("Pension scheme return"),None,None)),None)
-
+      val expectedReturn = CardViewModel(
+        "manage_reports_returns",
+        "Manage reports and returns",
+        List(CardSubHeading("Notice to file:","card-sub-heading",
+          List(CardSubHeadingParam("PSR due 6 April 2024","font-small bold"))
+        )),
+        List(
+          Link("aft-view-link", "dummy", Literal("Accounting for Tax (AFT) return"), None, None),
+          Link("psr-view-details", "dummy", Literal("Pension scheme return"), None, None),
+          Link("qrops-view-details", "dummy", Literal("Report a transfer to a qualified recognised overseas pension scheme"), None, None)
+        ),
+        None
+      )
       compareCardViewModels(actualReturn, expectedReturn)
-
-
     }
 
     "handle different multiple seqEROverview correctly" in {
@@ -232,15 +238,22 @@ class PsaSchemeDashboardServiceSpec
       val actualReturn = service.cards(showPsrLink = true, erHtml = Html(""), srn = "S2400000005", lock = None, list =
         ListOfSchemes("", "", Some(fullSchemes)), ua = UserAnswers()) .map(_.head).futureValue
 
-      val expectedReturn = CardViewModel("manage_reports_returns","Manage reports and returns",List(CardSubHeading("Notice to file:","card-sub-heading",
-        List(CardSubHeadingParam("Multiple pension scheme returns due","font-small bold")))),
-        List(Link("aft-view-link","dummy",Literal("Accounting for Tax (AFT) return"),None,None),
-          Link("psr-view-details","dummy",Literal("Pension scheme return"),None,None)),None)
-
+      val expectedReturn = CardViewModel(
+        "manage_reports_returns",
+        "Manage reports and returns",
+        List(CardSubHeading("Notice to file:", "card-sub-heading",
+          List(CardSubHeadingParam("Multiple pension scheme returns due", "font-small bold"))
+        )),
+        List(
+          Link("aft-view-link", "dummy", Literal("Accounting for Tax (AFT) return"), None, None),
+          Link("psr-view-details", "dummy", Literal("Pension scheme return"), None, None),
+          Link("qrops-view-details", "dummy", Literal("Report a transfer to a qualified recognised overseas pension scheme"), None, None)
+        ),
+        None
+      )
       compareCardViewModels(actualReturn, expectedReturn)
-
-
     }
+
     "throw an exception if the scheme details cannot be returned" in {
       val mockEventReportingConnector = mock[PensionSchemeReturnConnector]
       when(mockEventReportingConnector.getOverview(any(), any(), any(), any(), any())(using any())).thenReturn(Future.successful(Seq(overview1, overview1)))
@@ -390,6 +403,8 @@ object PsaSchemeDashboardServiceSpec {
         url = dummyUrl,
         linkText = messages("messages__psr__view_details_link")
       ))
+
+
 
     CardViewModel(
       id = "manage_reports_returns",

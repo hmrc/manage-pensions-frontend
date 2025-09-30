@@ -166,6 +166,13 @@ class PsaSchemeDashboardService @Inject()(
         linkText = messages("messages__psr__view_details_link")
       ))
 
+    val qropsLink = Seq(
+      Link(
+        id = "qrops-view-details",
+        url = appConfig.psrOverviewUrl.format(srn),
+        linkText = messages("messages__qrops__view_details_link")
+      ))
+
 
     val subHeading: Seq[CardSubHeading] = if (seqEROverview.isBlank) {
       Seq.empty
@@ -184,7 +191,7 @@ class PsaSchemeDashboardService @Inject()(
       links = if (seqEROverview.isBlank) {
         aftLink ++ erLink
       } else {
-        aftLink ++ erLink ++ psrLink
+        aftLink ++ erLink ++ psrLink  ++ qropsLink
       }
     )
   }
