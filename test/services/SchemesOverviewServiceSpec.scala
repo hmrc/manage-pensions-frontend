@@ -17,12 +17,13 @@
 package services
 
 import base.SpecBase
-import connectors._
+//import com.google.inject.Guice
+import connectors.*
 import connectors.admin.MinimalConnector
-import models._
+import models.*
 import models.requests.OptionalDataRequest
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
@@ -35,6 +36,10 @@ import uk.gov.hmrc.domain.PsaId
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.UserAnswers
 import viewmodels.{CardSubHeading, CardSubHeadingParam, CardViewModel, Message}
+import config.FrontendAppConfig
+import play.api.{Application, inject}
+import play.api.inject.bind
+import play.api.inject.guice.GuiceApplicationBuilder
 
 import scala.concurrent.Future
 
@@ -42,23 +47,50 @@ class SchemesOverviewServiceSpec extends SpecBase with MockitoSugar with BeforeA
 
   import SchemesOverviewServiceSpec._
 
+
   private val minimalPsaConnector: MinimalConnector = mock[MinimalConnector]
   private val frontendConnector = mock[FrontendConnector]
   private val invitationsCacheConnector = mock[InvitationsCacheConnector]
+  private val frontendAppConfig = mock[FrontendAppConfig]
+
+  override lazy val app: Application = GuiceApplicationBuilder()
+    .overrides(
+      bind[FrontendAppConfig].toInstance(frontendAppConfig),
+      bind[FrontendConnector].toInstance(frontendConnector),
+      bind[InvitationsCacheConnector].toInstance(invitationsCacheConnector),
+      bind[MinimalConnector].toInstance(minimalPsaConnector)
+    )
+    .build()
+
 
   override def beforeEach(): Unit = {
     when(minimalPsaConnector.getPsaNameFromPsaID()(using any(), any()))
       .thenReturn(Future.successful(minimalPsaName))
+
     when(invitationsCacheConnector.getForInvitee(any())(using any(), any()))
       .thenReturn(Future.successful(invitationList))
-    when(frontendConnector.retrieveSchemeUrlsPartial(using any(), any())).thenReturn(Future.successful(html))
-    when(frontendConnector.retrievePenaltiesUrlPartial(using any(), any())).thenReturn(Future.successful(html))
+
+    when(frontendConnector.retrieveSchemeUrlsPartial(using any(), any()))
+      .thenReturn(Future.successful(html))
+
+    when(frontendConnector.retrievePenaltiesUrlPartial(using any(), any()))
+      .thenReturn(Future.successful(html))
+
+    when(frontendAppConfig.enableMembersProtectionsEnhancements).thenReturn(false)
+    when(frontendAppConfig.checkMembersProtectionsEnhancementsUrl)
+      .thenReturn("http://tax.service.gov.uk/members-protections-and-enhancements/start")
+    when(frontendAppConfig.registeredPsaDetailsUrl)
+      .thenReturn("http://localhost:8201/register-as-pension-scheme-administrator/registered-psa-details")
+    when(frontendAppConfig.psaDeregisterUrl)
+      .thenReturn("http://localhost:8201/register-as-pension-scheme-administrator/stop-being-scheme-administrator")
+
     super.beforeEach()
   }
 
-  def service: SchemesOverviewService =
-    new SchemesOverviewService(frontendAppConfig, minimalPsaConnector,
-      invitationsCacheConnector, frontendConnector)
+
+  def service: SchemesOverviewService = app.injector.instanceOf[SchemesOverviewService]
+//    new SchemesOverviewService(frontendAppConfig, minimalPsaConnector,
+//      invitationsCacheConnector, frontendConnector)
 
   "getTiles" must {
 
@@ -88,6 +120,19 @@ class SchemesOverviewServiceSpec extends SpecBase with MockitoSugar with BeforeA
           _ mustBe tiles(adminCard(invitation = oneInvitationsLink))
         }
       }
+
+       "include 'check-member-protections' link when enableMembersProtectionsEnhancements is true" in {
+         when(invitationsCacheConnector.getForInvitee(any())(using any(), any()))
+           .thenReturn(Future.successful(List(invitation1)))
+
+         when(frontendAppConfig.enableMembersProtectionsEnhancements).thenReturn(true)
+
+         whenReady(service.getTiles(psaId)) {
+          _ mustBe tiles(adminCard(invitation = oneInvitationsLink))
+         }
+       }
+
+
 
     }
   }
@@ -136,22 +181,25 @@ object SchemesOverviewServiceSpec extends SpecBase with MockitoSugar {
     ) ++ invitation ++ deregistration,
     html = None)
 
+
+
   private def schemeCard = {
     val baseLinks =
       Seq(Link("view-schemes",
-        controllers.psa.routes.ListSchemesController.onPageLoad.url,
+        "/manage-pension-schemes/your-pension-schemes",
         Message("messages__schemeOverview__scheme_view")))
+
     val mpeLink =
       if (frontendAppConfig.enableMembersProtectionsEnhancements)
         Seq(Link("check-member-protections",
-          frontendAppConfig.checkMembersProtectionsEnhancementsUrl,
+          "http://tax.service.gov.uk/members-protections-and-enhancements/start",
           Message("messages__schemeOverview__check_member_protections")))
       else
         Seq.empty
 
     CardViewModel(
       id = "scheme-card",
-      heading = Message("messages__schemeOverview__scheme_heading"),
+      heading = "Pension schemes",
       links = baseLinks ++ mpeLink,
       html = Some(html)
     )
