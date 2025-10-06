@@ -355,7 +355,7 @@ messages__manage_reports_and_returns_subhead = Notice to file:
 messages__aft__view_details_link = Accounting for Tax (AFT) return
 messages__er__view_details_link = Event reporting
 messages__psr__view_details_link = Pension scheme return
-messages__qrops__view_details_link = Report a transfer to a qualified recognised overseas pension scheme
+messages__qrops__view_details_link = Report a transfer to a qualifying recognised overseas pension scheme
 
 messages__psaSchemeDash__view_change_details_link_notification_scheme = Another user is editing {0}. It must be saved and closed before changes can be made to another scheme.
 messages__psaSchemeDash__view_change_details_link_notification_psa = {0} is being edited. It must be saved and closed before changes can be made to another scheme.

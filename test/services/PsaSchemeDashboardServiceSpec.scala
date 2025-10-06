@@ -109,6 +109,8 @@ class PsaSchemeDashboardServiceSpec
     when(mockPensionSchemeVarianceLockConnector.getLockByPsa(any())(using any(), any())).thenReturn(Future.successful(None))
     when(mockSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(using any(), any())).thenReturn(Future.successful(UserAnswers()))
     when(mockEventReportingConnector.getOverview(any(), any(), any(), any(), any())(using any())).thenReturn(Future.successful(Seq(overview1)))
+    when(mockAppConfig.qropsOverviewUrl).thenReturn("dummy")
+    when(mockAppConfig.enableQROPSUrl).thenReturn(false)
     super.beforeEach()
   }
 
@@ -224,16 +226,7 @@ class PsaSchemeDashboardServiceSpec
         List(
           Link("aft-view-link", "dummy", Literal("Accounting for Tax (AFT) return"), None, None),
           Link("psr-view-details", "dummy", Literal("Pension scheme return"), None, None)
-        ) ++ (
-          if (mockAppConfig.enableQROPSUrl) {
-            List(
-              Link("qrops-view-details", "dummy",
-                Literal("Report a transfer to a qualified recognised overseas pension scheme"),
-                None, None
-              )
-            )
-          } else Nil
-          ),
+        ),
         None
       )
 
@@ -258,16 +251,7 @@ class PsaSchemeDashboardServiceSpec
         List(
           Link("aft-view-link", "dummy", Literal("Accounting for Tax (AFT) return"), None, None),
           Link("psr-view-details", "dummy", Literal("Pension scheme return"), None, None)
-        ) ++ (
-          if (mockAppConfig.enableQROPSUrl) {
-            List(
-              Link("qrops-view-details", "dummy",
-                Literal("Report a transfer to a qualified recognised overseas pension scheme"),
-                None, None
-              )
-            )
-          } else Nil
-          ),
+        ),
         None
       )
       compareCardViewModels(actualReturn, expectedReturn)
@@ -285,6 +269,34 @@ class PsaSchemeDashboardServiceSpec
       }
 
       exception.message mustBe "Scheme not found - could not find scheme with reference number to match srn"
+    }
+
+    "handle QROPS link when enabled" in {
+      when(mockAppConfig.enableQROPSUrl).thenReturn(true)
+
+      val actualReturn = service.cards(showPsrLink = true, erHtml = Html(""), srn = "S2400000005", lock = None, list =
+        ListOfSchemes("", "", Some(fullSchemes)), ua = UserAnswers()) .map(_.head).futureValue
+
+      val expectedReturn = CardViewModel(
+        "manage_reports_returns",
+        "Manage reports and returns",
+        List(
+          CardSubHeading("Notice to file:", "card-sub-heading",
+            List(CardSubHeadingParam("PSR due 6 April 2024", "font-small bold"))
+          )
+        ),
+        List(
+          Link("aft-view-link", "dummy", Literal("Accounting for Tax (AFT) return"), None, None),
+          Link("psr-view-details", "dummy", Literal("Pension scheme return"), None, None),
+          Link("qrops-view-details", "dummy",
+            Literal("Report a transfer to a qualifying recognised overseas pension scheme"),
+            None, None
+          )
+        ),
+        None
+      )
+
+      compareCardViewModels(actualReturn, expectedReturn)
     }
   }
 
