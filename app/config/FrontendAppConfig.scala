@@ -117,6 +117,8 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
     .getString("urls.eventReportingOverviewPartialLink")
 
   lazy val psrOverviewUrl: String = runModeConfiguration.underlying.getString("urls.psrOverviewUrl")
+  lazy val qropsOverviewUrl: String = runModeConfiguration.underlying.getString("urls.qropsOverviewUrl")
+  lazy val enableQROPSUrl: Boolean = runModeConfiguration.getOptional[Boolean]("features.enableQROPSUrl").getOrElse(false)
 
   val ifsTimeout: Duration = runModeConfiguration.get[Duration]("ifs.timeout")
 
