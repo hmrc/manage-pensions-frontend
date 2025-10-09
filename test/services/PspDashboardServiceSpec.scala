@@ -17,13 +17,19 @@
 package services
 
 import base.SpecBase
+import config.FrontendAppConfig
+import connectors.InvitationsCacheConnector
 import connectors.admin.MinimalConnector
-import models._
+import connectors.scheme.ListOfSchemesConnector
+import models.*
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito._
+import org.mockito.Mockito.*
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.Application
+import play.api.inject.bind
+import play.api.inject.guice.GuiceApplicationBuilder
 import viewmodels.{CardSubHeading, CardSubHeadingParam, CardViewModel, Message}
 
 import scala.concurrent.Future
@@ -33,10 +39,33 @@ class PspDashboardServiceSpec extends SpecBase with MockitoSugar with BeforeAndA
   import PspDashboardServiceSpec._
 
   private val minimalPsaConnector: MinimalConnector = mock[MinimalConnector]
+  private val frontendAppConfig: FrontendAppConfig = mock[FrontendAppConfig]
+  private val invitationsCacheConnector:InvitationsCacheConnector = mock[InvitationsCacheConnector]
+  private val listOfSchemesConnector = mock[ListOfSchemesConnector]
+
+
+  override lazy val app: Application = GuiceApplicationBuilder()
+    .overrides(
+      bind[MinimalConnector].toInstance(minimalPsaConnector),
+      bind[FrontendAppConfig].toInstance(frontendAppConfig),
+      bind[InvitationsCacheConnector].toInstance(invitationsCacheConnector),
+      bind[ListOfSchemesConnector].toInstance(listOfSchemesConnector)
+
+    )
+    .build()
 
   override def beforeEach(): Unit = {
     when(minimalPsaConnector.getMinimalPspDetails()(using any(), any()))
       .thenReturn(Future.successful(minimalPsaDetails))
+    when(frontendAppConfig.pspDetailsUrl)
+      .thenReturn("http://localhost:8208/pension-scheme-practitioner/practitioner-details")
+    when(frontendAppConfig.pspDeregisterCompanyUrl)
+      .thenReturn("http://localhost:8208/pension-scheme-practitioner/remove-psp/remove-company")
+    when(frontendAppConfig.enableMembersProtectionsEnhancements)
+      .thenReturn(false)
+    when(frontendAppConfig.checkMembersProtectionsEnhancementsUrl)
+      .thenReturn("/members-protections-and-enhancements/start")
+
     super.beforeEach()
   }
 
@@ -46,8 +75,15 @@ class PspDashboardServiceSpec extends SpecBase with MockitoSugar with BeforeAndA
     "return tiles with relevant links when all possible links are displayed" in {
       service.getTiles(pspId, minimalPsaDetails) mustBe tiles
     }
-  }
 
+    "include 'check-member-protections' link when flag is true" in {
+      when(frontendAppConfig.enableMembersProtectionsEnhancements).thenReturn(true)
+
+      service.getTiles(pspId, minimalPsaDetails) mustBe
+        Seq(schemeCard(baseLinks ++ mpeLink), practitionerCard)
+    }
+
+  }
 }
 
 object PspDashboardServiceSpec extends SpecBase with MockitoSugar {
@@ -76,14 +112,29 @@ object PspDashboardServiceSpec extends SpecBase with MockitoSugar {
       )
     )
 
-  private def schemeCard: CardViewModel =
+  val baseLinks =
+    Seq(Link(
+      id = "search-schemes",
+      url ="/manage-pension-schemes/list-psp",
+      linkText = Message("messages__pspDashboard__search_scheme")
+    ))
+
+  val mpeLink =
+    Seq(Link(
+      id = "check-member-protections",
+      url ="/members-protections-and-enhancements/start",
+      linkText =  Message("messages__pspDashboard__check_member_protections")
+    ))
+
+  private def schemeCard(links: Seq[Link] = baseLinks) = {
     CardViewModel(
       id = "scheme-card",
-      heading = Message("messages__pspDashboard__scheme_heading"),
-      links = Seq(Link("search-schemes", controllers.psp.routes.ListSchemesController.onPageLoad.url, Message("messages__pspDashboard__search_scheme")))
+      heading = "Pension schemes",
+      links = links,
     )
+  }
 
-  private val tiles: Seq[CardViewModel] = Seq(schemeCard, practitionerCard)
+  private val tiles: Seq[CardViewModel] = Seq(schemeCard(), practitionerCard)
 
 }
 
