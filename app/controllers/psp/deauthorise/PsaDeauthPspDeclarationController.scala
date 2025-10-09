@@ -34,7 +34,8 @@ import play.api.Logger
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.crypto.{ApplicationCrypto, PlainText}
+import uk.gov.hmrc.crypto.PlainText
+import uk.gov.hmrc.play.bootstrap.frontend.filters.crypto.ApplicationCrypto
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.annotations.DeauthorisePSP
 import utils.{Navigator, UserAnswers}

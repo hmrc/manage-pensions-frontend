@@ -24,7 +24,7 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject._
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents}
 import play.api.test.FakeRequest
-import uk.gov.hmrc.crypto.ApplicationCrypto
+import uk.gov.hmrc.play.bootstrap.frontend.filters.crypto.ApplicationCrypto
 
 import scala.concurrent.ExecutionContext
 
