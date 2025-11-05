@@ -200,4 +200,5 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
 
   lazy val checkMembersProtectionsEnhancementsUrl: String = runModeConfiguration.underlying.getString("urls.checkMembersProtectionsEnhancements")
   lazy val enableMembersProtectionsEnhancements: Boolean = runModeConfiguration.getOptional[Boolean]("features.enableMPELink").getOrElse(false)
+  lazy val forceServiceNavigation: Boolean = runModeConfiguration.getOptional[Boolean]("play-frontend-hmrc.forceServiceNavigation").getOrElse(false)
 }

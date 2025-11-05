@@ -22,31 +22,38 @@
 @import views.html.helper.CSPNonce
 
 @this(
-    appConfig: FrontendAppConfig,
-    govukLayout: GovukLayout,
-    hmrcHead: HmrcHead,
-    hmrcTimeoutDialogHelper: HmrcTimeoutDialogHelper,
-    hmrcStandardFooter: HmrcStandardFooter,
-    hmrcStandardHeader: HmrcStandardHeader,
-    standardBetaBanner: StandardBetaBanner,
-    defaultMainContentLayout: TwoThirdsMainContent,
-    hmrcScripts: HmrcScripts,
-    govukBackLink: GovukBackLink,
-    hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper
+        appConfig: FrontendAppConfig,
+        govukLayout: GovukLayout,
+        hmrcHead: HmrcHead,
+        hmrcTimeoutDialogHelper: HmrcTimeoutDialogHelper,
+        hmrcStandardFooter: HmrcStandardFooter,
+        hmrcStandardHeader: HmrcStandardHeader,
+        standardBetaBanner: StandardBetaBanner,
+        defaultMainContentLayout: TwoThirdsMainContent,
+        hmrcScripts: HmrcScripts,
+        govukBackLink: GovukBackLink,
+        hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper
 )
 
-@(pageTitle: String,
-    timeoutEnabled: Boolean = true,
-    canSignOut: Boolean = true,
-    showBackLink: Boolean = true,
-    fullWidthLayout: Boolean = false
-)(mainContent: Html)(implicit request: Request[?], messages: Messages)
+@(
+        pageTitle: String,
+        timeoutEnabled: Boolean = true,
+        canSignOut: Boolean = true,
+        showBackLink: Boolean = true,
+        fullWidthLayout: Boolean = false
+)(
+        mainContent: Html
+)(
+        implicit
+        request: Request[?],
+        messages: Messages
+)
 
 @headScripts = {
     @if(timeoutEnabled) {
         @hmrcTimeoutDialogHelper(
             signOutUrl = routes.LogoutController.onPageLoad.url,
-            keepAliveUrl= Some(routes.LogoutController.keepAlive.url),
+            keepAliveUrl = Some(routes.LogoutController.keepAlive.url),
             timeout = Some(900),
             countdown = Some(120)
         )
@@ -76,19 +83,32 @@
     </div>
 }
 
+@headerBlock = @{
+    if (appConfig.forceServiceNavigation) {
+        hmrcStandardHeader(
+            serviceNavigation = Some(ServiceNavigation(
+                serviceName = Some(messages("site.service_name")),
+                serviceUrl = Some(routes.SchemesOverviewController.onPageLoad().url)
+            )),
+            signOutUrl = if(canSignOut) Some(routes.LogoutController.onPageLoad.url) else None,
+            phaseBanner = Some(standardBetaBanner(url = appConfig.betaFeedbackUnauthenticatedUrl)),
+            userResearchBanner = Some(UserResearchBanner(url = "/manage-pension-schemes/user-research-banner-psa"))
+        )
+    } else {
+        hmrcStandardHeader(
+            serviceName = Some(messages("site.service_name")),
+            serviceUrl = Some(routes.SchemesOverviewController.onPageLoad().url),
+            signOutUrl = if(canSignOut) Some(routes.LogoutController.onPageLoad.url) else None,
+            phaseBanner = Some(standardBetaBanner(url = appConfig.betaFeedbackUnauthenticatedUrl)),
+            userResearchBanner = Some(UserResearchBanner(url = "/manage-pension-schemes/user-research-banner-psa"))
+        )
+    }
+}
 
 @govukLayout(
     pageTitle = Some(pageTitle + " - " + Messages("messages__manage_pension_schemes__title")),
-    headBlock = Some(hmrcHead(
-        headBlock = Some(headScripts)
-    )),
-    headerBlock = Some(hmrcStandardHeader(
-        serviceName = Some(messages("site.service_name")),
-        serviceUrl = Some(routes.SchemesOverviewController.onPageLoad().url),
-        signOutUrl = if(canSignOut) Some(routes.LogoutController.onPageLoad.url) else None,
-        phaseBanner = Some(standardBetaBanner(url = appConfig.betaFeedbackUnauthenticatedUrl)),
-        userResearchBanner = Some(UserResearchBanner(url="/manage-pension-schemes/user-research-banner-psa"))
-    )),
+    headBlock = Some(hmrcHead(headBlock = Some(headScripts))),
+    headerBlock = Some(headerBlock),
     beforeContentBlock = Some(beforeContentBlock),
     scriptsBlock = Some(scripts),
     mainContentLayout = if(fullWidthLayout) None else Some(defaultMainContentLayout(_)),
