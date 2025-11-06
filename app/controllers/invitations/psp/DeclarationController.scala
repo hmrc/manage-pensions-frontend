@@ -117,9 +117,11 @@ class DeclarationController @Inject()(
                 Future.successful(Redirect(controllers.invitations.psp.routes.AlreadyAssociatedWithSchemeController.onPageLoad(srn)))
             }
           case _ =>
+            logger.warn("Unable to retrieve PSTR")
             Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad))
         }
     }.left.map(_ =>
+      logger.warn("Unable to retrieve scheme and practitioner identifiers")
       Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad))
     )
 
