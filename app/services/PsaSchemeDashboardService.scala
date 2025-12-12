@@ -169,7 +169,7 @@ class PsaSchemeDashboardService @Inject()(
     val qropsLink = Seq(
       Link(
         id = "qrops-view-details",
-        url = appConfig.qropsOverviewUrl,
+        url = appConfig.qropsOverviewUrl.format(srn),
         linkText = messages("messages__qrops__view_details_link")
       ))
 
