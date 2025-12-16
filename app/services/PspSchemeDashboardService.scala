@@ -116,6 +116,13 @@ class PspSchemeDashboardService @Inject()(
           linkText = messages("messages__psr__view_details_link")
         ))
 
+      val qropsLink = Seq(
+        Link(
+          id = "qrops-view-details",
+          url = appConfig.qropsOverviewUrl.format(srn),
+          linkText = messages("messages__qrops__view_details_link")
+        ))
+
       val subHead: Seq[CardSubHeading] = if (subHeadingPstr.isBlank) {
         Seq.empty
       } else {
@@ -134,7 +141,10 @@ class PspSchemeDashboardService @Inject()(
         links = if (subHeadingPstr.isBlank) {
           aftLink ++ erLink
         } else {
-          aftLink ++ erLink ++ psrLink
+          if (appConfig.enableQROPSUrl)
+            aftLink ++ erLink ++ psrLink ++ qropsLink
+          else
+            aftLink ++ erLink ++ psrLink
         }
       )
     }
