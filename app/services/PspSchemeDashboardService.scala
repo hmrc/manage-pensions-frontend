@@ -49,13 +49,12 @@ class PspSchemeDashboardService @Inject()(
                 seqErOverview: Seq[EROverview]
               )(implicit messages: Messages): Seq[PspSchemeDashboardCardViewModel] = {
     val subHeadingMessage = if (seqErOverview.size == 1) {
-          seqErOverview.head.psrDueDate.map(date => messages("messages__manage_reports_and_returns_psr_due", date.format(formatter))).getOrElse("")
-      } else if (seqErOverview.size > 1) {
-          messages("messages__manage_reports_and_returns_multiple_due")
-      }
-      else{
-        ""
-      }
+      seqErOverview.head.psrDueDate.map(date => messages("messages__manage_reports_and_returns_psr_due", date.format(formatter))).getOrElse("")
+    } else if (seqErOverview.size > 1) {
+      messages("messages__manage_reports_and_returns_multiple_due")
+    } else {
+      ""
+    }
     Seq(manageReportsEventsCard(srn, erHtml, subHeadingMessage), practitionerCard(loggedInPsp, clientReference, srn))
   }
 
@@ -90,62 +89,65 @@ class PspSchemeDashboardService @Inject()(
     )
   }
 
-  private def manageReportsEventsCard(srn: String, erHtml:Html, subHeadingPstr: String)
-                               (implicit messages: Messages): PspSchemeDashboardCardViewModel =
-    {
-      val aftLink = Seq(Link(
-        id = "aft-view-link",
-        url = appConfig.aftOverviewHtmlUrl.format(srn),
-        linkText = messages("messages__aft__view_details_link")
+  private def manageReportsEventsCard(srn: String, erHtml: Html, subHeadingPstr: String)
+                                     (implicit messages: Messages): PspSchemeDashboardCardViewModel = {
+    val aftLink = Seq(Link(
+      id = "aft-view-link",
+      url = appConfig.aftOverviewHtmlUrl.format(srn),
+      linkText = messages("messages__aft__view_details_link")
+    ))
+
+    val erLink = if (erHtml.equals(Html(""))) {
+      Seq()
+    } else {
+      Seq(Link(
+        id = "er-view-link",
+        url = appConfig.eventReportingOverviewHtmlUrl.format(srn),
+        linkText = messages("messages__er__view_details_link")
+      ))
+    }
+
+    val psrLink = Seq(
+      Link(
+        id = "psr-view-details",
+        url = appConfig.psrOverviewUrl.format(srn),
+        linkText = messages("messages__psr__view_details_link")
       ))
 
-      val erLink = if (erHtml.equals(Html(""))) {
-        Seq()
-      } else {
-        Seq(Link(
-          id = "er-view-link",
-          url = appConfig.eventReportingOverviewHtmlUrl.format(srn),
-          linkText = messages("messages__er__view_details_link")
-        ))
-      }
+    val qropsLink = Seq(
+      Link(
+        id = "qrops-view-details",
+        url = appConfig.qropsOverviewUrl.format(srn),
+        linkText = messages("messages__qrops__view_details_link")
+      ))
 
-      val psrLink = Seq(
-        Link(
-          id = "psr-view-details",
-          url = appConfig.psrOverviewUrl.format(srn),
-          linkText = messages("messages__psr__view_details_link")
-        ))
-
-      val qropsLink = Seq(
-        Link(
-          id = "qrops-view-details",
-          url = appConfig.qropsOverviewUrl.format(srn),
-          linkText = messages("messages__qrops__view_details_link")
-        ))
-
-      val subHead: Seq[CardSubHeading] = if (subHeadingPstr.isBlank) {
-        Seq.empty
-      } else {
-        Seq(CardSubHeading(
-          subHeading = Message("messages__manage_reports_and_returns_subhead"),
-          subHeadingClasses = "card-sub-heading",
-          subHeadingParams = Seq(CardSubHeadingParam(
-            subHeadingParam = subHeadingPstr,
-            subHeadingParamClasses = "font-small bold"))))
-      }
-
-      PspSchemeDashboardCardViewModel(
-        id = "manage_reports_returns",
-        heading = Message("messages__manage_reports_and_returns_head"),
-        subHeadings = subHead.map(x => x.subHeading -> x.subHeadingParams.head.subHeadingParam),
-        links = if (subHeadingPstr.isBlank) {
-          aftLink ++ erLink
-        } else {
-          if (appConfig.enableQROPSUrl)
-            aftLink ++ erLink ++ psrLink ++ qropsLink
-          else
-            aftLink ++ erLink ++ psrLink
-        }
-      )
+    val subHead: Seq[CardSubHeading] = if (subHeadingPstr.isBlank) {
+      Seq.empty
+    } else {
+      Seq(CardSubHeading(
+        subHeading = Message("messages__manage_reports_and_returns_subhead"),
+        subHeadingClasses = "card-sub-heading",
+        subHeadingParams = Seq(CardSubHeadingParam(
+          subHeadingParam = subHeadingPstr,
+          subHeadingParamClasses = "font-small bold"))
+      ))
     }
+
+    PspSchemeDashboardCardViewModel(
+      id = "manage_reports_returns",
+      heading = Message("messages__manage_reports_and_returns_head"),
+      subHeadings = subHead.map(x => x.subHeading -> x.subHeadingParams.head.subHeadingParam),
+      links = if (subHeadingPstr.isBlank) {
+        if (appConfig.enableQROPSUrl)
+          aftLink ++ erLink ++ qropsLink
+        else
+          aftLink ++ erLink
+      } else {
+        if (appConfig.enableQROPSUrl)
+          aftLink ++ erLink ++ psrLink ++ qropsLink
+        else
+          aftLink ++ erLink ++ psrLink
+      }
+    )
+  }
 }
