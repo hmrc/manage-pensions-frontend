@@ -141,13 +141,13 @@ class PsaSchemeDashboardService @Inject()(
     )
   }
 
-  private[services] def manageReportsEventsCard(srn: String, erHtml:Html, seqEROverview: String)
-                               (implicit messages: Messages): CardViewModel = {
+  private[services] def manageReportsEventsCard(srn: String, erHtml: Html, seqEROverview: String)
+                                               (implicit messages: Messages): CardViewModel = {
     val aftLink = Seq(Link(
-        id = "aft-view-link",
-        url = appConfig.aftOverviewHtmlUrl.format(srn),
-        linkText = messages("messages__aft__view_details_link")
-      ))
+      id = "aft-view-link",
+      url = appConfig.aftOverviewHtmlUrl.format(srn),
+      linkText = messages("messages__aft__view_details_link")
+    ))
 
     val erLink = if (erHtml.equals(Html(""))) {
       Seq()
@@ -173,7 +173,6 @@ class PsaSchemeDashboardService @Inject()(
         linkText = messages("messages__qrops__view_details_link")
       ))
 
-
     val subHeading: Seq[CardSubHeading] = if (seqEROverview.isBlank) {
       Seq.empty
     } else {
@@ -184,15 +183,19 @@ class PsaSchemeDashboardService @Inject()(
           subHeadingParam = seqEROverview,
           subHeadingParamClasses = "font-small bold"))))
     }
+
     CardViewModel(
       id = "manage_reports_returns",
       heading = Message("messages__manage_reports_and_returns_head"),
       subHeadings = subHeading,
       links = if (seqEROverview.isBlank) {
-        aftLink ++ erLink
+        if (appConfig.enableQROPSUrl)
+          aftLink ++ erLink ++ qropsLink
+        else
+          aftLink ++ erLink
       } else {
-        if(appConfig.enableQROPSUrl)
-          aftLink ++ erLink ++ psrLink  ++ qropsLink
+        if (appConfig.enableQROPSUrl)
+          aftLink ++ erLink ++ psrLink ++ qropsLink
         else
           aftLink ++ erLink ++ psrLink
       }
@@ -227,7 +230,7 @@ class PsaSchemeDashboardService @Inject()(
       viewLinkText
     } else {
 
-      logger.info(s"Pension-scheme : $srn -- Lock-Status : ${optionLock.map(_.toString).getOrElse("No-Lock-Found").toString}")
+      logger.info(s"Pension-scheme : $srn -- Lock-Status : ${optionLock.map(_.toString).getOrElse("No-Lock-Found")}")
 
       optionLock match {
         case Some(VarianceLock) | None => viewOrChangeLinkText
