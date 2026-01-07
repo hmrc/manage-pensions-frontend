@@ -3,7 +3,7 @@ import sbt.*
 object AppDependencies {
 
   private val playVersion = "play-30"
-  private val bootstrapVersion = "10.4.0"
+  private val bootstrapVersion = "10.5.0"
 
   val compile: Seq[ModuleID] = Seq(
     play.sbt.PlayImport.ws,
@@ -11,7 +11,7 @@ object AppDependencies {
     "uk.gov.hmrc" %% s"bootstrap-frontend-$playVersion"            % bootstrapVersion,
     "uk.gov.hmrc" %% s"domain-$playVersion"                        % "13.0.0",
     "uk.gov.hmrc" %% s"play-partials-$playVersion"                 % "10.2.0",
-    "uk.gov.hmrc" %% s"play-frontend-hmrc-$playVersion"            % "12.24.0",
+    "uk.gov.hmrc" %% s"play-frontend-hmrc-$playVersion"            % "12.25.0",
   )
 
   val test: Seq[ModuleID] = Seq(
