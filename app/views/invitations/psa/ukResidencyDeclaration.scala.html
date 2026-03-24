@@ -1,0 +1,59 @@
+@*
+* Copyright 2026 HM Revenue & Customs
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*@
+@import controllers.invitations.psa.routes.*
+@import play.api.mvc.Call
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits.*
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits.*
+@import utils.ViewHelper.titleWithErrors
+@import views.html.*
+
+@this(
+        layout: templates.Layout,
+        formHelper: FormWithCSRF,
+        button: components.govuk_button
+)
+
+@(haveWorkingKnowledge: Boolean, isMasterTrust: Boolean, srn: String)(implicit request: Request[?], messages: Messages)
+
+@layout(pageTitle = messages("messages__ukResidency_declaration__title")) {
+
+    @components.heading(messages("messages__ukResidency_declaration__title"))
+
+    @components.paragraph_text(messages("messages__ukResidency_declaration__continue") + ":")
+
+    <ul class="govuk-list govuk-list--bullet">
+        <li>@messages("messages__ukResidency_declaration__statement1")</li>
+        <li>@messages("messages__ukResidency_declaration__statement2")</li>
+        <li>@messages("messages__ukResidency_declaration__statement3")</li>
+        <li>@messages("messages__ukResidency_declaration__statement4")</li>
+        <li>
+        @if(haveWorkingKnowledge) {
+            @messages("messages__ukResidency_declaration__statement5__no__adviser")
+        } else {
+            @messages("messages__ukResidency_declaration__statement5__with__adviser")
+        }
+        </li>
+        <li>@messages("messages__ukResidency_declaration__statement6")</li>
+        @if(isMasterTrust) {
+            <li>@messages("messages__ukResidency_declaration__statement7")</li>
+        }
+    </ul>
+
+    @formHelper(action = controllers.invitations.psa.routes.DeclarationController.onSubmit()) {
+        @button("site.agree_and_continue")
+    }
+}

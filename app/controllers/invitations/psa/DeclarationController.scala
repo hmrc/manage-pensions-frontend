@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,16 @@
 package controllers.invitations.psa
 
 import com.google.inject.Inject
+import config.FrontendAppConfig
 import connectors.scheme.SchemeDetailsConnector
 import connectors.{InvitationConnector, InvitationsCacheConnector, UserAnswersCacheConnector}
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import forms.invitations.psa.DeclarationFormProvider
 import identifiers.SchemeSrnId
-import identifiers.invitations._
+import identifiers.invitations.*
+import models.*
 import models.SchemeType.MasterTrust
-import models._
 import models.requests.DataRequest
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -33,7 +34,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.Navigator
 import utils.annotations.AcceptInvitation
-import views.html.invitations.psa.declaration
+import views.html.invitations.psa.{declaration, ukResidencyDeclaration}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -49,7 +50,9 @@ class DeclarationController @Inject()(
                                        invitationConnector: InvitationConnector,
                                        @AcceptInvitation navigator: Navigator,
                                        val controllerComponents: MessagesControllerComponents,
-                                       view: declaration
+                                       appConfig: FrontendAppConfig,
+                                       view: declaration,
+                                       ukResidencyView: ukResidencyDeclaration
                                      )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport
@@ -79,7 +82,13 @@ class DeclarationController @Inject()(
                   _ <- userAnswersCacheConnector.save(IsMasterTrustId, isMasterTrust)
                   _ <- userAnswersCacheConnector.save(PSTRId, response.pstr.getOrElse(""))
                 } yield {
-                  Ok(view(haveWorkingKnowledge, isMasterTrust, srn, form))
+                  Ok(
+                    if (appConfig.podsUkResidency) {
+                      ukResidencyView(haveWorkingKnowledge, isMasterTrust, srn)
+                    } else {
+                      view(haveWorkingKnowledge, isMasterTrust, srn, form)
+                    }
+                  )
                 }
               case _ => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad))
 
@@ -91,20 +100,26 @@ class DeclarationController @Inject()(
 
   def onSubmit(): Action[AnyContent] = (auth() andThen getData andThen requireData).async {
     implicit request =>
-
-      form.bindFromRequest().fold(
-        (formWithErrors: Form[Boolean]) =>
-          (DoYouHaveWorkingKnowledgeId and IsMasterTrustId and SchemeSrnId).retrieve.map {
-            case haveWorkingKnowledge ~ isMasterTrust ~ srn =>
-              Future.successful(BadRequest(view(haveWorkingKnowledge, isMasterTrust, srn, formWithErrors)))
-          },
-        declaration => {
-          (PSTRId and DoYouHaveWorkingKnowledgeId).retrieve.map {
-            case pstr ~ haveWorkingKnowledge =>
-              acceptInviteAndRedirect(pstr, haveWorkingKnowledge, declaration)
-          }
+      if (appConfig.podsUkResidency) {
+        (PSTRId and DoYouHaveWorkingKnowledgeId).retrieve.map {
+          case pstr ~ haveWorkingKnowledge =>
+            acceptInviteAndRedirect(pstr, haveWorkingKnowledge, declaration = true)
         }
-      )
+      } else {
+        form.bindFromRequest().fold(
+          (formWithErrors: Form[Boolean]) =>
+            (DoYouHaveWorkingKnowledgeId and IsMasterTrustId and SchemeSrnId).retrieve.map {
+              case haveWorkingKnowledge ~ isMasterTrust ~ srn =>
+                Future.successful(BadRequest(view(haveWorkingKnowledge, isMasterTrust, srn, formWithErrors)))
+            },
+          declaration => {
+            (PSTRId and DoYouHaveWorkingKnowledgeId).retrieve.map {
+              case pstr ~ haveWorkingKnowledge =>
+                acceptInviteAndRedirect(pstr, haveWorkingKnowledge, declaration)
+            }
+          }
+        )
+      }
   }
 
   private def acceptInviteAndRedirect(pstr: String, haveWorkingKnowledge: Boolean, declaration: Boolean)
