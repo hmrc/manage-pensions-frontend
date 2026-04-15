@@ -220,7 +220,7 @@ class PsaSchemeDashboardServiceSpec
         "Manage reports and returns",
         List(
           CardSubHeading("Notice to file:", "card-sub-heading",
-            List(CardSubHeadingParam("PSR due 6 April 2024", "font-small bold"))
+            List(CardSubHeadingParam("Pension Scheme Return due 6 April 2024", "font-small bold"))
           )
         ),
         List(
@@ -282,7 +282,7 @@ class PsaSchemeDashboardServiceSpec
         "Manage reports and returns",
         List(
           CardSubHeading("Notice to file:", "card-sub-heading",
-            List(CardSubHeadingParam("PSR due 6 April 2024", "font-small bold"))
+            List(CardSubHeadingParam("Pension Scheme Return due 6 April 2024", "font-small bold"))
           )
         ),
         List(
