@@ -33,7 +33,7 @@ import play.api.mvc.Call
 import play.api.test.Helpers.*
 import testhelpers.InvitationBuilder
 import utils.*
-import views.html.invitations.psa.ukResidencyDeclaration
+import views.html.invitations.psa.declaration
 
 import scala.concurrent.Future
 
@@ -49,7 +49,7 @@ class DeclarationControllerSpec
   private val fakeSchemeDetailsConnector: SchemeDetailsConnector = mock[SchemeDetailsConnector]
   private val fakeInvitationCacheConnector = mock[InvitationsCacheConnector]
   private val fakeInvitationConnector = mock[InvitationConnector]
-  private val ukResidencyView = injector.instanceOf[ukResidencyDeclaration]
+  private val view = injector.instanceOf[declaration]
 
   def controller(dataRetrievalAction: DataRetrievalAction = getEmptyData) = new DeclarationController(
     messagesApi,
@@ -62,7 +62,7 @@ class DeclarationControllerSpec
     fakeInvitationConnector,
     new FakeNavigator(onwardRoute),
     controllerComponents,
-    ukResidencyView
+    view
   )
 
   override def beforeEach(): Unit = {
@@ -78,8 +78,8 @@ class DeclarationControllerSpec
     None
   )
 
-  private def ukResidencyViewAsString(isItMasterTrust: Boolean = isMasterTrust, hasWkAdvisor: Boolean = hasAdviser) =
-    ukResidencyView(hasWkAdvisor, isItMasterTrust, srn)(using fakeRequest, messages).toString
+  private def viewAsString(isItMasterTrust: Boolean = isMasterTrust, hasWkAdvisor: Boolean = hasAdviser) =
+    view(hasWkAdvisor, isItMasterTrust, srn)(using fakeRequest, messages).toString
 
   "Declaration Controller" when {
 
@@ -91,7 +91,7 @@ class DeclarationControllerSpec
         val result = controller(data).onPageLoad()(fakeRequest)
 
         status(result) mustBe OK
-        contentAsString(result) mustBe ukResidencyViewAsString()
+        contentAsString(result) mustBe viewAsString()
         FakeUserAnswersCacheConnector.verify(SchemeNameId, "Open Single Trust Scheme with Indiv Establisher and Trustees")
         FakeUserAnswersCacheConnector.verify(IsMasterTrustId, true)
         FakeUserAnswersCacheConnector.verify(PSTRId, "24000001IN")
@@ -108,7 +108,7 @@ class DeclarationControllerSpec
         val result = controller(data).onPageLoad()(fakeRequest)
 
         status(result) mustBe OK
-        contentAsString(result) mustBe ukResidencyViewAsString(isItMasterTrust = false, hasWkAdvisor = true)
+        contentAsString(result) mustBe viewAsString(isItMasterTrust = false, hasWkAdvisor = true)
         FakeUserAnswersCacheConnector.verify(SchemeNameId, "rac dac scheme")
         FakeUserAnswersCacheConnector.verify(IsMasterTrustId, false)
         FakeUserAnswersCacheConnector.verify(PSTRId, pstr)

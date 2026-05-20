@@ -31,6 +31,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.Navigator
 import utils.annotations.AcceptInvitation
+import views.html.invitations.psa.declaration
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -45,7 +46,7 @@ class DeclarationController @Inject()(
                                        invitationConnector: InvitationConnector,
                                        @AcceptInvitation navigator: Navigator,
                                        val controllerComponents: MessagesControllerComponents,
-                                       ukResidencyView: views.html.invitations.psa.ukResidencyDeclaration
+                                       view: declaration
                                      )(implicit val ec: ExecutionContext)
   extends FrontendBaseController
     with I18nSupport
@@ -73,7 +74,7 @@ class DeclarationController @Inject()(
                   _ <- userAnswersCacheConnector.save(IsMasterTrustId, isMasterTrust)
                   _ <- userAnswersCacheConnector.save(PSTRId, response.pstr.getOrElse(""))
                 } yield {
-                  Ok(ukResidencyView(haveWorkingKnowledge, isMasterTrust, srn))
+                  Ok(view(haveWorkingKnowledge, isMasterTrust, srn))
                 }
               case _ => Future.successful(Redirect(controllers.routes.SessionExpiredController.onPageLoad))
 
