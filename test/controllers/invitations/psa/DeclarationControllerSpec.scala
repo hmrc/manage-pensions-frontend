@@ -17,12 +17,10 @@
 package controllers.invitations.psa
 
 import base.JsonFileReader
-import config.FrontendAppConfig
 import connectors.scheme.SchemeDetailsConnector
 import connectors.{FakeUserAnswersCacheConnector, InvitationConnector, InvitationsCacheConnector}
 import controllers.ControllerSpecBase
 import controllers.actions.{DataRequiredActionImpl, DataRetrievalAction, FakeAuthAction, FakeDataRetrievalAction}
-import forms.invitations.psa.DeclarationFormProvider
 import identifiers.invitations.{IsMasterTrustId, PSTRId, SchemeNameId}
 import models.{PsaInvitationInfoResponse, SchemeType}
 import org.mockito.ArgumentMatchers.{eq as eqTo, *}
@@ -31,12 +29,11 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.Configuration
-import play.api.data.Form
 import play.api.mvc.Call
 import play.api.test.Helpers.*
 import testhelpers.InvitationBuilder
 import utils.*
-import views.html.invitations.psa.{declaration, ukResidencyDeclaration}
+import views.html.invitations.psa.ukResidencyDeclaration
 
 import scala.concurrent.Future
 
@@ -52,13 +49,10 @@ class DeclarationControllerSpec
   private val fakeSchemeDetailsConnector: SchemeDetailsConnector = mock[SchemeDetailsConnector]
   private val fakeInvitationCacheConnector = mock[InvitationsCacheConnector]
   private val fakeInvitationConnector = mock[InvitationConnector]
-  private val mockAppConfig = mock[FrontendAppConfig]
-  private val view = injector.instanceOf[declaration]
   private val ukResidencyView = injector.instanceOf[ukResidencyDeclaration]
 
   def controller(dataRetrievalAction: DataRetrievalAction = getEmptyData) = new DeclarationController(
     messagesApi,
-    formProvider,
     FakeAuthAction,
     dataRetrievalAction,
     new DataRequiredActionImpl,
@@ -68,8 +62,6 @@ class DeclarationControllerSpec
     fakeInvitationConnector,
     new FakeNavigator(onwardRoute),
     controllerComponents,
-    mockAppConfig,
-    view,
     ukResidencyView
   )
 
@@ -77,7 +69,6 @@ class DeclarationControllerSpec
     reset(fakeSchemeDetailsConnector)
     reset(fakeInvitationCacheConnector)
     reset(fakeInvitationConnector)
-    when(mockAppConfig.podsUkResidency).thenReturn(false)
   }
 
   private val schemeDetailsResponse = PsaInvitationInfoResponse(
@@ -87,9 +78,6 @@ class DeclarationControllerSpec
     None
   )
 
-  private def viewAsString(form: Form[?] = form, isItMasterTrust: Boolean = isMasterTrust, hasWkAdvisor: Boolean = hasAdviser) =
-    view(hasWkAdvisor, isItMasterTrust, srn, form)(using fakeRequest, messages).toString
-
   private def ukResidencyViewAsString(isItMasterTrust: Boolean = isMasterTrust, hasWkAdvisor: Boolean = hasAdviser) =
     ukResidencyView(hasWkAdvisor, isItMasterTrust, srn)(using fakeRequest, messages).toString
 
@@ -97,68 +85,34 @@ class DeclarationControllerSpec
 
     "on a GET" must {
 
-      "return OK and the correct view with non rac dac master trust scheme" when {
-        "ukResidency toggle is disabled" in {
-          when(fakeSchemeDetailsConnector.getPsaInvitationInfo(any(), any())(using any(), any()))
-            .thenReturn(Future.successful(schemeDetailsResponse))
-          val result = controller(data).onPageLoad()(fakeRequest)
+      "return OK and the correct view with non rac dac master trust scheme" in {
+        when(fakeSchemeDetailsConnector.getPsaInvitationInfo(any(), any())(using any(), any()))
+          .thenReturn(Future.successful(schemeDetailsResponse))
+        val result = controller(data).onPageLoad()(fakeRequest)
 
-          status(result) mustBe OK
-          contentAsString(result) mustBe viewAsString()
-          FakeUserAnswersCacheConnector.verify(SchemeNameId, "Open Single Trust Scheme with Indiv Establisher and Trustees")
-          FakeUserAnswersCacheConnector.verify(IsMasterTrustId, true)
-          FakeUserAnswersCacheConnector.verify(PSTRId, "24000001IN")
-          verify(fakeSchemeDetailsConnector, times(1)).getPsaInvitationInfo(any(), any())(using any(), any())
-        }
-        "ukResidency toggle is enabled" in {
-          when(mockAppConfig.podsUkResidency).thenReturn(true)
-          when(fakeSchemeDetailsConnector.getPsaInvitationInfo(any(), any())(using any(), any()))
-            .thenReturn(Future.successful(schemeDetailsResponse))
-          val result = controller(data).onPageLoad()(fakeRequest)
-
-          status(result) mustBe OK
-          contentAsString(result) mustBe ukResidencyViewAsString()
-          FakeUserAnswersCacheConnector.verify(SchemeNameId, "Open Single Trust Scheme with Indiv Establisher and Trustees")
-          FakeUserAnswersCacheConnector.verify(IsMasterTrustId, true)
-          FakeUserAnswersCacheConnector.verify(PSTRId, "24000001IN")
-          verify(fakeSchemeDetailsConnector, times(1)).getPsaInvitationInfo(any(), any())(using any(), any())
-        }
+        status(result) mustBe OK
+        contentAsString(result) mustBe ukResidencyViewAsString()
+        FakeUserAnswersCacheConnector.verify(SchemeNameId, "Open Single Trust Scheme with Indiv Establisher and Trustees")
+        FakeUserAnswersCacheConnector.verify(IsMasterTrustId, true)
+        FakeUserAnswersCacheConnector.verify(PSTRId, "24000001IN")
+        verify(fakeSchemeDetailsConnector, times(1)).getPsaInvitationInfo(any(), any())(using any(), any())
       }
 
-      "return OK and the correct view with racdac scheme" when {
-        "ukResidency toggle is disabled" in {
-          val uaSchemeDetails = PsaInvitationInfoResponse(Some(pstr), Some("rac dac scheme"), None, Some(true))
-          val data = new FakeDataRetrievalAction(Some(UserAnswers().
-            haveWorkingKnowledge(true).srn(srn).pstr(pstr).json))
+      "return OK and the correct view with racdac scheme" in {
+        val uaSchemeDetails = PsaInvitationInfoResponse(Some(pstr), Some("rac dac scheme"), None, Some(true))
+        val data = new FakeDataRetrievalAction(Some(UserAnswers().
+          haveWorkingKnowledge(true).srn(srn).pstr(pstr).json))
 
-          when(fakeSchemeDetailsConnector.getPsaInvitationInfo(any(), any())(using any(), any()))
-            .thenReturn(Future.successful(uaSchemeDetails))
-          val result = controller(data).onPageLoad()(fakeRequest)
+        when(fakeSchemeDetailsConnector.getPsaInvitationInfo(any(), any())(using any(), any()))
+          .thenReturn(Future.successful(uaSchemeDetails))
+        val result = controller(data).onPageLoad()(fakeRequest)
 
-          status(result) mustBe OK
-          contentAsString(result) mustBe viewAsString(isItMasterTrust = false, hasWkAdvisor = true)
-          FakeUserAnswersCacheConnector.verify(SchemeNameId, "rac dac scheme")
-          FakeUserAnswersCacheConnector.verify(IsMasterTrustId, false)
-          FakeUserAnswersCacheConnector.verify(PSTRId, pstr)
-          verify(fakeSchemeDetailsConnector, times(1)).getPsaInvitationInfo(any(), any())(using any(), any())
-        }
-        "ukResidency toggle is enabled" in {
-          val uaSchemeDetails = PsaInvitationInfoResponse(Some(pstr), Some("rac dac scheme"), None, Some(true))
-          val data = new FakeDataRetrievalAction(Some(UserAnswers().
-            haveWorkingKnowledge(true).srn(srn).pstr(pstr).json))
-
-          when(mockAppConfig.podsUkResidency).thenReturn(true)
-          when(fakeSchemeDetailsConnector.getPsaInvitationInfo(any(), any())(using any(), any()))
-            .thenReturn(Future.successful(uaSchemeDetails))
-          val result = controller(data).onPageLoad()(fakeRequest)
-
-          status(result) mustBe OK
-          contentAsString(result) mustBe ukResidencyViewAsString(isItMasterTrust = false, hasWkAdvisor = true)
-          FakeUserAnswersCacheConnector.verify(SchemeNameId, "rac dac scheme")
-          FakeUserAnswersCacheConnector.verify(IsMasterTrustId, false)
-          FakeUserAnswersCacheConnector.verify(PSTRId, pstr)
-          verify(fakeSchemeDetailsConnector, times(1)).getPsaInvitationInfo(any(), any())(using any(), any())
-        }
+        status(result) mustBe OK
+        contentAsString(result) mustBe ukResidencyViewAsString(isItMasterTrust = false, hasWkAdvisor = true)
+        FakeUserAnswersCacheConnector.verify(SchemeNameId, "rac dac scheme")
+        FakeUserAnswersCacheConnector.verify(IsMasterTrustId, false)
+        FakeUserAnswersCacheConnector.verify(PSTRId, pstr)
+        verify(fakeSchemeDetailsConnector, times(1)).getPsaInvitationInfo(any(), any())(using any(), any())
       }
 
       "throw IllegalArgumentException if scheme type is missing for non rac dac scheme" in {
@@ -169,7 +123,7 @@ class DeclarationControllerSpec
           .thenReturn(Future.successful(uaSchemeDetails))
         val result = controller(data).onPageLoad()(fakeRequest)
 
-        ScalaFutures.whenReady(result.failed) { e =>
+        ScalaFutures.whenReady(result.failed) { (e: Throwable) =>
           e mustBe a[IllegalArgumentException]
           e.getMessage mustEqual "Scheme Type missing for Non RacDac scheme"
         }
@@ -185,47 +139,25 @@ class DeclarationControllerSpec
 
     "on a POST" must {
 
-      "accept invitation and redirect to next page when valid data with adviser details is submitted" when {
-        "ukResidency toggle is disabled" in {
-          when(fakeInvitationCacheConnector.get(eqTo(pstr), any())(using any(), any())).thenReturn(Future.successful(InvitationBuilder.invitationList))
-          when(fakeInvitationCacheConnector.remove(eqTo(pstr), any())(using any(), any())).thenReturn(Future.successful(()))
-          when(fakeInvitationConnector.acceptInvite(eqTo(InvitationBuilder.acceptedInvitation))(using any(), any())).thenReturn(Future.successful(()))
+      "accept invitation and redirect to next page when valid data with adviser details is submitted" in {
+        when(fakeInvitationCacheConnector.get(eqTo(pstr), any())(using any(), any())).thenReturn(Future.successful(InvitationBuilder.invitationList))
+        when(fakeInvitationCacheConnector.remove(eqTo(pstr), any())(using any(), any())).thenReturn(Future.successful(()))
+        when(fakeInvitationConnector.acceptInvite(eqTo(InvitationBuilder.acceptedInvitation))(using any(), any())).thenReturn(Future.successful(()))
 
-          val result = controller(data).onSubmit()(fakeRequest.withFormUrlEncodedBody("consent" -> "true"))
-          status(result) mustBe SEE_OTHER
-          redirectLocation(result).value mustBe onwardRoute.url
-          verify(fakeInvitationCacheConnector, times(1)).get(eqTo(pstr), any())(using any(), any())
-          verify(fakeInvitationCacheConnector, times(1)).remove(eqTo(pstr), any())(using any(), any())
-          verify(fakeInvitationConnector, times(1)).acceptInvite(eqTo(InvitationBuilder.acceptedInvitation))(using any(), any())
-        }
-        "ukResidency toggle is enabled" in {
-          when(mockAppConfig.podsUkResidency).thenReturn(true)
-          when(fakeInvitationCacheConnector.get(eqTo(pstr), any())(using any(), any())).thenReturn(Future.successful(InvitationBuilder.invitationList))
-          when(fakeInvitationCacheConnector.remove(eqTo(pstr), any())(using any(), any())).thenReturn(Future.successful(()))
-          when(fakeInvitationConnector.acceptInvite(eqTo(InvitationBuilder.acceptedInvitation))(using any(), any())).thenReturn(Future.successful(()))
-
-          val result = controller(data).onSubmit()(fakeRequest)
-          status(result) mustBe SEE_OTHER
-          redirectLocation(result).value mustBe onwardRoute.url
-          verify(fakeInvitationCacheConnector, times(1)).get(eqTo(pstr), any())(using any(), any())
-          verify(fakeInvitationCacheConnector, times(1)).remove(eqTo(pstr), any())(using any(), any())
-          verify(fakeInvitationConnector, times(1)).acceptInvite(eqTo(InvitationBuilder.acceptedInvitation))(using any(), any())
-        }
+        val result = controller(data).onSubmit()(fakeRequest)
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).value mustBe onwardRoute.url
+        verify(fakeInvitationCacheConnector, times(1)).get(eqTo(pstr), any())(using any(), any())
+        verify(fakeInvitationCacheConnector, times(1)).remove(eqTo(pstr), any())(using any(), any())
+        verify(fakeInvitationConnector, times(1)).acceptInvite(eqTo(InvitationBuilder.acceptedInvitation))(using any(), any())
       }
 
       "redirect to session expired page when there is no matching invitation" in {
         when(fakeInvitationCacheConnector.get(eqTo(pstr), any())(using any(), any())).thenReturn(Future.successful(Nil))
 
-        val result = controller(data).onSubmit()(fakeRequest.withFormUrlEncodedBody("consent" -> "true"))
+        val result = controller(data).onSubmit()(fakeRequest)
         status(result) mustBe SEE_OTHER
         redirectLocation(result).value mustBe sessionExpired
-      }
-
-      "return Bad Request if invalid data is submitted" in {
-        val formWithErrors = form.withError("consent", messages("messages__error__declaration__required"))
-        val result = controller(data).onSubmit()(fakeRequest)
-        status(result) mustBe BAD_REQUEST
-        contentAsString(result) mustBe viewAsString(formWithErrors)
       }
 
       "redirect to Session Expired page if there is no cached data" in {
@@ -255,9 +187,6 @@ object DeclarationControllerSpec {
     pstr(pstr).
     adviserAddress(InvitationBuilder.address).json
   ))
-
-  val formProvider = new DeclarationFormProvider()
-  val form: Form[Boolean] = formProvider()
 
   private def sessionExpired = controllers.routes.SessionExpiredController.onPageLoad.url
 }
