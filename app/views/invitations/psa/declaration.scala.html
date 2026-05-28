@@ -1,5 +1,5 @@
 @*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,73 +14,47 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
-@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits._
-@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
-@import views.html._
-@import controllers.invitations.psa.routes._
+@import controllers.invitations.psa.routes.*
+@import play.api.mvc.Call
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits.*
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.implicits.*
 @import utils.ViewHelper.titleWithErrors
+@import views.html.*
 
 @this(
-    layout: templates.Layout,
-    formHelper: PlayFrontendFormWithCSRF,
-    govukErrorSummary: GovukErrorSummary,
-    govukCheckboxes : GovukCheckboxes,
-    button: components.govuk_button
+        layout: templates.Layout,
+        formHelper: FormWithCSRF,
+        button: components.govuk_button
 )
 
-@(haveWorkingKnowledge: Boolean, isMasterTrust: Boolean, srn: String, form: Form[?])(implicit request: Request[?], messages: Messages)
+@(haveWorkingKnowledge: Boolean, isMasterTrust: Boolean, srn: String)(implicit request: Request[?], messages: Messages)
 
-@layout(pageTitle = titleWithErrors(form, messages("messages__declaration__title"))){
+@layout(pageTitle = messages("messages__declaration__title")) {
 
-    @formHelper(action = DeclarationController.onSubmit(), Symbol("autoComplete") -> "off") {
+    @components.heading(messages("messages__declaration__title"))
 
-        @components.heading(messages("messages__declaration__title"))
+    @components.paragraph_text(messages("messages__declaration__continue") + ":")
 
-        @if(form.errors.nonEmpty) {
-            @govukErrorSummary(ErrorSummary().withFormErrorsAsText(form, mapping = Map("consent" -> "consent")))
+    <ul class="govuk-list govuk-list--bullet">
+        <li>@messages("messages__declaration__statement1")</li>
+        <li>@messages("messages__declaration__statement2")</li>
+        <li>@messages("messages__declaration__statement3")</li>
+        <li>@messages("messages__declaration__statement4")</li>
+        <li>
+        @if(haveWorkingKnowledge) {
+            @messages("messages__declaration__statement5__no__adviser")
+        } else {
+            @messages("messages__declaration__statement5__with__adviser")
         }
+        </li>
+        <li>@messages("messages__declaration__statement6")</li>
+        @if(isMasterTrust) {
+            <li>@messages("messages__declaration__statement7")</li>
+        }
+    </ul>
 
-        @components.paragraph_text(messages("messages__declaration__continue") + ":")
-
-        <ol class="govuk-list govuk-list--number">
-            <li>@messages("messages__declaration__statement1")</li>
-            <li>@messages("messages__declaration__statement2")</li>
-            <li>@messages("messages__declaration__statement3")</li>
-            <li>@messages("messages__declaration__statement4")</li>
-            <li>
-                @if(haveWorkingKnowledge) {
-                    @messages("messages__declaration__statement5__no__adviser")
-                } else {
-                    @messages("messages__declaration__statement5__with__adviser")
-                }
-            </li>
-            <li>@messages("messages__declaration__statement6")</li>
-            @if(isMasterTrust) {
-                <li>@messages("messages__declaration__statement7")</li>
-            }
-        </ol>
-
-        @govukCheckboxes(Checkboxes(
-            fieldset = Some(Fieldset(
-            legend = Some(Legend(
-            content = Text(messages("messages__declaration__title")),
-            classes = "govuk-visually-hidden",
-            isPageHeading = false
-            ))
-        )),
-        idPrefix = Some("consent"),
-            name = "consent",
-            items = Seq(
-                CheckboxItem(
-                content = Text(messages("messages__declaration__label")),
-                value ="true"
-                )
-            )
-            ).withFormField(form("consent")
-        ))
-
-        @button(messages("site.continue"))
-
+    @formHelper(action = controllers.invitations.psa.routes.DeclarationController.onSubmit()) {
+        @button("site.agree_and_continue")
     }
 }
