@@ -167,6 +167,7 @@ messages__listSchemesPsp__viewScheme = View scheme
 
 
 messages__schemesOverview__title = Pension scheme administrator overview
+messages__tpssMigrationBanner__content = The Pension Schemes Online service is closing. Migrate your pension schemes by 31 December 2026 to avoid disruption.
 messages__schemesOverview__heading = Managing pension schemes
 messages__psaDashboard__sub_heading = Administrator
 messages__schemesOverview__manage__text = You can only view pension schemes that you have registered through this service.

@@ -21,7 +21,7 @@ import connectors._
 import connectors.admin.MinimalConnector
 import controllers.psa.routes._
 import models.requests.OptionalDataRequest
-import models.{Link, MinimalPSAPSP}
+import models.{Link, ListOfLegacySchemes, MinimalPSAPSP}
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContent, Request}
 import play.twirl.api.Html
@@ -35,7 +35,8 @@ class SchemesOverviewService @Inject()(
                                         appConfig: FrontendAppConfig,
                                         minimalPsaConnector: MinimalConnector,
                                         invitationsCacheConnector: InvitationsCacheConnector,
-                                        frontendConnector: FrontendConnector
+                                        frontendConnector: FrontendConnector,
+                                        migrationConnector: MigrationConnector
                                       )(implicit ec: ExecutionContext) {
 
   def getTiles(psaId: String)(implicit request: OptionalDataRequest[AnyContent], hc: HeaderCarrier, messages: Messages): Future[Seq[CardViewModel]] =
@@ -54,6 +55,13 @@ class SchemesOverviewService @Inject()(
 
   def retrieveMigrationTile[A](implicit request: Request[A], ec: ExecutionContext): Future[Option[Html]] =
     frontendConnector.retrieveMigrationUrlsPartial.map(Some(_))
+
+  def showMigrationBanner(implicit request: OptionalDataRequest[AnyContent], hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] =
+    if (!appConfig.enableTpssMigrationBanner) {
+      Future.successful(false)
+    } else {
+      hasSchemesRequiringMigration
+    }
 
   def getPsaName()(implicit hc: HeaderCarrier): Future[Option[String]] =
     minimalPsaConnector.getPsaNameFromPsaID().map(identity)
@@ -113,6 +121,19 @@ class SchemesOverviewService @Inject()(
   private val deregisterLink: Seq[Link] =
     Seq(Link("deregister-link", appConfig.psaDeregisterUrl,
       Message("messages__schemeOverview__psa_deregister")))
+
+  private def hasSchemesRequiringMigration(implicit request: OptionalDataRequest[AnyContent],
+                                           hc: HeaderCarrier,
+                                           ec: ExecutionContext): Future[Boolean] =
+    migrationConnector.getListOfLegacySchemes(request.psaIdOrException.id)
+      .map {
+        case Right(listOfLegacySchemes) => containsMigratableSchemes(listOfLegacySchemes)
+        case Left(_) => false
+      }
+      .recover { case _ => false }
+
+  private def containsMigratableSchemes(listOfLegacySchemes: ListOfLegacySchemes): Boolean =
+    listOfLegacySchemes.items.exists(_.exists(_.racDac == false))
 
 
 }
