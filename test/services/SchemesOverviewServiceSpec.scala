@@ -50,6 +50,7 @@ class SchemesOverviewServiceSpec extends SpecBase with MockitoSugar with BeforeA
   private val invitationsCacheConnector = mock[InvitationsCacheConnector]
   private val frontendAppConfig = mock[FrontendAppConfig]
   private val listOfSchemesConnector = mock[ListOfSchemesConnector]
+  private val migrationConnector = mock[MigrationConnector]
 
   override lazy val app: Application = GuiceApplicationBuilder()
     .overrides(
@@ -57,7 +58,8 @@ class SchemesOverviewServiceSpec extends SpecBase with MockitoSugar with BeforeA
       bind[FrontendConnector].toInstance(frontendConnector),
       bind[InvitationsCacheConnector].toInstance(invitationsCacheConnector),
       bind[MinimalConnector].toInstance(minimalPsaConnector),
-      bind[ListOfSchemesConnector].toInstance(listOfSchemesConnector)
+      bind[ListOfSchemesConnector].toInstance(listOfSchemesConnector),
+      bind[MigrationConnector].toInstance(migrationConnector)
     )
     .build()
 

@@ -18,7 +18,7 @@ package services
 
 import base.SpecBase
 import config.FrontendAppConfig
-import connectors.InvitationsCacheConnector
+import connectors.{InvitationsCacheConnector, MigrationConnector}
 import connectors.admin.MinimalConnector
 import connectors.scheme.ListOfSchemesConnector
 import models.*
@@ -42,6 +42,7 @@ class PspDashboardServiceSpec extends SpecBase with MockitoSugar with BeforeAndA
   private val frontendAppConfig: FrontendAppConfig = mock[FrontendAppConfig]
   private val invitationsCacheConnector:InvitationsCacheConnector = mock[InvitationsCacheConnector]
   private val listOfSchemesConnector = mock[ListOfSchemesConnector]
+  private val migrationConnector = mock[MigrationConnector]
 
 
   override lazy val app: Application = GuiceApplicationBuilder()
@@ -49,7 +50,8 @@ class PspDashboardServiceSpec extends SpecBase with MockitoSugar with BeforeAndA
       bind[MinimalConnector].toInstance(minimalPsaConnector),
       bind[FrontendAppConfig].toInstance(frontendAppConfig),
       bind[InvitationsCacheConnector].toInstance(invitationsCacheConnector),
-      bind[ListOfSchemesConnector].toInstance(listOfSchemesConnector)
+      bind[ListOfSchemesConnector].toInstance(listOfSchemesConnector),
+      bind[MigrationConnector].toInstance(migrationConnector)
 
     )
     .build()
@@ -137,7 +139,6 @@ object PspDashboardServiceSpec extends SpecBase with MockitoSugar {
   private val tiles: Seq[CardViewModel] = Seq(schemeCard(), practitionerCard)
 
 }
-
 
 
 

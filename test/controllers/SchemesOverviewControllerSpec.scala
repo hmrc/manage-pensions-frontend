@@ -57,6 +57,8 @@ class SchemesOverviewControllerSpec extends ControllerSpecBase with MockitoSugar
 
   override def beforeEach(): Unit = {
     super.beforeEach()
+    when(fakeSchemesOverviewService.showMigrationBanner(using any(), any(), any()))
+      .thenReturn(Future.successful(false))
   }
   def viewAsString(): String = view(
     name = psaName,
@@ -207,7 +209,6 @@ object SchemesOverviewControllerSpec extends ControllerSpecBase {
   private val adminTile = adminCard
   private val schemeTile = schemeCard
 }
-
 
 
 
