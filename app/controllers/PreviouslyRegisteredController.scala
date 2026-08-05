@@ -86,7 +86,7 @@ class PreviouslyRegisteredController @Inject()(
                                                  recoverCredentialsUrl: String
                                                 )(implicit request: Request[AnyContent]): Future[Result] = {
     authorised().retrieve(Retrievals.allEnrolments) { enrolments =>
-      if (isAlreadyRecoveredHasPodsEnrolments(enrolments)) {
+      if (alreadyRecoveredHasPodsEnrolments(enrolments)) {
         Future.successful(Redirect(recoverCredentialsUrl))
       } else if (isTpssAccount(enrolments, enrolmentKey, idName, idStartsWith)) {
         Future.successful(Redirect(routes.TpssRecoveryController.onPageLoad))
@@ -96,7 +96,7 @@ class PreviouslyRegisteredController @Inject()(
     }
   }
 
-  private def isAlreadyRecoveredHasPodsEnrolments(enrolments: Enrolments): Boolean =
+  private def alreadyRecoveredHasPodsEnrolments(enrolments: Enrolments): Boolean =
     enrolments.getEnrolment("HMRC-PODS-ORG").isDefined
 
   private def isTpssAccount(enrolments: Enrolments, enrolmentKey: String, idName: String, idStartsWith: String): Boolean =
