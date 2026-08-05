@@ -79,20 +79,20 @@ class PreviouslyRegisteredControllerSpec extends ControllerWithQuestionPageBehav
     app.injector.instanceOf[BodyParsers.Default]
   )
 
-  "PreviouslyRegisteredController for administrator" must {
-    def controller(): PreviouslyRegisteredController =
-      new PreviouslyRegisteredController(
-        appConfig,
-        fakeAuthConnector(Future.successful(Enrolments(Set(enrolmentPSA)))),
-        messagesApi,
-        formProvider,
-        controllerComponents,
-        view,
-        noEnrolmentOnlyAuthAction(Future.successful(new~(Some("id"), Enrolments(Set(enrolmentPSA))))))
+  def controller(enrolmentSet: Set[Enrolment]): PreviouslyRegisteredController =
+    new PreviouslyRegisteredController(
+      appConfig,
+      fakeAuthConnector(Future.successful(Enrolments(enrolmentSet))),
+      messagesApi,
+      formProvider,
+      controllerComponents,
+      view,
+      noEnrolmentOnlyAuthAction(Future.successful(new~(Some("id"), Enrolments(enrolmentSet)))))
 
+  "PreviouslyRegisteredController for administrator" must {
     "return OK with the view when calling on page load" in {
       val request = addCSRFToken(FakeRequest(GET, routes.PreviouslyRegisteredController.onPageLoadAdministrator().url))
-      val result = controller().onPageLoadAdministrator(request)
+      val result = controller(Set(enrolmentPSA)).onPageLoadAdministrator(request)
 
       status(result) mustBe OK
       contentAsString(result) mustBe view(formProvider(), AdministratorOrPractitioner.Administrator)(using request, messages).toString
@@ -101,17 +101,19 @@ class PreviouslyRegisteredControllerSpec extends ControllerWithQuestionPageBehav
     "return a Bad Request and errors when invalid data is submitted" in {
       val postRequest = FakeRequest(POST, routes.PreviouslyRegisteredController.onSubmitAdministrator().url).withFormUrlEncodedBody("value" -> "invalid value")
       val boundForm = formProvider().bind(Map("value" -> "invalid value"))
-      val result = controller().onSubmitAdministrator(postRequest)
+      val result = controller(Set(enrolmentPSA)).onSubmitAdministrator(postRequest)
 
       status(result) mustBe BAD_REQUEST
-      contentAsString(result) mustBe view(boundForm, AdministratorOrPractitioner.Administrator)(using postRequest,messages).toString
+      contentAsString(result) mustBe view(boundForm, AdministratorOrPractitioner.Administrator)(using postRequest, messages).toString
     }
 
     "redirect to the correct next page when yes stopped in chosen" in {
       val postRequest = FakeRequest(POST, routes.PreviouslyRegisteredController.onSubmitAdministrator().url).withFormUrlEncodedBody("value" ->
         PreviouslyRegistered.PreviouslyRegisteredButStoppedBeingAdministrator.toString)
+
       when(appConfig.registerSchemeAdministratorUrl).thenReturn(dummyUrl)
-      val result = controller().onSubmitAdministrator(postRequest)
+
+      val result = controller(Set(enrolmentPSA)).onSubmitAdministrator(postRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result).value mustBe dummyUrl
@@ -120,8 +122,10 @@ class PreviouslyRegisteredControllerSpec extends ControllerWithQuestionPageBehav
     "redirect to the correct next page when no chosen" in {
       val postRequest = FakeRequest(POST, routes.PreviouslyRegisteredController.onSubmitAdministrator().url).withFormUrlEncodedBody("value" ->
         PreviouslyRegistered.NotPreviousRegistered.toString)
+
       when(appConfig.registerSchemeAdministratorUrl).thenReturn(dummyUrl)
-      val result = controller().onSubmitAdministrator(postRequest)
+
+      val result = controller(Set(enrolmentPSA)).onSubmitAdministrator(postRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result).value mustBe dummyUrl
@@ -130,48 +134,33 @@ class PreviouslyRegisteredControllerSpec extends ControllerWithQuestionPageBehav
     "redirect to the correct next page when yes not logged in chosen (recovery url) for psa" in {
       val postRequest = FakeRequest(POST, routes.PreviouslyRegisteredController.onSubmitAdministrator().url).withFormUrlEncodedBody("value" ->
         PreviouslyRegistered.PreviouslyRegisteredButNotLoggedIn.toString)
+
       when(appConfig.recoverCredentialsPSAUrl).thenReturn(tpssRecoveryURL)
-      val result = controller().onSubmitAdministrator(postRequest)
+
+      val result = controller(Set(enrolmentPSA)).onSubmitAdministrator(postRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result).value mustBe tpssRecoveryURL
     }
 
-    "redirect to the correct next page when yes not logged in chosen (recovery url)" in {
-      val controller :PreviouslyRegisteredController =
-        new PreviouslyRegisteredController(
-          appConfig,
-          fakeAuthConnector(Future.successful(Enrolments(Set(enrolmentPODS)))),
-          messagesApi,
-          formProvider,
-          controllerComponents,
-          view,
-          noEnrolmentOnlyAuthAction(Future.successful(new~(Some("id"), Enrolments(Set(enrolmentPODS))))))
+    "redirect to recover credentials page when yes not logged in for three years but have already gone through tpss recovery" in {
       val postRequest = FakeRequest(POST, routes.PreviouslyRegisteredController.onSubmitAdministrator().url).withFormUrlEncodedBody("value" ->
         PreviouslyRegistered.PreviouslyRegisteredButNotLoggedIn.toString)
+
       when(appConfig.recoverCredentialsPSAUrl).thenReturn(dummyUrl)
-      val result = controller.onSubmitAdministrator(postRequest)
+
+      val result = controller(Set(enrolmentPSA, enrolmentPODS)).onSubmitAdministrator(postRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result).value mustBe dummyUrl
+
     }
   }
 
   "PreviouslyRegisteredController for practitioner" must {
-
-    def controller(): PreviouslyRegisteredController =
-      new PreviouslyRegisteredController(
-        appConfig,
-        fakeAuthConnector(Future.successful(Enrolments(Set(enrolmentPSP)))),
-        messagesApi,
-        formProvider,
-        controllerComponents,
-        view,
-        noEnrolmentOnlyAuthAction(Future.successful(new~(Some("id"), Enrolments(Set(enrolmentPSP))))))
-
     "return OK with the view when calling on page load" in {
       val request = addCSRFToken(FakeRequest(GET, routes.PreviouslyRegisteredController.onPageLoadPractitioner().url))
-      val result = controller().onPageLoadPractitioner(request)
+      val result = controller(Set(enrolmentPSP)).onPageLoadPractitioner(request)
 
       status(result) mustBe OK
       contentAsString(result) mustBe view(formProvider(), AdministratorOrPractitioner.Practitioner)(using request, messages).toString
@@ -180,17 +169,19 @@ class PreviouslyRegisteredControllerSpec extends ControllerWithQuestionPageBehav
     "return a Bad Request and errors when invalid data is submitted" in {
       val postRequest = FakeRequest(POST, routes.PreviouslyRegisteredController.onSubmitPractitioner().url).withFormUrlEncodedBody("value" -> "invalid value")
       val boundForm = formProvider().bind(Map("value" -> "invalid value"))
-      val result = controller().onSubmitPractitioner(postRequest)
+      val result = controller(Set(enrolmentPSP)).onSubmitPractitioner(postRequest)
 
       status(result) mustBe BAD_REQUEST
-      contentAsString(result) mustBe view(boundForm, AdministratorOrPractitioner.Practitioner)(using postRequest,messages).toString
+      contentAsString(result) mustBe view(boundForm, AdministratorOrPractitioner.Practitioner)(using postRequest, messages).toString
     }
 
     "redirect to the correct next page when yes stopped in chosen" in {
       val postRequest = FakeRequest(POST, routes.PreviouslyRegisteredController.onSubmitPractitioner().url).withFormUrlEncodedBody("value" ->
         PreviouslyRegistered.PreviouslyRegisteredButStoppedBeingAdministrator.toString)
+
       when(appConfig.registerSchemePractitionerUrl).thenReturn(dummyUrl)
-      val result = controller().onSubmitPractitioner(postRequest)
+
+      val result = controller(Set(enrolmentPSP)).onSubmitPractitioner(postRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result).value mustBe dummyUrl
@@ -199,8 +190,10 @@ class PreviouslyRegisteredControllerSpec extends ControllerWithQuestionPageBehav
     "redirect to the correct next page when no chosen" in {
       val postRequest = FakeRequest(POST, routes.PreviouslyRegisteredController.onSubmitPractitioner().url).withFormUrlEncodedBody("value" ->
         PreviouslyRegistered.NotPreviousRegistered.toString)
+
       when(appConfig.registerSchemePractitionerUrl).thenReturn(dummyUrl)
-      val result = controller().onSubmitPractitioner(postRequest)
+
+      val result = controller(Set(enrolmentPSP)).onSubmitPractitioner(postRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result).value mustBe dummyUrl
@@ -210,32 +203,26 @@ class PreviouslyRegisteredControllerSpec extends ControllerWithQuestionPageBehav
     "redirect to the correct next page when yes not logged in chosen (recovery URL) for psp" in {
       val postRequest = FakeRequest(POST, routes.PreviouslyRegisteredController.onSubmitPractitioner().url).withFormUrlEncodedBody("value" ->
         PreviouslyRegistered.PreviouslyRegisteredButNotLoggedIn.toString)
+
       when(appConfig.recoverCredentialsPSPUrl).thenReturn(tpssRecoveryURL)
-      val result = controller().onSubmitPractitioner(postRequest)
+
+      val result = controller(Set(enrolmentPSP)).onSubmitPractitioner(postRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result).value mustBe tpssRecoveryURL
     }
 
-
-    "redirect to the correct next page when yes not logged in chosen (recovery URL)" in {
-      val controller : PreviouslyRegisteredController =
-        new PreviouslyRegisteredController(
-          appConfig,
-          fakeAuthConnector(Future.successful(Enrolments(Set(enrolmentPODS)))),
-          messagesApi,
-          formProvider,
-          controllerComponents,
-          view,
-          noEnrolmentOnlyAuthAction(Future.successful(new~(Some("id"), Enrolments(Set(enrolmentPODS))))))
-
+    "redirect to recover credentials page when yes not logged in for three years but have already gone through tpss recovery" in {
       val postRequest = FakeRequest(POST, routes.PreviouslyRegisteredController.onSubmitPractitioner().url).withFormUrlEncodedBody("value" ->
         PreviouslyRegistered.PreviouslyRegisteredButNotLoggedIn.toString)
+
       when(appConfig.recoverCredentialsPSPUrl).thenReturn(dummyUrl)
-      val result = controller.onSubmitPractitioner(postRequest)
+
+      val result = controller(Set(enrolmentPSP, enrolmentPODS)).onSubmitPractitioner(postRequest)
 
       status(result) mustBe SEE_OTHER
       redirectLocation(result).value mustBe dummyUrl
+      
     }
   }
 
