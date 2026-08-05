@@ -17,7 +17,6 @@
 @import config.FrontendAppConfig
 @import viewmodels.CardViewModel
 @import models.Link
-@import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 @import uk.gov.hmrc.govukfrontend.views.html.components.GovukNotificationBanner
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.notificationbanner.NotificationBanner
@@ -50,7 +49,7 @@
             <div class="govuk-grid-column-two-thirds">
                     @if(showMigrationBanner) {
                         @govukNotificationBanner(NotificationBanner(
-                            content = HtmlContent({messages("messages__tpssMigrationBanner__content")}),
+                            content = Text(messages("messages__tpssMigrationBanner__content")),
                             attributes = Map("id" -> "alert-banner")
                         ))
                     }
