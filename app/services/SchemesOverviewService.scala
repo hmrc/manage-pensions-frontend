@@ -57,10 +57,10 @@ class SchemesOverviewService @Inject()(
     frontendConnector.retrieveMigrationUrlsPartial.map(Some(_))
 
   def showMigrationBanner(implicit request: OptionalDataRequest[AnyContent], hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] =
-    if (!appConfig.enableTpssMigrationBanner) {
-      Future.successful(false)
-    } else {
+    if (appConfig.enableTpssMigrationBanner) {
       hasSchemesRequiringMigration
+    } else {
+      Future.successful(false)
     }
 
   def getPsaName()(implicit hc: HeaderCarrier): Future[Option[String]] =
