@@ -21,7 +21,7 @@ import connectors._
 import connectors.admin.MinimalConnector
 import controllers.psa.routes._
 import models.requests.OptionalDataRequest
-import models.{Link, ListOfLegacySchemes, MinimalPSAPSP}
+import models.{Link, MinimalPSAPSP}
 import play.api.i18n.Messages
 import play.api.mvc.{AnyContent, Request}
 import play.twirl.api.Html
@@ -127,13 +127,9 @@ class SchemesOverviewService @Inject()(
                                            ec: ExecutionContext): Future[Boolean] =
     migrationConnector.getListOfLegacySchemes(request.psaIdOrException.id)
       .map {
-        case Right(listOfLegacySchemes) => containsMigratableSchemes(listOfLegacySchemes)
+        case Right(listOfLegacySchemes) => listOfLegacySchemes.items.exists(_.nonEmpty)
         case Left(_) => false
       }
       .recover { case _ => false }
-
-  private def containsMigratableSchemes(listOfLegacySchemes: ListOfLegacySchemes): Boolean =
-    listOfLegacySchemes.items.exists(_.exists(_.racDac == false))
-
 
 }
