@@ -139,6 +139,8 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
     .getString("urls.migrationUrlsPartialHtml")}"
 
   lazy val migrationListOfSchemesUrl: String = loadConfig("urls.migrationListOfSchemes")
+  lazy val migrationListOfLegacySchemesApiUrl: String = s"${servicesConfig.baseUrl("pensions-scheme-migration")}${runModeConfiguration.underlying
+    .getString("urls.migrationListOfLegacySchemesApi")}"
   lazy val psaOverviewUrl: String = loadConfig("urls.psaOverview")
   lazy val pspDashboardUrl: String = loadConfig("urls.pspDashboard")
 
@@ -201,4 +203,6 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val checkMembersProtectionsEnhancementsUrl: String = runModeConfiguration.underlying.getString("urls.checkMembersProtectionsEnhancements")
   lazy val enableMembersProtectionsEnhancements: Boolean = runModeConfiguration.getOptional[Boolean]("features.enableMPELink").getOrElse(false)
   lazy val forceServiceNavigation: Boolean = runModeConfiguration.getOptional[Boolean]("play-frontend-hmrc.forceServiceNavigation").getOrElse(false)
+  lazy val enableTpssMigrationBanner: Boolean = runModeConfiguration.getOptional[Boolean]("features.enableTpssMigrationBanner").getOrElse(false)
+
 }

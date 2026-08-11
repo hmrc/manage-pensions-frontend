@@ -17,11 +17,15 @@
 @import config.FrontendAppConfig
 @import viewmodels.CardViewModel
 @import models.Link
+@import uk.gov.hmrc.govukfrontend.views.html.components.GovukNotificationBanner
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.notificationbanner.NotificationBanner
 
 @this(
     layout: templates.Layout,
     hmrcPageHeading : HmrcPageHeading,
-    appConfig: FrontendAppConfig
+    appConfig: FrontendAppConfig,
+    govukNotificationBanner: GovukNotificationBanner
 )
 
 @(
@@ -31,6 +35,7 @@
     adminCard:  CardViewModel,
     penaltiesCardHtml: Option[Html],
     migrationHtml: Option[Html],
+    showMigrationBanner: Boolean = false,
     subHeading: Option[String] = None,
     returnLink: Option[Link] = None
 )(implicit request: Request[?], messages: Messages)
@@ -40,6 +45,15 @@
     <div class="govuk-grid-row">
 
         <div class="govuk-grid-column-full">
+
+            <div class="govuk-grid-column-two-thirds">
+                    @if(showMigrationBanner) {
+                        @govukNotificationBanner(NotificationBanner(
+                            content = Text(messages("messages__tpssMigrationBanner__content")),
+                            attributes = Map("id" -> "alert-banner")
+                        ))
+                    }
+                </div>
 
             @hmrcPageHeading(PageHeading(
                 text = name,
