@@ -26,8 +26,8 @@ import controllers.psa.routes.*
 import controllers.psp.routes.*
 import identifiers.psa.ListOfPSADetailsId
 import identifiers.{SchemeNameId, SchemeStatusId, SeqAuthorisedPractitionerId}
-import models.SchemeStatus.Open
 import models.*
+import models.SchemeStatus.Open
 import models.psa.PsaDetails
 import models.requests.AuthenticatedRequest
 import play.api.Logging
@@ -109,13 +109,21 @@ class PsaSchemeDashboardService @Inject()(
       pensionSchemeReturnConnector.getOverview(
         srn, pstr, minStartDateAsString, maxEndDateAsString, authEntity
       ).map {
-        case x if x.size == 1 =>
-          x.head.psrDueDate.map(date => messages("messages__manage_reports_and_returns_psr_due", date.format(formatter)))
-            .getOrElse("")
-        case x if x.size > 1 =>
-          x.head.psrDueDate.map(_ => messages("messages__manage_reports_and_returns_multiple_due"))
-            .getOrElse("")
-        case _ => ""
+        case rm if rm.size == 1 =>
+          rm.head.psrDueDate.map(date => messages("messages__manage_reports_and_returns_psr_due", date.format(formatter)))
+            .getOrElse {
+              logger.warn("One response message returned - PSR due date missing")
+              ""
+            }
+        case rm if rm.size > 1 =>
+          rm.head.psrDueDate.map(_ => messages("messages__manage_reports_and_returns_multiple_due"))
+            .getOrElse {
+              logger.warn("Multiple response messages returned - PSR due date missing")
+              ""
+            }
+        case _ =>
+          logger.warn("no response message returned")
+          ""
       } recoverWith {
         case e =>
           logger.error("Issue with PSR request", e)
