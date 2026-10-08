@@ -120,6 +120,13 @@ class PspSchemeDashboardService @Inject()(
         url = appConfig.qropsOverviewUrl.format(srn),
         linkText = messages("messages__qrops__view_details_link")
       ))
+      
+      val ihtpLink = Seq(
+        Link(
+          id = "ihtp-view-details",
+          url = appConfig.ihtpUrl,
+          linkText = messages("messages__ihtp__view_details_link")
+        ))
 
     val subHead: Seq[CardSubHeading] = if (subHeadingPstr.isBlank) {
       Seq.empty
@@ -133,21 +140,16 @@ class PspSchemeDashboardService @Inject()(
       ))
     }
 
+    val baseLink = aftLink ++ erLink
+    val psrLinks = if (subHeadingPstr.isBlank) Seq.empty else psrLink
+    val qropsLinks = if (appConfig.enableQROPSUrl) qropsLink else Seq.empty
+    val ihtpLinks = if (appConfig.enableIHTPLink) ihtpLink else Seq.empty
+    
     PspSchemeDashboardCardViewModel(
       id = "manage_reports_returns",
       heading = Message("messages__manage_reports_and_returns_head"),
       subHeadings = subHead.map(x => x.subHeading -> x.subHeadingParams.head.subHeadingParam),
-      links = if (subHeadingPstr.isBlank) {
-        if (appConfig.enableQROPSUrl)
-          aftLink ++ erLink ++ qropsLink
-        else
-          aftLink ++ erLink
-      } else {
-        if (appConfig.enableQROPSUrl)
-          aftLink ++ erLink ++ psrLink ++ qropsLink
-        else
-          aftLink ++ erLink ++ psrLink
-      }
+      links = baseLink ++ psrLinks ++ qropsLinks ++ ihtpLinks
     )
   }
 }
