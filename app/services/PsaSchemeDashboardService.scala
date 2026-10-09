@@ -172,6 +172,13 @@ class PsaSchemeDashboardService @Inject()(
         url = appConfig.qropsOverviewUrl.format(srn),
         linkText = messages("messages__qrops__view_details_link")
       ))
+      
+      val ihtpLink = Seq(
+        Link(
+          id = "ihtp-view-details",
+          url = appConfig.ihtpUrl,
+          linkText = messages("messages__ihtp__view_details_link")
+        ))
 
     val subHeading: Seq[CardSubHeading] = if (seqEROverview.isBlank) {
       Seq.empty
@@ -184,21 +191,16 @@ class PsaSchemeDashboardService @Inject()(
           subHeadingParamClasses = "font-small bold"))))
     }
 
+    val baseLinks = aftLink ++ erLink 
+    val psrLinks = if (seqEROverview.isBlank) Seq.empty else psrLink
+    val qropsLinks = if (appConfig.enableQROPSUrl) qropsLink else Seq.empty
+    val ihtpLinks = if (appConfig.enableIHTPLink) ihtpLink else Seq.empty
+    
     CardViewModel(
       id = "manage_reports_returns",
       heading = Message("messages__manage_reports_and_returns_head"),
       subHeadings = subHeading,
-      links = if (seqEROverview.isBlank) {
-        if (appConfig.enableQROPSUrl)
-          aftLink ++ erLink ++ qropsLink
-        else
-          aftLink ++ erLink
-      } else {
-        if (appConfig.enableQROPSUrl)
-          aftLink ++ erLink ++ psrLink ++ qropsLink
-        else
-          aftLink ++ erLink ++ psrLink
-      }
+      links = baseLinks ++ psrLinks ++ qropsLinks ++ ihtpLinks
     )
   }
 

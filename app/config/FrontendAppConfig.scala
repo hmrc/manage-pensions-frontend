@@ -204,5 +204,6 @@ class FrontendAppConfig @Inject()(runModeConfiguration: Configuration, environme
   lazy val enableMembersProtectionsEnhancements: Boolean = runModeConfiguration.getOptional[Boolean]("features.enableMPELink").getOrElse(false)
   lazy val forceServiceNavigation: Boolean = runModeConfiguration.getOptional[Boolean]("play-frontend-hmrc.forceServiceNavigation").getOrElse(false)
   lazy val enableTpssMigrationBanner: Boolean = runModeConfiguration.getOptional[Boolean]("features.enableTpssMigrationBanner").getOrElse(false)
-
+  lazy val ihtpUrl: String = runModeConfiguration.underlying.getString("urls.ihtpUrl")
+  lazy val enableIHTPLink: Boolean = runModeConfiguration.getOptional[Boolean]("features.enableIHTPLink").getOrElse(false)
 }

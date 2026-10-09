@@ -110,7 +110,9 @@ class PsaSchemeDashboardServiceSpec
     when(mockSchemeDetailsConnector.getSchemeDetails(any(), any(), any())(using any(), any())).thenReturn(Future.successful(UserAnswers()))
     when(mockEventReportingConnector.getOverview(any(), any(), any(), any(), any())(using any())).thenReturn(Future.successful(Seq(overview1)))
     when(mockAppConfig.qropsOverviewUrl).thenReturn("dummy")
+    when(mockAppConfig.ihtpUrl).thenReturn("dummy")
     when(mockAppConfig.enableQROPSUrl).thenReturn(false)
+    when(mockAppConfig.enableIHTPLink).thenReturn(false)
     super.beforeEach()
   }
 
@@ -298,6 +300,63 @@ class PsaSchemeDashboardServiceSpec
 
       compareCardViewModels(actualReturn, expectedReturn)
     }
+
+    "handle IHTP link when enabled" in {
+      when(mockAppConfig.enableIHTPLink).thenReturn(true)
+
+      val actualReturn = service.cards(showPsrLink = true, erHtml = Html(""), srn = "S2400000005", lock = None, list =
+        ListOfSchemes("", "", Some(fullSchemes)), ua = UserAnswers()) .map(_.head).futureValue
+
+      val expectedReturn = CardViewModel(
+        "manage_reports_returns",
+        "Manage reports and returns",
+        List(
+          CardSubHeading("Notice to file:", "card-sub-heading",
+            List(CardSubHeadingParam("Pension Scheme Return due 6 April 2024", "font-small bold"))
+          )
+        ),
+        List(
+          Link("aft-view-link", "dummy", Literal("Accounting for Tax (AFT) return"), None, None),
+          Link("psr-view-details", "dummy", Literal("Pension scheme return"), None, None),
+          Link("ihtp-view-details", "dummy", Literal("Report Inheritance Tax on a pension"), None, None)
+        ),
+        None
+      )
+
+      compareCardViewModels(actualReturn, expectedReturn)
+    }
+
+    "handle QROPS and IHTP links when both are enabled" in {
+      when(mockAppConfig.enableQROPSUrl).thenReturn(true)
+      when(mockAppConfig.enableIHTPLink).thenReturn(true)
+
+      val actualReturn = service.cards(showPsrLink = true, erHtml = Html(""), srn = "S2400000005", lock = None, list =
+        ListOfSchemes("", "", Some(fullSchemes)), ua = UserAnswers()) .map(_.head).futureValue
+
+      val expectedReturn = CardViewModel(
+        "manage_reports_returns",
+        "Manage reports and returns",
+        List(
+          CardSubHeading("Notice to file:", "card-sub-heading",
+            List(CardSubHeadingParam("Pension Scheme Return due 6 April 2024", "font-small bold"))
+          )
+        ),
+        List(
+          Link("aft-view-link", "dummy", Literal("Accounting for Tax (AFT) return"), None, None),
+          Link("psr-view-details", "dummy", Literal("Pension scheme return"), None, None),
+          Link("qrops-view-details", "dummy",
+            Literal("Report a transfer to a qualifying recognised overseas pension scheme"),
+            None, None
+          ),
+          Link("ihtp-view-details", "dummy", Literal("Report Inheritance Tax on a pension"), None, None)
+        ),
+        None
+      )
+
+      compareCardViewModels(actualReturn, expectedReturn)
+    }
+
+
   }
 
   def compareCardViewModels(card1: CardViewModel, card2: CardViewModel): Unit = {
