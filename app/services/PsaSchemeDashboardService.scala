@@ -202,7 +202,6 @@ class PsaSchemeDashboardService @Inject()(
       subHeadings = subHeading,
       links = baseLinks ++ psrLinks ++ qropsLinks ++ ihtpLinks
     )
-
   }
 
   private def optionNotificationMessageKey(optionLock: Option[Lock], lockedSchemeName: Option[String]): Option[String] =
