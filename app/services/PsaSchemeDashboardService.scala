@@ -176,7 +176,7 @@ class PsaSchemeDashboardService @Inject()(
       val ihtpLink = Seq(
         Link(
           id = "ihtp-view-details",
-          url = appConfig.ihtpUrl,
+          url = appConfig.ihtpUrl.format(srn),
           linkText = messages("messages__ihtp__view_details_link")
         ))
 
@@ -419,4 +419,3 @@ object PsaSchemeDashboardService {
   val minStartDateAsString = "2000-04-06"
   val maxEndDateAsString = s"${LocalDate.now().getYear + 1}-04-05"
 }
-

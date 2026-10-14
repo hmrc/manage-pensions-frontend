@@ -124,7 +124,7 @@ class PspSchemeDashboardService @Inject()(
       val ihtpLink = Seq(
         Link(
           id = "ihtp-view-details",
-          url = appConfig.ihtpUrl,
+          url = appConfig.ihtpUrl.format(srn),
           linkText = messages("messages__ihtp__view_details_link")
         ))
 
