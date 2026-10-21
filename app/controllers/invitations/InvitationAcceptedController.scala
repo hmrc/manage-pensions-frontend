@@ -17,6 +17,7 @@
 package controllers.invitations
 
 import connectors.UserAnswersCacheConnector
+import connectors.admin.MinimalConnector
 import controllers.Retrievals
 import controllers.actions.{AuthAction, DataRequiredAction, DataRetrievalAction}
 import identifiers.invitations.SchemeNameId
@@ -34,6 +35,7 @@ class InvitationAcceptedController @Inject()(
                                               getData: DataRetrievalAction,
                                               requireData: DataRequiredAction,
                                               userAnswersCacheConnector: UserAnswersCacheConnector,
+                                              minimalConnector: MinimalConnector,
                                               val controllerComponents: MessagesControllerComponents,
                                               view: invitationAccepted)(
                                               implicit val ec: ExecutionContext) extends FrontendBaseController with Retrievals with I18nSupport {
@@ -42,10 +44,12 @@ class InvitationAcceptedController @Inject()(
   def onPageLoad: Action[AnyContent] = (authenticate() andThen getData andThen requireData).async {
     implicit request =>
       SchemeNameId.retrieve.map { schemeName =>
-        userAnswersCacheConnector.removeAll(request.externalId).map { _ =>
-          Ok(view(
-            schemeName
-          ))
+        minimalConnector.getPsaNameFromPsaID().flatMap { psaName =>
+          userAnswersCacheConnector.removeAll(request.externalId).map { _ =>
+            psaName.map { name =>
+              Ok(view(schemeName, name))
+            }.getOrElse(Redirect(controllers.routes.SessionExpiredController.onPageLoad))
+          }
         }
       }
   }
