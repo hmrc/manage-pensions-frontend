@@ -21,7 +21,7 @@
     panel: components.panel
 )
 
-@(schemeName: String)(implicit request: Request[?], messages: Messages)
+@(schemeName: String, psaName: String)(implicit request: Request[?], messages: Messages)
 
 @layout(pageTitle = messages("messages__invitationAccepted__title")) {
 
@@ -30,9 +30,13 @@
         panelContent = ""
     )
 
+    <h2 class="govuk-heading-m">@messages("messages__invitationAccepted__whatHappensNext")</h2>
+
+    <p class="govuk-body">@messages("messages__invitationAccepted__whatHappensNextMessage")</p>
+
     <p class="govuk-body">
-        <a id="return-to-schemes" class="govuk-link" href="@controllers.psa.routes.ListSchemesController.onPageLoad">
-            @messages("messages__invitationAccepted__returnToSchemes__link")
+        <a id="return-to-schemes" class="govuk-link" href="@controllers.routes.SchemesOverviewController.onPageLoad()">
+            @messages("messages__invitationAccepted__returnToDashboard__link", psaName)
         </a>
     </p>
 

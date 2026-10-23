@@ -17,13 +17,24 @@
 package controllers.invitations
 
 import connectors.FakeUserAnswersCacheConnector
+import connectors.admin.MinimalConnector
 import controllers.ControllerSpecBase
 import controllers.actions._
+import org.jsoup.Jsoup
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.test.Helpers._
 import utils.{UserAnswers, UserAnswerOps}
 import views.html.invitations.invitationAccepted
 
-class InvitationsAcceptedControllerSpec extends ControllerSpecBase {
+import scala.concurrent.Future
+
+class InvitationsAcceptedControllerSpec extends ControllerSpecBase with MockitoSugar {
+
+  private val mockMinimalConnector = mock[MinimalConnector]
+
+  private val psaName = "Nigel Robert Smith"
 
   val testSchemeName: String = "Test Scheme Name"
   val getRelevantData: DataRetrievalAction = UserAnswers().schemeName(testSchemeName).dataRetrievalAction
@@ -37,19 +48,41 @@ class InvitationsAcceptedControllerSpec extends ControllerSpecBase {
       dataRetrievalAction,
       new DataRequiredActionImpl,
       FakeUserAnswersCacheConnector,
+      mockMinimalConnector,
       controllerComponents,
       view
     )
 
-  def viewAsString(): String = view(testSchemeName)(using fakeRequest, messages).toString
+  def viewAsString(): String = view(testSchemeName, psaName)(using fakeRequest, messages).toString
 
   "InvitationAccepted Controller" must {
 
     "return OK with correct content on GET" in {
+      when(mockMinimalConnector.getPsaNameFromPsaID()(using any(), any()))
+        .thenReturn(Future.successful(Some(psaName)))
+
       val result = controller().onPageLoad(fakeRequest)
       status(result) mustBe OK
       contentAsString(result) mustBe viewAsString()
+      val document = Jsoup.parse(contentAsString(result))
+      document.select("main h2.govuk-heading-m").text() mustBe "What happens next"
+      document.select("#return-to-schemes").size() mustBe 1
+      document.select("#return-to-schemes").text() mustBe s"Return to $psaName"
+      document.select("#return-to-schemes").attr("href") mustBe controllers.routes.SchemesOverviewController.onPageLoad().url
+      document.select("p.govuk-body").text() must include(
+        "It can take up to 1 hour before your pension scheme is available to view."
+      )
       FakeUserAnswersCacheConnector.verifyAllDataRemoved()
+    }
+
+    "redirect to session expired if the administrator name is missing" in {
+      when(mockMinimalConnector.getPsaNameFromPsaID()(using any(), any()))
+        .thenReturn(Future.successful(None))
+
+      val result = controller().onPageLoad(fakeRequest)
+
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(controllers.routes.SessionExpiredController.onPageLoad.url)
     }
 
     "redirect to session expired if required data is missing" in {

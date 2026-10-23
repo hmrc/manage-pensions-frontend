@@ -299,7 +299,10 @@ messages__declaration__statement7 = the scheme is a Master Trust as defined in S
 
 messages__invitationAccepted__title = You have been added as a scheme administrator
 messages__invitationAccepted__heading = You have been added as a scheme administrator of {0}
-messages__invitationAccepted__returnToSchemes__link = Return to your pension schemes
+messages__invitationAccepted__returnToDashboard__link = Return to {0}
+messages__invitationAccepted__whatHappensNext = What happens next
+messages__invitationAccepted__whatHappensNextMessage = It can take up to 1 hour before your pension scheme is available to view.
+
 
 messages__adviser__name__title = Who has working knowledge of pensions and pensions tax legislation?
 messages__adviser__name__heading = Who has working knowledge of pensions and pensions tax legislation?
