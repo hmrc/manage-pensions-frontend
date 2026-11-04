@@ -23,7 +23,7 @@ import models.PreviouslyRegistered.PreviouslyRegisteredButNotLoggedIn
 import models.{AdministratorOrPractitioner, PreviouslyRegistered}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
-import play.api.mvc._
+import play.api.mvc.*
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions, Enrolments}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -80,22 +80,26 @@ class PreviouslyRegisteredController @Inject()(
       )
   }
 
-  private def previouslyRegisteredButNotLoggedIn(enrolmentKey: String, idName: String, idStartsWith: String, recoverCredentialsUrl: String)
-                                                (implicit request: Request[AnyContent]): Future[Result] = {
-    authorised().retrieve(Retrievals.allEnrolments) {
-      enrolments =>
-        isTpssAccount(enrolments, enrolmentKey, idName, idStartsWith) match {
-          case true => Future.successful(Redirect(routes.TpssRecoveryController.onPageLoad))
-          case _ => Future.successful(Redirect(recoverCredentialsUrl))
-        }
+  private def previouslyRegisteredButNotLoggedIn(enrolmentKey: String,
+                                                 idName: String,
+                                                 idStartsWith: String,
+                                                 recoverCredentialsUrl: String
+                                                )(implicit request: Request[AnyContent]): Future[Result] = {
+    authorised().retrieve(Retrievals.allEnrolments) { enrolments =>
+      if (alreadyRecoveredHasPodsEnrolments(enrolments)) {
+        Future.successful(Redirect(recoverCredentialsUrl))
+      } else if (isTpssAccount(enrolments, enrolmentKey, idName, idStartsWith)) {
+        Future.successful(Redirect(routes.TpssRecoveryController.onPageLoad))
+      } else {
+        Future.successful(Redirect(recoverCredentialsUrl))
+      }
     }
   }
 
-  private def isTpssAccount(enrolments: Enrolments, enrolmentKey: String, idName: String, idStartsWith: String): Boolean = {
-    val psaVal = enrolments.getEnrolment(enrolmentKey).flatMap(_.getIdentifier(idName)).map(_.value)
-    psaVal match {
-      case Some(tpssVal) if tpssVal.startsWith(idStartsWith) => true
-      case _ => false
-    }
-  }
+  private def alreadyRecoveredHasPodsEnrolments(enrolments: Enrolments): Boolean =
+    enrolments.getEnrolment("HMRC-PODS-ORG").isDefined
+
+  private def isTpssAccount(enrolments: Enrolments, enrolmentKey: String, idName: String, idStartsWith: String): Boolean =
+    enrolments.getEnrolment(enrolmentKey).flatMap(_.getIdentifier(idName)).exists(_.value.startsWith(idStartsWith))
+
 }
